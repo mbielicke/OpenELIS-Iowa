@@ -41,17 +41,13 @@ public class ShippingMetaMap extends ShippingMeta implements MetaMap{
         TRACKING_META = new ShippingTrackingMeta("shippingTracking.");
             
         SHIPPING_ITEM_META = new ShippingItemMeta("shippingItem.");
-        
-        ORDER_SHIPPING_NOTE_META = new NoteMeta("note.");
-    }
-    
+    }    
+
     public OrganizationMetaMap ORGANIZATION_META;
     
     public ShippingTrackingMeta TRACKING_META;
         
     public ShippingItemMeta SHIPPING_ITEM_META;
-    
-    public NoteMeta ORDER_SHIPPING_NOTE_META;
     
     public OrganizationMetaMap getOrganizationMeta(){
         return ORGANIZATION_META;
@@ -63,10 +59,6 @@ public class ShippingMetaMap extends ShippingMeta implements MetaMap{
     
     public ShippingItemMeta getShippingItemMeta(){
         return SHIPPING_ITEM_META;
-    }
-    
-    public NoteMeta getNoteMeta(){
-        return ORDER_SHIPPING_NOTE_META;
     }
     
     public String buildFrom(String where) {
@@ -86,8 +78,6 @@ public class ShippingMetaMap extends ShippingMeta implements MetaMap{
             return TRACKING_META.hasColumn(columnName);
         if(columnName.startsWith("shippingItem."))
             return SHIPPING_ITEM_META.hasColumn(columnName);
-        if(columnName.startsWith("note."))
-            return ORDER_SHIPPING_NOTE_META.hasColumn(columnName);
         
         return super.hasColumn(columnName);
     }

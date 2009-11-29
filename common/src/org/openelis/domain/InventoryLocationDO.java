@@ -37,7 +37,7 @@ public class InventoryLocationDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, inventoryItemId, storageLocationId, quantityOnHand;
+    protected Integer         id, inventoryItemId, storageLocationId, quantityOnhand;
     protected String          lotNumber;
     protected Datetime        expirationDate;
 
@@ -45,13 +45,13 @@ public class InventoryLocationDO extends DataObject {
     }
 
     public InventoryLocationDO(Integer id, Integer inventoryItemId, String lotNumber,
-                               Integer storageLocationId, Integer quantityOnHand,
+                               Integer storageLocationId, Integer quantityOnhand,
                                Date expirationDate) {
         setId(id);
         setInventoryItemId(inventoryItemId);
         setLotNumber(lotNumber);
         setStorageLocationId(storageLocationId);
-        setQuantityOnHand(quantityOnHand);
+        setQuantityOnhand(quantityOnhand);
         setExpirationDate(DataBaseUtil.toYD(expirationDate));
         _changed = false;
     }
@@ -83,12 +83,12 @@ public class InventoryLocationDO extends DataObject {
         _changed = true;
     }
 
-    public Integer getQuantityOnHand() {
-        return quantityOnHand;
+    public Integer getQuantityOnhand() {
+        return quantityOnhand;
     }
 
-    public void setQuantityOnHand(Integer quantityOnHand) {
-        this.quantityOnHand = quantityOnHand;
+    public void setQuantityOnhand(Integer quantityOnhand) {
+        this.quantityOnhand = quantityOnhand;
         _changed = true;
     }
 

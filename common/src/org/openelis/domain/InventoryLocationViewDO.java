@@ -42,11 +42,14 @@ public class InventoryLocationViewDO extends InventoryLocationDO {
 
     protected String          inventoryItemName, storageLocationName;
 
+    public InventoryLocationViewDO() {
+    }
+    
     public InventoryLocationViewDO(Integer id, Integer inventoryItemId, String lotNumber,
-                                   Integer storageLocationId, Integer quantityOnHand,
+                                   Integer storageLocationId, Integer quantityOnhand,
                                    Date expirationDate, String inventoryItemName,
                                    String storageLocationName) {
-        super(id, inventoryItemId, lotNumber, storageLocationId, quantityOnHand, expirationDate);
+        super(id, inventoryItemId, lotNumber, storageLocationId, quantityOnhand, expirationDate);
         setInventoryItemName(inventoryItemName);
         setStorageLocationName(storageLocationName);
     }

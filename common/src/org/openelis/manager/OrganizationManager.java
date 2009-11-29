@@ -151,7 +151,7 @@ public class OrganizationManager implements RPC, HasNotesInt {
         if (notes == null) {
             if (organization.getId() != null) {
                 try {
-                    notes = NoteManager.findByRefTableRefId(ReferenceTable.ORGANIZATION, organization.getId());
+                    notes = NoteManager.fetchByRefTableRefId(ReferenceTable.ORGANIZATION, organization.getId());
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
