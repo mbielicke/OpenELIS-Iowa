@@ -53,10 +53,8 @@ import org.openelis.entity.Order;
 import org.openelis.entity.OrderItem;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.LockLocal;
-import org.openelis.metamap.InventoryItemMetaMap;
 import org.openelis.remote.BuildKitsRemote;
 
 @Stateless
@@ -82,7 +80,7 @@ public class BuildKitsBean implements BuildKitsRemote{
     }
 
     private static int invLocRefTableId;
-    private static final InventoryItemMetaMap InventoryItemMeta = new InventoryItemMetaMap();
+//    private static final InventoryItemMetaMap InventoryItemMeta = new InventoryItemMetaMap();
     
     public BuildKitsBean(){
         invLocRefTableId = ReferenceTable.INVENTORY_LOCATION;
@@ -244,10 +242,10 @@ public class BuildKitsBean implements BuildKitsRemote{
         ValidationErrorsList list = new ValidationErrorsList();
         validateKit(buildKitDO, list);
         boolean setNumRequestedError = false;
-        for(int i=0; i<components.size(); i++){
-            if(validateKitComponent(components.get(i), i, list))
-                setNumRequestedError = true;
-        }
+//        for(int i=0; i<components.size(); i++){
+//            if(validateKitComponent(components.get(i), i, list))
+//                setNumRequestedError = true;
+//        }
         
         if(setNumRequestedError)
             list.add(new FieldErrorException("numRequestedIsToHigh", "numRequested"));
@@ -258,6 +256,7 @@ public class BuildKitsBean implements BuildKitsRemote{
     
     private void validateKit(BuildKitDO buildKitDO, ValidationErrorsList list) {
         //name required 
+/*
         if(buildKitDO.getInventoryItemId() == null){
             list.add(new FieldErrorException("fieldRequiredException",InventoryItemMeta.getName()));
         }
@@ -322,9 +321,10 @@ public class BuildKitsBean implements BuildKitsRemote{
         //TODO check add to exisiting is right
         
         //TODO quantity validation on all components
-        
+
         return setNumRequestedError;
-    }
+*/
+}
     
     private void lockRecords(List components) throws Exception{
         if(components.size() == 0)

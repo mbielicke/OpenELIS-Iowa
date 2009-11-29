@@ -49,13 +49,10 @@ import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.InventoryAdjustment;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryXAdjust;
-import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.local.LockLocal;
-import org.openelis.metamap.InventoryAdjustmentMetaMap;
 import org.openelis.remote.InventoryAdjustmentRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
@@ -81,7 +78,7 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
     
     private LockLocal lockBean;
     private static int invLocRefTableId;
-    private static final InventoryAdjustmentMetaMap InventoryAdjustmentMetaMap = new InventoryAdjustmentMetaMap();
+//    private static final InventoryAdjustmentMetaMap InventoryAdjustmentMetaMap = new InventoryAdjustmentMetaMap();
     
     public InventoryAdjustmentBean(){
         invLocRefTableId = ReferenceTable.INVENTORY_LOCATION;
@@ -155,6 +152,7 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
     public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception{
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
+/*
         qb.setMeta(InventoryAdjustmentMetaMap);
         qb.setSelect("distinct new org.openelis.domain.IdNameDateDO("+InventoryAdjustmentMetaMap.getId()+", "+InventoryAdjustmentMetaMap.getDescription()+", " +
                          InventoryAdjustmentMetaMap.getAdjustmentDate()+") ");
@@ -165,7 +163,7 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
         qb.setOrderBy(InventoryAdjustmentMetaMap.getAdjustmentDate()+" , "+InventoryAdjustmentMetaMap.getId());
 
         sb.append(qb.getEJBQL());
-
+*/
         Query query = manager.createQuery(sb.toString());
 
         if(first > -1 && max > -1)
@@ -242,6 +240,7 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
 
     public void validateAdjustment(InventoryAdjustmentDO inventoryAdjustmentDO, List children) throws Exception{
         ValidationErrorsList list = new ValidationErrorsList();
+/*
         //desc required
         if(inventoryAdjustmentDO.getDescription() == null || "".equals(inventoryAdjustmentDO.getDescription()))
             list.add(new FieldErrorException("fieldRequiredException",InventoryAdjustmentMetaMap.getDescription()));
@@ -263,16 +262,19 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
         
         if(list.size() > 0)
             throw list;
+*/
     }
     
     private void validateAdjItem(InventoryAdjustmentChildDO childDO, int rowIndex, ValidationErrorsList exceptionList){
         //loc required
+/*
         if(childDO.getLocationId() == null)
             exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, InventoryAdjustmentMetaMap.TRANS_ADJUSTMENT_LOCATION_META.INVENTORY_LOCATION_META.getId()));
         
         //count required
         if(childDO.getPhysicalCount() == null)
             exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, InventoryAdjustmentMetaMap.TRANS_ADJUSTMENT_LOCATION_META.getPhysicalCount()));
+*/
     }
     
     public List getInventoryitemDataAndLockLoc(Integer inventoryLocationId, Integer oldLocId, Integer storeId) throws Exception{

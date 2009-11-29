@@ -80,7 +80,7 @@ public class InventoryLocationBean implements InventoryLocationLocal {
         entity.setInventoryItemId(data.getInventoryItemId());
         entity.setLotNumber(data.getLotNumber());
         entity.setStorageLocationId(data.getStorageLocationId());
-        entity.setQuantityOnhand(data.getQuantityOnHand());
+        entity.setQuantityOnhand(data.getQuantityOnhand());
         entity.setExpirationDate(data.getExpirationDate());
 
         manager.persist(entity);
@@ -101,7 +101,7 @@ public class InventoryLocationBean implements InventoryLocationLocal {
         entity.setInventoryItemId(data.getInventoryItemId());
         entity.setLotNumber(data.getLotNumber());
         entity.setStorageLocationId(data.getStorageLocationId());
-        entity.setQuantityOnhand(data.getQuantityOnHand());
+        entity.setQuantityOnhand(data.getQuantityOnhand());
         entity.setExpirationDate(data.getExpirationDate());
 
         return data;
@@ -124,7 +124,7 @@ public class InventoryLocationBean implements InventoryLocationLocal {
         if (DataBaseUtil.isEmpty(data.getStorageLocationId()))
             list.add(new FieldErrorException("fieldRequiredException",
                                              meta.getStorageLocationId()));
-        if (DataBaseUtil.isEmpty(data.getQuantityOnHand()))
+        if (DataBaseUtil.isEmpty(data.getQuantityOnhand()))
             list.add(new FieldErrorException("fieldRequiredException",
                                              meta.getQuantityOnhand()));
         

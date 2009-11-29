@@ -49,12 +49,15 @@ import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 @NamedQueries({
-	@NamedQuery(name = "StandardNote.FetchById", 
-			    query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.typeId,s.text) from StandardNote s where s.id = :id"),
-
-    @NamedQuery(name = "StandardNote.FetchByType", 
-    		    query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.typeId,s.text) from StandardNote s where "+
-                      " (s.name like :name OR s.description like :desc) and s.typeId = :type order by s.name")
+	@NamedQuery( name = "StandardNote.FetchById", 
+			    query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.typeId,s.text)"
+			          + " from StandardNote s where s.id = :id"),
+    @NamedQuery( name = "StandardNote.FetchByType", 
+    		    query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.typeId,s.text)"
+    		          + " from StandardNote s where s.typeId = :typeId order by s.name"),
+    @NamedQuery( name = "StandardNote.FetchByNameOrDescription", 
+                query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.typeId,s.text)"
+                      + " from StandardNote s where (s.name like :name OR s.description like :description) order by s.name")
 })
             
     

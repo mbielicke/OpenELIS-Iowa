@@ -37,7 +37,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.IdNameVO;
+import org.openelis.domain.IdNameStoreVO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.entity.InventoryItem;
@@ -48,7 +48,7 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.InventoryItemLocal;
-import org.openelis.metamap.InventoryItemMetaMap;
+import org.openelis.meta.InventoryItemMeta;
 import org.openelis.remote.InventoryItemRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -61,7 +61,7 @@ public class InventoryItemBean implements InventoryItemRemote, InventoryItemLoca
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
    
-    private static final InventoryItemMetaMap meta = new InventoryItemMetaMap();
+    private static InventoryItemMeta meta = new InventoryItemMeta();
     
     public InventoryItemViewDO fetchById(Integer id) throws Exception {
         Query query;
@@ -103,17 +103,16 @@ public class InventoryItemBean implements InventoryItemRemote, InventoryItemLoca
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+    public ArrayList<IdNameStoreVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
         QueryBuilderV2 builder;
         List list;
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getId() + ", " +
-                          meta.getName() + ", " + meta.getStore().getEntry() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameStoreVO(" + 
+                          meta.getId() + "," + meta.getName() + "," + meta.getStoreId() + ") ");
         builder.constructWhere(fields);
-        builder.addWhere(meta.getStoreId() + "=" + meta.getStore().getId());
         builder.setOrderBy(meta.getName());
 
         query = manager.createQuery(builder.getEJBQL());
@@ -123,11 +122,11 @@ public class InventoryItemBean implements InventoryItemRemote, InventoryItemLoca
         list = query.getResultList();
         if (list.isEmpty())
             throw new NotFoundException();
-        list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
+        list = (ArrayList<IdNameStoreVO>)DataBaseUtil.subList(list, first, max);
         if (list == null)
             throw new LastPageException();
 
-        return (ArrayList<IdNameVO>)list;
+        return (ArrayList<IdNameStoreVO>)list;
     }
 
 

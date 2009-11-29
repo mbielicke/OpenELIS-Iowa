@@ -56,18 +56,21 @@ public class NoteBean implements NoteLocal {
     @EJB
     LoginLocal            login;
 
-    public ArrayList<NoteViewDO> fetchById(Integer refTableId, Integer refId) throws Exception {
+    public ArrayList<NoteViewDO> fetchByRefTableRefId(Integer refTableId, Integer refId) throws Exception {
         Query query;
         NoteViewDO note;
         SystemUserDO user;
         ArrayList<NoteViewDO> list;
-        
-        query = manager.createNamedQuery("Note.Notes");
+
+        // TODO
+        // we are currently returning any requested note without checking to see
+        // if the user have permission to this note -- we need to fix this
+        //        
+        query = manager.createNamedQuery("Note.FetchByRefTableRefId");
         query.setParameter("referenceTable", refTableId);
         query.setParameter("id", refId);
 
         list = (ArrayList<NoteViewDO>)query.getResultList();
-
         if (list.size() == 0)
             throw new NotFoundException();
         
