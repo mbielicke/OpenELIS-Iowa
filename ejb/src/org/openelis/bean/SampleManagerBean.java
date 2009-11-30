@@ -40,6 +40,7 @@ import javax.transaction.UserTransaction;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.SampleDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
@@ -149,9 +150,9 @@ public class SampleManagerBean  implements SampleManagerRemote {
         return man;
     }
     
-    public void validateAccessionNumber(Integer accessionNumber) throws Exception {
+    public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
         SampleManager man = SampleManager.getInstance();
-        man.validateAccessionNumber(accessionNumber);
+        man.validateAccessionNumber(sampleDO);
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {

@@ -59,7 +59,7 @@ import org.openelis.utils.Auditable;
                       + " from Panel p where p.id = :id"),
     @NamedQuery(name = "Panel.FetchByName",
                query = "select distinct new org.openelis.domain.PanelDO(p.id,p.name,p.description)"
-                      + " from Panel p where p.name = :name")
+                      + " from Panel p where p.name like :name order by p.name")
 })
 
 @Entity

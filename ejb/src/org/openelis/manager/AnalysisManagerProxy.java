@@ -34,6 +34,7 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalysisLocal;
+import org.openelis.manager.AnalysisManager.AnalysisListItem;
 
 public class AnalysisManagerProxy {
     public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
@@ -175,6 +176,7 @@ public class AnalysisManagerProxy {
     
     private void update(AnalysisManager man, AnalysisViewDO analysisDO, int i) throws Exception {
         Integer anRefId, anIntRefId;
+        AnalysisListItem item;
         AnalysisLocal al = getAnalysisLocal();
         
         anRefId = ReferenceTable.ANALYSIS;
@@ -186,20 +188,29 @@ public class AnalysisManagerProxy {
         }else
             al.update(analysisDO);
         
-        man.getQAEventAt(i).setAnalysisId(analysisDO.getId());
-        man.getQAEventAt(i).update();
+        item = man.getItemAt(i);
+        if(item.qaEvents != null){
+            man.getQAEventAt(i).setAnalysisId(analysisDO.getId());
+            man.getQAEventAt(i).update();
+        }
         
-        man.getInternalNotesAt(i).setReferenceId(analysisDO.getId());
-        man.getInternalNotesAt(i).setReferenceTableId(anIntRefId);
-        man.getInternalNotesAt(i).update();
+        if(item.analysisInternalNotes != null){
+            man.getInternalNotesAt(i).setReferenceId(analysisDO.getId());
+            man.getInternalNotesAt(i).setReferenceTableId(anIntRefId);
+            man.getInternalNotesAt(i).update();
+        }
         
-        man.getExternalNoteAt(i).setReferenceId(analysisDO.getId());
-        man.getExternalNoteAt(i).setReferenceTableId(anRefId);
-        man.getExternalNoteAt(i).update();
+        if(item.analysisExternalNote != null){
+            man.getExternalNoteAt(i).setReferenceId(analysisDO.getId());
+            man.getExternalNoteAt(i).setReferenceTableId(anRefId);
+            man.getExternalNoteAt(i).update();
+        }
         
-        man.getStorageAt(i).setReferenceId(analysisDO.getId());
-        man.getStorageAt(i).setReferenceTableId(anRefId);
-        man.getStorageAt(i).update();
+        if(item.storage != null){
+            man.getStorageAt(i).setReferenceId(analysisDO.getId());
+            man.getStorageAt(i).setReferenceTableId(anRefId);
+            man.getStorageAt(i).update();
+        }
     }
         
     

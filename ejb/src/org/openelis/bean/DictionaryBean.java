@@ -37,6 +37,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.DictionaryCacheCategoryVO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
@@ -217,6 +218,17 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
         if (list.size() > 0)
             throw list;
 
+    }
+    
+    public ArrayList<DictionaryCacheCategoryVO> preLoadBySystemName(ArrayList<DictionaryCacheCategoryVO> cacheVO) throws Exception {
+        DictionaryCacheCategoryVO catVO;
+        
+        for(int i=0; i<cacheVO.size(); i++){
+            catVO = cacheVO.get(i);
+            catVO.setDictionaryList(fetchByCategorySystemName(catVO.getSystemName()));
+        }
+        
+        return cacheVO;
     }
     
     public void validateForDelete(DictionaryViewDO data) throws Exception{
