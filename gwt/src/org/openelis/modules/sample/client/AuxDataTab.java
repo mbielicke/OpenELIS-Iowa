@@ -89,32 +89,9 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
 
         initialize();
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                initializeDropdowns();
-            }
-        });
+        initializeDropdowns();
     }
     
-    private void initializeDropdowns() {
-        // load types into cache
-        DictionaryCache.getListByCategorySystemName("aux_field_value_type");
-        
-        try{
-            alphaLowerId = DictionaryCache.getIdFromSystemName("aux_alpha_lower");
-            alphaUpperId = DictionaryCache.getIdFromSystemName("aux_alpha_upper");
-            alphaMixedId = DictionaryCache.getIdFromSystemName("aux_alpha_mixed");
-            timeId = DictionaryCache.getIdFromSystemName("aux_time");
-            numericId = DictionaryCache.getIdFromSystemName("aux_numeric");
-            dateId = DictionaryCache.getIdFromSystemName("aux_date");
-            dateTimeId = DictionaryCache.getIdFromSystemName("aux_date_time");
-            dictionaryId = DictionaryCache.getIdFromSystemName("aux_dictionary");
-        }catch(Exception e){
-            Window.alert(e.getMessage());
-            window.close();
-        }
-    }
-
     private void initialize() {
         final AuxDataTab tab = this;
 
@@ -416,6 +393,22 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
         }
 
         ((AutoComplete<Integer>)event.getSource()).showAutoMatches(model);
+    }
+    
+    private void initializeDropdowns() {
+        try{
+            alphaLowerId = DictionaryCache.getIdFromSystemName("aux_alpha_lower");
+            alphaUpperId = DictionaryCache.getIdFromSystemName("aux_alpha_upper");
+            alphaMixedId = DictionaryCache.getIdFromSystemName("aux_alpha_mixed");
+            timeId = DictionaryCache.getIdFromSystemName("aux_time");
+            numericId = DictionaryCache.getIdFromSystemName("aux_numeric");
+            dateId = DictionaryCache.getIdFromSystemName("aux_date");
+            dateTimeId = DictionaryCache.getIdFromSystemName("aux_date_time");
+            dictionaryId = DictionaryCache.getIdFromSystemName("aux_dictionary");
+        }catch(Exception e){
+            Window.alert(e.getMessage());
+            window.close();
+        }
     }
 
     public void setManager(HasAuxDataInt parentMan) {

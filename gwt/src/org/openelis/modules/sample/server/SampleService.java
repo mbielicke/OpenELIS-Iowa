@@ -25,6 +25,7 @@
 */
 package org.openelis.modules.sample.server;
 
+import org.openelis.domain.SampleDO;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
@@ -64,8 +65,8 @@ public class SampleService {
         return remote().abortUpdate(sampleId);
     }
     
-    public void validateAccessionNumber(Integer accessionNumber) throws Exception {
-        remote().validateAccessionNumber(accessionNumber);
+    public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
+        remote().validateAccessionNumber(sampleDO);
     }
     
     //sample org methods

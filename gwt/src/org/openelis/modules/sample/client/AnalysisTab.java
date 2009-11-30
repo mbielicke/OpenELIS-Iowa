@@ -31,9 +31,11 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.IdVO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestSectionViewDO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -67,7 +69,7 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
 public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab.Action> {
-    public enum Action {CHANGED,SELECTED_TEST_PREP_ROW};
+    public enum Action {CHANGED};
     private boolean loaded;
     
     private SampleMetaMap meta;
@@ -82,21 +84,21 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     protected SampleItemViewDO sampleItem;
     protected Dropdown<Integer> statusId;
     
-        public AnalysisTab(ScreenDefInt def, ScreenWindow window) {
+    protected Integer analysisLoggedInId;
+    
+    protected ScreenService panelService;
+    
+    public AnalysisTab(ScreenDefInt def, ScreenWindow window) {
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.analysis.server.AnalysisService");
+        panelService = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
+        
         setDef(def);
         setWindow(window);
         meta = new SampleMetaMap("sample.");
         
         initialize();
        
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                setStatusesModel(DictionaryCache.getListByCategorySystemName("analysis_status"));
-                ArrayList<TableDataRow> sections = getSectionsModel(new ArrayList());
-                sectionId.setModel(sections);
-            }
-        });
+        initializeDropdowns();
     }
     
     private void initialize() {
@@ -110,48 +112,53 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 try{
+                    SampleDataBundle dataBundle;
+                    ArrayList<IdVO> testIds;
+                    ArrayList<SampleDataBundle> bundles;
                     TestManager testMan=null;
                     TableDataRow selectedRow = test.getSelection();
                     
-                    if(selectedRow.key != null){
-                        testMan = TestManager.fetchWithPrepTests(event.getValue());
-                        bundle.testManager = testMan;
-                    }else
-                        method.setSelections(new ArrayList());
+                    if(selectedRow != null && selectedRow.key != null){
+                        if(selectedRow.cells.get(1).value == null){
+                            testIds = panelService.callList("fetchTestIdsByPanelId", event.getValue());
+                        }else{
+                            testIds = new ArrayList<IdVO>();
+                            IdVO idVO = new IdVO();
+                            idVO.setId(event.getValue());
+                            testIds.add(idVO);
+                        }
                     
-                    analysis.setTestId(event.getValue());
-                    
-                    if(testMan != null){
-                        //set the method
-                        method.setSelection(new TableDataRow(testMan.getTest().getMethodId(), testMan.getTest().getMethodName()));
-                        analysis.setTestName(testMan.getTest().getName());
-                        analysis.setMethodId(testMan.getTest().getMethodId());
-                        analysis.setMethodName(testMan.getTest().getMethodName());
-                        
-                        //set isreportable
-                        isReportable.setValue(testMan.getTest().getIsReportable());
-                        analysis.setIsReportable(testMan.getTest().getIsReportable());
-                        
-                        TestSectionViewDO defaultDO = testMan.getTestSections().getDefaultSection();
-                        
-                        if(defaultDO != null){
-                            sectionId.setModel(getSectionsModel(defaultDO.getSectionId(), defaultDO.getSection()));
-                            sectionId.setSelection(defaultDO.getSectionId());
-                            analysis.setSectionId(defaultDO.getSectionId());
-                            analysis.setSectionName(defaultDO.getSection());
-                            bundle.sectionsDropdownModel = null;
-                        }else if(testMan.getTestSections().count() > 0){
-                            ArrayList<TableDataRow> sections = getSectionsModel(testMan.getTestSections().getSections());
-                            sectionId.setModel(sections);
-                            sectionId.setSelections(null);
+                        bundles = new ArrayList<SampleDataBundle>();
+                        for(int i=0; i<testIds.size(); i++){
+                            testMan = TestManager.fetchWithPrepTests(testIds.get(i).getId());
+                            dataBundle = null;
                             
-                            if(bundle != null)
-                                bundle.sectionsDropdownModel = sections;
+                            if(i==0)
+                                dataBundle = bundle;
+                            else{
+                                dataBundle = new SampleDataBundle();
+                                dataBundle.analysisManager = bundle.analysisManager;
+                                dataBundle.analysisTestDO = new AnalysisViewDO();
+                                dataBundle.sampleItemDO = bundle.sampleItemDO;
+                                dataBundle.sampleItemManager = bundle.sampleItemManager;
+                                dataBundle.type = SampleDataBundle.Type.ANALYSIS;
+                                
+                                bundle.analysisManager.addAnalysis(dataBundle.analysisTestDO);
+                            }
+                            
+                            bundles.add(dataBundle);
+                            
+                            //figure out which bundle to send
+                            setupBundle(dataBundle, testMan);
                         }
                         
                         //fire changed before we check for prep tests
-                        ActionEvent.fire(anTab, Action.CHANGED, null);
-                    }
+                        ActionEvent.fire(anTab, Action.CHANGED, bundles);
+                        
+                        
+                        
+                    }else
+                        method.setSelections(new ArrayList());
                 }catch(Exception e){
                     Window.alert(e.getMessage());
                 }
@@ -249,7 +256,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                statusId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                statusId.enable(EnumSet.of(State.QUERY).contains(event.getState()));
                 statusId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -382,15 +389,6 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         });
     }
     
-    private void setStatusesModel(ArrayList<DictionaryDO> list) {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for(DictionaryDO resultDO :  list){
-            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
-        } 
-        statusId.setModel(model);
-    }
-    
     private ArrayList<TableDataRow> getSectionsModel(Integer id, String sectionName) {
         ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
@@ -409,6 +407,61 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         }
         
         return model;
+    }
+    
+    public void setupBundle(SampleDataBundle bundle,  TestManager testMan){
+        TestSectionViewDO defaultDO;
+        TestViewDO test = testMan.getTest();
+        
+        bundle.testManager = testMan;
+        bundle.analysisTestDO.setTestId(test.getId());
+        bundle.analysisTestDO.setTestName(test.getName());
+        bundle.analysisTestDO.setMethodId(test.getMethodId());
+        bundle.analysisTestDO.setMethodName(test.getMethodName());
+        bundle.analysisTestDO.setIsReportable(test.getIsReportable());
+        bundle.analysisTestDO.setStatusId(analysisLoggedInId);
+        bundle.analysisTestDO.setRevision(0);
+            
+        defaultDO = null;
+        try{
+            defaultDO = testMan.getTestSections().getDefaultSection();
+            
+        }catch(Exception e){
+            Window.alert(e.getMessage());
+            return;
+        }
+            
+        if(defaultDO != null){
+            bundle.analysisTestDO.setSectionId(defaultDO.getSectionId());
+            bundle.analysisTestDO.setSectionName(defaultDO.getSection());
+            bundle.sectionsDropdownModel = null;
+        }else if(testMan.getTestSections().count() > 0){
+            ArrayList<TableDataRow> sections = getSectionsModel(testMan.getTestSections().getSections());
+                
+            if(bundle != null)
+                bundle.sectionsDropdownModel = sections;
+        }
+    }
+    
+    private void initializeDropdowns() {
+        ArrayList<TableDataRow> model;
+        try{
+            analysisLoggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
+            
+        }catch(Exception e){
+            Window.alert(e.getMessage());
+            window.close();
+        }
+        
+        //analysis status dropdown
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("analysis_status"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+
+        statusId.setModel(model);
+        
+        sectionId.setModel(getSectionsModel(new ArrayList()));
     }
         
     public void setData(SampleDataBundle data) {
