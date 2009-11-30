@@ -2,6 +2,7 @@ package org.openelis.remote;
 
 import javax.ejb.Remote;
 
+import org.openelis.domain.SampleDO;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
@@ -22,5 +23,5 @@ public interface SampleManagerRemote {
     public SampleProjectManager fetchSampleProjectsBySampleId(Integer sampleId) throws Exception;
     public SampleItemManager fetchSampleItemsBySampleId(Integer sampleId) throws Exception;
     
-    public void validateAccessionNumber(Integer accessionNumber) throws Exception;
+    public void validateAccessionNumber(SampleDO sampleDO) throws Exception;
 }

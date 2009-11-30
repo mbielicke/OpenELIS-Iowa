@@ -97,6 +97,18 @@ public class TestTypeOfSampleManager implements RPC {
             deleted.add(sampleType);
         }
     }
+    
+    public boolean hasType(Integer type){
+        TestTypeOfSampleDO typeDO;
+        for(int i=0; i<count(); i++){
+            typeDO = getTypeAt(i);
+            
+            if(typeDO.getTypeOfSampleId().equals(type))
+                return true;
+        }
+        
+        return false;
+    }
 
     public static TestTypeOfSampleManager fetchByTestId(Integer testId) throws Exception {
         return proxy().fetchByTestId(testId);
