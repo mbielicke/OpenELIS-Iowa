@@ -101,27 +101,6 @@ public class TestBean implements TestRemote, TestLocal {
         }
     }
 
-    public ArrayList<TestMethodVO> fetchByNameSampleItemType(String name, Integer sampleItemType, int max) throws Exception{
-        Query query = manager.createNamedQuery("Test.FetchByNameSampleItemType");
-        query.setParameter("name", name);
-        query.setParameter("typeId", sampleItemType);
-        query.setMaxResults(max);
-
-        List testList = query.getResultList();
-
-        /*
-         * for(int i=0; i<testList.size(); i++){ SampleTestMethodDO testDO =
-         * (SampleTestMethodDO)testList.get(i); // query for test sections try {
-         * testDO.setSections(getTestSections(testDO.getTest().getId())); }
-         * catch (Exception e) { testDO.setSections(new
-         * ArrayList<TestSectionViewDO>()); } //query for pre tests
-         * testDO.setPrepTests
-         * ((ArrayList<TestPrepDO>)getTestPreps(testDO.getTest().getId())); }
-         */
-
-        return DataBaseUtil.toArrayList(testList);
-    }
-
     public ArrayList<TestMethodVO> query(ArrayList<QueryData> fields, int first, int max)
                                                                                          throws Exception {
         Query query;

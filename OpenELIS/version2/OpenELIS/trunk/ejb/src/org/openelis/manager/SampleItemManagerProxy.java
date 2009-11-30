@@ -33,6 +33,7 @@ import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.SampleItemLocal;
+import org.openelis.manager.SampleItemManager.SampleItemListItem;
 
 public class SampleItemManagerProxy {
     public SampleItemManager fetchBySampleId(Integer sampleId) throws Exception {
@@ -76,6 +77,7 @@ public class SampleItemManagerProxy {
         Integer sampleItemRefTableId;
         SampleItemLocal sil = getSampleItemLocal();
         SampleItemViewDO itemDO;
+        SampleItemListItem item;
         
         sampleItemRefTableId = ReferenceTable.SAMPLE_ITEM;
         
@@ -90,13 +92,18 @@ public class SampleItemManagerProxy {
                 sil.add(itemDO);
             }else
                 sil.update(itemDO);
+
+            item = man.getItemAt(i);
+            if(item.storage != null){
+                man.getStorageAt(i).setReferenceId(itemDO.getId());
+                man.getStorageAt(i).setReferenceTableId(sampleItemRefTableId);
+                man.getStorageAt(i).update();
+            }
             
-            man.getStorageAt(i).setReferenceId(itemDO.getId());
-            man.getStorageAt(i).setReferenceTableId(sampleItemRefTableId);
-            man.getStorageAt(i).update();
-            
-            man.getAnalysisAt(i).setSampleItemId(itemDO.getId());
-            man.getAnalysisAt(i).update();
+            if(item.analysis != null){
+                man.getAnalysisAt(i).setSampleItemId(itemDO.getId());
+                man.getAnalysisAt(i).update();
+            }
         }
 
         return man;

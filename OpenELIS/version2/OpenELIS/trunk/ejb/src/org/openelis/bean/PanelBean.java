@@ -38,7 +38,11 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.IdVO;
 import org.openelis.domain.PanelDO;
+import org.openelis.domain.PanelItemDO;
+import org.openelis.domain.TestMethodVO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.entity.Panel;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
@@ -76,6 +80,87 @@ public class PanelBean implements PanelRemote, PanelLocal {
             throw new DatabaseException(e);
         }
         return data;
+    }
+    
+    public ArrayList<TestMethodVO> fetchByNameSampleTypeWithTests(String name, Integer sampleItemType, int maxResults) throws Exception {
+        List<PanelDO> panelList;
+        List<TestMethodVO> testList;
+        ArrayList<TestMethodVO> returnList;
+        PanelDO panelDO;
+        TestMethodVO testDO;
+        int i,j;
+        
+        //check for panels first
+        Query query = manager.createNamedQuery("Panel.FetchByName");
+        query.setParameter("name", name);
+        query.setMaxResults(maxResults);
+        panelList = query.getResultList();
+        
+        //if the list isnt full find tests
+        testList = new ArrayList<TestMethodVO>();
+        if(panelList.size() < maxResults){
+            query = manager.createNamedQuery("Test.FetchByNameSampleItemType");
+            query.setParameter("name", name);
+            query.setParameter("typeId", sampleItemType);
+            query.setMaxResults(maxResults);
+            testList = query.getResultList();
+        }
+        
+        returnList = new ArrayList<TestMethodVO>();
+        for(i=0; i<panelList.size(); i++){
+            panelDO = panelList.get(i);
+            testDO = new TestMethodVO();
+            
+            testDO.setTestId(panelDO.getId());
+            testDO.setTestName(panelDO.getName());
+            testDO.setTestDescription(panelDO.getDescription());
+            
+            returnList.add(testDO);
+        }
+        
+        j=0;
+        while(i<maxResults && j<testList.size()){
+            testDO = testList.get(j);
+            returnList.add(testDO);
+            i++;
+            j++;
+        }
+
+        return returnList;
+    }
+    
+    public ArrayList<IdVO> fetchTestIdsFromPanel(Integer panelId) throws Exception {
+        List<PanelItemDO> panelItemList;
+        PanelItemDO panelItem;
+        TestViewDO testDO;
+        ArrayList<IdVO> returnList;
+        IdVO idVO;
+        
+        //fetch the panelitems
+        Query query = manager.createNamedQuery("PanelItem.FetchByPanelId");
+        query.setParameter("id", panelId);
+        panelItemList = query.getResultList();
+        
+        //fetch the testid from each row by test name, method name
+        returnList = new ArrayList<IdVO>();
+        query = manager.createNamedQuery("Test.FetchByNameMethodName");
+        for(int i=0; i<panelItemList.size(); i++){
+            panelItem = panelItemList.get(i);
+            
+            query.setParameter("name", panelItem.getTestName());
+            query.setParameter("methodName", panelItem.getMethodName());
+            try{
+                testDO = (TestViewDO)query.getSingleResult();
+                idVO = new IdVO();
+                idVO.setId(testDO.getId());
+                
+                returnList.add(idVO);
+            }catch(NoResultException e){
+                //do nothing
+            }
+        }
+        
+        return returnList;
     }
 
     @SuppressWarnings("unchecked")

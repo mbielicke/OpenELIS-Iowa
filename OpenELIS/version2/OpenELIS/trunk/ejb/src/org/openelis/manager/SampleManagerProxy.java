@@ -87,32 +87,48 @@ public class SampleManagerProxy {
         sampleRefId = ReferenceTable.SAMPLE;
         sampleInternalRefId = ReferenceTable.SAMPLE_INTERNAL_NOTE;
         
-        man.getDomainManager().setSampleId(sampleId);
-        man.getDomainManager().update();
+        if(man.sampleDomain != null){
+            man.getDomainManager().setSampleId(sampleId);
+            man.getDomainManager().update();
+        }
         
-        man.getSampleItems().setSampleId(sampleId);
-        man.getSampleItems().update();
+        if(man.sampleItems != null){
+            man.getSampleItems().setSampleId(sampleId);
+            man.getSampleItems().update();
+        }
         
-        man.getOrganizations().setSampleId(sampleId);
-        man.getOrganizations().update();
+        if(man.organizations != null){
+            man.getOrganizations().setSampleId(sampleId);
+            man.getOrganizations().update();
+        }
         
-        man.getProjects().setSampleId(sampleId);
-        man.getProjects().update();
+        if(man.projects != null){
+            man.getProjects().setSampleId(sampleId);
+            man.getProjects().update();
+        }
         
-        man.getQaEvents().setSampleId(sampleId);
-        man.getQaEvents().update();
+        if(man.qaEvents != null){
+            man.getQaEvents().setSampleId(sampleId);
+            man.getQaEvents().update();
+        }
         
-        man.getAuxData().setReferenceTableId(sampleRefId);
-        man.getAuxData().setReferenceId(sampleId);
-        man.getAuxData().update();
+        if(man.auxData != null){
+            man.getAuxData().setReferenceTableId(sampleRefId);
+            man.getAuxData().setReferenceId(sampleId);
+            man.getAuxData().update();
+        }
         
-        man.getInternalNotes().setReferenceTableId(sampleInternalRefId);
-        man.getInternalNotes().setReferenceId(sampleId);
-        man.getInternalNotes().update();
+        if(man.sampleInternalNotes != null){
+            man.getInternalNotes().setReferenceTableId(sampleInternalRefId);
+            man.getInternalNotes().setReferenceId(sampleId);
+            man.getInternalNotes().update();
+        }
         
-        man.getExternalNote().setReferenceTableId(sampleRefId);
-        man.getExternalNote().setReferenceId(sampleId);
-        man.getExternalNote().update();
+        if(man.sampleExternalNote != null){
+            man.getExternalNote().setReferenceTableId(sampleRefId);
+            man.getExternalNote().setReferenceId(sampleId);
+            man.getExternalNote().update();
+        }
         
         return man;
     }
@@ -172,14 +188,14 @@ public class SampleManagerProxy {
     public SampleManager abort(Integer sampleId) throws Exception {
         throw new UnsupportedOperationException();    }
     
-    public void validateAccessionNumber(Integer accessionNumber) throws Exception {
+    public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
         ValidationErrorsList errorsList;
         SampleMetaMap meta = new SampleMetaMap("sample.");
         SystemVariableLocal svl = getSysVariableLocal();
         SampleLocal sl = getSampleLocal();
         ArrayList<SystemVariableDO> sysVarList;
         SystemVariableDO sysVarDO;
-        SampleDO sampleDO;
+        SampleDO checkSample;
         
         errorsList = new ValidationErrorsList();
         
@@ -188,14 +204,14 @@ public class SampleManagerProxy {
         sysVarDO = sysVarList.get(0);
         
         //we need to set the error
-        if(accessionNumber.compareTo(new Integer(sysVarDO.getValue())) > 0)
+        if(sampleDO.getAccessionNumber().compareTo(new Integer(sysVarDO.getValue())) > 0)
             errorsList.add(new FieldErrorException("accessionNumberNotInUse", meta.getAccessionNumber()));
         
         //check for dups
         try{
-            sampleDO = getSampleLocal().fetchByAccessionNumber(accessionNumber);
-            
-            if(sampleDO != null)
+            checkSample = getSampleLocal().fetchByAccessionNumber(sampleDO.getAccessionNumber());
+
+            if(checkSample != null && !checkSample.getId().equals(sampleDO.getId()))
                 errorsList.add(new FieldErrorException("accessionNumberDuplicate", meta.getAccessionNumber()));
 
         }catch(Exception e){
