@@ -127,7 +127,6 @@ public class AnalysisNotesTab extends NotesTab {
                 internalNote.setSystemUserId(userId);
                 internalNote.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
                 internalEditNote.setNote(internalNote);
-                internalEditNote.setScreenState(State.UPDATE);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {

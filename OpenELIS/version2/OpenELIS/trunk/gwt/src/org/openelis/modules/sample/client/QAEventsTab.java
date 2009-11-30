@@ -76,21 +76,19 @@ public class QAEventsTab extends Screen {
     protected SampleManager          sampleManager;
     protected AnalysisManager        anMan;
     protected AnalysisViewDO         anDO;
+    private Object                   oldVal;
 
     protected QaeventLookupScreen    qaEventScreen;
 
     public QAEventsTab(ScreenDefInt def, ScreenWindow window) {
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.qaevent.server.QaEventService");
+        service = new ScreenService(
+                                    "OpenELISServlet?service=org.openelis.modules.qaevent.server.QaEventService");
         setDef(def);
         setWindow(window);
 
         initialize();
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                setTypesModel(DictionaryCache.getListByCategorySystemName("qaevent_type"));
-            }
-        });
+        initializeDropdowns();
     }
 
     private void initialize() {
@@ -108,12 +106,13 @@ public class QAEventsTab extends Screen {
                 sampleQATable.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
-        sampleQATable.addBeforeCellEditedHandler(new BeforeCellEditedHandler(){
-           public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-               if(event.getCol() == 0)
-                   event.cancel();
-            } 
+
+        sampleQATable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                if (event.getCol() == 0 || !Window.confirm(consts.get("qaEventEditConfirm"))){
+                    event.cancel();
+                }
+            }
         });
 
         sampleQATable.addCellEditedHandler(new CellEditedHandler() {
@@ -123,12 +122,12 @@ public class QAEventsTab extends Screen {
 
                 r = event.getRow();
                 c = event.getCol();
-
+                
                 val = sampleQATable.getRow(r).cells.get(c).value;
-
+    
                 SampleQaEventViewDO qaDO;
                 qaDO = sampleQAManager.getSampleQAAt(r);
-
+    
                 switch (c) {
                     case 1:
                         qaDO.setTypeId((Integer)val);
@@ -195,12 +194,12 @@ public class QAEventsTab extends Screen {
                 analysisQATable.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
-        analysisQATable.addBeforeCellEditedHandler(new BeforeCellEditedHandler(){
-           public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-               if(event.getCol() == 0)
-                   event.cancel();
-            } 
+
+        analysisQATable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                if (event.getCol() == 0 || !Window.confirm(consts.get("qaEventEditConfirm")))
+                    event.cancel();
+            }
         });
 
         analysisQATable.addCellEditedHandler(new CellEditedHandler() {
@@ -386,14 +385,15 @@ public class QAEventsTab extends Screen {
         }
     }
 
-    private void setTypesModel(ArrayList<DictionaryDO> list) {
+    private void initializeDropdowns(){
         ArrayList<TableDataRow> model;
 
+        //qa event type dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO resultDO : list) {
-            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
-        }
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("qaevent_type"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+
         ((Dropdown<Integer>)sampleQATable.getColumns().get(1).getColumnWidget()).setModel(model);
         ((Dropdown<Integer>)analysisQATable.getColumns().get(1).getColumnWidget()).setModel(model);
     }

@@ -28,6 +28,7 @@ package org.openelis.modules.panel.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.IdVO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.PanelItemManager;
@@ -110,6 +111,10 @@ public class PanelService {
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
+    }
+    
+    public ArrayList<IdVO> fetchTestIdsByPanelId(Integer panelId) throws Exception {
+        return remote().fetchTestIdsFromPanel(panelId);
     }
     
     private PanelRemote remote() {

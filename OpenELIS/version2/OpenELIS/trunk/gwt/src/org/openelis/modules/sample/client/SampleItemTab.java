@@ -66,14 +66,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
         
         initialize();
         
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                setSampleTypesModel(DictionaryCache.getListByCategorySystemName("type_of_sample"));
-                setSourceModel(DictionaryCache.getListByCategorySystemName("source_of_sample"));
-                setContainersModel(DictionaryCache.getListByCategorySystemName("sample_container"));
-                setUnitsModel(DictionaryCache.getListByCategorySystemName("unit_of_measure"));
-            }
-       });
+        initializeDropdowns();
     }
     
     private void initialize() {
@@ -199,42 +192,6 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
         });
     }
     
-    private void setSampleTypesModel(ArrayList<DictionaryDO> arrayList) {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for(DictionaryDO resultDO :  arrayList){
-            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
-        } 
-        typeOfSampleId.setModel(model);
-    }
-    
-    private void setSourceModel(ArrayList<DictionaryDO> arrayList) {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for(DictionaryDO resultDO :  arrayList){
-            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
-        } 
-        sourceOfSampleId.setModel(model);
-    }
-    
-    private void setContainersModel(ArrayList<DictionaryDO> arrayList) {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for(DictionaryDO resultDO :  arrayList){
-            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
-        } 
-        containerId.setModel(model);
-    }
-    
-    private void setUnitsModel(ArrayList<DictionaryDO> arrayList) {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for(DictionaryDO resultDO :  arrayList){            
-            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
-        } 
-        unitOfMeasureId.setModel(model);
-    }
-    
     public void setData(SampleDataBundle data) {
         if(data.sampleItemDO == null){
             sampleItem = new SampleItemViewDO();
@@ -247,6 +204,42 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
         }
         
         loaded = false;
+    }
+    
+    private void initializeDropdowns(){
+        ArrayList<TableDataRow> model;
+
+        //sample type dropdown
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("type_of_sample"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+
+        typeOfSampleId.setModel(model);
+
+        //source dropdown
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("source_of_sample"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+
+        sourceOfSampleId.setModel(model);
+        
+        //sample container dropdown
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("sample_container"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+
+        containerId.setModel(model);
+        
+        //unit of measure dropdown
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("unit_of_measure"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+
+        unitOfMeasureId.setModel(model);
     }
     
      public void draw(){
