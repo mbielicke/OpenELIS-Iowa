@@ -30,9 +30,15 @@ import java.util.ArrayList;
 import javax.ejb.Remote;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.IdVO;
+import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.common.data.QueryData;
 
 @Remote
 public interface PanelRemote {       
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;    
-}
+    
+    public ArrayList<TestMethodVO> fetchByNameSampleTypeWithTests(String name, Integer sampleItemType, int maxResults) throws Exception;
+    
+    public ArrayList<IdVO> fetchTestIdsFromPanel(Integer panelId) throws Exception;
+ }

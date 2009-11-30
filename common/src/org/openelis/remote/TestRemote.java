@@ -41,9 +41,4 @@ public interface TestRemote {
     public ArrayList<TestMethodVO> fetchByName(String name, int maxResults) throws Exception;
     
     public ArrayList<PanelVO> fetchNameMethodSectionByName(String name, int maxResults) throws Exception;
-
-    public ArrayList<TestMethodVO> fetchByNameSampleItemType(String name,
-                                                        Integer sampleItemType,
-                                                        int maxResults) throws Exception;
-
 }

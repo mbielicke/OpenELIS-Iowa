@@ -100,8 +100,8 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
         return proxy().fetchForUpdate(sample.getId());
     }
     
-    public void validateAccessionNumber(Integer accessionNumber) throws Exception {
-        proxy().validateAccessionNumber(accessionNumber);
+    public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
+        proxy().validateAccessionNumber(sampleDO);
     }
     
     public void unrelease() {

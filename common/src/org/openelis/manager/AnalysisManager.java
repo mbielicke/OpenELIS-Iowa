@@ -80,12 +80,12 @@ public class AnalysisManager implements RPC, HasNotesInt {
 
     // analysis
     public AnalysisViewDO getAnalysisAt(int i) {
-        return getItem(i).analysis;
+        return getItemAt(i).analysis;
 
     }
 
     public void setAnalysisAt(AnalysisViewDO analysis, int i) {
-        getItem(i).analysis = analysis;
+        getItemAt(i).analysis = analysis;
     }
 
     public void addAnalysis(AnalysisViewDO analysis) {
@@ -117,7 +117,7 @@ public class AnalysisManager implements RPC, HasNotesInt {
 
     // qaevents
     public AnalysisQaEventManager getQAEventAt(int i) throws Exception {
-        AnalysisListItem item = getItem(i);
+        AnalysisListItem item = getItemAt(i);
         if (item.qaEvents == null) {
             if (item.analysis != null && item.analysis.getId() != null) {
                 try {
@@ -138,12 +138,12 @@ public class AnalysisManager implements RPC, HasNotesInt {
     }
 
     public void setQAEventAt(AnalysisQaEventManager qaEvent, int i) {
-        getItem(i).qaEvents = qaEvent;
+        getItemAt(i).qaEvents = qaEvent;
     }
 
     // internal notes
     public NoteManager getInternalNotesAt(int i) throws Exception {
-        AnalysisListItem item = getItem(i);
+        AnalysisListItem item = getItemAt(i);
         if (item.analysisInternalNotes == null) {
             if (item.analysis != null && item.analysis.getId() != null) {
                 try {
@@ -165,12 +165,12 @@ public class AnalysisManager implements RPC, HasNotesInt {
     }
 
     public void setInternalNotes(NoteManager notes, int i) {
-        getItem(i).analysisInternalNotes = notes;
+        getItemAt(i).analysisInternalNotes = notes;
     }
 
     // external note
     public NoteManager getExternalNoteAt(int i) throws Exception {
-        AnalysisListItem item = getItem(i);
+        AnalysisListItem item = getItemAt(i);
         if (item.analysisExternalNote == null) {
             if (item.analysis != null && item.analysis.getId() != null) {
                 try {
@@ -192,12 +192,12 @@ public class AnalysisManager implements RPC, HasNotesInt {
     }
 
     public void setExternalNoteAt(NoteManager note, int i) {
-        getItem(i).analysisExternalNote = note;
+        getItemAt(i).analysisExternalNote = note;
     }
 
     // storage
     public StorageManager getStorageAt(int i) throws Exception {
-        AnalysisListItem item = getItem(i);
+        AnalysisListItem item = getItemAt(i);
 
         if (item.storage == null) {
             if (item.analysis != null && item.analysis.getId() != null) {
@@ -219,12 +219,12 @@ public class AnalysisManager implements RPC, HasNotesInt {
     }
 
     public void setStorageAt(StorageManager storage, int i) {
-        getItem(i).storage = storage;
+        getItemAt(i).storage = storage;
     }
 
     // analysis test result
     public AnalysisResultManager getAnalysisResultAt(int i) throws Exception {
-        AnalysisListItem item = getItem(i);
+        AnalysisListItem item = getItemAt(i);
 
         if (item.analysisResult == null) {
             if (item.analysis != null) {
@@ -255,7 +255,7 @@ public class AnalysisManager implements RPC, HasNotesInt {
     }
 
     public AnalysisResultManager getDisplayAnalysisResultAt(int i) throws Exception {
-        AnalysisListItem item = getItem(i);
+        AnalysisListItem item = getItemAt(i);
 
         if (item.analysisResult == null) {
             if (item.analysis != null) {
@@ -278,11 +278,11 @@ public class AnalysisManager implements RPC, HasNotesInt {
     }
 
     public void setAnalysisResultAt(AnalysisResultManager analysisResult, int i) {
-        getItem(i).analysisResult = analysisResult;
+        getItemAt(i).analysisResult = analysisResult;
     }
 
     // item
-    private AnalysisListItem getItem(int i) {
+    public AnalysisListItem getItemAt(int i) {
         return items.get(i);
     }
 

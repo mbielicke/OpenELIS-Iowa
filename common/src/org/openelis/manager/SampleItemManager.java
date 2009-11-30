@@ -80,12 +80,12 @@ public class SampleItemManager implements RPC {
         
     // sample item
     public SampleItemViewDO getSampleItemAt(int i) {
-        return getItem(i).sampleItem;
+        return getItemAt(i).sampleItem;
 
     }
 
     public void setSampleItemAt(SampleItemViewDO sampleItem, int i) {
-        getItem(i).sampleItem = sampleItem;
+        getItemAt(i).sampleItem = sampleItem;
     }
     
     public void addSampleItem(SampleItemViewDO sampleItem){
@@ -109,7 +109,7 @@ public class SampleItemManager implements RPC {
 
     // storage
     public StorageManager getStorageAt(int i) throws Exception {
-        SampleItemListItem item = getItem(i);
+        SampleItemListItem item = getItemAt(i);
 
         if (item.storage == null) {
             if(item.sampleItem != null && item.sampleItem.getId() != null){
@@ -130,12 +130,12 @@ public class SampleItemManager implements RPC {
     }
 
     public void setStorageAt(StorageManager storage, int i) {
-        getItem(i).storage = storage;
+        getItemAt(i).storage = storage;
     }
 
     // analysis
     public AnalysisManager getAnalysisAt(int i) throws Exception {
-        SampleItemListItem item = getItem(i);
+        SampleItemListItem item = getItemAt(i);
 
         if (item.analysis == null) {
             if(item.sampleItem != null && item.sampleItem.getId() != null){
@@ -164,10 +164,10 @@ public class SampleItemManager implements RPC {
     }
 
     public void setAnalysisAt(AnalysisManager analysis, int i) {
-        getItem(i).analysis = analysis;
+        getItemAt(i).analysis = analysis;
     }
 
-    private SampleItemListItem getItem(int i) {
+    public SampleItemListItem getItemAt(int i) {
         return (SampleItemListItem)items.get(i);
     }
 
