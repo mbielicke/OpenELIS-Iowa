@@ -70,13 +70,13 @@ public class SampleManagerProxy {
         return service.call("abort", sampleId);
     }
     
-    public void validateAccessionNumber(Integer accessionNumber) throws Exception {
-        service.call("validateAccessionNumber", accessionNumber);
+    public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
+        service.call("validateAccessionNumber", sampleDO);
     }
     
-    private void validateAccessionNumber(Integer accessionNumber, ValidationErrorsList errorsList) throws Exception {
+    private void validateAccessionNumber(SampleDO sampleDO, ValidationErrorsList errorsList) throws Exception {
         try{
-            service.call("validateAccessionNumber", accessionNumber);
+            service.call("validateAccessionNumber", sampleDO);
 
         }catch(ValidationErrorsList e){
             ArrayList<Exception> errors = e.getErrorList();
@@ -88,22 +88,48 @@ public class SampleManagerProxy {
     
     public void validate(SampleManager man, ValidationErrorsList errorsList) throws Exception {
         //revalidate accession number
-        validateAccessionNumber(man.getSample().getAccessionNumber(), errorsList);
+        validateAccessionNumber(man.getSample(), errorsList);
         
         SampleMetaMap meta = new SampleMetaMap("sample.");
         
         //sample validate code
         SampleDO sampleDO = man.getSample();
+        
         //validate the dates
-        if(sampleDO.getCollectionDate() != null && sampleDO.getReceivedDate() != null)
+        //recieved date required
+        if(sampleDO.getReceivedDate() == null || sampleDO.getReceivedDate().getDate() == null)
+            errorsList.add(new FieldErrorWarning("fieldRequiredException", meta.getReceivedDate()));
+        else if(sampleDO.getEnteredDate() != null && sampleDO.getReceivedDate().before(sampleDO.getEnteredDate().add(-30)))
+            //recieved cant be more than 30 days before entered
+            errorsList.add(new FieldErrorWarning("receivedTooOldWarning", meta.getReceivedDate()));
+            
+       if(sampleDO.getEnteredDate() != null && sampleDO.getCollectionDate() != null){
+           if(sampleDO.getCollectionDate().before(sampleDO.getEnteredDate().add(-364)))
+               errorsList.add(new FieldErrorException("collectedTooOldException", meta.getCollectionDate()));
+           else if(sampleDO.getCollectionDate().before(sampleDO.getEnteredDate().add(-30)))
+               errorsList.add(new FieldErrorWarning("collectedTooOldWarning", meta.getCollectionDate()));
+       }
+        
+       if(sampleDO.getCollectionDate() == null)
+           errorsList.add(new FieldErrorWarning("collectedDateMissingWarning", meta.getCollectionDate()));
+       else if(sampleDO.getReceivedDate() != null){
             if(sampleDO.getCollectionDate().compareTo(sampleDO.getReceivedDate()) == 1)
                 errorsList.add(new FieldErrorException("collectedDateInvalidError", meta.getReceivedDate()));
+       }
         
-        if(sampleDO.getCollectionDate() == null)
-            errorsList.add(new FieldErrorWarning("collectedDateMissingWarning", meta.getCollectionDate()));
-        
-        man.getSampleItems().validate(errorsList);
-        man.getOrganizations().validate(errorsList);
-        man.getProjects().validate(errorsList);
+       if(man.sampleItems != null)
+           man.getSampleItems().validate(errorsList);
+       
+       if(man.organizations != null)
+           man.getOrganizations().validate(errorsList);
+       
+       if(man.projects != null)
+           man.getProjects().validate(errorsList);
+       
+       if(man.qaEvents != null)
+           man.getQaEvents().validate(errorsList);
+       
+       if(man.auxData != null)
+           man.getAuxData().validate(errorsList);
     }
 }

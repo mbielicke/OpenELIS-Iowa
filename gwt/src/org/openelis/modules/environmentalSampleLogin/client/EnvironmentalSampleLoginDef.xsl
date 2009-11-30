@@ -615,7 +615,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
             <tab key="tab5" text="{resource:getString($constants,'storage')}">
               <TablePanel padding="0" spacing="0">
               <row>
-                <table key="storageTable" width="auto" maxRows="9" showScroll="ALWAYS" title="">
+                <table key="storageTable" width="auto" maxRows="8" showScroll="ALWAYS" title="">
                   <col width="155" header="{resource:getString($constants,'user')}">
                     <label />
                   </col>
@@ -659,8 +659,8 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
             <tab key="tab6" text="{resource:getString($constants,'qaEvents')}">
               	<TablePanel padding="0" spacing="0" height="100%" style="TabSubForm">
               	<row>
-	                 <table key="sampleQATable" style="ScreenTableWithSides" title="" width="auto" maxRows="9" showScroll="ALWAYS">
-	                  <col width="175" header="{resource:getString($constants,'sampleQAEvent')}">
+	                 <table key="sampleQATable" style="ScreenTableWithSides" title="" width="auto" maxRows="8" showScroll="ALWAYS">
+	                  <col width="172" header="{resource:getString($constants,'sampleQAEvent')}">
 	                  	<label/>
 	                  </col>
 	                  <col width="90" header="{resource:getString($constants,'type')}">
@@ -673,8 +673,8 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
 	                <widget rowspan="3">
 	                	<AbsolutePanel style="Divider"/>
 	                </widget>
-	                <table key="analysisQATable" style="ScreenTableWithSides" title="" width="auto" maxRows="9" showScroll="ALWAYS">
-                  		<col width="175" header="{resource:getString($constants,'analysisQAEvent')}">
+	                <table key="analysisQATable" style="ScreenTableWithSides" title="" width="auto" maxRows="8" showScroll="ALWAYS">
+                  		<col width="172" header="{resource:getString($constants,'analysisQAEvent')}">
                   		<label/>
 	                  </col>
 	                  <col width="90" header="{resource:getString($constants,'type')}">
@@ -734,7 +734,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                 <TablePanel padding="0" spacing="0">
                 <row>
                 <widget colspan="6">
-	              <table key="auxValsTable" title="" width="auto" maxRows="7" showScroll="ALWAYS">
+	              <table key="auxValsTable" title="" width="auto" maxRows="6" showScroll="ALWAYS">
 	                 <col width="85" header="{resource:getString($constants,'reportable')}">
 	                 <check/>
 	                 </col>

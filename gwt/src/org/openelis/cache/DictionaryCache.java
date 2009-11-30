@@ -28,7 +28,8 @@ package org.openelis.cache;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.openelis.cache.server.DictionaryCacheRPC;
+import org.openelis.domain.DictionaryCacheCategoryVO;
+import org.openelis.domain.DictionaryCacheVO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.modules.main.client.openelis.OpenELIS;
@@ -58,6 +59,12 @@ public class DictionaryCache {
         return instance.getSystemNameFromIdInt(id);
     }
     
+    public static void preloadByCategorySystemNames(String... systemNames) throws Exception {
+        if(instance == null)
+            instance = new DictionaryCache();
+        
+        instance.preloadByCategorySystemNamesInt(systemNames);
+    }
     
     public static ArrayList<DictionaryDO> getListByCategorySystemName(String systemName) {
        if(instance == null)
@@ -154,6 +161,51 @@ public class DictionaryCache {
         return dictDO;
     }
     
+    protected void preloadByCategorySystemNamesInt(final String... systemNames) throws Exception {
+        ArrayList<DictionaryDO> list;
+        ArrayList<DictionaryCacheCategoryVO> cacheCatList;
+        DictionaryCacheVO cacheVO;
+        DictionaryCacheCategoryVO cacheCatVO;
+        
+        try{
+            cacheCatList = new ArrayList<DictionaryCacheCategoryVO>();
+            for(int i=0; i<systemNames.length; i++){
+                list = categoryNameList.get(systemNames[i]);
+                
+                if(list == null){
+                    cacheCatVO = new DictionaryCacheCategoryVO();
+                    cacheCatVO.setSystemName(systemNames[i]);
+                    cacheCatList.add(cacheCatVO);
+                }
+            }
+            
+            cacheVO = new DictionaryCacheVO();
+            cacheVO.setList(new ArrayList<DictionaryCacheCategoryVO>());
+            if(cacheCatList.size() > 0){
+                cacheVO.setList(cacheCatList);
+                cacheVO = service.call("preloadByCategorySystemNames", cacheVO);
+            }
+            
+            //put the new values in the screen cache
+            cacheCatList = cacheVO.getList();
+            for(int i=0; i<cacheCatList.size(); i++){
+                cacheCatVO = cacheCatList.get(i);
+                list = cacheCatVO.getDictionaryList();
+                categoryNameList.put(cacheCatVO.getSystemName(), cacheCatVO.getDictionaryList());
+                
+                //iterate through the results and insert them into the other lists
+                for(int j=0; j<list.size(); j++){
+                    DictionaryDO dictDO = (DictionaryDO)list.get(j);
+                    
+                    systemNameList.put(dictDO.getSystemName(), dictDO);
+                    idList.put(dictDO.getId(), dictDO);
+                }
+            }
+
+        }catch(Exception e){
+            throw new Exception("DictionaryCache.preloadByCategorySystemNamesInt error: Please call the system administrator.");
+        }
+    }
     
     protected ArrayList<DictionaryDO> getListFromCategorySystemName(final String systemName) {
         ArrayList<DictionaryDO> list = categoryNameList.get(systemName);

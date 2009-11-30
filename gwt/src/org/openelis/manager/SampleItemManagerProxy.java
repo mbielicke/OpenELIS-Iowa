@@ -28,6 +28,7 @@ package org.openelis.manager;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.manager.SampleItemManager.SampleItemListItem;
 
 public class SampleItemManagerProxy {
     protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.sample.server.SampleService";
@@ -43,6 +44,7 @@ public class SampleItemManagerProxy {
     
     public void validate(SampleItemManager man, ValidationErrorsList errorsList) throws Exception {
         String sequenceNum;
+        SampleItemListItem item;
         //you have to have at least 1 sample item
         if(man.count() == 0)
             errorsList.add(new FormErrorException("minOneSampleItemException"));
@@ -53,9 +55,13 @@ public class SampleItemManagerProxy {
             if(man.getSampleItemAt(i).getTypeOfSampleId() == null)
                 errorsList.add(new FormErrorException("sampleItemTypeMissing", sequenceNum));
             
+            item = man.getItemAt(i);
             //validate the children
-            man.getStorageAt(i).validate(errorsList);
-            man.getAnalysisAt(i).validate(sequenceNum, errorsList);
+            if(item.storage != null)
+                man.getStorageAt(i).validate(errorsList);
+            
+            if(item.analysis != null)
+                man.getAnalysisAt(i).validate(sequenceNum, errorsList);
         }
     }
     
