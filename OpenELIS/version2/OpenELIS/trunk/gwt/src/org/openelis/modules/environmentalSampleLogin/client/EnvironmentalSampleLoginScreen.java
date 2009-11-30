@@ -122,7 +122,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     };
 
     protected Tabs                     tab;
-    private Integer analysisLoggedInId, sampleLoggedInId, sampleErrorStatusId;
+    private Integer analysisLoggedInId, analysisCancelledId, analysisInPrep, sampleLoggedInId, sampleErrorStatusId;
     
     private SampleEnvironmentalMetaMap meta = new SampleEnvironmentalMetaMap();
     private SampleItemTab              sampleItemTab;
@@ -138,6 +138,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     protected TextBox location;
     protected AutoComplete<Integer> project, reportTo, billTo;
     protected TreeWidget itemsTree;
+    protected AppButton removeRow;
 
     private SampleLocationLookupScreen locationScreen;
     private SampleOrganizationLookupScreen organizationScreen;
@@ -181,10 +182,19 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         tab = Tabs.SAMPLE_ITEM;
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
-
+        
+        try{
+            DictionaryCache.preloadByCategorySystemNames("sample_status", "analysis_status", "type_of_sample", 
+                                                         "source_of_sample", "sample_container", "unit_of_measure", 
+                                                         "qaevent_type", "aux_field_value_type", "organization_type");
+        }catch(Exception e){
+            Window.alert(e.getMessage());
+            window.close();
+        }
+        
         initialize();
-        setState(State.DEFAULT);
         initializeDropdowns();
+        setState(State.DEFAULT);
         DataChangeEvent.fire(this);
     }
     
@@ -196,21 +206,15 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
 
             public void onValueChange(final ValueChangeEvent<Integer> event) {
-                //FIXME not sure why this is a deferred command.  getting rid of it for now
-                //DeferredCommand.addCommand(new Command() {
-                //    public void execute() {
-                        try{
-                //            service.call("validateAccessionNumber", event.getValue());
-                            manager.validateAccessionNumber(event.getValue());
-                            manager.getSample().setAccessionNumber(event.getValue());
-                            
-                        }catch(ValidationErrorsList e) {
-                            showErrors(e);
-                        }catch(Exception e){
-                            Window.alert(e.getMessage());
-                        }
-                    //}
-                //});
+                try{
+                    manager.getSample().setAccessionNumber(event.getValue());
+                    manager.validateAccessionNumber(manager.getSample());
+                    
+                }catch(ValidationErrorsList e) {
+                    showErrors(e);
+                }catch(Exception e){
+                    Window.alert(e.getMessage());
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -641,11 +645,17 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 
             } 
         });
+        
         itemsTree.addSelectionHandler(new SelectionHandler<TreeDataItem>(){
            public void onSelection(SelectionEvent<TreeDataItem> event) {
                SampleDataBundle data;
                
                TreeDataItem selection = itemsTree.getSelection();
+               
+               if("sampleItem".equals(selection.leafType) && selection.hasChildren())
+                   removeRow.enable(false);
+               else
+                   removeRow.enable(true);
                
                if(selection != null)
                    data = (SampleDataBundle)selection.data;
@@ -762,15 +772,14 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final AppButton removeRow = (AppButton)def.getWidget("removeRowButton");
+        removeRow = (AppButton)def.getWidget("removeRowButton");
         addScreenHandler(removeRow, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 onRemoveRowButtonClick();
             }
             
             public void onStateChange(StateChangeEvent<State> event) {
-                removeRow.enable(EnumSet.of(State.ADD, State.UPDATE)
-                                   .contains(event.getState()));
+                removeRow.enable(false);
             }
         });
         
@@ -965,9 +974,10 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         analysisTab.addActionHandler(new ActionHandler<AnalysisTab.Action>(){
             public void onAction(ActionEvent<AnalysisTab.Action> event) {
                 if(state != State.QUERY && event.getAction() == AnalysisTab.Action.CHANGED){
-                    updateTreeAnalysisRowAndCheckPrepTests();
+                    updateTreeAndCheckPrepTests((ArrayList<SampleDataBundle>)event.getData());
 
-                }else if(event.getAction() == AnalysisTab.Action.SELECTED_TEST_PREP_ROW){
+                }
+                /*else if(event.getAction() == AnalysisTab.Action.SELECTED_TEST_PREP_ROW){
                     TreeDataItem selected = itemsTree.getSelection();
                     selected = selected.parent;
                     SampleDataBundle selectedBundle = (SampleDataBundle)event.getData();
@@ -995,15 +1005,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                         Window.alert(e.getMessage());
                         return;
                     }
-                    
-                    /*
-                    SampleDataBundle data = (SampleDataBundle)selected.data;
-                    AnalysisViewDO aDO = data.analysisTestDO;
-                    
-                    itemsTree.setCell(selectedIndex, 0, formatTreeString(aDO.getTestName()) + " : " + formatTreeString(aDO.getMethodName()));
-                    itemsTree.setCell(selectedIndex, 1, aDO.getStatusId());
-                    Window.alert("selected ROW!!!");*/
-                }
+                }*/
             }
         });
         
@@ -1468,11 +1470,20 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     }
     
     public void onAddAnalysisButtonClick() {
-        TreeDataItem newRow = itemsTree.createTreeItem("analysis");
+        TreeDataItem selectedRow;
+        int selectedIndex;
+        TreeDataItem newRow;
+        
+        newRow = itemsTree.createTreeItem("analysis");
         newRow.cells.get(0).value = "<> : <>";
         newRow.cells.get(1).value = analysisLoggedInId;
         
-        TreeDataItem selectedRow = itemsTree.getRow(itemsTree.getSelectedRow());
+        selectedIndex = itemsTree.getSelectedRow();
+        if(selectedIndex == -1)
+            onAddItemButtonClick();
+        
+        selectedIndex = itemsTree.getSelectedRow();
+        selectedRow = itemsTree.getRow(selectedIndex);
         
         if(!"sampleItem".equals(selectedRow.leafType))
             selectedRow = selectedRow.parent;
@@ -1501,47 +1512,34 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             selectedRow.toggle();
     }
     
-    public void onRemoveRowButtonClick() {/*
-        if(itemsTestsTree.model.getSelectedIndex() != -1)
-            itemsTestsTree.model.deleteRow(itemsTestsTree.model.getSelectedIndex());
+    public void onRemoveRowButtonClick() {
+        TreeDataItem selectedTreeRow = itemsTree.getSelection();
         
-        addTestButton.setState(ButtonState.DISABLED);*/
-    }
-    
-    
-    /*
-    private void redrawRow(){
-        if("sampleItem".equals(itemsTestsTree.model.getSelection().leafType))
-            redrawSampleItemRow();
-        else if("analysis".equals(itemsTestsTree.model.getSelection().leafType))
-            redrawAnalysisRow();
-    }
-    
-    private void redrawSampleItemRow(){
-        TreeModel model = itemsTestsTree.model; 
-        int selectedRow = model.getSelectedIndex();
-        SampleItemForm subForm = (SampleItemForm)model.getSelection().getData();
-        
-        if(subForm != null){
-            model.setCell(selectedRow, 0, subForm.itemSequence + " - " + subForm.container.getTextValue());
-            model.setCell(selectedRow, 1, subForm.typeOfSample.getTextValue());
+        if("analysis".equals(selectedTreeRow.leafType) && selectedTreeRow.key != null){
+            if(Window.confirm(consts.get("cancelAnalysisMessage")))
+                cancelAnalysisRow(itemsTree.getSelectedRow());
+
+        }else{
+            itemsTree.deleteRow(selectedTreeRow);
         }
     }
-    
-    private void redrawAnalysisRow(){
-        TreeModel model = itemsTestsTree.model; 
-        int selectedRow = model.getSelectedIndex();
-        AnalysisForm subForm = (AnalysisForm)model.getSelection().getData();
-        
-        if(subForm != null){
-            model.setCell(selectedRow, 0, subForm.testId.getTextValue() + " - " + subForm.methodId.getTextValue());
-            model.setCell(selectedRow, 1, subForm.statusId.getValue());
-        }
-    }*/
     
     private void initializeDropdowns(){
         ArrayList<TableDataRow> model;
 
+        //preload dictionary models and single entries, close the window if an error is found 
+        try{
+            analysisLoggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
+            sampleLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
+            sampleErrorStatusId = DictionaryCache.getIdFromSystemName("sample_error");
+            analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
+            analysisInPrep = DictionaryCache.getIdFromSystemName("analysis_inprep");
+        
+        }catch(Exception e){
+            Window.alert(e.getMessage());
+            window.close();
+        }
+        
         //sample status dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
@@ -1557,15 +1555,6 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
         ((Dropdown<Integer>)itemsTree.getColumns().get("analysis").get(1).colWidget).setModel(model);
-        
-        try{
-        analysisLoggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
-        sampleLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
-        sampleErrorStatusId = DictionaryCache.getIdFromSystemName("sample_error");
-        }catch(Exception e){
-            Window.alert(e.getMessage());
-            window.close();
-        }
     }
     
     private void drawTabs() {
@@ -1737,17 +1726,50 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     }
     
     private void selectedPrepTest(Integer prepTestId){
+        TreeDataItem selectedRow;
+        int selectedIndex;
+        SampleDataBundle bundle, tmpBundle;
+        ArrayList<SampleDataBundle> bundles;
         Integer currentPrepId = checkForPrepTest(prepTestId);
         
+        bundle = null;
+        selectedRow = itemsTree.getSelection();
+        selectedIndex = itemsTree.getSelectedRow();
+        tmpBundle = (SampleDataBundle)selectedRow.data;
+        
         if(currentPrepId != null){
-            TreeDataItem selectedRow = itemsTree.getSelection();
-            SampleDataBundle bundle = (SampleDataBundle)selectedRow.data;
+            bundle = (SampleDataBundle)selectedRow.data;
             AnalysisViewDO anDO = bundle.analysisTestDO;
             
             anDO.setPreAnalysisId(currentPrepId);
         }else{
-            TreeDataItem newPrepRow = createPrepRowTestRowById(prepTestId);
-            TreeDataItem selectedRow = itemsTree.getSelection();
+            bundle = new SampleDataBundle();
+            bundle.analysisManager = tmpBundle.analysisManager;
+            bundle.analysisTestDO = new AnalysisViewDO();
+            bundle.sampleItemDO = tmpBundle.sampleItemDO;
+            bundle.sampleItemManager = tmpBundle.sampleItemManager;
+            bundle.type = SampleDataBundle.Type.ANALYSIS;
+            
+            TestManager testMan = null;
+            try{
+                testMan = TestManager.fetchWithPrepTests(prepTestId);
+                
+            }catch(Exception e){
+                Window.alert(e.getMessage());
+            }
+            
+            analysisTab.setupBundle(bundle, testMan);
+            
+            //need to put new row in tree
+            TreeDataItem newPrepRow = new TreeDataItem(2);
+            newPrepRow.leafType = "analysis";
+            newPrepRow.checkForChildren(false);
+            newPrepRow.data = bundle;
+            //createPrepRowTestRowById(prepTestId);
+            
+            itemsTree.setCell(selectedIndex, 1, analysisInPrep);
+            tmpBundle.analysisTestDO.setStatusId(analysisInPrep);
+            
             if("analysis".equals(selectedRow.leafType))
                 selectedRow = selectedRow.parent;
             
@@ -1756,7 +1778,9 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 itemsTree.select(newPrepRow);
             }
             
-            updateTreeAnalysisRowAndCheckPrepTests();
+            bundles = new ArrayList<SampleDataBundle>();
+            bundles.add(bundle);
+            updateTreeAndCheckPrepTests(bundles);
         }
     }
     
@@ -1839,29 +1863,67 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         return newRow;
     }
     
-    private void updateTreeAnalysisRowAndCheckPrepTests(){
+    private void updateTreeAndCheckPrepTests(ArrayList<SampleDataBundle> bundles){
+        SampleDataBundle bundle;
+        AnalysisViewDO aDO;
+        
         TreeDataItem selected = itemsTree.getSelection();
         int selectedIndex = itemsTree.getSelectedRow();
         
-        SampleDataBundle data = (SampleDataBundle)selected.data;
-        AnalysisViewDO aDO = data.analysisTestDO;
-        
-        itemsTree.setCell(selectedIndex, 0, formatTreeString(aDO.getTestName()) + " : " + formatTreeString(aDO.getMethodName()));
-        itemsTree.setCell(selectedIndex, 1, aDO.getStatusId());
-        
-        //check for prep tests
-        try{
-            TestPrepManager prepMan = data.testManager.getPrepTests();
-            if(prepMan.count() > 0){
-                TestPrepDO requiredTestPrepDO = prepMan.getRequiredTestPrep();
-                if(requiredTestPrepDO == null)
-                    drawTestPrepScreen(prepMan);
-                else
-                    selectedPrepTest(requiredTestPrepDO.getPrepTestId());
+        for(int i=0; i<bundles.size(); i++){
+            bundle = bundles.get(i);
+            aDO = bundle.analysisTestDO;
+            
+            if(i == 0)
+                selected.data = bundle;
+            else{
+                //the row doesnt exist.  Check to make sure the sample type is right
+                //and if it is make a new row and fill it.
+                TreeDataItem newRow = new TreeDataItem(2);
+                newRow.leafType = "analysis";
+                newRow.checkForChildren(false);
+                newRow.data = bundle;
+                
+                itemsTree.addChildItem(selected.parent, newRow);
+                itemsTree.select(newRow);
+                selectedIndex = itemsTree.getSelectedRow();
             }
-        }catch(Exception e){
-            Window.alert(e.getMessage());
+            
+            itemsTree.setCell(selectedIndex, 0, formatTreeString(aDO.getTestName()) + " : " + formatTreeString(aDO.getMethodName()));
+            itemsTree.setCell(selectedIndex, 1, aDO.getStatusId());
+            
+            //check for prep tests
+            try{
+                TestPrepManager prepMan = bundle.testManager.getPrepTests();
+                if(prepMan.count() > 0){
+                    TestPrepDO requiredTestPrepDO = prepMan.getRequiredTestPrep();
+                    if(requiredTestPrepDO == null)
+                        drawTestPrepScreen(prepMan);
+                    else
+                        selectedPrepTest(requiredTestPrepDO.getPrepTestId());
+                }
+            }catch(Exception e){
+                Window.alert(e.getMessage());
+            }
         }
+    }
+    
+    private void cancelAnalysisRow(int selectedIndex){
+        TreeDataItem treeRow;
+        SampleDataBundle bundle;
+        int index;
+        AnalysisViewDO anDO;
+        
+        treeRow = itemsTree.getRow(selectedIndex);
+        
+        //update the tree row
+        bundle = (SampleDataBundle)treeRow.data;
+        itemsTree.setCell(selectedIndex, 1, analysisCancelledId);
+        
+        //update the analysis manager
+        index = bundle.analysisManager.getIndex(bundle.analysisTestDO);
+        anDO = bundle.analysisManager.getAnalysisAt(index);
+        anDO.setStatusId(analysisCancelledId);
     }
     
     private ArrayList<TableDataRow> getSectionsModel(ArrayList<TestSectionViewDO> sections) {

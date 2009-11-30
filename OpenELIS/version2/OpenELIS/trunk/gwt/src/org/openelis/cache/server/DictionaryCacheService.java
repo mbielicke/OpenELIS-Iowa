@@ -27,6 +27,7 @@ package org.openelis.cache.server;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.DictionaryCacheVO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.server.handlers.DictionaryCacheHandler;
 
@@ -42,5 +43,9 @@ public class DictionaryCacheService {
 
     public ArrayList<DictionaryDO> getListByCategorySystemName(String systemName) {
         return DictionaryCacheHandler.getListByCategorySystemName(systemName);
+    }
+    
+    public DictionaryCacheVO preloadByCategorySystemNames(DictionaryCacheVO cacheVO) {
+        return DictionaryCacheHandler.preloadByCategorySystemNames(cacheVO);
     }
 }

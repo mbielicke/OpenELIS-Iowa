@@ -29,6 +29,7 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.manager.AnalysisManager.AnalysisListItem;
 
 public class AnalysisManagerProxy {
     protected static final String ANALYSIS_SERVICE_URL = "org.openelis.modules.analysis.server.AnalysisService";
@@ -54,6 +55,7 @@ public class AnalysisManagerProxy {
     }
     
     public void validate(AnalysisManager man, String sampleItemSequence, ValidationErrorsList errorsList) throws Exception {
+        AnalysisListItem item;
         if(man.count() == 0)
             errorsList.add(new FormErrorException("minOneAnalysisException", sampleItemSequence));
         
@@ -66,7 +68,16 @@ public class AnalysisManagerProxy {
             if(analysisDO.getTestId() != null && analysisDO.getSectionId() == null)
                 errorsList.add(new FormErrorException("analysisSectionIdMissing", analysisDO.getTestName(), analysisDO.getMethodName()));
             
-            man.getStorageAt(i).validate(errorsList);
+            item = man.getItemAt(i);
+            //validate the children
+            if(item.analysisResult != null)
+                man.getAnalysisResultAt(i).validate(errorsList);
+            
+            if(item.qaEvents != null)
+                man.getQAEventAt(i).validate(errorsList);
+            
+            if(item.storage != null)
+                man.getStorageAt(i).validate(errorsList);
         }
     }
 }
