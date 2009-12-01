@@ -61,8 +61,10 @@ public class QcManagerProxy {
         local().add(man.getQc());
         id = man.getQc().getId();
 
-        man.getAnalytes().setQcId(id);
-        man.getAnalytes().add();
+        if (man.analytes != null) {
+            man.getAnalytes().setQcId(id);
+            man.getAnalytes().add();
+        }
 
         return man;
     }
@@ -73,8 +75,10 @@ public class QcManagerProxy {
         local().update(man.getQc());
         id = man.getQc().getId();
 
-        man.getAnalytes().setQcId(id);
-        man.getAnalytes().update();
+        if (man.analytes != null) {
+            man.getAnalytes().setQcId(id);
+            man.getAnalytes().update();
+        }
 
         return man;
     }
@@ -101,7 +105,8 @@ public class QcManagerProxy {
             DataBaseUtil.mergeException(list, e);
         }
         try {
-            man.getAnalytes().validate();
+            if (man.analytes != null)
+                man.getAnalytes().validate();
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }

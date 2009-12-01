@@ -49,7 +49,7 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.QcLocal;
-import org.openelis.metamap.QcMetaMap;
+import org.openelis.meta.QcMeta;
 import org.openelis.remote.QcRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
@@ -67,7 +67,7 @@ public class QcBean implements QcRemote, QcLocal {
     @EJB
     private SystemUserUtilLocal   sysUser;
 
-    private static final QcMetaMap meta = new QcMetaMap();
+    private static final QcMeta meta = new QcMeta();
 
     public QcViewDO fetchById(Integer id) throws Exception {
         Query query;
@@ -138,10 +138,10 @@ public class QcBean implements QcRemote, QcLocal {
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
         builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + 
-                          meta.getId() + "," + meta.getName() + "," +
-                          meta.getLotNumber() + ") ");
+                          QcMeta.getId() + "," + QcMeta.getName() + "," +
+                          QcMeta.getLotNumber() + ") ");
         builder.constructWhere(fields);
-        builder.setOrderBy(meta.getName() + "," + meta.getLotNumber());
+        builder.setOrderBy(QcMeta.getName() + "," + QcMeta.getLotNumber());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
@@ -217,19 +217,19 @@ public class QcBean implements QcRemote, QcLocal {
         
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getName()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getName()));
+            list.add(new FieldErrorException("fieldRequiredException", QcMeta.getName()));
 
         if (DataBaseUtil.isEmpty(data.getSource()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getSource()));
+            list.add(new FieldErrorException("fieldRequiredException", QcMeta.getSource()));
 
         if (DataBaseUtil.isEmpty(data.getPreparedDate()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getPreparedDate()));
+            list.add(new FieldErrorException("fieldRequiredException", QcMeta.getPreparedDate()));
         
         if (DataBaseUtil.isEmpty(data.getUsableDate()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getUsableDate()));
+            list.add(new FieldErrorException("fieldRequiredException", QcMeta.getUsableDate()));
 
         if (DataBaseUtil.isEmpty(data.getExpireDate()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getExpireDate()));
+            list.add(new FieldErrorException("fieldRequiredException", QcMeta.getExpireDate()));
 
         if (DataBaseUtil.isAfter(data.getPreparedDate(), data.getUsableDate()))
             list.add(new FieldErrorException("usableBeforePrepException",null));
@@ -241,12 +241,12 @@ public class QcBean implements QcRemote, QcLocal {
         // check for duplicate lot #
         //
         if (DataBaseUtil.isEmpty(data.getLotNumber())) {
-            list.add(new FieldErrorException("fieldRequiredException", meta.getLotNumber()));
+            list.add(new FieldErrorException("fieldRequiredException", QcMeta.getLotNumber()));
         } else {
             try {
                 dup = fetchByLotNumber(data.getLotNumber());
                 if (DataBaseUtil.isDifferent(dup.getId(), data.getId()))
-                    list.add(new FieldErrorException("fieldUniqueException", meta.getLotNumber()));
+                    list.add(new FieldErrorException("fieldUniqueException", QcMeta.getLotNumber()));
             } catch (NotFoundException e) {
                 // ignore
             }

@@ -65,18 +65,17 @@ public class TestSectionManagerProxy {
 
         tl = local();
 
-        for (int i = 0; i < man.deleteCount(); i++ ) {
+        for (int i = 0; i < man.deleteCount(); i++)
             tl.delete(man.getDeletedAt(i));
-        }
 
         for (int i = 0; i < man.count(); i++ ) {
             data = man.getSectionAt(i);
-
             if (data.getId() == null) {
                 data.setTestId(man.getTestId());
                 tl.add(data);
-            } else
+            } else {
                 tl.update(data);
+            }
         }
 
         return man;
@@ -103,9 +102,8 @@ public class TestSectionManagerProxy {
         }
 
         dl = dictLocal();
-
-        defId = (dl.fetchBySystemName("test_section_default")).getId();
-        matchId = (dl.fetchBySystemName("test_section_match")).getId();
+        defId = dl.fetchBySystemName("test_section_default").getId();
+        matchId = dl.fetchBySystemName("test_section_match").getId();
 
         numDef = 0;
         numMatch = 0;
@@ -138,7 +136,6 @@ public class TestSectionManagerProxy {
             } else if (matchId.equals(flagId)) {
                 numMatch++ ;
             }
-
         }
 
         if (numBlank == man.count()) {
@@ -177,7 +174,6 @@ public class TestSectionManagerProxy {
                                                        meta.getTestSection().getFlagId(),"sectionTable");
                     list.add(exc);
                 }
-
             }
         } 
         
@@ -204,5 +200,4 @@ public class TestSectionManagerProxy {
             return null;
         }
     }
-    
 }

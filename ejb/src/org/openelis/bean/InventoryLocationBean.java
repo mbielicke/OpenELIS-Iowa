@@ -43,7 +43,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.InventoryLocationLocal;
-import org.openelis.meta.InventoryLocationMeta;
+import org.openelis.meta.InventoryItemMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
@@ -53,8 +53,6 @@ public class InventoryLocationBean implements InventoryLocationLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager                    manager;
-
-    private static final InventoryLocationMeta meta = new InventoryLocationMeta();
 
     @SuppressWarnings("unchecked")
     public ArrayList<InventoryLocationViewDO> fetchByInventoryItemId(Integer id) throws Exception {
@@ -123,10 +121,10 @@ public class InventoryLocationBean implements InventoryLocationLocal {
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getStorageLocationId()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getStorageLocationId()));
+                                             InventoryItemMeta.getLocationStorageLocationId()));
         if (DataBaseUtil.isEmpty(data.getQuantityOnhand()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getQuantityOnhand()));
+                                             InventoryItemMeta.getLocationQuantityOnhand()));
         
         if (list.size() > 0)
             throw list;
