@@ -41,10 +41,12 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 
 public class EditRichTextScreen extends Screen implements HasActionHandlers<EditRichTextScreen.Action> {
 
-    private NoteViewDO     managerNoteDO, screenNoteDO;
+    private NoteViewDO     note;
     private RichTextWidget text;
     private AppButton      okButton, cancelButton;
 
@@ -63,11 +65,10 @@ public class EditRichTextScreen extends Screen implements HasActionHandlers<Edit
         text = (RichTextWidget)def.getWidget("text");
         addScreenHandler(text, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                text.setValue(screenNoteDO.getText());
+                text.setValue(note.getText());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                screenNoteDO.setText(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -99,33 +100,27 @@ public class EditRichTextScreen extends Screen implements HasActionHandlers<Edit
     }
 
     public void ok() {
-        clearErrors();
-        if (validate()) {
-            managerNoteDO.copy(screenNoteDO);
-            setState(State.DEFAULT);
-            ActionEvent.fire(this, Action.OK, null);
-            clearErrors();
-            window.close();
-        }
-    }
-
-    public void cancel() {
-        setState(State.DEFAULT);
-        ActionEvent.fire(this, Action.CANCEL, null);
-        clearErrors();
+        note.setText(text.getValue());
+        ActionEvent.fire(this, Action.OK, null);
         window.close();
     }
 
-    public void setScreenState(State state) {
-        setState(state);
+    public void cancel() {
+        ActionEvent.fire(this, Action.CANCEL, null);
+        window.close();
     }
 
-    public void setNote(NoteViewDO note) {
-        screenNoteDO = new NoteViewDO();
-        screenNoteDO.copy(note);
-        managerNoteDO = note;
+    public void setNote(NoteViewDO aNote) {
+        note = aNote;
+        text.toolbar.reset();
 
         DataChangeEvent.fire(this);
+
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                setFocus(text);
+            }
+        });
     }
 
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {

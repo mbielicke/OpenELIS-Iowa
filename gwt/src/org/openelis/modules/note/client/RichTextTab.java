@@ -23,16 +23,16 @@ import com.google.gwt.user.client.ui.HTML;
 
 public class RichTextTab extends Screen {
 
-    private EditRichTextScreen richtext;
-    private HasNotesInt        parentManager;
-    private NoteManager        manager;
-    private NoteViewDO         note;
-    private HTML               richTextPanel;
-    private String             richtextPanelKey, editButtonKey;
-    private AppButton          editButton;
-    private String             userName;
-    private Integer            userId;
-    private boolean            loaded;
+    protected EditRichTextScreen richtext;
+    protected HasNotesInt        parentManager;
+    protected NoteManager        manager;
+    protected NoteViewDO         note;
+    protected HTML               richTextPanel;
+    protected String             richtextPanelKey, editButtonKey;
+    protected AppButton          editButton;
+    protected String             userName;
+    protected Integer            userId;
+    protected boolean            loaded;
 
     public RichTextTab(ScreenDefInt def, ScreenWindow window, String richtextPanelKey,
                        String editButtonKey) {
@@ -113,7 +113,6 @@ public class RichTextTab extends Screen {
         note.setSystemUserId(userId);
         note.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
         richtext.setNote(note);
-        richtext.setScreenState(State.UPDATE);
     }
 
     public void setManager(HasNotesInt parentManager) {

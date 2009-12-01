@@ -43,19 +43,21 @@
           <TablePanel style="Form">
             <row>
               <text key="subjectText" style="Prompt">Subject:</text>
-              <textbox key="subject" width="500px" />
+              <textbox key="subject" width="500" />
             </row>
             <row>
-              <text style="Prompt">Text:</text>
-              <textarea key="text" width="500px" height="150px" />
+              <widget valign="top">
+                <text style="Prompt">Text:</text>
+              </widget>
+              <textarea key="text" width="500" height="150" />
             </row>
             <row></row>
           </TablePanel>
-          <TablePanel width="500px" style="Form">
+          <TablePanel width="500" style="Form">
             <row>
               <HorizontalPanel spacing="0">
                 <HorizontalPanel spacing="3">
-                  <textbox key="findTextBox" width="190px" />
+                  <textbox key="findTextBox" width="190" />
                 </HorizontalPanel>
                 <appButton key="findButton" style="Button" action="find">
                   <HorizontalPanel>
@@ -79,7 +81,7 @@
             </row>
             <row>
               <widget halign="left" valign="top">
-                <tree key="noteTree" width="auto" maxRows="10" showScroll="ALWAYS" style="atozTable">
+                <tree key="noteTree" width="auto" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides">
                   <header>
                     <col width="230" header="Category/Name" />
                   </header>
@@ -96,7 +98,7 @@
                 </tree>
               </widget>
               <widget halign="right" valign="top">
-                <textarea key="preview" width="286px" height="230px" style="atozTable,ScreenTextArea" />
+                <textarea key="preview" width="286" height="230" style="ScreenTableWithSides,ScreenTextArea" />
               </widget>
             </row>
           </TablePanel>

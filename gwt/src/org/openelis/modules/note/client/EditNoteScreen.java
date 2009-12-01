@@ -60,13 +60,14 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class EditNoteScreen extends Screen implements HasActionHandlers<EditNoteScreen.Action> {
 
-    private NoteViewDO              managerNoteDO, screenNoteDO;
-
+    private NoteViewDO              note;
     private TextArea                text, preview;
     private TextBox                 subject, search;
     private AppButton               pasteButton, findButton, okButton, cancelButton;
@@ -118,23 +119,21 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
         subject = (TextBox)def.getWidget("subject");
         addScreenHandler(subject, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                subject.setValue(screenNoteDO.getSubject());
+                subject.setValue(note.getSubject());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                screenNoteDO.setSubject(event.getValue());
+                // OK button will set the note's subject
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                if (screenNoteDO != null) {
-                    if ("N".equals(screenNoteDO.getIsExternal())) {
+                if (note != null) {
+                    if ("N".equals(note.getIsExternal())) {
                         subject.enable(true);
                         subject.setVisible(true);
-                        subject.setFocus(true);
                     } else {
                         subject.enable(false);
                         subject.setVisible(false);
-                        text.setFocus(true);
                     }
                 }
 
@@ -144,11 +143,11 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
         text = (TextArea)def.getWidget("text");
         addScreenHandler(text, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                text.setValue(screenNoteDO.getText());
+                text.setValue(note.getText());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                screenNoteDO.setText(event.getValue());
+                // OK button will set the note's text
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -175,7 +174,7 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 // disable the paste button if the preview text is empty
-                pasteButton.enable("".equals(preview.getValue()));
+                pasteButton.enable(! "".equals(preview.getValue()));
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -190,10 +189,7 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                if ("".equals(preview.getValue()))
-                    pasteButton.enable(false);
-                else
-                    pasteButton.enable(true);
+                pasteButton.enable(! "".equals(preview.getValue()));
             }
         });
 
@@ -242,7 +238,6 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
         query = new Query();
         parser = new QueryFieldUtil();
         parser.parse("*" + search.getValue() + "*");
-
 
         field = new QueryData();
         field.type = QueryData.Type.STRING;
@@ -314,7 +309,8 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
     public void ok() {
         clearErrors();
         if (validate()) {
-            managerNoteDO.copy(screenNoteDO);
+            note.setSubject(subject.getText());
+            note.setText(text.getText());
             setState(State.DEFAULT);
             ActionEvent.fire(this, Action.OK, null);
             clearErrors();
@@ -330,9 +326,11 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
     }
 
     protected boolean validate() {
-        boolean valid = true;
-        if (screenNoteDO != null) {
-            if ("N".equals(screenNoteDO.getIsExternal())) {
+        boolean valid;
+        
+        valid = true;
+        if (note != null) {
+            if ("N".equals(note.getIsExternal())) {
                 if (subject.getValue().trim().length() == 0 && text.getValue().trim().length() > 0) {
                     subject.addException(new FieldErrorException("fieldRequiredException", ""));
                     window.setError(consts.get("correctErrors"));
@@ -381,7 +379,7 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
 
             noteNode = new TreeDataItem(1);
             noteNode.leafType = "note";
-            noteNode.key = screenNoteDO.getId();
+            noteNode.key = note.getId();
             noteNode.cells.get(0).value = note.getName() + " : " + note.getDescription();
             noteNode.data = note.getText();
             tree.addChildItem(catNode, noteNode);
@@ -427,18 +425,26 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
 
         tree.load(treeList);
     }
-
+    
+    @Deprecated
     public void setScreenState(State state) {
-        setState(state);
+        //setState(state);
     }
 
-    public void setNote(NoteViewDO note) {
-        screenNoteDO = new NoteViewDO();
-        screenNoteDO.copy(note);
-        managerNoteDO = note;
+    public void setNote(NoteViewDO aNote) {
+        note = aNote;
 
         buildTree();
         DataChangeEvent.fire(this);
+        StateChangeEvent.fire(this, state);
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                if ("N".equals(note.getIsExternal()))
+                    setFocus(subject);
+                else
+                    setFocus(text);
+            }
+        });
     }
 
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {

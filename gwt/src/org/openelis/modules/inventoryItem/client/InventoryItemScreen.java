@@ -59,7 +59,6 @@ import org.openelis.manager.InventoryItemManager;
 import org.openelis.meta.InventoryItemMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.note.client.NotesTab;
-import org.openelis.modules.note.client.RichTextTab;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -82,7 +81,7 @@ public class InventoryItemScreen extends Screen {
 
     private ComponentTab          componentTab;
     private LocationTab           locationTab;
-    private RichTextTab           manufacturingTab;
+    private ManufacturingTab      manufacturingTab;
     private NotesTab              noteTab;
     private Tabs                  tab;
 
@@ -547,8 +546,8 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        parentInventoryItemId = (AutoComplete)def.getWidget(InventoryItemMeta.getParentName());
-        addScreenHandler(name, new ScreenEventHandler<Integer>() {
+        parentInventoryItemId = (AutoComplete)def.getWidget(InventoryItemMeta.getParentInventoryItemName());
+        addScreenHandler(parentInventoryItemId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 parentInventoryItemId.setSelection(manager.getInventoryItem().getParentInventoryItemId(),
                                                    manager.getInventoryItem().getParentInventoryItemName());
@@ -560,8 +559,8 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                name.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
-                name.setQueryMode(event.getState() == State.QUERY);
+                parentInventoryItemId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                parentInventoryItemId.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -668,7 +667,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        manufacturingTab = new RichTextTab(def, window, "manufacturingPanel", "editManufacturingButton");
+        manufacturingTab = new ManufacturingTab(def, window, "manufacturingPanel", "editManufacturingButton");
         addScreenHandler(manufacturingTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 manufacturingTab.setManager(manager);
