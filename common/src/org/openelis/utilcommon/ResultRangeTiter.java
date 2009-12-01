@@ -33,33 +33,37 @@ import org.openelis.exception.ParseException;
  * and upper limit are inclusive.
  */
 public class ResultRangeTiter implements ResultRange {
+    protected boolean valid = false;
     protected int min, max;
 
     public void setRange(String range) throws ParseException {
         String st[];
 
-        if (range != null) {
-            st = range.split(":");
-            if (st.length != 2)
-                throw new ParseException("illegalTiterFormatException");
+        valid = false;
+        if (range == null)
+            throw new ParseException("illegalTiterFormatException");
 
-            try {
-                min = Integer.parseInt(st[0]);
-                max = Integer.parseInt(st[1]);
-                if (min <= 0 || max <= 0)
-                    throw new ParseException("illegalTiterFormatException");
-                if (min > max)
-                    throw new ParseException("illegalTiterRangeException");
-            } catch (NumberFormatException ex) {
+        st = range.split(":");
+        if (st.length != 2)
+            throw new ParseException("illegalTiterFormatException");
+
+        try {
+            min = Integer.parseInt(st[0]);
+            max = Integer.parseInt(st[1]);
+            if (min <= 0 || max <= 0)
                 throw new ParseException("illegalTiterFormatException");
-            }
+            if (min > max)
+                throw new ParseException("illegalTiterRangeException");
+        } catch (NumberFormatException ex) {
+            throw new ParseException("illegalTiterFormatException");
         }
+        valid = true;
     }
 
     public boolean intersects(ResultRange value) {
         ResultRangeTiter r;
 
-        if (value instanceof ResultRangeTiter) {
+        if (value instanceof ResultRangeTiter && valid) {
             r = (ResultRangeTiter)value;
             return (r.getMin() >= min && r.getMin() <= max) ||
                    (r.getMax() >= min && r.getMax() <= max) ||
@@ -78,18 +82,24 @@ public class ResultRangeTiter implements ResultRange {
         } catch (Exception e) {
             contains = false;
         }
-        return contains;
+        return contains && valid;
     }
 
     public String toString() {
-        return min + ":" + max;
+        if (valid)
+            return min + ":" + max;
+        return "";
     }
 
     protected int getMin() {
-        return min;
+        if (valid)
+            return min;
+        return 0;
     }
 
     protected int getMax() {
-        return max;
+        if (valid)
+            return max;
+        return 0;
     }
 }

@@ -35,46 +35,47 @@ import org.openelis.gwt.common.Meta;
 import org.openelis.gwt.common.MetaMap;
 
 public class InventoryItemMeta implements Meta, MetaMap {
-    private static final String   ID   = "id", 
-                                  NAME = "name",
-                                  DESCRIPTION = "description",
-                                  CATEGORY_ID = "categoryId", 
-                                  STORE_ID = "storeId",
-                                  QUANTITY_MIN_LEVEL = "quantityMinLevel",
-                                  QUANTITY_MAX_LEVEL = "quantityMaxLevel",
-                                  QUANTITY_TO_REORDER = "quantityToReorder",
-                                  DISPENSED_UNITS_ID = "dispensedUnitsId",
-                                  IS_REORDER_AUTO = "isReorderAuto",
-                                  IS_LOT_MAINTAINED = "isLotMaintained",
-                                  IS_SERIAL_MAINTAINED = "isSerialMaintained",
-                                  IS_ACTIVE = "isActive",
-                                  IS_BULK = "isBulk",
-                                  IS_NOT_FOR_SALE = "isNotForSale",
-                                  IS_SUB_ASSEMBLY = "isSubAssembly",
-                                  IS_LABOR = "isLabor",
-                                  IS_NOT_INVENTORIED = "isNotInventoried",
-                                  PRODUCT_URI = "productUri",
-                                  AVERAGE_LEAD_TIME = "averageLeadTime",
-                                  AVERAGE_COST = "averageCost",
-                                  AVERAGE_DAILY_USE = "averageDailyUse",
-                                  PARENT_INVENTORY_ITEM_ID = "parentInventoryItemId",
-                                  PARENT_RATIO = "parentRatio",
+    private static final String   ID   = "_inventoryItem.id", 
+                                  NAME = "_inventoryItem.name",
+                                  DESCRIPTION = "_inventoryItem.description",
+                                  CATEGORY_ID = "_inventoryItem.categoryId", 
+                                  STORE_ID = "_inventoryItem.storeId",
+                                  QUANTITY_MIN_LEVEL = "_inventoryItem.quantityMinLevel",
+                                  QUANTITY_MAX_LEVEL = "_inventoryItem.quantityMaxLevel",
+                                  QUANTITY_TO_REORDER = "_inventoryItem.quantityToReorder",
+                                  DISPENSED_UNITS_ID = "_inventoryItem.dispensedUnitsId",
+                                  IS_REORDER_AUTO = "_inventoryItem.isReorderAuto",
+                                  IS_LOT_MAINTAINED = "_inventoryItem.isLotMaintained",
+                                  IS_SERIAL_MAINTAINED = "_inventoryItem.isSerialMaintained",
+                                  IS_ACTIVE = "_inventoryItem.isActive",
+                                  IS_BULK = "_inventoryItem.isBulk",
+                                  IS_NOT_FOR_SALE = "_inventoryItem.isNotForSale",
+                                  IS_SUB_ASSEMBLY = "_inventoryItem.isSubAssembly",
+                                  IS_LABOR = "_inventoryItem.isLabor",
+                                  IS_NOT_INVENTORIED = "_inventoryItem.isNotInventoried",
+                                  PRODUCT_URI = "_inventoryItem.productUri",
+                                  AVERAGE_LEAD_TIME = "_inventoryItem.averageLeadTime",
+                                  AVERAGE_COST = "_inventoryItem.averageCost",
+                                  AVERAGE_DAILY_USE = "_inventoryItem.averageDailyUse",
+                                  PARENT_INVENTORY_ITEM_ID = "_inventoryItem.parentInventoryItemId",
+                                  PARENT_RATIO = "_inventoryItem.parentRatio",
                                   
-                                  CMP_ID = "inventoryComponent.id",
-                                  CMP_INVENTORY_ITEM_ID = "inventoryComponent.inventoryItemId",
-                                  CMP_COMPONENT_ID = "inventoryComponent.componentId",
-                                  CMP_COMPONENT_NAME = "inventoryComponent.componentInventoryItem.name",
-                                  CMP_COMPONENT_DESCRIPTION = "inventoryComponent.componentInventoryItem.description",
-                                  CMP_QUANTITY = "inventoryComponent.quantity",
+                                  CMP_ID = "_inventoryComponent.id",
+                                  CMP_INVENTORY_ITEM_ID = "_inventoryComponent.inventoryItemId",
+                                  CMP_COMPONENT_ID = "_inventoryComponent.componentId",
+                                  CMP_QUANTITY = "_inventoryComponent.quantity",
                                   
-                                  LOC_ID = "inventoryLocation.id",
-                                  LOC_INVENTORY_ITEM_ID = "inventoryLocation.inventoryItemId",
-                                  LOC_LOT_NUMBER = "inventoryLocation.lotNumber",
-                                  LOC_STORAGE_LOCATION_ID = "inventoryLocation.storageLocationId",
-                                  LOC_QUANTITY_ONHAND = "inventoryLocation.quantityOnhand",
-                                  LOC_EXPIRATION_DATE = "inventoryLocation.expirationDate",
+                                  LOC_ID = "_inventoryLocation.id",
+                                  LOC_INVENTORY_ITEM_ID = "_inventoryLocation.inventoryItemId",
+                                  LOC_LOT_NUMBER = "_inventoryLocation.lotNumber",
+                                  LOC_STORAGE_LOCATION_ID = "_inventoryLocation.storageLocationId",
+                                  LOC_QUANTITY_ONHAND = "_inventoryLocation.quantityOnhand",
+                                  LOC_EXPIRATION_DATE = "_inventoryLocation.expirationDate",
                                   
-                                  PAR_NAME = "parentInventoryItem.name";
+                                  PARENT_INVENTORY_ITEM_NAME = "_inventoryItem.parentInventoryItem.name",
+                                  CMP_COMPONENT_NAME = "_inventoryComponent.componentInventoryItem.name",
+                                  CMP_COMPONENT_DESCRIPTION = "_inventoryComponent.componentInventoryItem.description",
+                                  LOC_STORAGE_LOCATION_NAME = "_inventoryLocation.storageLocation.name";
 
     private static HashSet<String> names;
     
@@ -88,12 +89,14 @@ public class InventoryItemMeta implements Meta, MetaMap {
                                                   IS_NOT_INVENTORIED, PRODUCT_URI,
                                                   AVERAGE_LEAD_TIME, AVERAGE_COST,
                                                   AVERAGE_DAILY_USE, PARENT_INVENTORY_ITEM_ID,
-                                                  PARENT_RATIO, CMP_ID, CMP_INVENTORY_ITEM_ID,
-                                                  CMP_COMPONENT_ID, CMP_COMPONENT_NAME,
-                                                  CMP_COMPONENT_DESCRIPTION, CMP_QUANTITY, LOC_ID,
+                                                  PARENT_RATIO,
+                                                  CMP_ID, CMP_INVENTORY_ITEM_ID, CMP_COMPONENT_ID,
+                                                  CMP_QUANTITY, LOC_ID,
                                                   LOC_INVENTORY_ITEM_ID, LOC_LOT_NUMBER,
                                                   LOC_STORAGE_LOCATION_ID, LOC_QUANTITY_ONHAND,
-                                                  LOC_EXPIRATION_DATE, PAR_NAME));
+                                                  LOC_EXPIRATION_DATE,
+                                                  PARENT_INVENTORY_ITEM_NAME, CMP_COMPONENT_NAME,
+                                                  CMP_COMPONENT_DESCRIPTION, LOC_STORAGE_LOCATION_NAME));
     }
 
     public static String getId() {
@@ -188,6 +191,10 @@ public class InventoryItemMeta implements Meta, MetaMap {
         return PARENT_INVENTORY_ITEM_ID;
     }
 
+    public static String getParentInventoryItemName() {
+        return PARENT_INVENTORY_ITEM_NAME;
+    }
+
     public static String getParentRatio() {
         return PARENT_RATIO;
     }
@@ -232,6 +239,10 @@ public class InventoryItemMeta implements Meta, MetaMap {
         return LOC_STORAGE_LOCATION_ID;
     }
 
+    public static String getLocationStorageLocationName() {
+        return LOC_STORAGE_LOCATION_NAME;
+    }
+
     public static String getLocationQuantityOnhand() {
         return LOC_QUANTITY_ONHAND;
     }
@@ -240,22 +251,18 @@ public class InventoryItemMeta implements Meta, MetaMap {
         return LOC_EXPIRATION_DATE;
     }
 
-    public static String getParentName() {
-        return PAR_NAME;
-    }
-
-    public boolean hasColumn(String name) {
-        return names.contains(name);
+    public boolean hasColumn(String columnName) {
+        return names.contains(columnName);
     }
 
     public String buildFrom(String where) {
         String from;
         
-        from = "InventoryItem ";
+        from = "InventoryItem _inventoryItem ";
         if (where.indexOf("inventoryComponent.") > -1)
-            from += ",IN (InventoryItem.inventoryComponent) inventoryComponent ";
+            from += ",IN (_inventoryItem.inventoryComponent) _inventoryComponent ";
         if (where.indexOf("inventoryLocation.") > -1)
-            from += ",IN (InventoryItem.inventoryLocation) inventoryLocation ";
+            from += ",IN (_inventoryItem.inventoryLocation) _inventoryLocation ";
 
         return from;
     }

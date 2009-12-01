@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.ProviderAddressDO;
 import org.openelis.domain.ProviderAddressDO;
+import org.openelis.domain.QcAnalyteDO;
 import org.openelis.gwt.common.RPC;
 
 public class ProviderAddressManager implements RPC {
@@ -110,8 +111,8 @@ public class ProviderAddressManager implements RPC {
         return deleted.size();
     }
     
-    ArrayList<ProviderAddressDO> getDeleted() {
-    	return deleted;
+    ProviderAddressDO getDeletedAt(int i) {
+        return deleted.get(i);
     }
 
     private static ProviderAddressManagerProxy proxy() {

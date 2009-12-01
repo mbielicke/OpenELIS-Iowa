@@ -26,24 +26,25 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.QcMeta;
 import org.openelis.meta.WorksheetAnalysisMeta;
 
 public class WorksheetAnalysisMetaMap extends WorksheetAnalysisMeta implements MetaMap {
     
-    public QcMetaMap             QC;
+    public QcMeta                QC;
     public AnalysisMetaMap       ANALYSIS;
     public WorksheetAnalysisMeta RELATED_WORKSHEET_ANALYSIS;
     
     public WorksheetAnalysisMetaMap() {
         super("wa.");
-        QC                         = new QcMetaMap();
+        QC                         = new QcMeta();
         ANALYSIS                   = new AnalysisMetaMap();
         RELATED_WORKSHEET_ANALYSIS = new WorksheetAnalysisMeta();
     }
     
     public WorksheetAnalysisMetaMap(String path) {
         super(path);
-        QC       = new QcMetaMap(path+"qc.");
+        QC       = new QcMeta();
         ANALYSIS = new AnalysisMetaMap(path+"analysis.");
         RELATED_WORKSHEET_ANALYSIS = new WorksheetAnalysisMeta(path+"relatedAnalysis.");
     }
@@ -52,7 +53,7 @@ public class WorksheetAnalysisMetaMap extends WorksheetAnalysisMeta implements M
         return new WorksheetAnalysisMetaMap();
     }
     
-    public QcMetaMap getQc() {
+    public QcMeta getQc() {
         return QC;
     }
     
