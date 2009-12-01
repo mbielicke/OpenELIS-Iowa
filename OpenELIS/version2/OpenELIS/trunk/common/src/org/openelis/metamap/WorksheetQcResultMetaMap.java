@@ -26,27 +26,28 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.QcMeta;
 import org.openelis.meta.WorksheetQcResultMeta;
 
 public class WorksheetQcResultMetaMap extends WorksheetQcResultMeta implements MetaMap {
     
-    public QcAnalyteMetaMap QC_ANALYTE;
+    public QcMeta QC_ANALYTE;
     
     public WorksheetQcResultMetaMap() {
         super("wqr.");
-        QC_ANALYTE = new QcAnalyteMetaMap();
+        QC_ANALYTE = new QcMeta();
     }
     
     public WorksheetQcResultMetaMap(String path) {
         super(path);
-        QC_ANALYTE = new QcAnalyteMetaMap(path+"qcAnalyte.");
+        QC_ANALYTE = new QcMeta();
     }
     
     public static WorksheetQcResultMetaMap getInstance() {
         return new WorksheetQcResultMetaMap();
     }
     
-    public QcAnalyteMetaMap getQcAnalyte() {
+    public QcMeta getQcAnalyte() {
         return QC_ANALYTE;
     }
     

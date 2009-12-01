@@ -5,111 +5,145 @@ package org.openelis.meta;
  */
 
 import org.openelis.gwt.common.Meta;
+import org.openelis.gwt.common.MetaMap;
 
+import java.util.Arrays;
 import java.util.HashSet;
 
-public class QcMeta implements Meta {
-    public String                 path        = "";
-    private static final String   entityName  = "Qc";
+public class QcMeta implements Meta, MetaMap {
+    private static final String   ID  = "_qc.id",
+                                  NAME = "_qc.name",
+                                  TYPE_ID = "_qc.typeId",
+                                  INVENTORY_ITEM_ID = "_qc.inventoryItemId",
+                                  SOURCE = "_qc.source",
+                                  LOT_NUMBER = "_qc.lotNumber",
+                                  PREPARED_DATE = "_qc.preparedDate",
+                                  PREPARED_VOLUME = "_qc.preparedVolume",
+                                  PREPARED_UNIT_ID = "_qc.preparedUnitId",
+                                  PREPARED_BY_ID = "_qc.preparedById",
+                                  USABLE_DATE = "_qc.usableDate",
+                                  EXPIRE_DATE = "_qc.expireDate",
+                                  IS_ACTIVE = "_qc.isActive",
+                                  
+                                  ANA_ID = "_qcAnalyte.id",
+                                  ANA_QC_ID = "_qcAnalyte.qcId",
+                                  ANA_ANALYTE_ID = "_qcAnalyte.analyteId",
+                                  ANA_TYPE_ID = "_qcAnalyte.typeId",
+                                  ANA_VALUE = "_qcAnalyte.value",
+                                  ANA_IS_TRENDABLE = "_qcAnalyte.isTrendable",
 
-    private static final String   ID  = "id",
-                                  NAME = "name",
-                                  TYPE_ID = "typeId",
-                                  INVENTORY_ITEM_ID = "inventoryItemId",
-                                  SOURCE = "source",
-                                  LOT_NUMBER = "lotNumber",
-                                  PREPARED_DATE = "preparedDate",
-                                  PREPARED_VOLUME = "preparedVolume",
-                                  PREPARED_UNIT_ID = "preparedUnitId",
-                                  PREPARED_BY_ID = "preparedById",
-                                  USABLE_DATE = "usableDate",
-                                  EXPIRE_DATE = "expireDate",
-                                  IS_ACTIVE = "isActive";
+                                  INVENTORY_ITEM_NAME = "_qc.inventoryItem.name",
+                                  ANA_ANALYTE_NAME = "_qcAnalyte.analyte.name";
 
-    private static final String[] columnNames = {ID,
-                    NAME, TYPE_ID, INVENTORY_ITEM_ID, SOURCE, LOT_NUMBER,
-                    PREPARED_DATE, PREPARED_VOLUME, PREPARED_UNIT_ID,
-                    PREPARED_BY_ID, USABLE_DATE, EXPIRE_DATE, IS_ACTIVE};
+    private static HashSet<String> names;
 
-    private HashSet<String>       columnHashList;
-
-    private void init() {
-        columnHashList = new HashSet<String>(columnNames.length);
-        for (int i = 0; i < columnNames.length; i++ ) {
-            columnHashList.add(path + columnNames[i]);
-        }
+    static {
+        names = new HashSet<String>(Arrays.asList(ID, NAME, TYPE_ID, INVENTORY_ITEM_ID,
+                                                  SOURCE, LOT_NUMBER, PREPARED_DATE,
+                                                  PREPARED_VOLUME, PREPARED_UNIT_ID,
+                                                  PREPARED_BY_ID, USABLE_DATE, EXPIRE_DATE,
+                                                  IS_ACTIVE,
+                                                  ANA_ID, ANA_QC_ID, ANA_ANALYTE_ID,
+                                                  ANA_TYPE_ID, ANA_VALUE, ANA_IS_TRENDABLE,
+                                                  INVENTORY_ITEM_NAME, ANA_ANALYTE_NAME));
     }
 
-    public QcMeta() {
-        init();
+    public static String getId() {
+        return ID;
     }
 
-    public QcMeta(String path) {
-        this.path = path;
-        init();
+    public static String getName() {
+        return NAME;
     }
 
-    public String getId() {
-        return path + ID;
+    public static String getTypeId() {
+        return TYPE_ID;
     }
 
-    public String getName() {
-        return path + NAME;
+    public static String getInventoryItemId() {
+        return INVENTORY_ITEM_ID;
     }
 
-    public String getTypeId() {
-        return path + TYPE_ID;
+    public static String getSource() {
+        return SOURCE;
     }
 
-    public String getInventoryItemId() {
-        return path + INVENTORY_ITEM_ID;
+    public static String getLotNumber() {
+        return LOT_NUMBER;
     }
 
-    public String getSource() {
-        return path + SOURCE;
+    public static String getPreparedDate() {
+        return PREPARED_DATE;
     }
 
-    public String getLotNumber() {
-        return path + LOT_NUMBER;
+    public static String getPreparedVolume() {
+        return PREPARED_VOLUME;
     }
 
-    public String getPreparedDate() {
-        return path + PREPARED_DATE;
+    public static String getPreparedUnitId() {
+        return PREPARED_UNIT_ID;
     }
 
-    public String getPreparedVolume() {
-        return path + PREPARED_VOLUME;
+    public static String getPreparedById() {
+        return PREPARED_BY_ID;
     }
 
-    public String getPreparedUnitId() {
-        return path + PREPARED_UNIT_ID;
+    public static String getUsableDate() {
+        return USABLE_DATE;
     }
 
-    public String getPreparedById() {
-        return path + PREPARED_BY_ID;
+    public static String getExpireDate() {
+        return EXPIRE_DATE;
     }
 
-    public String getUsableDate() {
-        return path + USABLE_DATE;
+    public static String getIsActive() {
+        return IS_ACTIVE;
     }
 
-    public String getExpireDate() {
-        return path + EXPIRE_DATE;
+    public static String getQcAnalyteId() {
+        return ANA_ID;
     }
 
-    public String getIsActive() {
-        return path + IS_ACTIVE;
+    public static String getQcAnalyteQcId() {
+        return ANA_QC_ID;
     }
 
-    public String[] getColumnList() {
-        return columnNames;
+    public static String getQcAnalyteAnalyteId() {
+        return ANA_ANALYTE_ID;
     }
 
-    public String getEntity() {
-        return entityName;
+    public static String getQcAnalyteTypeId() {
+        return ANA_TYPE_ID;
+    }
+
+    public static String getQcAnalyteValue() {
+        return ANA_VALUE;
+    }
+
+    public static String getQcAnalyteIsTrendable() {
+        return ANA_IS_TRENDABLE;
+    }
+
+    public static String getInventoryItemName() {
+        return INVENTORY_ITEM_NAME;
+    }
+
+    public static String getQcAnalyteAnalyteName() {
+        return ANA_ANALYTE_NAME;
     }
 
     public boolean hasColumn(String columnName) {
-        return columnHashList.contains(columnName);
+        return names.contains(columnName);
+    }
+
+    public String buildFrom(String where) {
+        String from;
+        
+        from = "Qc _qc ";
+        if (where.indexOf("qcAnalyte.") > -1)
+            from += ",IN (_qc.qcAnalyte) _qcAnalyte ";
+
+        return from;
+
     }
 }

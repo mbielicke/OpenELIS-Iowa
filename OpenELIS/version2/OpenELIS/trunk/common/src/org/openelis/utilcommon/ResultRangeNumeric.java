@@ -33,31 +33,35 @@ import org.openelis.exception.ParseException;
  * The lower limit is inclusive and the upper limit is exclusive.
  */
 public class ResultRangeNumeric implements ResultRange {
+    protected boolean valid = false;
     protected double min, max;
 
     public void setRange(String range) throws ParseException {
         String st[];
 
-        if (range != null) {
-            st = range.split(",");
-            if (st.length != 2)
-                throw new ParseException("illegalNumericFormatException");
+        valid = false;
+        if (range == null)
+            throw new ParseException("illegalNumericFormatException");
 
-            try {
-                min = Double.parseDouble(st[0]);
-                max = Double.parseDouble(st[1]);
-                if (min >= max)
-                    throw new ParseException("illegalNumericRangeException");
-            } catch (NumberFormatException ex) {
-                throw new ParseException("illegalNumericFormatException");
-            }
+        st = range.split(",");
+        if (st.length != 2)
+            throw new ParseException("illegalNumericFormatException");
+
+        try {
+            min = Double.parseDouble(st[0]);
+            max = Double.parseDouble(st[1]);
+            if (min >= max)
+                throw new ParseException("illegalNumericRangeException");
+        } catch (NumberFormatException ex) {
+            throw new ParseException("illegalNumericFormatException");
         }
+        valid = true;
     }
 
     public boolean intersects(ResultRange value) {
         ResultRangeNumeric r;
 
-        if (value instanceof ResultRangeNumeric) {
+        if (value instanceof ResultRangeNumeric && valid) {
             r = (ResultRangeNumeric)value;
             return (r.getMin() >= min && r.getMin() < max) ||
                    (r.getMax() > min && r.getMax() <= max) ||
@@ -76,18 +80,24 @@ public class ResultRangeNumeric implements ResultRange {
         } catch (Exception e) {
             contains = false;
         }
-        return contains;
+        return contains && valid;
     }
 
     public String toString() {
-        return min + "," + max;
+        if (valid)
+            return min + "," + max;
+        return "";
     }
 
     protected double getMin() {
-        return min;
+        if (valid)
+            return min;
+        return 0;
     }
 
     protected double getMax() {
-        return max;
+        if (valid)
+            return max;
+        return 0;
     }
 }
