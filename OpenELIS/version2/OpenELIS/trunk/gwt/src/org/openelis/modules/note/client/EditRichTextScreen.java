@@ -115,12 +115,6 @@ public class EditRichTextScreen extends Screen implements HasActionHandlers<Edit
         text.toolbar.reset();
 
         DataChangeEvent.fire(this);
-
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                setFocus(text);
-            }
-        });
     }
 
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
