@@ -31,6 +31,7 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.SecuritySystemUserDO;
 import org.openelis.gwt.common.Datetime;
@@ -73,9 +74,8 @@ import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.QcManager;
-import org.openelis.meta.InventoryItemMeta;
+import org.openelis.meta.QcMeta;
 import org.openelis.metamap.CategoryMetaMap;
-import org.openelis.metamap.QcMetaMap;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -92,8 +92,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class QcScreen extends Screen {
     private QcManager                   manager;
-    private QcMetaMap                   meta    = new QcMetaMap();
-    private InventoryItemMeta           invMeta = meta.getInventoryItem();
     private CategoryMetaMap             catMeta = new CategoryMetaMap();
     private SecurityModule              security;
 
@@ -250,7 +248,7 @@ public class QcScreen extends Screen {
         //
         // screen fields
         //
-        name = (TextBox)def.getWidget(meta.getName());
+        name = (TextBox)def.getWidget(QcMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(manager.getQc().getName());
@@ -267,7 +265,7 @@ public class QcScreen extends Screen {
             }
         });
 
-        typeId = (Dropdown)def.getWidget(meta.getTypeId());
+        typeId = (Dropdown)def.getWidget(QcMeta.getTypeId());
         addScreenHandler(typeId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 typeId.setSelection(manager.getQc().getTypeId());
@@ -284,7 +282,7 @@ public class QcScreen extends Screen {
             }
         });
 
-        inventoryItem = (AutoComplete)def.getWidget(invMeta.getName());
+        inventoryItem = (AutoComplete)def.getWidget(QcMeta.getInventoryItemName());
         addScreenHandler(inventoryItem, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 inventoryItem.setSelection(manager.getQc().getInventoryItemId(),
@@ -297,28 +295,28 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                // TODO enable this code after inventory rewrite
-                inventoryItem.enable(false);
-                // inventoryItem.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
-                // inventoryItem.setQueryMode(event.getState() == State.QUERY);
+                inventoryItem.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                inventoryItem.setQueryMode(event.getState() == State.QUERY);
             }
         });
         inventoryItem.addGetMatchesHandler(new GetMatchesHandler() {
-            // TODO after rewrite of the inventoryItem, check this code
             public void onGetMatches(GetMatchesEvent event) {
+                DictionaryDO   dict;
                 QueryFieldUtil parser;
-                ArrayList<IdNameVO> list;
+                ArrayList<InventoryItemDO> list;
                 ArrayList<TableDataRow> model;
 
                 parser = new QueryFieldUtil();
                 parser.parse(event.getMatch());
 
                 try {
-                    list = inventoryService.callList("fetchByName", parser.getParameter().get(0));
+                    list = inventoryService.callList("fetchActiveByName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
 
-                    for (IdNameVO data : list)
-                        model.add(new TableDataRow(data.getId(), data.getName()));
+                    for (InventoryItemDO data : list) {
+                        dict = DictionaryCache.getEntryFromId(data.getStoreId());
+                        model.add(new TableDataRow(data.getId(), data.getName(), dict.getEntry()));
+                    }
                     inventoryItem.showAutoMatches(model);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
@@ -326,7 +324,7 @@ public class QcScreen extends Screen {
             }
         });
 
-        source = (TextBox)def.getWidget(meta.getSource());
+        source = (TextBox)def.getWidget(QcMeta.getSource());
         addScreenHandler(source, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 source.setValue(manager.getQc().getSource());
@@ -343,7 +341,7 @@ public class QcScreen extends Screen {
             }
         });
 
-        lotNumber = (TextBox)def.getWidget(meta.getLotNumber());
+        lotNumber = (TextBox)def.getWidget(QcMeta.getLotNumber());
         addScreenHandler(lotNumber, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 lotNumber.setValue(manager.getQc().getLotNumber());
@@ -360,7 +358,7 @@ public class QcScreen extends Screen {
             }
         });
 
-        isActive = (CheckBox)def.getWidget(meta.getIsActive());
+        isActive = (CheckBox)def.getWidget(QcMeta.getIsActive());
         addScreenHandler(isActive, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isActive.setValue(manager.getQc().getIsActive());
@@ -377,7 +375,7 @@ public class QcScreen extends Screen {
             }
         });
 
-        preparedDate = (CalendarLookUp)def.getWidget(meta.getPreparedDate());
+        preparedDate = (CalendarLookUp)def.getWidget(QcMeta.getPreparedDate());
         addScreenHandler(preparedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 preparedDate.setValue(manager.getQc().getPreparedDate());
@@ -394,7 +392,7 @@ public class QcScreen extends Screen {
             }
         });
 
-        preparedVolume = (TextBox)def.getWidget(meta.getPreparedVolume());
+        preparedVolume = (TextBox)def.getWidget(QcMeta.getPreparedVolume());
         addScreenHandler(preparedVolume, new ScreenEventHandler<Double>() {
             public void onDataChange(DataChangeEvent event) {
                 preparedVolume.setValue(manager.getQc().getPreparedVolume());
@@ -411,7 +409,7 @@ public class QcScreen extends Screen {
             }
         });
 
-        preparedUnitId = (Dropdown)def.getWidget(meta.getPreparedUnitId());
+        preparedUnitId = (Dropdown)def.getWidget(QcMeta.getPreparedUnitId());
         addScreenHandler(preparedUnitId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 preparedUnitId.setSelection(manager.getQc().getPreparedUnitId());
@@ -428,7 +426,7 @@ public class QcScreen extends Screen {
             }
         });
 
-        preparedBy = (AutoComplete)def.getWidget(meta.getPreparedById());
+        preparedBy = (AutoComplete)def.getWidget(QcMeta.getPreparedById());
         addScreenHandler(preparedBy, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 preparedBy.setSelection(manager.getQc().getPreparedById(),
@@ -469,7 +467,7 @@ public class QcScreen extends Screen {
             }
         });
 
-        usableDate = (CalendarLookUp)def.getWidget(meta.getUsableDate());
+        usableDate = (CalendarLookUp)def.getWidget(QcMeta.getUsableDate());
         addScreenHandler(usableDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 usableDate.setValue(manager.getQc().getUsableDate());
@@ -486,7 +484,7 @@ public class QcScreen extends Screen {
             }
         });
 
-        expireDate = (CalendarLookUp)def.getWidget(meta.getExpireDate());
+        expireDate = (CalendarLookUp)def.getWidget(QcMeta.getExpireDate());
         addScreenHandler(expireDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 expireDate.setValue(manager.getQc().getExpireDate());
@@ -504,9 +502,8 @@ public class QcScreen extends Screen {
         });
 
         qcAnalyteTable = (TableWidget)def.getWidget("QcAnalyteTable");
-        analyte = (AutoComplete<Integer>)qcAnalyteTable.getColumnWidget(meta.QC_ANALYTE.getAnalyte()
-                                                                                       .getName());
-        analyteTypeId = (Dropdown)qcAnalyteTable.getColumnWidget(meta.QC_ANALYTE.getTypeId());
+        analyte = (AutoComplete<Integer>)qcAnalyteTable.getColumnWidget(QcMeta.getQcAnalyteAnalyteName());
+        analyteTypeId = (Dropdown)qcAnalyteTable.getColumnWidget(QcMeta.getQcAnalyteTypeId());
         addScreenHandler(qcAnalyteTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
                 // table is not queried,so it needs to be cleared in query mode
@@ -622,11 +619,7 @@ public class QcScreen extends Screen {
 
                 r = qcAnalyteTable.getSelectedRow() + 1;
                 if (r == 0) {
-                    n = qcAnalyteTable.numRows();
-                    if (n != 0) {
-                        Window.alert(consts.get("qc.noSelectedRow"));
-                        return;
-                    }
+                    r = qcAnalyteTable.numRows();
                 }
                 qcAnalyteTable.addRow(r);
                 qcAnalyteTable.selectRow(r);
@@ -731,7 +724,7 @@ public class QcScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = meta.getName();
+                field.key = QcMeta.getName();
                 field.query = ((AppButton)event.getSource()).getAction();
                 field.type = QueryData.Type.STRING;
 

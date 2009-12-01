@@ -282,8 +282,8 @@ UIRF Software License are applicable instead of those above.
 
                 <tab key="componentTab" text="{resource:getString($constants,'components')}">
                   <VerticalPanel padding="0" spacing="0">
-                    <table key="componentTable" width="587" maxRows="10" showScroll="ALWAYS" tab="{meta:getName()},{meta:getIsNotInventoried()}">
-                      <col key="{meta:getComponentName()}" width="137" header="{resource:getString($constants,'component')}">
+                    <table key="componentTable" width="auto" maxRows="10" showScroll="ALWAYS" tab="{meta:getName()},{meta:getIsNotInventoried()}">
+                      <col key="{meta:getComponentName()}" width="138" header="{resource:getString($constants,'component')}">
                         <autoComplete width="137" case="LOWER" field="Integer" required="true">
                           <col width="135" header="{resource:getString($constants,'name')}" />
                           <col width="300" header="{resource:getString($constants,'description')}" />
@@ -323,21 +323,21 @@ UIRF Software License are applicable instead of those above.
 
                 <tab key="locationTab" text="{resource:getString($constants,'locationQuantity')}">
                   <VerticalPanel padding="0" spacing="0">
-                    <table key="locationTable" width="587" maxRows="11" showScroll="ALWAYS">
-                      <col key="{meta:getLocationStorageLocationId()}" width="170" header="{resource:getString($constants,'location')}" sort="true">
-                        <label />
+                    <table key="locationTable" width="auto" maxRows="11" showScroll="ALWAYS">
+                      <col key="{meta:getLocationStorageLocationName()}" width="172" header="{resource:getString($constants,'location')}" sort="true">
+                        <textbox max="20" field="String" />
                       </col>
                       <col key="{meta:getLocationLotNumber()}" width="110" header="{resource:getString($constants,'lotNum')}" sort="true">
-                        <label />
+                        <textbox max="20" field="String" />
                       </col>
                       <col key="{meta:getLocationId()}" width="70" header="{resource:getString($constants,'serialNum')}">
-                        <label />
+                        <textbox max="20" field="String" />
                       </col>
-                      <col key="{meta:getLocationExpirationDate()}" width="110" header="{resource:getString($constants,'expirationDate')}" sort="true">
-                        <label />
+                      <col key="{meta:getLocationExpirationDate()}" width="105" header="{resource:getString($constants,'expirationDate')}" sort="true">
+                        <calendar begin="0" end="2" pattern="{resource:getString($constants,'datePattern')}" />
                       </col>
-                      <col key="{meta:getLocationQuantityOnhand()}" width="125" header="{resource:getString($constants,'quantityOnHand')}" sort="true">
-                        <label />
+                      <col key="{meta:getLocationQuantityOnhand()}" width="115" header="{resource:getString($constants,'quantityOnHand')}" sort="true">
+                        <textbox max="10" field="Integer" required="true" />
                       </col>
                     </table>
                   </VerticalPanel>
@@ -352,7 +352,7 @@ UIRF Software License are applicable instead of those above.
                         <xsl:value-of select='resource:getString($constants,"productURI")' />:
                       </text>
                       <widget colspan="5">
-                        <textbox key="{meta:getProductUri()}" width="490" max="80" tab="{meta:getParentName()},{meta:getParentRatio()}" field="String"/>
+                        <textbox key="{meta:getProductUri()}" width="490" max="80" tab="{meta:getParentInventoryItemName()},{meta:getParentRatio()}" field="String"/>
                       </widget>
                     </row>
                     <row>
@@ -360,7 +360,7 @@ UIRF Software License are applicable instead of those above.
                         <xsl:value-of select='resource:getString($constants,"parentItem")' />:
                       </text>
                       <widget colspan="3">
-                        <autoComplete key="{meta:getParentName()}" width="210" tab="{meta:getParentRatio()},{meta:getProductUri()}" field="Integer">
+                        <autoComplete key="{meta:getParentInventoryItemName()}" width="210" tab="{meta:getParentRatio()},{meta:getProductUri()}" field="Integer">
                           <col width="135" header="{resource:getString($constants,'name')}" />
                           <col width="130" header="{resource:getString($constants,'store')}" />
                         </autoComplete>
@@ -370,7 +370,7 @@ UIRF Software License are applicable instead of those above.
                       <text style="Prompt">
                         <xsl:value-of select='resource:getString($constants,"parentRatio")' />:
                       </text>
-                      <textbox key="{meta:getParentRatio()}" width="55" max="30" tab="{meta:getProductUri()},{meta:getParentName()}" field="Integer"/>
+                      <textbox key="{meta:getParentRatio()}" width="55" max="30" tab="{meta:getProductUri()},{meta:getParentInventoryItemName()}" field="Integer"/>
                     </row>
                     <row>
                       <text style="Prompt">
@@ -393,7 +393,9 @@ UIRF Software License are applicable instead of those above.
 
                 <tab key="manufacturingTab" text="{resource:getString($constants,'manufacturing')}">
                   <VerticalPanel padding="0" spacing="0">
-                    <html key="manufacturingPanel" width="604" height="247" style="ScreenTable" />
+                    <ScrollPanel width="604" height="247" style="ScreenTable">
+                      <html key="manufacturingPanel" width="100%" height="100%"/>
+                    </ScrollPanel>
                     <appButton key="editManufacturingButton" style="Button">
                       <HorizontalPanel>
                         <AbsolutePanel style="StandardNoteButtonImage" />

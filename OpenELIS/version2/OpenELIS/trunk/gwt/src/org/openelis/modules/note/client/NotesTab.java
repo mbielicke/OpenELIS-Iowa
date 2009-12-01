@@ -96,7 +96,7 @@ public class NotesTab extends Screen {
         }
 
         modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-        modal.setName(consts.get("standardNote"));
+        modal.setName(consts.get("noteEditor"));
         modal.setContent(editNote);
 
         note = null;
@@ -107,13 +107,12 @@ public class NotesTab extends Screen {
                 note = manager.getInternalEditingNote();
         } catch (Exception e) {
             e.printStackTrace();
-            Window.alert("Error in EditNote:");
+            Window.alert("Error in EditNote:" + e.getMessage());
         }
         note.setSystemUser(userName);
         note.setSystemUserId(userId);
         note.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
         editNote.setNote(note);
-        editNote.setScreenState(State.UPDATE);
     }
     
     private void drawNotes() {

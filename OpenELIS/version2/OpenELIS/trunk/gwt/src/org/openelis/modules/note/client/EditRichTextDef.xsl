@@ -39,7 +39,7 @@
     <screen id="EditRichText" name="{resource:getString($constants,'richTextEditor')}">
       <VerticalPanel padding="0" spacing="0">
 
-        <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel" width="700">
+        <VerticalPanel padding="0" spacing="0" width="700">
           <richtext key="text" tools="true" width="100%" height="250"/>
         </VerticalPanel>
 

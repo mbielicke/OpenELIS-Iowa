@@ -35,11 +35,11 @@ import com.google.gwt.user.client.Window;
 
 public class ComponentTab extends Screen {
 
-    private InventoryItemManager manager;
-    private TableWidget          table;
-    private AutoComplete         componentId;
-    private AppButton            addComponentButton, removeComponentButton;
-    private boolean              loaded;
+    private InventoryItemManager  manager;
+    private TableWidget           table;
+    private AutoComplete<Integer> componentId;
+    private AppButton             addComponentButton, removeComponentButton;
+    private boolean               loaded;
 
     public ComponentTab(ScreenDefInt def, ScreenWindow window) {
         service = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
@@ -87,7 +87,7 @@ public class ComponentTab extends Screen {
                     case 0:
                         row = (TableDataRow)val;
                         data.setComponentId((Integer)row.key);
-                        if (row.key == null) return;
+                        data.setComponentName((String)row.getCells().get(0));
                         data.setComponentDescription((String)row.getCells().get(1));
                         table.setCell(r, 1, data.getComponentDescription());
                         break;
@@ -132,7 +132,7 @@ public class ComponentTab extends Screen {
                     return;
                 }
                 window.clearStatus();
-                
+
                 query = new Query();
                 parser = new QueryFieldUtil();
                 parser.parse(event.getMatch());
@@ -150,13 +150,18 @@ public class ComponentTab extends Screen {
                 query.setFields(field);
 
                 try {
-                    list = service.callList("fetchActiveByNameAndStore", query); 
+                    list = service.callList("fetchActiveByNameAndStore", query);
                     model = new ArrayList<TableDataRow>();
 
                     for (int i = 0; i < list.size(); i++ ) {
                         data = list.get(i);
-                        model.add(new TableDataRow(data.getId(), data.getName(),
-                                                   data.getDescription()));
+                        //
+                        // we can't have recursive definition where an item has
+                        // itself as a component
+                        //
+                        if (! data.getId().equals(manager.getInventoryItem().getId()))
+                            model.add(new TableDataRow(data.getId(), data.getName(),
+                                                       data.getDescription()));
                     }
                     componentId.showAutoMatches(model);
                 } catch (Exception e) {
@@ -213,11 +218,9 @@ public class ComponentTab extends Screen {
         try {
             for (i = 0; i < manager.getComponents().count(); i++ ) {
                 data = (InventoryComponentViewDO)manager.getComponents().getComponentAt(i);
-                model.add(new TableDataRow(null,
-                                           new TableDataRow(data.getComponentId(),
-                                                            data.getComponentName()),
-                                           data.getComponentDescription(),
-                                           data.getQuantity()));
+                model.add(new TableDataRow(null, new TableDataRow(data.getComponentId(),
+                                                                  data.getComponentName()),
+                                           data.getComponentDescription(), data.getQuantity()));
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());

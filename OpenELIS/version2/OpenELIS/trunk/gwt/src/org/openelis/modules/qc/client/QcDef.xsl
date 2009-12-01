@@ -37,10 +37,7 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:ana="xalan://org.openelis.meta.AnalyteMeta"
-  xmlns:inv="xalan://org.openelis.meta.InventoryItemMeta"
-  xmlns:meta="xalan://org.openelis.metamap.QcMetaMap"
-  xmlns:qca="xalan://org.openelis.metamap.QcAnalyteMetaMap">
+  xmlns:meta="xalan://org.openelis.meta.QcMeta">
 
   <xsl:import href="IMPORT/aToZOneColumn.xsl" />
 
@@ -48,10 +45,6 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <xsl:variable name="qc" select="meta:new()" />
-    <xsl:variable name="qca" select="meta:getQcAnalyte($qc)" />
-    <xsl:variable name="ana" select="qca:getAnalyte($qca)" />
-    <xsl:variable name="item" select="meta:getInventoryItem($qc)" />
 
 <!-- main screen -->
 
@@ -143,21 +136,21 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'name')" />:
                   </text>
                   <widget colspan="6">
-                    <textbox key="{meta:getName($qc)}" width="215" case="LOWER" max="30" tab="{meta:getTypeId($qc)},qcAnalyteTable" />
+                    <textbox key="{meta:getName()}" width="215" case="LOWER" max="30" tab="{meta:getTypeId()},QcAnalyteTable" required="true" />
                   </widget>
                 </row>
                 <row>
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'type')" />:
                   </text>
-                  <dropdown key="{meta:getTypeId($qc)}" width="100" tab="{inv:getName($item)},{meta:getName($qc)}" field="Integer" />
+                  <dropdown key="{meta:getTypeId()}" width="100" tab="{meta:getInventoryItemName()},{meta:getName()}" field="Integer" />
                 </row>
                 <row>
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'inventoryItem')" />:
                   </text>
                   <widget>
-                    <autoComplete key="{inv:getName($item)}" width="145" tab="{meta:getSource($qc)},{meta:getTypeId($qc)}" field="Integer">
+                    <autoComplete key="{meta:getInventoryItemName()}" width="145" tab="{meta:getSource()},{meta:getTypeId()}" field="Integer">
                       <col width="135" header="{resource:getString($constants,'name')}" />
                       <col width="110" header="{resource:getString($constants,'store')}" />
                     </autoComplete>
@@ -168,7 +161,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'source')" />:
                   </text>
                   <widget colspan="6">
-                    <textbox key="{meta:getSource($qc)}" width="215" max="30" tab="{meta:getLotNumber($qc)},{inv:getName($item)}" />
+                    <textbox key="{meta:getSource()}" width="215" max="30" tab="{meta:getLotNumber()},{meta:getInventoryItemName()}" required="true" />
                   </widget>
                 </row>
                 <row>
@@ -176,14 +169,14 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'lotNumber')" />:
                   </text>
                   <widget colspan="6">
-                    <textbox key="{meta:getLotNumber($qc)}" width="215" max="30" tab="{meta:getIsActive($qc)},{meta:getSource($qc)}" />
+                    <textbox key="{meta:getLotNumber()}" width="215" max="30" tab="{meta:getIsActive()},{meta:getSource()}" required="true" />
                   </widget>
                 </row>
                 <row>
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"active")' />:
                   </text>
-                  <check key="{meta:getIsActive($qc)}" tab="{meta:getPreparedDate($qc)},{meta:getLotNumber($qc)}" />
+                  <check key="{meta:getIsActive()}" tab="{meta:getPreparedDate()},{meta:getLotNumber()}" />
                 </row>
               </TablePanel>
               <TablePanel style="Form">
@@ -191,28 +184,28 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"preparedDate")' />:
                   </text>
-                  <calendar key="{meta:getPreparedDate($qc)}" begin="0" end="4" width="140" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getPreparedVolume($qc)},{meta:getIsActive($qc)}" />
+                  <calendar key="{meta:getPreparedDate()}" begin="0" end="4" width="140" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getPreparedVolume()},{meta:getIsActive()}" required="true" />
                 </row>
                 <row>
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'preparedVolume')" />:
                   </text>
                   <widget colspan="6">
-                    <textbox key="{meta:getPreparedVolume($qc)}" width="100" tab="{meta:getPreparedUnitId($qc)},{meta:getPreparedDate($qc)}" field="Double" />
+                    <textbox key="{meta:getPreparedVolume()}" width="100" tab="{meta:getPreparedUnitId()},{meta:getPreparedDate()}" field="Double" />
                   </widget>
                 </row>
                 <row>
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'preparedUnit')" />:
                   </text>
-                  <dropdown key="{meta:getPreparedUnitId($qc)}" width="150" tab="{meta:getPreparedById($qc)},{meta:getPreparedVolume($qc)}" field="Integer" />
+                  <dropdown key="{meta:getPreparedUnitId()}" width="150" tab="{meta:getPreparedById()},{meta:getPreparedVolume()}" field="Integer" />
                 </row>
                 <row>
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'preparedBy')" />:
                   </text>
                   <widget>
-                    <autoComplete key="{meta:getPreparedById($qc)}" width="145" tab="{meta:getUsableDate($qc)},{meta:getPreparedUnitId($qc)}" field="Integer">
+                    <autoComplete key="{meta:getPreparedById()}" width="145" tab="{meta:getUsableDate()},{meta:getPreparedUnitId()}" field="Integer">
                       <col width="145" />
                     </autoComplete>
                   </widget>
@@ -221,31 +214,33 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"usableDate")' />:
                   </text>
-                  <calendar key="{meta:getUsableDate($qc)}" begin="0" end="4" width="140" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getExpireDate($qc)},{meta:getPreparedById($qc)}" />
+                  <calendar key="{meta:getUsableDate()}" begin="0" end="4" width="140" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getExpireDate()},{meta:getPreparedById()}" required="true" />
                 </row>
                 <row>
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"expireDate")' />:
                   </text>
-                  <calendar key="{meta:getExpireDate($qc)}" begin="0" end="4" width="140" pattern="{resource:getString($constants,'dateTimePattern')}" tab="qcAnalyteTable,{meta:getUsableDate($qc)}" />
+                  <calendar key="{meta:getExpireDate()}" begin="0" end="4" width="140" pattern="{resource:getString($constants,'dateTimePattern')}" tab="QcAnalyteTable,{meta:getUsableDate()}" required="true" />
                 </row>
               </TablePanel>
             </HorizontalPanel>
+
             <VerticalPanel height="10" />
+
             <VerticalPanel>
-              <table key="QcAnalyteTable" width="625" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName($qc)},{meta:getExpireDate($qc)}">
-                <col key="{ana:getName($ana)}" width="270" align="left" header="{resource:getString($constants,'analyte')}">
+              <table key="QcAnalyteTable" width="625" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getExpireDate()}">
+                <col key="{meta:getQcAnalyteAnalyteName()}" width="270" align="left" header="{resource:getString($constants,'analyte')}">
                   <autoComplete popWidth="auto" field="Integer" required="true">
                     <col width="300" />
                   </autoComplete>
                 </col>
-                <col key="{qca:getTypeId($qca)}" width="55" align="left" header="{resource:getString($constants,'type')}">
+                <col key="{meta:getQcAnalyteTypeId()}" width="55" align="left" header="{resource:getString($constants,'type')}">
                   <dropdown width="55" field="Integer" required="true" />
                 </col>
-                <col key="{qca:getIsTrendable($qca)}" width="55" align="center" header="{resource:getString($constants,'trendable')}">
+                <col key="{meta:getQcAnalyteIsTrendable()}" width="55" align="center" header="{resource:getString($constants,'trendable')}">
                   <check />
                 </col>
-                <col key="{qca:getValue($qca)}" width="400" align="left" header="{resource:getString($constants,'expectedValue')}">
+                <col key="{meta:getQcAnalyteValue()}" width="245" align="left" header="{resource:getString($constants,'expectedValue')}">
                   <textbox max="80" field="String" />
                 </col>
               </table>
