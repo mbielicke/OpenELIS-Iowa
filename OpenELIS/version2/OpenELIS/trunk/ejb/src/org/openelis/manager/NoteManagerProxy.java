@@ -66,7 +66,7 @@ public class NoteManagerProxy {
         NoteLocal nl;
 
         nl = local();
-        for (int j = 0; j < man.deleteCount(); j++ )
+        for (int j = 0; j < man.deleteCount(); j++)
             nl.delete(man.getDeletedAt(j));
 
         if (man.count() > 0) {

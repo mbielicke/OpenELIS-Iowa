@@ -50,7 +50,7 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.QcAnalyteLocal;
-import org.openelis.meta.QcAnalyteMeta;
+import org.openelis.meta.QcMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
@@ -59,14 +59,14 @@ import org.openelis.utilcommon.DataBaseUtil;
 public class QcAnalyteBean implements QcAnalyteLocal {
 
     @PersistenceContext(name = "openelis")
-    private EntityManager              manager;
+    private EntityManager       manager;
 
     @EJB
-    private DictionaryLocal            dictionary;
+    private DictionaryLocal     dictionary;
 
-    private static int                 typeDict;
-    private static final QcAnalyteMeta meta = new QcAnalyteMeta();
-    private static final Logger        log  = Logger.getLogger(QcAnalyteBean.class.getName());
+    private static int          typeDict;
+    private static final QcMeta meta = new QcMeta();
+    private static final Logger log  = Logger.getLogger(QcAnalyteBean.class.getName());
     
     @PostConstruct
     public void init() {
@@ -170,10 +170,10 @@ public class QcAnalyteBean implements QcAnalyteLocal {
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getAnalyteId()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getAnalyteId()));
+                                             meta.getQcAnalyteId()));
         if (DataBaseUtil.isEmpty(data.getTypeId()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getTypeId()));
+                                             meta.getQcAnalyteTypeId()));
         if (list.size() > 0)
             throw list;
     }

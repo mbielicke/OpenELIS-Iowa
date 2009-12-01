@@ -31,7 +31,6 @@ import javax.naming.InitialContext;
 
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.OrganizationContactLocal;
 import org.openelis.local.QcAnalyteLocal;
 import org.openelis.utilcommon.DataBaseUtil;
 

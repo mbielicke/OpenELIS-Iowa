@@ -125,21 +125,21 @@ public class InventoryItemManagerProxy {
 
         if (man.components != null) {
             man.getComponents().setInventoryItemId(id);
-            man.getComponents().add();
+            man.getComponents().update();
         }
         if (man.locations != null) {
             man.getLocations().setInventoryItemId(id);
-            man.getLocations().add();
+            man.getLocations().update();
         }
         if (man.manufacturing != null) {
             man.getManufacturing().setReferenceId(id);
             man.getManufacturing().setReferenceTableId(ReferenceTable.INVENTORY_ITEM_MANUFACTURING);
-            man.getManufacturing().add();
+            man.getManufacturing().update();
         }
         if (man.notes != null) {
             man.getNotes().setReferenceId(id);
             man.getNotes().setReferenceTableId(ReferenceTable.INVENTORY_ITEM);
-            man.getNotes().add();
+            man.getNotes().update();
         }
 
         return man;

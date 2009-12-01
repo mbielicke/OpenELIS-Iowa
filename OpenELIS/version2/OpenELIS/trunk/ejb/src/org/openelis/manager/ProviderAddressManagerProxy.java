@@ -68,11 +68,9 @@ public class ProviderAddressManagerProxy {
         ProviderAddressDO address;
 
         pl = local();
-        if (man.getDeleted() != null) {
-            for (ProviderAddressDO data : man.getDeleted())
-                pl.delete(data);
-        }
-
+        for (int j = 0; j < man.deleteCount(); j++)
+            pl.delete(man.getDeletedAt(j));
+        
         for (int i = 0; i < man.count(); i++ ) {
             address = man.getAddressAt(i);
 
