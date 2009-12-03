@@ -80,7 +80,7 @@ public class SampleManagerProxy {
             service.call("validateAccessionNumber", sampleDO);
 
         }catch(ValidationErrorsList e){
-            ArrayList<LocalizedException> errors = e.getErrorList();
+            ArrayList<Exception> errors = e.getErrorList();
             
             for(int i=0; i<errors.size(); i++)
                 errorsList.add(errors.get(i));
