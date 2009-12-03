@@ -49,8 +49,10 @@ UIRF Software License are applicable instead of those above.
 <head>
     <title>OpenELIS Authentication Service</title>
     <script>
-        function submit() {
-            document.login_form.submit();
+        function mySubmit() {
+            alert("in submit");
+        	document.getElementById("credentials").style.display="";
+          
         }
    
         function focusLogin() {
@@ -80,17 +82,18 @@ UIRF Software License are applicable instead of those above.
             color:#486095;
             cursor:pointer;
         }
+        .spinnerIcon {width:16px; height:16px;background:transparent url("OSXspinnerGIF.gif") no-repeat scroll left;}
     </style>
 </head>
 
 <body onLoad="focusLogin()">
 
-    <table align="center">
+    <table align="center" id="table">
         <tr><td height="200px"></td></tr>
 
         <tr>
             <td>
-                <form method="post" name="login_form" autocomplete="off" action="{action}">
+                <form method="post" name="login_form" autocomplete="off" action="{action}" onsubmit="document.getElementById('credentials').style.display='';">
                     <center>
                         <table border="0" cellspacing="5" align='center' class="inputbackground">
                             <tr><td colspan='2' style="height: 130px;"></td></tr>
@@ -110,6 +113,10 @@ UIRF Software License are applicable instead of those above.
                     </center>
                </form>
             </td>
+        </tr>
+        <tr id="credentials" style="display:none;">
+          <td><font face="Arial,Helvetica">Checking Credentials...</font></td>
+          <td><div class="spinnerIcon"/></td>
         </tr>
         <xsl:for-each select="error">
  		 <tr>

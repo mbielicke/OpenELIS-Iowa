@@ -25,9 +25,9 @@
  */
  package org.openelis.modules.buildKits.client;
 
-import org.openelis.gwt.common.data.deprecated.FieldType;
 
-public class BuildKitsInvItemKey implements FieldType {
+public class BuildKitsInvItemKey {//implements FieldType {
+	/*
    
     private static final long serialVersionUID = 1L;
 
@@ -44,4 +44,5 @@ public class BuildKitsInvItemKey implements FieldType {
     public Object clone() {
         return null;
     }
+    */
 }

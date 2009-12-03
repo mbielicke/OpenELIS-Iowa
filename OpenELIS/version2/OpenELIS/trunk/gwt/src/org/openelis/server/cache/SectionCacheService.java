@@ -23,15 +23,18 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.cache.server;
+package org.openelis.server.cache;
 
-import java.util.ArrayList;
+import org.openelis.cache.SectionCacheRPC;
+import org.openelis.server.handlers.SectionCacheHandler;
 
-import org.openelis.domain.SectionDO;
-import org.openelis.gwt.common.RPC;
+public class SectionCacheService {
+    
+    public SectionCacheRPC getSectionList(String name) {
+        SectionCacheRPC rpc = new SectionCacheRPC();
+        rpc.list = SectionCacheHandler.getSectionList();
+        
+        return rpc;
+    }
 
-public class SectionCacheRPC implements RPC {
-
-    private static final long serialVersionUID = 1L;
-    public ArrayList<SectionDO> list;
 }

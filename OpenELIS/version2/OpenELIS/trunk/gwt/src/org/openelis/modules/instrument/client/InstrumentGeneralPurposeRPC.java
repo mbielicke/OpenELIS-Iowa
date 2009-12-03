@@ -25,14 +25,12 @@
 */
 package org.openelis.modules.instrument.client;
 
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
 
-public class InstrumentGeneralPurposeRPC implements RPC {
-
+public class InstrumentGeneralPurposeRPC {//implements RPC {
+/*
     private static final long serialVersionUID = 1L;
       
     public Integer testId;
     public TableDataModel<TableDataRow<Integer>> analyteModel;
+    */
 }

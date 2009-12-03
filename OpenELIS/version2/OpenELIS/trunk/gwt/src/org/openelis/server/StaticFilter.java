@@ -140,6 +140,28 @@ public class StaticFilter implements Filter {
                     SessionManager.getSession().setAttribute("jndiProps", props);
                     SessionManager.getSession().setAttribute("USER_NAME", username);
                     authLog.info("Login attempt for "+username+" succeeded");
+                    /*try {
+                        Document doc = XMLUtil.createNew("login");
+                        Element action = doc.createElement("action");
+                        action.appendChild(doc.createTextNode(hreq.getRequestURI()));
+                        doc.getDocumentElement().appendChild(action);
+                        if(error != null){
+                            Element errorEL = doc.createElement("error");
+                            errorEL.appendChild(doc.createTextNode(error));
+                            doc.getDocumentElement().appendChild(errorEL);
+                        }
+                        ((HttpServletResponse)response).setHeader("pragma", "no-cache");
+                        ((HttpServletResponse)response).setHeader("Cache-Control","no-cache");
+                        ((HttpServletResponse)response).setHeader("Cache-Control","no-store");
+                        ((HttpServletResponse)response).setDateHeader("Expires", 0 );
+                        ((HttpServletResponse)response).setContentType("text/html");
+                        ((HttpServletResponse)response).setCharacterEncoding("UTF-8");
+                        response.getWriter().write(ServiceUtils.getXML(Constants.APP_ROOT+"loading.xsl", doc));
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
+                    return;
+                    */
                 }catch(Exception e){
                     e.printStackTrace();
                     error = "authFailure";

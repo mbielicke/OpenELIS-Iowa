@@ -220,7 +220,7 @@ UIRF Software License are applicable instead of those above.
                     <col key="{addr:getStreetAddress($contAddr)}" width="130" header="{resource:getString($constants,'address')}">
                       <textbox case="UPPER" max="40" field="String" />
                     </col>
-                    <col key="{addr:getCity($contAddr)}" width="130" header="{resource:getString($constants,'city')}">
+                    <col key="{addr:getCity($contAddr)}" width="130" header="{resource:getString($constants,'city')}" sort="true">
                       <textbox case="UPPER" max="30" field="String" />
                     </col>
                     <col key="{addr:getState($contAddr)}" width="56" header="{resource:getString($constants,'state')}">

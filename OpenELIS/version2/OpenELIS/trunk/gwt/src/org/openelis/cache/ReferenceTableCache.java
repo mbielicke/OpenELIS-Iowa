@@ -27,7 +27,6 @@ package org.openelis.cache;
 
 import java.util.HashMap;
 
-import org.openelis.cache.server.ReferenceTableCacheRPC;
 import org.openelis.domain.IdNameDO;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.modules.main.client.openelis.OpenELIS;

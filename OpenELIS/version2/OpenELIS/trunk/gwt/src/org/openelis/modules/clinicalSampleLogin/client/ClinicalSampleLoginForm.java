@@ -26,13 +26,9 @@
 
 package org.openelis.modules.clinicalSampleLogin.client;
 
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.gwt.common.deprecated.Form;
 
-import com.google.gwt.xml.client.Node;
-
-public class ClinicalSampleLoginForm extends Form<Integer> {
-
+public class ClinicalSampleLoginForm {//extends Form<Integer> {
+/*
     private static final long serialVersionUID = 1L;        
     
     public ClinicalSampleLoginForm() {
@@ -47,5 +43,5 @@ public class ClinicalSampleLoginForm extends Form<Integer> {
     public AbstractField[] getFields() {
         return new AbstractField[] {};
     }
-
+*/
 }

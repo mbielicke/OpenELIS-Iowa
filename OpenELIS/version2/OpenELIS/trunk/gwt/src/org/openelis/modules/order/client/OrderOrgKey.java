@@ -25,10 +25,9 @@
 */
 package org.openelis.modules.order.client;
 
-import org.openelis.gwt.common.data.deprecated.FieldType;
 
-public class OrderOrgKey implements FieldType {
-   
+public class OrderOrgKey {//implements FieldType {
+   /*
     private static final long serialVersionUID = 1L;
 
     public String aptSuite;
@@ -44,4 +43,5 @@ public class OrderOrgKey implements FieldType {
     public Object clone() {
         return null;
     }
+    */
 }

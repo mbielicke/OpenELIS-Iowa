@@ -25,15 +25,9 @@
 */
 package org.openelis.modules.animalSampleLogin.server;
 
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
-import org.openelis.modules.animalSampleLogin.client.AnimalSampleLoginForm;
-import org.openelis.server.constants.Constants;
 
-public class AnimalSampleLoginService implements AppScreenFormServiceInt<AnimalSampleLoginForm, Query<TableDataRow<Integer>>>{
-
+public class AnimalSampleLoginService {//implements AppScreenFormServiceInt<AnimalSampleLoginForm, Query<TableDataRow<Integer>>>{
+/*
     public AnimalSampleLoginForm abort(AnimalSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
@@ -74,4 +68,5 @@ public class AnimalSampleLoginService implements AppScreenFormServiceInt<AnimalS
         
         return rpc;
     }
+    */
 }

@@ -25,23 +25,9 @@
 */
 package org.openelis.modules.newbornScreeningSampleLogin.client;
 
-import org.openelis.gwt.common.data.deprecated.KeyListManager;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.data.deprecated.TreeDataItem;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.screen.deprecated.CommandChain;
-import org.openelis.gwt.widget.deprecated.ButtonPanel;
-import org.openelis.gwt.widget.tree.deprecated.TreeManager;
-import org.openelis.gwt.widget.tree.deprecated.TreeWidget;
-import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.Widget;
-
-public class NewbornScreeningSampleLoginScreen extends OpenELISScreenForm<NewbornScreeningSampleLoginForm,Query<TableDataRow<Integer>>> implements ClickListener, TabListener, TreeManager{
-
+public class NewbornScreeningSampleLoginScreen {//extends OpenELISScreenForm<NewbornScreeningSampleLoginForm,Query<TableDataRow<Integer>>> implements ClickListener, TabListener, TreeManager{
+ /*
     private TreeWidget itemsTestsTree;
     private KeyListManager keyList = new KeyListManager();
     
@@ -131,5 +117,5 @@ public class NewbornScreeningSampleLoginScreen extends OpenELISScreenForm<Newbor
     public boolean canSelect(TreeWidget widget, TreeDataItem set, int row) {
         return false;
     }
-
+ */
 }

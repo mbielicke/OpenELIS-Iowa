@@ -34,7 +34,7 @@ UIRF Software License are applicable instead of those above.
         <filter-class>org.openelis.server.JUnitFilter</filter-class>
         <init-param>
             <param-name>AppRoot</param-name>
-            <param-value>/home/USERNAME/workspace/OpenELIS-GWT/war/openelis</param-value>
+            <param-value>/home/tschmidt/GWT2.0/workspace/OpenELIS-GWT/war/openelis</param-value>
         </init-param>
         <init-param>
             <param-name>User</param-name>
@@ -58,7 +58,7 @@ UIRF Software License are applicable instead of those above.
 
   <servlet>
     <servlet-name>OpenELISServlet</servlet-name>
-    <servlet-class>org.openelis.modules.main.server.OpenELISServlet</servlet-class>
+    <servlet-class>org.openelis.gwt.server.ScreenControllerServlet</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
   

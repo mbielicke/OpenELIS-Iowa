@@ -25,15 +25,9 @@
 */
 package org.openelis.modules.newbornScreeningSampleLogin.server;
 
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
-import org.openelis.modules.newbornScreeningSampleLogin.client.NewbornScreeningSampleLoginForm;
-import org.openelis.server.constants.Constants;
 
-public class NewbornScreeningSampleLoginService implements AppScreenFormServiceInt<NewbornScreeningSampleLoginForm, Query<TableDataRow<Integer>>>{
-
+public class NewbornScreeningSampleLoginService {//implements AppScreenFormServiceInt<NewbornScreeningSampleLoginForm, Query<TableDataRow<Integer>>>{
+/*
     public NewbornScreeningSampleLoginForm abort(NewbornScreeningSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
@@ -74,4 +68,5 @@ public class NewbornScreeningSampleLoginService implements AppScreenFormServiceI
         
         return rpc;
     }
+    */
 }

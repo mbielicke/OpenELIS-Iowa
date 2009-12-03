@@ -31,7 +31,6 @@ import java.util.HashMap;
 import org.openelis.domain.DictionaryCacheCategoryVO;
 import org.openelis.domain.DictionaryCacheVO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.DictionaryDO;
 import org.openelis.messages.DictionaryCacheMessage;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;

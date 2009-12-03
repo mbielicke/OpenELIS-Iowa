@@ -37,7 +37,7 @@ import org.openelis.modules.main.client.openelis.OpenELIS;
 import com.google.gwt.user.client.Window;
 
 public class DictionaryCache {
-    protected static final String DICTIONARY_CACHE_SERVICE_URL = "org.openelis.cache.server.DictionaryCacheService";
+    protected static final String DICTIONARY_CACHE_SERVICE_URL = "org.openelis.server.cache.DictionaryCacheService";
     protected ScreenService service;
     
     HashMap<String, DictionaryDO> systemNameList;

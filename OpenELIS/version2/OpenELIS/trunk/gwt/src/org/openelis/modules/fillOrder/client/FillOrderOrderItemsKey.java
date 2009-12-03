@@ -25,10 +25,9 @@
 */
 package org.openelis.modules.fillOrder.client;
 
-import org.openelis.gwt.common.data.deprecated.FieldType;
 
-public class FillOrderOrderItemsKey implements FieldType {
-   
+public class FillOrderOrderItemsKey {//implements FieldType {
+   /*
     private static final long serialVersionUID = 1L;
 
     public Integer referenceTableId;
@@ -52,4 +51,5 @@ public class FillOrderOrderItemsKey implements FieldType {
         
         return clone;
     }
+    */
 }

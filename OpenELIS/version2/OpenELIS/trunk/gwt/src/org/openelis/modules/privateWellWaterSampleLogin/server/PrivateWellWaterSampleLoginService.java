@@ -25,15 +25,9 @@
 */
 package org.openelis.modules.privateWellWaterSampleLogin.server;
 
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
-import org.openelis.modules.privateWellWaterSampleLogin.client.PrivateWellWaterSampleLoginForm;
-import org.openelis.server.constants.Constants;
 
-public class PrivateWellWaterSampleLoginService implements AppScreenFormServiceInt<PrivateWellWaterSampleLoginForm, Query<TableDataRow<Integer>>>{
-
+public class PrivateWellWaterSampleLoginService {//implements AppScreenFormServiceInt<PrivateWellWaterSampleLoginForm, Query<TableDataRow<Integer>>>{
+/*
     public PrivateWellWaterSampleLoginForm abort(PrivateWellWaterSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
@@ -73,4 +67,5 @@ public class PrivateWellWaterSampleLoginService implements AppScreenFormServiceI
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/privateWellWaterSampleLogin.xsl");
         return rpc;
     }
+    */
 }

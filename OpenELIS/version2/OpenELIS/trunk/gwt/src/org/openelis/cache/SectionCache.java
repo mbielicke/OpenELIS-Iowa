@@ -28,9 +28,7 @@ package org.openelis.cache;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.openelis.cache.server.SectionCacheRPC;
 import org.openelis.domain.SectionDO;
-import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 

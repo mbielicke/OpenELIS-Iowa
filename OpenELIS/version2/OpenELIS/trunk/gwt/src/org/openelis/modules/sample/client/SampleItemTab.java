@@ -47,8 +47,6 @@ import org.openelis.metamap.SampleMetaMap;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 
 public class SampleItemTab extends Screen implements HasActionHandlers<SampleItemTab.Action> {
     public enum Action {CHANGED};

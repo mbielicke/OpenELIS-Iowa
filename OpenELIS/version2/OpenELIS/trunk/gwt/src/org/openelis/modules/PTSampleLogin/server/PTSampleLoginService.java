@@ -25,26 +25,9 @@
 */
 package org.openelis.modules.PTSampleLogin.server;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import org.openelis.domain.IdNameDO;
-import org.openelis.domain.IdNameVO;
-import org.openelis.gwt.common.data.deprecated.StringObject;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
-import org.openelis.modules.PTSampleLogin.client.PTSampleLoginForm;
-import org.openelis.persistence.CachingManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.CategoryRemote;
-import org.openelis.remote.DictionaryRemote;
-import org.openelis.server.constants.Constants;
-
-public class PTSampleLoginService implements AppScreenFormServiceInt<PTSampleLoginForm, Query<TableDataRow<Integer>>>{
-
+public class PTSampleLoginService {//implements AppScreenFormServiceInt<PTSampleLoginForm, Query<TableDataRow<Integer>>>{
+/*
     public PTSampleLoginForm abort(PTSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
@@ -140,4 +123,5 @@ public class PTSampleLoginService implements AppScreenFormServiceInt<PTSampleLog
         
         return returnModel;
     }
+    */
 }

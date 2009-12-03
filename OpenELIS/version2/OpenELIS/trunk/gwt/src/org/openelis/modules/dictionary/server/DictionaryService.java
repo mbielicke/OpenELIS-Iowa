@@ -35,8 +35,8 @@ import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.CategoryManager;
 import org.openelis.manager.DictionaryManager;
 import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.CategoryManagerRemote;
+import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.DictionaryRemote;
 
 public class DictionaryService {

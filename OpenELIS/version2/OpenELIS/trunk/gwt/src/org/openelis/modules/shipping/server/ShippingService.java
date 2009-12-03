@@ -25,55 +25,9 @@
  */
 package org.openelis.modules.shipping.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
-import org.openelis.domain.IdNameDO;
-import org.openelis.domain.IdNameVO;
-import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.OrganizationDO;
-import org.openelis.domain.ShippingAddAutoFillDO;
-import org.openelis.domain.ShippingDO;
-import org.openelis.domain.ShippingItemDO;
-import org.openelis.domain.ShippingTrackingDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.gwt.common.data.deprecated.FieldType;
-import org.openelis.gwt.common.data.deprecated.StringObject;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.data.deprecated.TableField;
-import org.openelis.gwt.common.deprecated.Form;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
-import org.openelis.gwt.services.deprecated.AutoCompleteServiceInt;
-import org.openelis.metamap.ShippingMetaMap;
-import org.openelis.modules.shipping.client.ShippingForm;
-import org.openelis.modules.shipping.client.ShippingItemsData;
-import org.openelis.modules.shipping.client.ShippingItemsForm;
-import org.openelis.modules.shipping.client.ShippingNotesForm;
-import org.openelis.modules.shipping.client.ShippingShipToKey;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.CategoryRemote;
-import org.openelis.remote.DictionaryRemote;
-import org.openelis.remote.OrganizationRemote;
-import org.openelis.remote.ShippingRemote;
-import org.openelis.server.constants.Constants;
-import org.openelis.util.FormUtil;
-import org.openelis.util.SessionManager;
-import org.openelis.util.UTFResource;
-
-import com.google.gwt.user.client.Window;
-
-public class ShippingService implements AppScreenFormServiceInt<ShippingForm, Query<TableDataRow<Integer>>>, AutoCompleteServiceInt {
-
+public class ShippingService {//implements AppScreenFormServiceInt<ShippingForm, Query<TableDataRow<Integer>>>, AutoCompleteServiceInt {
+   /*
 	private UTFResource openElisConstants = UTFResource.getBundle((String) SessionManager.getSession().getAttribute("locale"));
 
 	private static final ShippingMetaMap ShippingMeta = new ShippingMetaMap();
@@ -108,7 +62,7 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingForm, Qu
 				}
 			}
 		} else {*/
-			ShippingRemote remote = (ShippingRemote) EJBFactory
+/*			ShippingRemote remote = (ShippingRemote) EJBFactory
 					.lookup("openelis/ShippingBean/remote");
 
 			try {
@@ -715,4 +669,5 @@ System.out.println("after shipping items");
 	        
 	        form.status = Form.Status.invalid;
 	    }
+	    */
 }

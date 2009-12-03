@@ -65,7 +65,6 @@ import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestWorksheetManager;
 import org.openelis.metamap.TestMetaMap;
-import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.modules.test.client.AnalyteAndResultTab.Action;
 
 import com.google.gwt.event.dom.client.ClickEvent;

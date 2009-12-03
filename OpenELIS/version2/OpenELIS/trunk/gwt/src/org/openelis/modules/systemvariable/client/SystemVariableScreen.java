@@ -27,6 +27,7 @@ package org.openelis.modules.systemvariable.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.LastPageException;
@@ -37,14 +38,21 @@ import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.event.*;
-import org.openelis.gwt.screen.*;
+import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.StateChangeEvent;
+import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDefInt;
+import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.*;
+import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.ButtonGroup;
+import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.metamap.SystemVariableMetaMap;
 import org.openelis.modules.main.client.openelis.OpenELIS;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;

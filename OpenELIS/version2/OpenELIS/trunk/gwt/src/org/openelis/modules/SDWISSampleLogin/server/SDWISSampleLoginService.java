@@ -25,26 +25,9 @@
 */
 package org.openelis.modules.SDWISSampleLogin.server;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import org.openelis.domain.IdNameDO;
-import org.openelis.domain.IdNameVO;
-import org.openelis.gwt.common.data.deprecated.StringObject;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
-import org.openelis.modules.SDWISSampleLogin.client.SDWISSampleLoginForm;
-import org.openelis.persistence.CachingManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.CategoryRemote;
-import org.openelis.remote.DictionaryRemote;
-import org.openelis.server.constants.Constants;
-
-public class SDWISSampleLoginService implements AppScreenFormServiceInt<SDWISSampleLoginForm, Query<TableDataRow<Integer>>>{
-
+public class SDWISSampleLoginService {//implements AppScreenFormServiceInt<SDWISSampleLoginForm, Query<TableDataRow<Integer>>>{
+/*
     public SDWISSampleLoginForm abort(SDWISSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
@@ -150,4 +133,5 @@ public class SDWISSampleLoginService implements AppScreenFormServiceInt<SDWISSam
         
         return returnModel;
     }
+    */
 }

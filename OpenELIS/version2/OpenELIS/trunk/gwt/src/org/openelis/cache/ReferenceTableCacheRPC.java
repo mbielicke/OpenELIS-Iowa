@@ -23,15 +23,13 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.cache.server;
+package org.openelis.cache;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.IdNameDO;
 import org.openelis.gwt.common.RPC;
 
-public class DictionaryCacheRPC implements RPC {
-    private static final long serialVersionUID = 1L;
-    
-    public ArrayList<DictionaryDO> dictionaryList;
+public class ReferenceTableCacheRPC implements RPC {
+    public ArrayList<IdNameDO> list;
 }

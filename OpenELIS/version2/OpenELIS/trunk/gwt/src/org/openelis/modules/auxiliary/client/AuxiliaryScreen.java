@@ -25,56 +25,13 @@
 */
 package org.openelis.modules.auxiliary.client;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
-import org.openelis.cache.DictionaryCache;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.TestResultDO;
-import org.openelis.gwt.common.data.deprecated.DateField;
-import org.openelis.gwt.common.data.deprecated.DropDownField;
-import org.openelis.gwt.common.data.deprecated.KeyListManager;
-import org.openelis.gwt.common.data.deprecated.QueryStringField;
-import org.openelis.gwt.common.data.deprecated.StringField;
-import org.openelis.gwt.common.data.deprecated.StringObject;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.deprecated.Form;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.event.ActionEvent;
-import org.openelis.gwt.event.ActionHandler;
-import org.openelis.gwt.screen.Screen;
-import org.openelis.gwt.screen.deprecated.CommandChain;
-import org.openelis.gwt.screen.deprecated.ScreenTableWidget;
-import org.openelis.gwt.screen.deprecated.ScreenWindow;
-import org.openelis.gwt.widget.deprecated.AppButton;
-import org.openelis.gwt.widget.deprecated.ButtonPanel;
-import org.openelis.gwt.widget.deprecated.ResultsTable;
-import org.openelis.gwt.widget.deprecated.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.deprecated.TableDropdown;
-import org.openelis.gwt.widget.table.deprecated.TableManager;
-import org.openelis.gwt.widget.table.deprecated.TableWidget;
-import org.openelis.gwt.widget.table.deprecated.event.SourcesTableModelEvents;
-import org.openelis.gwt.widget.table.deprecated.event.SourcesTableWidgetEvents;
-import org.openelis.gwt.widget.table.deprecated.event.TableModelListener;
-import org.openelis.gwt.widget.table.deprecated.event.TableWidgetListener;
-import org.openelis.metamap.AuxFieldGroupMetaMap;
-import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
-import org.openelis.modules.main.client.OpenELISScreenForm;
-
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.SyncCallback;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
-public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<TableDataRow<Integer>>> implements TableManager,
-                                                                                                         ClickListener,
-                                                                                                         ChangeListener,
-                                                                                                         TableWidgetListener,
-                                                                                                         TableModelListener{
+public class AuxiliaryScreen {//OpenELISScreenForm<AuxiliaryForm, Query<TableDataRow<Integer>>> implements TableManager,
+  //                                                                                                       ClickListener,
+  //                                                                                                       ChangeListener,
+  //                                                                                                       TableWidgetListener,
+  //TableModelListener{
+	/*
     private ButtonPanel atozButtons;
     
     private KeyListManager keyList = new KeyListManager();
@@ -384,7 +341,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
     /**
      * This function opens a dialog window which allows the users to select one
      * or more dictionary entries to be added to the auxiliary field value  table
-     */
+     
     private void onDictionaryLookUpButtonClicked() {
         ScreenWindow modal;                                                            
         if(dictEntryPicker == null) {
@@ -654,7 +611,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
      * [HH:mm] and then returns the formatted version of it , if it conforms with
      * format. For example a string like "7:5" will be converted to "07:05".
      * It throws an IllegalArgumentException if the value doesn't conform with the format 
-     */
+     *
     private String validateTime(String value) throws IllegalArgumentException {
      Date date = null;                                               
      DateField df = null;
@@ -693,7 +650,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
      * This function returns the system name for the option that was selected
      * in a given row, represented by the argument "row", from the type dropdown
      * in auxFieldTableWidget, it returns null if no option was selected   
-     */
+     *
     private String getSelectedSystemName(int row){
         TableDataRow<Integer> trow;
         String sysname;
@@ -728,4 +685,5 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
         
         return m;
     }
+    */
   }      

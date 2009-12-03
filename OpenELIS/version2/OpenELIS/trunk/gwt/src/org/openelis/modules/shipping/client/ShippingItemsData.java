@@ -1,9 +1,7 @@
 package org.openelis.modules.shipping.client;
 
-import org.openelis.gwt.common.data.deprecated.FieldType;
-
-public class ShippingItemsData implements FieldType {
-   
+public class ShippingItemsData {
+   /*
     private static final long serialVersionUID = 1L;
 
     public Integer referenceTableId;
@@ -19,4 +17,5 @@ public class ShippingItemsData implements FieldType {
     public Object clone() {
         return null;
     }
+    */
 }
