@@ -5,6 +5,7 @@ package org.openelis.meta;
  */
 
 import java.util.HashSet;
+
 import org.openelis.gwt.common.Meta;
 
 public class OrganizationParameterMeta implements Meta {

@@ -1,7 +1,6 @@
 package org.openelis.domain;
 
 import org.openelis.gwt.common.RPC;
-import org.openelis.utilcommon.DataBaseUtil;
 
 /**
  * The class is used to carry id for query returns, for left 

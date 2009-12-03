@@ -28,7 +28,6 @@ package org.openelis.metamap;
 import org.openelis.gwt.common.MetaMap;
 import org.openelis.meta.AddressMeta;
 import org.openelis.meta.SampleEnvironmentalMeta;
-import org.openelis.meta.StorageMeta;
 
 public class SampleEnvironmentalMetaMap extends SampleEnvironmentalMeta implements MetaMap{
 

@@ -23,32 +23,37 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.remote;
+package org.openelis.domain;
 
-import java.util.ArrayList;
+import org.openelis.utilcommon.DataBaseUtil;
 
-import javax.ejb.Remote;
+/**
+ * The class extends the label DO and carries an additional scriptlet name
+ * field. This additional fields is for read/display only and does not get
+ * committed to the database. Note: isChanged will reflect any changes to
+ * read/display fields.
+ */
 
-import org.openelis.domain.IdNameVO;
-import org.openelis.domain.TestTrailerDO;
-import org.openelis.gwt.common.data.QueryData;
+public class LabelScriptletDO extends LabelDO {
 
-@Remote
-public interface TestTrailerRemote {
+    private static final long serialVersionUID = 1L;
 
-    public TestTrailerDO fetchById(Integer id) throws Exception;
+    protected String          scriptletName;
 
-    public ArrayList<IdNameVO> fetchByName(String name, int max) throws Exception;
+    public LabelScriptletDO() {
+    }
 
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
+    public LabelScriptletDO(Integer id, String name, String description, Integer printerTypeId,
+                   Integer scriptletId, String scriptletName) {
+        //super(id, name, description, printerTypeId, scriptletId);
+        setScriptletName(scriptletName);
+    }    
+    
+    public String getScriptletName() {
+        return scriptletName;
+    }
 
-    public TestTrailerDO add(TestTrailerDO data) throws Exception;
-
-    public TestTrailerDO update(TestTrailerDO data) throws Exception;
-
-    public TestTrailerDO fetchForUpdate(Integer id) throws Exception;
-
-    public TestTrailerDO abortUpdate(Integer id) throws Exception;
-
-    public void delete(TestTrailerDO data) throws Exception;
+    public void setScriptletName(String scriptletName) {
+        this.scriptletName = DataBaseUtil.trim(scriptletName);
+    }
 }

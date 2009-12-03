@@ -26,7 +26,6 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
-import org.openelis.meta.NoteMeta;
 import org.openelis.meta.ShippingItemMeta;
 import org.openelis.meta.ShippingMeta;
 import org.openelis.meta.ShippingTrackingMeta;

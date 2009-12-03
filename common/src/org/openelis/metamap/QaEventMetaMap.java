@@ -27,7 +27,6 @@ package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
 import org.openelis.meta.QaEventMeta;
-import org.openelis.meta.TestMeta;
 
 public class QaEventMetaMap extends QaEventMeta implements MetaMap {
 

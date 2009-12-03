@@ -25,16 +25,12 @@
 */
 package org.openelis.remote;
 
-import org.openelis.domain.InventoryLocationDO;
-import org.openelis.domain.InventoryReceiptDO;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Remote;
+
+import org.openelis.domain.InventoryLocationDO;
+import org.openelis.domain.InventoryReceiptDO;
 
 @Remote
 public interface InventoryReceiptRemote {
@@ -51,20 +47,20 @@ public interface InventoryReceiptRemote {
     public void updateInventoryTransfer(List inventorytransfers) throws Exception;
     
     //method to query for inventory receipts
-     public List query(ArrayList<AbstractField> fields, int first, int max, boolean receipt) throws Exception;
+    // public List query(ArrayList<AbstractField> fields, int first, int max, boolean receipt) throws Exception;
      
      //method to query for inventory receipts..and also lock the necessary records
-     public List queryAndLock(ArrayList<AbstractField> fields, int first, int max, boolean receipt) throws Exception;
+    // public List queryAndLock(ArrayList<AbstractField> fields, int first, int max, boolean receipt) throws Exception;
      
      //method to lock new inv loc and unlock old inv loc and return location record
      public InventoryLocationDO lockLocationAndFetch(Integer oldLocId, Integer newLocId) throws Exception;
      
      //method to query for inventory receipts..and also unlock the necessary records
-     public List queryAndUnlock(ArrayList<AbstractField> fields, int first, int max, boolean receipt) throws Exception;
+     //public List queryAndUnlock(ArrayList<AbstractField> fields, int first, int max, boolean receipt) throws Exception;
      
-     public void unlockLocations(TableDataModel<TableDataRow<Integer>> locIds);
+    // public void unlockLocations(TableDataModel<TableDataRow<Integer>> locIds);
      
-     public void unlockOrders(TableDataModel<TableDataRow<Integer>> orderIds);
+    // public void unlockOrders(TableDataModel<TableDataRow<Integer>> orderIds);
      
      //auto complete lookup
      public List autoCompleteLocationLookupByName(String name, int maxResults);

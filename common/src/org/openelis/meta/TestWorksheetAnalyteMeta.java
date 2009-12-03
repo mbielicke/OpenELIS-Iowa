@@ -30,9 +30,9 @@ package org.openelis.meta;
   * TestWorksheetAnalyte META Data
   */
 
-import org.openelis.gwt.common.Meta;
-
 import java.util.HashSet;
+
+import org.openelis.gwt.common.Meta;
 
 public class TestWorksheetAnalyteMeta implements Meta {
   	private String path = "";

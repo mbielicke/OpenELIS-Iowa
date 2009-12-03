@@ -3,8 +3,6 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.domain.ProviderAddressDO;
-import org.openelis.domain.ProviderAddressDO;
-import org.openelis.domain.QcAnalyteDO;
 import org.openelis.gwt.common.RPC;
 
 public class ProviderAddressManager implements RPC {

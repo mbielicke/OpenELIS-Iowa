@@ -27,7 +27,6 @@ package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
 import org.openelis.meta.WorksheetMeta;
-import org.openelis.metamap.WorksheetItemMetaMap;
 
 public class WorksheetMetaMap extends WorksheetMeta implements MetaMap {
 

@@ -25,13 +25,12 @@
 */
 package org.openelis.remote;
 
-import org.openelis.domain.StorageLocationViewDO;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Remote;
+
+import org.openelis.domain.StorageLocationViewDO;
 
 @Remote
 public interface StorageLocationRemote {
@@ -51,7 +50,7 @@ public interface StorageLocationRemote {
 	public List getStorageLocChildren(Integer StorageId);
 	
 	 //method to query for storage locs
-	 public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
+	// public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
 	 
 //	auto complete lookup
 	 public ArrayList autoCompleteLookupByName(String name, int maxResults);

@@ -25,9 +25,9 @@
 */
 package org.openelis.remote;
 
-import org.openelis.domain.PreferencesDO;
-
 import javax.ejb.Remote;
+
+import org.openelis.domain.PreferencesDO;
 
 @Remote
 public interface PreferencesRemote {
