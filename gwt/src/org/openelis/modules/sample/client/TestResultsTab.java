@@ -28,6 +28,7 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.gwt.event.ActionEvent;
@@ -69,12 +70,16 @@ public class TestResultsTab extends Screen {
 
     protected AnalysisManager       analysisMan;
     protected AnalysisViewDO        anDO;
+    
+    private Integer analysisCancelledId, analysisReleasedId;
 
     public TestResultsTab(ScreenDefInt def, ScreenWindow window) {
         setDef(def);
         setWindow(window);
         
         initialize();
+        
+        initializeDropdowns();
     }
     
     private void initialize() {
@@ -85,7 +90,7 @@ public class TestResultsTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                testResultsTable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                testResultsTable.enable(canEdit() && EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 testResultsTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -288,6 +293,21 @@ MISSING TABLE COL!!! USING OLD TABLE FORMAT?
                 }
             testResultsTable.columns.add(column);*/
         }
+    }
+    
+    private void initializeDropdowns() {
+        try{
+            analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
+            analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
+            
+        }catch(Exception e){
+            Window.alert(e.getMessage());
+            window.close();
+        }
+    }
+    
+    private boolean canEdit(){
+        return (anDO != null && !analysisCancelledId.equals(anDO.getStatusId()) && !analysisReleasedId.equals(anDO.getStatusId()));
     }
     
     public void setData(SampleDataBundle data) {

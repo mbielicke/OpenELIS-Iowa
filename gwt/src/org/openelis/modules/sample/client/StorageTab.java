@@ -28,6 +28,7 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LocalizedException;
@@ -66,6 +67,8 @@ public class StorageTab extends Screen {
     
     protected StorageManager manager;
     protected SampleDataBundle data;
+    
+    private Integer analysisCancelledId, analysisReleasedId;
 
     public StorageTab(ScreenDefInt def, ScreenWindow window) {
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.storage.server.StorageService");
@@ -76,6 +79,8 @@ public class StorageTab extends Screen {
         userId = OpenELIS.security.getSystemUserId();
         
         initialize();
+        
+        initializeDropdowns();
     }
     
     private void initialize() {
@@ -86,7 +91,7 @@ public class StorageTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                storageTable.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                storageTable.enable(canEdit() && EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
                 storageTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -213,7 +218,7 @@ public class StorageTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addStorageButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                addStorageButton.enable(canEdit() && EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -227,7 +232,7 @@ public class StorageTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeStorageButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                removeStorageButton.enable(canEdit() && EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -263,6 +268,28 @@ public class StorageTab extends Screen {
         return model;
     }
     
+    public boolean canEdit(){
+        if(data != null){
+            if(data.type == SampleDataBundle.Type.ANALYSIS){
+                return (data.analysisTestDO != null && !analysisCancelledId.equals(data.analysisTestDO.getStatusId()) && !analysisReleasedId.equals(data.analysisTestDO.getStatusId()));
+            }
+            else
+                return true;
+        }
+        
+        return false;
+    }
+    
+    private void initializeDropdowns(){
+        try{
+            analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
+            analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
+            
+        }catch(Exception e){
+            Window.alert(e.getMessage());
+            window.close();
+        }
+    }
     
     public void setData(SampleDataBundle data) {
         this.data = data;

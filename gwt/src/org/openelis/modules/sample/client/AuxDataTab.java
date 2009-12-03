@@ -33,6 +33,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
+import org.openelis.domain.SampleDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -59,6 +60,7 @@ import org.openelis.manager.AuxDataManager;
 import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.AuxFieldValueManager;
 import org.openelis.manager.HasAuxDataInt;
+import org.openelis.manager.SampleManager;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -78,7 +80,8 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
 
     protected HasAuxDataInt         parentMan;
     protected AuxDataManager        manager;
-
+    protected SampleDO sample;
+    
     public AuxDataTab(ScreenDefInt def, ScreenWindow window) {
         service = new ScreenService(
                                     "OpenELISServlet?service=org.openelis.modules.auxiliary.server.AuxiliaryService");
@@ -408,7 +411,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             window.close();
         }
     }
-
+    
     public void setManager(HasAuxDataInt parentMan) {
         this.parentMan = parentMan;
         loaded = false;
@@ -421,6 +424,9 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                     manager = parentMan.getAuxDataforUpdate();
                 else
                     manager = parentMan.getAuxData();
+                
+                if(parentMan instanceof SampleManager)
+                    sample = ((SampleManager)parentMan).getSample();
 
                 DataChangeEvent.fire(this);
                 loaded = true;

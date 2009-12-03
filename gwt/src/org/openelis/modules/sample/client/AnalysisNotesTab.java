@@ -25,6 +25,9 @@
 */
 package org.openelis.modules.sample.client;
 
+import java.util.EnumSet;
+
+import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.gwt.common.Datetime;
@@ -60,6 +63,8 @@ public class AnalysisNotesTab extends NotesTab {
     protected EditNoteScreen internalEditNote;
     protected NoteViewDO internalNote;
     
+    private Integer analysisCancelledId, analysisReleasedId;
+    
     public AnalysisNotesTab(ScreenDefInt def, ScreenWindow window, String notesPanelKey, String editButtonKey, boolean isExternal) {
         super(def, window, notesPanelKey, editButtonKey, isExternal);
     }
@@ -72,10 +77,39 @@ public class AnalysisNotesTab extends NotesTab {
        this.internalNotesPanelKey = internalNotesPanelKey;
        this.internalEditButtonKey = internalEditButtonKey;
        
-       initializeTab();
+       initialize();
+       
+       initializeDropdowns();
     }
     
-    public void initializeTab() {
+    //overrides the notetab initialize to control the external notes button
+    public void initialize() {
+        //we dont have all the info set yet, dont run through this method
+        if(internalNotesPanelKey == null)
+            return;
+        
+        notesPanel = (NotesPanel)def.getWidget(notesPanelKey);
+        addScreenHandler(notesPanel, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                drawNotes();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                if (event.getState() == State.ADD)
+                    notesPanel.clearNotes();
+            }
+        });
+        final AppButton standardNote = (AppButton)def.getWidget(editButtonKey);
+        addScreenHandler(standardNote, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                showEditWindow();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                standardNote.enable(!isReleased() && !isCancelled() && EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+            }
+        });
+        
         internalNotesPanel = (NotesPanel)def.getWidget(internalNotesPanelKey);
         addScreenHandler(internalNotesPanel, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -130,11 +164,7 @@ public class AnalysisNotesTab extends NotesTab {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-
-                if (event.getState() == State.ADD || event.getState() == State.UPDATE)
-                    internalEditButton.enable(true);
-                else
-                    internalEditButton.enable(false);
+                internalEditButton.enable(!isCancelled() && EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
     }
@@ -170,6 +200,25 @@ public class AnalysisNotesTab extends NotesTab {
             } catch (Exception e) {
                 Window.alert(e.getMessage());
             }
+        }
+    }
+    
+    private boolean isCancelled(){
+        return (analysis != null && analysisCancelledId.equals(analysis.getStatusId()));
+    }
+    
+    private boolean isReleased(){
+        return (analysis != null && analysisReleasedId.equals(analysis.getStatusId()));
+    }
+    
+    private void initializeDropdowns() {
+        try{
+            analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
+            analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
+            
+        }catch(Exception e){
+            Window.alert(e.getMessage());
+            window.close();
         }
     }
     

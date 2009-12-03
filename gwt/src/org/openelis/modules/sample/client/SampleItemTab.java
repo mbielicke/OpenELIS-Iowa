@@ -30,6 +30,7 @@ import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -54,6 +55,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
     
     private SampleMetaMap meta;
     protected SampleItemViewDO sampleItem;
+    protected SampleDO sample;
     protected Dropdown<Integer> typeOfSampleId, sourceOfSampleId, containerId, unitOfMeasureId;
 
     public SampleItemTab(ScreenDefInt def, ScreenWindow window) {
@@ -190,12 +192,50 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
         });
     }
     
+    private void initializeDropdowns(){
+        ArrayList<TableDataRow> model;
+    
+        //sample type dropdown
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("type_of_sample"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+    
+        typeOfSampleId.setModel(model);
+    
+        //source dropdown
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("source_of_sample"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+    
+        sourceOfSampleId.setModel(model);
+        
+        //sample container dropdown
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("sample_container"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+    
+        containerId.setModel(model);
+        
+        //unit of measure dropdown
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("unit_of_measure"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+    
+        unitOfMeasureId.setModel(model);
+    }
+
     public void setData(SampleDataBundle data) {
         if(data.sampleItemDO == null){
             sampleItem = new SampleItemViewDO();
+            sample = new SampleDO();
             StateChangeEvent.fire(this, State.DEFAULT);   
         }else{
             sampleItem = data.sampleItemDO;
+            sample = data.sampleDO;
             
             if(state == State.ADD || state == State.UPDATE)
                 StateChangeEvent.fire(this, State.UPDATE);
@@ -204,43 +244,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
         loaded = false;
     }
     
-    private void initializeDropdowns(){
-        ArrayList<TableDataRow> model;
-
-        //sample type dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("type_of_sample"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
-
-        typeOfSampleId.setModel(model);
-
-        //source dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("source_of_sample"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
-
-        sourceOfSampleId.setModel(model);
-        
-        //sample container dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("sample_container"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
-
-        containerId.setModel(model);
-        
-        //unit of measure dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("unit_of_measure"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
-
-        unitOfMeasureId.setModel(model);
-    }
-    
-     public void draw(){
+    public void draw(){
          if(!loaded)
              DataChangeEvent.fire(this);
          

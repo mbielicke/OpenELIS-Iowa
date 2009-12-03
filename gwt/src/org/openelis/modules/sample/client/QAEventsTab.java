@@ -74,7 +74,7 @@ public class QAEventsTab extends Screen {
     protected SampleManager          sampleManager;
     protected AnalysisManager        anMan;
     protected AnalysisViewDO         anDO;
-    private Object                   oldVal;
+    protected Integer analysisCancelledId, analysisReleasedId;
 
     protected QaeventLookupScreen    qaEventScreen;
 
@@ -99,7 +99,7 @@ public class QAEventsTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sampleQATable.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                sampleQATable.enable(canEditSampleQA() && EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                             .contains(event.getState()));
                 sampleQATable.setQueryMode(event.getState() == State.QUERY);
             }
@@ -153,7 +153,7 @@ public class QAEventsTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeSampleQAButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                removeSampleQAButton.enable(canEditSampleQA() && EnumSet.of(State.ADD, State.UPDATE)
                                                    .contains(event.getState()));
             }
         });
@@ -173,7 +173,7 @@ public class QAEventsTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sampleQAPicker.enable(EnumSet.of(State.ADD, State.UPDATE)
+                sampleQAPicker.enable(canEditSampleQA() && EnumSet.of(State.ADD, State.UPDATE)
                                              .contains(event.getState()));
             }
         });
@@ -185,7 +185,7 @@ public class QAEventsTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                analysisQATable.enable( (SampleDataBundle.Type.ANALYSIS == type) &&
+                analysisQATable.enable(canEditAnalysisQA() && (SampleDataBundle.Type.ANALYSIS == type) &&
                                        anDO.getTestId() != null &&
                                        EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                               .contains(event.getState()));
@@ -241,7 +241,7 @@ public class QAEventsTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeAnalysisQAButton.enable( (SampleDataBundle.Type.ANALYSIS == type) &&
+                removeAnalysisQAButton.enable(canEditAnalysisQA() && (SampleDataBundle.Type.ANALYSIS == type) &&
                                               anDO.getTestId() != null &&
                                               EnumSet.of(State.ADD, State.UPDATE)
                                                      .contains(event.getState()));
@@ -263,7 +263,7 @@ public class QAEventsTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                analysisQAPicker.enable( (SampleDataBundle.Type.ANALYSIS == type) &&
+                analysisQAPicker.enable(canEditAnalysisQA() && (SampleDataBundle.Type.ANALYSIS == type) &&
                                         anDO.getTestId() != null &&
                                         EnumSet.of(State.ADD, State.UPDATE)
                                                .contains(event.getState()));
@@ -384,6 +384,15 @@ public class QAEventsTab extends Screen {
     }
 
     private void initializeDropdowns(){
+        try{
+            analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
+            analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
+            
+        }catch(Exception e){
+            Window.alert(e.getMessage());
+            window.close();
+        }
+        
         ArrayList<TableDataRow> model;
 
         //qa event type dropdown
@@ -394,6 +403,18 @@ public class QAEventsTab extends Screen {
 
         ((Dropdown<Integer>)sampleQATable.getColumns().get(1).getColumnWidget()).setModel(model);
         ((Dropdown<Integer>)analysisQATable.getColumns().get(1).getColumnWidget()).setModel(model);
+    }
+    
+    private boolean canEditSampleQA(){
+        try{
+            return !sampleManager.hasReleasedCancelledAnalysis();    
+        }catch(Exception e){
+            return false;
+        }
+    }
+    
+    private boolean canEditAnalysisQA(){
+        return (anDO != null && !analysisCancelledId.equals(anDO.getStatusId()) && !analysisReleasedId.equals(anDO.getStatusId()));
     }
 
     public void setData(SampleDataBundle data) {
