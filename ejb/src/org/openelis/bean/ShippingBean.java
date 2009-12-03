@@ -56,16 +56,12 @@ import org.openelis.entity.ShippingTracking;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.ShippingMetaMap;
 import org.openelis.remote.ShippingRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
 
 @Stateless
 @EJBs({
@@ -122,7 +118,7 @@ public class ShippingBean implements ShippingRemote{
         
         return autoFillDO;
     }
-
+/*
     public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
@@ -153,7 +149,7 @@ public class ShippingBean implements ShippingRemote{
         else
          return returnList;
     }
-
+*/
     @RolesAllowed("shipping-update")
  public Integer updateShipment(ShippingDO shippingDO, List<ShippingItemDO> shippingItems, List<ShippingTrackingDO> trackingNumbers, NoteViewDO shippingNote) throws Exception {
         validateShipping(shippingDO, shippingItems);
