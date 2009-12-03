@@ -55,16 +55,12 @@ import org.openelis.entity.Order;
 import org.openelis.entity.OrderItem;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
+import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.local.LockLocal;
 import org.openelis.persistence.CachingManager;
 import org.openelis.remote.InventoryReceiptRemote;
 import org.openelis.security.domain.SystemUserDO;
-import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
 @Stateless
@@ -127,7 +123,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
        
         return inventoryReceiptList;
     }
-
+/*
     @RolesAllowed("receipt-update")
     public List queryAndLock(ArrayList<AbstractField> fields, int first, int max, boolean receipt) throws Exception {
         
@@ -138,7 +134,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
                 
         return queryResultList;
     }
-    
+*/    
     public InventoryLocationDO lockLocationAndFetch(Integer oldLocId, Integer newLocId) throws Exception {
         lockBean.getLock(invLocRefTableId, newLocId);
 
@@ -157,7 +153,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         else
             return null;
     }
-    
+/*    
     public List queryAndUnlock(ArrayList<AbstractField> fields, int first, int max, boolean receipt) throws Exception {
         List queryResultList = query(fields, first, max, receipt);
         
@@ -166,7 +162,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
                 
         return queryResultList;
     }
-    
+  
     public void unlockLocations(TableDataModel<TableDataRow<Integer>> locIds) {
         for(int i=0; i<locIds.size(); i++)
             lockBean.giveUpLock(invLocRefTableId, locIds.get(i).key);
@@ -273,7 +269,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         sb.append(qb.getSelectClause()).append(fromClause).append(qb.getWhereClause()).append(qb.getOrderBy());
         
 //        sb.append(qb.getEJBQL());
-*/
+
         Query query = manager.createQuery(sb.toString());
     
         if(first > -1 && max > -1)
@@ -289,7 +285,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         else
          return returnList;
     }
-
+*/
     @RolesAllowed("receipt-update")
     public void updateInventoryReceipt(List inventoryReceipts) throws Exception {
 

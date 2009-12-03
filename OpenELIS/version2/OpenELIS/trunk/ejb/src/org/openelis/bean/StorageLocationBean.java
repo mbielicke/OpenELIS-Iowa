@@ -47,16 +47,12 @@ import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.entity.StorageLocation;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.StorageLocationMetaMap;
 import org.openelis.remote.StorageLocationRemote;
-import org.openelis.util.QueryBuilder;
 import org.openelis.utilcommon.DataBaseUtil;
-import org.openelis.utils.GetPage;
 
 @Stateless
 @EJBs({
@@ -154,7 +150,7 @@ public class StorageLocationBean implements StorageLocationRemote{
 		query.setParameter("id", StorageId);
 		return query.getResultList();
 	}
-
+/*
 	public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
 		StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
@@ -186,7 +182,7 @@ public class StorageLocationBean implements StorageLocationRemote{
          else
         	 return returnList;
 	}
-
+*/
     @RolesAllowed("storagelocation-update")
 	public Integer updateStorageLoc(StorageLocationViewDO storageDO, List storageLocationChildren) throws Exception{
         if(storageDO.getId() != null)

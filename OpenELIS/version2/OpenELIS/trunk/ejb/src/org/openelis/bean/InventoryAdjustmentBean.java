@@ -25,7 +25,6 @@
 */
 package org.openelis.bean;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -49,15 +48,11 @@ import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.InventoryAdjustment;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryXAdjust;
-import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.local.LockLocal;
 import org.openelis.remote.InventoryAdjustmentRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
 
 @Stateless
 @EJBs({
@@ -148,7 +143,7 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
             return null;
         }     
     }
-
+/*
     public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception{
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
@@ -163,7 +158,7 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
         qb.setOrderBy(InventoryAdjustmentMetaMap.getAdjustmentDate()+" , "+InventoryAdjustmentMetaMap.getId());
 
         sb.append(qb.getEJBQL());
-*/
+
         Query query = manager.createQuery(sb.toString());
 
         if(first > -1 && max > -1)
@@ -179,7 +174,7 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
         else
          return returnList;
     }
-
+*/
     public Integer updateInventoryAdjustment(InventoryAdjustmentDO inventoryAdjustmentDO, List children) throws Exception {
         manager.setFlushMode(FlushModeType.COMMIT);
         

@@ -49,17 +49,11 @@ import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryXUse;
 import org.openelis.entity.Order;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
 import org.openelis.local.LockLocal;
 import org.openelis.persistence.CachingManager;
 import org.openelis.remote.FillOrderRemote;
 import org.openelis.security.domain.SystemUserDO;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
 
 @Stateless
 @EJBs({
@@ -100,7 +94,7 @@ public class FillOrderBean implements FillOrderRemote {
             return null;
         }
     }
-
+/*
     public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
@@ -125,7 +119,7 @@ public class FillOrderBean implements FillOrderRemote {
         qb.addWhere(OrderMap.getIsExternal()+"='N'");
         
         qb.setOrderBy(OrderMap.ORDER_ORGANIZATION_META.getName()+" DESC, "+OrderMap.getId());
-*/
+
         sb.append(qb.getEJBQL());
 
         Query query = manager.createQuery(sb.toString());
@@ -143,7 +137,7 @@ public class FillOrderBean implements FillOrderRemote {
         else
          return returnList;
     }
-    
+*/    
     public List getOrderItems(Integer orderId) {
         Query query = manager.createNamedQuery("OrderItem.OrderItemsByOrderId");
         query.setParameter("id", orderId);
@@ -235,7 +229,7 @@ public class FillOrderBean implements FillOrderRemote {
             lockBean.giveUpLock(orderRefTableId, orderIds.get(j));
         }
     }
-    
+/*    
     private void unlockRecords(TableDataModel<TableDataRow<Integer>> orders) throws Exception{
         if(orders.size() == 0)
             return;
@@ -249,7 +243,7 @@ public class FillOrderBean implements FillOrderRemote {
                 lockBean.giveUpLock(orderRefTableId, orderId);
         }
     }
-    
+*/    
     public Integer getOrderItemReferenceTableId() {
         return orderItemRefTableId;
     }

@@ -25,7 +25,6 @@
 */
 package org.openelis.bean;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -53,15 +52,9 @@ import org.openelis.entity.Note;
 import org.openelis.entity.Order;
 import org.openelis.entity.OrderItem;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.local.LockLocal;
 import org.openelis.remote.OrderRemote;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
 
 @Stateless
 @EJBs({
@@ -193,7 +186,7 @@ public class OrderBean implements OrderRemote{
         else 
             return null;        
     }
-
+/*
     public List query(ArrayList<AbstractField> fields, int first, int max, String orderType) throws Exception {       
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
@@ -232,7 +225,7 @@ public class OrderBean implements OrderRemote{
         }else{
             sb.append(qb.getEJBQL());
         }
-*/               
+               
         Query query = manager.createQuery(sb.toString());
         
         if(first > -1 && max > -1)
@@ -248,7 +241,7 @@ public class OrderBean implements OrderRemote{
         else
          return returnList;
     }
-
+*/
     public OrderAddAutoFillDO getAddAutoFillValues() throws Exception{
         OrderAddAutoFillDO autoFillDO = new OrderAddAutoFillDO();        
         //status integer

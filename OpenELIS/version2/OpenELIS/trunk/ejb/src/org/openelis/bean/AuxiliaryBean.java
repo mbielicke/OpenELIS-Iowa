@@ -51,18 +51,14 @@ import org.openelis.entity.AuxFieldGroup;
 import org.openelis.exception.InconsistentException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.AuxFieldGroupMetaMap;
 import org.openelis.remote.AuxiliaryRemote;
-import org.openelis.util.QueryBuilder;
 import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utilcommon.ResultRangeNumeric;
-import org.openelis.utils.GetPage;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -370,7 +366,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         }
         return entryList;
     }
-
+/*
     public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception { 
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
@@ -400,7 +396,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         else
             return returnList;
     }   
-    
+*/    
     public ArrayList<AuxFieldGroupDO> fetchActive(){
         Query query = manager.createNamedQuery("AuxFieldGroup.FetchActive");
         
