@@ -275,7 +275,7 @@ public class DataBaseUtil {
     public static void mergeException(ValidationErrorsList list, Exception e) {
         if (e instanceof ValidationErrorsList) {
             int i;
-            ArrayList<LocalizedException> el;
+            ArrayList<Exception> el;
 
             el = ((ValidationErrorsList)e).getErrorList();
             for (i = 0; i < el.size(); i++ )
@@ -296,7 +296,7 @@ public class DataBaseUtil {
     public static void mergeException(ValidationErrorsList list, Exception e, String table, int row) {
         if (e instanceof ValidationErrorsList) {
             int i;
-            ArrayList<LocalizedException> el;
+            ArrayList<Exception> el;
 
             el = ((ValidationErrorsList)e).getErrorList();
             for (i = 0; i < el.size(); i++ )
@@ -316,7 +316,7 @@ public class DataBaseUtil {
                                       int key1, int key2) {
         if (e instanceof ValidationErrorsList) {
             int i;
-            ArrayList<LocalizedException> el;
+            ArrayList<Exception> el;
 
             el = ((ValidationErrorsList)e).getErrorList();
             for (i = 0; i < el.size(); i++ )
