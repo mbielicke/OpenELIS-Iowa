@@ -25,6 +25,8 @@
 */
 package org.openelis.manager;
 
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
 import org.openelis.gwt.common.InconsistencyException;
@@ -44,6 +46,8 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
     protected NoteManager sampleInternalNotes;
     protected NoteManager sampleExternalNote;
     protected AuxDataManager auxData;
+    
+    protected Boolean hasReleasedCancelledAnalysis;
     
     public static final String  ENVIRONMENTAL_DOMAIN_FLAG   = "E",
                                 HUMAN_DOMAIN_FLAG           = "H",
@@ -110,6 +114,40 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
 
     public void updateStatus() {
         
+    }
+    
+    public boolean hasReleasedCancelledAnalysis() throws Exception {
+        if(hasReleasedCancelledAnalysis != null)
+            return hasReleasedCancelledAnalysis.booleanValue();
+        
+        SampleItemManager itemMan;
+        AnalysisManager analysisMan;
+        AnalysisViewDO anDO;
+        boolean value = false;
+        Integer cancelledId, releasedId;
+    
+        cancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
+        releasedId = DictionaryCache.getIdFromSystemName("analysis_released");
+        
+        itemMan = getSampleItems();
+        for(int s=0; s<itemMan.count(); s++){
+            analysisMan = itemMan.getAnalysisAt(s);
+            for(int a=0; a<analysisMan.count(); a++){
+                anDO = analysisMan.getAnalysisAt(a);
+                if(cancelledId.equals(anDO.getStatusId()) || releasedId.equals(anDO.getStatusId())){
+                    value = true;
+                    break;
+                }
+            }
+        }
+        
+        setHasReleasedCancelledAnalysis(value);
+
+        return value;
+    }
+    
+    public void setHasReleasedCancelledAnalysis(boolean value){
+        hasReleasedCancelledAnalysis = new Boolean(value);
     }
     
     //getters and setters
