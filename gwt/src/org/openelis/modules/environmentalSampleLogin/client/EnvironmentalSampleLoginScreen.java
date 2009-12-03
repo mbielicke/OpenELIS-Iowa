@@ -66,6 +66,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
+import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
@@ -117,43 +118,45 @@ import com.google.gwt.user.client.ui.TabPanel;
 public class EnvironmentalSampleLoginScreen extends Screen {
 
     public enum Tabs {
-        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES,
-        STORAGE, QA_EVENTS, AUX_DATA
+        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
+        AUX_DATA
     };
 
-    protected Tabs                     tab;
-    private Integer analysisLoggedInId, analysisCancelledId, analysisInPrep, sampleLoggedInId, sampleErrorStatusId;
-    
-    private SampleEnvironmentalMetaMap meta = new SampleEnvironmentalMetaMap();
-    private SampleItemTab              sampleItemTab;
-    private AnalysisTab                analysisTab;
-    private TestResultsTab             testResultsTab;
-    private AnalysisNotesTab           analysisNotesTab;
-    private SampleNotesTab             sampleNotesTab;
-    private StorageTab                 storageTab;
-    private QAEventsTab                qaEventsTab;
-    private AuxDataTab                 auxDataTab;
-    
-    protected TestPrepLookupScreen prepPickerScreen;
-    protected TextBox location;
-    protected AutoComplete<Integer> project, reportTo, billTo;
-    protected TreeWidget itemsTree;
-    protected AppButton removeRow;
+    protected Tabs                         tab;
+    private Integer                        analysisLoggedInId, analysisCancelledId,
+                    analysisReleasedId, analysisInPrep, sampleLoggedInId, sampleErrorStatusId,
+                    sampleCancelledId, sampleReleasedId;
 
-    private SampleLocationLookupScreen locationScreen;
+    private SampleEnvironmentalMetaMap     meta = new SampleEnvironmentalMetaMap();
+    private SampleItemTab                  sampleItemTab;
+    private AnalysisTab                    analysisTab;
+    private TestResultsTab                 testResultsTab;
+    private AnalysisNotesTab               analysisNotesTab;
+    private SampleNotesTab                 sampleNotesTab;
+    private StorageTab                     storageTab;
+    private QAEventsTab                    qaEventsTab;
+    private AuxDataTab                     auxDataTab;
+
+    protected TestPrepLookupScreen         prepPickerScreen;
+    protected TextBox                      location;
+    protected AutoComplete<Integer>        project, reportTo, billTo;
+    protected TreeWidget                   itemsTree;
+    protected AppButton                    removeRow, addButton;
+
+    private SampleLocationLookupScreen     locationScreen;
     private SampleOrganizationLookupScreen organizationScreen;
-    private SampleProjectLookupScreen projectScreen;
-    
-    protected ScreenService orgService;
-    protected ScreenService projectService;
-    
-    
-    ScreenNavigator nav;
-    private SecurityModule       security;
-    
-    private SampleManager manager;
-    
-    private int tempId;
+    private SampleProjectLookupScreen      projectScreen;
+    private Confirm                        cancelAnalysisConfirm;
+
+    protected ScreenService                orgService;
+    protected ScreenService                projectService;
+
+    ScreenNavigator                        nav;
+    private SecurityModule                 security;
+
+    private SampleManager                  manager;
+
+    private int                            tempId;
     
     public EnvironmentalSampleLoginScreen() throws Exception {
         //Call base to get ScreenDef and draw screen
@@ -299,6 +302,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         addScreenHandler(statusId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 statusId.setSelection(manager.getSample().getStatusId());
+                addButton.enable(canEdit());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -613,7 +617,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                billTo.enable(EnumSet.of(State.ADD, State.UPDATE)
+                billTo.enable( EnumSet.of(State.ADD, State.UPDATE)
                                    .contains(event.getState()));
                 billTo.setQueryMode(event.getState() == State.QUERY);
             }
@@ -649,18 +653,31 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         itemsTree.addSelectionHandler(new SelectionHandler<TreeDataItem>(){
            public void onSelection(SelectionEvent<TreeDataItem> event) {
                SampleDataBundle data;
-               
+               boolean enable;
                TreeDataItem selection = itemsTree.getSelection();
-               
-               if("sampleItem".equals(selection.leafType) && selection.hasChildren())
-                   removeRow.enable(false);
-               else
-                   removeRow.enable(true);
                
                if(selection != null)
                    data = (SampleDataBundle)selection.data;
                else
                    data = new SampleDataBundle();
+               
+               enable = false;
+               if(state == State.ADD || state == State.UPDATE){
+                   if("sampleItem".equals(selection.leafType)){
+                       if(selection.hasChildren())
+                           enable = false;
+                       else
+                           enable = true;
+                   }else{
+                       if(data.analysisTestDO != null && 
+                                       (analysisCancelledId.equals(data.analysisTestDO.getStatusId()) || analysisReleasedId.equals(data.analysisTestDO.getStatusId())))
+                           enable = false;
+                       else
+                           enable = true;
+               }
+               }
+
+               removeRow.enable(enable);
                
                sampleItemTab.setData(data);
                analysisTab.setData(data);
@@ -1026,7 +1043,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
 
-        final AppButton addButton = (AppButton)def.getWidget("add");
+        addButton = (AppButton)def.getWidget("add");
         addScreenHandler(addButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 add();
@@ -1047,6 +1064,14 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 update();
+            }
+            
+            public void onDataChange(DataChangeEvent event) {
+                if (canEdit() && EnumSet.of(State.DISPLAY).contains(state) && 
+                                security.hasUpdatePermission())
+                    updateButton.enable(true);
+                else
+                    updateButton.enable(false);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -1131,6 +1156,43 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 
                 drawTabs();
                 window.clearStatus();
+            }
+        });
+        
+        
+      //////////////////////////////////
+        final AppButton warning = (AppButton)def.getWidget("warning");
+        addScreenHandler(warning, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                Confirm c = new Confirm(Confirm.Type.WARN, "This is warning text.  You probabaly shouldnt be doing this...you have been warned.  Trust me", "Ok, I trust you");
+                c.show();
+            }
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                warning.enable(true);
+            }
+        });
+        
+        final AppButton error = (AppButton)def.getWidget("error");
+        addScreenHandler(error, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                Confirm c = new Confirm(Confirm.Type.ERROR, "ERROR!! You really shouldnt have done that.  Man I am going to have to tell someone.  Please wait patiently while Skynet resolves this.", "Ok, please hurry");
+                c.show();
+            }
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                error.enable(true);
+            }
+        });
+        final AppButton question = (AppButton)def.getWidget("question");
+        addScreenHandler(question, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                Confirm c = new Confirm(Confirm.Type.ERROR, "Are you sure you really want to do that? Press YES if you feel competent with this decision and are will to take the consciquences.  Press NO if you really pressed the wrong button", "YES, I am confident.", "NO, sorry I'm and idiot");
+                c.show();
+            }
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                question.enable(true);
             }
         });
     }
@@ -1456,7 +1518,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         
         try{
             
-            SampleDataBundle data = new SampleDataBundle(manager.getSampleItems(),siDO);
+            SampleDataBundle data = new SampleDataBundle(manager.getSample(), manager.getSampleItems(),siDO);
             newRow.data = data;
         }catch(Exception e){
             Window.alert(e.getMessage());
@@ -1498,7 +1560,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         aDO.setRevision(0);
         
         try{
-            SampleDataBundle data = new SampleDataBundle(sampleItemData.sampleItemManager, itemDO,
+            SampleDataBundle data = new SampleDataBundle(manager.getSample(), sampleItemData.sampleItemManager, itemDO,
                                                          sampleItemData.sampleItemManager.getAnalysisAt(sampleItemIndex),aDO);
             newRow.data = data;
             itemsTree.addChildItem(selectedRow, newRow);
@@ -1516,8 +1578,20 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         TreeDataItem selectedTreeRow = itemsTree.getSelection();
         
         if("analysis".equals(selectedTreeRow.leafType) && selectedTreeRow.key != null){
-            if(Window.confirm(consts.get("cancelAnalysisMessage")))
-                cancelAnalysisRow(itemsTree.getSelectedRow());
+            if(cancelAnalysisConfirm == null){
+                cancelAnalysisConfirm = new Confirm(Confirm.Type.QUESTION, consts.get("cancelAnalysisMessage"), "No", "Yes");
+                cancelAnalysisConfirm.addSelectionHandler(new SelectionHandler<Integer>(){
+                    public void onSelection(SelectionEvent<Integer> event) {
+                        switch(event.getSelectedItem().intValue()) {
+                            case 1 : 
+                                cancelAnalysisRow(itemsTree.getSelectedRow());
+                                break;
+                        }
+                    }
+                });
+            }
+            
+            cancelAnalysisConfirm.show();
 
         }else{
             itemsTree.deleteRow(selectedTreeRow);
@@ -1533,7 +1607,10 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             sampleLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
             sampleErrorStatusId = DictionaryCache.getIdFromSystemName("sample_error");
             analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
+            analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
             analysisInPrep = DictionaryCache.getIdFromSystemName("analysis_inprep");
+            sampleCancelledId = DictionaryCache.getIdFromSystemName("sample_canceled");
+            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
         
         }catch(Exception e){
             Window.alert(e.getMessage());
@@ -1619,7 +1696,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 //source,type
                 row.cells.get(1).value = itemDO.getTypeOfSample();
                 
-                SampleDataBundle data = new SampleDataBundle(manager.getSampleItems(), itemDO);
+                SampleDataBundle data = new SampleDataBundle(manager.getSample(), manager.getSampleItems(), itemDO);
                 row.data = data;
                 
                 tmp = keyTable.get(itemDO.getId());
@@ -1641,7 +1718,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                     treeModelItem.cells.get(0).value = formatTreeString(aDO.getTestName()) + " : " + formatTreeString(aDO.getMethodName());
                     treeModelItem.cells.get(1).value = aDO.getStatusId();
                     
-                    SampleDataBundle aData = new SampleDataBundle(sim, itemDO, am, aDO);
+                    SampleDataBundle aData = new SampleDataBundle(manager.getSample(), sim, itemDO, am, aDO);
                     treeModelItem.data = aData;
                     
                     row.addItem(treeModelItem);
@@ -1744,6 +1821,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             anDO.setPreAnalysisId(currentPrepId);
         }else{
             bundle = new SampleDataBundle();
+            bundle.sampleDO = manager.getSample();
             bundle.analysisManager = tmpBundle.analysisManager;
             bundle.analysisTestDO = new AnalysisViewDO();
             bundle.sampleItemDO = tmpBundle.sampleItemDO;
@@ -1837,6 +1915,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 //set the pre analysis to the negative id for now
                 selectedBundle.analysisTestDO.setPreAnalysisId(analysis.getId());
                 
+                bundle.sampleDO = manager.getSample();
                 bundle.sampleItemDO = selectedBundle.sampleItemDO;
                 bundle.sampleItemManager = selectedBundle.sampleItemManager;
                 bundle.analysisManager = selectedBundle.analysisManager;
@@ -1936,6 +2015,10 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         }
         
         return model;
+    }
+    
+    private boolean canEdit(){
+        return (!sampleCancelledId.equals(manager.getSample().getStatusId()) && !sampleReleasedId.equals(manager.getSample().getStatusId()));
     }
     
     protected boolean validate() {
