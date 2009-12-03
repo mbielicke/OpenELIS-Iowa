@@ -10,6 +10,7 @@
 		<!-- Use normal html, such as style            -->
 		<!--                                           -->
 		<style>
+		.spinnerIcon {width:16px; height:16px;background:transparent url(../Images/OSXspinnerGIF.gif) no-repeat scroll center;}
 		</style>
 
 		<!--                                           -->
@@ -26,7 +27,19 @@
 	<!-- to create a completely dynamic ui         -->
 	<!--                                           -->
 	<body>
+		    <table align="center">
+        <tr><td height="200px"></td></tr>
 
-		<div id="main"/>
+        <tr>
+            <td>
+                    <center>
+                       <p id="message">Loading...</p>
+                    </center>
+            </td>
+            <td>
+                <div class="spinnerIcon"/>
+            <td>
+        </tr>
+    </table>
 	</body>
 </html>

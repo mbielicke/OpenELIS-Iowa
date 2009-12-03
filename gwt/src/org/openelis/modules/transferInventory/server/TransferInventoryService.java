@@ -25,18 +25,9 @@
 */
 package org.openelis.modules.transferInventory.server;
 
-import java.util.HashMap;
 
-import org.openelis.gwt.common.data.deprecated.FieldType;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
-import org.openelis.modules.transferInventory.client.TransferInventoryForm;
-import org.openelis.server.constants.Constants;
-
-public class TransferInventoryService implements AppScreenFormServiceInt<TransferInventoryForm,Query<TableDataRow<Integer>>>{
-
+public class TransferInventoryService {//implements AppScreenFormServiceInt<TransferInventoryForm,Query<TableDataRow<Integer>>>{
+/*
     public TransferInventoryForm abort(TransferInventoryForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
@@ -89,5 +80,5 @@ public class TransferInventoryService implements AppScreenFormServiceInt<Transfe
     public TransferInventoryForm getScreen(TransferInventoryForm rpc){
         return rpc;
     }
-
+*/
 }

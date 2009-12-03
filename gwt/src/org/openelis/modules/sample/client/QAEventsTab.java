@@ -60,8 +60,6 @@ import org.openelis.manager.SampleQaEventManager;
 import org.openelis.modules.qaevent.client.QaeventLookupScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
 public class QAEventsTab extends Screen {

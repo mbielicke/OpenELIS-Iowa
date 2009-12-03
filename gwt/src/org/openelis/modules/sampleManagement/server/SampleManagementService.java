@@ -25,18 +25,9 @@
 */
 package org.openelis.modules.sampleManagement.server;
 
-import java.util.HashMap;
 
-import org.openelis.gwt.common.data.deprecated.FieldType;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
-import org.openelis.modules.sampleManagement.client.SampleManagementForm;
-import org.openelis.server.constants.Constants;
-
-public class SampleManagementService implements AppScreenFormServiceInt<SampleManagementForm, Query<TableDataRow<Integer>>>{
-
+public class SampleManagementService {//implements AppScreenFormServiceInt<SampleManagementForm, Query<TableDataRow<Integer>>>{
+/*
     public SampleManagementForm abort(SampleManagementForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
@@ -89,4 +80,5 @@ public class SampleManagementService implements AppScreenFormServiceInt<SampleMa
     public SampleManagementForm getScreen(SampleManagementForm rpc){
         return rpc;
     }
+    */
 }

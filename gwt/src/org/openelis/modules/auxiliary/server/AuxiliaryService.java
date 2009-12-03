@@ -26,60 +26,10 @@
 
 package org.openelis.modules.auxiliary.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
-import org.openelis.domain.AuxFieldGroupDO;
-import org.openelis.domain.AuxFieldValueDO;
-import org.openelis.domain.AuxFieldViewDO;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.DictionaryViewDO;
-import org.openelis.domain.IdNameDO;
-import org.openelis.domain.IdNameVO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.gwt.common.data.deprecated.DropDownField;
-import org.openelis.gwt.common.data.deprecated.FieldType;
-import org.openelis.gwt.common.data.deprecated.IntegerField;
-import org.openelis.gwt.common.data.deprecated.StringField;
-import org.openelis.gwt.common.data.deprecated.StringObject;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.data.deprecated.TableField;
-import org.openelis.gwt.common.deprecated.Form;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
-import org.openelis.gwt.services.deprecated.AutoCompleteServiceInt;
-import org.openelis.manager.AuxFieldGroupManager;
-import org.openelis.manager.AuxFieldManager;
-import org.openelis.manager.AuxFieldValueManager;
-import org.openelis.modules.auxiliary.client.AuxiliaryForm;
-import org.openelis.modules.auxiliary.client.AuxiliaryGeneralPurposeRPC;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.AnalyteRemote;
-import org.openelis.remote.AuxFieldGroupManagerRemote;
-import org.openelis.remote.AuxiliaryRemote;
-import org.openelis.remote.CategoryRemote;
-import org.openelis.remote.DictionaryRemote;
-import org.openelis.remote.MethodRemote;
-import org.openelis.remote.OrganizationManagerRemote;
-import org.openelis.remote.ScriptletRemote;
-import org.openelis.server.constants.Constants;
-import org.openelis.util.FormUtil;
-import org.openelis.util.SessionManager;
-import org.openelis.util.UTFResource;
-
-public class AuxiliaryService implements
-                             AppScreenFormServiceInt<AuxiliaryForm, Query<TableDataRow<Integer>>> , AutoCompleteServiceInt{
-    
+public class AuxiliaryService {//implements
+                             //AppScreenFormServiceInt<AuxiliaryForm, Query<TableDataRow<Integer>>> , AutoCompleteServiceInt{
+    /*
     private static final int leftTableRowsPerPage = 26;
     private UTFResource openElisConstants = UTFResource.getBundle((String)SessionManager.getSession()
                                                                                         .getAttribute("locale"));
@@ -589,4 +539,5 @@ public class AuxiliaryService implements
     private AuxFieldGroupManagerRemote remoteManager() {
         return (AuxFieldGroupManagerRemote)EJBFactory.lookup("openelis/AuxFieldGroupManagerBean/remote");
     }
+    */
 }

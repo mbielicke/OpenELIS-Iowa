@@ -25,12 +25,9 @@
  */
  package org.openelis.modules.buildKits.client;
 
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
 
-public class SubLocationAutoRPC implements RPC{
-
+public class SubLocationAutoRPC {//implements RPC{
+/*
     private static final long serialVersionUID = 1L;
     
     public String cat;
@@ -39,5 +36,6 @@ public class SubLocationAutoRPC implements RPC{
     public Integer id;
     
     public TableDataModel<TableDataRow<Integer>> matchesModel;
+    */
 
 }

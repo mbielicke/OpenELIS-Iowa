@@ -25,18 +25,9 @@
 */
 package org.openelis.modules.clinicalSampleLogin.server;
 
-import java.util.HashMap;
 
-import org.openelis.gwt.common.data.deprecated.FieldType;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
-import org.openelis.modules.clinicalSampleLogin.client.ClinicalSampleLoginForm;
-import org.openelis.server.constants.Constants;
-
-public class ClinicalSampleLoginService implements AppScreenFormServiceInt<ClinicalSampleLoginForm,Query<TableDataRow<Integer>>>{
-
+public class ClinicalSampleLoginService {//implements AppScreenFormServiceInt<ClinicalSampleLoginForm,Query<TableDataRow<Integer>>>{
+/*
     public ClinicalSampleLoginForm abort(ClinicalSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
@@ -89,4 +80,5 @@ public class ClinicalSampleLoginService implements AppScreenFormServiceInt<Clini
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/clinicalSampleLogin.xsl");
         return rpc;
     }
+    */
 }

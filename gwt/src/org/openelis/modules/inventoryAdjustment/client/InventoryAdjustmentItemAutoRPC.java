@@ -25,14 +25,12 @@
 */
 package org.openelis.modules.inventoryAdjustment.client;
 
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
 
 
 
-public class InventoryAdjustmentItemAutoRPC implements RPC{
+public class InventoryAdjustmentItemAutoRPC {//implements RPC{
 
+	/*
     private static final long serialVersionUID = 1L;
     
     public Integer key;
@@ -41,4 +39,5 @@ public class InventoryAdjustmentItemAutoRPC implements RPC{
     public Integer storeId;
     
     public TableDataModel<TableDataRow<Integer>> autoMatches;
+    */
 }

@@ -25,14 +25,9 @@
 */
 package org.openelis.modules.shipping.client;
 
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.gwt.common.data.deprecated.StringField;
-import org.openelis.gwt.common.deprecated.Form;
-import org.openelis.metamap.ShippingMetaMap;
 
-import com.google.gwt.xml.client.Node;
-
-public class ShippingNotesForm extends Form<Integer>{
+public class ShippingNotesForm {//extends Form<Integer>{
+	/*
     private static final long serialVersionUID = 1L;
 	   	
     public StringField text;
@@ -58,4 +53,5 @@ public class ShippingNotesForm extends Form<Integer>{
                                    text
        };
    }
+   */
 }

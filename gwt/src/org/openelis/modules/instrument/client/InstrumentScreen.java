@@ -72,7 +72,6 @@ import org.openelis.manager.InstrumentManager;
 import org.openelis.metamap.InstrumentMetaMap;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;

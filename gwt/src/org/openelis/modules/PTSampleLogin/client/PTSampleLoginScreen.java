@@ -25,27 +25,10 @@
 */
 package org.openelis.modules.PTSampleLogin.client;
 
-import org.openelis.gwt.common.data.deprecated.KeyListManager;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.data.deprecated.TreeDataItem;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.screen.deprecated.CommandChain;
-import org.openelis.gwt.widget.deprecated.ButtonPanel;
-import org.openelis.gwt.widget.deprecated.Dropdown;
-import org.openelis.gwt.widget.tree.deprecated.TreeManager;
-import org.openelis.gwt.widget.tree.deprecated.TreeWidget;
-import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.Widget;
+public class PTSampleLoginScreen {//extends OpenELISScreenForm<PTSampleLoginForm,Query<TableDataRow<Integer>>> implements ClickListener, TabListener, TreeManager{
 
-public class PTSampleLoginScreen extends OpenELISScreenForm<PTSampleLoginForm,Query<TableDataRow<Integer>>> implements ClickListener, TabListener, TreeManager{
-
+	/*
     private TreeWidget itemsTestsTree;
     private KeyListManager keyList = new KeyListManager();
     
@@ -159,5 +142,5 @@ public class PTSampleLoginScreen extends OpenELISScreenForm<PTSampleLoginForm,Qu
     public boolean canSelect(TreeWidget widget, TreeDataItem set, int row) {
         return false;
     }
-
+*/
 }

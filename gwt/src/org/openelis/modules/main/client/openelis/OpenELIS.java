@@ -117,7 +117,7 @@ public class OpenELIS extends Screen {
         addClickHandler("Logout", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
-                    service.callVoid("logout");
+                    service.call("logout");
                     Window.open("http://www.uhl.uiowa.edu", "_self", null);
                 } catch (Throwable e) {
                     e.printStackTrace();

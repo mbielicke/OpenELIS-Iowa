@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import org.openelis.domain.SampleDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FieldErrorWarning;
+import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.metamap.SampleMetaMap;
@@ -79,7 +80,7 @@ public class SampleManagerProxy {
             service.call("validateAccessionNumber", sampleDO);
 
         }catch(ValidationErrorsList e){
-            ArrayList<Exception> errors = e.getErrorList();
+            ArrayList<LocalizedException> errors = e.getErrorList();
             
             for(int i=0; i<errors.size(); i++)
                 errorsList.add(errors.get(i));

@@ -25,26 +25,9 @@
 */
 package org.openelis.modules.clinicalSampleLogin.client;
 
-import org.openelis.gwt.common.data.deprecated.Field;
-import org.openelis.gwt.common.data.deprecated.KeyListManager;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.data.deprecated.TreeDataItem;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.screen.deprecated.CommandChain;
-import org.openelis.gwt.screen.deprecated.ScreenWindow;
-import org.openelis.gwt.widget.deprecated.ButtonPanel;
-import org.openelis.gwt.widget.tree.deprecated.TreeManager;
-import org.openelis.gwt.widget.tree.deprecated.TreeWidget;
-import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.Widget;
-
-public class ClinicalSampleLoginScreen extends OpenELISScreenForm<ClinicalSampleLoginForm,Query<TableDataRow<Integer>>> implements ClickListener, TabListener, TreeManager{
-
+public class ClinicalSampleLoginScreen {//extends OpenELISScreenForm<ClinicalSampleLoginForm,Query<TableDataRow<Integer>>> implements ClickListener, TabListener, TreeManager{
+/*
     private TreeWidget itemsTestsTree;
     public enum LookupType {PATIENT_SEARCH, PATIENT_NAME_SEARCH, PATIENT_COMMENTS, ORGANIZATION_VIEW, PROJECT_VIEW};
     private KeyListManager keyList = new KeyListManager();
@@ -150,4 +133,6 @@ public class ClinicalSampleLoginScreen extends OpenELISScreenForm<ClinicalSample
         modal.setName(consts.get("sampleOrganization"));
         //modal.setContent(new SampleOrganizationScreen());
     }
+    
+    */
 }

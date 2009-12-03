@@ -25,10 +25,9 @@
 */
 package org.openelis.modules.inventoryReceipt.client;
 
-import org.openelis.gwt.common.data.deprecated.FieldType;
 
-public class InvReceiptOrgKey implements FieldType {
-   
+public class InvReceiptOrgKey {// implements FieldType {
+    /*
     private static final long serialVersionUID = 1L;
 
     public String aptSuite;
@@ -44,4 +43,5 @@ public class InvReceiptOrgKey implements FieldType {
     public Object clone() {
         return null;
     }
+    */
 }

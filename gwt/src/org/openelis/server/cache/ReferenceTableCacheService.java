@@ -23,28 +23,32 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.main.client;
+package org.openelis.server.cache;
 
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.deprecated.Form;
-import org.openelis.gwt.screen.deprecated.AppScreenForm;
-import org.openelis.modules.main.client.service.OpenELISServiceInt;
-import org.openelis.modules.main.client.service.OpenELISServiceIntAsync;
+import java.util.ArrayList;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import org.openelis.cache.ReferenceTableCacheRPC;
+import org.openelis.domain.IdNameDO;
+import org.openelis.server.handlers.ReferenceTableCacheHandler;
 
-public class OpenELISScreenForm<ScreenRPC extends Form,QueryRPC extends RPC> extends AppScreenForm<ScreenRPC,QueryRPC> {
+public class ReferenceTableCacheService {
     
-    public OpenELISServiceIntAsync<ScreenRPC,QueryRPC> screenService = (OpenELISServiceIntAsync<ScreenRPC,QueryRPC>)GWT.create(OpenELISServiceInt.class);
-    public ServiceDefTarget target = (ServiceDefTarget)screenService;
-    
-    
-    public OpenELISScreenForm(String serviceClass){
-        super();              
-        target.setServiceEntryPoint(target.getServiceEntryPoint()+"?service="+serviceClass);
-        service = screenService;
-        formService = screenService;
+    public ReferenceTableCacheRPC getIdByTableName(String tableName){
+        ReferenceTableCacheRPC rpc = new ReferenceTableCacheRPC();
+        IdNameDO tmpDO = ReferenceTableCacheHandler.getDOFromTableName(tableName);
+        
+        if(tmpDO != null){
+            rpc.list = new ArrayList<IdNameDO>();
+            rpc.list.add(tmpDO);
+        }
+        
+        return rpc;
     }
     
+    public ReferenceTableCacheRPC getReferenceTableList(String obj){
+        ReferenceTableCacheRPC rpc = new ReferenceTableCacheRPC();
+        rpc.list = ReferenceTableCacheHandler.getTableList();
+        
+        return rpc;
+    }
 }

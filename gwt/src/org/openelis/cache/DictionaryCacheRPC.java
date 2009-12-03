@@ -23,18 +23,15 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.main.client.service;
+package org.openelis.cache;
 
+import java.util.ArrayList;
+
+import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
 
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-
-@RemoteServiceRelativePath("OpenELISServlet")
-public interface OpenELISServiceInt<ScreenRPC extends RPC,QueryRPC extends RPC> extends AppScreenFormServiceInt<ScreenRPC,QueryRPC> {
-   
-    public <T extends RPC> T call(String method, RPC rpc) throws Throwable;
+public class DictionaryCacheRPC implements RPC {
+    private static final long serialVersionUID = 1L;
     
-    public void logout();
-	 
+    public ArrayList<DictionaryDO> dictionaryList;
 }

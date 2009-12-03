@@ -25,10 +25,9 @@
 */
 package org.openelis.modules.shipping.client;
 
-import org.openelis.gwt.common.data.deprecated.FieldType;
 
-public class ShippingShipToKey implements FieldType {
-   
+public class ShippingShipToKey {//implements FieldType {
+   /*
     private static final long serialVersionUID = 1L;
 
     public String aptSuite;
@@ -44,4 +43,5 @@ public class ShippingShipToKey implements FieldType {
     public Object clone() {
         return null;
     }
+    */
 }

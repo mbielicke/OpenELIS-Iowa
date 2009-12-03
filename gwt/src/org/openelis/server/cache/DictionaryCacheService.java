@@ -23,7 +23,7 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.cache.server;
+package org.openelis.server.cache;
 
 import java.util.ArrayList;
 

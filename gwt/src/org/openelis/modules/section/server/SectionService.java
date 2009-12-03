@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.SectionRemote;

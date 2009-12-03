@@ -26,23 +26,10 @@
 
 package org.openelis.modules.auxiliary.client;
 
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.gwt.common.data.deprecated.CheckField;
-import org.openelis.gwt.common.data.deprecated.DateField;
-import org.openelis.gwt.common.data.deprecated.IntegerField;
-import org.openelis.gwt.common.data.deprecated.StringField;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.data.deprecated.TableField;
-import org.openelis.gwt.common.deprecated.Form;
-import org.openelis.metamap.AuxFieldGroupMetaMap;
 
-import com.google.gwt.xml.client.Node;
+public class AuxiliaryForm {//extends Form<Integer> {
 
-public class AuxiliaryForm extends Form<Integer> {
-
-    /**
-     * 
-     */
+/*
     private static final long serialVersionUID = 1L;
     
     public IntegerField id;
@@ -80,4 +67,5 @@ public class AuxiliaryForm extends Form<Integer> {
                                     auxFieldValueTable
         };
     }
+    */
 }

@@ -1,9 +1,8 @@
 package org.openelis.modules.shipping.client;
 
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
 
 public class ShippingDataService {
+	/*
     Integer shipFromId;
     Integer shipToId;
     String shipToText;   
@@ -68,4 +67,5 @@ public class ShippingDataService {
     public void setZipCodeText(String zipCodeText) {
         this.zipCodeText = zipCodeText;
     }
+    */
 }
