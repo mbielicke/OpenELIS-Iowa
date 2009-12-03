@@ -68,6 +68,8 @@ import org.openelis.gwt.widget.table.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
+import org.openelis.gwt.widget.table.event.RowMovedEvent;
+import org.openelis.gwt.widget.table.event.RowMovedHandler;
 import org.openelis.gwt.widget.table.event.SortEvent;
 import org.openelis.gwt.widget.table.event.SortHandler;
 import org.openelis.gwt.widget.table.event.SortEvent.SortDirection;
@@ -453,8 +455,16 @@ public class DictionaryScreen extends Screen {
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
-                
-                
+            }            
+        });
+        
+        dictTable.addRowMovedHandler(new RowMovedHandler() {
+            public void onRowMoved(RowMovedEvent event) {
+                try {
+                    manager.getEntries().moveEntry(event.getOldIndex(), event.getNewIndex());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }                
             }
             
         });
