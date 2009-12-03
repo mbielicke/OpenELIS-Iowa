@@ -82,7 +82,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     protected SampleItemViewDO sampleItem;
     protected Dropdown<Integer> statusId;
     
-    protected Integer analysisLoggedInId;
+    protected Integer analysisLoggedInId, analysisCancelledId, analysisReleasedId;
     
     protected ScreenService panelService;
     
@@ -135,6 +135,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                                 dataBundle = bundle;
                             else{
                                 dataBundle = new SampleDataBundle();
+                                dataBundle.sampleDO = bundle.sampleDO;
                                 dataBundle.analysisManager = bundle.analysisManager;
                                 dataBundle.analysisTestDO = new AnalysisViewDO();
                                 dataBundle.sampleItemDO = bundle.sampleItemDO;
@@ -163,7 +164,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                test.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                test.enable(canEdit() && EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
                 test.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -237,7 +238,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                method.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                method.enable(canEdit() && EnumSet.of(State.QUERY).contains(event.getState()));
                 method.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -254,7 +255,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                statusId.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                statusId.enable(canEdit() && EnumSet.of(State.QUERY).contains(event.getState()));
                 statusId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -286,7 +287,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isReportable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                isReportable.enable(canEdit() && EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
                 isReportable.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -313,7 +314,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sectionId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                sectionId.enable(canEdit() && EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
                 sectionId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -380,7 +381,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                printedDate.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                printedDate.enable(EnumSet.of(State.QUERY)
                                    .contains(event.getState()));
                 printedDate.setQueryMode(event.getState() == State.QUERY);
             }
@@ -444,6 +445,8 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         try{
+            analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
+            analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
             analysisLoggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
             
         }catch(Exception e){
@@ -460,6 +463,10 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         statusId.setModel(model);
         
         sectionId.setModel(getSectionsModel(new ArrayList()));
+    }
+    
+    private boolean canEdit(){
+        return (analysis != null && !analysisCancelledId.equals(analysis.getStatusId()) && !analysisReleasedId.equals(analysis.getStatusId()));
     }
         
     public void setData(SampleDataBundle data) {
