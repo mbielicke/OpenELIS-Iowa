@@ -32,6 +32,7 @@ import javax.naming.InitialContext;
 import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.CategoryLocal;
@@ -212,17 +213,17 @@ public class DictionaryManagerProxy {
             } catch(Exception e) {
                 DataBaseUtil.mergeException(list, e, "dictEntTable", i);                
             }           
-
+            
             if (!DataBaseUtil.isEmpty(systemName)) {
                 if (!systemNames.contains(systemName)) {
                    try {
                     dictDO = dl.fetchBySystemName(systemName);
-                    
                     catId = dictDO.getCategoryId();
-                   } catch (Exception e) {
+                   } catch (NotFoundException e) {
+                       //do nothing
+                   } catch(Exception e){
                        e.printStackTrace();
                    }
-                   
                    if (!DataBaseUtil.isEmpty(catId) && DataBaseUtil.isDifferent(catId,categoryId)) {
                         list.add(new TableFieldErrorException("fieldUniqueException", i,
                                                               meta.getDictionary().getSystemName(),
