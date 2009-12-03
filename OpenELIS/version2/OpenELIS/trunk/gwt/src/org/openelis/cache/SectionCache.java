@@ -35,7 +35,7 @@ import org.openelis.modules.main.client.openelis.OpenELIS;
 import com.google.gwt.user.client.Window;
 
 public class SectionCache {
-    protected static final String SECTION_CACHE_SERVICE_URL = "org.openelis.cache.server.SectionCacheService";
+    protected static final String SECTION_CACHE_SERVICE_URL = "org.openelis.server.cache.SectionCacheService";
     protected ScreenService service;
     HashMap<String, ArrayList<SectionDO>> sectionList;
     private static SectionCache instance;

@@ -34,7 +34,7 @@ import org.openelis.modules.main.client.openelis.OpenELIS;
 import com.google.gwt.user.client.Window;
 
 public class ReferenceTableCache {
-    protected static final String REFERENCETABLE_CACHE_SERVICE_URL = "org.openelis.cache.server.ReferenceTableCacheService";
+    protected static final String REFERENCETABLE_CACHE_SERVICE_URL = "org.openelis.server.cache.ReferenceTableCacheService";
     protected ScreenService service;
     HashMap<String, Integer> tableList;
     private static ReferenceTableCache instance;
