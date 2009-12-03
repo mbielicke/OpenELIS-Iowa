@@ -1,5 +1,7 @@
 package org.openelis.modules.note.client;
 
+import java.util.EnumSet;
+
 import org.openelis.domain.NoteViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.event.ActionEvent;
@@ -9,6 +11,7 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.NotesPanel;
 import org.openelis.gwt.widget.ScreenWindow;
@@ -64,15 +67,12 @@ public class NotesTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                if (event.getState() == State.ADD || event.getState() == State.UPDATE)
-                    standardNote.enable(true);
-                else
-                    standardNote.enable(false);
+                standardNote.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
     }
 
-    private void showEditWindow() {
+    protected void showEditWindow() {
         ScreenWindow modal;
         
         if (editNote == null) {

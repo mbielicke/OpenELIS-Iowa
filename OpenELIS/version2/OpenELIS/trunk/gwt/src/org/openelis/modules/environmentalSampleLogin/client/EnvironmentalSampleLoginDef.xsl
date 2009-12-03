@@ -328,6 +328,16 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
 		                      </text>
 		                    </HorizontalPanel>
 		                  </appButton>
+		                  
+		                    <appButton key="warning" style="Button" action="removeRow">
+		                      <text>Warning</text>
+		                  </appButton>
+		                    <appButton key="question" style="Button" action="removeRow">
+		                      <text>Question</text>
+		                  </appButton>
+		                    <appButton key="error" style="Button" action="removeRow">
+		                      <text>Error</text>
+		                  </appButton>
 		                </HorizontalPanel>
 	                </widget>
                 </row>
@@ -619,7 +629,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                   <col width="155" header="{resource:getString($constants,'user')}">
                     <label />
                   </col>
-                  <col width="260" header="{resource:getString($constants,'location')}">
+                  <col width="259" header="{resource:getString($constants,'location')}">
                     <autoComplete key="" width="215px" case="LOWER" popWidth="auto" field="Integer" required="true">
                       <col width="240" header="{resource:getString($constants,'name')}" />
                     </autoComplete>
@@ -741,7 +751,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
 	                  <col width="300" header="{resource:getString($constants,'name')}">
 	                    <label />
 	                  </col>
-	                  <col width="304" class="org.openelis.modules.sample.client.AuxTableColumn" header="{resource:getString($constants,'value')}">
+	                  <col width="303" class="org.openelis.modules.sample.client.AuxTableColumn" header="{resource:getString($constants,'value')}">
 	                  	<label/>
 	                  </col>
 	                </table>
