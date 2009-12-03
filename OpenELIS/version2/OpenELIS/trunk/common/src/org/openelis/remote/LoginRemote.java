@@ -25,9 +25,9 @@
 */
 package org.openelis.remote;
 
-import org.openelis.gwt.common.SecurityUtil;
-
 import javax.ejb.Remote;
+
+import org.openelis.gwt.common.SecurityUtil;
 
 @Remote
 public interface LoginRemote {

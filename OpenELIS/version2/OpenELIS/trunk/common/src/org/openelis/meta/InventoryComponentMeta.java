@@ -29,8 +29,6 @@ package org.openelis.meta;
  * InventoryComponent META Data
  */
 
-import java.util.HashSet;
-import org.openelis.gwt.common.Meta;
 
 public class InventoryComponentMeta {
     private static final String   entityName  = "InventoryComponent";

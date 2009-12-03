@@ -26,7 +26,9 @@
 package org.openelis.remote;
 
 import java.util.ArrayList;
+
 import javax.ejb.Remote;
+
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.gwt.common.data.QueryData;

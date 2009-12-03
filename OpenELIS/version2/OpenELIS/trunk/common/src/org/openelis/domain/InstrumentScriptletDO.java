@@ -25,50 +25,38 @@
  */
 package org.openelis.domain;
 
+import java.util.Date;
 
 /**
- * Class represents the fields in database table system_variable.
+ * The class extends the instrument DO and carries an additional scriptlet name
+ * field. This additional fields is for read/display only and does not get
+ * committed to the database. Note: isChanged will reflect any changes to
+ * read/display fields.
  */
 
-public class WorksheetItemDO extends DataObject {
+public class InstrumentScriptletDO extends InstrumentDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer  id, worksheetId, position;
+    protected String          scriptletName;
 
-    public WorksheetItemDO() {
+    public InstrumentScriptletDO() {
     }
 
-    public WorksheetItemDO(Integer id, Integer worksheetId, Integer position) {
-        setId(id);
-        setWorksheetId(worksheetId);
-        setPosition(position);
-        _changed = false;
+    public InstrumentScriptletDO(Integer id, String name, String description, String modelNumber,
+                                 String serialNumber, Integer typeId, String location,
+                                 String isActive, Date activeBegin, Date activeEnd,
+                                 Integer scriptletId, String scriptletName) {
+        //super(id, name, description, modelNumber, serialNumber, typeId, location, isActive,
+          //    activeBegin, activeEnd, scriptletId);
+        setScriptletName(scriptletName);
     }
 
-    public Integer getId() {
-        return id;
+    public String getScriptletName() {
+        return scriptletName;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-        _changed = true;
+    public void setScriptletName(String scriptletName) {
+        this.scriptletName = scriptletName;
     }
-
-    public Integer getWorksheetId() {
-        return worksheetId;
-    }
-
-    public void setWorksheetId(Integer worksheetId) {
-        this.worksheetId = worksheetId;
-    }
-
-    public Integer getPosition() {
-        return position;
-    }
-
-    public void setPosition(Integer position) {
-        this.position = position;
-    }
-
 }

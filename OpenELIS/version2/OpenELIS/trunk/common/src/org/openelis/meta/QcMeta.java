@@ -4,11 +4,11 @@ package org.openelis.meta;
  * Qc META Data
  */
 
-import org.openelis.gwt.common.Meta;
-import org.openelis.gwt.common.MetaMap;
-
 import java.util.Arrays;
 import java.util.HashSet;
+
+import org.openelis.gwt.common.Meta;
+import org.openelis.gwt.common.MetaMap;
 
 public class QcMeta implements Meta, MetaMap {
     private static final String   ID  = "_qc.id",

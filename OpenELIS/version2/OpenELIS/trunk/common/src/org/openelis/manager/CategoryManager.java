@@ -26,7 +26,6 @@
 package org.openelis.manager;
 
 import org.openelis.domain.CategoryDO;
-import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 

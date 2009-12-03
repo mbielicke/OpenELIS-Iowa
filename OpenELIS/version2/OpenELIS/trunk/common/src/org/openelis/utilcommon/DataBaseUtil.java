@@ -35,6 +35,7 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.GridFieldErrorException;
+import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 
@@ -274,7 +275,7 @@ public class DataBaseUtil {
     public static void mergeException(ValidationErrorsList list, Exception e) {
         if (e instanceof ValidationErrorsList) {
             int i;
-            ArrayList<Exception> el;
+            ArrayList<LocalizedException> el;
 
             el = ((ValidationErrorsList)e).getErrorList();
             for (i = 0; i < el.size(); i++ )
@@ -295,7 +296,7 @@ public class DataBaseUtil {
     public static void mergeException(ValidationErrorsList list, Exception e, String table, int row) {
         if (e instanceof ValidationErrorsList) {
             int i;
-            ArrayList<Exception> el;
+            ArrayList<LocalizedException> el;
 
             el = ((ValidationErrorsList)e).getErrorList();
             for (i = 0; i < el.size(); i++ )
@@ -315,7 +316,7 @@ public class DataBaseUtil {
                                       int key1, int key2) {
         if (e instanceof ValidationErrorsList) {
             int i;
-            ArrayList<Exception> el;
+            ArrayList<LocalizedException> el;
 
             el = ((ValidationErrorsList)e).getErrorList();
             for (i = 0; i < el.size(); i++ )

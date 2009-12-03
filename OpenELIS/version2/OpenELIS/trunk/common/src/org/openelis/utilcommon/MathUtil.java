@@ -25,7 +25,6 @@
 */
 package org.openelis.utilcommon;
 
-import java.lang.Math;
 
 public class MathUtil {
     

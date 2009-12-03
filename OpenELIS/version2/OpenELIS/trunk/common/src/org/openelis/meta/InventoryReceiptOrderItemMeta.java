@@ -5,9 +5,9 @@ package org.openelis.meta;
   * InventoryReceiptOrderItem META Data
   */
 
-import org.openelis.gwt.common.Meta;
-
 import java.util.HashSet;
+
+import org.openelis.gwt.common.Meta;
 
 public class InventoryReceiptOrderItemMeta implements Meta {
   	private String path = "";

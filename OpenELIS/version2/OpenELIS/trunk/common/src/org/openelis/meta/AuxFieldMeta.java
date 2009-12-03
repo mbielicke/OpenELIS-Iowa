@@ -6,9 +6,9 @@ package org.openelis.meta;
   */
 
 
-import org.openelis.gwt.common.Meta;
-
 import java.util.HashSet;
+
+import org.openelis.gwt.common.Meta;
 
 public class AuxFieldMeta implements Meta {
   	public String path = "";

@@ -27,7 +27,6 @@ package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
 import org.openelis.meta.AddressMeta;
-import org.openelis.meta.NoteMeta;
 import org.openelis.meta.OrganizationMeta;
 import org.openelis.meta.OrganizationParameterMeta;
 
