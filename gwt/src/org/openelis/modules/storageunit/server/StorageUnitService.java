@@ -46,6 +46,14 @@ public class StorageUnitService {
         }
     }
 	
+	public ArrayList<IdNameVO> fetchByDescription(String search) throws Exception {
+        try {
+            return remote().fetchByDescription(search+"%",10);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+	
     public ArrayList<IdNameVO> query(Query query) throws Exception {
         try {
             return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);

@@ -800,6 +800,6 @@ public class DictionaryScreen extends Screen {
     private void validateForDelete(DictionaryViewDO data) throws Exception{        
         if(data.getId() == null)
             return;                           
-        service.call("validateDelete", data);            
+        service.call("validateForDelete", data);            
     }
 }

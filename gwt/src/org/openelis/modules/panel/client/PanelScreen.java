@@ -262,7 +262,7 @@ public class PanelScreen extends Screen {
         addScreenHandler(panelItemTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
                 if(state != State.QUERY)
-                    panelItemTable.load(getTableModel()); 
+                    panelItemTable.load(getPanelItemTableModel()); 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -708,7 +708,7 @@ public class PanelScreen extends Screen {
         return true;
     }
     
-    private ArrayList<TableDataRow> getTableModel() {
+    private ArrayList<TableDataRow> getPanelItemTableModel() {
         int i;
         PanelItemDO data;
         ArrayList<TableDataRow> model;

@@ -51,6 +51,7 @@ import org.openelis.modules.qaevent.client.QaEventScreen;
 import org.openelis.modules.qc.client.QcScreen;
 import org.openelis.modules.section.client.SectionScreen;
 import org.openelis.modules.standardnote.client.StandardNoteScreen;
+import org.openelis.modules.storage.client.StorageLocationScreen;
 import org.openelis.modules.storageunit.client.StorageUnitScreen;
 import org.openelis.modules.systemvariable.client.SystemVariableScreen;
 import org.openelis.modules.test.client.TestScreen;
@@ -376,12 +377,12 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addClickHandler("storage", new ClickHandler() {
+        addClickHandler("storageLocation", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                         //   browser.addScreen(new StorageLocationScreen());
+                            browser.addScreen(new StorageLocationScreen());
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());

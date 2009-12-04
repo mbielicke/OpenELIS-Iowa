@@ -245,7 +245,7 @@ public class BuildKitsService {
         }        
         
         for(int i=0; i < autoCompleteList.size(); i++){
-            StorageLocationAutoDO resultDO = (StorageLocationAutoDO) autoCompleteList.get(i);
+            StorageLocationVO resultDO = (StorageLocationVO) autoCompleteList.get(i);
             //id
             Integer id = resultDO.getId();
             //desc
@@ -270,7 +270,7 @@ public class BuildKitsService {
         autoCompleteList = remote.autoCompleteLocationLookupByNameInvId(match+"%", id, 10);
 
         for(int i=0; i < autoCompleteList.size(); i++){
-            StorageLocationAutoDO resultDO = (StorageLocationAutoDO) autoCompleteList.get(i);
+            StorageLocationVO resultDO = (StorageLocationVO) autoCompleteList.get(i);
             //id
             Integer autoId = resultDO.getLocationId();
             //desc

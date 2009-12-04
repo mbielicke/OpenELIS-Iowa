@@ -588,7 +588,7 @@ UIRF Software License are applicable instead of those above.
                           <widget valign="top">
                             <table key="testPrepTable" width="auto" maxRows="8" showScroll="ALWAYS" title="">
                               <col key="{prepTestMeta:getName($pt)}" width="312" header="{resource:getString($constants,'prepTest')}">
-                                <autoComplete width="312" field="Integer">
+                                <autoComplete width="312" field="Integer" required="true">
                                   <col width="140" header="{resource:getString($constants,'test')}" />
                                   <col width="135" header="{resource:getString($constants,'method')}" />
                                   <col width="250" header="{resource:getString($constants,'description')}" />
@@ -633,7 +633,7 @@ UIRF Software License are applicable instead of those above.
                           <widget valign="top">
                             <table key="testReflexTable" width="auto" maxRows="10" showScroll="ALWAYS" title="">
                               <col key="{addTestMeta:getName($at)}" width="90" header="{resource:getString($constants,'reflexiveTest')}">
-                                <autoComplete width="80" case="MIXED" field="Integer" required="true">
+                                <autoComplete width="80" field="Integer" required="true">
                                   <col width="140" header="{resource:getString($constants,'test')}" />
                                   <col width="135" header="{resource:getString($constants,'method')}" />
                                   <col width="250" header="{resource:getString($constants,'description')}" />

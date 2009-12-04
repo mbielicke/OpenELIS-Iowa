@@ -196,7 +196,7 @@ UIRF Software License are applicable instead of those above.
                 <menuItem key="storageUnit" description="{resource:getString($constants,'storageUnitDescription')}" enable="true" icon="storageUnitIcon" label="{resource:getString($constants,'storageUnit')}" />
                 <code>}</code>
                 <code>if(OpenELIS.security.hasModule("storagelocation","SELECT")){</code>
-                <menuItem key="storageLocation" description="{resource:getString($constants,'storageLocationDescription')}" enable="false" icon="storageLocationIcon" label="{resource:getString($constants,'storageLocation')}" />
+                <menuItem key="storageLocation" description="{resource:getString($constants,'storageLocationDescription')}" enable="true" icon="storageLocationIcon" label="{resource:getString($constants,'storageLocation')}" />
                 <code>}</code>
                 <html>&lt;hr/&gt;</html>
                 <code>if(OpenELIS.security.hasModule("instrument","SELECT")){</code>
