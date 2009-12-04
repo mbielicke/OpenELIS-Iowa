@@ -68,8 +68,10 @@ public class StorageLocationDO extends DataObject {
     }
 
     public void setSortOrder(Integer sortOrder) {
-        this.sortOrder = sortOrder;
-        _changed = true;
+        if(this.sortOrder == null || !(this.sortOrder.equals(sortOrder))) {
+            this.sortOrder = sortOrder;
+            _changed = true;
+        }
     }
 
     public String getName() {
@@ -77,8 +79,10 @@ public class StorageLocationDO extends DataObject {
     }
 
     public void setName(String name) {
-        this.name = DataBaseUtil.trim(name);
-        _changed = true;
+        if(this.name == null || !(this.name.equals(DataBaseUtil.trim(name)))) {
+            this.name = DataBaseUtil.trim(name);
+            _changed = true;
+        }
     }
 
     public String getLocation() {

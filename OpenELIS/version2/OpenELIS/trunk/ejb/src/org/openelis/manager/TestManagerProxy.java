@@ -41,14 +41,14 @@ import org.openelis.utilcommon.DataBaseUtil;
 public class TestManagerProxy {
 
     public TestManager fetchById(Integer testId) throws Exception {
-        TestViewDO testDO;
+        TestViewDO data;
         TestManager man;
         TestSectionManager tsm;
         ArrayList<TestSectionViewDO> sections;
 
-        testDO = local().fetchById(testId);
+        data = local().fetchById(testId);
         man = TestManager.getInstance();
-        man.setTest(testDO);
+        man.setTest(data);
 
         sections = (ArrayList<TestSectionViewDO>)sectionLocal().fetchByTestId(testId);
 
@@ -105,15 +105,7 @@ public class TestManagerProxy {
         return man;
     }
     
-    public TestManager add(TestManager man) throws Exception {
-        TestSectionManager tsm;
-        TestTypeOfSampleManager ttsm;
-        TestAnalyteManager tam;
-        TestResultManager trm;
-        TestPrepManager tpm;
-        TestReflexManager tfm;
-        TestWorksheetManager twm;
-        
+    public TestManager add(TestManager man) throws Exception {      
         Integer testId;
         HashMap<Integer,Integer> analyteMap, resultMap;        
         
@@ -124,46 +116,45 @@ public class TestManagerProxy {
 
         testId = man.getTest().getId();
 
-        tsm = man.getTestSections();
-        tsm.setTestId(testId);
-        tsm.add();
+        if(man.testSections != null) {
+            man.getTestSections().setTestId(testId);
+            man.getTestSections().add();
+        }
+        
+        if(man.sampleTypes != null) {
+            man.getSampleTypes().setTestId(testId);
+            man.getSampleTypes().add();
+        }
 
-        ttsm = man.getSampleTypes();
-        ttsm.setTestId(testId);
-        ttsm.add();
-
-        tam = man.getTestAnalytes();
-        tam.setTestId(testId);
-        tam.add(analyteMap);
+        if(man.testAnalytes != null) {
+            man.getTestAnalytes().setTestId(testId);
+            man.getTestAnalytes().add(analyteMap);
+        }
         
-        trm = man.getTestResults();
-        trm.setTestId(testId);
-        trm.add(resultMap);
+        if(man.testResults != null) {
+            man.getTestResults().setTestId(testId);
+            man.getTestResults().add(resultMap);
+        }
         
-        tpm = man.getPrepTests();
-        tpm.setTestId(testId);
-        tpm.add();
+        if(man.prepTests != null) {
+            man.getPrepTests().setTestId(testId);
+            man.getPrepTests().add();
+        }
         
-        tfm = man.getReflexTests();
-        tfm.setTestId(testId);
-        tfm.add(analyteMap, resultMap);
+        if(man.reflexTests != null) {
+            man.getReflexTests().setTestId(testId);
+            man.getReflexTests().add(analyteMap, resultMap);
+        }
         
-        twm = man.getTestWorksheet();
-        twm.setTestId(testId);
-        twm.add(analyteMap);        
+        if(man.worksheet != null) {
+            man.getTestWorksheet().setTestId(testId);
+            man.getTestWorksheet().add(analyteMap);       
+        }
 
         return man;
     }
 
-    public TestManager update(TestManager man) throws Exception {
-        TestSectionManager tsm;
-        TestTypeOfSampleManager ttsm;
-        TestAnalyteManager tam;
-        TestResultManager trm;
-        TestPrepManager tpm;
-        TestReflexManager tfm;
-        TestWorksheetManager twm;
-        
+    public TestManager update(TestManager man) throws Exception {        
         Integer testId;
         HashMap<Integer,Integer> analyteMap, resultMap;
         
@@ -174,121 +165,126 @@ public class TestManagerProxy {
 
         testId = man.getTest().getId();
 
-        tsm = man.getTestSections();
-        tsm.setTestId(testId);
-        tsm.update();
+        if(man.testSections != null) {
+            man.getTestSections().setTestId(testId);
+            man.getTestSections().update();
+        }
 
-        ttsm = man.getSampleTypes();
-        ttsm.setTestId(testId);
-        ttsm.update();
-
-        tam = man.getTestAnalytes();
-        tam.setTestId(testId);
-        tam.update(analyteMap);
-
-        trm = man.getTestResults();
-        trm.setTestId(testId);
-        trm.update(resultMap);
+        if(man.sampleTypes != null) {
+            man.getSampleTypes().setTestId(testId);
+            man.getSampleTypes().update();
+        }
         
-        tpm = man.getPrepTests();
-        tpm.setTestId(testId);
-        tpm.update();
+        if(man.testAnalytes != null) {           
+            man.getTestAnalytes().setTestId(testId);
+            man.getTestAnalytes().update(analyteMap);
+        }
         
-        tfm = man.getReflexTests();
-        tfm.setTestId(testId);
-        tfm.update(analyteMap, resultMap);
+        if(man.testResults != null) {
+            man.getTestResults().setTestId(testId);
+            man.getTestResults().update(resultMap);
+        }
         
-        twm = man.getTestWorksheet();
-        twm.setTestId(testId);
-        twm.update(analyteMap);   
+        if(man.prepTests != null) {
+            man.getPrepTests().setTestId(testId);
+            man.getPrepTests().update();
+        }
+        
+        if(man.reflexTests != null) {        
+            man.getReflexTests().setTestId(testId);
+            man.getReflexTests().update(analyteMap, resultMap);
+        }
+        
+        if(man.worksheet != null) {        
+            man.getTestWorksheet().setTestId(testId);
+            man.getTestWorksheet().update(analyteMap);
+        }
+        
         return man;
     }    
 
     public TestManager fetchForUpdate(Integer testId) throws Exception {
         assert false : "not supported";
-    return null;
+        return null;
     }
 
     public TestManager abortUpdate(Integer testId) throws Exception {
         assert false : "not supported";
-    return null;
+        return null;
     }
 
     public void validate(TestManager man) throws Exception {
-        ValidationErrorsList exceptionList;
+        ValidationErrorsList list;
         HashMap<Integer, Integer> anaResGrpMap;
         HashMap<Integer, List<Integer>> resGrpRsltMap;
         boolean anaListValid, resListValid;
-        TestViewDO data;
         
-        exceptionList = new ValidationErrorsList();
+        list = new ValidationErrorsList();
 
         anaResGrpMap = new HashMap<Integer, Integer>();
         resGrpRsltMap = new HashMap<Integer, List<Integer>>();        
-        data = man.getTest();
         anaListValid = true;
         resListValid = true;
         
-        try {
-            local().validate(data);
+        try {            
+            local().validate(man.getTest());
         } catch(Exception e) {
-            e.printStackTrace();
-            DataBaseUtil.mergeException(exceptionList, e);
+            DataBaseUtil.mergeException(list, e);
         }
         
         try {
-            man.getTestSections().validate();
+            if(man.testSections != null)
+                man.getTestSections().validate();
         } catch(Exception e) {
-            e.printStackTrace();
-            DataBaseUtil.mergeException(exceptionList, e);
+            DataBaseUtil.mergeException(list, e);
         }
         
         try {
-            man.getSampleTypes().validate();
+            if(man.sampleTypes != null)
+                man.getSampleTypes().validate();
         } catch(Exception e) {
-            e.printStackTrace();
-            DataBaseUtil.mergeException(exceptionList, e);
+            DataBaseUtil.mergeException(list, e);
         }
         
         try {
-            man.getTestAnalytes().validate(man.getTestResults(), anaResGrpMap);
+            if(man.testAnalytes != null)
+                man.getTestAnalytes().validate(man.getTestResults(), anaResGrpMap);
         } catch(Exception e) {
-            e.printStackTrace();
-            DataBaseUtil.mergeException(exceptionList, e);
+            DataBaseUtil.mergeException(list, e);
             anaListValid = false;
         }
         
         try {
-            man.getTestResults().validate(man.getSampleTypes(), resGrpRsltMap);
+            if(man.testAnalytes != null)
+                man.getTestResults().validate(man.getSampleTypes(), resGrpRsltMap);
         } catch(Exception e) {
-            e.printStackTrace();
-            DataBaseUtil.mergeException(exceptionList, e);
+            DataBaseUtil.mergeException(list, e);
             resListValid = false;
         }
         
         try {
-            man.getPrepTests().validate();
+            if(man.prepTests != null)
+                man.getPrepTests().validate();
         } catch(Exception e) {
-            e.printStackTrace();
-            DataBaseUtil.mergeException(exceptionList, e);
+            DataBaseUtil.mergeException(list, e);
         }
         
         try {
-            man.getReflexTests().validate(anaListValid, resListValid, anaResGrpMap, resGrpRsltMap);
+            if(man.prepTests != null)
+                man.getReflexTests().validate(anaListValid, resListValid, anaResGrpMap, resGrpRsltMap);
         } catch(Exception e) {
-            e.printStackTrace();
-            DataBaseUtil.mergeException(exceptionList, e);
+            DataBaseUtil.mergeException(list, e);
         }
         
         try {
-            man.getTestWorksheet().validate();
+            if(man.worksheet != null)
+                man.getTestWorksheet().validate();
         } catch(Exception e) {
-            e.printStackTrace();
-            DataBaseUtil.mergeException(exceptionList, e);
+            DataBaseUtil.mergeException(list, e);
         }
         
-        if (exceptionList.size() > 0)
-            throw exceptionList;
+        if (list.size() > 0)
+            throw list;
     }
 
     private TestLocal local() {

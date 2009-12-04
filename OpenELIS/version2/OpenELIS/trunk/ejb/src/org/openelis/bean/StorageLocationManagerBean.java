@@ -38,17 +38,17 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.local.LockLocal;
-import org.openelis.manager.PanelItemManager;
-import org.openelis.manager.PanelManager;
-import org.openelis.remote.PanelManagerRemote;
+import org.openelis.manager.StorageLocationChildManager;
+import org.openelis.manager.StorageLocationManager;
+import org.openelis.remote.StorageLocationManagerRemote;
 import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("panel-select")
+@RolesAllowed("storagelocation-select")
 @TransactionManagement(TransactionManagementType.BEAN)
 
-public class PanelManagerBean implements PanelManagerRemote {
+public class StorageLocationManagerBean implements StorageLocationManagerRemote {
 
     @Resource
     private SessionContext ctx;
@@ -56,15 +56,15 @@ public class PanelManagerBean implements PanelManagerRemote {
     @EJB
     private LockLocal      lockBean;
     
-    public PanelManager fetchById(Integer id) throws Exception {       
-        return PanelManager.fetchById(id);
+    public StorageLocationManager fetchById(Integer id) throws Exception {        
+        return StorageLocationManager.fetchById(id);
     }
     
-    public PanelManager fetchWithItems(Integer id) throws Exception {
-        return PanelManager.fetchWithItems(id);
+    public StorageLocationManager fetchWithChildren(Integer id) throws Exception {
+        return StorageLocationManager.fetchWithChildren(id);
     }
-    
-    public PanelManager add(PanelManager man) throws Exception {
+
+    public StorageLocationManager add(StorageLocationManager man) throws Exception {
         UserTransaction ut;
 
         checkSecurity(ModuleFlags.ADD);
@@ -79,7 +79,7 @@ public class PanelManagerBean implements PanelManagerRemote {
         return man;
     }
     
-    public PanelManager update(PanelManager man) throws Exception {
+    public StorageLocationManager update(StorageLocationManager man) throws Exception {
         UserTransaction ut;
         
         checkSecurity(ModuleFlags.UPDATE);
@@ -88,46 +88,31 @@ public class PanelManagerBean implements PanelManagerRemote {
 
         ut = ctx.getUserTransaction();
         ut.begin();
-        lockBean.validateLock(ReferenceTable.PANEL, man.getPanel().getId());        
+        lockBean.validateLock(ReferenceTable.STORAGE_LOCATION, man.getStorageLocation().getId());        
         man.update();
-        lockBean.giveUpLock(ReferenceTable.PANEL, man.getPanel().getId());
+        lockBean.giveUpLock(ReferenceTable.STORAGE_LOCATION, man.getStorageLocation().getId());
         ut.commit();
 
         return man;
     }
     
-    public PanelManager delete(PanelManager man) throws Exception {
-        UserTransaction ut;
-        
-        checkSecurity(ModuleFlags.DELETE);
-
-        ut = ctx.getUserTransaction();
-        ut.begin();
-        lockBean.validateLock(ReferenceTable.PANEL, man.getPanel().getId());        
-        man.delete();
-        lockBean.giveUpLock(ReferenceTable.PANEL, man.getPanel().getId());
-        ut.commit();
-
-        return man;
-    }
-    
-    public PanelManager fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(ReferenceTable.PANEL, id);
+    public StorageLocationManager fetchForUpdate(Integer id) throws Exception {
+        lockBean.getLock(ReferenceTable.STORAGE_LOCATION, id);
         return fetchById(id);
     }
     
-    public PanelManager abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.PANEL, id);
+    public StorageLocationManager abortUpdate(Integer id) throws Exception {
+        lockBean.giveUpLock(ReferenceTable.STORAGE_LOCATION, id);
         return fetchById(id);
     }
-
-    public PanelItemManager fetchItemByPanelId(Integer id) throws Exception {
-        return PanelItemManager.fetchByPanelId(id);
+    
+    public StorageLocationChildManager fetchChildByParentStorageLocationId(Integer id) throws Exception {
+        return StorageLocationChildManager.fetchByParentStorageLocationId(id);
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
         SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
-                                          "panel", flag);
+                                          "storagelocation", flag);
     }
 
 }

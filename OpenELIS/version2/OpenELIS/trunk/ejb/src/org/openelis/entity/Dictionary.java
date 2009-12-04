@@ -144,6 +144,8 @@ import org.openelis.utils.Auditable;
                           "UNION "  +
                           "select category_id as DICTIONARY_ID from storage_unit where category_id = :id "+
                           "UNION " +
+                          "select type_id as DICTIONARY_ID from instrument where type_id = :id "+
+                          "UNION "  +
                           "select type_id as DICTIONARY_ID from standard_note where type_id = :id ",                          
                   resultSetMapping="Dictionary.ReferenceCheckForIdMapping"),
                   @NamedNativeQuery(name = "Dictionary.ReferenceCheckForValue",     
@@ -154,7 +156,7 @@ import org.openelis.utils.Auditable;
                                       " qca.type_id = d.id and d.system_name = 'qc_analyte_dictionary' " +
                                       " UNION " +
                                       "select value as VALUE from aux_field_value afv,dictionary d where value = :value and" +
-                                      " type_id = d.id and d.system_name = 'aux_dictionary' ",                          
+                                      " afv.type_id = d.id and d.system_name = 'aux_dictionary' ",                          
                   resultSetMapping="Dictionary.ReferenceCheckForValueMapping"),
                   @NamedNativeQuery(name = "Dictionary.ReferenceCheckForEntry",     
                                     query = "select state as ENTRY from address where state = :entry " +

@@ -23,22 +23,31 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.remote;
-
-import org.openelis.domain.IdNameVO;
-import org.openelis.domain.StorageLocationViewDO;
-import org.openelis.gwt.common.data.QueryData;
+package org.openelis.local;
 
 import java.util.ArrayList;
 
-import javax.ejb.Remote;
+import javax.ejb.Local;
 
 import org.openelis.domain.StorageLocationViewDO;
 
-@Remote
-public interface StorageLocationRemote {
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int i, int rowPP) throws Exception;
+@Local
+public interface StorageLocationLocal {
+
+    public StorageLocationViewDO fetchById(Integer id) throws Exception;
+    
+    public ArrayList<StorageLocationViewDO> fetchByParentStorageLocationId(Integer id) throws Exception;
+
+    public StorageLocationViewDO add(StorageLocationViewDO data) throws Exception;
+    
+    public StorageLocationViewDO update(StorageLocationViewDO data) throws Exception;
+
+    public void delete(StorageLocationViewDO deletedAt) throws Exception;
+    
+    public void validateParentStorageLocation(StorageLocationViewDO data) throws Exception;
+    
+    public void validateChildStorageLocation(StorageLocationViewDO data) throws Exception;
 
     public void validateForDelete(StorageLocationViewDO data) throws Exception;
-}
 
+}

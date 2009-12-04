@@ -81,10 +81,11 @@ public class DictionaryManager implements RPC {
             return;
 
         entry = entries.remove(i);
-        if (entry.getId() != null)
+        if (entry.getId() != null) {
             if (deleted == null)
-                deleted = new ArrayList<DictionaryViewDO>();
-        deleted.add(entry);
+                deleted = new ArrayList<DictionaryViewDO>();        
+            deleted.add(entry);
+        }
     }
 
     public void moveEntry(int oldIndex, int newIndex) {
