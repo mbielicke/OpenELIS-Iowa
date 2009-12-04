@@ -49,11 +49,6 @@ UIRF Software License are applicable instead of those above.
 <head>
     <title>OpenELIS Authentication Service</title>
     <script>
-        function mySubmit() {
-            alert("in submit");
-        	document.getElementById("credentials").style.display="";
-          
-        }
    
         function focusLogin() {
             document.login_form.username.focus();
@@ -82,7 +77,7 @@ UIRF Software License are applicable instead of those above.
             color:#486095;
             cursor:pointer;
         }
-        .spinnerIcon {width:16px; height:16px;background:transparent url("OSXspinnerGIF.gif") no-repeat scroll left;}
+        .spinnerIcon {width:16px; height:16px;background:transparent url("OSXspinnerGIF.gif") no-repeat scroll center;}
     </style>
 </head>
 
@@ -115,8 +110,18 @@ UIRF Software License are applicable instead of those above.
             </td>
         </tr>
         <tr id="credentials" style="display:none;">
-          <td><font face="Arial,Helvetica">Checking Credentials...</font></td>
-          <td><div class="spinnerIcon"/></td>
+          <td>
+            <table>
+              <tr>
+                <td>
+                  <font face="Arial,Helvetica">Checking Credentials...</font>
+                </td>
+                <td>
+                  <div class="spinnerIcon"/>
+                </td>
+              </tr>
+            </table>
+          </td>
         </tr>
         <xsl:for-each select="error">
  		 <tr>
