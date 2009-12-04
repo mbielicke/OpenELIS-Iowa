@@ -182,7 +182,7 @@ public class StorageTab extends Screen {
                     ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
                         
                     for (int i=0; i<rpc.model.size(); i++){
-                        StorageLocationAutoDO autoDO = (StorageLocationAutoDO)rpc.model.get(i);
+                        StorageLocationVO autoDO = (StorageLocationVO)rpc.model.get(i);
                         
                         TableDataRow row = new TableDataRow(1);
                         row.key = autoDO.getId();

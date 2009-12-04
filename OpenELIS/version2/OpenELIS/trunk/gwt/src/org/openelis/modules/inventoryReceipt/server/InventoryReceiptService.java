@@ -317,7 +317,7 @@ public class InventoryReceiptService {
     private TableDataModel getLocationMatches(String match, String addToExisting, Integer inventoryItemId) throws Exception{
         //InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
-        List<StorageLocationAutoDO> autoCompleteList = new ArrayList();
+        List<StorageLocationVO> autoCompleteList = new ArrayList();
         
         if("Y".equals(addToExisting)){
             //TODO needs inv item id
@@ -330,7 +330,7 @@ public class InventoryReceiptService {
             autoCompleteList = remote.autoCompleteLookupByName(match+"%", 10);    
         }        
         
-        for(StorageLocationAutoDO resultDO : autoCompleteList){
+        for(StorageLocationVO resultDO : autoCompleteList){
             dataModel.add(new TableDataRow<Integer>(resultDO.getId(),new StringObject(resultDO.getLocation())));
         }       
         

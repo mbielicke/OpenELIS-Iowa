@@ -230,7 +230,7 @@ public class FillOrderService {
         }
         
         for(int i=0; i < autoCompleteList.size(); i++){
-            StorageLocationAutoDO resultDO = (StorageLocationAutoDO) autoCompleteList.get(i);
+            StorageLocationVO resultDO = (StorageLocationVO) autoCompleteList.get(i);
  
             //add the dataset to the datamodel
             dataModel.add(new TableDataRow<Integer>(resultDO.getLocationId(),new FieldType[] {new StringObject(resultDO.getLocation()), new StringObject(resultDO.getLotNum()), new IntegerObject(resultDO.getQtyOnHand())}));                            

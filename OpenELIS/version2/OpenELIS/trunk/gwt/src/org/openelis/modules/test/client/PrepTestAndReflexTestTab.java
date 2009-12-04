@@ -174,7 +174,7 @@ public class PrepTestAndReflexTestTab extends Screen implements
                     data = new TestPrepViewDO();
                     data.setIsOptional("N");
                     manager.getPrepTests().addPrep(data);
-                    testPrepTable.setCell(r, 0, "N");
+                    testPrepTable.setCell(r, 2, "N");
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }

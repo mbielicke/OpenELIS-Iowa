@@ -204,11 +204,11 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"endDate")' />:
                 </text>
-                <calendar key="{meta:getActiveEnd($inst)}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getName($inst)},{meta:getActiveBegin($inst)}" />
+                <calendar key="{meta:getActiveEnd($inst)}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="logTable,{meta:getActiveBegin($inst)}" />
               </row>
             </TablePanel>
             <widget valign="top">
-              <table key="logTable" width="668" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
+              <table key="logTable" width="668" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" title="" tab="{meta:getName($inst)},{meta:getActiveEnd($inst)}">
                 <col key="{instLog:getTypeId($il)}" width="120" align="left" header="{resource:getString($constants,'type')}">
                   <dropdown width="155" field="Integer" required="true" />
                 </col>

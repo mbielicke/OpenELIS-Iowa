@@ -132,9 +132,13 @@ public class DictionaryService {
     }
     
 
-    public DictionaryViewDO validateDelete(DictionaryViewDO data) throws Exception {
-        dictRemote().validateForDelete(data);        
-        return data;
+    public DictionaryViewDO validateForDelete(DictionaryViewDO data) throws Exception {
+        try {
+            dictRemote().validateForDelete(data);        
+            return data;
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     private CategoryRemote remote() {
