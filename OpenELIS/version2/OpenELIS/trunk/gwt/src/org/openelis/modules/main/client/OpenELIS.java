@@ -25,8 +25,6 @@
 */
 package org.openelis.modules.main.client;
 
-import org.openelis.gwt.screen.Screen;
-
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -36,7 +34,6 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
@@ -54,16 +51,15 @@ public class OpenELIS implements EntryPoint, NativePreviewHandler {
 		  GWT.runAsync(new RunAsyncCallback() {
 			  public void onSuccess() {
 				  try {
-					  Screen main = new org.openelis.modules.main.client.openelis.OpenELIS();
-					  RootPanel.getBodyElement().removeChild(RootPanel.getBodyElement().getElementsByTagName("table").getItem(0));
-					  RootPanel.get().add(main);
+					  RootPanel.getBodyElement().removeChild(RootPanel.getBodyElement().getElementsByTagName("div").getItem(0));			  
+					  RootPanel.get().add(new org.openelis.modules.main.client.openelis.OpenELIS());
 				  }catch(Throwable e){
 					  e.printStackTrace();
 					  Window.alert("Unable to start app : "+e.getMessage());
 				  }
 			  }
 		  
-			  public void onFailure(Throwable caught) {
+			 public void onFailure(Throwable caught) {
 				  Window.alert(caught.getMessage());
 			  }
 		  });
