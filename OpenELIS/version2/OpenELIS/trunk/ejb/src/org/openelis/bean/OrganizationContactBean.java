@@ -44,7 +44,7 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AddressLocal;
 import org.openelis.local.OrganizationContactLocal;
-import org.openelis.metamap.OrganizationMetaMap;
+import org.openelis.meta.OrganizationMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
@@ -57,8 +57,6 @@ public class OrganizationContactBean implements OrganizationContactLocal {
 
     @EJB
     private AddressLocal                     addressBean;
-
-    private static final OrganizationMetaMap meta = new OrganizationMetaMap();
 
     @SuppressWarnings("unchecked")
     public ArrayList<OrganizationContactDO> fetchByOrganizationId(Integer id) throws Exception {
@@ -126,10 +124,10 @@ public class OrganizationContactBean implements OrganizationContactLocal {
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getContactTypeId()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.ORGANIZATION_CONTACT.getContactTypeId()));
+                                             OrganizationMeta.getContactContactTypeId()));
         if (DataBaseUtil.isEmpty(data.getName()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.ORGANIZATION_CONTACT.getName()));
+                                             OrganizationMeta.getContactName()));
         
         if (list.size() > 0)
             throw list;

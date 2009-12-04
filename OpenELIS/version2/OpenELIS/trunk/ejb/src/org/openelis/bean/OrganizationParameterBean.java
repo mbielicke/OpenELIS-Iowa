@@ -42,7 +42,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.OrganizationParameterLocal;
-import org.openelis.metamap.OrganizationMetaMap;
+import org.openelis.meta.OrganizationMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
@@ -52,8 +52,6 @@ public class OrganizationParameterBean implements OrganizationParameterLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager                    manager;
-
-    private static final OrganizationMetaMap meta = new OrganizationMetaMap();
 
     public ArrayList<OrganizationParameterDO> fetchByOrganizationId(Integer id) throws Exception {
         Query query;
@@ -116,10 +114,10 @@ public class OrganizationParameterBean implements OrganizationParameterLocal {
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getTypeId()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.ORGANIZATION_PARAMETER.getTypeId()));
+                                             OrganizationMeta.getOrganizationParameterTypeId()));
         if (DataBaseUtil.isEmpty(data.getValue()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.ORGANIZATION_PARAMETER.getValue()));
+                                             OrganizationMeta.getOrganizationParameterValue()));
         if (list.size() > 0)
             throw list;
     }

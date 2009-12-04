@@ -50,7 +50,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AddressLocal;
 import org.openelis.local.OrganizationLocal;
-import org.openelis.metamap.OrganizationMetaMap;
+import org.openelis.meta.OrganizationMeta;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -66,7 +66,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
     @EJB
     private AddressLocal                     addressBean;
 
-    private static final OrganizationMetaMap meta = new OrganizationMetaMap();
+    private static final OrganizationMeta meta = new OrganizationMeta();
 
     public OrganizationViewDO fetchById(Integer id) throws Exception {
         Query query;
@@ -116,10 +116,11 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getId() + ", " +
-                          meta.getName() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + 
+                          OrganizationMeta.getId() + ", " +
+                          OrganizationMeta.getName() + ") ");
         builder.constructWhere(fields);
-        builder.setOrderBy(meta.getName());
+        builder.setOrderBy(OrganizationMeta.getName());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
@@ -176,16 +177,16 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getName()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getName()));
+            list.add(new FieldErrorException("fieldRequiredException", OrganizationMeta.getName()));
 
         if (DataBaseUtil.isEmpty(data.getAddress().getStreetAddress()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.ADDRESS.getStreetAddress()));
+            list.add(new FieldErrorException("fieldRequiredException", OrganizationMeta.getAddressStreetAddress()));
 
         if (DataBaseUtil.isEmpty(data.getAddress().getCity()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.ADDRESS.getCity()));
+            list.add(new FieldErrorException("fieldRequiredException", OrganizationMeta.getAddressCity()));
 
         if (DataBaseUtil.isEmpty(data.getAddress().getZipCode()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.ADDRESS.getZipCode()));
+            list.add(new FieldErrorException("fieldRequiredException", OrganizationMeta.getAddressZipCode()));
 
         if (list.size() > 0)
             throw list;
