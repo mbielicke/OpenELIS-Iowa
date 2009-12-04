@@ -29,14 +29,18 @@ import java.util.ArrayList;
 
 import javax.naming.InitialContext;
 
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SystemVariableLocal;
 import org.openelis.metamap.SampleMetaMap;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.DictionaryRemote;
 
 public class SampleManagerProxy {
     public SampleManager add(SampleManager man) throws Exception {
@@ -226,6 +230,13 @@ public class SampleManagerProxy {
         
     }
     
+    public Integer getIdFromSystemName(String systemName) throws Exception{
+        DictionaryLocal dl = getDictionaryLocal();
+        DictionaryDO dictDO = dl.fetchBySystemName(systemName);
+        
+        return dictDO.getId();
+    }
+    
     private SampleLocal getSampleLocal(){
         try{
             InitialContext ctx = new InitialContext();
@@ -244,5 +255,9 @@ public class SampleManagerProxy {
              System.out.println(e.getMessage());
              return null;
         }
+    }
+    
+    private static DictionaryLocal getDictionaryLocal(){
+        return (DictionaryLocal)EJBFactory.lookup("openelis/DictionaryBean/local");
     }
 }
