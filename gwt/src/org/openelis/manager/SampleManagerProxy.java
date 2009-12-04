@@ -27,6 +27,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.SampleDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FieldErrorWarning;
@@ -34,6 +35,7 @@ import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.metamap.SampleMetaMap;
+import org.openelis.utilcommon.DataBaseUtil;
 
 public class SampleManagerProxy {
     protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.sample.server.SampleService";
@@ -132,5 +134,9 @@ public class SampleManagerProxy {
        
        if(man.auxData != null)
            man.getAuxData().validate(errorsList);
+    }
+    
+    public Integer getIdFromSystemName(String systemName) throws Exception {
+        return DictionaryCache.getIdFromSystemName(systemName);
     }
 }
