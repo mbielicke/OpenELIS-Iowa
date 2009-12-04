@@ -28,6 +28,15 @@ package org.openelis.modules.worksheetCreation.client;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QcAnalyteDO;
@@ -42,8 +51,10 @@ import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcResultDO;
 import org.openelis.domain.WorksheetResultDO;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -79,17 +90,8 @@ import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetQcResultManager;
 import org.openelis.manager.WorksheetResultManager;
-import org.openelis.metamap.WorksheetMetaMap;
+import org.openelis.meta.WorksheetCreationMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
 
 public class WorksheetCreationScreen extends Screen implements HasActionHandlers<WorksheetCreationScreen.Action> {
 
@@ -100,12 +102,12 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
     private ScreenService                    qcService;
     private SecurityModule                   security;
     private WorksheetManager                 manager;
-    private WorksheetMetaMap                 meta;
 
     private AppButton                        saveButton, exitButton,
                                              insertQCButton, removeRowButton;
 
     protected ArrayList<Integer>             testIds;
+    protected ArrayList<LocalizedException>  qcErrors;
     protected ArrayList<TableDataRow>        analysisItems, qcLastRunList, qcLastBothList;
     protected ArrayList<TestWorksheetItemDO> testWorksheetItems;
     protected TableDataRow                   qcItems[];
@@ -128,8 +130,6 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         if (security == null)
             throw new SecurityException("screenPermException", "Worksheet Creation Screen");
 
-        meta   = new WorksheetMetaMap();
-
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 postConstructor();
@@ -146,6 +146,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         analysisItems  = new ArrayList<TableDataRow>();
         isSaved        = true;
         manager        = WorksheetManager.getInstance();
+        qcErrors       = new ArrayList<LocalizedException>();
         qcLastRunList  = new ArrayList<TableDataRow>();
         qcLastBothList = new ArrayList<TableDataRow>();
         testIds        = new ArrayList<Integer>();
@@ -173,7 +174,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
      */
     @SuppressWarnings("unchecked")
     private void initialize() {
-        worksheetId = (TextBox)def.getWidget(meta.getId());
+        worksheetId = (TextBox)def.getWidget(WorksheetCreationMeta.getId());
         addScreenHandler(worksheetId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 worksheetId.setValue(manager.getWorksheet().getId());
@@ -354,6 +355,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
                                     testWorksheetDO.setBatchCapacity(500);
                                     testWorksheetDO.setTotalCapacity(500);
                                     testWorksheetItems.clear();
+                                    buildQCWorksheet();
                                 } else {
                                     loadQCTemplate(testIds.get(0));
                                 }
@@ -394,12 +396,16 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         WorksheetResultManager   wrManager = null;
         
         if (worksheetItemTable.numRows() == 0) {
-            Window.alert("You may not save an empty worksheet");
+            Window.alert(consts.get("worksheetNotSaveEmpty"));
             return;
         }
         
-        choice = Window.confirm("Worksheets cannot be changed once they have been saved.\n"+
-                                "Are you sure you would like to save this worksheet?");
+        if (qcErrors.size() > 0) {
+            Window.alert("Please fix errors on worksheet before saving");
+            return;
+        }
+        
+        choice = Window.confirm(consts.get("worksheetSaveConfirm"));
         if (!choice)
             return;
 
@@ -506,8 +512,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         
         choice = true;
         if (!isSaved)
-            choice = Window.confirm("This worksheet has not been saved.\n"+
-                                    "Are you sure you would like to exit without saving?");
+            choice = Window.confirm(consts.get("worksheetExitConfirm"));
         return choice;
     }
 
@@ -531,14 +536,20 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
     }
     
     private void buildQCWorksheet() {
-        int                     i, j, posNum, randSize, numBatches, startIndex;
-        Integer                 qcId;
-        String                  qcName;
-        ArrayList<QcDO>         list;
-        ArrayList<TableDataRow> qcRandList, qcLastWellList, lastOf;
-        TableDataRow            qcRow, qcRow1;
-        TestWorksheetItemDO     twiDO;
+        int                      i, j, posNum, randSize, numBatches, startIndex;
+        Integer                  qcId;
+        String                   qcName;
+        ArrayList<QcDO>          list;
+        ArrayList<TableDataRow>  qcRandList, qcLastWellList, lastOf;
+        TableDataRow             qcRow, qcRow1;
+        TableFieldErrorException tfe;
+        TestWorksheetItemDO      twiDO;
 
+        //
+        // Clear the QC Error list
+        //
+        qcErrors.clear();
+        
         //
         // initialize/clear the qcItems
         //
@@ -567,11 +578,13 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
             try {
                 list = qcService.callList("fetchActiveByName", twiDO.getQcName());
                 if (list.size() == 0) {
-                    Window.alert("No active QC matching '"+twiDO.getQcName()+"' at row "+(i+1));
-                    qcName = "MISSING: "+twiDO.getQcName();
+                    tfe = new TableFieldErrorException("noMatchingActiveQc", twiDO.getPosition() - 1, consts.get("description"), new String[]{twiDO.getQcName()});
+                    if (!qcErrors.contains(tfe))
+                        qcErrors.add(tfe);
+                    qcName = twiDO.getQcName();
                 } else if (list.size() > 1) {
                     // TODO -- Need to code a chooser for multiple active QCs matching name
-                    Window.alert("More than one active QC was found matching '"+twiDO.getQcName()+"' at row "+(i+1));
+                    Window.alert("More than one active QC was found matching '"+twiDO.getQcName()+"' at row "+(twiDO.getPosition()));
                 } else {
                     qcId = list.get(0).getId();
                     qcName = list.get(0).getName();
@@ -672,7 +685,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
                 row.cells.get(0).value = getPositionNumber(i);
                 items.add(analysisItems.get(j));
                 j++;
-            } else if (typeDup.equals(((TestWorksheetItemDO)row.data).getTypeId()) && j > 0) {
+//            } else if (typeDup.equals(((TestWorksheetItemDO)row.data).getTypeId()) && j > 0) {
                 // TODO -- Add a duplicate of the previous analysis
             } else {
                 row.cells.get(0).value = getPositionNumber(i);
@@ -711,9 +724,10 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         }
 
         if (j < analysisItems.size())
-            Window.alert("Worksheet is full, cannot add more Analyses");
+            Window.alert(consts.get("worksheetIsFull"));
 
         worksheetItemTable.load(items);
+        showErrors();
     }
 
     public HandlerRegistration addActionHandler(ActionHandler<WorksheetCreationScreen.Action> handler) {
@@ -750,5 +764,15 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
      */
    private int getPositionMinorNumber(int position) {
        return position - (getPositionMajorNumber(position) - 1) * testWorksheetDO.getBatchCapacity();
+   }
+   
+   protected void showErrors() {
+       for (Exception ex : qcErrors) {
+           if (ex instanceof TableFieldErrorException) {
+               worksheetItemTable.setCellException(((TableFieldErrorException)ex).getRowIndex(),
+                                                   ((TableFieldErrorException)ex).getFieldName(),
+                                                   (TableFieldErrorException)ex);
+           }
+       }
    }
 }

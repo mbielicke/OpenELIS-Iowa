@@ -27,6 +27,15 @@ package org.openelis.modules.worksheetCreation.client;
 
 import java.util.ArrayList;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.domain.DictionaryDO;
@@ -61,24 +70,14 @@ import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.metamap.WorksheetCreationMetaMap;
+import org.openelis.meta.WorksheetCreationMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class WorksheetCreationLookupScreen extends Screen 
                                            implements HasActionHandlers<WorksheetCreationLookupScreen.Action> {
 
     private ScreenService            testService;
     private SecurityModule           security;
-    private WorksheetCreationMetaMap meta;
 
     protected AppButton             searchButton, addButton, selectAllButton;
     protected AutoComplete<Integer> testId;
@@ -99,9 +98,7 @@ public class WorksheetCreationLookupScreen extends Screen
         
         security = OpenELIS.security.getModule("worksheet");
         if (security == null)
-            throw new SecurityException("screenPermException", "System Variable Screen");
-
-        meta = new WorksheetCreationMetaMap();
+            throw new SecurityException("screenPermException", "Worksheet Creation Lookup Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -130,7 +127,7 @@ public class WorksheetCreationLookupScreen extends Screen
         //
         // screen fields and buttons
         //
-        testId = (AutoComplete)def.getWidget(meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.TEST.getId());
+        testId = (AutoComplete)def.getWidget(WorksheetCreationMeta.getAnalysisTestId());
         addScreenHandler(testId, new ScreenEventHandler<Integer>() {
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 TableDataRow selectedRow = testId.getSelection();
@@ -185,14 +182,14 @@ public class WorksheetCreationLookupScreen extends Screen
             } 
         });
 
-        methodName = (TextBox)def.getWidget(meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.TEST.METHOD.getName());
+        methodName = (TextBox)def.getWidget(WorksheetCreationMeta.getAnalysisTestMethodName());
         addScreenHandler(methodName, new ScreenEventHandler<Integer>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 methodName.enable(false);
             }
         });
 
-        sectionId = (Dropdown)def.getWidget(meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.SECTION.getId());
+        sectionId = (Dropdown)def.getWidget(WorksheetCreationMeta.getAnalysisSectionId());
         addScreenHandler(sectionId, new ScreenEventHandler<Integer>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 sectionId.enable(true);
@@ -200,7 +197,7 @@ public class WorksheetCreationLookupScreen extends Screen
             }
         });
 
-        accessionNumber = (TextBox)def.getWidget(meta.SAMPLE.getAccessionNumber());
+        accessionNumber = (TextBox)def.getWidget(WorksheetCreationMeta.getSampleAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 accessionNumber.enable(true);
@@ -208,7 +205,7 @@ public class WorksheetCreationLookupScreen extends Screen
             }
         });
 
-        statusId = (Dropdown)def.getWidget(meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.getStatusId());
+        statusId = (Dropdown)def.getWidget(WorksheetCreationMeta.getAnalysisStatusId());
         addScreenHandler(statusId, new ScreenEventHandler<Integer>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 statusId.enable(true);
@@ -216,7 +213,7 @@ public class WorksheetCreationLookupScreen extends Screen
             }
         });
 
-        typeOfSampleId = (Dropdown)def.getWidget(meta.SAMPLE.SAMPLE_ITEM.getTypeOfSampleId());
+        typeOfSampleId = (Dropdown)def.getWidget(WorksheetCreationMeta.getSampleItemTypeOfSampleId());
         addScreenHandler(typeOfSampleId, new ScreenEventHandler<Integer>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 typeOfSampleId.enable(true);
@@ -224,7 +221,7 @@ public class WorksheetCreationLookupScreen extends Screen
             }
         });
 
-        receivedDate = (CalendarLookUp)def.getWidget(meta.SAMPLE.getReceivedDate());
+        receivedDate = (CalendarLookUp)def.getWidget(WorksheetCreationMeta.getSampleReceivedDate());
         addScreenHandler(receivedDate, new ScreenEventHandler<Datetime>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 receivedDate.enable(true);
@@ -232,7 +229,7 @@ public class WorksheetCreationLookupScreen extends Screen
             }
         });
 
-        enteredDate = (CalendarLookUp)def.getWidget(meta.SAMPLE.getEnteredDate());
+        enteredDate = (CalendarLookUp)def.getWidget(WorksheetCreationMeta.getSampleEnteredDate());
         addScreenHandler(enteredDate, new ScreenEventHandler<Datetime>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 enteredDate.enable(true);
@@ -420,7 +417,6 @@ public class WorksheetCreationLookupScreen extends Screen
                 row.key = analysisRow.getAnalysisId();
                 row.cells.get(0).value = analysisRow.getAccessionNumber();
                 row.cells.get(1).value = analysisRow.getDescription();
-//                row.cells.get(2).value = analysisRow.getProjectName();
                 row.cells.get(2).value = analysisRow.getTestName();
                 row.cells.get(3).value = analysisRow.getMethodName();
                 row.cells.get(4).value = analysisRow.getSectionName();
