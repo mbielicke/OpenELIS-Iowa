@@ -26,6 +26,7 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.OrganizationMeta;
 import org.openelis.meta.ShippingItemMeta;
 import org.openelis.meta.ShippingMeta;
 import org.openelis.meta.ShippingTrackingMeta;
@@ -35,20 +36,20 @@ public class ShippingMetaMap extends ShippingMeta implements MetaMap{
     public ShippingMetaMap() {
         super("ship.");
         
-        ORGANIZATION_META = new OrganizationMetaMap("orgz.");
+        ORGANIZATION_META = new OrganizationMeta();
         
         TRACKING_META = new ShippingTrackingMeta("shippingTracking.");
             
         SHIPPING_ITEM_META = new ShippingItemMeta("shippingItem.");
     }    
 
-    public OrganizationMetaMap ORGANIZATION_META;
+    public OrganizationMeta ORGANIZATION_META;
     
     public ShippingTrackingMeta TRACKING_META;
         
     public ShippingItemMeta SHIPPING_ITEM_META;
     
-    public OrganizationMetaMap getOrganizationMeta(){
+    public OrganizationMeta getOrganizationMeta(){
         return ORGANIZATION_META;
     }
     
