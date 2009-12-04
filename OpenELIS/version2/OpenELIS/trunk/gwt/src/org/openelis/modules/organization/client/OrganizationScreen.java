@@ -59,7 +59,7 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.OrganizationManager;
-import org.openelis.metamap.OrganizationMetaMap;
+import org.openelis.meta.OrganizationMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.note.client.NotesTab;
 
@@ -76,7 +76,6 @@ import com.google.gwt.user.client.ui.TabPanel;
 
 public class OrganizationScreen extends Screen {
     private OrganizationManager   manager;
-    private OrganizationMetaMap   meta = new OrganizationMetaMap();
     private SecurityModule        security;
 
     private ButtonGroup           atoz;
@@ -229,7 +228,7 @@ public class OrganizationScreen extends Screen {
         //
         // screen fields
         //
-        id = (TextBox)def.getWidget(meta.getId());
+        id = (TextBox)def.getWidget(OrganizationMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 id.setValue(manager.getOrganization().getId());
@@ -245,7 +244,7 @@ public class OrganizationScreen extends Screen {
             }
         });
 
-        name = (TextBox)def.getWidget(meta.getName());
+        name = (TextBox)def.getWidget(OrganizationMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(manager.getOrganization().getName());
@@ -262,7 +261,7 @@ public class OrganizationScreen extends Screen {
             }
         });
 
-        city = (TextBox)def.getWidget(meta.ADDRESS.getCity());
+        city = (TextBox)def.getWidget(OrganizationMeta.getAddressCity());
         addScreenHandler(city, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 city.setValue(manager.getOrganization().getAddress().getCity());
@@ -279,7 +278,7 @@ public class OrganizationScreen extends Screen {
             }
         });
 
-        multipleUnit = (TextBox)def.getWidget(meta.ADDRESS.getMultipleUnit());
+        multipleUnit = (TextBox)def.getWidget(OrganizationMeta.getAddressMultipleUnit());
         addScreenHandler(multipleUnit, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 multipleUnit.setValue(manager.getOrganization().getAddress().getMultipleUnit());
@@ -296,7 +295,7 @@ public class OrganizationScreen extends Screen {
             }
         });
 
-        stateCode = (Dropdown)def.getWidget(meta.ADDRESS.getState());
+        stateCode = (Dropdown)def.getWidget(OrganizationMeta.getAddressState());
         addScreenHandler(stateCode, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 stateCode.setSelection(manager.getOrganization().getAddress().getState());
@@ -313,7 +312,7 @@ public class OrganizationScreen extends Screen {
             }
         });
 
-        zipCode = (TextBox)def.getWidget(meta.ADDRESS.getZipCode());
+        zipCode = (TextBox)def.getWidget(OrganizationMeta.getAddressZipCode());
         addScreenHandler(zipCode, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 zipCode.setValue(manager.getOrganization().getAddress().getZipCode());
@@ -330,7 +329,7 @@ public class OrganizationScreen extends Screen {
             }
         });
 
-        streetAddress = (TextBox)def.getWidget(meta.ADDRESS.getStreetAddress());
+        streetAddress = (TextBox)def.getWidget(OrganizationMeta.getAddressStreetAddress());
         addScreenHandler(streetAddress, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 streetAddress.setValue(manager.getOrganization().getAddress().getStreetAddress());
@@ -347,7 +346,7 @@ public class OrganizationScreen extends Screen {
             }
         });
 
-        country = (Dropdown)def.getWidget(meta.ADDRESS.getCountry());
+        country = (Dropdown)def.getWidget(OrganizationMeta.getAddressCountry());
         addScreenHandler(country, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 country.setSelection(manager.getOrganization().getAddress().getCountry());
@@ -364,7 +363,7 @@ public class OrganizationScreen extends Screen {
             }
         });
 
-        parentName = (AutoComplete)def.getWidget(meta.getParentOrganization().getName());
+        parentName = (AutoComplete)def.getWidget(OrganizationMeta.getParentOrganizationName());
         addScreenHandler(parentName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 parentName.setSelection(manager.getOrganization().getParentOrganizationId(),
@@ -418,7 +417,7 @@ public class OrganizationScreen extends Screen {
             }
         });
 
-        isActive = (CheckBox)def.getWidget(meta.getIsActive());
+        isActive = (CheckBox)def.getWidget(OrganizationMeta.getIsActive());
         addScreenHandler(isActive, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isActive.setValue(manager.getOrganization().getIsActive());
@@ -555,7 +554,7 @@ public class OrganizationScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = meta.getName();
+                field.key = OrganizationMeta.getName();
                 field.query = ((AppButton)event.getSource()).getAction();
                 field.type = QueryData.Type.STRING;
 
