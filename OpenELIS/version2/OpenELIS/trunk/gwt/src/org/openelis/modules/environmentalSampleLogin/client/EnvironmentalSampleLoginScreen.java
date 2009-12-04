@@ -125,7 +125,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     protected Tabs                         tab;
     private Integer                        analysisLoggedInId, analysisCancelledId,
                     analysisReleasedId, analysisInPrep, sampleLoggedInId, sampleErrorStatusId,
-                    sampleCancelledId, sampleReleasedId;
+                    sampleReleasedId;
 
     private SampleEnvironmentalMetaMap     meta = new SampleEnvironmentalMetaMap();
     private SampleItemTab                  sampleItemTab;
@@ -994,35 +994,6 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                     updateTreeAndCheckPrepTests((ArrayList<SampleDataBundle>)event.getData());
 
                 }
-                /*else if(event.getAction() == AnalysisTab.Action.SELECTED_TEST_PREP_ROW){
-                    TreeDataItem selected = itemsTree.getSelection();
-                    selected = selected.parent;
-                    SampleDataBundle selectedBundle = (SampleDataBundle)event.getData();
-                    AnalysisViewDO anDO = selectedBundle.analysisTestDO;
-                    anDO.setStatusId(analysisLoggedInId);
-                    
-                    TreeDataItem newRow = itemsTree.createTreeItem("analysis");
-                    newRow.cells.get(0).value = formatTreeString(anDO.getTestName())+" : "+formatTreeString(anDO.getMethodName());
-                    newRow.cells.get(1).value = analysisLoggedInId;
-                    
-                    SampleDataBundle sampleItemData = (SampleDataBundle)selected.data;
-                    SampleItemViewDO itemDO = sampleItemData.sampleItemDO;
-                    int sampleItemIndex = sampleItemData.sampleItemManager.getIndex(itemDO);
-                    
-                    try{
-                        selectedBundle.sampleItemDO = sampleItemData.sampleItemDO;
-                        selectedBundle.sampleItemManager = sampleItemData.sampleItemManager;
-                        selectedBundle.analysisManager = sampleItemData.sampleItemManager.getAnalysisAt(sampleItemIndex);
-                        
-                        newRow.data = selectedBundle;
-                        
-                        itemsTree.addChildItem(selected, newRow);
-                        itemsTree.select(newRow);
-                    }catch(Exception e){
-                        Window.alert(e.getMessage());
-                        return;
-                    }
-                }*/
             }
         });
         
@@ -1158,43 +1129,6 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 window.clearStatus();
             }
         });
-        
-        
-      //////////////////////////////////
-        final AppButton warning = (AppButton)def.getWidget("warning");
-        addScreenHandler(warning, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                Confirm c = new Confirm(Confirm.Type.WARN, "This is warning text.  You probabaly shouldnt be doing this...you have been warned.  Trust me", "Ok, I trust you");
-                c.show();
-            }
-            
-            public void onStateChange(StateChangeEvent<State> event) {
-                warning.enable(true);
-            }
-        });
-        
-        final AppButton error = (AppButton)def.getWidget("error");
-        addScreenHandler(error, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                Confirm c = new Confirm(Confirm.Type.ERROR, "ERROR!! You really shouldnt have done that.  Man I am going to have to tell someone.  Please wait patiently while Skynet resolves this.", "Ok, please hurry");
-                c.show();
-            }
-            
-            public void onStateChange(StateChangeEvent<State> event) {
-                error.enable(true);
-            }
-        });
-        final AppButton question = (AppButton)def.getWidget("question");
-        addScreenHandler(question, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                Confirm c = new Confirm(Confirm.Type.ERROR, "Are you sure you really want to do that? Press YES if you feel competent with this decision and are will to take the consciquences.  Press NO if you really pressed the wrong button", "YES, I am confident.", "NO, sorry I'm and idiot");
-                c.show();
-            }
-            
-            public void onStateChange(StateChangeEvent<State> event) {
-                question.enable(true);
-            }
-        });
     }
 
     protected void query() {
@@ -1283,6 +1217,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             window.setBusy(consts.get("adding"));
             try {
                 manager.validate();
+                manager.getSample().setStatusId(sampleLoggedInId);
                 manager = manager.add();
 
                 setState(Screen.State.DISPLAY);
@@ -1301,6 +1236,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             window.setBusy(consts.get("updating"));
             try {
                 manager.validate();
+                manager.getSample().setStatusId(sampleLoggedInId);
                 manager = manager.update();
 
                 setState(Screen.State.DISPLAY);
@@ -1609,7 +1545,6 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
             analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
             analysisInPrep = DictionaryCache.getIdFromSystemName("analysis_inprep");
-            sampleCancelledId = DictionaryCache.getIdFromSystemName("sample_canceled");
             sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
         
         }catch(Exception e){
@@ -1945,8 +1880,9 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     private void updateTreeAndCheckPrepTests(ArrayList<SampleDataBundle> bundles){
         SampleDataBundle bundle;
         AnalysisViewDO aDO;
+        TreeDataItem selected;
         
-        TreeDataItem selected = itemsTree.getSelection();
+        selected = itemsTree.getSelection();
         int selectedIndex = itemsTree.getSelectedRow();
         
         for(int i=0; i<bundles.size(); i++){
@@ -1964,10 +1900,11 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 newRow.data = bundle;
                 
                 itemsTree.addChildItem(selected.parent, newRow);
-                itemsTree.select(newRow);
-                selectedIndex = itemsTree.getSelectedRow();
+                selected = newRow;
             }
-            
+
+            itemsTree.select(selected);
+            selectedIndex = itemsTree.getSelectedRow();
             itemsTree.setCell(selectedIndex, 0, formatTreeString(aDO.getTestName()) + " : " + formatTreeString(aDO.getMethodName()));
             itemsTree.setCell(selectedIndex, 1, aDO.getStatusId());
             
@@ -2003,6 +1940,18 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         index = bundle.analysisManager.getIndex(bundle.analysisTestDO);
         anDO = bundle.analysisManager.getAnalysisAt(index);
         anDO.setStatusId(analysisCancelledId);
+        
+        //update the sample manager status boolean and the tabs.
+        //then redraw the tabs to make sure this change didn't change the status
+        manager.setHasReleasedCancelledAnalysis(true);
+        sampleItemTab.setData(bundle);
+        analysisTab.setData(bundle);
+        testResultsTab.setData(bundle);
+        analysisNotesTab.setData(bundle);
+        storageTab.setData(bundle);
+        qaEventsTab.setData(bundle);
+        
+        drawTabs();
     }
     
     private ArrayList<TableDataRow> getSectionsModel(ArrayList<TestSectionViewDO> sections) {
@@ -2018,7 +1967,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     }
     
     private boolean canEdit(){
-        return (!sampleCancelledId.equals(manager.getSample().getStatusId()) && !sampleReleasedId.equals(manager.getSample().getStatusId()));
+        return (!sampleReleasedId.equals(manager.getSample().getStatusId()));
     }
     
     protected boolean validate() {

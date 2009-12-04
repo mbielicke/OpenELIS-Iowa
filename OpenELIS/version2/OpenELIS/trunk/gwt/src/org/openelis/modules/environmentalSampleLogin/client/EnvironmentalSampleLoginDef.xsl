@@ -39,7 +39,7 @@ version="1.0"
   xmlns:analysisMetaMap="xalan://org.openelis.metamap.AnalysisMetaMap" 
 xmlns:envMeta="xalan://org.openelis.metamap.SampleEnvironmentalMetaMap" 
 xmlns:methodMeta="xalan://org.openelis.meta.MethodMeta" 
-xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" 
+xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMetaOld" 
 xmlns:projectMeta="xalan://org.openelis.meta.ProjectMeta" 
 xmlns:sampleItemMetaMap="xalan://org.openelis.metamap.SampleItemMetaMap" 
 xmlns:sampleMetaMap="xalan://org.openelis.metamap.SampleMetaMap" 
@@ -72,7 +72,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
     <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleOrganizationMetaMap" />
   </xalan:component>
   <xalan:component prefix="orgMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationMeta" />
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationMetaOld" />
   </xalan:component>
   <xalan:component prefix="sampleProjectMetaMap">
     <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleProjectMetaMap" />
@@ -327,16 +327,6 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
 		                        <xsl:value-of select="resource:getString($constants,'removeRow')" />
 		                      </text>
 		                    </HorizontalPanel>
-		                  </appButton>
-		                  
-		                    <appButton key="warning" style="Button" action="removeRow">
-		                      <text>Warning</text>
-		                  </appButton>
-		                    <appButton key="question" style="Button" action="removeRow">
-		                      <text>Question</text>
-		                  </appButton>
-		                    <appButton key="error" style="Button" action="removeRow">
-		                      <text>Error</text>
 		                  </appButton>
 		                </HorizontalPanel>
 	                </widget>

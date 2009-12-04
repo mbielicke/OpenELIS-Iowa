@@ -198,43 +198,43 @@ UIRF Software License are applicable instead of those above.
               <tab key="contactTab" text="{resource:getString($constants,'contact')}">
                 <VerticalPanel padding="0" spacing="0">
                   <table key="contactTable" width="587" maxRows="10" showScroll="ALWAYS" tab="{meta:getId()},{meta:getIsActive()}">
-                    <col key="{meta:getOrganizationContactContactTypeId()}" width="106" header="{resource:getString($constants,'type')}">
+                    <col key="{meta:getContactContactTypeId()}" width="106" header="{resource:getString($constants,'type')}">
                       <dropdown width="90" field="Integer" required="true" />
                     </col>
-                    <col key="{meta:getOrganizationContactName()}" width="130" header="{resource:getString($constants,'contactName')}">
+                    <col key="{meta:getContactName()}" width="130" header="{resource:getString($constants,'contactName')}">
                       <textbox max="40" field="String" required="true" />
                     </col>
-                    <col key="{meta:getOrganizationContactAddressMultipleUnit()}" width="130" header="{resource:getString($constants,'aptSuite')}">
+                    <col key="{meta:getContactAddressMultipleUnit()}" width="130" header="{resource:getString($constants,'aptSuite')}">
                       <textbox case="UPPER" max="30" field="String" />
                     </col>
-                    <col key="{meta:getOrganizationContactAddressStreetAddress()}" width="130" header="{resource:getString($constants,'address')}">
+                    <col key="{meta:getContactAddressStreetAddress()}" width="130" header="{resource:getString($constants,'address')}">
                       <textbox case="UPPER" max="40" field="String" />
                     </col>
-                    <col key="{meta:getOrganizationContactAddressCity()}" width="130" header="{resource:getString($constants,'city')}" sort="true">
+                    <col key="{meta:getContactAddressCity()}" width="130" header="{resource:getString($constants,'city')}" sort="true">
                       <textbox case="UPPER" max="30" field="String" />
                     </col>
-                    <col key="{meta:getOrganizationContactAddressState()}" width="56" header="{resource:getString($constants,'state')}">
+                    <col key="{meta:getContactAddressState()}" width="56" header="{resource:getString($constants,'state')}">
                       <dropdown width="40" case="UPPER" field="String" />
                     </col>
-                    <col key="{meta:getOrganizationContactAddressZipCode()}" width="68" header="{resource:getString($constants,'zipcode')}">
+                    <col key="{meta:getContactAddressZipCode()}" width="68" header="{resource:getString($constants,'zipcode')}">
                       <textbox mask="99999-9999" field="String" />
                     </col>
-                    <col key="{meta:getOrganizationContactAddressCountry()}" width="126" header="{resource:getString($constants,'country')}">
+                    <col key="{meta:getContactAddressCountry()}" width="126" header="{resource:getString($constants,'country')}">
                       <dropdown width="110" field="String" />
                     </col>
-                    <col key="{meta:getOrganizationContactAddressWorkPhone()}" width="100" header="{resource:getString($constants,'workNumber')}">
+                    <col key="{meta:getContactAddressWorkPhone()}" width="100" header="{resource:getString($constants,'workNumber')}">
                       <textbox field="String" />
                     </col>
-                    <col key="{meta:getOrganizationContactAddressHomePhone()}" width="90" header="{resource:getString($constants,'homeNumber')}">
+                    <col key="{meta:getContactAddressHomePhone()}" width="90" header="{resource:getString($constants,'homeNumber')}">
                       <textbox field="String" />
                     </col>
-                    <col key="{meta:getOrganizationContactAddressCellPhone()}" width="90" header="{resource:getString($constants,'cellNumber')}">
+                    <col key="{meta:getContactAddressCellPhone()}" width="90" header="{resource:getString($constants,'cellNumber')}">
                       <textbox field="String" />
                     </col>
-                    <col key="{meta:getOrganizationContactAddressFaxPhone()}" width="90" header="{resource:getString($constants,'faxNumber')}">
+                    <col key="{meta:getContactAddressFaxPhone()}" width="90" header="{resource:getString($constants,'faxNumber')}">
                       <textbox field="String" />
                     </col>
-                    <col key="{meta:getOrganizationContactAddressEmail()}" width="150" header="{resource:getString($constants,'email')}">
+                    <col key="{meta:getContactAddressEmail()}" width="150" header="{resource:getString($constants,'email')}">
                       <textbox field="String" />
                     </col>
                   </table>
