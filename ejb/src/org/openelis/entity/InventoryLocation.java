@@ -66,13 +66,13 @@ import org.openelis.utils.Auditable;
                                                                                         + " from InventoryLocation i left join i.storageLocation childLoc "
                                                                                         + " left join childLoc.parentStorageLocation parentLoc "
                                                                                         + " where i.inventoryItemId = :id and i.quantityOnhand > 0"),
-                @NamedQuery(name = "InventoryLocation.AutoCompleteByName", query = "select new org.openelis.domain.StorageLocationAutoDO(childLoc.id, childLoc.name, i.id, childLoc.location, "
+                @NamedQuery(name = "InventoryLocation.AutoCompleteByName", query = "select new org.openelis.domain.StorageLocationVO(childLoc.id, childLoc.name, i.id, childLoc.location, "
                                                                                    + " parentLoc.name, childLoc.storageUnit.description) "
                                                                                    + " from InventoryLocation i left join i.storageLocation childLoc left join childLoc.parentStorageLocation parentLoc where "
                                                                                    + " (childLoc.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId=childLoc.id))"
                                                                                    + " and (childLoc.name like :name OR childLoc.location like :loc OR childLoc.storageUnit.description like :desc) "
                                                                                    + " order by childLoc.name"),
-                @NamedQuery(name = "InventoryLocation.AutoCompleteByNameInvId", query = "select new org.openelis.domain.StorageLocationAutoDO(childLoc.id, childLoc.name, childLoc.location, "
+                @NamedQuery(name = "InventoryLocation.AutoCompleteByNameInvId", query = "select new org.openelis.domain.StorageLocationVO(childLoc.id, childLoc.name, childLoc.location, "
                                                                                         + " parentLoc.name, childLoc.storageUnit.description, i.id, i.quantityOnhand, i.lotNumber) "
                                                                                         + " from InventoryLocation i left join i.storageLocation childLoc left join childLoc.parentStorageLocation parentLoc where "
                                                                                         + " (childLoc.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId=childLoc.id))"

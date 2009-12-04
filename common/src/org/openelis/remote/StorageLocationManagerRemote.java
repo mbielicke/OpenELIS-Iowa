@@ -25,20 +25,26 @@
 */
 package org.openelis.remote;
 
-import org.openelis.domain.IdNameVO;
-import org.openelis.domain.StorageLocationViewDO;
-import org.openelis.gwt.common.data.QueryData;
-
-import java.util.ArrayList;
-
 import javax.ejb.Remote;
 
-import org.openelis.domain.StorageLocationViewDO;
+import org.openelis.manager.StorageLocationChildManager;
+import org.openelis.manager.StorageLocationManager;
 
 @Remote
-public interface StorageLocationRemote {
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int i, int rowPP) throws Exception;
+public interface StorageLocationManagerRemote {
 
-    public void validateForDelete(StorageLocationViewDO data) throws Exception;
+    public StorageLocationManager fetchById(Integer id) throws Exception;
+    
+    public StorageLocationManager fetchWithChildren(Integer id) throws Exception;
+    
+    public StorageLocationManager add(StorageLocationManager man) throws Exception;
+    
+    public StorageLocationManager update(StorageLocationManager man) throws Exception;
+    
+    public StorageLocationManager fetchForUpdate(Integer id) throws Exception;
+    
+    public StorageLocationManager abortUpdate(Integer id) throws Exception;
+    
+    public StorageLocationChildManager fetchChildByParentStorageLocationId(Integer id) throws Exception;
+    
 }
-

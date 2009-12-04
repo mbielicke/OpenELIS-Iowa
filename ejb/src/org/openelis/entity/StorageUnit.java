@@ -52,7 +52,7 @@ import org.openelis.utils.Auditable;
                query = "select new org.openelis.domain.StorageUnitDO(s.id,s.categoryId,s.description,s.isSingular)"
                      + " from StorageUnit s where s.id = :id"),
     @NamedQuery(name = "StorageUnit.FetchByDescription",
-               query = "select new org.openelis.domain.IdNameVO(s.id, d.entry, s.description) "
+               query = "select new org.openelis.domain.IdNameVO(s.id,s.description,d.entry) "
                      + " from StorageUnit s, Dictionary d where s.categoryId = d.id and s.description like :description order by s.description"),
     @NamedQuery(name = "StorageUnit.ReferenceCheck",
                query = "select storageUnitId from StorageLocation s where s.storageUnitId = :id"),                     

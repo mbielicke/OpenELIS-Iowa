@@ -28,7 +28,7 @@ package org.openelis.domain;
 import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class StorageLocationAutoDO implements RPC {
+public class StorageLocationVO implements RPC {
 
     private static final long serialVersionUID = 1L;
     protected Integer         id;
@@ -38,10 +38,10 @@ public class StorageLocationAutoDO implements RPC {
     protected Integer         qtyOnHand;
     protected String          lotNum;
 
-    public StorageLocationAutoDO() {
+    public StorageLocationVO() {
     }
 
-    public StorageLocationAutoDO(Integer id,
+    public StorageLocationVO(Integer id,
                                  String name,
                                  Integer locationId,
                                  String location,
@@ -53,7 +53,7 @@ public class StorageLocationAutoDO implements RPC {
         setLocation(DataBaseUtil.formatStorageLocation(name, location, storageUnitDescription, parentStorageLocName));
     }
 
-    public StorageLocationAutoDO(Integer id,
+    public StorageLocationVO(Integer id,
                                  String name,
                                  String location,
                                  String parentStorageLocName,
@@ -64,7 +64,7 @@ public class StorageLocationAutoDO implements RPC {
     }
 
     // with qty on hand
-    public StorageLocationAutoDO(Integer id,
+    public StorageLocationVO(Integer id,
                                  String name,
                                  String location,
                                  String parentStorageLocName,
@@ -77,7 +77,7 @@ public class StorageLocationAutoDO implements RPC {
     }
 
     // with qty on hand and lot number
-    public StorageLocationAutoDO(Integer id,
+    public StorageLocationVO(Integer id,
                                  String name,
                                  String location,
                                  String parentStorageLocName,

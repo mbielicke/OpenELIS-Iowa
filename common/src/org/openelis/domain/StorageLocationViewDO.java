@@ -1,22 +1,23 @@
 package org.openelis.domain;
 
+import org.openelis.utilcommon.DataBaseUtil;
+
 public class StorageLocationViewDO extends StorageLocationDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String storageUnitDescription;
-    
-    public StorageLocationViewDO(){
-        
+    protected String          storageUnitDescription;
+
+    public StorageLocationViewDO() {
+
     }
-    
+
     public StorageLocationViewDO(Integer id, Integer sortOrder, String name, String location,
                                  Integer parentStorageLocationId, Integer storageUnitId,
-                                 String isAvailable, String storageUnitDescription){
+                                 String isAvailable, String storageUnitDescription) {
         super(id, sortOrder, name, location, parentStorageLocationId, storageUnitId, isAvailable);
-        
+
         setStorageUnitDescription(storageUnitDescription);
-        
     }
 
     public String getStorageUnitDescription() {
@@ -24,6 +25,6 @@ public class StorageLocationViewDO extends StorageLocationDO {
     }
 
     public void setStorageUnitDescription(String storageUnitDescription) {
-        this.storageUnitDescription = storageUnitDescription;
+        this.storageUnitDescription = DataBaseUtil.trim(storageUnitDescription);
     }
 }
