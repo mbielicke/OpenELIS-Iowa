@@ -42,7 +42,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.WorksheetItemLocal;
-import org.openelis.metamap.WorksheetItemMetaMap;
+import org.openelis.meta.WorksheetCompletionMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
@@ -52,8 +52,6 @@ public class WorksheetItemBean implements WorksheetItemLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
-
-    private static final WorksheetItemMetaMap meta = new WorksheetItemMetaMap();
 
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetItemDO> fetchByWorksheetId(Integer id) throws Exception {
@@ -115,7 +113,7 @@ public class WorksheetItemBean implements WorksheetItemLocal {
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getPosition()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getPosition()));
+                                             WorksheetCompletionMeta.getWorksheetItemPosition()));
         
         if (list.size() > 0)
             throw list;

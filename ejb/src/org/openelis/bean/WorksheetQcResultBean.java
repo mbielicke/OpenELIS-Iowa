@@ -42,7 +42,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.WorksheetQcResultLocal;
-import org.openelis.metamap.WorksheetQcResultMetaMap;
+import org.openelis.meta.WorksheetCompletionMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
@@ -52,8 +52,6 @@ public class WorksheetQcResultBean implements WorksheetQcResultLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
-
-    private static final WorksheetQcResultMetaMap meta = new WorksheetQcResultMetaMap();
 
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetQcResultDO> fetchByWorksheetAnalysisId(Integer id) throws Exception {
@@ -122,16 +120,16 @@ public class WorksheetQcResultBean implements WorksheetQcResultLocal {
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getWorksheetAnalysisId()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getWorksheetAnalysisId()));
+                                             WorksheetCompletionMeta.getWorksheetQcResultWorksheetAnalysisId()));
         if (DataBaseUtil.isEmpty(data.getSortOrder()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getSortOrder()));
+                                             WorksheetCompletionMeta.getWorksheetQcResultSortOrder()));
         if (DataBaseUtil.isEmpty(data.getQcAnalyteId()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getQcAnalyteId()));
+                                             WorksheetCompletionMeta.getWorksheetQcResultQcAnalyteId()));
         if (DataBaseUtil.isEmpty(data.getTypeId()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getTypeId()));
+                                             WorksheetCompletionMeta.getWorksheetQcResultTypeId()));
         
         if (list.size() > 0)
             throw list;

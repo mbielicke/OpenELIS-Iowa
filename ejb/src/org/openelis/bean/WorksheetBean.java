@@ -46,7 +46,7 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.WorksheetLocal;
-import org.openelis.metamap.WorksheetMetaMap;
+import org.openelis.meta.WorksheetCompletionMeta;
 import org.openelis.remote.WorksheetRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -59,7 +59,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
 	@PersistenceContext(name = "openelis")
     private EntityManager manager;
 	
-    private static final WorksheetMetaMap meta = new WorksheetMetaMap();
+    private static final WorksheetCompletionMeta meta = new WorksheetCompletionMeta();
     
 	public WorksheetDO fetchById(Integer id) throws Exception {		
 		Query       query;
@@ -85,13 +85,13 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.WorksheetDO("+meta.getId()+", "+
-                          meta.getCreatedDate()+", "+
-                          meta.getSystemUserId()+", "+
-                          meta.getStatusId()+", "+
-                          meta.getFormatId()+") ");
+        builder.setSelect("distinct new org.openelis.domain.WorksheetDO("+WorksheetCompletionMeta.getId()+", "+
+                          WorksheetCompletionMeta.getCreatedDate()+", "+
+                          WorksheetCompletionMeta.getSystemUserId()+", "+
+                          WorksheetCompletionMeta.getStatusId()+", "+
+                          WorksheetCompletionMeta.getFormatId()+") ");
         builder.constructWhere(fields);
-        builder.setOrderBy(meta.getId());
+        builder.setOrderBy(WorksheetCompletionMeta.getId());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
@@ -146,16 +146,16 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
         list = new ValidationErrorsList();
 
         if (DataBaseUtil.isEmpty(data.getCreatedDate()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getCreatedDate()));
+            list.add(new FieldErrorException("fieldRequiredException", WorksheetCompletionMeta.getCreatedDate()));
 
         if (DataBaseUtil.isEmpty(data.getSystemUserId()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getSystemUserId()));
+            list.add(new FieldErrorException("fieldRequiredException", WorksheetCompletionMeta.getSystemUserId()));
 
         if (DataBaseUtil.isEmpty(data.getStatusId()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getStatusId()));
+            list.add(new FieldErrorException("fieldRequiredException", WorksheetCompletionMeta.getStatusId()));
 
         if (DataBaseUtil.isEmpty(data.getFormatId()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getFormatId()));
+            list.add(new FieldErrorException("fieldRequiredException", WorksheetCompletionMeta.getFormatId()));
 
         if (list.size() > 0)
             throw list;

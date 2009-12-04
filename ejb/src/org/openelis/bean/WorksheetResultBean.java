@@ -42,7 +42,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.WorksheetResultLocal;
-import org.openelis.metamap.WorksheetResultMetaMap;
+import org.openelis.meta.WorksheetCompletionMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
@@ -52,8 +52,6 @@ public class WorksheetResultBean implements WorksheetResultLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
-
-    private static final WorksheetResultMetaMap meta = new WorksheetResultMetaMap();
 
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetResultDO> fetchByWorksheetAnalysisId(Integer id) throws Exception {
@@ -128,22 +126,22 @@ public class WorksheetResultBean implements WorksheetResultLocal {
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getWorksheetAnalysisId()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getWorksheetAnalysisId()));
+                                             WorksheetCompletionMeta.getWorksheetResultWorksheetAnalysisId()));
         if (DataBaseUtil.isEmpty(data.getTestAnalyteId()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getTestAnalyteId()));
+                                             WorksheetCompletionMeta.getWorksheetResultTestAnalyteId()));
         if (DataBaseUtil.isEmpty(data.getIsColumn()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getIsColumn()));
+                                             WorksheetCompletionMeta.getWorksheetResultIsColumn()));
         if (DataBaseUtil.isEmpty(data.getSortOrder()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getSortOrder()));
+                                             WorksheetCompletionMeta.getWorksheetResultSortOrder()));
         if (DataBaseUtil.isEmpty(data.getAnalyteId()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getAnalyteId()));
+                                             WorksheetCompletionMeta.getWorksheetResultAnalyteId()));
         if (DataBaseUtil.isEmpty(data.getTypeId()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getTypeId()));
+                                             WorksheetCompletionMeta.getWorksheetResultTypeId()));
         
         if (list.size() > 0)
             throw list;
