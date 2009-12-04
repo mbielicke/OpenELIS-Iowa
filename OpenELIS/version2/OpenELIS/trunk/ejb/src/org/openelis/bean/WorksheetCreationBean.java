@@ -40,7 +40,7 @@ import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.metamap.WorksheetCreationMetaMap;
+import org.openelis.meta.WorksheetCreationMeta;
 import org.openelis.remote.WorksheetCreationRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -53,8 +53,8 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
 
-    private static final WorksheetCreationMetaMap WorksheetCreationMetaMap = new WorksheetCreationMetaMap();
-
+    private static final WorksheetCreationMeta meta = new WorksheetCreationMeta();
+    
     public WorksheetCreationBean() {
     }
 
@@ -68,66 +68,58 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
         WorksheetCreationVO vo;
 
         builder = new QueryBuilderV2();
-        builder.setMeta(WorksheetCreationMetaMap);
+        builder.setMeta(meta);
         builder.setSelect("distinct new org.openelis.domain.WorksheetCreationVO("+
-                          WorksheetCreationMetaMap.SAMPLE.SAMPLE_ITEM.ANALYSIS.getId()+", "+
-                          WorksheetCreationMetaMap.SAMPLE.getDomain()+", "+
-                          WorksheetCreationMetaMap.SAMPLE.getAccessionNumber()+", "+
-                          WorksheetCreationMetaMap.SAMPLE.getCollectionDate()+", "+
-                          WorksheetCreationMetaMap.SAMPLE.getCollectionTime()+", "+
-                          WorksheetCreationMetaMap.SAMPLE.getReceivedDate()+", "+
-                          WorksheetCreationMetaMap.SAMPLE_ENVIRONMENTAL.getDescription()+", "+
-                          WorksheetCreationMetaMap.SAMPLE_ENVIRONMENTAL.getPriority()+", "+
-//                          WorksheetCreationMetaMap.SAMPLE_HUMAN.PATIENT.getLastName()+", "+
-//                          WorksheetCreationMetaMap.SAMPLE_HUMAN.PATIENT.getFirstName()+", "+
-//                          WorksheetCreationMetaMap.SAMPLE.SAMPLE_PROJECT.PROJECT.getName()+", " +
-                          WorksheetCreationMetaMap.SAMPLE.SAMPLE_ITEM.ANALYSIS.TEST.getId()+", " +
-                          WorksheetCreationMetaMap.SAMPLE.SAMPLE_ITEM.ANALYSIS.TEST.getName()+", " +
-                          WorksheetCreationMetaMap.SAMPLE.SAMPLE_ITEM.ANALYSIS.TEST.METHOD.getName()+", "+
-                          WorksheetCreationMetaMap.SAMPLE.SAMPLE_ITEM.ANALYSIS.TEST.getTimeHolding()+", " +
-                          WorksheetCreationMetaMap.SAMPLE.SAMPLE_ITEM.ANALYSIS.TEST.getTimeTaAverage()+", " +
-                          WorksheetCreationMetaMap.SAMPLE.SAMPLE_ITEM.ANALYSIS.SECTION.getName()+", "+
-                          WorksheetCreationMetaMap.SAMPLE.SAMPLE_ITEM.ANALYSIS.getPreAnalysisId()+", "+
-                          WorksheetCreationMetaMap.SAMPLE.SAMPLE_ITEM.ANALYSIS.getStatusId()+") ");
+                          WorksheetCreationMeta.getAnalysisId()+", "+
+                          WorksheetCreationMeta.getSampleDomain()+", "+
+                          WorksheetCreationMeta.getSampleAccessionNumber()+", "+
+                          WorksheetCreationMeta.getSampleCollectionDate()+", "+
+                          WorksheetCreationMeta.getSampleCollectionTime()+", "+
+                          WorksheetCreationMeta.getSampleReceivedDate()+", "+
+                          WorksheetCreationMeta.getSampleEnvironmentalDescription()+", "+
+                          WorksheetCreationMeta.getSampleEnvironmentalPriority()+", "+
+//                          WorksheetCreationMeta.getPatientLastName()+", "+
+//                          WorksheetCreationMeta.getPatientFirstName()+", "+
+                          WorksheetCreationMeta.getAnalysisTestId()+", " +
+                          WorksheetCreationMeta.getAnalysisTestName()+", " +
+                          WorksheetCreationMeta.getAnalysisTestMethodName()+", "+
+                          WorksheetCreationMeta.getAnalysisTestTimeHolding()+", " +
+                          WorksheetCreationMeta.getAnalysisTestTimeTaAverage()+", " +
+                          WorksheetCreationMeta.getAnalysisSectionName()+", "+
+                          WorksheetCreationMeta.getAnalysisPreAnalysisId()+", "+
+                          WorksheetCreationMeta.getAnalysisStatusId()+") ");
         builder.constructWhere(fields);
-        
-//        builder.addWhere(WorksheetCreationMetaMap.SAMPLE.SAMPLE_PROJECT.getIsPermanent() + " = 'Y'");
-        
-        builder.setOrderBy(WorksheetCreationMetaMap.SAMPLE.getAccessionNumber());
+        builder.setOrderBy(WorksheetCreationMeta.getSampleAccessionNumber());
 
-        try {
-            query = manager.createQuery(builder.getEJBQL());
-            query.setMaxResults(first + max);
+        query = manager.createQuery(builder.getEJBQL());
+        query.setMaxResults(first + max);
 
-            builder.setQueryParams(query, fields);
+        builder.setQueryParams(query, fields);
 
-            list = DataBaseUtil.toArrayList(query.getResultList());
-            if (list.isEmpty()) {
-                throw new NotFoundException();
-            } else {
-                for (i = 0; i < list.size(); i++) {
-                    vo = (WorksheetCreationVO) list.get(i);
-                    //
-                    // Compute and set the number of days until the analysis is 
-                    // due to be completed based on when the sample was received,
-                    // what the tests average turnaround time is, and whether the
-                    // client requested a priority number of days.
-                    //
-                    if (vo.getPriority() != null)
-                        vo.setDueDays(computeDueDays(vo.getReceivedDate(), vo.getPriority()));
-                    else
-                        vo.setDueDays(computeDueDays(vo.getReceivedDate(), vo.getTimeTaAverage()));
-                        
-                    //
-                    // Compute and set the expiration date on the analysis based
-                    // on the collection date and the tests definition of holding
-                    // hours.
-                    //
-                    vo.setExpireDate(computeExpireDate(vo.getCollectionDate(), vo.getCollectionTime(), vo.getTimeHolding()));
-                }
+        list = DataBaseUtil.toArrayList(query.getResultList());
+        if (list.isEmpty()) {
+            throw new NotFoundException();
+        } else {
+            for (i = 0; i < list.size(); i++) {
+                vo = (WorksheetCreationVO) list.get(i);
+                //
+                // Compute and set the number of days until the analysis is 
+                // due to be completed based on when the sample was received,
+                // what the tests average turnaround time is, and whether the
+                // client requested a priority number of days.
+                //
+                if (vo.getPriority() != null)
+                    vo.setDueDays(computeDueDays(vo.getReceivedDate(), vo.getPriority()));
+                else
+                    vo.setDueDays(computeDueDays(vo.getReceivedDate(), vo.getTimeTaAverage()));
+                    
+                //
+                // Compute and set the expiration date on the analysis based
+                // on the collection date and the tests definition of holding
+                // hours.
+                //
+                vo.setExpireDate(computeExpireDate(vo.getCollectionDate(), vo.getCollectionTime(), vo.getTimeHolding()));
             }
-        } catch (Exception anyE) {
-            anyE.printStackTrace();
         }
 
         return (ArrayList<WorksheetCreationVO>)list;

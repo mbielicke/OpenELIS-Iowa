@@ -340,8 +340,8 @@ public class TestWorksheetManagerProxy {
         checkPosition = false;
 
         try {
-            batchId = (dictLocal().fetchBySystemName("batch")).getId();
-            totalId = (dictLocal().fetchBySystemName("total")).getId();
+            batchId = (dictLocal().fetchBySystemName("wsheet_num_format_batch")).getId();
+            totalId = (dictLocal().fetchBySystemName("wsheet_num_format_total")).getId();
             fixedId = (dictLocal().fetchBySystemName("pos_fixed")).getId();
             duplId = (dictLocal().fetchBySystemName("pos_duplicate")).getId();
         } catch(Exception e) {
