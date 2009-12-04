@@ -27,22 +27,23 @@ package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
 import org.openelis.meta.OrganizationMeta;
+import org.openelis.meta.OrganizationMetaOld;
 import org.openelis.meta.SampleOrganizationMeta;
 
 public class SampleOrganizationMetaMap extends SampleOrganizationMeta implements MetaMap{
     public SampleOrganizationMetaMap() {
         super("sampleOrg.");
-        ORGANIZATION = new OrganizationMeta(path+"organization.");
+        ORGANIZATION = new OrganizationMetaOld(path+"organization.");
     }
     
     public SampleOrganizationMetaMap(String path) {
         super(path);
-        ORGANIZATION = new OrganizationMeta(path+"organization.");
+        ORGANIZATION = new OrganizationMetaOld(path+"organization.");
     }
     
-    public OrganizationMeta ORGANIZATION;
+    public OrganizationMetaOld ORGANIZATION;
     
-    public OrganizationMeta getOrganization(){
+    public OrganizationMetaOld getOrganization(){
         return ORGANIZATION;
     }
     

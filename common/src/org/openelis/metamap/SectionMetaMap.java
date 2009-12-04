@@ -26,23 +26,23 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
-import org.openelis.meta.OrganizationMeta;
+import org.openelis.meta.OrganizationMetaOld;
 import org.openelis.meta.SectionMeta;
 
 public class SectionMetaMap extends SectionMeta implements MetaMap {
 // TODO convert this to new meta and remove reference to organization.
-   private OrganizationMeta ORGANIZATION;
+   private OrganizationMetaOld ORGANIZATION;
    private SectionMeta PARENT_SECTION;
     
    public SectionMetaMap() {
        super("s.");
-       ORGANIZATION = new OrganizationMeta();
+       ORGANIZATION = new OrganizationMetaOld();
        PARENT_SECTION = new SectionMeta("s.parentSection.");
    } 
     
    public SectionMetaMap(String path){
        super(path);
-       ORGANIZATION = new OrganizationMeta();
+       ORGANIZATION = new OrganizationMetaOld();
        PARENT_SECTION = new SectionMeta(path+"s.parentSection.");
    }
    
@@ -58,7 +58,7 @@ public class SectionMetaMap extends SectionMeta implements MetaMap {
        return super.hasColumn(name);
    }  
    
-   public OrganizationMeta getOrganization() {
+   public OrganizationMetaOld getOrganization() {
        return ORGANIZATION;
    }
    
