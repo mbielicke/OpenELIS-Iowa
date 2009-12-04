@@ -35,23 +35,12 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:analysisMetaMap="xalan://org.openelis.metamap.AnalysisMetaMap"
-  xmlns:methodMeta="xalan://org.openelis.meta.MethodMeta"
-  xmlns:sampleItemMetaMap="xalan://org.openelis.metamap.SampleItemMetaMap"
-  xmlns:sampleMetaMap="xalan://org.openelis.metamap.SampleMetaMap"
-  xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap"
-  xmlns:worksheetMetaMap="xalan://org.openelis.metamap.WorksheetMetaMap">
+  xmlns:meta="xalan://org.openelis.meta.WorksheetCreationMeta">
 
   <xsl:template match="doc">
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <xsl:variable name="sample" select="sampleMetaMap:new()" />
-    <xsl:variable name="sampleItem" select="sampleMetaMap:getSampleItem($sample)" />
-    <xsl:variable name="analysis" select="sampleItemMetaMap:getAnalysis($sampleItem)" />
-    <xsl:variable name="test" select="analysisMetaMap:getTest($analysis)" />
-    <xsl:variable name="method" select="testMetaMap:getMethod($test)" />
-    <xsl:variable name="worksheet" select="worksheetMetaMap:new()" />
     <screen id="WorksheetCreation" name="{resource:getString($constants,'worksheetCreation')}">
       <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
         <TablePanel style="Form">
@@ -59,7 +48,7 @@ UIRF Software License are applicable instead of those above.
 	        <text style="Prompt">
 	          <xsl:value-of select="resource:getString($constants,'worksheetNumber')" />:
 	        </text>
-	        <textbox key="{worksheetMetaMap:getId($worksheet)}" width="100px" case="LOWER" field="String" tab="worksheetItemTable,worksheetItemTable" />
+	        <textbox key="{meta:getId()}" width="100px" case="LOWER" field="String" tab="worksheetItemTable,worksheetItemTable" />
 	        <appButton key="saveButton" style="Button" action="save" >
 	          <HorizontalPanel>
 	            <AbsolutePanel style="SaveButtonImage" />
@@ -78,38 +67,38 @@ UIRF Software License are applicable instead of those above.
 	        </appButton>
           </row>
         </TablePanel>
-        <table key="worksheetItemTable" width="800" maxRows="9" showScroll="ALWAYS" tab="{worksheetMetaMap:getId($worksheet)},{worksheetMetaMap:getId($worksheet)}" title="" style="ScreenTableWithSides">
-          <col width="50" header="{resource:getString($constants,'position')}" sort="false">
+        <table key="worksheetItemTable" width="800" maxRows="9" showScroll="ALWAYS" tab="{meta:getId()},{meta:getId()}" title="" style="ScreenTableWithSides">
+          <col key="{resource:getString($constants,'position')}" width="50" header="{resource:getString($constants,'position')}" sort="false">
             <label />
           </col>
-          <col width="90" header="{resource:getString($constants,'accessionNum')}" sort="true">
+          <col key="{resource:getString($constants,'accessionNum')}" width="90" header="{resource:getString($constants,'accessionNum')}" sort="true">
             <label />
           </col>
-          <col width="150" header="{resource:getString($constants,'description')}" sort="true">
+          <col key="{resource:getString($constants,'description')}" width="150" header="{resource:getString($constants,'description')}" sort="true">
             <label />
           </col>
-          <col width="50" header="{resource:getString($constants,'qcLink')}" sort="false">
+          <col key="{resource:getString($constants,'qcLink')}" width="50" header="{resource:getString($constants,'qcLink')}" sort="false">
             <label />
           </col>
-          <col width="100" header="{resource:getString($constants,'test')}" sort="true">
+          <col key="{resource:getString($constants,'test')}" width="100" header="{resource:getString($constants,'test')}" sort="true">
             <label />
           </col>
-          <col width="100" header="{resource:getString($constants,'method')}" sort="true">
+          <col key="{resource:getString($constants,'method')}" width="100" header="{resource:getString($constants,'method')}" sort="true">
             <label />
           </col>
-          <col width="75" header="{resource:getString($constants,'status')}" sort="true">
+          <col key="{resource:getString($constants,'status')}" width="75" header="{resource:getString($constants,'status')}" sort="true">
             <dropdown width="55"/>
           </col>
-          <col width="75" header="{resource:getString($constants,'collected')}" sort="true">
+          <col key="{resource:getString($constants,'collected')}" width="75" header="{resource:getString($constants,'collected')}" sort="true">
             <calendar pattern="{resource:getString($constants,'datePattern')}" begin="0" end="2"/>
           </col>
-          <col width="100" header="{resource:getString($constants,'received')}" sort="true">
+          <col key="{resource:getString($constants,'received')}" width="100" header="{resource:getString($constants,'received')}" sort="true">
             <calendar pattern="{resource:getString($constants,'dateTimePattern')}" begin="0" end="4"/>
           </col>
-          <col width="50" header="{resource:getString($constants,'due')}" sort="true">
+          <col key="{resource:getString($constants,'due')}" width="50" header="{resource:getString($constants,'due')}" sort="true">
             <label />
           </col>
-          <col width="100" header="{resource:getString($constants,'expire')}" sort="true">
+          <col key="{resource:getString($constants,'expire')}" width="100" header="{resource:getString($constants,'expire')}" sort="true">
             <calendar pattern="{resource:getString($constants,'dateTimePattern')}" begin="0" end="4"/>
           </col>
         </table>
