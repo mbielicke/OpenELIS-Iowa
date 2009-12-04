@@ -30,19 +30,19 @@ import org.openelis.meta.OrganizationMeta;
 import org.openelis.meta.SectionMeta;
 
 public class SectionMetaMap extends SectionMeta implements MetaMap {
-
+// TODO convert this to new meta and remove reference to organization.
    private OrganizationMeta ORGANIZATION;
    private SectionMeta PARENT_SECTION;
     
    public SectionMetaMap() {
        super("s.");
-       ORGANIZATION = new OrganizationMeta("s.organization.");
+       ORGANIZATION = new OrganizationMeta();
        PARENT_SECTION = new SectionMeta("s.parentSection.");
    } 
     
    public SectionMetaMap(String path){
        super(path);
-       ORGANIZATION = new OrganizationMeta(path+"s.organization.");
+       ORGANIZATION = new OrganizationMeta();
        PARENT_SECTION = new SectionMeta(path+"s.parentSection.");
    }
    
