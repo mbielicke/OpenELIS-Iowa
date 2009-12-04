@@ -37,23 +37,13 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:addr="xalan://org.openelis.meta.AddressMeta"
-  xmlns:contact="xalan://org.openelis.metamap.OrganizationContactMetaMap"
-  xmlns:meta="xalan://org.openelis.metamap.OrganizationMetaMap"
-  xmlns:parameter="xalan://org.openelis.metamap.OrganizationParameterMeta"
-  xmlns:parent="xalan://org.openelis.meta.OrganizationMeta">
+  xmlns:meta="xalan://org.openelis.meta.OrganizationMeta">
 
   <xsl:import href="IMPORT/aToZOneColumn.xsl" />
   <xsl:template match="doc">
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <xsl:variable name="org" select="meta:new()" />
-    <xsl:variable name="addr" select="meta:getAddress($org)" />
-    <xsl:variable name="cont" select="meta:getOrganizationContact($org)" />
-    <xsl:variable name="param" select="meta:getOrganizationParameter($org)" />
-    <xsl:variable name="parent" select="meta:getParentOrganization($org)" />
-    <xsl:variable name="contAddr" select="contact:getAddress($cont)" />
 
 <!-- main screen -->
 
@@ -140,51 +130,51 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'id')" />:
                 </text>
-                <textbox key="{meta:getId($org)}" width="75" tab="{meta:getName($org)},{meta:getIsActive($org)}" field="Integer" />
+                <textbox key="{meta:getId()}" width="75" tab="{meta:getName()},{meta:getIsActive()}" field="Integer" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'name')" />:
                 </text>
-                <textbox key="{meta:getName($org)}" width="225" case="UPPER" max="40" tab="{addr:getMultipleUnit($addr)},{meta:getId($org)}" field="String" required="true" />
+                <textbox key="{meta:getName()}" width="225" case="UPPER" max="40" tab="{meta:getAddressMultipleUnit()},{meta:getId()}" field="String" required="true" />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'city')" />:
                 </text>
                 <widget colspan="3">
-                  <textbox key="{addr:getCity($addr)}" width="212" case="UPPER" max="30" tab="{addr:getState($addr)},{addr:getStreetAddress($addr)}" field="String" required="true" />
+                  <textbox key="{meta:getAddressCity()}" width="212" case="UPPER" max="30" tab="{meta:getAddressState()},{meta:getAddressStreetAddress()}" field="String" required="true" />
                 </widget>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'aptSuite')" />:
                 </text>
-                <textbox key="{addr:getMultipleUnit($addr)}" width="212" case="UPPER" max="30" tab="{addr:getStreetAddress($addr)},{meta:getName($org)}" field="String" />
+                <textbox key="{meta:getAddressMultipleUnit()}" width="212" case="UPPER" max="30" tab="{meta:getAddressStreetAddress()},{meta:getName()}" field="String" />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'state')" />:
                 </text>
-                <dropdown key="{addr:getState($addr)}" width="40" case="UPPER" popWidth="40" tab="{addr:getZipCode($addr)},{addr:getCity($addr)}" field="String" />
+                <dropdown key="{meta:getAddressState()}" width="40" case="UPPER" popWidth="40" tab="{meta:getAddressZipCode()},{meta:getAddressCity()}" field="String" />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'zipcode')" />:
                 </text>
-                <textbox key="{addr:getZipCode($addr)}" width="70" mask="99999-9999" tab="{addr:getCountry($addr)},{addr:getState($addr)}" field="String" />
+                <textbox key="{meta:getAddressZipCode()}" width="70" mask="99999-9999" tab="{meta:getAddressCountry()},{meta:getAddressState()}" field="String" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'address')" />:
                 </text>
-                <textbox key="{addr:getStreetAddress($addr)}" width="212" case="UPPER" max="30" tab="{addr:getCity($addr)},{addr:getMultipleUnit($addr)}" field="String" required="true" />
+                <textbox key="{meta:getAddressStreetAddress()}" width="212" case="UPPER" max="30" tab="{meta:getAddressCity()},{meta:getAddressMultipleUnit()}" field="String" required="true" />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'country')" />:
                 </text>
                 <widget colspan="3">
-                  <dropdown key="{addr:getCountry($addr)}" width="175" popWidth="175" tab="{parent:getName($parent)},{addr:getZipCode($addr)}" field="String" required="true" />
+                  <dropdown key="{meta:getAddressCountry()}" width="175" popWidth="175" tab="{meta:getParentOrganizationName()},{meta:getAddressZipCode()}" field="String" required="true" />
                 </widget>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'parentOrganization')" />:
                 </text>
-                <autoComplete key="{parent:getName($parent)}" width="241" case="UPPER" popWidth="auto" tab="{meta:getIsActive($org)},{addr:getCountry($addr)}" field="Integer">
+                <autoComplete key="{meta:getParentOrganizationName()}" width="241" case="UPPER" popWidth="auto" tab="{meta:getIsActive()},{meta:getAddressCountry()}" field="Integer">
                   <col width="180" header="Name" />
                   <col width="110" header="Street" />
                   <col width="100" header="City" />
@@ -194,7 +184,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'active')" />:
                 </text>
                 <widget colspan="3">
-                  <check key="{meta:getIsActive($org)}" tab="contactTable,{parent:getName($parent)}" />
+                  <check key="{meta:getIsActive()}" tab="contactTable,{meta:getParentOrganizationName()}" />
                 </widget>
               </row>
             </TablePanel>
@@ -207,44 +197,44 @@ UIRF Software License are applicable instead of those above.
 
               <tab key="contactTab" text="{resource:getString($constants,'contact')}">
                 <VerticalPanel padding="0" spacing="0">
-                  <table key="contactTable" width="587" maxRows="10" showScroll="ALWAYS" tab="{meta:getId($org)},{meta:getIsActive($org)}">
-                    <col key="{contact:getContactTypeId($cont)}" width="106" header="{resource:getString($constants,'type')}">
+                  <table key="contactTable" width="587" maxRows="10" showScroll="ALWAYS" tab="{meta:getId()},{meta:getIsActive()}">
+                    <col key="{meta:getOrganizationContactContactTypeId()}" width="106" header="{resource:getString($constants,'type')}">
                       <dropdown width="90" field="Integer" required="true" />
                     </col>
-                    <col key="{contact:getName($cont)}" width="130" header="{resource:getString($constants,'contactName')}">
+                    <col key="{meta:getOrganizationContactName()}" width="130" header="{resource:getString($constants,'contactName')}">
                       <textbox max="40" field="String" required="true" />
                     </col>
-                    <col key="{addr:getMultipleUnit($contAddr)}" width="130" header="{resource:getString($constants,'aptSuite')}">
+                    <col key="{meta:getOrganizationContactAddressMultipleUnit()}" width="130" header="{resource:getString($constants,'aptSuite')}">
                       <textbox case="UPPER" max="30" field="String" />
                     </col>
-                    <col key="{addr:getStreetAddress($contAddr)}" width="130" header="{resource:getString($constants,'address')}">
+                    <col key="{meta:getOrganizationContactAddressStreetAddress()}" width="130" header="{resource:getString($constants,'address')}">
                       <textbox case="UPPER" max="40" field="String" />
                     </col>
-                    <col key="{addr:getCity($contAddr)}" width="130" header="{resource:getString($constants,'city')}" sort="true">
+                    <col key="{meta:getOrganizationContactAddressCity()}" width="130" header="{resource:getString($constants,'city')}" sort="true">
                       <textbox case="UPPER" max="30" field="String" />
                     </col>
-                    <col key="{addr:getState($contAddr)}" width="56" header="{resource:getString($constants,'state')}">
+                    <col key="{meta:getOrganizationContactAddressState()}" width="56" header="{resource:getString($constants,'state')}">
                       <dropdown width="40" case="UPPER" field="String" />
                     </col>
-                    <col key="{addr:getZipCode($contAddr)}" width="68" header="{resource:getString($constants,'zipcode')}">
+                    <col key="{meta:getOrganizationContactAddressZipCode()}" width="68" header="{resource:getString($constants,'zipcode')}">
                       <textbox mask="99999-9999" field="String" />
                     </col>
-                    <col key="{addr:getCountry($contAddr)}" width="126" header="{resource:getString($constants,'country')}">
+                    <col key="{meta:getOrganizationContactAddressCountry()}" width="126" header="{resource:getString($constants,'country')}">
                       <dropdown width="110" field="String" />
                     </col>
-                    <col key="{addr:getWorkPhone($contAddr)}" width="100" header="{resource:getString($constants,'workNumber')}">
+                    <col key="{meta:getOrganizationContactAddressWorkPhone()}" width="100" header="{resource:getString($constants,'workNumber')}">
                       <textbox field="String" />
                     </col>
-                    <col key="{addr:getHomePhone($contAddr)}" width="90" header="{resource:getString($constants,'homeNumber')}">
+                    <col key="{meta:getOrganizationContactAddressHomePhone()}" width="90" header="{resource:getString($constants,'homeNumber')}">
                       <textbox field="String" />
                     </col>
-                    <col key="{addr:getCellPhone($contAddr)}" width="90" header="{resource:getString($constants,'cellNumber')}">
+                    <col key="{meta:getOrganizationContactAddressCellPhone()}" width="90" header="{resource:getString($constants,'cellNumber')}">
                       <textbox field="String" />
                     </col>
-                    <col key="{addr:getFaxPhone($contAddr)}" width="90" header="{resource:getString($constants,'faxNumber')}">
+                    <col key="{meta:getOrganizationContactAddressFaxPhone()}" width="90" header="{resource:getString($constants,'faxNumber')}">
                       <textbox field="String" />
                     </col>
-                    <col key="{addr:getEmail($contAddr)}" width="150" header="{resource:getString($constants,'email')}">
+                    <col key="{meta:getOrganizationContactAddressEmail()}" width="150" header="{resource:getString($constants,'email')}">
                       <textbox field="String" />
                     </col>
                   </table>
@@ -275,11 +265,11 @@ UIRF Software License are applicable instead of those above.
 
               <tab key="parameterTab" text="{resource:getString($constants,'parameter')}">
                 <VerticalPanel padding="0" spacing="0">
-                  <table key="parameterTable" width="587" maxRows="10" showScroll="ALWAYS" tab="{meta:getId($org)},{meta:getIsActive($org)}">
-                    <col key="{parameter:getTypeId($param)}" width="300" align="left" header="{resource:getString($constants,'type')}">
+                  <table key="parameterTable" width="587" maxRows="10" showScroll="ALWAYS" tab="{meta:getId()},{meta:getIsActive()}">
+                    <col key="{meta:getOrganizationParameterTypeId()}" width="300" align="left" header="{resource:getString($constants,'type')}">
                       <dropdown width="300" field="Integer" required="true" />
                     </col>
-                    <col key="{parameter:getValue($param)}" width="287" align="left" header="{resource:getString($constants,'value')}">
+                    <col key="{meta:getOrganizationParameterValue()}" width="287" align="left" header="{resource:getString($constants,'value')}">
                       <textbox max="80" field="String" required="true" />
                     </col>
                   </table>
