@@ -122,6 +122,13 @@ public class OrganizationScreen extends Screen {
         tab = Tabs.CONTACT;
         manager = OrganizationManager.getInstance();
 
+        try {
+            DictionaryCache.preloadByCategorySystemNames("country", "state",
+                                                         "contact_type", "parameter_type");
+        } catch (Exception e) {
+            Window.alert("OrganizationScreen: missing dictionary entry; " + e.getMessage());
+        }
+        
         initialize();
         setState(State.DEFAULT);
         initializeDropdowns();
