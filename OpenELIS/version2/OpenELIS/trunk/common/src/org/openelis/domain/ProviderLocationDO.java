@@ -28,11 +28,11 @@ package org.openelis.domain;
 import org.openelis.utilcommon.DataBaseUtil;
 
 /**
- * Class represents the fields in database table provider_address. The address
+ * Class represents the fields in database table provider_location. The address
  * information in this class is maintained in AddressDO object. 
  */
 
-public class ProviderAddressDO extends DataObject {
+public class ProviderLocationDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
@@ -40,11 +40,11 @@ public class ProviderAddressDO extends DataObject {
     protected String          location, externalId;
     protected AddressDO       addressDO;
 
-    public ProviderAddressDO() {
+    public ProviderLocationDO() {
         addressDO = new AddressDO();
     }
 
-    public ProviderAddressDO(Integer id, String location, String externalId, Integer providerId,
+    public ProviderLocationDO(Integer id, String location, String externalId, Integer providerId,
                              Integer addressId, String multipleUnit, String streetAddress, String city,
                              String state, String zipCode, String workPhone, String homePhone,
                              String cellPhone, String faxPhone, String email, String country) {
