@@ -48,7 +48,7 @@ UIRF Software License are applicable instead of those above.
 	        <text style="Prompt">
 	          <xsl:value-of select="resource:getString($constants,'worksheetNumber')" />:
 	        </text>
-	        <textbox key="{meta:getId()}" width="100px" case="LOWER" field="String" tab="worksheetItemTable,worksheetItemTable" />
+	        <textbox key="{meta:getWorksheetId()}" width="100px" case="LOWER" field="String" tab="worksheetItemTable,worksheetItemTable" />
 	        <appButton key="saveButton" style="Button" action="save" >
 	          <HorizontalPanel>
 	            <AbsolutePanel style="SaveButtonImage" />
@@ -67,38 +67,38 @@ UIRF Software License are applicable instead of those above.
 	        </appButton>
           </row>
         </TablePanel>
-        <table key="worksheetItemTable" width="800" maxRows="9" showScroll="ALWAYS" tab="{meta:getId()},{meta:getId()}" title="" style="ScreenTableWithSides">
-          <col key="{resource:getString($constants,'position')}" width="50" header="{resource:getString($constants,'position')}" sort="false">
+        <table key="worksheetItemTable" width="800" maxRows="9" showScroll="ALWAYS" tab="{meta:getWorksheetId()},{meta:getWorksheetId()}" title="" style="ScreenTableWithSides">
+          <col key="{meta:getWorksheetItemPosition()}" width="50" header="{resource:getString($constants,'position')}" sort="false">
             <label />
           </col>
-          <col key="{resource:getString($constants,'accessionNum')}" width="90" header="{resource:getString($constants,'accessionNum')}" sort="true">
+          <col key="{meta:getSampleAccessionNumber()}" width="90" header="{resource:getString($constants,'accessionNum')}" sort="true">
             <label />
           </col>
-          <col key="{resource:getString($constants,'description')}" width="150" header="{resource:getString($constants,'description')}" sort="true">
+          <col key="{meta:getSampleDescription()}" width="150" header="{resource:getString($constants,'description')}" sort="true">
             <label />
           </col>
-          <col key="{resource:getString($constants,'qcLink')}" width="50" header="{resource:getString($constants,'qcLink')}" sort="false">
+          <col key="{meta:getWorksheetAnalysisWorksheetAnalysisId}" width="50" header="{resource:getString($constants,'qcLink')}" sort="false">
             <label />
           </col>
-          <col key="{resource:getString($constants,'test')}" width="100" header="{resource:getString($constants,'test')}" sort="true">
+          <col key="{meta:getAnalysisTestName()}" width="100" header="{resource:getString($constants,'test')}" sort="true">
             <label />
           </col>
-          <col key="{resource:getString($constants,'method')}" width="100" header="{resource:getString($constants,'method')}" sort="true">
+          <col key="{meta:getAnalysisTestMethodName()}" width="100" header="{resource:getString($constants,'method')}" sort="true">
             <label />
           </col>
-          <col key="{resource:getString($constants,'status')}" width="75" header="{resource:getString($constants,'status')}" sort="true">
+          <col key="{meta:getAnalysisStatusId()}" width="75" header="{resource:getString($constants,'status')}" sort="true">
             <dropdown width="55"/>
           </col>
-          <col key="{resource:getString($constants,'collected')}" width="75" header="{resource:getString($constants,'collected')}" sort="true">
+          <col key="{meta:getSampleCollectionDate()}" width="75" header="{resource:getString($constants,'collected')}" sort="true">
             <calendar pattern="{resource:getString($constants,'datePattern')}" begin="0" end="2"/>
           </col>
-          <col key="{resource:getString($constants,'received')}" width="100" header="{resource:getString($constants,'received')}" sort="true">
+          <col key="{meta:getSampleReceivedDate()}" width="100" header="{resource:getString($constants,'received')}" sort="true">
             <calendar pattern="{resource:getString($constants,'dateTimePattern')}" begin="0" end="4"/>
           </col>
-          <col key="{resource:getString($constants,'due')}" width="50" header="{resource:getString($constants,'due')}" sort="true">
+          <col key="{meta:getAnalysisDueDays()}" width="50" header="{resource:getString($constants,'due')}" sort="true">
             <label />
           </col>
-          <col key="{resource:getString($constants,'expire')}" width="100" header="{resource:getString($constants,'expire')}" sort="true">
+          <col key="{meta:getAnalysisExpireDate()}" width="100" header="{resource:getString($constants,'expire')}" sort="true">
             <calendar pattern="{resource:getString($constants,'dateTimePattern')}" begin="0" end="4"/>
           </col>
         </table>
