@@ -69,8 +69,7 @@ import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.ProjectManager;
-import org.openelis.meta.ScriptletMeta;
-import org.openelis.metamap.ProjectMetaMap;
+import org.openelis.meta.ProjectMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -83,8 +82,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class ProjectScreen extends Screen {
     private ProjectManager   manager;
-    private ProjectMetaMap   meta       = new ProjectMetaMap();
-    private ScriptletMeta    scriptMeta = new ScriptletMeta();
     private SecurityModule   security;
 
     private CalendarLookUp   startedDate, completedDate;
@@ -225,7 +222,7 @@ public class ProjectScreen extends Screen {
             }
         });
 
-        id = (TextBox<Integer>)def.getWidget(meta.getId());
+        id = (TextBox<Integer>)def.getWidget(ProjectMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 id.setValue(manager.getProject().getId());
@@ -242,7 +239,7 @@ public class ProjectScreen extends Screen {
             }
         });
 
-        name = (TextBox)def.getWidget(meta.getName());
+        name = (TextBox)def.getWidget(ProjectMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(manager.getProject().getName());
@@ -259,7 +256,7 @@ public class ProjectScreen extends Screen {
             }
         });
 
-        description = (TextBox)def.getWidget(meta.getDescription());
+        description = (TextBox)def.getWidget(ProjectMeta.getDescription());
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 description.setValue(manager.getProject().getDescription());
@@ -276,7 +273,7 @@ public class ProjectScreen extends Screen {
             }
         });
 
-        ownerId = (AutoComplete<Integer>)def.getWidget(meta.getOwnerId());
+        ownerId = (AutoComplete<Integer>)def.getWidget(ProjectMeta.getOwnerId());
         addScreenHandler(ownerId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 ownerId.setSelection(manager.getProject().getOwnerId(), 
@@ -289,7 +286,7 @@ public class ProjectScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                ownerId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                ownerId.enable(EnumSet.of(State.ADD, State.UPDATE)
                                       .contains(event.getState()));
                 ownerId.setQueryMode(event.getState() == State.QUERY);
             }
@@ -317,7 +314,7 @@ public class ProjectScreen extends Screen {
             }
         });
 
-        isActive = (CheckBox)def.getWidget(meta.getIsActive());
+        isActive = (CheckBox)def.getWidget(ProjectMeta.getIsActive());
         addScreenHandler(isActive, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isActive.setValue(manager.getProject().getIsActive());
@@ -334,7 +331,7 @@ public class ProjectScreen extends Screen {
             }
         });
 
-        referenceTo = (TextBox)def.getWidget(meta.getReferenceTo());
+        referenceTo = (TextBox)def.getWidget(ProjectMeta.getReferenceTo());
         addScreenHandler(referenceTo, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 referenceTo.setValue(manager.getProject().getReferenceTo());
@@ -351,7 +348,7 @@ public class ProjectScreen extends Screen {
             }
         });
 
-        startedDate = (CalendarLookUp)def.getWidget(meta.getStartedDate());
+        startedDate = (CalendarLookUp)def.getWidget(ProjectMeta.getStartedDate());
         addScreenHandler(startedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 startedDate.setValue(manager.getProject().getStartedDate());
@@ -368,7 +365,7 @@ public class ProjectScreen extends Screen {
             }
         });
 
-        scriptletId = (AutoComplete<Integer>)def.getWidget(meta.getScriptlet().getName());
+        scriptletId = (AutoComplete<Integer>)def.getWidget(ProjectMeta.getScriptletName());
         addScreenHandler(name, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 scriptletId.setSelection(manager.getProject().getScriptletId(),
@@ -408,7 +405,7 @@ public class ProjectScreen extends Screen {
             }
         });
 
-        completedDate = (CalendarLookUp)def.getWidget(meta.getCompletedDate());
+        completedDate = (CalendarLookUp)def.getWidget(ProjectMeta.getCompletedDate());
         addScreenHandler(completedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 completedDate.setValue(manager.getProject().getCompletedDate());
@@ -576,7 +573,7 @@ public class ProjectScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = meta.getName();
+                field.key = ProjectMeta.getName();
                 field.query = ((AppButton)event.getSource()).action;
                 field.type = QueryData.Type.STRING;
 
@@ -596,7 +593,7 @@ public class ProjectScreen extends Screen {
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("project_parameter_operations"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
-        ((Dropdown)parameterTable.getColumnWidget(meta.PROJECT_PARAMETER.getOperationId())).setModel(model);
+        ((Dropdown)parameterTable.getColumnWidget(ProjectMeta.getProjectParameterOperationId())).setModel(model);
     }
 
     private void query() {

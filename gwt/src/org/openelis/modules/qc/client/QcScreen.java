@@ -439,7 +439,7 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                preparedBy.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                preparedBy.enable(EnumSet.of(State.ADD, State.UPDATE)
                                          .contains(event.getState()));
                 preparedBy.setQueryMode(event.getState() == State.QUERY);
             }

@@ -37,18 +37,13 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:addr="xalan://org.openelis.meta.AddressMeta"
-  xmlns:location="xalan://org.openelis.metamap.ProviderAddressMetaMap"
-  xmlns:meta="xalan://org.openelis.metamap.ProviderMetaMap">
+  xmlns:meta="xalan://org.openelis.meta.ProviderMeta">
 
   <xsl:import href="IMPORT/aToZOneColumn.xsl" />
   <xsl:template match="doc">
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <xsl:variable name="pro" select="meta:new()" />
-    <xsl:variable name="loc" select="meta:getProviderAddress($pro)" />
-    <xsl:variable name="locAddr" select="location:getAddress($loc)" />
 
 <!-- main screen -->
 
@@ -138,90 +133,90 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'id')" />:
                 </text>
-                <textbox key="{meta:getId($pro)}" width="50" tab="{meta:getLastName($pro)},{meta:getNpi($pro)}" field="Integer" />
+                <textbox key="{meta:getId()}" width="50" tab="{meta:getLastName()},{meta:getNpi()}" field="Integer" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'lastName')" />:
                 </text>
-                <textbox key="{meta:getLastName($pro)}" width="215" case="UPPER" max="30" tab="{meta:getFirstName($pro)},{meta:getId($pro)}" required="true" />
+                <textbox key="{meta:getLastName()}" width="215" case="UPPER" max="30" tab="{meta:getFirstName()},{meta:getId()}" required="true" />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'type')" />:
                 </text>
-                <dropdown key="{meta:getTypeId($pro)}" width="80" tab="{meta:getNpi($pro)},{meta:getMiddleName($pro)}" required="true" />
+                <dropdown key="{meta:getTypeId()}" width="80" tab="{meta:getNpi()},{meta:getMiddleName()}" required="true" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'firstName')" />:
                 </text>
-                <textbox key="{meta:getFirstName($pro)}" width="145" case="UPPER" max="20" tab="{meta:getMiddleName($pro)},{meta:getLastName($pro)}" />
+                <textbox key="{meta:getFirstName()}" width="145" case="UPPER" max="20" tab="{meta:getMiddleName()},{meta:getLastName()}" />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'npi')" />:
                 </text>
-                <textbox key="{meta:getNpi($pro)}" width="145" max="20" tab="{meta:getId($pro)},{meta:getTypeId($pro)}" />
+                <textbox key="{meta:getNpi()}" width="145" max="20" tab="{meta:getId()},{meta:getTypeId()}" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'middleName')" />:
                 </text>
-                <textbox key="{meta:getMiddleName($pro)}" width="145" case="UPPER" max="20" tab="{meta:getTypeId($pro)},{meta:getFirstName($pro)}" />
+                <textbox key="{meta:getMiddleName()}" width="145" case="UPPER" max="20" tab="{meta:getTypeId()},{meta:getFirstName()}" />
               </row>
             </TablePanel>
 
 <!-- TAB PANEL -->
 
-            <TabPanel key="provTabPanel" width="605">
+            <TabPanel key="tabPanel" width="605">
 
 <!-- TAB 1 -->
 
-              <tab key="addressesTab" text="{resource:getString($constants,'locations')}">
+              <tab key="locationTab" text="{resource:getString($constants,'locations')}">
                 <VerticalPanel width="605">
                   <widget valign="top">
-                    <table key="providerAddressTable" width="587" maxRows="10" showScroll="ALWAYS">
-                      <col key="{location:getLocation($loc)}" width="115" header="{resource:getString($constants,'location')}">
+                    <table key="locationTable" width="587" maxRows="10" showScroll="ALWAYS">
+                      <col key="{meta:getProviderLocationLocation()}" width="115" header="{resource:getString($constants,'location')}">
                         <textbox max="50" required="true" />
                       </col>
-                      <col key="{location:getExternalId($loc)}" width="130" header="{resource:getString($constants,'externalId')}">
+                      <col key="{meta:getProviderLocationExternalId()}" width="130" header="{resource:getString($constants,'externalId')}">
                         <textbox max="10" />
                       </col>
-                      <col key="{addr:getMultipleUnit($locAddr)}" width="130" header="{resource:getString($constants,'aptSuite')}">
+                      <col key="{meta:getProviderLocationAddressMultipleUnit()}" width="130" header="{resource:getString($constants,'aptSuite')}">
                         <textbox max="30" />
                       </col>
-                      <col key="{addr:getStreetAddress($locAddr)}" width="130" header="{resource:getString($constants,'address')}">
+                      <col key="{meta:getProviderLocationAddressStreetAddress()}" width="130" header="{resource:getString($constants,'address')}">
                         <textbox max="30" />
                       </col>
-                      <col key="{addr:getCity($locAddr)}" width="130" header="{resource:getString($constants,'city')}">
+                      <col key="{meta:getProviderLocationAddressCity()}" width="130" header="{resource:getString($constants,'city')}">
                         <textbox max="30" />
                       </col>
-                      <col key="{addr:getState($locAddr)}" width="60" header="{resource:getString($constants,'state')}">
+                      <col key="{meta:getProviderLocationAddressState()}" width="60" header="{resource:getString($constants,'state')}">
                         <dropdown width="60" case="UPPER" field="String" />
                       </col>
-                      <col key="{addr:getZipCode($locAddr)}" width="100" header="{resource:getString($constants,'zipcode')}">
+                      <col key="{meta:getProviderLocationAddressZipCode()}" width="100" header="{resource:getString($constants,'zipcode')}">
                         <textbox max="10" />
                       </col>
-                      <col key="{addr:getCountry($locAddr)}" width="130" header="{resource:getString($constants,'country')}">
+                      <col key="{meta:getProviderLocationAddressCountry()}" width="130" header="{resource:getString($constants,'country')}">
                         <dropdown width="130" field="String" />
                       </col>
-                      <col key="{addr:getWorkPhone($locAddr)}" width="90" header="{resource:getString($constants,'workNumber')}">
+                      <col key="{meta:getProviderLocationAddressWorkPhone()}" width="90" header="{resource:getString($constants,'workNumber')}">
                         <textbox max="21" />
                       </col>
-                      <col key="{addr:getHomePhone($locAddr)}" width="90" header="{resource:getString($constants,'homeNumber')}">
+                      <col key="{meta:getProviderLocationAddressHomePhone()}" width="90" header="{resource:getString($constants,'homeNumber')}">
                         <textbox max="16" />
                       </col>
-                      <col key="{addr:getCellPhone($locAddr)}" width="90" header="{resource:getString($constants,'cellNumber')}">
+                      <col key="{meta:getProviderLocationAddressCellPhone()}" width="90" header="{resource:getString($constants,'cellNumber')}">
                         <textbox max="16" />
                       </col>
-                      <col key="{addr:getFaxPhone($locAddr)}" width="150" header="{resource:getString($constants,'faxNumber')}">
+                      <col key="{meta:getProviderLocationAddressFaxPhone()}" width="150" header="{resource:getString($constants,'faxNumber')}">
                         <textbox max="16" />
                       </col>
-                      <col key="{addr:getEmail($locAddr)}" width="145" header="{resource:getString($constants,'email')}">
+                      <col key="{meta:getProviderLocationAddressEmail()}" width="145" header="{resource:getString($constants,'email')}">
                         <textbox max="80" />
                       </col>
                     </table>
                   </widget>
                   <widget style="TableButtonFooter">
                     <HorizontalPanel>
-                      <appButton key="addAddressButton" style="Button">
+                      <appButton key="addLocationButton" style="Button">
                         <HorizontalPanel>
                           <AbsolutePanel style="AddRowButtonImage" />
                           <widget>
@@ -231,7 +226,7 @@ UIRF Software License are applicable instead of those above.
                           </widget>
                         </HorizontalPanel>
                       </appButton>
-                      <appButton key="removeAddressButton" style="Button">
+                      <appButton key="removeLocationButton" style="Button">
                         <HorizontalPanel>
                           <AbsolutePanel style="RemoveRowButtonImage" />
                           <widget>
