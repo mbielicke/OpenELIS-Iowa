@@ -29,91 +29,113 @@ package org.openelis.meta;
  * Project META Data
  */
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 import org.openelis.gwt.common.Meta;
+import org.openelis.gwt.common.MetaMap;
 
-public class ProjectMeta implements Meta {
-    protected String              path        = "";
-    private static final String   entityName  = "Project";
+public class ProjectMeta implements Meta, MetaMap {
+    private static final String   ID = "_project.id",
+                                  NAME = "_project.name",
+                                  DESCRIPTION = "_project.description",
+                                  STARTED_DATE = "_project.startedDate",
+                                  COMPLETED_DATE = "_project.completedDate",
+                                  IS_ACTIVE = "_project.isActive",
+                                  REFERENCE_TO = "_project.referenceTo",
+                                  OWNER_ID = "_project.ownerId",
+                                  SCRIPTLET_ID = "_project.scriptletId",
 
-    private static final String   ID = "id",
-                                  NAME = "name",
-                                  DESCRIPTION = "description",
-                                  STARTED_DATE = "startedDate",
-                                  COMPLETED_DATE = "completedDate",
-                                  IS_ACTIVE = "isActive",
-                                  REFERENCE_TO = "referenceTo",
-                                  OWNER_ID = "ownerId",
-                                  SCRIPTLET_ID = "scriptletId";
+                                  PARM_ID = "_projectParameter.id",
+                                  PARM_PROJECT_ID = "_projectParameter.projectId",
+                                  PARM_PARAMETER = "_projectParameter.parameter",
+                                  PARM_OPERATION_ID = "_projectParameter.operationId",
+                                  PARM_VALUE= "_projectParameter.value",
+                                  
+                                  SCRIPTLET_NAME = "_project.scriptlet.name";
 
-    private static final String[] columnNames = {ID, NAME, DESCRIPTION,
-                    STARTED_DATE, COMPLETED_DATE, IS_ACTIVE,
-                    REFERENCE_TO, OWNER_ID, SCRIPTLET_ID};
+    private static HashSet<String> names;
 
-    private HashSet<String>       columnHashList;
-
-    private void init() {
-        columnHashList = new HashSet<String>(columnNames.length);
-        for (int i = 0; i < columnNames.length; i++ ) {
-            columnHashList.add(path + columnNames[i]);
-        }
+    static {
+        names = new HashSet<String>(Arrays.asList(ID, NAME, DESCRIPTION,
+                                                  STARTED_DATE, COMPLETED_DATE, IS_ACTIVE,
+                                                  REFERENCE_TO, OWNER_ID, SCRIPTLET_ID,
+                                                  PARM_ID, PARM_PROJECT_ID, PARM_PARAMETER,
+                                                  PARM_OPERATION_ID, PARM_VALUE,
+                                                  SCRIPTLET_NAME));
     }
 
-    public ProjectMeta() {
-        init();
+    public static String getId() {
+        return ID;
     }
 
-    public ProjectMeta(String path) {
-        this.path = path;
-        init();
+    public static String getName() {
+        return NAME;
     }
 
-    public String[] getColumnList() {
-        return columnNames;
+    public static String getDescription() {
+        return DESCRIPTION;
     }
 
-    public String getEntity() {
-        return entityName;
+    public static String getStartedDate() {
+        return STARTED_DATE;
+    }
+
+    public static String getCompletedDate() {
+        return COMPLETED_DATE;
+    }
+
+    public static String getIsActive() {
+        return IS_ACTIVE;
+    }
+
+    public static String getReferenceTo() {
+        return REFERENCE_TO;
+    }
+
+    public static String getOwnerId() {
+        return OWNER_ID;
+    }
+
+    public static String getScriptletId() {
+        return SCRIPTLET_ID;
+    }
+
+    public static String getProjectParameterId() {
+        return PARM_ID;
+    }
+
+    public static String getProjectParameterProjectId() {
+        return PARM_PROJECT_ID;
+    }
+
+    public static String getProjectParameterParameter() {
+        return PARM_PARAMETER;
+    }
+
+    public static String getProjectParameterOperationId() {
+        return PARM_OPERATION_ID;
+    }
+
+    public static String getProjectParameterValue() {
+        return PARM_VALUE;
+    }
+
+    public static String getScriptletName() {
+        return SCRIPTLET_NAME;
     }
 
     public boolean hasColumn(String columnName) {
-        return columnHashList.contains(columnName);
+        return names.contains(columnName);
     }
 
-    public String getId() {
-        return path + ID;
-    }
+    public String buildFrom(String where) {
+        String from;
+        
+        from = "Project _project ";
+        if (where.indexOf("projectParameter.") > -1)
+            from += ",IN (_project.projectParameter) _projectParameter ";
 
-    public String getName() {
-        return path + NAME;
-    }
-
-    public String getDescription() {
-        return path + DESCRIPTION;
-    }
-
-    public String getStartedDate() {
-        return path + STARTED_DATE;
-    }
-
-    public String getCompletedDate() {
-        return path + COMPLETED_DATE;
-    }
-
-    public String getIsActive() {
-        return path + IS_ACTIVE;
-    }
-
-    public String getReferenceTo() {
-        return path + REFERENCE_TO;
-    }
-
-    public String getOwnerId() {
-        return path + OWNER_ID;
-    }
-
-    public String getScriptletId() {
-        return path + SCRIPTLET_ID;
+        return from;
     }
 }

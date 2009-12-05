@@ -10,7 +10,7 @@ public class ProviderManager implements RPC, HasNotesInt {
     private static final long                       serialVersionUID = 1L;
 
     protected ProviderDO                            provider;
-    protected ProviderAddressManager                addresses;
+    protected ProviderLocationManager               locations;
     protected NoteManager                           notes;
 
     protected transient static ProviderManagerProxy proxy;
@@ -20,7 +20,7 @@ public class ProviderManager implements RPC, HasNotesInt {
      * allocation.
      */
     protected ProviderManager() {
-        addresses = null;
+        locations = null;
         notes = null;
         provider = null;
     }
@@ -51,8 +51,8 @@ public class ProviderManager implements RPC, HasNotesInt {
         return proxy().fetchById(id);
     }
 
-    public static ProviderManager fetchWithAddresses(Integer id) throws Exception {
-        return proxy().fetchWithAddresses(id);
+    public static ProviderManager fetchWithLocations(Integer id) throws Exception {
+        return proxy().fetchWithLocations(id);
     }
 
     public static ProviderManager fetchWithNotes(Integer id) throws Exception {
@@ -82,21 +82,21 @@ public class ProviderManager implements RPC, HasNotesInt {
     //
     // other managers
     //
-    public ProviderAddressManager getAddresses() throws Exception {
-        if (addresses == null) {
+    public ProviderLocationManager getLocations() throws Exception {
+        if (locations == null) {
             if (provider.getId() != null) {
                 try {
-                    addresses = ProviderAddressManager.fetchByProviderId(provider.getId());
+                    locations = ProviderLocationManager.fetchByProviderId(provider.getId());
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
                     throw e;
                 }
             }
-            if (addresses == null)
-                addresses = ProviderAddressManager.getInstance();
+            if (locations == null)
+                locations = ProviderLocationManager.getInstance();
         }
-        return addresses;
+        return locations;
     }
 
     public NoteManager getNotes() throws Exception {

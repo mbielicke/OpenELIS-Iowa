@@ -32,12 +32,12 @@ import org.openelis.meta.SampleProjectMeta;
 public class SampleProjectMetaMap extends SampleProjectMeta implements MetaMap {
     public SampleProjectMetaMap(){
         super("sampleProject.");
-        PROJECT = new ProjectMeta(path+"project.");
+        //PROJECT = new ProjectMeta(path+"project.");
     }
     
     public SampleProjectMetaMap(String path){
         super(path);
-        PROJECT = new ProjectMeta(path+"project.");
+        //PROJECT = new ProjectMeta(path+"project.");
     }
     
     public ProjectMeta PROJECT;

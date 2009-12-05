@@ -144,6 +144,5 @@ public class QcMeta implements Meta, MetaMap {
             from += ",IN (_qc.qcAnalyte) _qcAnalyte ";
 
         return from;
-
     }
 }

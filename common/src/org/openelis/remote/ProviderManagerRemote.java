@@ -2,7 +2,7 @@ package org.openelis.remote;
 
 import javax.ejb.Remote;
 
-import org.openelis.manager.ProviderAddressManager;
+import org.openelis.manager.ProviderLocationManager;
 import org.openelis.manager.ProviderManager;
 
 @Remote
@@ -10,7 +10,7 @@ public interface ProviderManagerRemote {
 
     public ProviderManager fetchById(Integer id) throws Exception;
 
-    public ProviderManager fetchWithAddresses(Integer id) throws Exception;
+    public ProviderManager fetchWithLocations(Integer id) throws Exception;
 
     public ProviderManager fetchWithNotes(Integer id) throws Exception;
 
@@ -22,6 +22,6 @@ public interface ProviderManagerRemote {
 
     public ProviderManager abortUpdate(Integer id) throws Exception;
     
-    public ProviderAddressManager fetchAddressByProviderId(Integer id) throws Exception;
+    public ProviderLocationManager fetchLocationByProviderId(Integer id) throws Exception;
 
 }
