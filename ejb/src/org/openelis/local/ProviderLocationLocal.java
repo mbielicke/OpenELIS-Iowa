@@ -29,17 +29,17 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
-import org.openelis.domain.ProviderAddressDO;
+import org.openelis.domain.ProviderLocationDO;
 
 @Local
-public interface ProviderAddressLocal {
-    public ArrayList<ProviderAddressDO> fetchByProviderId(Integer id) throws Exception;
+public interface ProviderLocationLocal {
+    public ArrayList<ProviderLocationDO> fetchByProviderId(Integer id) throws Exception;
 
-    public ProviderAddressDO add(ProviderAddressDO data) throws Exception;
+    public ProviderLocationDO add(ProviderLocationDO data) throws Exception;
 
-    public ProviderAddressDO update(ProviderAddressDO data) throws Exception;
+    public ProviderLocationDO update(ProviderLocationDO data) throws Exception;
 
-    public void delete(ProviderAddressDO id) throws Exception;
+    public void delete(ProviderLocationDO id) throws Exception;
 
-    public void validate(ProviderAddressDO data) throws Exception;
+    public void validate(ProviderLocationDO data) throws Exception;
 }

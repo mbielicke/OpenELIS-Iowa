@@ -49,7 +49,7 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.ProjectLocal;
-import org.openelis.metamap.ProjectMetaMap;
+import org.openelis.meta.ProjectMeta;
 import org.openelis.remote.ProjectRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
@@ -62,12 +62,12 @@ import org.openelis.utilcommon.DataBaseUtil;
 public class ProjectBean implements ProjectLocal, ProjectRemote {
 
     @PersistenceContext(name = "openelis")
-    private EntityManager         manager;
+    private EntityManager       manager;
 
-    private static ProjectMetaMap meta = new ProjectMetaMap();
+    private static ProjectMeta  meta = new ProjectMeta();
 
     @EJB
-    private SystemUserUtilLocal   sysUser;
+    private SystemUserUtilLocal sysUser;
 
     public ProjectBean() {
     }
@@ -115,9 +115,9 @@ public class ProjectBean implements ProjectLocal, ProjectRemote {
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
         builder.setSelect("distinct new org.openelis.domain.IdNameVO(" +
-                          meta.getId() + "," + meta.getName() + ") ");
+                          ProjectMeta.getId() + "," + ProjectMeta.getName() + ") ");
         builder.constructWhere(fields);
-        builder.setOrderBy(meta.getName());
+        builder.setOrderBy(ProjectMeta.getName());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
@@ -182,31 +182,31 @@ public class ProjectBean implements ProjectLocal, ProjectRemote {
         
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getIsActive()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getIsActive()));
+            list.add(new FieldErrorException("fieldRequiredException", ProjectMeta.getIsActive()));
 
         if (DataBaseUtil.isEmpty(data.getOwnerId()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getOwnerId()));
+            list.add(new FieldErrorException("fieldRequiredException", ProjectMeta.getOwnerId()));
 
         if (DataBaseUtil.isEmpty(data.getStartedDate()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getStartedDate()));
+            list.add(new FieldErrorException("fieldRequiredException", ProjectMeta.getStartedDate()));
 
         if (DataBaseUtil.isEmpty(data.getCompletedDate()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getCompletedDate()));
+            list.add(new FieldErrorException("fieldRequiredException", ProjectMeta.getCompletedDate()));
 
         if (DataBaseUtil.isAfter(data.getStartedDate(), data.getCompletedDate()))
             list.add(new FieldErrorException("endDateAfterBeginDateException",
-                                                      meta.getCompletedDate()));
+                                                      ProjectMeta.getCompletedDate()));
         //
         // check for duplicate name
         //
         if (DataBaseUtil.isEmpty(data.getName())) { 
-            list.add(new FieldErrorException("fieldRequiredException", meta.getName()));
+            list.add(new FieldErrorException("fieldRequiredException", ProjectMeta.getName()));
         } else {
             if ("Y".equals(data.getIsActive())) {
                 try {
                     dups = fetchActiveByName(data.getName(), 1);
                     if (dups.size() > 0 && DataBaseUtil.isDifferent(data.getId(), dups.get(0).getId())) 
-                        list.add(new FieldErrorException("fieldUniqueException", meta.getName()));
+                        list.add(new FieldErrorException("fieldUniqueException", ProjectMeta.getName()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

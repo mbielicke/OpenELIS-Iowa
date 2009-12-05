@@ -102,15 +102,14 @@ public class Project implements Auditable, Cloneable {
   @Column(name="scriptlet_id")
   private Integer scriptletId;             
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "scriptlet_id",insertable = false, updatable = false)
+  private Scriptlet scriptlet;
+
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "project_id")
   private Collection<ProjectParameter> projectParameter;
   
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "scriptlet_id",insertable = false, updatable = false)
-  private Scriptlet scriptlet;
-  
-
   @Transient
   private Project original;
   

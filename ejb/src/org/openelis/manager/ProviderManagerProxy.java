@@ -49,11 +49,11 @@ public class ProviderManagerProxy {
         return m;
     }
 
-    public ProviderManager fetchWithAddresses(Integer id) throws Exception {
+    public ProviderManager fetchWithLocations(Integer id) throws Exception {
         ProviderManager m;
 
         m = fetchById(id);
-        m.getAddresses();
+        m.getLocations();
 
         return m;
     }
@@ -75,13 +75,15 @@ public class ProviderManagerProxy {
         ol.add(man.getProvider());
         id = man.getProvider().getId();
 
-        man.getAddresses().setProviderId(id);
-        man.getAddresses().add();
-
-        man.getNotes().setReferenceId(id);
-        man.getNotes().setReferenceTableId(ReferenceTable.PROVIDER);
-        man.getNotes().add();
-
+        if (man.locations != null) {
+            man.getLocations().setProviderId(id);
+            man.getLocations().add();
+        }
+        if (man.notes != null) {
+            man.getNotes().setReferenceId(id);
+            man.getNotes().setReferenceTableId(ReferenceTable.PROVIDER);
+            man.getNotes().add();
+        }
         return man;
     }
 
@@ -93,13 +95,15 @@ public class ProviderManagerProxy {
         ol.update(man.getProvider());
         id = man.getProvider().getId();
 
-        man.getAddresses().setProviderId(id);
-        man.getAddresses().update();
-
-        man.getNotes().setReferenceId(id);
-        man.getNotes().setReferenceTableId(ReferenceTable.PROVIDER);
-        man.getNotes().update();
-
+        if (man.locations != null) {
+            man.getLocations().setProviderId(id);
+            man.getLocations().update();
+        }
+        if (man.notes != null) {
+            man.getNotes().setReferenceId(id);
+            man.getNotes().setReferenceTableId(ReferenceTable.PROVIDER);
+            man.getNotes().update();
+        }
         return man;
     }
 
@@ -123,12 +127,14 @@ public class ProviderManagerProxy {
             DataBaseUtil.mergeException(list, e);
         }
         try {
-            man.getAddresses().validate();
+            if (man.locations != null)
+                man.getLocations().validate();
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
         try {
-            man.getNotes().validate();
+            if (man.notes != null)
+                man.getNotes().validate();
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }

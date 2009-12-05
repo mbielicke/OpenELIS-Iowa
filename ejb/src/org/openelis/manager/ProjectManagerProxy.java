@@ -43,9 +43,10 @@ public class ProjectManagerProxy {
         local().add(man.getProject());
         id = man.getProject().getId();
 
-        man.getParameters().setProjectId(id);
-        man.getParameters().add();
-
+        if (man.parameters != null) {
+            man.getParameters().setProjectId(id);
+            man.getParameters().add();
+        }
         return man;
     }
 
@@ -55,9 +56,10 @@ public class ProjectManagerProxy {
         local().update(man.getProject());
         id = man.getProject().getId();
 
-        man.getParameters().setProjectId(id);
-        man.getParameters().update();
-
+        if (man.parameters != null) {
+            man.getParameters().setProjectId(id);
+            man.getParameters().update();
+        }
         return man;
     }
 
@@ -81,7 +83,8 @@ public class ProjectManagerProxy {
             DataBaseUtil.mergeException(list, e);
         }
         try {
-            man.getParameters().validate();
+            if (man.parameters != null)
+                man.getParameters().validate();
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
