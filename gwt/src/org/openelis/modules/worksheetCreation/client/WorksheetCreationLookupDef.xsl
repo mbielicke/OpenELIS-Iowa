@@ -102,37 +102,37 @@ UIRF Software License are applicable instead of those above.
           </widget>
         </HorizontalPanel>
         <table key="analysesTable" width="800" maxRows="9" showScroll="ALWAYS" tab="{meta:getAnalysisTestId()},{meta:getSampleEnteredDate()}" title="" style="ScreenTableWithSides">
-          <col key="{resource:getString($constants,'accessionNum')}" width="90" header="{resource:getString($constants,'accessionNum')}" sort="true">
+          <col key="{meta:getSampleAccessionNumber()}" width="90" header="{resource:getString($constants,'accessionNum')}" sort="true">
             <label />
           </col>
-          <col key="{resource:getString($constants,'description')}" width="150" header="{resource:getString($constants,'description')}" sort="true">
+          <col key="{meta:getSampleEnvironmentalDescription()}" width="150" header="{resource:getString($constants,'description')}" sort="true">
             <label />
           </col>
-          <col key="{resource:getString($constants,'test')}" width="100" header="{resource:getString($constants,'test')}" sort="true">
+          <col key="{meta:getAnalysisTestId()}" width="100" header="{resource:getString($constants,'test')}" sort="true">
             <label />
           </col>
-          <col key="{resource:getString($constants,'method')}" width="100" header="{resource:getString($constants,'method')}" sort="true">
+          <col key="{meta:getAnalysisTestMethodName()}" width="100" header="{resource:getString($constants,'method')}" sort="true">
             <label />
           </col>
-          <col key="{resource:getString($constants,'section')}" width="100" header="{resource:getString($constants,'section')}" sort="true">
+          <col key="{meta:getAnalysisSectionName()}" width="100" header="{resource:getString($constants,'section')}" sort="true">
             <label />
           </col>
-          <col key="{resource:getString($constants,'status')}" width="75" header="{resource:getString($constants,'status')}" sort="true">
+          <col key="{meta:getAnalysisStatusId()}" width="75" header="{resource:getString($constants,'status')}" sort="true">
             <dropdown width="55"/>
           </col>
-          <col key="{resource:getString($constants,'collected')}" width="75" header="{resource:getString($constants,'collected')}" sort="true">
+          <col key="{meta:getSampleCollectionDate}" width="75" header="{resource:getString($constants,'collected')}" sort="true">
             <calendar pattern="{resource:getString($constants,'datePattern')}" begin="0" end="2"/>
           </col>
-          <col key="{resource:getString($constants,'received')}" width="100" header="{resource:getString($constants,'received')}" sort="true">
+          <col key="{meta:getSampleReceivedDate}" width="100" header="{resource:getString($constants,'received')}" sort="true">
             <calendar pattern="{resource:getString($constants,'dateTimePattern')}" begin="0" end="4"/>
           </col>
-          <col key="{resource:getString($constants,'due')}" width="50" header="{resource:getString($constants,'due')}" sort="true">
+          <col key="{meta:getAnalysisDueDays()}" width="50" header="{resource:getString($constants,'due')}" sort="true">
             <label />
           </col>
-          <col key="{resource:getString($constants,'expire')}" width="100" header="{resource:getString($constants,'expire')}" sort="true">
+          <col key="{meta:getAnalysisExpireDate()}" width="100" header="{resource:getString($constants,'expire')}" sort="true">
             <calendar pattern="{resource:getString($constants,'dateTimePattern')}" begin="0" end="4"/>
           </col>
-          <col key="{resource:getString($constants,'priority')}" width="65" header="{resource:getString($constants,'priority')}" sort="true">
+          <col key="{meta:getSampleEnvironmentalPriority()}" width="65" header="{resource:getString($constants,'priority')}" sort="true">
             <label />
           </col>
         </table>
