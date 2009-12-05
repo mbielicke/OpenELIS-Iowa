@@ -36,8 +36,12 @@ import org.openelis.gwt.common.Meta;
 import org.openelis.gwt.common.MetaMap;
 
 public class WorksheetCreationMeta implements Meta, MetaMap {
-    private static final String ID  = "_worksheet.id",
+    private static final String WSHT_ID  = "_worksheet.id",
     
+                                WSHT_ITEM_POSITION = "_worksheetItem.position",
+                                
+                                WSHT_ANA_WORKSHEET_ANALYSIS_ID = "_worksheetAnalysis.worksheetAnalysisId",
+
                                 SAMP_DOMAIN = "_sample.domain",
                                 SAMP_ACCESSION_NUMBER = "_sample.accessionNumber",
                                 SAMP_COLLECTION_DATE = "_sample.collectionDate",
@@ -62,12 +66,19 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
                                 ANA_SECTION_ID = "_analysis.sectionId",
                                 ANA_SECTION_NAME = "_analysis.section.name",
                                 ANA_PRE_ANALYSIS_ID = "_analysis.preAnalysisId",
-                                ANA_STATUS_ID = "_analysis.statusId";
+                                ANA_STATUS_ID = "_analysis.statusId",
+                                
+                                SAMP_DESCRIPTION = "_sample.description",   // combined field for all domain descriptions
+                                ANA_DUE_DAYS = "_analysis.dueDays",
+                                ANA_EXPIRE_DATE = "_analysis.expireDate";
+                                
 
     private static HashSet<String> names;
 
     static {
-        names = new HashSet<String>(Arrays.asList(ID, SAMP_DOMAIN, SAMP_ACCESSION_NUMBER,
+        names = new HashSet<String>(Arrays.asList(WSHT_ID, WSHT_ITEM_POSITION, 
+                                                  WSHT_ANA_WORKSHEET_ANALYSIS_ID, 
+                                                  SAMP_DOMAIN, SAMP_ACCESSION_NUMBER,
                                                   SAMP_COLLECTION_DATE, SAMP_COLLECTION_TIME,
                                                   SAMP_RECEIVED_DATE, SAMP_ENV_DESCRIPTION,
                                                   SAMP_ENV_PRIORITY, SAMP_ITEM_TYPE_OF_SAMPLE_ID,
@@ -76,11 +87,20 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
                                                   ANA_TEST_METHOD_NAME, ANA_TEST_TIME_HOLDING,
                                                   ANA_TEST_TIME_TA_AVERAGE, ANA_SECTION_ID,
                                                   ANA_SECTION_NAME, ANA_PRE_ANALYSIS_ID,
-                                                  ANA_STATUS_ID));
+                                                  ANA_STATUS_ID, SAMP_DESCRIPTION,
+                                                  ANA_DUE_DAYS, ANA_EXPIRE_DATE));
     }
 
-    public static String getId() {
-        return ID;
+    public static String getWorksheetId() {
+        return WSHT_ID;
+    }
+
+    public static String getWorksheetItemPosition() {
+        return WSHT_ITEM_POSITION;
+    }
+
+    public static String getWorksheetAnalysisWorksheetAnalysisId() {
+        return WSHT_ANA_WORKSHEET_ANALYSIS_ID;
     }
 
     public static String getSampleDomain() {
@@ -165,6 +185,18 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
 
     public static String getAnalysisStatusId() {
         return ANA_STATUS_ID;
+    }
+
+    public static String getSampleDescription() {
+        return SAMP_DESCRIPTION;
+    }
+
+    public static String getAnalysisDueDays() {
+        return ANA_DUE_DAYS;
+    }
+
+    public static String getAnalysisExpireDate() {
+        return ANA_EXPIRE_DATE;
     }
 
     public boolean hasColumn(String columnName) {
