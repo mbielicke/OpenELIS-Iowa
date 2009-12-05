@@ -53,138 +53,132 @@ import org.w3c.dom.Element;
 
 @NamedQueries({
 	@NamedQuery(name = "Provider.FetchById", 
-			    query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,d.id,p.npi)" +                                                                                                  
-					    "  from Provider p, Dictionary d where d.id = p.typeId and p.id = :id")
+			    query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.typeId,p.npi)"                                                                                                  
+					  + " from Provider p where p.id = :id")
 })
 
 @Entity
-@Table(name="provider")
-@EntityListeners({AuditUtil.class})
+@Table(name = "provider")
+@EntityListeners( {AuditUtil.class})
 public class Provider implements Auditable, Cloneable {
-  
-  @Id
-  @GeneratedValue
-  @Column(name="id")
-  private Integer id;             
 
-  @Column(name="last_name")
-  private String lastName;             
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private Integer                      id;
 
-  @Column(name="first_name")
-  private String firstName;             
+    @Column(name = "last_name")
+    private String                       lastName;
 
-  @Column(name="middle_name")
-  private String middleName;             
+    @Column(name = "first_name")
+    private String                       firstName;
 
-  @Column(name="type_id")
-  private Integer typeId;             
+    @Column(name = "middle_name")
+    private String                       middleName;
 
-  @Column(name="npi")
-  private String npi;             
+    @Column(name = "type_id")
+    private Integer                      typeId;
 
-  @OneToMany(fetch = FetchType.LAZY)
-  @JoinColumn(name = "provider_id",insertable = false, updatable = false)
-  private Collection<ProviderAddress> providerAddress;
-  
-  @OneToMany(fetch = FetchType.LAZY)
-  @JoinColumn(name = "reference_id", insertable = false, updatable = false)
-  private Collection<Note> provNote;
+    @Column(name = "npi")
+    private String                       npi;
 
-  @Transient
-  private Provider original;
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "provider_id", insertable = false, updatable = false)
+    private Collection<ProviderLocation> providerLocation;
 
-  
-  public Integer getId() {
-    return id;
-  }
-  protected void setId(Integer id) {
-    if(DataBaseUtil.isDifferent(id,this.id))
-      this.id = id;
-  }
+    @Transient
+    private Provider                     original;
 
-  public String getLastName() {
-    return lastName;
-  }
-  public void setLastName(String lastName) {
-    if(DataBaseUtil.isDifferent(lastName,this.lastName))
-      this.lastName = lastName;
-  }
-
-  public String getFirstName() {
-    return firstName;
-  }
-  public void setFirstName(String firstName) {
-    if(DataBaseUtil.isDifferent(firstName,this.firstName))
-      this.firstName = firstName;
-  }
-
-  public String getMiddleName() {
-    return middleName;
-  }
-  public void setMiddleName(String middleName) {
-    if(DataBaseUtil.isDifferent(middleName,this.middleName))
-      this.middleName = middleName;
-  }
-
-  public Integer getTypeId() {
-    return typeId;
-  }
-  public void setTypeId(Integer typeId) {
-    if(DataBaseUtil.isDifferent(typeId,this.typeId))
-      this.typeId = typeId;
-  }
-
-  public String getNpi() {
-    return npi;
-  }
-  public void setNpi(String npi) {
-    if(DataBaseUtil.isDifferent(npi,this.npi))
-      this.npi = npi;
-  }
-
-  
-  public void setClone() {
-    try {
-      original = (Provider)this.clone();
-    }catch(Exception e){}
-  }
-  
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
-      AuditUtil.getChangeXML(lastName,original.lastName,doc,"last_name");
-      AuditUtil.getChangeXML(firstName,original.firstName,doc,"first_name");
-      AuditUtil.getChangeXML(middleName,original.middleName,doc,"middle_name");
-      AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
-      AuditUtil.getChangeXML(npi,original.npi,doc,"npi");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
-    }catch(Exception e){
-      e.printStackTrace();
+    public Integer getId() {
+        return id;
     }
-    return null;
-  }
-   
-  public String getTableName() {
-    return "provider";
-  }
-  
-  public Collection<ProviderAddress> getProviderAddress() {
-      return providerAddress;
-   }
-   
-   public void setProviderAddress(Collection<ProviderAddress> providerAddress) {
-     this.providerAddress = providerAddress;
-   }
-    public Collection<Note> getProvNote() {
-     return provNote;
-   }
-    public void setProvNote(Collection<Note> provNote) {
-     this.provNote = provNote;
-   }
-  
-}   
+
+    protected void setId(Integer id) {
+        if (DataBaseUtil.isDifferent(id, this.id))
+            this.id = id;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        if (DataBaseUtil.isDifferent(lastName, this.lastName))
+            this.lastName = lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        if (DataBaseUtil.isDifferent(firstName, this.firstName))
+            this.firstName = firstName;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        if (DataBaseUtil.isDifferent(middleName, this.middleName))
+            this.middleName = middleName;
+    }
+
+    public Integer getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(Integer typeId) {
+        if (DataBaseUtil.isDifferent(typeId, this.typeId))
+            this.typeId = typeId;
+    }
+
+    public String getNpi() {
+        return npi;
+    }
+
+    public void setNpi(String npi) {
+        if (DataBaseUtil.isDifferent(npi, this.npi))
+            this.npi = npi;
+    }
+
+    public void setClone() {
+        try {
+            original = (Provider)this.clone();
+        } catch (Exception e) {
+        }
+    }
+
+    public String getChangeXML() {
+        try {
+            Document doc = XMLUtil.createNew("change");
+            Element root = doc.getDocumentElement();
+
+            AuditUtil.getChangeXML(id, original.id, doc, "id");
+            AuditUtil.getChangeXML(lastName, original.lastName, doc, "last_name");
+            AuditUtil.getChangeXML(firstName, original.firstName, doc, "first_name");
+            AuditUtil.getChangeXML(middleName, original.middleName, doc, "middle_name");
+            AuditUtil.getChangeXML(typeId, original.typeId, doc, "type_id");
+            AuditUtil.getChangeXML(npi, original.npi, doc, "npi");
+
+            if (root.hasChildNodes())
+                return XMLUtil.toString(doc);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String getTableName() {
+        return "provider";
+    }
+
+    public Collection<ProviderLocation> getProviderLocation() {
+        return providerLocation;
+    }
+
+    public void setProviderLocation(Collection<ProviderLocation> providerLocation) {
+        this.providerLocation = providerLocation;
+    }
+}

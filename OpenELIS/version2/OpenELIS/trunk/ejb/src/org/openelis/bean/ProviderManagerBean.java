@@ -13,7 +13,7 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.local.LockLocal;
-import org.openelis.manager.ProviderAddressManager;
+import org.openelis.manager.ProviderLocationManager;
 import org.openelis.manager.ProviderManager;
 import org.openelis.remote.ProviderManagerRemote;
 import org.openelis.utils.SecurityInterceptor;
@@ -30,10 +30,17 @@ public class ProviderManagerBean implements ProviderManagerRemote {
     @EJB
     private LockLocal      lockBean;
 
-	public ProviderManager abortUpdate(Integer id) throws Exception {
-		lockBean.giveUpLock(ReferenceTable.PROVIDER,id);
-		return fetchById(id);
-	}
+    public ProviderManager fetchById(Integer id) throws Exception {
+        return ProviderManager.fetchById(id);
+    }
+
+    public ProviderManager fetchWithLocations(Integer id) throws Exception {
+        return ProviderManager.fetchWithLocations(id);
+    }
+
+    public ProviderManager fetchWithNotes(Integer id) throws Exception {
+        return ProviderManager.fetchWithNotes(id);
+    }
 
 	public ProviderManager add(ProviderManager man) throws Exception {
 		UserTransaction ut;
@@ -51,26 +58,9 @@ public class ProviderManagerBean implements ProviderManagerRemote {
 		
 	}
 
-	public ProviderManager fetchById(Integer id) throws Exception {
-		return ProviderManager.fetchById(id);
-	}
-
-	public ProviderAddressManager fetchAddressByProviderId(Integer id)
-			throws Exception {
-		return ProviderAddressManager.fetchByProviderId(id);
-	}
-
 	public ProviderManager fetchForUpdate(Integer id) throws Exception {
 		lockBean.getLock(ReferenceTable.PROVIDER, id);
 		return fetchById(id);
-	}
-
-	public ProviderManager fetchWithAddresses(Integer id) throws Exception {
-		return ProviderManager.fetchWithAddresses(id);
-	}
-
-	public ProviderManager fetchWithNotes(Integer id) throws Exception {
-		return ProviderManager.fetchWithNotes(id);
 	}
 
 	public ProviderManager update(ProviderManager man) throws Exception {
@@ -90,9 +80,17 @@ public class ProviderManagerBean implements ProviderManagerRemote {
         return man;
 	}
 	
+    public ProviderManager abortUpdate(Integer id) throws Exception {
+        lockBean.giveUpLock(ReferenceTable.PROVIDER,id);
+        return fetchById(id);
+    }
+
+    public ProviderLocationManager fetchLocationByProviderId(Integer id) throws Exception {
+        return ProviderLocationManager.fetchByProviderId(id);
+    }
+
     private void checkSecurity(ModuleFlags flag) throws Exception {
         SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
                                           "provider", flag);
     }
-
 }

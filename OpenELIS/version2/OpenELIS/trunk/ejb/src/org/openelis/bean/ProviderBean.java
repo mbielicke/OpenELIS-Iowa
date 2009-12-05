@@ -32,6 +32,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -39,13 +40,14 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.IdFirstLastNameVO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.entity.Provider;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.ProviderLocal;
-import org.openelis.metamap.ProviderMetaMap;
+import org.openelis.meta.ProviderMeta;
 import org.openelis.remote.ProviderRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -56,34 +58,39 @@ import org.openelis.utilcommon.DataBaseUtil;
 public class ProviderBean implements ProviderRemote, ProviderLocal {
 
     @PersistenceContext(name = "openelis")
-    private EntityManager                manager;
+    private EntityManager             manager;
 
-    private static final ProviderMetaMap meta = new ProviderMetaMap();
+    private static final ProviderMeta meta = new ProviderMeta();
 
-    public ProviderDO fetchById(Integer providerId) {
+    public ProviderDO fetchById(Integer providerId) throws Exception {
         Query query;
-        ProviderDO provider;
+        ProviderDO data;
 
         query = manager.createNamedQuery("Provider.FetchById");
         query.setParameter("id", providerId);
-        provider = (ProviderDO)query.getSingleResult();// getting provider
-
-        return provider;
+        try {
+            data = (ProviderDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<IdFirstLastNameVO> query(ArrayList<QueryData> fields, int first, int max)
-                                                                                              throws Exception {
+    public ArrayList<IdFirstLastNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
         QueryBuilderV2 builder;
         List list;
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdFirstLastNameVO(" + meta.getId() +
-                          "," + meta.getLastName() + ", " + meta.getFirstName() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdFirstLastNameVO(" +
+                          ProviderMeta.getId() + "," + ProviderMeta.getLastName() + "," +
+                          ProviderMeta.getFirstName() + ") ");
         builder.constructWhere(fields);
-        builder.setOrderBy(meta.getLastName() + "," + meta.getFirstName());
+        builder.setOrderBy(ProviderMeta.getLastName() + "," + ProviderMeta.getFirstName());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
@@ -136,13 +143,13 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
 
     public void validate(ProviderDO providerDO) throws ValidationErrorsList {
         ValidationErrorsList list;
-        
+
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(providerDO.getLastName()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getLastName()));
+            list.add(new FieldErrorException("fieldRequiredException", ProviderMeta.getLastName()));
 
         if (DataBaseUtil.isEmpty(providerDO.getTypeId()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getTypeId()));
+            list.add(new FieldErrorException("fieldRequiredException", ProviderMeta.getTypeId()));
 
         if (list.size() > 0)
             throw list;

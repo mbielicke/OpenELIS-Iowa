@@ -12,20 +12,20 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.ProviderAddressDO;
-import org.openelis.entity.ProviderAddress;
+import org.openelis.domain.ProviderLocationDO;
+import org.openelis.entity.ProviderLocation;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AddressLocal;
-import org.openelis.local.ProviderAddressLocal;
-import org.openelis.metamap.ProviderMetaMap;
+import org.openelis.local.ProviderLocationLocal;
+import org.openelis.meta.ProviderMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")
 @RolesAllowed("provider-select")
-public class ProviderAddressBean implements ProviderAddressLocal {
+public class ProviderLocationBean implements ProviderLocationLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager                manager;
@@ -33,14 +33,12 @@ public class ProviderAddressBean implements ProviderAddressLocal {
     @EJB
     private AddressLocal                 addressBean;
 
-    private static final ProviderMetaMap meta = new ProviderMetaMap();
-
     @SuppressWarnings("unchecked")
-    public ArrayList<ProviderAddressDO> fetchByProviderId(Integer id) throws Exception {
+    public ArrayList<ProviderLocationDO> fetchByProviderId(Integer id) throws Exception {
         Query query;
         List list;
 
-        query = manager.createNamedQuery("ProviderAddress.FetchByProviderId");
+        query = manager.createNamedQuery("ProviderLocation.FetchByProviderId");
         query.setParameter("id", id);
 
         list = query.getResultList();
@@ -51,13 +49,13 @@ public class ProviderAddressBean implements ProviderAddressLocal {
 
     }
 
-    public ProviderAddressDO add(ProviderAddressDO data) throws Exception {
-        ProviderAddress entity;
+    public ProviderLocationDO add(ProviderLocationDO data) throws Exception {
+        ProviderLocation entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
         addressBean.add(data.getAddressDO());
-        entity = new ProviderAddress();
+        entity = new ProviderLocation();
         entity.setAddressId(data.getAddressDO().getId());
         entity.setLocation(data.getLocation());
         entity.setExternalId(data.getExternalId());
@@ -69,39 +67,38 @@ public class ProviderAddressBean implements ProviderAddressLocal {
         return data;
     }
 
-    public ProviderAddressDO update(ProviderAddressDO data) throws Exception {
-        ProviderAddress entity;
+    public ProviderLocationDO update(ProviderLocationDO data) throws Exception {
+        ProviderLocation entity;
 
         if ( !data.isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
         addressBean.update(data.getAddressDO());
-        entity = manager.find(ProviderAddress.class, data.getId());
+        entity = manager.find(ProviderLocation.class, data.getId());
         entity.setLocation(data.getLocation());
         entity.setExternalId(data.getExternalId());
 
         return data;
     }
 
-    public void delete(ProviderAddressDO data) throws Exception {
-        ProviderAddress entity;
+    public void delete(ProviderLocationDO data) throws Exception {
+        ProviderLocation entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
-        entity = manager.find(ProviderAddress.class, data.getId());
+        entity = manager.find(ProviderLocation.class, data.getId());
         if (entity != null) {
             addressBean.delete(entity.getAddressId());
             manager.remove(entity);
         }
     }
 
-    public void validate(ProviderAddressDO data) throws Exception {
+    public void validate(ProviderLocationDO data) throws Exception {
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getLocation()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getProviderAddress()
-                                                                           .getLocation()));
+            list.add(new FieldErrorException("fieldRequiredException", ProviderMeta.getProviderLocationLocation()));
 
         if (list.size() > 0)
             throw list;

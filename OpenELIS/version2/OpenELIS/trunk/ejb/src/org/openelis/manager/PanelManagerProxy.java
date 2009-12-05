@@ -61,8 +61,10 @@ public class PanelManagerProxy {
         local().add(man.getPanel());
         id = man.getPanel().getId();
         
-        man.getItems().setPanelId(id);
-        man.getItems().add();
+        if (man.items != null) {
+            man.getItems().setPanelId(id);
+            man.getItems().add();
+        }
         
         return man;
     }
@@ -73,22 +75,20 @@ public class PanelManagerProxy {
         local().update(man.getPanel());
         id = man.getPanel().getId();
         
-        man.getItems().setPanelId(id);
-        man.getItems().update();
+        if (man.items != null) {
+            man.getItems().setPanelId(id);
+            man.getItems().update();
+        }
         
         return man;
     }
     
-    public PanelManager delete(PanelManager man) throws Exception {
-        Integer id;
+    public void delete(PanelManager man) throws Exception {
         
-        local().delete(man.getPanel());
-        id = man.getPanel().getId();
-        
-        man.getItems().setPanelId(id);
+        man.getItems().setPanelId(man.getPanel().getId());
         man.getItems().delete();
-        
-        return man;
+
+        local().delete(man.getPanel());
     }
     
     public PanelManager fetchForUpdate(Integer id) throws Exception {
@@ -112,7 +112,8 @@ public class PanelManagerProxy {
             DataBaseUtil.mergeException(list, e);
         }
         try {
-            man.getItems().validate();
+            if (man.items != null)
+                man.getItems().validate();
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }

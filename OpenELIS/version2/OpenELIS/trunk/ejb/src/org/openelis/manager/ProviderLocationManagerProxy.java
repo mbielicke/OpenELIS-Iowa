@@ -29,83 +29,83 @@ import java.util.ArrayList;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.ProviderAddressDO;
+import org.openelis.domain.ProviderLocationDO;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.ProviderAddressLocal;
-import org.openelis.manager.ProviderAddressManager;
+import org.openelis.local.ProviderLocationLocal;
+import org.openelis.manager.ProviderLocationManager;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class ProviderAddressManagerProxy {
+public class ProviderLocationManagerProxy {
 
-    public ProviderAddressManager fetchByProviderId(Integer id) throws Exception {
-        ProviderAddressManager pm;
-        ArrayList<ProviderAddressDO> address;
+    public ProviderLocationManager fetchByProviderId(Integer id) throws Exception {
+        ProviderLocationManager pm;
+        ArrayList<ProviderLocationDO> location;
 
-        address = local().fetchByProviderId(id);
-        pm = ProviderAddressManager.getInstance();
+        location = local().fetchByProviderId(id);
+        pm = ProviderLocationManager.getInstance();
         pm.setProviderId(id);
-        pm.setAddresses(address);
+        pm.setLocations(location);
 
         return pm;
     }
 
-    public ProviderAddressManager add(ProviderAddressManager man) throws Exception {
-        ProviderAddressLocal pl;
-        ProviderAddressDO address;
+    public ProviderLocationManager add(ProviderLocationManager man) throws Exception {
+        ProviderLocationLocal pl;
+        ProviderLocationDO location;
 
         pl = local();
         for (int i = 0; i < man.count(); i++ ) {
-            address = man.getAddressAt(i);
-            address.setProviderId(man.getProviderId());
-            pl.add(address);
+            location = man.getLocationAt(i);
+            location.setProviderId(man.getProviderId());
+            pl.add(location);
         }
 
         return man;
     }
 
-    public ProviderAddressManager update(ProviderAddressManager man) throws Exception {
-        ProviderAddressLocal pl;
-        ProviderAddressDO address;
+    public ProviderLocationManager update(ProviderLocationManager man) throws Exception {
+        ProviderLocationLocal pl;
+        ProviderLocationDO location;
 
         pl = local();
         for (int j = 0; j < man.deleteCount(); j++)
             pl.delete(man.getDeletedAt(j));
         
         for (int i = 0; i < man.count(); i++ ) {
-            address = man.getAddressAt(i);
+            location = man.getLocationAt(i);
 
-            if (address.getId() == null) {
-                address.setProviderId(man.getProviderId());
-                pl.add(address);
+            if (location.getId() == null) {
+                location.setProviderId(man.getProviderId());
+                pl.add(location);
             } else {
-                pl.update(address);
+                pl.update(location);
             }
         }
 
         return man;
     }
 
-    public void validate(ProviderAddressManager man) throws Exception {
+    public void validate(ProviderLocationManager man) throws Exception {
         ValidationErrorsList list;
-        ProviderAddressLocal cl;
+        ProviderLocationLocal cl;
 
         cl = local();
         list = new ValidationErrorsList();
         for (int i = 0; i < man.count(); i++ ) {
             try {
-                cl.validate(man.getAddressAt(i));
+                cl.validate(man.getLocationAt(i));
             } catch (Exception e) {
-                DataBaseUtil.mergeException(list, e, "providerAddressTable", i);
+                DataBaseUtil.mergeException(list, e, "locationTable", i);
             }
         }
         if (list.size() > 0)
             throw list;
     }
 
-    private ProviderAddressLocal local() {
+    private ProviderLocationLocal local() {
         try {
             InitialContext ctx = new InitialContext();
-            return (ProviderAddressLocal)ctx.lookup("openelis/ProviderAddressBean/local");
+            return (ProviderLocationLocal)ctx.lookup("openelis/ProviderLocationBean/local");
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;

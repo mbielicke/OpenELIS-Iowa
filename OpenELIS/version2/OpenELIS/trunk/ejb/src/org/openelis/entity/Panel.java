@@ -148,5 +148,4 @@ public class Panel implements Auditable, Cloneable {
     public String getTableName() {
         return "panel";
     }
-
 }

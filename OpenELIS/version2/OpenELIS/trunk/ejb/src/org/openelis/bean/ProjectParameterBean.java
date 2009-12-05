@@ -17,7 +17,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.ProjectParameterLocal;
-import org.openelis.metamap.ProjectMetaMap;
+import org.openelis.meta.ProjectMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
@@ -27,8 +27,6 @@ public class ProjectParameterBean implements ProjectParameterLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager         manager;
-
-    private static final ProjectMetaMap meta = new ProjectMetaMap();
 
     public ArrayList<ProjectParameterDO> fetchByProjectId(Integer id) throws Exception {
         Query query;
@@ -94,13 +92,13 @@ public class ProjectParameterBean implements ProjectParameterLocal {
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getParameter()))
             list.add(new FieldErrorException("fieldRequiredException", 
-                                             meta.PROJECT_PARAMETER.getParameter()));
+                                             ProjectMeta.getProjectParameterParameter()));
         if (DataBaseUtil.isEmpty(data.getOperationId()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.PROJECT_PARAMETER.getOperationId()));
+                                             ProjectMeta.getProjectParameterOperationId()));
         if (DataBaseUtil.isEmpty(data.getValue()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.PROJECT_PARAMETER.getValue()));
+                                             ProjectMeta.getProjectParameterValue()));
         if (list.size() > 0)
             throw list;
     }

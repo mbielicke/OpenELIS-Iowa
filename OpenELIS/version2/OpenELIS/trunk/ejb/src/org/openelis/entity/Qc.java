@@ -126,12 +126,12 @@ public class Qc implements Auditable, Cloneable {
     @JoinColumn(name = "inventory_item_id", insertable = false, updatable = false)
     private InventoryItem         inventoryItem;
 
-    @Transient
-    private Qc                    original;
-
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "qc_id")
     private Collection<QcAnalyte> qcAnalyte;
+
+    @Transient
+    private Qc                    original;
 
     public Integer getId() {
         return id;
