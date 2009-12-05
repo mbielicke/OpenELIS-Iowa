@@ -53,7 +53,7 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.ProviderManager;
-import org.openelis.metamap.ProviderMetaMap;
+import org.openelis.meta.ProviderMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.note.client.NotesTab;
 
@@ -70,24 +70,23 @@ import com.google.gwt.user.client.ui.TabPanel;
 
 public class ProviderScreen extends Screen {
     private ProviderManager   manager;
-    private ProviderMetaMap   meta = new ProviderMetaMap();
     private SecurityModule    security;
 
     private Tabs              tab;
-    private AddressesTab      addressesTab;
+    private LocationTab       locationTab;
     private NotesTab          notesTab;
 
     private TextBox           id, lastName, firstName, npi, middleName;
     private AppButton         queryButton, previousButton, nextButton, addButton, updateButton,
                               commitButton, abortButton, standardNoteButton;
     private Dropdown<Integer> typeId;
-    private TabPanel          provTabPanel;
+    private TabPanel          tabPanel;
 
     private ButtonGroup       atoz;
     private ScreenNavigator   nav;
 
     private enum Tabs {
-        ADDRESSES, NOTES
+        LOCATION, NOTE
     };
 
     public ProviderScreen() throws Exception {
@@ -106,7 +105,7 @@ public class ProviderScreen extends Screen {
     }
 
     private void postConstructor() {
-        tab = Tabs.ADDRESSES;
+        tab = Tabs.LOCATION;
         manager = ProviderManager.getInstance();
 
         initialize();
@@ -206,7 +205,7 @@ public class ProviderScreen extends Screen {
             }
         });
 
-        id = (TextBox)def.getWidget(meta.getId());
+        id = (TextBox)def.getWidget(ProviderMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 id.setValue(manager.getProvider().getId());
@@ -222,7 +221,7 @@ public class ProviderScreen extends Screen {
             }
         });
 
-        lastName = (TextBox)def.getWidget(meta.getLastName());
+        lastName = (TextBox)def.getWidget(ProviderMeta.getLastName());
         addScreenHandler(lastName, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 lastName.setValue(manager.getProvider().getLastName());
@@ -239,7 +238,7 @@ public class ProviderScreen extends Screen {
             }
         });
 
-        typeId = (Dropdown<Integer>)def.getWidget(meta.getTypeId());
+        typeId = (Dropdown<Integer>)def.getWidget(ProviderMeta.getTypeId());
         addScreenHandler(typeId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 typeId.setSelection(manager.getProvider().getTypeId());
@@ -256,7 +255,7 @@ public class ProviderScreen extends Screen {
             }
         });
 
-        firstName = (TextBox)def.getWidget(meta.getFirstName());
+        firstName = (TextBox)def.getWidget(ProviderMeta.getFirstName());
         addScreenHandler(firstName, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 firstName.setValue(manager.getProvider().getFirstName());
@@ -273,7 +272,7 @@ public class ProviderScreen extends Screen {
             }
         });
 
-        npi = (TextBox)def.getWidget(meta.getNpi());
+        npi = (TextBox)def.getWidget(ProviderMeta.getNpi());
         addScreenHandler(npi, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 npi.setValue(manager.getProvider().getNpi());
@@ -290,7 +289,7 @@ public class ProviderScreen extends Screen {
             }
         });
 
-        middleName = (TextBox)def.getWidget(meta.getMiddleName());
+        middleName = (TextBox)def.getWidget(ProviderMeta.getMiddleName());
         addScreenHandler(middleName, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 middleName.setValue(manager.getProvider().getMiddleName());
@@ -307,8 +306,8 @@ public class ProviderScreen extends Screen {
             }
         });
 
-        provTabPanel = (TabPanel)def.getWidget("provTabPanel");
-        provTabPanel.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+        tabPanel = (TabPanel)def.getWidget("tabPanel");
+        tabPanel.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
             public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
                 int i;
 
@@ -321,16 +320,16 @@ public class ProviderScreen extends Screen {
             }
         });
 
-        addressesTab = new AddressesTab(def, window);
-        addScreenHandler(addressesTab, new ScreenEventHandler<Object>() {
+        locationTab = new LocationTab(def, window);
+        addScreenHandler(locationTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                addressesTab.setManager(manager);
-                if (tab == Tabs.ADDRESSES)
+                locationTab.setManager(manager);
+                if (tab == Tabs.LOCATION)
                     drawTabs();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addressesTab.setState(event.getState());
+                locationTab.setState(event.getState());
             }
         });
 
@@ -338,7 +337,7 @@ public class ProviderScreen extends Screen {
         addScreenHandler(notesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 notesTab.setManager(manager);
-                if (tab == Tabs.NOTES)
+                if (tab == Tabs.NOTE)
                     drawTabs();
             }
 
@@ -410,7 +409,7 @@ public class ProviderScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = meta.getLastName();
+                field.key = ProviderMeta.getLastName();
                 field.query = ((AppButton)event.getSource()).getAction();
                 field.type = QueryData.Type.STRING;
 
@@ -440,7 +439,7 @@ public class ProviderScreen extends Screen {
         DataChangeEvent.fire(this);
 
         // clear all the tabs
-        addressesTab.draw();
+        locationTab.draw();
         notesTab.draw();
 
         setFocus(id);
@@ -559,10 +558,10 @@ public class ProviderScreen extends Screen {
             window.setBusy(consts.get("fetching"));
             try {
                 switch (tab) {
-                    case ADDRESSES:
-                        manager = ProviderManager.fetchWithAddresses(id);
+                    case LOCATION:
+                        manager = ProviderManager.fetchWithLocations(id);
                         break;
-                    case NOTES:
+                    case NOTE:
                         manager = ProviderManager.fetchWithNotes(id);
                         break;
                 }
@@ -586,10 +585,10 @@ public class ProviderScreen extends Screen {
 
     private void drawTabs() {
         switch (tab) {
-            case ADDRESSES:
-                addressesTab.draw();
+            case LOCATION:
+                locationTab.draw();
                 break;
-            case NOTES:
+            case NOTE:
                 notesTab.draw();
                 break;
         }

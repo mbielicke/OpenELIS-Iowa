@@ -37,18 +37,13 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:meta="xalan://org.openelis.metamap.ProjectMetaMap"
-  xmlns:param="xalan://org.openelis.metamap.ProjectParameterMetaMap"
-  xmlns:script="xalan://org.openelis.meta.ScriptletMeta">
+  xmlns:meta="xalan://org.openelis.meta.ProjectMeta">
 
   <xsl:import href="IMPORT/aToZOneColumn.xsl" />
   <xsl:template match="doc">
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <xsl:variable name="proj" select="meta:new()" />
-    <xsl:variable name="script" select="meta:getScriptlet($proj)" />
-    <xsl:variable name="param" select="meta:getProjectParameter($proj)" />
 
 <!-- main screen -->
 
@@ -135,14 +130,14 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'id')" />:
                 </text>
-                <textbox key="{meta:getId($proj)}" width="50" tab="{meta:getName($proj)},parameterTable" field="Integer" />
+                <textbox key="{meta:getId()}" width="50" tab="{meta:getName()},parameterTable" field="Integer" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'name')" />:
                 </text>
                 <widget colspan="6">
-                  <textbox key="{meta:getName($proj)}" width="145" case="LOWER" max="20" tab="{meta:getDescription($proj)},{meta:getId($proj)}" required="true" />
+                  <textbox key="{meta:getName()}" width="145" case="LOWER" max="20" tab="{meta:getDescription()},{meta:getId()}" required="true" />
                 </widget>
               </row>
               <row>
@@ -150,7 +145,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'description')" />:
                 </text>
                 <widget colspan="6">
-                  <textbox key="{meta:getDescription($proj)}" width="425" max="60" tab="{meta:getOwnerId($proj)},{meta:getName($proj)}" required="true" />
+                  <textbox key="{meta:getDescription()}" width="425" max="60" tab="{meta:getOwnerId()},{meta:getName()}" required="true" />
                 </widget>
               </row>
               <row>
@@ -158,36 +153,36 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'owner')" />:
                 </text>
                 <widget>
-                  <autoComplete key="{meta:getOwnerId($proj)}" width="145" case="LOWER" tab="{meta:getIsActive($proj)},{meta:getDescription($proj)}" required="true" />
+                  <autoComplete key="{meta:getOwnerId()}" width="145" case="LOWER" tab="{meta:getIsActive()},{meta:getDescription()}" required="true" />
                 </widget>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"active")' />:
                 </text>
-                <check key="{meta:getIsActive($proj)}" tab="{meta:getStartedDate($proj)},{meta:getOwnerId($proj)}" />
+                <check key="{meta:getIsActive()}" tab="{meta:getStartedDate()},{meta:getOwnerId()}" />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'referenceTo')" />:
                 </text>
                 <widget>
-                  <textbox key="{meta:getReferenceTo($proj)}" width="145" max="20" tab="{script:getName($script)},{meta:getCompletedDate($proj)}" />
+                  <textbox key="{meta:getReferenceTo()}" width="145" max="20" tab="{meta:getScriptletName()},{meta:getCompletedDate()}" />
                 </widget>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"beginDate")' />:
                 </text>
-                <calendar key="{meta:getStartedDate($proj)}" begin="0" end="2" width="90" tab="{meta:getCompletedDate($proj)},{meta:getIsActive($proj)}" required="true" />
+                <calendar key="{meta:getStartedDate()}" begin="0" end="2" width="90" tab="{meta:getCompletedDate()},{meta:getIsActive()}" required="true" />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'scriptlet')" />:
                 </text>
-                <autoComplete key="{script:getName($script)}" width="180" case="LOWER" tab="parameterTable,{meta:getId($proj)}" field="Integer" />
+                <autoComplete key="{meta:getScriptletName()}" width="180" case="LOWER" tab="parameterTable,{meta:getReferenceTo()}" field="Integer" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"endDate")' />:
                 </text>
-                <calendar key="{meta:getCompletedDate($proj)}" begin="0" end="2" width="90" tab="{meta:getReferenceTo($proj)},{meta:getStartedDate($proj)}" required="true" />
+                <calendar key="{meta:getCompletedDate()}" begin="0" end="2" width="90" tab="{meta:getReferenceTo()},{meta:getStartedDate()}" required="true" />
               </row>
             </TablePanel>
             <VerticalPanel height="5" />
@@ -196,14 +191,14 @@ UIRF Software License are applicable instead of those above.
 
             <HorizontalPanel width="609">
               <widget valign="top">
-                <table key="parameterTable" width="590" maxRows="8" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getId($proj)},{script:getName($script)}">
-                  <col key="{param:getParameter($param)}" width="325" header="{resource:getString($constants,'parameter')}">
+                <table key="parameterTable" width="590" maxRows="8" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getId()},{meta:getScriptletName()}">
+                  <col key="{meta:getProjectParameterParameter()}" width="325" header="{resource:getString($constants,'parameter')}">
                     <textbox required="true" />
                   </col>
-                  <col key="{param:getOperationId($param)}" width="80" header="{resource:getString($constants,'operation')}">
+                  <col key="{meta:getProjectParameterOperationId()}" width="80" header="{resource:getString($constants,'operation')}">
                     <dropdown width="80" required="true" />
                   </col>
-                  <col key="{param:getValue($param)}" width="400" header="{resource:getString($constants,'value')}">
+                  <col key="{meta:getProjectParameterValue()}" width="400" header="{resource:getString($constants,'value')}">
                     <textbox required="true" />
                   </col>
                 </table>

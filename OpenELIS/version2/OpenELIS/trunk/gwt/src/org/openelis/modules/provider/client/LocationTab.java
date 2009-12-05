@@ -5,7 +5,7 @@ import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.ProviderAddressDO;
+import org.openelis.domain.ProviderLocationDO;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -29,14 +29,14 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
-public class AddressesTab extends Screen {
+public class LocationTab extends Screen {
 	
 	private ProviderManager manager;
-	private TableWidget providerAddressTable; 
+	private TableWidget locationTable; 
 	private AppButton addAddressButton, removeAddressButton;
 	private boolean loaded;
 	
-	public AddressesTab(ScreenDefInt def, ScreenWindow window) {
+	public LocationTab(ScreenDefInt def, ScreenWindow window) {
 		setDef(def);
 		setWindow(window);
 		initialize();
@@ -53,31 +53,31 @@ public class AddressesTab extends Screen {
     }
 	
 	private void initialize() {
-        providerAddressTable = (TableWidget)def.getWidget("providerAddressTable");
-        addScreenHandler(providerAddressTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        locationTable = (TableWidget)def.getWidget("locationTable");
+        addScreenHandler(locationTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                providerAddressTable.load(getTableModel());
+                locationTable.load(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                providerAddressTable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
-                providerAddressTable.setQueryMode(event.getState() == State.QUERY);
+                locationTable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                locationTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        providerAddressTable.addCellEditedHandler(new CellEditedHandler() {
+        locationTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 r = event.getRow();
                 c = event.getCol();
                 Object val = event.getValue();
-                ProviderAddressDO data;
+                ProviderLocationDO data;
                 try {
-                	data = manager.getAddresses().getAddressAt(r);
+                	data = manager.getLocations().getLocationAt(r);
                 }catch(Exception e) {
                 	return;
                 }
-                val = providerAddressTable.getObject(r,c);
+                val = locationTable.getObject(r,c);
                 switch(c) {
                     case 0:
                         data.setLocation((String)val);
@@ -122,10 +122,10 @@ public class AddressesTab extends Screen {
             }
         });
 
-        providerAddressTable.addRowAddedHandler(new RowAddedHandler() {
+        locationTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
             	try {
-            		manager.getAddresses().addAddress(new ProviderAddressDO());
+            		manager.getLocations().addLocation(new ProviderLocationDO());
             	}catch(Exception e){
             		e.printStackTrace();
             		Window.alert(e.toString());
@@ -133,10 +133,10 @@ public class AddressesTab extends Screen {
             }
         });
 
-        providerAddressTable.addRowDeletedHandler(new RowDeletedHandler() {
+        locationTable.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
             	try {
-            		manager.getAddresses().removeAddressAt(event.getIndex());
+            		manager.getLocations().removeLocationAt(event.getIndex());
             	}catch(Exception e) {
             		e.printStackTrace();
             		Window.alert(e.toString());
@@ -145,10 +145,10 @@ public class AddressesTab extends Screen {
         });
         
 
-        addAddressButton = (AppButton)def.getWidget("addAddressButton");
+        addAddressButton = (AppButton)def.getWidget("addLocationButton");
         addScreenHandler(addAddressButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-            	providerAddressTable.addRow();
+            	locationTable.addRow();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -156,11 +156,11 @@ public class AddressesTab extends Screen {
             }
         });
 
-        removeAddressButton = (AppButton)def.getWidget("removeAddressButton");
+        removeAddressButton = (AppButton)def.getWidget("removeLocationButton");
         addScreenHandler(removeAddressButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-            	int r = providerAddressTable.getSelectedRow();
-            	providerAddressTable.deleteRow(r);
+            	int r = locationTable.getSelectedRow();
+            	locationTable.deleteRow(r);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -174,19 +174,19 @@ public class AddressesTab extends Screen {
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("state"))
             model.add(new TableDataRow(d.getEntry(), d.getEntry()));
-        ((Dropdown<String>)providerAddressTable.getColumns().get(5).getColumnWidget()).setModel(model);
+        ((Dropdown<String>)locationTable.getColumns().get(5).getColumnWidget()).setModel(model);
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("country"))
             model.add(new TableDataRow(d.getEntry(), d.getEntry()));
-        ((Dropdown<String>)providerAddressTable.getColumns().get(7).getColumnWidget()).setModel(model);		
+        ((Dropdown<String>)locationTable.getColumns().get(7).getColumnWidget()).setModel(model);		
 	}
 	
     private ArrayList<TableDataRow> getTableModel() {
         int i;
         TableDataRow row;
-        ProviderAddressDO data;
+        ProviderLocationDO data;
         ArrayList<TableDataRow> model;
         
         model = new ArrayList<TableDataRow>();
@@ -194,8 +194,8 @@ public class AddressesTab extends Screen {
             return model;
 
         try {
-            for (i = 0; i < manager.getAddresses().count(); i++) {
-                data = (ProviderAddressDO)manager.getAddresses().getAddressAt(i);
+            for (i = 0; i < manager.getLocations().count(); i++) {
+                data = (ProviderLocationDO)manager.getLocations().getLocationAt(i);
 
                 row = new TableDataRow(13);
                 row.cells.get(0).value = data.getLocation();
@@ -231,5 +231,4 @@ public class AddressesTab extends Screen {
 
         loaded = true;
     }
-
 }
