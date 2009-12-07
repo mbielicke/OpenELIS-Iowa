@@ -13,7 +13,6 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.local.LockLocal;
-import org.openelis.manager.OrganizationManager;
 import org.openelis.manager.ProjectManager;
 import org.openelis.manager.ProjectParameterManager;
 import org.openelis.remote.ProjectManagerRemote;
