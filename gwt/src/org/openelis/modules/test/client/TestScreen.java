@@ -142,7 +142,7 @@ public class TestScreen extends Screen {
         trailerService = new ScreenService("controller?service=org.openelis.modules.testTrailer.server.TestTrailerService"); 
         labelService = new ScreenService("controller?service=org.openelis.modules.label.server.LabelService"); 
         analyteService = new ScreenService("controller?service=org.openelis.modules.analyte.server.AnalyteService");
-        qcService = new ScreenService("controller?service=org.openelis.modules.qc.server.QCService");
+        qcService = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
         dictionaryService = new ScreenService("controller?service=org.openelis.modules.dictionary.server.DictionaryService");
         
         security = OpenELIS.security.getModule("test");
@@ -164,7 +164,19 @@ public class TestScreen extends Screen {
     private void postConstructor() {
         tab = Tabs.DETAILS;
         manager = TestManager.getInstance();
-
+        
+        try{
+            DictionaryCache.preloadByCategorySystemNames("test_format", "test_reporting_method", "test_sorting_method", 
+                                                         "test_revision_method", "test_section_flags", "type_of_sample",
+                                                         "unit_of_measure","test_analyte_type","test_result_type",
+                                                         "test_result_flags","rounding_method","test_reflex_flags",
+                                                         "test_res_type_dictionary","test_worksheet_analyte_flags",
+                                                         "test_worksheet_item_type","test_worksheet_format");
+        } catch(Exception e){
+            Window.alert(e.getMessage());
+            window.close();
+        }
+        
         initialize();        
         setState(State.DEFAULT);       
         initializeDropdowns();

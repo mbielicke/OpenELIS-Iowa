@@ -62,10 +62,7 @@ public class TestWorksheetItemBean implements TestWorksheetItemLocal {
         query = manager.createNamedQuery("TestWorksheetItem.FetchByTestWorksheetId");
         query.setParameter("testWorksheetId", twsId);
                 
-        list = query.getResultList();
-        
-        if(list.isEmpty())
-            throw new NotFoundException(); 
+        list = query.getResultList();       
         
         return DataBaseUtil.toArrayList(list);
     }

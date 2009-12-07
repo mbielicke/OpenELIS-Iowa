@@ -80,20 +80,10 @@ public class SampleTypeTab extends Screen implements HasActionHandlers<SampleTyp
         setWindow(window);       
         
         initialize();
-
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });        
-    }
-    
-    private void postConstructor() {
-        initializeDropdowns();        
+        initializeDropdowns();       
     }
 
     private void initialize() {
-
         screen = this;
 
         table = (TableWidget)def.getWidget("sampleTypeTable");

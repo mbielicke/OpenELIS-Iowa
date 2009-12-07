@@ -53,9 +53,9 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQuery(name = "TestWorksheet.FetchByTestId",
-                query = "select distinct new org.openelis.domain.TestWorksheetViewDO(tw.id,tw.testId,tw.batchCapacity,"+
-                        " tw.totalCapacity,tw.formatId,tw.scriptletId,s.name)"
-                      + " from TestWorksheet tw left join tw.scriptlet s where tw.testId = :testId")
+           query = "select distinct new org.openelis.domain.TestWorksheetViewDO(tw.id,tw.testId,tw.batchCapacity, "+
+                   "tw.totalCapacity,tw.formatId,tw.scriptletId,s.name)"
+                 + " from TestWorksheet tw left join tw.scriptlet s where tw.testId = :testId")
 @Entity
 @Table(name = "test_worksheet")
 @EntityListeners( {AuditUtil.class})
