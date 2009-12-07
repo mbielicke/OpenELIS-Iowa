@@ -38,7 +38,6 @@ import org.openelis.domain.SampleDO;
 import org.openelis.entity.Sample;
 import org.openelis.local.LockLocal;
 import org.openelis.local.SampleLocal;
-import org.openelis.metamap.SampleMetaMap;
 
 @Stateless
 
@@ -53,8 +52,6 @@ public class SampleBean implements SampleLocal {
     @EJB private LockLocal lockBean;
     
     private static int sampleRefTableId;
-    
-    private static final SampleMetaMap sampleMeta = new SampleMetaMap();
     
     public SampleBean(){
         sampleRefTableId = ReferenceTable.SAMPLE;

@@ -46,7 +46,7 @@ import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AddressLocal;
 import org.openelis.local.SampleEnvironmentalLocal;
 import org.openelis.manager.SampleManager;
-import org.openelis.metamap.SampleEnvironmentalMetaMap;
+import org.openelis.meta.SampleMeta;
 import org.openelis.remote.SampleEnvironmentalRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -61,7 +61,7 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalRemote, Sampl
     
     @EJB private AddressLocal addressBean;
    
-    private static final SampleEnvironmentalMetaMap meta = new SampleEnvironmentalMetaMap();
+    private static final SampleMeta meta = new SampleMeta();
     
     public SampleEnvironmentalDO fetchBySampleId(Integer id) throws Exception {
         Query query;
@@ -79,10 +79,10 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalRemote, Sampl
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.SAMPLE.getId() + ",'') ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + SampleMeta.getId() + ",'') ");
         builder.constructWhere(fields);
-        builder.addWhere(meta.SAMPLE.getDomain() + "='" + SampleManager.ENVIRONMENTAL_DOMAIN_FLAG + "'");
-        builder.setOrderBy(meta.SAMPLE.getId());
+        builder.addWhere(SampleMeta.getDomain() + "='" + SampleManager.ENVIRONMENTAL_DOMAIN_FLAG + "'");
+        builder.setOrderBy(SampleMeta.getId());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
