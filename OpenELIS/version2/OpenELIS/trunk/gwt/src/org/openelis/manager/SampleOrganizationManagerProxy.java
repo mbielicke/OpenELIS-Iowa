@@ -31,14 +31,13 @@ import org.openelis.gwt.common.FieldErrorWarning;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.metamap.SampleEnvironmentalMetaMap;
+import org.openelis.meta.SampleMeta;
 
 import com.google.gwt.user.client.Window;
 
 public class SampleOrganizationManagerProxy {
     protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.sample.server.SampleService";
     protected ScreenService service;
-    protected SampleEnvironmentalMetaMap META = new SampleEnvironmentalMetaMap();
     
     public SampleOrganizationManagerProxy(){
         service = new ScreenService("OpenELISServlet?service="+SAMPLE_SERVICE_URL);
@@ -88,9 +87,9 @@ public class SampleOrganizationManagerProxy {
             errorsList.add(new FormErrorException("multipleReportToException"));
         
         if(numReportTo == 0)
-            errorsList.add(new FieldErrorWarning("reportToMissingWarning",META.SAMPLE.SAMPLE_ORGANIZATION.ORGANIZATION.getName()));
+            errorsList.add(new FieldErrorWarning("reportToMissingWarning", SampleMeta.getOrgName()));
             
         if(numBillTo == 0)
-            errorsList.add(new FieldErrorWarning("billToMissingWarning", "billTo"));
+            errorsList.add(new FieldErrorWarning("billToMissingWarning", SampleMeta.getBillTo()));
     }
 }

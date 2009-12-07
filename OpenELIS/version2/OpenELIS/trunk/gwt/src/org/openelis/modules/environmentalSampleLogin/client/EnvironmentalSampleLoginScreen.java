@@ -86,7 +86,7 @@ import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestPrepManager;
-import org.openelis.metamap.SampleEnvironmentalMetaMap;
+import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
@@ -127,7 +127,6 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                     analysisReleasedId, analysisInPrep, sampleLoggedInId, sampleErrorStatusId,
                     sampleReleasedId;
 
-    private SampleEnvironmentalMetaMap     meta = new SampleEnvironmentalMetaMap();
     private SampleItemTab                  sampleItemTab;
     private AnalysisTab                    analysisTab;
     private TestResultsTab                 testResultsTab;
@@ -137,15 +136,25 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     private QAEventsTab                    qaEventsTab;
     private AuxDataTab                     auxDataTab;
 
-    protected TestPrepLookupScreen         prepPickerScreen;
-    protected TextBox                      location;
+    protected TextBox                      location, clientReference, description, collector,
+                    collectorPhone;
+    protected TextBox<Integer>             accessionNumber, orderNumber, priority;
+    protected TextBox<Datetime>            collectedTime;
     protected AutoComplete<Integer>        project, reportTo, billTo;
+    protected Dropdown<Integer>            statusId;
     protected TreeWidget                   itemsTree;
-    protected AppButton                    removeRow, addButton;
+    protected AppButton                    removeRow, billToLookup, reportToLookup, projectLookup,
+                    locationLookup, addItem, addAnalysis, queryButton, addButton, updateButton,
+                    nextButton, prevButton, commitButton, abortButton;
+    protected CalendarLookUp               collectedDate, receivedDate;
+    protected CheckBox                     isHazardous;
+    protected MenuItem                     history;
+    protected TabPanel                     tabs;
 
     private SampleLocationLookupScreen     locationScreen;
     private SampleOrganizationLookupScreen organizationScreen;
     private SampleProjectLookupScreen      projectScreen;
+    private TestPrepLookupScreen           prepPickerScreen;
     private Confirm                        cancelAnalysisConfirm;
 
     protected ScreenService                orgService;
@@ -153,10 +162,9 @@ public class EnvironmentalSampleLoginScreen extends Screen {
 
     ScreenNavigator                        nav;
     private SecurityModule                 security;
+    private int                            tempId;
 
     private SampleManager                  manager;
-
-    private int                            tempId;
     
     public EnvironmentalSampleLoginScreen() throws Exception {
         //Call base to get ScreenDef and draw screen
@@ -202,7 +210,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     }
     
     private void initialize() {
-        final TextBox<Integer> accessionNumber = (TextBox<Integer>)def.getWidget(meta.SAMPLE.getAccessionNumber());
+        accessionNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 accessionNumber.setValue(getString(manager.getSample().getAccessionNumber()));
@@ -231,7 +239,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final TextBox<Integer> orderNumber = (TextBox<Integer>)def.getWidget("orderNumber");
+        orderNumber = (TextBox<Integer>)def.getWidget("orderNumber");
         addScreenHandler(orderNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 //orderNumber.setValue(getString(manager.getSample().getorgetAccessionNumber()));
@@ -247,7 +255,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final CalendarLookUp collectedDate = (CalendarLookUp)def.getWidget(meta.SAMPLE.getCollectionDate());
+        collectedDate = (CalendarLookUp)def.getWidget(SampleMeta.getCollectionDate());
         addScreenHandler(collectedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 collectedDate.setValue(manager.getSample().getCollectionDate());
@@ -264,7 +272,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final TextBox<Datetime> collectedTime = (TextBox<Datetime>)def.getWidget(meta.SAMPLE.getCollectionTime());
+        collectedTime = (TextBox<Datetime>)def.getWidget(SampleMeta.getCollectionTime());
         addScreenHandler(collectedTime, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 collectedTime.setValue(manager.getSample().getCollectionTime());
@@ -281,7 +289,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final CalendarLookUp receivedDate = (CalendarLookUp)def.getWidget(meta.getSample().getReceivedDate());
+        receivedDate = (CalendarLookUp)def.getWidget(SampleMeta.getReceivedDate());
         addScreenHandler(receivedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 receivedDate.setValue(manager.getSample().getReceivedDate());
@@ -298,7 +306,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final Dropdown<Integer> statusId = (Dropdown<Integer>)def.getWidget(meta.SAMPLE.getStatusId());
+        statusId = (Dropdown<Integer>)def.getWidget(SampleMeta.getStatusId());
         addScreenHandler(statusId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 statusId.setSelection(manager.getSample().getStatusId());
@@ -316,7 +324,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final TextBox clientReference = (TextBox)def.getWidget(meta.SAMPLE.getClientReference());
+        clientReference = (TextBox)def.getWidget(SampleMeta.getClientReference());
         addScreenHandler(clientReference, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 clientReference.setValue(manager.getSample().getClientReference());
@@ -333,7 +341,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final CheckBox isHazardous = (CheckBox)def.getWidget(meta.getIsHazardous());
+        isHazardous = (CheckBox)def.getWidget(SampleMeta.getEnvIsHazardous());
         addScreenHandler(isHazardous, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isHazardous.setValue(getEnvManager().getEnvironmental().getIsHazardous());
@@ -345,12 +353,12 @@ public class EnvironmentalSampleLoginScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 isHazardous.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                   .contains(event.getState()));
+                                   .contains(event.getState())); 
                 isHazardous.setQueryMode(event.getState() == State.QUERY);
             }
         });
         
-        final TextBox<Integer> priority = (TextBox<Integer>)def.getWidget(meta.getPriority());
+        priority = (TextBox<Integer>)def.getWidget(SampleMeta.getEnvPriority());
         addScreenHandler(priority, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 priority.setValue(getEnvManager().getEnvironmental().getPriority());
@@ -367,7 +375,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final TextBox description = (TextBox)def.getWidget(meta.getDescription());
+        description = (TextBox)def.getWidget(SampleMeta.getEnvDescription());
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 description.setValue(getEnvManager().getEnvironmental().getDescription());
@@ -384,7 +392,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final TextBox collector = (TextBox)def.getWidget(meta.getCollector());
+        collector = (TextBox)def.getWidget(SampleMeta.getEnvCollector());
         addScreenHandler(collector, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 collector.setValue(getEnvManager().getEnvironmental().getCollector());
@@ -401,7 +409,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final TextBox collectorPhone = (TextBox)def.getWidget(meta.getCollectorPhone());
+        collectorPhone = (TextBox)def.getWidget(SampleMeta.getEnvCollectorPhone());
         addScreenHandler(collectorPhone, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 collectorPhone.setValue(getEnvManager().getEnvironmental().getCollectorPhone());
@@ -418,7 +426,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        location = (TextBox)def.getWidget(meta.getSamplingLocation());
+        location = (TextBox)def.getWidget(SampleMeta.getEnvSamplingLocation());
         addScreenHandler(location, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 location.setValue(getEnvManager().getEnvironmental().getSamplingLocation());
@@ -435,7 +443,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        project = (AutoComplete<Integer>)def.getWidget(meta.SAMPLE.SAMPLE_PROJECT.PROJECT.getName());
+        project = (AutoComplete<Integer>)def.getWidget(SampleMeta.getProjectName());
         addScreenHandler(project, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 try{
@@ -518,7 +526,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             } 
         });
         
-        reportTo = (AutoComplete<Integer>)def.getWidget(meta.SAMPLE.SAMPLE_ORGANIZATION.ORGANIZATION.getName());
+        reportTo = (AutoComplete<Integer>)def.getWidget(SampleMeta.getOrgName());
         addScreenHandler(reportTo, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 try{
@@ -574,7 +582,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             } 
         });
         
-        billTo = (AutoComplete<Integer>)def.getWidget("billTo");
+        billTo = (AutoComplete<Integer>)def.getWidget(SampleMeta.getBillTo());
         addScreenHandler(billTo, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 try{
@@ -717,7 +725,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             } 
         });
         
-        final AppButton billToLookup = (AppButton)def.getWidget("billToLookup");
+        billToLookup = (AppButton)def.getWidget("billToLookup");
         addScreenHandler(billToLookup, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 onOrganizationLookupClick();
@@ -729,7 +737,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final AppButton reportToLookup = (AppButton)def.getWidget("reportToLookup");
+        reportToLookup = (AppButton)def.getWidget("reportToLookup");
         addScreenHandler(reportToLookup, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 onOrganizationLookupClick();
@@ -741,7 +749,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final AppButton projectLookup = (AppButton)def.getWidget("projectLookup");
+        projectLookup = (AppButton)def.getWidget("projectLookup");
         addScreenHandler(projectLookup, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 onProjectLookupClick();
@@ -753,7 +761,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final AppButton locationLookup = (AppButton)def.getWidget("locButton");
+        locationLookup = (AppButton)def.getWidget("locButton");
         addScreenHandler(locationLookup, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 onLocationLookupClick();
@@ -765,7 +773,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final AppButton addItem = (AppButton)def.getWidget("addItemButton");
+        addItem = (AppButton)def.getWidget("addItemButton");
         addScreenHandler(addItem, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 onAddItemButtonClick();
@@ -777,7 +785,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final AppButton addAnalysis = (AppButton)def.getWidget("addAnalysisButton");
+        addAnalysis = (AppButton)def.getWidget("addAnalysisButton");
         addScreenHandler(addAnalysis, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 onAddAnalysisButtonClick();
@@ -800,7 +808,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final MenuItem history = (MenuItem)def.getWidget("history");
+        history = (MenuItem)def.getWidget("history");
         addScreenHandler(history, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {               
                 Window.alert("clicked history");
@@ -997,7 +1005,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final AppButton queryButton = (AppButton)def.getWidget("query");
+        queryButton = (AppButton)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 query();
@@ -1031,7 +1039,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
 
-        final AppButton updateButton = (AppButton)def.getWidget("update");
+        updateButton = (AppButton)def.getWidget("update");
         addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 update();
@@ -1057,7 +1065,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final AppButton nextButton = (AppButton)def.getWidget("next");
+        nextButton = (AppButton)def.getWidget("next");
         addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 next();
@@ -1068,7 +1076,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
 
-        final AppButton prevButton = (AppButton)def.getWidget("previous");
+        prevButton = (AppButton)def.getWidget("previous");
         addScreenHandler(prevButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 previous();
@@ -1079,7 +1087,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
 
-        final AppButton commitButton = (AppButton)def.getWidget("commit");
+        commitButton = (AppButton)def.getWidget("commit");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 commit();
@@ -1090,7 +1098,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
 
-        final AppButton abortButton = (AppButton)def.getWidget("abort");
+        abortButton = (AppButton)def.getWidget("abort");
         addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 abort();
@@ -1102,29 +1110,17 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         });
 
         // Get TabPanel and set Tab Selection Handlers
-        final TabPanel tabs = (TabPanel)def.getWidget("sampleItemTabPanel");
-        tabs.addSelectionHandler(new SelectionHandler<Integer>() {
-            public void onSelection(SelectionEvent<Integer> event) {
-                int tabIndex = event.getSelectedItem().intValue();
-                if (tabIndex == Tabs.SAMPLE_ITEM.ordinal())
-                    tab = Tabs.SAMPLE_ITEM;
-                else if (tabIndex == Tabs.ANALYSIS.ordinal())
-                    tab = Tabs.ANALYSIS;
-                else if (tabIndex == Tabs.TEST_RESULT.ordinal())
-                    tab = Tabs.TEST_RESULT;
-                else if (tabIndex == Tabs.ANALYSIS_NOTES.ordinal())
-                    tab = Tabs.ANALYSIS_NOTES;
-                else if (tabIndex == Tabs.SAMPLE_NOTES.ordinal())
-                    tab = Tabs.SAMPLE_NOTES;
-                else if (tabIndex == Tabs.STORAGE.ordinal())
-                    tab = Tabs.STORAGE;
-                else if (tabIndex == Tabs.QA_EVENTS.ordinal())
-                    tab = Tabs.QA_EVENTS;
-                else if (tabIndex == Tabs.AUX_DATA.ordinal())
-                    tab = Tabs.AUX_DATA;
-                
-                window.setBusy(consts.get("loadingMessage"));
-                
+        tabs = (TabPanel)def.getWidget("sampleItemTabPanel");
+        tabs.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+            public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
+                int i;
+
+                // tab screen order should be the same as enum or this will
+                // not work
+                i = event.getItem().intValue();
+                tab = Tabs.values()[i];
+
+                window.setBusy("loadingMessage");
                 drawTabs();
                 window.clearStatus();
             }
@@ -1558,7 +1554,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("sample_status"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
-        ((Dropdown<Integer>)def.getWidget(meta.SAMPLE.getStatusId())).setModel(model);
+        ((Dropdown<Integer>)def.getWidget(SampleMeta.getStatusId())).setModel(model);
 
         //analysis status dropdown
         model = new ArrayList<TableDataRow>();
@@ -1570,22 +1566,32 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     }
     
     private void drawTabs() {
-        if (tab == Tabs.SAMPLE_ITEM)
-            sampleItemTab.draw();
-        else if (tab == Tabs.ANALYSIS)
-            analysisTab.draw();
-        else if (tab == Tabs.TEST_RESULT)
-            testResultsTab.draw();
-        else if (tab == Tabs.ANALYSIS_NOTES)
-            analysisNotesTab.draw();
-        else if (tab == Tabs.SAMPLE_NOTES)
-            sampleNotesTab.draw();
-        else if (tab == Tabs.STORAGE)
-            storageTab.draw();
-        else if (tab == Tabs.QA_EVENTS)
-            qaEventsTab.draw();
-        else if (tab == Tabs.AUX_DATA)
-            auxDataTab.draw();
+        switch (tab) {
+            case SAMPLE_ITEM:
+                sampleItemTab.draw();
+                break;
+            case ANALYSIS:
+                analysisTab.draw();
+                break;
+            case TEST_RESULT:
+                testResultsTab.draw();
+                break;
+            case ANALYSIS_NOTES:
+                analysisNotesTab.draw();
+                break;
+            case SAMPLE_NOTES:
+                sampleNotesTab.draw();
+                break;
+            case STORAGE:
+                storageTab.draw();
+                break;
+            case QA_EVENTS:
+                qaEventsTab.draw();
+                break;
+            case AUX_DATA:
+                auxDataTab.draw();
+                break;
+        }
     }
     
     private SampleEnvironmentalManager getEnvManager(){
