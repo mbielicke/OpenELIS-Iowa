@@ -96,21 +96,6 @@ public class PanelManagerBean implements PanelManagerRemote {
         return man;
     }
     
-    public PanelManager delete(PanelManager man) throws Exception {
-        UserTransaction ut;
-        
-        checkSecurity(ModuleFlags.DELETE);
-
-        ut = ctx.getUserTransaction();
-        ut.begin();
-        lockBean.validateLock(ReferenceTable.PANEL, man.getPanel().getId());        
-        man.delete();
-        lockBean.giveUpLock(ReferenceTable.PANEL, man.getPanel().getId());
-        ut.commit();
-
-        return man;
-    }
-    
     public PanelManager fetchForUpdate(Integer id) throws Exception {
         lockBean.getLock(ReferenceTable.PANEL, id);
         return fetchById(id);
@@ -119,6 +104,21 @@ public class PanelManagerBean implements PanelManagerRemote {
     public PanelManager abortUpdate(Integer id) throws Exception {
         lockBean.giveUpLock(ReferenceTable.PANEL, id);
         return fetchById(id);
+    }
+
+    public PanelManager delete(PanelManager man) throws Exception {
+        UserTransaction ut;
+        
+        checkSecurity(ModuleFlags.DELETE);
+    
+        ut = ctx.getUserTransaction();
+        ut.begin();
+        lockBean.validateLock(ReferenceTable.PANEL, man.getPanel().getId());        
+        man.delete();
+        lockBean.giveUpLock(ReferenceTable.PANEL, man.getPanel().getId());
+        ut.commit();
+    
+        return man;
     }
 
     public PanelItemManager fetchItemByPanelId(Integer id) throws Exception {
