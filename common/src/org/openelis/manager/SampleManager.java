@@ -52,7 +52,7 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
     
     protected Integer anLoggedInId, anInitiatedId, anCompletedId,
                       anReleasedId, anInPrepId, anOnHoldId, anRequeueId,
-                      anCancelledId, anErrorLoggedInId, anErrorInitializedId,
+                      anCancelledId, anErrorLoggedInId, anErrorInitiatedId,
                       anErrorCompletedId, samLoggedInId, samCompletedId,
                       samReleasedId, samErrorId;
     
@@ -141,7 +141,7 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
                      anDO = analysisMan.getAnalysisAt(a);
                      analysisStatusId = anDO.getStatusId();
                      
-                     if(analysisStatusId.equals(anErrorLoggedInId) || analysisStatusId.equals(anErrorInitializedId) || analysisStatusId.equals(anErrorCompletedId))
+                     if(analysisStatusId.equals(anErrorLoggedInId) || analysisStatusId.equals(anErrorInitiatedId) || analysisStatusId.equals(anErrorCompletedId))
                          e++;
                      else if(analysisStatusId.equals(anLoggedInId) || analysisStatusId.equals(anInitiatedId) || analysisStatusId.equals(anRequeueId) || analysisStatusId.equals(anInPrepId))
                          l++;
@@ -440,7 +440,7 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
         anRequeueId = proxy().getIdFromSystemName("analysis_requeue");
         anCancelledId = proxy().getIdFromSystemName("analysis_cancelled");
         anErrorLoggedInId = proxy().getIdFromSystemName("analysis_error_logged_in");
-        anErrorInitializedId = proxy().getIdFromSystemName("analysis_error_initiated");
+        anErrorInitiatedId = proxy().getIdFromSystemName("analysis_error_initiated");
         anErrorCompletedId = proxy().getIdFromSystemName("analysis_error_completed");
         samLoggedInId = proxy().getIdFromSystemName("sample_logged_in");
         samCompletedId = proxy().getIdFromSystemName("sample_completed");
