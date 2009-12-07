@@ -44,7 +44,7 @@ import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.metamap.SampleMetaMap;
+import org.openelis.meta.SampleMeta;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -53,26 +53,23 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
     public enum Action {CHANGED};
     private boolean loaded;
     
-    private SampleMetaMap meta;
     protected SampleItemViewDO sampleItem;
     protected SampleDO sample;
+    protected TextBox sourceOther, containerReference, quantity;
     protected Dropdown<Integer> typeOfSampleId, sourceOfSampleId, containerId, unitOfMeasureId;
 
     public SampleItemTab(ScreenDefInt def, ScreenWindow window) {
         setDef(def);
         setWindow(window);
-        
-        meta = new SampleMetaMap("sample.");
-        
+    
         initialize();
-        
         initializeDropdowns();
     }
     
     private void initialize() {
         final SampleItemTab itemTab = this;
         
-        typeOfSampleId = (Dropdown)def.getWidget(meta.SAMPLE_ITEM.getTypeOfSampleId());
+        typeOfSampleId = (Dropdown)def.getWidget(SampleMeta.getItemTypeOfSampleId());
         addScreenHandler(typeOfSampleId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 typeOfSampleId.setSelection(sampleItem.getTypeOfSampleId());
@@ -90,7 +87,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             }
         });
         
-        sourceOfSampleId = (Dropdown)def.getWidget(meta.SAMPLE_ITEM.getSourceOfSampleId());
+        sourceOfSampleId = (Dropdown)def.getWidget(SampleMeta.getItemSourceOfSampleId());
         addScreenHandler(sourceOfSampleId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 sourceOfSampleId.setSelection(sampleItem.getSourceOfSampleId());
@@ -108,7 +105,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             }
         });
         
-        final TextBox sourceOther = (TextBox)def.getWidget(meta.SAMPLE_ITEM.getSourceOther());
+        sourceOther = (TextBox)def.getWidget(SampleMeta.getItemSourceOther());
         addScreenHandler(sourceOther, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 sourceOther.setValue(sampleItem.getSourceOther());
@@ -124,7 +121,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             }
         });
 
-        containerId = (Dropdown)def.getWidget(meta.SAMPLE_ITEM.getContainerId());
+        containerId = (Dropdown)def.getWidget(SampleMeta.getItemContainerId());
         addScreenHandler(containerId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 containerId.setSelection(sampleItem.getContainerId());
@@ -142,7 +139,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             }
         });
 
-        final TextBox containerReference = (TextBox)def.getWidget(meta.SAMPLE_ITEM.getContainerReference());
+        containerReference = (TextBox)def.getWidget(SampleMeta.getItemContainerReference());
         addScreenHandler(containerReference, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 containerReference.setValue(sampleItem.getContainerReference());
@@ -158,7 +155,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             }
         });
 
-        final TextBox quantity = (TextBox)def.getWidget(meta.SAMPLE_ITEM.getQuantity());
+        quantity = (TextBox)def.getWidget(SampleMeta.getItemQuantity());
         addScreenHandler(quantity, new ScreenEventHandler<Double>() {
             public void onDataChange(DataChangeEvent event) {
                 quantity.setValue(getString(sampleItem.getQuantity()));
@@ -175,7 +172,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             }
         });
 
-        unitOfMeasureId = (Dropdown)def.getWidget(meta.SAMPLE_ITEM.getUnitOfMeasureId());
+        unitOfMeasureId = (Dropdown)def.getWidget(SampleMeta.getItemUnitOfMeasureId());
         addScreenHandler(unitOfMeasureId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 unitOfMeasureId.setSelection(sampleItem.getUnitOfMeasureId());

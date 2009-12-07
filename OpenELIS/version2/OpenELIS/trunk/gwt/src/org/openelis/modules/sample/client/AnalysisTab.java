@@ -60,7 +60,7 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.TestManager;
-import org.openelis.metamap.SampleMetaMap;
+import org.openelis.meta.SampleMeta;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -70,17 +70,16 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     public enum Action {CHANGED};
     private boolean loaded;
     
-    private SampleMetaMap meta;
-    
     protected AutoComplete<Integer> test, method;
-    protected Dropdown<Integer> sectionId;
+    protected Dropdown<Integer> sectionId, statusId;
     protected CheckBox isReportable;
+    protected TextBox revision;
+    protected CalendarLookUp startedDate, completedDate, releasedDate, printedDate;
     
     protected SampleDataBundle bundle;
     protected AnalysisManager manager;
     protected AnalysisViewDO analysis;
     protected SampleItemViewDO sampleItem;
-    protected Dropdown<Integer> statusId;
     
     protected Integer analysisLoggedInId, analysisCancelledId, analysisReleasedId;
     
@@ -92,17 +91,15 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         
         setDef(def);
         setWindow(window);
-        meta = new SampleMetaMap("sample.");
         
         initialize();
-       
         initializeDropdowns();
     }
     
     private void initialize() {
         final AnalysisTab anTab = this;
         
-        test = (AutoComplete)def.getWidget(meta.SAMPLE_ITEM.ANALYSIS.TEST.getName());
+        test = (AutoComplete)def.getWidget(SampleMeta.getAnalysisTestName());
         addScreenHandler(test, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 test.setSelection(analysis.getTestId(), analysis.getTestName());
@@ -227,7 +224,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
            }
         });
 
-        method = (AutoComplete)def.getWidget(meta.SAMPLE_ITEM.ANALYSIS.TEST.METHOD.getName());
+        method = (AutoComplete)def.getWidget(SampleMeta.getAnalysisMethodName());
         addScreenHandler(method, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 method.setSelection(analysis.getMethodId(), analysis.getMethodName());
@@ -243,7 +240,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
         });
 
-        statusId = (Dropdown)def.getWidget(meta.SAMPLE_ITEM.ANALYSIS.getStatusId());
+        statusId = (Dropdown)def.getWidget(SampleMeta.getAnalysisStatusId());
         addScreenHandler(statusId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 statusId.setSelection(analysis.getStatusId());
@@ -260,7 +257,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
         });
 
-        final TextBox revision = (TextBox)def.getWidget(meta.SAMPLE_ITEM.ANALYSIS.getRevision());
+        revision = (TextBox)def.getWidget(SampleMeta.getAnalysisRevision());
         addScreenHandler(revision, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 revision.setValue(getString(analysis.getRevision()));
@@ -276,7 +273,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
         });
 
-        isReportable = (CheckBox)def.getWidget(meta.SAMPLE_ITEM.ANALYSIS.getIsReportable());
+        isReportable = (CheckBox)def.getWidget(SampleMeta.getAnalysisIsReportable());
         addScreenHandler(isReportable, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isReportable.setValue(analysis.getIsReportable());
@@ -292,7 +289,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
         });
 
-        sectionId = (Dropdown<Integer>)def.getWidget(meta.SAMPLE_ITEM.ANALYSIS.SECTION.getName());
+        sectionId = (Dropdown<Integer>)def.getWidget(SampleMeta.getAnalysisSectionName());
         addScreenHandler(sectionId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 if(analysis.getSectionId() != null)
@@ -319,7 +316,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
         });
         
-        final CalendarLookUp startedDate = (CalendarLookUp)def.getWidget(meta.SAMPLE_ITEM.ANALYSIS.getStartedDate());
+        startedDate = (CalendarLookUp)def.getWidget(SampleMeta.getAnalysisStartedDate());
         addScreenHandler(startedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 startedDate.setValue(analysis.getStartedDate());
@@ -336,7 +333,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
         });
         
-        final CalendarLookUp completedDate = (CalendarLookUp)def.getWidget(meta.SAMPLE_ITEM.ANALYSIS.getCompletedDate());
+        completedDate = (CalendarLookUp)def.getWidget(SampleMeta.getAnalysisCompletedDate());
         addScreenHandler(completedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 completedDate.setValue(analysis.getCompletedDate());
@@ -353,7 +350,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
         });
         
-        final CalendarLookUp releasedDate = (CalendarLookUp)def.getWidget(meta.SAMPLE_ITEM.ANALYSIS.getReleasedDate());
+        releasedDate = (CalendarLookUp)def.getWidget(SampleMeta.getAnalysisReleasedDate());
         addScreenHandler(releasedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 releasedDate.setValue(analysis.getReleasedDate());
@@ -370,7 +367,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
         });
 
-        final CalendarLookUp printedDate = (CalendarLookUp)def.getWidget(meta.SAMPLE_ITEM.ANALYSIS.getPrintedDate());
+        printedDate = (CalendarLookUp)def.getWidget(SampleMeta.getAnalysisPrintedDate());
         addScreenHandler(releasedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 printedDate.setValue(analysis.getPrintedDate());
