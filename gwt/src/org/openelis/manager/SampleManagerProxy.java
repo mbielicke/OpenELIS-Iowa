@@ -31,11 +31,9 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.SampleDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FieldErrorWarning;
-import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.metamap.SampleMetaMap;
-import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.meta.SampleMeta;
 
 public class SampleManagerProxy {
     protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.sample.server.SampleService";
@@ -93,31 +91,29 @@ public class SampleManagerProxy {
         //revalidate accession number
         validateAccessionNumber(man.getSample(), errorsList);
         
-        SampleMetaMap meta = new SampleMetaMap("sample.");
-        
         //sample validate code
         SampleDO sampleDO = man.getSample();
         
         //validate the dates
         //recieved date required
         if(sampleDO.getReceivedDate() == null || sampleDO.getReceivedDate().getDate() == null)
-            errorsList.add(new FieldErrorWarning("fieldRequiredException", meta.getReceivedDate()));
+            errorsList.add(new FieldErrorWarning("fieldRequiredException", SampleMeta.getReceivedDate()));
         else if(sampleDO.getEnteredDate() != null && sampleDO.getReceivedDate().before(sampleDO.getEnteredDate().add(-30)))
             //recieved cant be more than 30 days before entered
-            errorsList.add(new FieldErrorWarning("receivedTooOldWarning", meta.getReceivedDate()));
+            errorsList.add(new FieldErrorWarning("receivedTooOldWarning", SampleMeta.getReceivedDate()));
             
        if(sampleDO.getEnteredDate() != null && sampleDO.getCollectionDate() != null){
            if(sampleDO.getCollectionDate().before(sampleDO.getEnteredDate().add(-364)))
-               errorsList.add(new FieldErrorException("collectedTooOldException", meta.getCollectionDate()));
+               errorsList.add(new FieldErrorException("collectedTooOldException", SampleMeta.getCollectionDate()));
            else if(sampleDO.getCollectionDate().before(sampleDO.getEnteredDate().add(-30)))
-               errorsList.add(new FieldErrorWarning("collectedTooOldWarning", meta.getCollectionDate()));
+               errorsList.add(new FieldErrorWarning("collectedTooOldWarning", SampleMeta.getCollectionDate()));
        }
         
        if(sampleDO.getCollectionDate() == null)
-           errorsList.add(new FieldErrorWarning("collectedDateMissingWarning", meta.getCollectionDate()));
+           errorsList.add(new FieldErrorWarning("collectedDateMissingWarning", SampleMeta.getCollectionDate()));
        else if(sampleDO.getReceivedDate() != null){
             if(sampleDO.getCollectionDate().compareTo(sampleDO.getReceivedDate()) == 1)
-                errorsList.add(new FieldErrorException("collectedDateInvalidError", meta.getReceivedDate()));
+                errorsList.add(new FieldErrorException("collectedDateInvalidError", SampleMeta.getReceivedDate()));
        }
         
        if(man.sampleItems != null)

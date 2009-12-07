@@ -25,82 +25,46 @@
 */
 package org.openelis.modules.privateWellWaterSampleLogin.client;
 
+import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDefInt;
 
-public class PrivateWellWaterSampleLoginScreen {//extends OpenELISScreenForm<PrivateWellWaterSampleLoginForm,Query<TableDataRow<Integer>>> implements ClickListener, TabListener, TreeManager{
-    /*
-    private TreeWidget itemsTestsTree;
-    private KeyListManager keyList = new KeyListManager();
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+
+
+public class PrivateWellWaterSampleLoginScreen extends Screen {
     
-    public PrivateWellWaterSampleLoginScreen() {
-        super("org.openelis.modules.privateWellWaterSampleLogin.server.PrivateWellWaterSampleLoginService");
-        query = new Query<TableDataRow<Integer>>();
-        getScreen(new PrivateWellWaterSampleLoginForm());
+    public PrivateWellWaterSampleLoginScreen() throws Exception {
+        //Call base to get ScreenDef and draw screen
+        super((ScreenDefInt)GWT.create(PrivateWellWaterSampleLoginDef.class));
+        //service = new ScreenService("controller?service=org.openelis.modules.environmentalSampleLogin.server.EnvironmentalSampleLoginService");
+        
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                postConstructor();
+            }
+        });
     }
 
-    public void onClick(Widget sender) {
+    /**
+     * This method is called to set the initial state of widgets after the
+     * screen is attached to the browser. It is usually called in deferred
+     * command.
+     */
+    private void postConstructor() {
+        initialize();
+        initializeDropdowns();
+        setState(State.DEFAULT);
+        DataChangeEvent.fire(this);
+    }
     
+    private void initialize() {
+        
     }
     
-    public void afterDraw(boolean sucess) {
-        ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
+    private void initializeDropdowns(){
         
-        //disable the buttons for the demo for now
-        bpanel.enableButton("query", false);
-        bpanel.enableButton("add", false);
-        
-        CommandChain formChain = new CommandChain();
-        formChain.addCommand(this);
-        formChain.addCommand(bpanel);
-        formChain.addCommand(keyList);
-
-        itemsTestsTree = (TreeWidget)getWidget("itemsTestsTree");
-        
-        //build the tree
-        TreeDataItem row1 = itemsTestsTree.model.createTreeItem("top");
-        row1.cells[0].setValue("0 - Private Kit");
-        row1.cells[1].setValue("Well");
-        TreeDataItem row2 = itemsTestsTree.model.createTreeItem("top");
-        row2.cells[0].setValue("Total Coliform - Logged In");
-        TreeDataItem row3 = itemsTestsTree.model.createTreeItem("top");
-        row3.cells[0].setValue("Nitrate - Logged In");
-        row1.addItem(row2);
-        row1.addItem(row3);
-        itemsTestsTree.model.addRow(row1);
-        
-        itemsTestsTree.model.refresh();
-        
-        super.afterDraw(sucess);
     }
-
-    public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
-        return true;
-    }
-
-    public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
-    }
-
-    public boolean canAdd(TreeWidget widget, TreeDataItem set, int row) {
-        return false;
-    }
-
-    public boolean canClose(TreeWidget widget, TreeDataItem set, int row) {
-        return true;
-    }
-
-    public boolean canDelete(TreeWidget widget, TreeDataItem set, int row) {
-        return false;
-    }
-
-    public boolean canEdit(TreeWidget widget, TreeDataItem set, int row, int col) {
-        return false;
-    }
-
-    public boolean canOpen(TreeWidget widget, TreeDataItem addRow, int row) {
-        return true;
-    }
-
-    public boolean canSelect(TreeWidget widget, TreeDataItem set, int row) {
-        return false;
-    }
-*/
 }

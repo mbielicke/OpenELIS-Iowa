@@ -92,13 +92,15 @@ UIRF Software License are applicable instead of those above.
 
                 <menuItem key="tracking" description="{resource:getString($constants,'trackingDescription')}" enable="false" icon="trackingIcon" label="{resource:getString($constants,'tracking')}" />
                 <html>&lt;hr/&gt;</html>
+                <code>if(OpenELIS.security.hasModule("sampleenvironmental","SELECT")){</code>
                 <menuItem key="environmentalSampleLogin" description="{resource:getString($constants,'environmentalSampleLoginDescription')}" icon="environmentalSampleLoginIcon" label="{resource:getString($constants,'environmentalSampleLogin')}" />
+                <code>}</code>
                 <menuItem key="clinicalSampleLogin" description="{resource:getString($constants,'clinicalSampleLoginDescription')}" enable="false" icon="clinicalSampleLoginIcon" label="{resource:getString($constants,'clinicalSampleLogin')}" />
                 <menuItem key="animalSampleLogin" description="{resource:getString($constants,'animalSampleLoginDescription')}" enable="false" icon="animalSampleLoginIcon" label="{resource:getString($constants,'animalSampleLogin')}" />
                 <menuItem key="newbornScreeningSampleLogin" description="{resource:getString($constants,'newbornScreeningSampleLoginDescription')}" enable="false" icon="newbornScreeningSampleLoginIcon" label="{resource:getString($constants,'newbornScreeningSampleLogin')}" />
                 <menuItem key="ptSampleLogin" description="{resource:getString($constants,'ptSampleLoginDescription')}" enable="false" icon="ptSampleLoginIcon" label="{resource:getString($constants,'ptSampleLogin')}" />
                 <menuItem key="sdwisSampleLogin" description="{resource:getString($constants,'sdwisSampleLoginDescription')}" enable="false" icon="sdwisSampleLoginIcon" label="{resource:getString($constants,'sdwisSampleLogin')}" />
-                <menuItem key="privateWellWaterSampleLogin" description="{resource:getString($constants,'privateWellWaterSampleLoginDescription')}" enable="false" icon="privateWellWaterSampleLoginIcon" label="{resource:getString($constants,'privateWellWaterSampleLogin')}" />
+                <menuItem key="privateWellWaterSampleLogin" description="{resource:getString($constants,'privateWellWaterSampleLoginDescription')}" enable="true" icon="privateWellWaterSampleLoginIcon" label="{resource:getString($constants,'privateWellWaterSampleLogin')}" />
 
 <!-- 
 <menuItem key="sampleManagement" icon="sampleManagementIcon" label="{resource:getString($constants,'sampleManagement')}" description="{resource:getString($constants,'sampleManagementDescription')}"/>
