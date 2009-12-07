@@ -41,11 +41,11 @@ public interface PanelManagerRemote {
     
     public PanelManager update(PanelManager man) throws Exception;
     
-    public PanelManager delete(PanelManager man) throws Exception; 
-    
     public PanelManager fetchForUpdate(Integer id) throws Exception;
     
     public PanelManager abortUpdate(Integer id) throws Exception;
+    
+    public PanelManager delete(PanelManager man) throws Exception; 
     
     public PanelItemManager fetchItemByPanelId(Integer id) throws Exception;      
 
