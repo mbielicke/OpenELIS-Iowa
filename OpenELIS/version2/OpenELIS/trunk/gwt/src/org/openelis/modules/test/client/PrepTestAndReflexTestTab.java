@@ -103,16 +103,7 @@ public class PrepTestAndReflexTestTab extends Screen implements
         this.service = service;
         
         initialize();
-
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });        
-    }
-    
-    private void postConstructor() {
-        initializeDropdowns();        
+        initializeDropdowns();          
     }
 
     private void initialize() {

@@ -32,6 +32,7 @@ import java.util.List;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.QcDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.TestWorksheetDO;
@@ -102,17 +103,10 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         this.qcService = qcService;
         
         initialize();
-
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });        
+        initializeDropdowns();            
     }
     
-    private void postConstructor() {
-        initializeDropdowns();        
-    }
+
 
     private void initialize() {
         screen = this;
@@ -259,8 +253,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
                 ArrayList<TableDataRow> model;
-                TableDataRow row;
-                ArrayList<IdNameVO> list;
+                ArrayList<QcDO> list;
 
                 parser = new QueryFieldUtil();
                 parser.parse(event.getMatch());
@@ -268,9 +261,8 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
                 try {
                     list = qcService.callList("fetchByName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
-                    for (IdNameVO data : list) {
-                        model.add(new TableDataRow(data.getName(), data.getName()));
-                    }
+                    for (QcDO data : list) 
+                        model.add(new TableDataRow(data.getName(), data.getName()));                    
                     qcname.showAutoMatches(model);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());

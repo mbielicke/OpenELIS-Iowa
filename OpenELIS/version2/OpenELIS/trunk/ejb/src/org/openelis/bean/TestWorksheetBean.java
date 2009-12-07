@@ -56,66 +56,68 @@ public class TestWorksheetBean implements TestWorksheetLocal {
     
     public TestWorksheetViewDO fetchByTestId(Integer testId) throws Exception {
         Query query;
-        TestWorksheetViewDO worksheetDO;        
+        TestWorksheetViewDO data;        
         
+        data = null;
         query = manager.createNamedQuery("TestWorksheet.FetchByTestId");
         query.setParameter("testId", testId);                
         
         try {
-            worksheetDO = (TestWorksheetViewDO)query.getSingleResult();
+            data = (TestWorksheetViewDO)query.getSingleResult();
         } catch (NoResultException e) {
-            throw new NotFoundException();
+            //ignore the exception because
+            //it is possible to have a test without a test_worksheet record
         } catch (Exception e) {
             throw new DatabaseException(e);
         }
         
-        return worksheetDO;
+        return data;
     }
     
     public TestWorksheetViewDO add(TestWorksheetViewDO data) throws Exception {
-        TestWorksheet testWorksheet;      
+        TestWorksheet entity;      
         
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        testWorksheet = new TestWorksheet();
+        entity = new TestWorksheet();
         
-        testWorksheet.setBatchCapacity(data.getBatchCapacity());
-        testWorksheet.setFormatId(data.getFormatId());
-        testWorksheet.setScriptletId(data.getScriptletId());
-        testWorksheet.setTestId(data.getTestId());
-        testWorksheet.setTotalCapacity(data.getTotalCapacity());
+        entity.setBatchCapacity(data.getBatchCapacity());
+        entity.setFormatId(data.getFormatId());
+        entity.setScriptletId(data.getScriptletId());
+        entity.setTestId(data.getTestId());
+        entity.setTotalCapacity(data.getTotalCapacity());
         
-        manager.persist(testWorksheet);
+        manager.persist(entity);
 
-        data.setId(testWorksheet.getId());
+        data.setId(entity.getId());
         
         return data;
 
     }
 
     public TestWorksheetViewDO update(TestWorksheetViewDO data) throws Exception {
-        TestWorksheet testWorksheet;
+        TestWorksheet entity;
         
         if(!data.isChanged())
             return data;
         
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        testWorksheet = manager.find(TestWorksheet.class, data.getId());
+        entity = manager.find(TestWorksheet.class, data.getId());
         
-        testWorksheet.setBatchCapacity(data.getBatchCapacity());
-        testWorksheet.setFormatId(data.getFormatId());
-        testWorksheet.setScriptletId(data.getScriptletId());
-        testWorksheet.setTestId(data.getTestId());
-        testWorksheet.setTotalCapacity(data.getTotalCapacity());
+        entity.setBatchCapacity(data.getBatchCapacity());
+        entity.setFormatId(data.getFormatId());
+        entity.setScriptletId(data.getScriptletId());
+        entity.setTestId(data.getTestId());
+        entity.setTotalCapacity(data.getTotalCapacity());
         
         return data;
 
     }
 
-    public void validate(TestWorksheetViewDO worksheetDO) throws Exception {
+    public void validate(TestWorksheetViewDO data) throws Exception {
         boolean checkForMultiple = true;
-        ValidationErrorsList exceptionList;
+        ValidationErrorsList list;
 
         //
         // This check is put here in order to distinguish between the cases where
@@ -127,49 +129,49 @@ public class TestWorksheetBean implements TestWorksheetLocal {
         // will make error messages get displayed on the screen when there was
         // no fault of the user.
         //
-        if (!worksheetDO.isChanged())
+        if (!data.isChanged())
             return;
 
-        exceptionList = new ValidationErrorsList();
+        list = new ValidationErrorsList();
         
-        if (worksheetDO.getBatchCapacity() == null) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
+        if (data.getBatchCapacity() == null) {
+            list.add(new FieldErrorException("fieldRequiredException",
                                                       meta.getTestWorksheet().getBatchCapacity()));
             checkForMultiple = false;
         }
-        if (worksheetDO.getTotalCapacity() == null) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
+        if (data.getTotalCapacity() == null) {
+            list.add(new FieldErrorException("fieldRequiredException",
                                                       meta.getTestWorksheet().getTotalCapacity()));
             checkForMultiple = false;
         }
 
-        if (worksheetDO.getBatchCapacity() != null && worksheetDO.getBatchCapacity() <= 0) {
-            exceptionList.add(new FieldErrorException("batchCapacityMoreThanZeroException",
+        if (data.getBatchCapacity() != null && data.getBatchCapacity() <= 0) {
+            list.add(new FieldErrorException("batchCapacityMoreThanZeroException",
                                                       meta.getTestWorksheet().getBatchCapacity()));
             checkForMultiple = false;
         }
 
-        if (worksheetDO.getTotalCapacity() != null && worksheetDO.getTotalCapacity() <= 0) {
-            exceptionList.add(new FieldErrorException("totalCapacityMoreThanZeroException",
+        if (data.getTotalCapacity() != null && data.getTotalCapacity() <= 0) {
+            list.add(new FieldErrorException("totalCapacityMoreThanZeroException",
                                                       meta.getTestWorksheet().getTotalCapacity()));
             checkForMultiple = false;
         }
 
-        if (worksheetDO.getFormatId() == null) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
+        if (data.getFormatId() == null) {
+            list.add(new FieldErrorException("fieldRequiredException",
                                                       meta.getTestWorksheet().getFormatId()));
         }
 
         if (checkForMultiple) {
-            if ( (worksheetDO.getTotalCapacity() % worksheetDO.getBatchCapacity()) != 0) {
-                exceptionList.add(new FieldErrorException("totalCapacityMultipleException",
+            if ( (data.getTotalCapacity() % data.getBatchCapacity()) != 0) {
+                list.add(new FieldErrorException("totalCapacityMultipleException",
                                                           meta.getTestWorksheet()
                                                               .getTotalCapacity()));
             }
         }
         
-        if(exceptionList.size() > 0)
-            throw exceptionList;
+        if(list.size() > 0)
+            throw list;
     }
 
 

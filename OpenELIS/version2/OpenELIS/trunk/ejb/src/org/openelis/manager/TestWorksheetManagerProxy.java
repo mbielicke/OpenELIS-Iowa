@@ -38,7 +38,6 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.CategoryLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestWorksheetAnalyteLocal;
 import org.openelis.local.TestWorksheetItemLocal;
@@ -55,45 +54,31 @@ public class TestWorksheetManagerProxy {
         TestWorksheetItemLocal il;
         TestWorksheetAnalyteLocal al;
         TestWorksheetManager twm;
-        TestWorksheetViewDO wsDO;
+        TestWorksheetViewDO data;
         ArrayList<TestWorksheetItemDO> items;
         ArrayList<TestWorksheetAnalyteViewDO> analytes;
 
         items = null;
         wl = worksheetLocal();
         twm = TestWorksheetManager.getInstance();
-        wsDO = null;
+        data = null;
         analytes = null;
-
-        try {
-            wsDO = wl.fetchByTestId(testId);
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            throw new DatabaseException(e);
-        }
-
+                
+        data = wl.fetchByTestId(testId);
+        
         il = itemLocal();
         al = analyteLocal();
 
-        if (wsDO == null) {
-            wsDO = new TestWorksheetViewDO();
+        if (data == null) {
+            data = new TestWorksheetViewDO();
         } else {
-            try {
-                items = il.fetchByTestWorksheetId(wsDO.getId());
-            } catch (NotFoundException e) {
-                e.printStackTrace();
-            }
+            items = il.fetchByTestWorksheetId(data.getId());        
         }
         
-        try {
-            analytes = al.fetchByTestId(testId);
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-        }
+        analytes = al.fetchByTestId(testId);
 
         twm.setTestId(testId);
-        twm.setWorksheet(wsDO);
+        twm.setWorksheet(data);
         twm.setItems(items);
         twm.setAnalytes(analytes);
 
@@ -158,13 +143,13 @@ public class TestWorksheetManagerProxy {
         TestWorksheetLocal wl;
         TestWorksheetItemLocal il;
         TestWorksheetAnalyteLocal al;
-        TestWorksheetViewDO worksheet;
+        TestWorksheetViewDO data;
         TestWorksheetItemDO item;
         TestWorksheetAnalyteViewDO analyte;
         int i;
         Integer id;
 
-        worksheet = man.getWorksheet();
+        data = man.getWorksheet();
         wl = worksheetLocal();
         il = itemLocal();
         al = analyteLocal();
@@ -180,11 +165,11 @@ public class TestWorksheetManagerProxy {
         // fields was changed on the screen. The validation code won't be
         // executed if the _changed flag isn't set for the same reason.
         //
-        if (worksheet.getId() == null && worksheet.isChanged()) {
-            worksheet.setTestId(man.getTestId());
-            wl.add(worksheet);
+        if (data.getId() == null && data.isChanged()) {
+            data.setTestId(man.getTestId());
+            wl.add(data);
         } else {
-            wl.update(worksheet);
+            wl.update(data);
         }
 
         for (i = 0; i < man.deleteItemCount(); i++ ) {
@@ -194,7 +179,7 @@ public class TestWorksheetManagerProxy {
         for (i = 0; i < man.itemCount(); i++ ) {
             item = man.getItemAt(i);
             if (item.getId() == null) {
-                item.setTestWorksheetId(worksheet.getId());
+                item.setTestWorksheetId(data.getId());
                 il.add(item);
             } else {
                 il.update(item);
@@ -224,20 +209,20 @@ public class TestWorksheetManagerProxy {
 
     public void validate(TestWorksheetManager man) throws Exception {
         ValidationErrorsList list;
-        TestWorksheetViewDO wsDO;
+        TestWorksheetViewDO data;
         TestWorksheetLocal wl;
 
-        wsDO = man.getWorksheet();
+        data = man.getWorksheet();
         wl = worksheetLocal();
         list = new ValidationErrorsList();
 
         try {
-            wl.validate(wsDO);
+            wl.validate(data);
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
         
-        validateWorksheetItems(list, man.getItems(), wsDO);
+        validateWorksheetItems(list, man.getItems(), data);
         validateWorksheetAnalytes(list, man.getAnalytes());
         if (list.size() > 0)
             throw list;
@@ -283,9 +268,9 @@ public class TestWorksheetManagerProxy {
         }
     }
 
-    private void validateWorksheetItems(ValidationErrorsList exceptionList,
-                                        List<TestWorksheetItemDO> itemDOList,
-                                        TestWorksheetViewDO worksheetDO) {
+    private void validateWorksheetItems(ValidationErrorsList list,
+                                        List<TestWorksheetItemDO> items,
+                                        TestWorksheetViewDO data) {
         Integer bc, tc, position, batchId, totalId, formatId, fixedId, duplId;
         ArrayList<Integer> posList;
         int i, size;
@@ -295,13 +280,13 @@ public class TestWorksheetManagerProxy {
         TestWorksheetItemLocal il;
         TestWorksheetLocal wl;
 
-        if (itemDOList == null)
+        if (items == null)
             return;
 
         bc = null;
         tc = null;
         formatId = null;
-        size = itemDOList.size();
+        size = items.size();
         batchId = null;
         totalId = null;
         fixedId = null;
@@ -311,10 +296,10 @@ public class TestWorksheetManagerProxy {
         il = itemLocal();
         wl = worksheetLocal();
 
-        if (worksheetDO != null) {
-            bc = worksheetDO.getBatchCapacity();
-            tc = worksheetDO.getTotalCapacity();
-            formatId = worksheetDO.getFormatId();
+        if (data != null) {
+            bc = data.getBatchCapacity();
+            tc = data.getTotalCapacity();
+            formatId = data.getFormatId();
         } else if (size > 0) {
             // 
             // if there's no data in worksheetDO it means that the user didn't
@@ -325,14 +310,14 @@ public class TestWorksheetManagerProxy {
             // won't be carried out unless the _changed flag is set, we set the
             // 3 fields that are required for a TestWorksheet
             //
-            worksheetDO = new TestWorksheetViewDO();
-            worksheetDO.setBatchCapacity(bc);
-            worksheetDO.setFormatId(formatId);
-            worksheetDO.setTotalCapacity(tc);
+            data = new TestWorksheetViewDO();
+            data.setBatchCapacity(bc);
+            data.setFormatId(formatId);
+            data.setTotalCapacity(tc);
             try {
-                wl.validate(worksheetDO);
+                wl.validate(data);
             } catch (Exception e) {
-                DataBaseUtil.mergeException(exceptionList, e);
+                DataBaseUtil.mergeException(list, e);
             }
         }
 
@@ -350,22 +335,22 @@ public class TestWorksheetManagerProxy {
         prevDO = null;
 
         for (i = 0; i < size; i++ ) {
-            currDO = itemDOList.get(i);
+            currDO = items.get(i);
 
             if (i > 0)
-                prevDO = itemDOList.get(i - 1);
+                prevDO = items.get(i - 1);
 
             position = currDO.getPosition();
             checkPosition = true;
             name = currDO.getQcName();
 
             if (name == null || "".equals(name)) {
-                exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
+                list.add(new TableFieldErrorException("fieldRequiredException", i,
                                                                meta.getTestWorksheetItem()
                                                                    .getQcName(), "worksheetTable"));
             }
             if (currDO.getTypeId() == null) {
-                exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
+                list.add(new TableFieldErrorException("fieldRequiredException", i,
                                                                meta.getTestWorksheetItem()
                                                                    .getTypeId(), "worksheetTable"));
                 checkPosition = false;
@@ -374,24 +359,24 @@ public class TestWorksheetManagerProxy {
             try {
                 il.validate(currDO);
             } catch (Exception e) {
-                DataBaseUtil.mergeException(exceptionList, e, "worksheetTable", i);
+                DataBaseUtil.mergeException(list, e, "worksheetTable", i);
             }
 
             if (position != null) {
                 if (position <= 0) {
-                    exceptionList.add(new TableFieldErrorException("posMoreThanZeroException", i,
+                    list.add(new TableFieldErrorException("posMoreThanZeroException", i,
                                                                    meta.getTestWorksheetItem()
                                                                        .getPosition(),
                                                                    "worksheetTable"));
                     checkPosition = false;
                 } else if (bc != null && batchId.equals(formatId) && position > bc) {
-                    exceptionList.add(new TableFieldErrorException("posExcBatchCapacityException",
+                    list.add(new TableFieldErrorException("posExcBatchCapacityException",
                                                                    i, meta.getTestWorksheetItem()
                                                                           .getPosition(),
                                                                    "worksheetTable"));
                     checkPosition = false;
                 } else if (tc != null && totalId.equals(formatId) && position > tc) {
-                    exceptionList.add(new TableFieldErrorException("posExcTotalCapacityException",
+                    list.add(new TableFieldErrorException("posExcTotalCapacityException",
                                                                    i, meta.getTestWorksheetItem()
                                                                           .getPosition(),
                                                                    "worksheetTable"));
@@ -400,7 +385,7 @@ public class TestWorksheetManagerProxy {
                     if ( !posList.contains(position)) {
                         posList.add(position);
                     } else {
-                        exceptionList.add(new TableFieldErrorException(
+                        list.add(new TableFieldErrorException(
                                                                        "duplicatePosForQCsException",
                                                                        i,
                                                                        meta.getTestWorksheetItem()
@@ -419,7 +404,7 @@ public class TestWorksheetManagerProxy {
                 }
                 if (position == null) {
                     if ("pos_duplicate".equals(sysName) || "".equals(sysName)) {
-                        exceptionList.add(new TableFieldErrorException(
+                        list.add(new TableFieldErrorException(
                                                                        "fixedDuplicatePosException",
                                                                        i,
                                                                        meta.getTestWorksheetItem()
@@ -428,13 +413,13 @@ public class TestWorksheetManagerProxy {
                     }
                 } else {
                     if (position == 1 && "pos_duplicate".equals(sysName)) {
-                        exceptionList.add(new TableFieldErrorException("posOneDuplicateException",
+                        list.add(new TableFieldErrorException("posOneDuplicateException",
                                                                        i,
                                                                        meta.getTestWorksheetItem()
                                                                            .getTypeId(),
                                                                        "worksheetTable"));
                     } else if ( !"pos_duplicate".equals(sysName) && !"pos_fixed".equals(sysName)) {
-                        exceptionList.add(new TableFieldErrorException("posSpecifiedException", i,
+                        list.add(new TableFieldErrorException("posSpecifiedException", i,
                                                                        meta.getTestWorksheetItem()
                                                                            .getPosition(),
                                                                        "worksheetTable"));
@@ -442,7 +427,7 @@ public class TestWorksheetManagerProxy {
                 }
 
                 if (duplicateAfterFixedOrDuplicate(currDO, prevDO, fixedId, duplId)) {
-                    exceptionList.add(new TableFieldErrorException(
+                    list.add(new TableFieldErrorException(
                                                                    "duplPosAfterFixedOrDuplPosException",
                                                                    i, meta.getTestWorksheetItem()
                                                                           .getPosition(),
@@ -453,32 +438,32 @@ public class TestWorksheetManagerProxy {
         }
     }
 
-    private void validateWorksheetAnalytes(ValidationErrorsList exceptionList,
-                                           ArrayList<TestWorksheetAnalyteViewDO> twsaDOList) {
-        TestWorksheetAnalyteViewDO twsaDO;
+    private void validateWorksheetAnalytes(ValidationErrorsList list,
+                                           ArrayList<TestWorksheetAnalyteViewDO> analytes) {
+        TestWorksheetAnalyteViewDO data;
         Integer anaId;
         ArrayList<Integer> idlist;
         TestWorksheetAnalyteLocal al;
 
-        if(twsaDOList == null)
+        if(analytes == null)
             return;
         
         idlist = new ArrayList<Integer>();
         al = analyteLocal();
         
-        for (int i = 0; i < twsaDOList.size(); i++ ) {
-            twsaDO = twsaDOList.get(i);
-            anaId = twsaDO.getTestAnalyteId();
+        for (int i = 0; i < analytes.size(); i++ ) {
+            data = analytes.get(i);
+            anaId = data.getTestAnalyteId();
 
             try {
-                al.validate(twsaDO);
+                al.validate(data);
             } catch (Exception e) {
-                DataBaseUtil.mergeException(exceptionList, e, "worksheetAnalyteTable", i);
+                DataBaseUtil.mergeException(list, e, "worksheetAnalyteTable", i);
             }            
             if (!idlist.contains(anaId)) {
                 idlist.add(anaId);
             } else {
-                exceptionList.add(new TableFieldErrorException("duplicateWSAnalyteException", i,
+                list.add(new TableFieldErrorException("duplicateWSAnalyteException", i,
                                                                meta.getTestWorksheetAnalyte()
                                                                    .getAnalyteId(),
                                                                "worksheetAnalyteTable"));

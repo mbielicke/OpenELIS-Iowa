@@ -61,10 +61,7 @@ public class TestWorksheetAnalyteBean implements TestWorksheetAnalyteLocal {
         
         query = manager.createNamedQuery("TestWorksheetAnalyte.FetchByTestId");
         query.setParameter("testId", testId);
-        list = query.getResultList();
-        
-        if(list.isEmpty())
-            throw new NotFoundException();
+        list = query.getResultList();       
         
         return DataBaseUtil.toArrayList(list);
     }

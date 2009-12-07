@@ -153,17 +153,8 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         this.analyteService = analyteService;
         this.dictionaryService = dictionaryService;  
         
-        initialize();  
-        
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });        
-    }
-    
-    private void postConstructor() {
-        initializeDropdowns();        
+        initialize();          
+        initializeDropdowns();     
     }
         
     private void initialize() {                        
