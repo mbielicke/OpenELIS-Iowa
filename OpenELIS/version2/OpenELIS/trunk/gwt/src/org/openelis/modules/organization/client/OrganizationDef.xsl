@@ -184,7 +184,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'active')" />:
                 </text>
                 <widget colspan="3">
-                  <check key="{meta:getIsActive()}" tab="contactTable,{meta:getParentOrganizationName()}" />
+                  <check key="{meta:getIsActive()}" tab="tabPanel,{meta:getParentOrganizationName()}" />
                 </widget>
               </row>
             </TablePanel>
@@ -195,7 +195,7 @@ UIRF Software License are applicable instead of those above.
 
 <!-- TAB 1 -->
 
-              <tab key="contactTab" text="{resource:getString($constants,'contact')}">
+              <tab key="contactTab" text="{resource:getString($constants,'contact')}" tab="contactTable">
                 <VerticalPanel padding="0" spacing="0">
                   <table key="contactTable" width="587" maxRows="10" showScroll="ALWAYS" tab="{meta:getId()},{meta:getIsActive()}">
                     <col key="{meta:getContactContactTypeId()}" width="106" header="{resource:getString($constants,'type')}">
@@ -263,7 +263,7 @@ UIRF Software License are applicable instead of those above.
 
 <!-- TAB 2 -->
 
-              <tab key="parameterTab" text="{resource:getString($constants,'parameter')}">
+              <tab key="parameterTab" text="{resource:getString($constants,'parameter')}" tab="parameterTable">
                 <VerticalPanel padding="0" spacing="0">
                   <table key="parameterTable" width="587" maxRows="10" showScroll="ALWAYS" tab="{meta:getId()},{meta:getIsActive()}">
                     <col key="{meta:getOrganizationParameterTypeId()}" width="300" align="left" header="{resource:getString($constants,'type')}">
@@ -298,10 +298,10 @@ UIRF Software License are applicable instead of those above.
 
 <!-- TAB 3 -->
 
-              <tab key="notesTab" text="{resource:getString($constants,'note')}">
+              <tab key="notesTab" text="{resource:getString($constants,'note')}" tab="standardNoteButton">
                 <VerticalPanel padding="0" spacing="0">
                   <notes key="notesPanel" width="604" height="247" />
-                  <appButton key="standardNoteButton" style="Button">
+                  <appButton key="standardNoteButton" style="Button" tab="{meta:getId()},{meta:getIsActive()}">
                     <HorizontalPanel>
                       <AbsolutePanel style="StandardNoteButtonImage" />
                       <text>
