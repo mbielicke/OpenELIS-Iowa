@@ -53,7 +53,6 @@ import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.SampleProjectManager;
-import org.openelis.metamap.SampleProjectMetaMap;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -68,7 +67,6 @@ public class SampleProjectLookupScreen extends Screen implements HasActionHandle
         OK
     };
 
-    private SampleProjectMetaMap       meta = new SampleProjectMetaMap();
     private TableWidget sampleProjectTable;
 
     public SampleProjectLookupScreen() throws Exception {

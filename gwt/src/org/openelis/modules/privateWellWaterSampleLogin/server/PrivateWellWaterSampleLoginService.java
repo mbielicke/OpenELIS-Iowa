@@ -26,46 +26,6 @@
 package org.openelis.modules.privateWellWaterSampleLogin.server;
 
 
-public class PrivateWellWaterSampleLoginService {//implements AppScreenFormServiceInt<PrivateWellWaterSampleLoginForm, Query<TableDataRow<Integer>>>{
-/*
-    public PrivateWellWaterSampleLoginForm abort(PrivateWellWaterSampleLoginForm rpc) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public PrivateWellWaterSampleLoginForm commitAdd(PrivateWellWaterSampleLoginForm rpc) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public PrivateWellWaterSampleLoginForm commitDelete(PrivateWellWaterSampleLoginForm rpc) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> data) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public PrivateWellWaterSampleLoginForm commitUpdate(PrivateWellWaterSampleLoginForm rpc) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public PrivateWellWaterSampleLoginForm fetch(PrivateWellWaterSampleLoginForm rpc) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public PrivateWellWaterSampleLoginForm fetchForUpdate(PrivateWellWaterSampleLoginForm rpc) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
+public class PrivateWellWaterSampleLoginService {
     
-    public PrivateWellWaterSampleLoginForm getScreen(PrivateWellWaterSampleLoginForm rpc) throws Exception {
-        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/privateWellWaterSampleLogin.xsl");
-        return rpc;
-    }
-    */
 }

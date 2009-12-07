@@ -43,7 +43,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.metamap.SampleEnvironmentalMetaMap;
+import org.openelis.meta.SampleMeta;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -60,8 +60,6 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
         OK
     };
 
-    private SampleEnvironmentalMetaMap       meta = new SampleEnvironmentalMetaMap();
-
     public SampleLocationLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SampleLocationLookupDef.class));
         
@@ -74,7 +72,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
     }
     
     private void initialize() {
-        final TextBox samplingLocation = (TextBox)def.getWidget(meta.getSamplingLocation());
+        final TextBox samplingLocation = (TextBox)def.getWidget(SampleMeta.getEnvSamplingLocation());
         addScreenHandler(samplingLocation, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 samplingLocation.setValue(envDO.getSamplingLocation());
@@ -90,7 +88,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
         });
 
-        final TextBox multipleUnit = (TextBox)def.getWidget(meta.ADDRESS.getMultipleUnit());
+        final TextBox multipleUnit = (TextBox)def.getWidget(SampleMeta.getAddrMultipleUnit());
         addScreenHandler(multipleUnit, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 multipleUnit.setValue(envDO.getAddressDO().getMultipleUnit());
@@ -106,7 +104,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
         });
 
-        final TextBox streetAddress = (TextBox)def.getWidget(meta.ADDRESS.getStreetAddress());
+        final TextBox streetAddress = (TextBox)def.getWidget(SampleMeta.getAddrStreetAddress());
         addScreenHandler(streetAddress, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 streetAddress.setValue(envDO.getAddressDO().getStreetAddress());
@@ -122,7 +120,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
         });
 
-        final TextBox city = (TextBox)def.getWidget(meta.ADDRESS.getCity());
+        final TextBox city = (TextBox)def.getWidget(SampleMeta.getAddrCity());
         addScreenHandler(city, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 city.setValue(envDO.getAddressDO().getCity());
@@ -138,7 +136,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
         });
 
-        state = (Dropdown)def.getWidget(meta.ADDRESS.getState());
+        state = (Dropdown)def.getWidget(SampleMeta.getAddrState());
         addScreenHandler(state, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 state.setSelection(envDO.getAddressDO().getState());
@@ -154,7 +152,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
         });
 
-        final TextBox zipCode = (TextBox)def.getWidget(meta.ADDRESS.getZipCode());
+        final TextBox zipCode = (TextBox)def.getWidget(SampleMeta.getAddrZipCode());
         addScreenHandler(zipCode, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 zipCode.setValue(envDO.getAddressDO().getZipCode());
@@ -170,7 +168,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
         });
 
-        country = (Dropdown)def.getWidget(meta.ADDRESS.getCountry());
+        country = (Dropdown)def.getWidget(SampleMeta.getAddrCountry());
         addScreenHandler(country, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 country.setSelection(envDO.getAddressDO().getCountry());
