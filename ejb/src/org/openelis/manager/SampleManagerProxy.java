@@ -38,9 +38,8 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SystemVariableLocal;
-import org.openelis.metamap.SampleMetaMap;
+import org.openelis.meta.SampleMeta;
 import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.DictionaryRemote;
 
 public class SampleManagerProxy {
     public SampleManager add(SampleManager man) throws Exception {
@@ -194,7 +193,7 @@ public class SampleManagerProxy {
     
     public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
         ValidationErrorsList errorsList;
-        SampleMetaMap meta = new SampleMetaMap("sample.");
+        
         SystemVariableLocal svl = getSysVariableLocal();
         SampleLocal sl = getSampleLocal();
         ArrayList<SystemVariableDO> sysVarList;
@@ -209,14 +208,14 @@ public class SampleManagerProxy {
         
         //we need to set the error
         if(sampleDO.getAccessionNumber().compareTo(new Integer(sysVarDO.getValue())) > 0)
-            errorsList.add(new FieldErrorException("accessionNumberNotInUse", meta.getAccessionNumber()));
+            errorsList.add(new FieldErrorException("accessionNumberNotInUse", SampleMeta.getAccessionNumber()));
         
         //check for dups
         try{
             checkSample = getSampleLocal().fetchByAccessionNumber(sampleDO.getAccessionNumber());
 
             if(checkSample != null && !checkSample.getId().equals(sampleDO.getId()))
-                errorsList.add(new FieldErrorException("accessionNumberDuplicate", meta.getAccessionNumber()));
+                errorsList.add(new FieldErrorException("accessionNumberDuplicate", SampleMeta.getAccessionNumber()));
 
         }catch(Exception e){
             //resultnotfound exception good in this case, no error
