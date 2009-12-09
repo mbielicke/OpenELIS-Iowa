@@ -49,6 +49,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -134,8 +136,7 @@ public class Analysis implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    if((id == null && this.id != null) || 
-       (id != null && !id.equals(this.id)))
+    if(DataBaseUtil.isDifferent(id, this.id))
       this.id = id;
   }
 
@@ -143,8 +144,7 @@ public class Analysis implements Auditable, Cloneable {
     return sampleItemId;
   }
   public void setSampleItemId(Integer sampleItemId) {
-    if((sampleItemId == null && this.sampleItemId != null) || 
-       (sampleItemId != null && !sampleItemId.equals(this.sampleItemId)))
+    if(DataBaseUtil.isDifferent(sampleItemId, this.sampleItemId))
       this.sampleItemId = sampleItemId;
   }
 
@@ -152,8 +152,7 @@ public class Analysis implements Auditable, Cloneable {
     return revision;
   }
   public void setRevision(Integer revision) {
-    if((revision == null && this.revision != null) || 
-       (revision != null && !revision.equals(this.revision)))
+    if(DataBaseUtil.isDifferent(revision, this.revision))
       this.revision = revision;
   }
 
@@ -161,8 +160,7 @@ public class Analysis implements Auditable, Cloneable {
     return testId;
   }
   public void setTestId(Integer testId) {
-    if((testId == null && this.testId != null) || 
-       (testId != null && !testId.equals(this.testId)))
+    if(DataBaseUtil.isDifferent(testId, this.testId))
       this.testId = testId;
   }
 
@@ -170,8 +168,7 @@ public class Analysis implements Auditable, Cloneable {
     return sectionId;
   }
   public void setSectionId(Integer sectionId) {
-    if((sectionId == null && this.sectionId != null) || 
-       (sectionId != null && !sectionId.equals(this.sectionId)))
+    if(DataBaseUtil.isDifferent(sectionId, this.sectionId))
       this.sectionId = sectionId;
   }
 
@@ -179,8 +176,7 @@ public class Analysis implements Auditable, Cloneable {
     return preAnalysisId;
   }
   public void setPreAnalysisId(Integer preAnalysisId) {
-    if((preAnalysisId == null && this.preAnalysisId != null) || 
-       (preAnalysisId != null && !preAnalysisId.equals(this.preAnalysisId)))
+    if(DataBaseUtil.isDifferent(preAnalysisId, this.preAnalysisId))
       this.preAnalysisId = preAnalysisId;
   }
 
@@ -188,8 +184,7 @@ public class Analysis implements Auditable, Cloneable {
     return parentAnalysisId;
   }
   public void setParentAnalysisId(Integer parentAnalysisId) {
-    if((parentAnalysisId == null && this.parentAnalysisId != null) || 
-       (parentAnalysisId != null && !parentAnalysisId.equals(this.parentAnalysisId)))
+    if(DataBaseUtil.isDifferent(parentAnalysisId, this.parentAnalysisId))
       this.parentAnalysisId = parentAnalysisId;
   }
 
@@ -197,8 +192,7 @@ public class Analysis implements Auditable, Cloneable {
     return parentResultId;
   }
   public void setParentResultId(Integer parentResultId) {
-    if((parentResultId == null && this.parentResultId != null) || 
-       (parentResultId != null && !parentResultId.equals(this.parentResultId)))
+    if(DataBaseUtil.isDifferent(parentResultId, this.parentResultId))
       this.parentResultId = parentResultId;
   }
 
@@ -206,8 +200,7 @@ public class Analysis implements Auditable, Cloneable {
     return isReportable;
   }
   public void setIsReportable(String isReportable) {
-    if((isReportable == null && this.isReportable != null) || 
-       (isReportable != null && !isReportable.equals(this.isReportable)))
+    if(DataBaseUtil.isDifferent(isReportable, this.isReportable ))
       this.isReportable = isReportable;
   }
 
@@ -215,8 +208,7 @@ public class Analysis implements Auditable, Cloneable {
     return unitOfMeasureId;
   }
   public void setUnitOfMeasureId(Integer unitOfMeasureId) {
-    if((unitOfMeasureId == null && this.unitOfMeasureId != null) || 
-       (unitOfMeasureId != null && !unitOfMeasureId.equals(this.unitOfMeasureId)))
+    if(DataBaseUtil.isDifferent(unitOfMeasureId, this.unitOfMeasureId))
       this.unitOfMeasureId = unitOfMeasureId;
   }
 
@@ -224,66 +216,59 @@ public class Analysis implements Auditable, Cloneable {
     return statusId;
   }
   public void setStatusId(Integer statusId) {
-    if((statusId == null && this.statusId != null) || 
-       (statusId != null && !statusId.equals(this.statusId)))
+    if(DataBaseUtil.isDifferent(statusId, this.statusId))
       this.statusId = statusId;
   }
 
   public Datetime getAvailableDate() {
     if(availableDate == null)
       return null;
-    return new Datetime(Datetime.YEAR,Datetime.SECOND,availableDate);
+    return new Datetime(Datetime.YEAR,Datetime.MINUTE,availableDate);
   }
   public void setAvailableDate (Datetime available_date){
-    if((availableDate == null && this.availableDate != null) || 
-       (availableDate != null && !availableDate.equals(this.availableDate)))
+    if(DataBaseUtil.isDifferentYM(availableDate, this.availableDate))
       this.availableDate = available_date.getDate();
   }
 
   public Datetime getStartedDate() {
     if(startedDate == null)
       return null;
-    return new Datetime(Datetime.YEAR,Datetime.SECOND,startedDate);
+    return new Datetime(Datetime.YEAR,Datetime.MINUTE,startedDate);
   }
   public void setStartedDate (Datetime started_date){
-    if((startedDate == null && this.startedDate != null) || 
-       (startedDate != null && !startedDate.equals(this.startedDate)))
+    if(DataBaseUtil.isDifferentYM(startedDate, this.startedDate))
       this.startedDate = started_date.getDate();
   }
 
   public Datetime getCompletedDate() {
     if(completedDate == null)
       return null;
-    return new Datetime(Datetime.YEAR,Datetime.SECOND,completedDate);
+    return new Datetime(Datetime.YEAR,Datetime.MINUTE,completedDate);
   }
   public void setCompletedDate (Datetime completed_date){
-    if((completedDate == null && this.completedDate != null) || 
-       (completedDate != null && !completedDate.equals(this.completedDate)))
+    if(DataBaseUtil.isDifferentYM(completedDate, this.completedDate))
       this.completedDate = completed_date.getDate();
   }
 
   public Datetime getReleasedDate() {
     if(releasedDate == null)
       return null;
-    return new Datetime(Datetime.YEAR,Datetime.SECOND,releasedDate);
+    return new Datetime(Datetime.YEAR,Datetime.MINUTE,releasedDate);
   }
   public void setReleasedDate (Datetime released_date){
-    if((releasedDate == null && this.releasedDate != null) || 
-       (releasedDate != null && !releasedDate.equals(this.releasedDate)))
+    if(DataBaseUtil.isDifferentYM(releasedDate, this.releasedDate))
       this.releasedDate = released_date.getDate();
   }
 
   public Datetime getPrintedDate() {
     if(printedDate == null)
       return null;
-    return new Datetime(Datetime.YEAR,Datetime.SECOND,printedDate);
+    return new Datetime(Datetime.YEAR,Datetime.MINUTE,printedDate);
   }
   public void setPrintedDate (Datetime printed_date){
-    if((printedDate == null && this.printedDate != null) || 
-       (printedDate != null && !printedDate.equals(this.printedDate)))
+    if(DataBaseUtil.isDifferentYM(printedDate, this.printedDate))
       this.printedDate = printed_date.getDate();
   }
-
   
   public void setClone() {
     try {
@@ -297,35 +282,20 @@ public class Analysis implements Auditable, Cloneable {
       Element root = doc.getDocumentElement();
       
       AuditUtil.getChangeXML(id,original.id,doc,"id");
-
       AuditUtil.getChangeXML(sampleItemId,original.sampleItemId,doc,"sample_item_id");
-
       AuditUtil.getChangeXML(revision,original.revision,doc,"revision");
-
       AuditUtil.getChangeXML(testId,original.testId,doc,"test_id");
-
       AuditUtil.getChangeXML(sectionId,original.sectionId,doc,"section_id");
-
       AuditUtil.getChangeXML(preAnalysisId,original.preAnalysisId,doc,"pre_analysis_id");
-
       AuditUtil.getChangeXML(parentAnalysisId,original.parentAnalysisId,doc,"parent_analysis_id");
-
       AuditUtil.getChangeXML(parentResultId,original.parentResultId,doc,"parent_result_id");
-
       AuditUtil.getChangeXML(isReportable,original.isReportable,doc,"is_reportable");
-
       AuditUtil.getChangeXML(unitOfMeasureId,original.unitOfMeasureId,doc,"unit_of_measure_id");
-
       AuditUtil.getChangeXML(statusId,original.statusId,doc,"status_id");
-
       AuditUtil.getChangeXML(availableDate,original.availableDate,doc,"available_date");
-
       AuditUtil.getChangeXML(startedDate,original.startedDate,doc,"started_date");
-
       AuditUtil.getChangeXML(completedDate,original.completedDate,doc,"completed_date");
-
       AuditUtil.getChangeXML(releasedDate,original.releasedDate,doc,"released_date");
-
       AuditUtil.getChangeXML(printedDate,original.printedDate,doc,"printed_date");
 
       if(root.hasChildNodes())

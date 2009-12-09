@@ -68,7 +68,13 @@ import org.w3c.dom.Element;
                query = "select new org.openelis.domain.StorageLocationViewDO(s.id,s.sortOrder,s.name, " +
                        "s.location,s.parentStorageLocationId,s.storageUnitId,s.isAvailable,s.storageUnit.description)"
                      + " from StorageLocation s where s.name = :name"),
-})
+@NamedQuery(name = "StorageLocation.FetchAvailableByName",
+            query = "select new org.openelis.domain.StorageLocationVO(childLoc.id, childLoc.name, childLoc.location, " +
+                    "parentLoc.name, childLoc.storageUnit.description) " 
+                  + " from StorageLocation childLoc left join childLoc.parentStorageLocation parentLoc where "
+                  + " (childLoc.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId=childLoc.id))"
+                  + " and (childLoc.name like :name OR childLoc.location like :loc OR childLoc.storageUnit.description like :desc) and childLoc.isAvailable = 'Y'"
+                  + " order by childLoc.name")})
 
 @NamedNativeQuery(name = "StorageLocation.ReferenceCheck",
                   query = "select storage_location_id as STORAGE_LOCATION_ID from storage where storage_location_id = :id " +
@@ -77,15 +83,7 @@ import org.w3c.dom.Element;
                   resultSetMapping="StorageLocation.ReferenceCheckMapping")
 @SqlResultSetMapping(name="StorageLocation.ReferenceCheckMapping",
                      columns={@ColumnResult(name="STORAGE_LOCATION_ID")})
-                     
-/*
-     @NamedQuery(name = "StorageLocation.FetchByName",
-               query = "select new org.openelis.domain.StorageLocationVO(childLoc.id, childLoc.name, childLoc.location, " +
-                       "parentLoc.name, childLoc.storageUnit.description) " 
-                     + " from StorageLocation childLoc left join childLoc.parentStorageLocation parentLoc where "
-                     + " (childLoc.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId=childLoc.id))"
-                     + " and (childLoc.name like :name OR childLoc.location like :loc OR childLoc.storageUnit.description like :desc) and childLoc.isAvailable = 'Y'"
-                     + " order by childLoc.name"), */                     
+                          
 
 @Entity
 @Table(name = "storage_location")

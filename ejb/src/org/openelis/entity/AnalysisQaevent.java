@@ -19,6 +19,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.openelis.util.XMLUtil;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
@@ -62,8 +63,7 @@ public class AnalysisQaevent implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    if((id == null && this.id != null) || 
-       (id != null && !id.equals(this.id)))
+    if(DataBaseUtil.isDifferent(id, this.id))
       this.id = id;
   }
 
@@ -71,8 +71,7 @@ public class AnalysisQaevent implements Auditable, Cloneable {
     return analysisId;
   }
   public void setAnalysisId(Integer analysisId) {
-    if((analysisId == null && this.analysisId != null) || 
-       (analysisId != null && !analysisId.equals(this.analysisId)))
+    if(DataBaseUtil.isDifferent(analysisId, this.analysisId))
       this.analysisId = analysisId;
   }
 
@@ -80,8 +79,7 @@ public class AnalysisQaevent implements Auditable, Cloneable {
     return qaeventId;
   }
   public void setQaeventId(Integer qaeventId) {
-    if((qaeventId == null && this.qaeventId != null) || 
-       (qaeventId != null && !qaeventId.equals(this.qaeventId)))
+    if(DataBaseUtil.isDifferent(qaeventId, this.qaeventId))
       this.qaeventId = qaeventId;
   }
 
@@ -89,8 +87,7 @@ public class AnalysisQaevent implements Auditable, Cloneable {
     return typeId;
   }
   public void setTypeId(Integer typeId) {
-    if((typeId == null && this.typeId != null) || 
-       (typeId != null && !typeId.equals(this.typeId)))
+    if(DataBaseUtil.isDifferent(typeId, this.typeId));
       this.typeId = typeId;
   }
 
@@ -98,8 +95,7 @@ public class AnalysisQaevent implements Auditable, Cloneable {
     return isBillable;
   }
   public void setIsBillable(String isBillable) {
-    if((isBillable == null && this.isBillable != null) || 
-       (isBillable != null && !isBillable.equals(this.isBillable)))
+    if(DataBaseUtil.isDifferent(isBillable, this.isBillable))
       this.isBillable = isBillable;
   }
 
@@ -116,13 +112,9 @@ public class AnalysisQaevent implements Auditable, Cloneable {
       Element root = doc.getDocumentElement();
       
       AuditUtil.getChangeXML(id,original.id,doc,"id");
-
       AuditUtil.getChangeXML(analysisId,original.analysisId,doc,"analysis_id");
-
       AuditUtil.getChangeXML(qaeventId,original.qaeventId,doc,"qaevent_id");
-
       AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
-
       AuditUtil.getChangeXML(isBillable,original.isBillable,doc,"is_billable");
 
       if(root.hasChildNodes())

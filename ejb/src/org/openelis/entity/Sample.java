@@ -49,6 +49,7 @@ import javax.persistence.Transient;
 
 import org.openelis.gwt.common.Datetime;
 import org.openelis.util.XMLUtil;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
@@ -157,8 +158,7 @@ public class Sample implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    if((id == null && this.id != null) || 
-       (id != null && !id.equals(this.id)))
+    if(DataBaseUtil.isDifferent(id, this.id))
       this.id = id;
   }
 
@@ -166,8 +166,7 @@ public class Sample implements Auditable, Cloneable {
     return nextItemSequence;
   }
   public void setNextItemSequence(Integer nextItemSequence) {
-    if((nextItemSequence == null && this.nextItemSequence != null) || 
-       (nextItemSequence != null && !nextItemSequence.equals(this.nextItemSequence)))
+    if(DataBaseUtil.isDifferent(nextItemSequence, this.nextItemSequence))
       this.nextItemSequence = nextItemSequence;
   }
 
@@ -175,8 +174,7 @@ public class Sample implements Auditable, Cloneable {
     return domain;
   }
   public void setDomain(String domain) {
-    if((domain == null && this.domain != null) || 
-       (domain != null && !domain.equals(this.domain)))
+    if(DataBaseUtil.isDifferent(domain, this.domain))
       this.domain = domain;
   }
 
@@ -184,8 +182,7 @@ public class Sample implements Auditable, Cloneable {
     return accessionNumber;
   }
   public void setAccessionNumber(Integer accessionNumber) {
-    if((accessionNumber == null && this.accessionNumber != null) || 
-       (accessionNumber != null && !accessionNumber.equals(this.accessionNumber)))
+    if(DataBaseUtil.isDifferent(accessionNumber, this.accessionNumber))
       this.accessionNumber = accessionNumber;
   }
 
@@ -193,31 +190,28 @@ public class Sample implements Auditable, Cloneable {
     return revision;
   }
   public void setRevision(Integer revision) {
-    if((revision == null && this.revision != null) || 
-       (revision != null && !revision.equals(this.revision)))
+    if(DataBaseUtil.isDifferent(revision, this.revision))
       this.revision = revision;
   }
 
   public Datetime getEnteredDate() {
     if(enteredDate == null)
       return null;
-    return new Datetime(Datetime.YEAR,Datetime.SECOND,enteredDate);
+    return new Datetime(Datetime.YEAR,Datetime.MINUTE, enteredDate);
   }
     
   public void setEnteredDate (Datetime enteredDate){
-    if((enteredDate == null && this.enteredDate != null) || (enteredDate != null && this.enteredDate == null) ||
-       (enteredDate != null && !enteredDate.equals(new Datetime(Datetime.YEAR, Datetime.SECOND, this.enteredDate))))
+    if(DataBaseUtil.isDifferentYM(enteredDate, this.enteredDate))
       this.enteredDate = enteredDate.getDate();
   }
 
   public Datetime getReceivedDate() {
     if(receivedDate == null)
       return null;
-    return new Datetime(Datetime.YEAR,Datetime.SECOND,receivedDate);
+    return new Datetime(Datetime.YEAR,Datetime.MINUTE,receivedDate);
   }
   public void setReceivedDate (Datetime receivedDate){
-    if((receivedDate == null && this.receivedDate != null) || (receivedDate != null && this.receivedDate == null) ||
-       (receivedDate != null && !receivedDate.equals(new Datetime(Datetime.YEAR, Datetime.SECOND, this.receivedDate))))
+    if(DataBaseUtil.isDifferentYM(receivedDate, this.receivedDate))
       this.receivedDate = receivedDate.getDate();
   }
 
@@ -225,19 +219,17 @@ public class Sample implements Auditable, Cloneable {
     return receivedById;
   }
   public void setReceivedById(Integer receivedById) {
-    if((receivedById == null && this.receivedById != null) || 
-       (receivedById != null && !receivedById.equals(this.receivedById)))
+    if(DataBaseUtil.isDifferent(receivedById, this.receivedById))
       this.receivedById = receivedById;
   }
 
   public Datetime getCollectionDate() {
     if(collectionDate == null)
       return null;
-    return new Datetime(Datetime.YEAR,Datetime.SECOND,collectionDate);
+    return new Datetime(Datetime.YEAR,Datetime.DAY,collectionDate);
   }
   public void setCollectionDate (Datetime collectionDate){
-    if((collectionDate == null && this.collectionDate != null) || (collectionDate != null && this.collectionDate == null) ||
-       (collectionDate != null && !collectionDate.equals(new Datetime(Datetime.YEAR, Datetime.SECOND, this.collectionDate))))
+    if(DataBaseUtil.isDifferentYD(collectionDate, this.collectionDate))
       this.collectionDate = collectionDate.getDate();
   }
   
@@ -247,8 +239,7 @@ public class Sample implements Auditable, Cloneable {
       return new Datetime(Datetime.HOUR,Datetime.SECOND,collectionTime);
     }
     public void setCollectionTime (Datetime collectionTime){
-      if((collectionTime == null && this.collectionTime != null) || (collectionTime != null && this.collectionTime == null) ||
-         (collectionTime != null && !collectionTime.equals(new Datetime(Datetime.HOUR, Datetime.SECOND, this.collectionTime))))
+      if(DataBaseUtil.isDifferentHM(collectionTime, this.collectionTime))
         this.collectionTime = collectionTime.getDate();
     }
 
@@ -256,8 +247,7 @@ public class Sample implements Auditable, Cloneable {
     return statusId;
   }
   public void setStatusId(Integer statusId) {
-    if((statusId == null && this.statusId != null) || 
-       (statusId != null && !statusId.equals(this.statusId)))
+    if(DataBaseUtil.isDifferent(statusId, this.statusId))
       this.statusId = statusId;
   }
 
@@ -265,8 +255,7 @@ public class Sample implements Auditable, Cloneable {
     return packageId;
   }
   public void setPackageId(Integer packageId) {
-    if((packageId == null && this.packageId != null) || 
-       (packageId != null && !packageId.equals(this.packageId)))
+    if(DataBaseUtil.isDifferent(packageId, this.packageId))
       this.packageId = packageId;
   }
 
@@ -274,19 +263,17 @@ public class Sample implements Auditable, Cloneable {
     return clientReference;
   }
   public void setClientReference(String clientReference) {
-    if((clientReference == null && this.clientReference != null) || 
-       (clientReference != null && !clientReference.equals(this.clientReference)))
+    if(DataBaseUtil.isDifferent(clientReference, this.clientReference))
       this.clientReference = clientReference;
   }
 
   public Datetime getReleasedDate() {
     if(releasedDate == null)
       return null;
-    return new Datetime(Datetime.YEAR,Datetime.SECOND,releasedDate);
+    return new Datetime(Datetime.YEAR,Datetime.MINUTE,releasedDate);
   }
   public void setReleasedDate (Datetime released_date){
-    if((releasedDate == null && this.releasedDate != null) || (releasedDate != null && this.releasedDate == null) ||
-       (releasedDate != null && !releasedDate.equals(new Datetime(Datetime.YEAR, Datetime.SECOND, this.releasedDate))))
+    if(DataBaseUtil.isDifferentYM(releasedDate, this.releasedDate))
       this.releasedDate = released_date.getDate();
   }
 
@@ -303,31 +290,18 @@ public class Sample implements Auditable, Cloneable {
       Element root = doc.getDocumentElement();
       
       AuditUtil.getChangeXML(id,original.id,doc,"id");
-
       AuditUtil.getChangeXML(nextItemSequence,original.nextItemSequence,doc,"next_item_sequence");
-
       AuditUtil.getChangeXML(domain,original.domain,doc,"domain");
-
       AuditUtil.getChangeXML(accessionNumber,original.accessionNumber,doc,"accession_number");
-
       AuditUtil.getChangeXML(revision,original.revision,doc,"revision");
-
       AuditUtil.getChangeXML(enteredDate,original.enteredDate,doc,"entered_date");
-
       AuditUtil.getChangeXML(receivedDate,original.receivedDate,doc,"received_date");
-
       AuditUtil.getChangeXML(receivedById,original.receivedById,doc,"received_by_id");
-
       AuditUtil.getChangeXML(collectionDate,original.collectionDate,doc,"collection_date");
-      
       AuditUtil.getChangeXML(collectionTime,original.collectionTime,doc,"collection_time");
-
       AuditUtil.getChangeXML(statusId,original.statusId,doc,"status_id");
-
       AuditUtil.getChangeXML(packageId,original.packageId,doc,"package_id");
-
       AuditUtil.getChangeXML(clientReference,original.clientReference,doc,"client_reference");
-
       AuditUtil.getChangeXML(releasedDate,original.releasedDate,doc,"released_date");
 
       if(root.hasChildNodes())
