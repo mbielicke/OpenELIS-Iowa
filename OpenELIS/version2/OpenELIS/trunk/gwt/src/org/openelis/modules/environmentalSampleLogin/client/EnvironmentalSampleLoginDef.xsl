@@ -304,7 +304,7 @@ version="1.0"
             </VerticalPanel>
           </HorizontalPanel>
           <TabPanel key="sampleItemTabPanel" height="236px" width="715px">
-            <tab key="tab0" text="{resource:getString($constants,'sampleItem')}">
+            <tab key="tab0" text="{resource:getString($constants,'sampleItem')}" tab="{meta:getItemTypeOfSampleId()},{meta:getItemUnitOfMeasureId()}">
                 <TablePanel style="Form">
                   <row>
                     <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sampleType')" />:</text>
@@ -330,7 +330,7 @@ version="1.0"
                   </row>
                 </TablePanel>
             </tab>
-            <tab key="tab1" text="{resource:getString($constants,'analysis')}">
+            <tab key="tab1" text="{resource:getString($constants,'analysis')}" tab="{meta:getAnalysisTestName()},{meta:getAnalysisPrintedDate()}">
                 <TablePanel style="Form">
                   <row>
                     <text style="Prompt"><xsl:value-of select="resource:getString($constants,'test')" />:</text>
@@ -357,6 +357,10 @@ version="1.0"
                     <dropdown key="{meta:getAnalysisSectionName()}" width="150px" popWidth="150px" case="LOWER" field="Integer"/>
                   </row>
                   <row>
+                  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'unit')" />:</text>
+                    <dropdown key="{meta:getAnalysisUnitOfMeasureId()}" width="150px" popWidth="150px" field="Integer" />
+                  </row>
+                  <row>
                     <text style="Prompt"><xsl:value-of select="resource:getString($constants,'started')" />:</text>
                     <calendar key="{meta:getAnalysisStartedDate()}" begin="0" end="2" pattern="{resource:getString($constants,'dateTimePattern')}" />
                     <text style="Prompt"><xsl:value-of select="resource:getString($constants,'completed')" />:</text>
@@ -370,7 +374,7 @@ version="1.0"
                   </row>
                 </TablePanel>
             </tab>
-            <tab key="tab2" text="{resource:getString($constants,'testResults')}">
+            <tab key="tab2" text="{resource:getString($constants,'testResults')}" tab="testResultsTable,testResultsTable">
 				<TablePanel padding="0" spacing="0">
 	              <row>
 	                <table key="testResultsTable" width="697" maxRows="9" showScroll="ALWAYS" title="">
@@ -438,7 +442,7 @@ version="1.0"
 	                </row>
 	                </TablePanel>
             </tab>
-            <tab key="tab3" text="{resource:getString($constants,'analysisNotes')}">
+            <tab key="tab3" text="{resource:getString($constants,'analysisNotes')}" tab="anExNoteButton,anIntNoteButton">
             <HorizontalPanel width="100%" height="100%" padding="0" spacing="0">
             <TablePanel padding="0" spacing="0" style="TabSubForm">
                 <row>
@@ -483,7 +487,7 @@ version="1.0"
                 </TablePanel>
                 </HorizontalPanel>
             </tab>
-            <tab key="tab4" text="{resource:getString($constants,'sampleNotes')}">
+            <tab key="tab4" text="{resource:getString($constants,'sampleNotes')}" tab="sampleExtNoteButton,sampleIntNoteButton">
              <HorizontalPanel width="100%" height="100%" padding="0" spacing="0">
             <TablePanel padding="0" spacing="0" style="TabSubForm">
             	<row>
@@ -528,7 +532,7 @@ version="1.0"
                 </TablePanel>
                 </HorizontalPanel>
             </tab>
-            <tab key="tab5" text="{resource:getString($constants,'storage')}">
+            <tab key="tab5" text="{resource:getString($constants,'storage')}" tab="storageTable,storageTable">
               <TablePanel padding="0" spacing="0">
               <row>
                 <table key="storageTable" width="auto" maxRows="8" showScroll="ALWAYS" title="">
@@ -572,7 +576,7 @@ version="1.0"
                 </row>
                 </TablePanel>
             </tab>
-            <tab key="tab6" text="{resource:getString($constants,'qaEvents')}">
+            <tab key="tab6" text="{resource:getString($constants,'qaEvents')}" tab="sampleQATable,analysisQATable">
               	<TablePanel padding="0" spacing="0" height="100%" style="TabSubForm">
               	<row>
 	                 <table key="sampleQATable" style="ScreenTableWithSides" title="" width="auto" maxRows="8" showScroll="ALWAYS">
@@ -645,7 +649,7 @@ version="1.0"
                 </row>
                 </TablePanel>  
             </tab>
-            <tab key="tab7" text="{resource:getString($constants,'auxData')}">
+            <tab key="tab7" text="{resource:getString($constants,'auxData')}" tab="auxValsTable,auxValsTable">
             <VerticalPanel>
                 <TablePanel padding="0" spacing="0">
                 <row>

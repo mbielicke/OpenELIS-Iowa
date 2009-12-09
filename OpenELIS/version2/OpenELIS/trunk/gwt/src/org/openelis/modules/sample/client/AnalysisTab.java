@@ -71,7 +71,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     private boolean loaded;
     
     protected AutoComplete<Integer> test, method;
-    protected Dropdown<Integer> sectionId, statusId;
+    protected Dropdown<Integer> sectionId, unitOfMeasureId, statusId;
     protected CheckBox isReportable;
     protected TextBox revision;
     protected CalendarLookUp startedDate, completedDate, releasedDate, printedDate;
@@ -313,6 +313,36 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             public void onStateChange(StateChangeEvent<State> event) {
                 sectionId.enable(canEdit() && EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
                 sectionId.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        unitOfMeasureId = (Dropdown<Integer>)def.getWidget(SampleMeta.getAnalysisUnitOfMeasureId());
+        addScreenHandler(sectionId, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                /*
+                if(analysis.getSectionId() != null)
+                    sectionId.setModel(getSectionsModel(analysis.getSectionId(), analysis.getSectionName()));
+                else{
+                    if(bundle != null && bundle.sectionsDropdownModel != null)
+                        sectionId.setModel(bundle.sectionsDropdownModel);
+                    else
+                        sectionId.setModel(getSectionsModel(new ArrayList()));
+                }
+                
+                sectionId.setSelection(analysis.getSectionId());
+                */
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                /*analysis.setSectionId(event.getValue());
+                analysis.setSectionName(sectionId.getTextBoxDisplay());
+                */
+                
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                unitOfMeasureId.enable(canEdit() && EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                unitOfMeasureId.setQueryMode(event.getState() == State.QUERY);
             }
         });
         

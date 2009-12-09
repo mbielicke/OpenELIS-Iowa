@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.OrganizationDO;
+import org.openelis.domain.StorageLocationVO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LocalizedException;
@@ -42,6 +44,7 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
+import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -174,29 +177,35 @@ public class StorageTab extends Screen {
         
         location.addGetMatchesHandler(new GetMatchesHandler(){
             public void onGetMatches(GetMatchesEvent event) {
-/*
-                AutocompleteRPC rpc = new AutocompleteRPC();
-                rpc.match = event.getMatch();
+                QueryFieldUtil parser;
+                TableDataRow row;
+                StorageLocationVO data;
+                ArrayList<StorageLocationVO> list;
+                ArrayList<TableDataRow> model;
+
+                parser = new QueryFieldUtil();
+                parser.parse(event.getMatch());
+
+                window.setBusy();
+                
                 try {
-                    rpc = service.call("getStorageMatches", rpc);
-                    ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-                        
-                    for (int i=0; i<rpc.model.size(); i++){
-                        StorageLocationVO autoDO = (StorageLocationVO)rpc.model.get(i);
-                        
-                        TableDataRow row = new TableDataRow(1);
-                        row.key = autoDO.getId();
-                        row.cells.get(0).value = autoDO.getLocation();
+                    list = service.callList("fetchAvailableByName", parser.getParameter().get(0));
+                    model = new ArrayList<TableDataRow>();
+                    for (int i = 0; i < list.size(); i++ ) {
+                        row = new TableDataRow(1);
+                        data = list.get(i);
+
+                        row.key = data.getId();
+                        row.cells.get(0).value = data.getLocation();
 
                         model.add(row);
-                    } 
-                    
+                    }
                     location.showAutoMatches(model);
                         
                 }catch(Exception e) {
                     Window.alert(e.getMessage());                     
                 }
-*/                
+                window.clearStatus();
             }
         });
 

@@ -125,7 +125,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     protected Tabs                         tab;
     private Integer                        analysisLoggedInId, analysisCancelledId,
                     analysisReleasedId, analysisInPrep, sampleLoggedInId, sampleErrorStatusId,
-                    sampleReleasedId;
+                    sampleReleasedId, userId;
 
     private SampleItemTab                  sampleItemTab;
     private AnalysisTab                    analysisTab;
@@ -176,6 +176,8 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         security = OpenELIS.security.getModule("sampleenvironmental");
         if (security == null)
             throw new SecurityException("screenPermException", "Environmental Sample Login Screen");
+        
+        userId = OpenELIS.security.getSystemUserId();
         
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -1165,6 +1167,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             manager.getSample().setStatusId(sampleLoggedInId);
             manager.getSample().setEnteredDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
             manager.getSample().setReceivedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+            manager.getSample().setReceivedById(userId);
             manager.getSample().setNextItemSequence(0);
             ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().setIsHazardous("N");
             
@@ -1250,6 +1253,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     }
     
     protected void commitWithWarnings() {
+        clearErrors();
         manager.getSample().setStatusId(sampleErrorStatusId);
         
         if (state == State.ADD) {
@@ -1784,10 +1788,17 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             newPrepRow.leafType = "analysis";
             newPrepRow.checkForChildren(false);
             newPrepRow.data = bundle;
-            //createPrepRowTestRowById(prepTestId);
             
+            //set the selected row to in prep
             itemsTree.setCell(selectedIndex, 1, analysisInPrep);
             tmpBundle.analysisTestDO.setStatusId(analysisInPrep);
+            
+            //set the pre analysis id
+            bundle.analysisTestDO.setId(getNextTempId());
+            tmpBundle.analysisTestDO.setPreAnalysisId(bundle.analysisTestDO.getId());
+            
+            //set the available date on the prep row
+            bundle.analysisTestDO.setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
             
             if("analysis".equals(selectedRow.leafType))
                 selectedRow = selectedRow.parent;

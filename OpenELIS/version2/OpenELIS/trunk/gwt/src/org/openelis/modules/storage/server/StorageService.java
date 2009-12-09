@@ -25,9 +25,13 @@
 */
 package org.openelis.modules.storage.server;
 
+import java.util.ArrayList;
+
+import org.openelis.domain.StorageLocationVO;
 import org.openelis.manager.StorageManager;
 import org.openelis.modules.storage.client.StorageServiceParams;
 import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.StorageLocationRemote;
 import org.openelis.remote.StorageManagerRemote;
 
 public class StorageService {
@@ -36,13 +40,10 @@ public class StorageService {
         
         return remote.fetch(params.referenceTableId, params.referenceId);
     }
-/*    
-    public AutocompleteRPC getStorageMatches(AutocompleteRPC rpc) throws Exception {
+ 
+    public ArrayList<StorageLocationVO> fetchAvailableByName(String search) throws Exception {
         StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
         
-        rpc.model = remote.autoCompleteLookupByName(rpc.match+"%", 10);
-        
-        return rpc;
+        return remote.fetchAvailableByName(search+"%", 10);
     }
-*/    
 }
