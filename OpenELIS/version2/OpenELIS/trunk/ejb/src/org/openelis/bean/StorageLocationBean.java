@@ -38,6 +38,7 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.StorageLocationVO;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.entity.StorageLocation;
 import org.openelis.gwt.common.DatabaseException;
@@ -248,19 +249,15 @@ public class StorageLocationBean implements StorageLocationRemote, StorageLocati
         }
     }
     
- //
- // this code is here so that in the future when the service that uses it is
- // rewritten, it will be available
- //   
+    public ArrayList<StorageLocationVO> fetchAvailableByName(String name, int max) throws Exception{
+        Query query = null;
+        query = manager.createNamedQuery("StorageLocation.FetchAvailableByName");
+        query.setParameter("name",name);
+        query.setParameter("loc",name);
+        query.setParameter("desc",name);
+        query.setMaxResults(max);
     
- /*public ArrayList<StorageLocationVO> fetchByName(String name, int maxResults) {
-    Query query = null;
-    query = manager.createNamedQuery("StorageLocation.FetchByName");
-    query.setParameter("name",name);
-    query.setParameter("loc",name);
-    query.setParameter("desc",name);
-    query.setMaxResults(maxResults);
-    return DataBaseUtil.toArrayList(query.getResultList());
-}*/
+        return DataBaseUtil.toArrayList(query.getResultList());
+}
 
 }

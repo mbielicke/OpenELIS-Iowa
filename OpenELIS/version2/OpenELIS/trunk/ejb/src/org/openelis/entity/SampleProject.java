@@ -43,6 +43,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.openelis.util.XMLUtil;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
@@ -86,8 +87,7 @@ public class SampleProject implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    if((id == null && this.id != null) || 
-       (id != null && !id.equals(this.id)))
+    if(DataBaseUtil.isDifferent(id, this.id))
       this.id = id;
   }
 
@@ -95,8 +95,7 @@ public class SampleProject implements Auditable, Cloneable {
     return sampleId;
   }
   public void setSampleId(Integer sampleId) {
-    if((sampleId == null && this.sampleId != null) || 
-       (sampleId != null && !sampleId.equals(this.sampleId)))
+    if(DataBaseUtil.isDifferent(sampleId, this.sampleId))
       this.sampleId = sampleId;
   }
 
@@ -104,8 +103,7 @@ public class SampleProject implements Auditable, Cloneable {
     return projectId;
   }
   public void setProjectId(Integer projectId) {
-    if((projectId == null && this.projectId != null) || 
-       (projectId != null && !projectId.equals(this.projectId)))
+    if(DataBaseUtil.isDifferent(projectId, this.projectId))
       this.projectId = projectId;
   }
 
@@ -113,11 +111,9 @@ public class SampleProject implements Auditable, Cloneable {
     return isPermanent;
   }
   public void setIsPermanent(String isPermanent) {
-    if((isPermanent == null && this.isPermanent != null) || 
-       (isPermanent != null && !isPermanent.equals(this.isPermanent)))
+    if(DataBaseUtil.isDifferent(isPermanent, this.isPermanent))
       this.isPermanent = isPermanent;
   }
-
   
   public void setClone() {
     try {
@@ -131,11 +127,8 @@ public class SampleProject implements Auditable, Cloneable {
       Element root = doc.getDocumentElement();
       
       AuditUtil.getChangeXML(id,original.id,doc,"id");
-
       AuditUtil.getChangeXML(sampleId,original.sampleId,doc,"sample_id");
-
       AuditUtil.getChangeXML(projectId,original.projectId,doc,"project_id");
-
       AuditUtil.getChangeXML(isPermanent,original.isPermanent,doc,"is_permanent");
 
       if(root.hasChildNodes())

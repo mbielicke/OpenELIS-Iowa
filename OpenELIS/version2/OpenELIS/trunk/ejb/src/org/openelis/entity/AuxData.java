@@ -43,6 +43,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.openelis.util.XMLUtil;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
@@ -95,8 +96,7 @@ public class AuxData implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    if((id == null && this.id != null) || 
-       (id != null && !id.equals(this.id)))
+    if(DataBaseUtil.isDifferent(id, this.id))
       this.id = id;
   }
 
@@ -104,8 +104,7 @@ public class AuxData implements Auditable, Cloneable {
     return sortOrder;
   }
   public void setSortOrder(Integer sortOrder) {
-    if((sortOrder == null && this.sortOrder != null) || 
-       (sortOrder != null && !sortOrder.equals(this.sortOrder)))
+    if(DataBaseUtil.isDifferent(sortOrder, this.sortOrder))
       this.sortOrder = sortOrder;
   }
 
@@ -113,8 +112,7 @@ public class AuxData implements Auditable, Cloneable {
     return auxFieldId;
   }
   public void setAuxFieldId(Integer auxFieldId) {
-    if((auxFieldId == null && this.auxFieldId != null) || 
-       (auxFieldId != null && !auxFieldId.equals(this.auxFieldId)))
+    if(DataBaseUtil.isDifferent(auxFieldId, this.auxFieldId))
       this.auxFieldId = auxFieldId;
   }
 
@@ -122,8 +120,7 @@ public class AuxData implements Auditable, Cloneable {
     return referenceId;
   }
   public void setReferenceId(Integer referenceId) {
-    if((referenceId == null && this.referenceId != null) || 
-       (referenceId != null && !referenceId.equals(this.referenceId)))
+    if(DataBaseUtil.isDifferent(referenceId, this.referenceId))
       this.referenceId = referenceId;
   }
 
@@ -131,8 +128,7 @@ public class AuxData implements Auditable, Cloneable {
     return referenceTableId;
   }
   public void setReferenceTableId(Integer referenceTableId) {
-    if((referenceTableId == null && this.referenceTableId != null) || 
-       (referenceTableId != null && !referenceTableId.equals(this.referenceTableId)))
+    if(DataBaseUtil.isDifferent(referenceTableId, this.referenceTableId))
       this.referenceTableId = referenceTableId;
   }
 
@@ -140,8 +136,7 @@ public class AuxData implements Auditable, Cloneable {
     return isReportable;
   }
   public void setIsReportable(String isReportable) {
-    if((isReportable == null && this.isReportable != null) || 
-       (isReportable != null && !isReportable.equals(this.isReportable)))
+    if(DataBaseUtil.isDifferent(isReportable, this.isReportable))
       this.isReportable = isReportable;
   }
 
@@ -149,8 +144,7 @@ public class AuxData implements Auditable, Cloneable {
     return typeId;
   }
   public void setTypeId(Integer typeId) {
-    if((typeId == null && this.typeId != null) || 
-       (typeId != null && !typeId.equals(this.typeId)))
+    if(DataBaseUtil.isDifferent(typeId, this.typeId))
       this.typeId = typeId;
   }
 
@@ -158,11 +152,9 @@ public class AuxData implements Auditable, Cloneable {
     return value;
   }
   public void setValue(String value) {
-    if((value == null && this.value != null) || 
-       (value != null && !value.equals(this.value)))
+    if(DataBaseUtil.isDifferent(value, this.value))
       this.value = value;
   }
-
   
   public void setClone() {
     try {
@@ -176,19 +168,12 @@ public class AuxData implements Auditable, Cloneable {
       Element root = doc.getDocumentElement();
       
       AuditUtil.getChangeXML(id,original.id,doc,"id");
-
       AuditUtil.getChangeXML(sortOrder,original.sortOrder,doc,"sort_order_id");
-
       AuditUtil.getChangeXML(auxFieldId,original.auxFieldId,doc,"aux_field_id");
-
       AuditUtil.getChangeXML(referenceId,original.referenceId,doc,"reference_id");
-
       AuditUtil.getChangeXML(referenceTableId,original.referenceTableId,doc,"reference_table_id");
-
       AuditUtil.getChangeXML(isReportable,original.isReportable,doc,"is_reportable");
-
       AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
-
       AuditUtil.getChangeXML(value,original.value,doc,"value");
 
       if(root.hasChildNodes())

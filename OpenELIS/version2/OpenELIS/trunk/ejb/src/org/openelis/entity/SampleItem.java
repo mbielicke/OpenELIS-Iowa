@@ -46,6 +46,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.openelis.util.XMLUtil;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
@@ -135,8 +136,7 @@ public class SampleItem implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    if((id == null && this.id != null) || 
-       (id != null && !id.equals(this.id)))
+    if(DataBaseUtil.isDifferent(id, this.id))
       this.id = id;
   }
 
@@ -144,8 +144,7 @@ public class SampleItem implements Auditable, Cloneable {
     return sampleId;
   }
   public void setSampleId(Integer sampleId) {
-    if((sampleId == null && this.sampleId != null) || 
-       (sampleId != null && !sampleId.equals(this.sampleId)))
+    if(DataBaseUtil.isDifferent(sampleId, this.sampleId))
       this.sampleId = sampleId;
   }
 
@@ -153,8 +152,7 @@ public class SampleItem implements Auditable, Cloneable {
     return sampleItemId;
   }
   public void setSampleItemId(Integer sampleItemId) {
-    if((sampleItemId == null && this.sampleItemId != null) || 
-       (sampleItemId != null && !sampleItemId.equals(this.sampleItemId)))
+    if(DataBaseUtil.isDifferent(sampleItemId, this.sampleItemId))
       this.sampleItemId = sampleItemId;
   }
 
@@ -162,8 +160,7 @@ public class SampleItem implements Auditable, Cloneable {
     return itemSequence;
   }
   public void setItemSequence(Integer itemSequence) {
-    if((itemSequence == null && this.itemSequence != null) || 
-       (itemSequence != null && !itemSequence.equals(this.itemSequence)))
+    if(DataBaseUtil.isDifferent(itemSequence, this.itemSequence))
       this.itemSequence = itemSequence;
   }
 
@@ -171,8 +168,7 @@ public class SampleItem implements Auditable, Cloneable {
     return typeOfSampleId;
   }
   public void setTypeOfSampleId(Integer typeOfSampleId) {
-    if((typeOfSampleId == null && this.typeOfSampleId != null) || 
-       (typeOfSampleId != null && !typeOfSampleId.equals(this.typeOfSampleId)))
+    if(DataBaseUtil.isDifferent(typeOfSampleId, this.typeOfSampleId))
       this.typeOfSampleId = typeOfSampleId;
   }
 
@@ -180,8 +176,7 @@ public class SampleItem implements Auditable, Cloneable {
     return sourceOfSampleId;
   }
   public void setSourceOfSampleId(Integer sourceOfSampleId) {
-    if((sourceOfSampleId == null && this.sourceOfSampleId != null) || 
-       (sourceOfSampleId != null && !sourceOfSampleId.equals(this.sourceOfSampleId)))
+    if(DataBaseUtil.isDifferent(sourceOfSampleId, this.sourceOfSampleId))
       this.sourceOfSampleId = sourceOfSampleId;
   }
 
@@ -189,8 +184,7 @@ public class SampleItem implements Auditable, Cloneable {
     return sourceOther;
   }
   public void setSourceOther(String sourceOther) {
-    if((sourceOther == null && this.sourceOther != null) || 
-       (sourceOther != null && !sourceOther.equals(this.sourceOther)))
+    if(DataBaseUtil.isDifferent(sourceOther, this.sourceOther))
       this.sourceOther = sourceOther;
   }
 
@@ -198,8 +192,7 @@ public class SampleItem implements Auditable, Cloneable {
     return containerId;
   }
   public void setContainerId(Integer containerId) {
-    if((containerId == null && this.containerId != null) || 
-       (containerId != null && !containerId.equals(this.containerId)))
+    if(DataBaseUtil.isDifferent(containerId, this.containerId))
       this.containerId = containerId;
   }
 
@@ -207,8 +200,7 @@ public class SampleItem implements Auditable, Cloneable {
     return containerReference;
   }
   public void setContainerReference(String containerReference) {
-    if((containerReference == null && this.containerReference != null) || 
-       (containerReference != null && !containerReference.equals(this.containerReference)))
+    if(DataBaseUtil.isDifferent(containerReference, this.containerReference))
       this.containerReference = containerReference;
   }
 
@@ -216,8 +208,7 @@ public class SampleItem implements Auditable, Cloneable {
     return quantity;
   }
   public void setQuantity(Double quantity) {
-    if((quantity == null && this.quantity != null) || 
-       (quantity != null && !quantity.equals(this.quantity)))
+    if(DataBaseUtil.isDifferent(quantity, this.quantity))
       this.quantity = quantity;
   }
 
@@ -225,11 +216,9 @@ public class SampleItem implements Auditable, Cloneable {
     return unitOfMeasureId;
   }
   public void setUnitOfMeasureId(Integer unitOfMeasureId) {
-    if((unitOfMeasureId == null && this.unitOfMeasureId != null) || 
-       (unitOfMeasureId != null && !unitOfMeasureId.equals(this.unitOfMeasureId)))
+    if(DataBaseUtil.isDifferent(unitOfMeasureId, this.unitOfMeasureId))
       this.unitOfMeasureId = unitOfMeasureId;
   }
-
   
   public void setClone() {
     try {
@@ -243,25 +232,15 @@ public class SampleItem implements Auditable, Cloneable {
       Element root = doc.getDocumentElement();
       
       AuditUtil.getChangeXML(id,original.id,doc,"id");
-
       AuditUtil.getChangeXML(sampleId,original.sampleId,doc,"sample_id");
-
       AuditUtil.getChangeXML(sampleItemId,original.sampleItemId,doc,"sample_item_id");
-
       AuditUtil.getChangeXML(itemSequence,original.itemSequence,doc,"item_sequence");
-
       AuditUtil.getChangeXML(typeOfSampleId,original.typeOfSampleId,doc,"type_of_sample_id");
-
       AuditUtil.getChangeXML(sourceOfSampleId,original.sourceOfSampleId,doc,"source_of_sample_id");
-
       AuditUtil.getChangeXML(sourceOther,original.sourceOther,doc,"source_other");
-
       AuditUtil.getChangeXML(containerId,original.containerId,doc,"container_id");
-
       AuditUtil.getChangeXML(containerReference,original.containerReference,doc,"container_reference");
-
       AuditUtil.getChangeXML(quantity,original.quantity,doc,"quantity");
-
       AuditUtil.getChangeXML(unitOfMeasureId,original.unitOfMeasureId,doc,"unit_of_measure_id");
 
       if(root.hasChildNodes())

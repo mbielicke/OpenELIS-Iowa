@@ -19,6 +19,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.openelis.util.XMLUtil;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
@@ -84,8 +85,7 @@ public class Result implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    if((id == null && this.id != null) || 
-       (id != null && !id.equals(this.id)))
+    if(DataBaseUtil.isDifferent(id, this.id))
       this.id = id;
   }
 
@@ -93,8 +93,7 @@ public class Result implements Auditable, Cloneable {
     return analysisId;
   }
   public void setAnalysisId(Integer analysisId) {
-    if((analysisId == null && this.analysisId != null) || 
-       (analysisId != null && !analysisId.equals(this.analysisId)))
+    if(DataBaseUtil.isDifferent(analysisId, this.analysisId))
       this.analysisId = analysisId;
   }
 
@@ -102,8 +101,7 @@ public class Result implements Auditable, Cloneable {
     return testAnalyteId;
   }
   public void setTestAnalyteId(Integer testAnalyteId) {
-    if((testAnalyteId == null && this.testAnalyteId != null) || 
-       (testAnalyteId != null && !testAnalyteId.equals(this.testAnalyteId)))
+    if(DataBaseUtil.isDifferent(testAnalyteId, this.testAnalyteId))
       this.testAnalyteId = testAnalyteId;
   }
 
@@ -111,8 +109,7 @@ public class Result implements Auditable, Cloneable {
     return testResultId;
   }
   public void setTestResultId(Integer testResultId) {
-    if((testResultId == null && this.testResultId != null) || 
-       (testResultId != null && !testResultId.equals(this.testResultId)))
+    if(DataBaseUtil.isDifferent(testResultId, this.testResultId))
       this.testResultId = testResultId;
   }
 
@@ -120,8 +117,7 @@ public class Result implements Auditable, Cloneable {
     return isColumn;
   }
   public void setIsColumn(String isColumn) {
-    if((isColumn == null && this.isColumn != null) || 
-       (isColumn != null && !isColumn.equals(this.isColumn)))
+    if(DataBaseUtil.isDifferent(isColumn, this.isColumn))
       this.isColumn = isColumn;
   }
 
@@ -129,8 +125,7 @@ public class Result implements Auditable, Cloneable {
     return sortOrder;
   }
   public void setSortOrder(Integer sortOrder) {
-    if((sortOrder == null && this.sortOrder != null) || 
-       (sortOrder != null && !sortOrder.equals(this.sortOrder)))
+    if(DataBaseUtil.isDifferent(sortOrder, this.sortOrder))
       this.sortOrder = sortOrder;
   }
 
@@ -138,8 +133,7 @@ public class Result implements Auditable, Cloneable {
     return isReportable;
   }
   public void setIsReportable(String isReportable) {
-    if((isReportable == null && this.isReportable != null) || 
-       (isReportable != null && !isReportable.equals(this.isReportable)))
+    if(DataBaseUtil.isDifferent(isReportable, this.isReportable))
       this.isReportable = isReportable;
   }
 
@@ -147,8 +141,7 @@ public class Result implements Auditable, Cloneable {
     return analyteId;
   }
   public void setAnalyteId(Integer analyteId) {
-    if((analyteId == null && this.analyteId != null) || 
-       (analyteId != null && !analyteId.equals(this.analyteId)))
+    if(DataBaseUtil.isDifferent(analyteId, this.analyteId))
       this.analyteId = analyteId;
   }
 
@@ -156,8 +149,7 @@ public class Result implements Auditable, Cloneable {
     return typeId;
   }
   public void setTypeId(Integer typeId) {
-    if((typeId == null && this.typeId != null) || 
-       (typeId != null && !typeId.equals(this.typeId)))
+    if(DataBaseUtil.isDifferent(typeId, this.typeId))
       this.typeId = typeId;
   }
 
@@ -165,8 +157,7 @@ public class Result implements Auditable, Cloneable {
     return value;
   }
   public void setValue(String value) {
-    if((value == null && this.value != null) || 
-       (value != null && !value.equals(this.value)))
+    if(DataBaseUtil.isDifferent(value, this.value))
       this.value = value;
   }
 

@@ -43,6 +43,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.openelis.util.XMLUtil;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
@@ -87,8 +88,7 @@ public class SampleOrganization implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    if((id == null && this.id != null) || 
-       (id != null && !id.equals(this.id)))
+    if(DataBaseUtil.isDifferent(id, this.id))
       this.id = id;
   }
 
@@ -96,8 +96,7 @@ public class SampleOrganization implements Auditable, Cloneable {
     return sampleId;
   }
   public void setSampleId(Integer sampleId) {
-    if((sampleId == null && this.sampleId != null) || 
-       (sampleId != null && !sampleId.equals(this.sampleId)))
+    if(DataBaseUtil.isDifferent(sampleId, this.sampleId))
       this.sampleId = sampleId;
   }
 
@@ -105,8 +104,7 @@ public class SampleOrganization implements Auditable, Cloneable {
     return organizationId;
   }
   public void setOrganizationId(Integer organizationId) {
-    if((organizationId == null && this.organizationId != null) || 
-       (organizationId != null && !organizationId.equals(this.organizationId)))
+    if(DataBaseUtil.isDifferent(organizationId, this.organizationId))
       this.organizationId = organizationId;
   }
 
@@ -114,11 +112,9 @@ public class SampleOrganization implements Auditable, Cloneable {
     return typeId;
   }
   public void setTypeId(Integer typeId) {
-    if((typeId == null && this.typeId != null) || 
-       (typeId != null && !typeId.equals(this.typeId)))
+    if(DataBaseUtil.isDifferent(typeId, this.typeId))
       this.typeId = typeId;
   }
-
   
   public void setClone() {
     try {
@@ -132,11 +128,8 @@ public class SampleOrganization implements Auditable, Cloneable {
       Element root = doc.getDocumentElement();
       
       AuditUtil.getChangeXML(id,original.id,doc,"id");
-
       AuditUtil.getChangeXML(sampleId,original.sampleId,doc,"sample_id");
-
       AuditUtil.getChangeXML(organizationId,original.organizationId,doc,"organization_id");
-
       AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
 
       if(root.hasChildNodes())
