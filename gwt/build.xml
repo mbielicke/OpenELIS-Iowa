@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="OpenELIS" default="build" basedir=".">
   <!-- Configure path to GWT SDK -->
-  <property name="gwt.sdk" location="../OpenELIS-Lib-tools/gwt-linux-2.0.0" />
+  <property name="gwt.sdk" location="../OpenELIS-Lib-tools/gwt-2.0.0" />
 
   <path id="project.class.path">
     <pathelement location="war/WEB-INF/classes"/>
@@ -38,7 +38,7 @@
         <pathelement location="src"/>
         <pathelement location="../OpenELIS-Lib/src"/>
         <pathelement location="../OpenELIS-Common/src"/>
-        <pathelement location="../OpenELIS-Lib/lib/gwt-dnd-2.6.5.jar"/>
+        <pathelement location="../OpenELIS-Lib/lib/gwt-dnd-3.0.0.jar"/>
       	<pathelement location="../OpenELIS-Lib/lib/gwt-incubator-july-14-2009.jar"/>
         <path refid="project.class.path"/>
       </classpath>
