@@ -26,6 +26,16 @@
 
 package org.openelis.modules.auxiliary.server;
 
+import java.util.ArrayList;
+
+import org.openelis.domain.AuxFieldGroupDO;
+import org.openelis.manager.AuxFieldGroupManager;
+import org.openelis.manager.AuxFieldManager;
+import org.openelis.manager.AuxFieldValueManager;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.AuxFieldGroupManagerRemote;
+import org.openelis.remote.AuxiliaryRemote;
+
 
 public class AuxiliaryService {//implements
                              //AppScreenFormServiceInt<AuxiliaryForm, Query<TableDataRow<Integer>>> , AutoCompleteServiceInt{
@@ -493,7 +503,7 @@ public class AuxiliaryService {//implements
         }    
         
     }
-    
+    */
     public ArrayList<AuxFieldGroupDO> fetchActive(){
         AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
         return remote.fetchActive();
@@ -539,5 +549,4 @@ public class AuxiliaryService {//implements
     private AuxFieldGroupManagerRemote remoteManager() {
         return (AuxFieldGroupManagerRemote)EJBFactory.lookup("openelis/AuxFieldGroupManagerBean/remote");
     }
-    */
 }

@@ -26,7 +26,7 @@
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:meta="xalan://org.openelis.meta.SampleEnvironmentalMeta">
+  xmlns:meta="xalan://org.openelis.meta.SampleMeta">
 	<xsl:import href="IMPORT/button.xsl" />
   <xsl:template match="doc">
     <xsl:variable name="language" select="locale" />
@@ -64,18 +64,18 @@
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
 						<widget>
-							<dropdown case="UPPER" key="{meta:getAddrState()}" width="40px" tab="{meta:getAddrZipCode()},{meta:getAddrCity()}" field="String"/>
+							<dropdown case="UPPER" key="{meta:getAddrState()}" width="55px" tab="{meta:getAddrZipCode()},{meta:getAddrCity()}" field="String"/>
 						</widget>
 						
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
 						<widget>
-							<textbox case="UPPER" key="{meta:getAddrZipCode()}" width="76px" max="30" tab="{meta:getAddrCountry()},{meta:getAddrState()}" field="String"/>
+							<textbox case="UPPER" key="{meta:getAddrZipCode()}" width="91px" max="30" tab="{meta:getAddrCountry()},{meta:getAddrState()}" field="String"/>
 						</widget>
 					</row>
 					<row>
 					<text style="Prompt"><xsl:value-of select="resource:getString($constants,'country')"/>:</text>
 					<widget colspan="3">
-						<dropdown key="{meta:getAddrCountry()}" width="198px" tab="{meta:getEnvSamplingLocation()},{meta:getAddrZipCode()}" field="String"/>
+						<dropdown key="{meta:getAddrCountry()}" width="214px" tab="{meta:getEnvSamplingLocation()},{meta:getAddrZipCode()}" field="String"/>
 					</widget>
 					</row>
 					</TablePanel>

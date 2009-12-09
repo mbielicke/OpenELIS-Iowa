@@ -254,12 +254,14 @@ version="1.0"
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
-							<widget>
-								<textbox case="UPPER" key="4" width="30px" max="30" field="String"/>
-							</widget>
+							<dropdown case="UPPER" key="4" width="40px" tab="??,??" field="String"/>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
-							<widget>
-								<textbox case="UPPER" key="5" width="64px" max="30" field="String"/>
+							<textbox case="UPPER" key="5" width="73px" max="30" field="String"/>
+						</row>
+						<row>
+						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"country")'/>:</text>
+							<widget colspan="3">
+								<dropdown key="6" width="180px" tab="??,??" field="String"/>
 							</widget>
 						</row>
 					</TablePanel>
