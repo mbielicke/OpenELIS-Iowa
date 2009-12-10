@@ -50,6 +50,7 @@ import org.openelis.modules.project.client.ProjectScreen;
 import org.openelis.modules.provider.client.ProviderScreen;
 import org.openelis.modules.qaevent.client.QaEventScreen;
 import org.openelis.modules.qc.client.QcScreen;
+import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
 import org.openelis.modules.section.client.SectionScreen;
 import org.openelis.modules.standardnote.client.StandardNoteScreen;
 import org.openelis.modules.storage.client.StorageLocationScreen;
@@ -134,7 +135,21 @@ public class OpenELIS extends Screen {
         });
         addClickHandler("tracking", new ClickHandler() {
             public void onClick(ClickEvent event) {
-                // browser.addScreen(new )
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new SampleTrackingScreen());
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
             }
         });
         addClickHandler("environmentalSampleLogin", new ClickHandler() {
