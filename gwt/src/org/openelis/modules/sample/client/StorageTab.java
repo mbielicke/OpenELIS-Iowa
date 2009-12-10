@@ -214,8 +214,10 @@ public class StorageTab extends Screen {
             public void onClick(ClickEvent event) {
                 Datetime date = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
                 
-                if(storageTable.numRows() > 0 && storageTable.getCell(0, 3).value == null)
+                if(storageTable.numRows() > 0 && storageTable.getCell(0, 3).value == null){
+                    manager.getStorageAt(0).setCheckout(date);
                     storageTable.setCell(0, 3, date);
+                }
                 
                 TableDataRow newRow = new TableDataRow(4);
                 newRow.cells.get(0).value = userName;

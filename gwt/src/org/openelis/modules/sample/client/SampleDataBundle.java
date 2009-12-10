@@ -48,6 +48,7 @@ public class SampleDataBundle {
     public AnalysisViewDO          analysisTestDO;
     public TestManager             testManager;
     public ArrayList<TableDataRow> sectionsDropdownModel;
+    public ArrayList<TableDataRow> unitsDropdownModel;
 
     public SampleDataBundle() {
 
@@ -68,3 +69,4 @@ public class SampleDataBundle {
         type = Type.ANALYSIS;
     }
 }
+

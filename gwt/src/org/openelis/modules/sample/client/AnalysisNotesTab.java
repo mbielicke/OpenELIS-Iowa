@@ -113,7 +113,7 @@ public class AnalysisNotesTab extends NotesTab {
         internalNotesPanel = (NotesPanel)def.getWidget(internalNotesPanelKey);
         addScreenHandler(internalNotesPanel, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                drawNotes();
+                drawInternalNotes();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -169,7 +169,7 @@ public class AnalysisNotesTab extends NotesTab {
         });
     }
     
-    private void drawNotes() {
+    protected void drawInternalNotes() {
         internalNotesPanel.clearNotes();
         for (int i = 0; i < internalManager.count(); i++) {
             NoteViewDO noteRow = internalManager.getNoteAt(i);
