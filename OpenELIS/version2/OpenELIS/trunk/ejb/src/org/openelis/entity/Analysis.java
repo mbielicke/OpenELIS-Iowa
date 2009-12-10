@@ -57,8 +57,8 @@ import org.openelis.utils.Auditable;
 @NamedQueries( {
     @NamedQuery(name = "Analysis.AnalysisTestBySampleItemId", query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision, " + 
                 " a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId, " + 
-                " a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, s.name, t.name, t.method.id, t.method.name) from " +
-                " Analysis a LEFT JOIN a.section s LEFT JOIN a.test t where a.sampleItemId = :id")})
+                " a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, s.name, t.name, t.method.id, t.method.name,d.entry) from " +
+                " Analysis a LEFT JOIN a.section s LEFT JOIN a.test t, Dictionary d where d.id=a.unitOfMeasureId and a.sampleItemId = :id")})
                 
 @Entity
 @Table(name="analysis")
@@ -225,9 +225,9 @@ public class Analysis implements Auditable, Cloneable {
       return null;
     return new Datetime(Datetime.YEAR,Datetime.MINUTE,availableDate);
   }
-  public void setAvailableDate (Datetime available_date){
-    if(DataBaseUtil.isDifferentYM(availableDate, this.availableDate))
-      this.availableDate = available_date.getDate();
+  public void setAvailableDate (Datetime availableDate){
+      if(DataBaseUtil.isDifferentYM(availableDate, this.availableDate))
+          this.availableDate = availableDate.getDate();
   }
 
   public Datetime getStartedDate() {
@@ -245,9 +245,9 @@ public class Analysis implements Auditable, Cloneable {
       return null;
     return new Datetime(Datetime.YEAR,Datetime.MINUTE,completedDate);
   }
-  public void setCompletedDate (Datetime completed_date){
+  public void setCompletedDate (Datetime completedDate){
     if(DataBaseUtil.isDifferentYM(completedDate, this.completedDate))
-      this.completedDate = completed_date.getDate();
+      this.completedDate = completedDate.getDate();
   }
 
   public Datetime getReleasedDate() {
@@ -255,9 +255,9 @@ public class Analysis implements Auditable, Cloneable {
       return null;
     return new Datetime(Datetime.YEAR,Datetime.MINUTE,releasedDate);
   }
-  public void setReleasedDate (Datetime released_date){
+  public void setReleasedDate (Datetime releasedDate){
     if(DataBaseUtil.isDifferentYM(releasedDate, this.releasedDate))
-      this.releasedDate = released_date.getDate();
+      this.releasedDate = releasedDate.getDate();
   }
 
   public Datetime getPrintedDate() {
@@ -265,9 +265,9 @@ public class Analysis implements Auditable, Cloneable {
       return null;
     return new Datetime(Datetime.YEAR,Datetime.MINUTE,printedDate);
   }
-  public void setPrintedDate (Datetime printed_date){
+  public void setPrintedDate (Datetime printedDate){
     if(DataBaseUtil.isDifferentYM(printedDate, this.printedDate))
-      this.printedDate = printed_date.getDate();
+      this.printedDate = printedDate.getDate();
   }
   
   public void setClone() {

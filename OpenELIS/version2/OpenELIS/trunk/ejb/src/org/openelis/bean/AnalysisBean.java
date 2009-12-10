@@ -69,6 +69,7 @@ public class AnalysisBean implements AnalysisLocal{
         manager.setFlushMode(FlushModeType.COMMIT);
         
         entity = new Analysis();
+        System.out.println("8888888888888888888"+data.getAvailableDate());
         entity.setAvailableDate(data.getAvailableDate());
         entity.setCompletedDate(data.getCompletedDate());
         entity.setIsReportable(data.getIsReportable());

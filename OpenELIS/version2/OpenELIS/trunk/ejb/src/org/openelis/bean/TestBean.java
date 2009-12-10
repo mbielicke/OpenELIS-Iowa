@@ -100,6 +100,22 @@ public class TestBean implements TestRemote, TestLocal {
             throw e;
         }
     }
+    
+    public TestViewDO fetchByIdAndSampleType(Integer testId, Integer sampleTypeId) throws Exception {
+        Query query;
+        
+        query = manager.createNamedQuery("Test.FetchByIdSampleItemType");
+        query.setParameter("id", testId);
+        query.setParameter("typeId", sampleTypeId);
+        
+        try{
+            return (TestViewDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+    }
 
     public ArrayList<TestMethodVO> query(ArrayList<QueryData> fields, int first, int max)
                                                                                          throws Exception {

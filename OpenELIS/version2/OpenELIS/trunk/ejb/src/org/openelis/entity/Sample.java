@@ -272,9 +272,9 @@ public class Sample implements Auditable, Cloneable {
       return null;
     return new Datetime(Datetime.YEAR,Datetime.MINUTE,releasedDate);
   }
-  public void setReleasedDate (Datetime released_date){
+  public void setReleasedDate (Datetime releasedDate){
     if(DataBaseUtil.isDifferentYM(releasedDate, this.releasedDate))
-      this.releasedDate = released_date.getDate();
+      this.releasedDate = releasedDate.getDate();
   }
 
   

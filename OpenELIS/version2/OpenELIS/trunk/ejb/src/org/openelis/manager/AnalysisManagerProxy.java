@@ -41,7 +41,7 @@ public class AnalysisManagerProxy {
         AnalysisLocal al = getAnalysisLocal();
         ArrayList<AnalysisViewDO> items = (ArrayList<AnalysisViewDO>)al.fetchBySampleItemId(sampleItemId);
         AnalysisManager am = AnalysisManager.getInstance();
-
+        
         for(int i=0; i<items.size(); i++)
             am.addAnalysis(items.get(i));
         
@@ -218,7 +218,7 @@ public class AnalysisManagerProxy {
         
     }
 
-    public void validate(AnalysisManager man, String sampleItemSequence, ValidationErrorsList errorsList) throws Exception {
+    public void validate(AnalysisManager man, String sampleItemSequence, Integer sampleTypeId, ValidationErrorsList errorsList) throws Exception {
         
     }
     
