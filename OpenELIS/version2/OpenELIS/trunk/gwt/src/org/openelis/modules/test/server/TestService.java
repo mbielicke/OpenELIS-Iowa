@@ -28,7 +28,9 @@ package org.openelis.modules.test.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.PanelVO;
+import org.openelis.domain.TestDO;
 import org.openelis.domain.TestMethodVO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.TestAnalyteManager;
@@ -142,6 +144,11 @@ public class TestService {
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
+    }
+    
+    public TestViewDO fetchTestByIdAndSampleType(Query query) throws Exception {
+        return remote().fetchByIdAndSampleType(new Integer(query.getFields().get(0).query), 
+                                               new Integer(query.getFields().get(1).query));
     }
 
     public TestManager fetchWithPrepTestsAndReflexTests(Integer testId) throws Exception {

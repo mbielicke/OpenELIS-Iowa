@@ -11,7 +11,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.NotesPanel;
 import org.openelis.gwt.widget.ScreenWindow;
@@ -115,7 +114,7 @@ public class NotesTab extends Screen {
         editNote.setNote(note);
     }
     
-    private void drawNotes() {
+    protected void drawNotes() {
         notesPanel.clearNotes();
         for (int i = 0; i < manager.count(); i++ ) {
             NoteViewDO noteRow = manager.getNoteAt(i);

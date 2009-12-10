@@ -25,18 +25,25 @@
 */
 package org.openelis.manager;
 
+import java.util.ArrayList;
+
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.manager.AnalysisManager.AnalysisListItem;
 
 public class AnalysisManagerProxy {
     protected static final String ANALYSIS_SERVICE_URL = "org.openelis.modules.analysis.server.AnalysisService";
-    protected ScreenService service;
+    protected static final String TEST_MANAGER_SERVICE_URL = "org.openelis.modules.test.server.TestService";
+    protected ScreenService service, testService;
     
     public AnalysisManagerProxy(){
         service = new ScreenService("OpenELISServlet?service="+ANALYSIS_SERVICE_URL);
+        testService = new ScreenService("OpenELISServlet?service="+TEST_MANAGER_SERVICE_URL);
     }
     public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
         return service.call("fetchBySampleItemId", sampleItemId);
@@ -50,11 +57,41 @@ public class AnalysisManagerProxy {
         throw new UnsupportedOperationException();
     }
     
-    public void validate(AnalysisManager man, ValidationErrorsList errorsList) throws Exception {
-        validate(man, null, errorsList);
+    public boolean testHasSampleType(Integer testId, Integer sampleTypeId){
+        Query query;
+        QueryData field;
+        ArrayList<QueryData> fields;
+
+        try{
+            fields = new ArrayList<QueryData>();
+            query = new Query();
+        
+            field = new QueryData();
+            field.query = testId.toString();
+            fields.add(field);
+            
+            field = new QueryData();
+            field.query = sampleTypeId.toString();
+            fields.add(field);
+            
+            query.setFields(fields);
+
+            testService.call("fetchTestByIdAndSampleType", query);
+        
+        }catch(NotFoundException e){
+            return false;
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        
+        return true;
     }
     
-    public void validate(AnalysisManager man, String sampleItemSequence, ValidationErrorsList errorsList) throws Exception {
+    public void validate(AnalysisManager man, ValidationErrorsList errorsList) throws Exception {
+        validate(man, null, null, errorsList);
+    }
+    
+    public void validate(AnalysisManager man, String sampleItemSequence, Integer sampleTypeId, ValidationErrorsList errorsList) throws Exception {
         AnalysisListItem item;
         if(man.count() == 0)
             errorsList.add(new FormErrorException("minOneAnalysisException", sampleItemSequence));
@@ -67,6 +104,12 @@ public class AnalysisManagerProxy {
             
             if(analysisDO.getTestId() != null && analysisDO.getSectionId() == null)
                 errorsList.add(new FormErrorException("analysisSectionIdMissing", analysisDO.getTestName(), analysisDO.getMethodName()));
+            
+            if(analysisDO.getTestId() != null && analysisDO.getUnitOfMeasureId() == null)
+                errorsList.add(new FormErrorException("analysisUnitIdMissing", analysisDO.getTestName(), analysisDO.getMethodName()));
+            
+            if(analysisDO.getTestId() != null && !testHasSampleType(analysisDO.getTestId(), sampleTypeId))
+                errorsList.add(new FormErrorException("sampleTypeInvalid", analysisDO.getTestName(), analysisDO.getMethodName()));
             
             item = man.getItemAt(i);
             //validate the children

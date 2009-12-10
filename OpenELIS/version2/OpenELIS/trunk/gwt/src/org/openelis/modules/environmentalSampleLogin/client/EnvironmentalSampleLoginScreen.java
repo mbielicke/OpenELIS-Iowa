@@ -40,6 +40,7 @@ import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.TestPrepDO;
+import org.openelis.domain.TestPrepViewDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.Datetime;
@@ -312,7 +313,6 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         addScreenHandler(statusId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 statusId.setSelection(manager.getSample().getStatusId());
-                addButton.enable(canEdit());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -850,10 +850,18 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 return fetchById((entry==null)?null:((IdNameVO)entry).getId());
             }
 
-			public ArrayList<?> getModel() {
-				return null;
-			}
-			
+            public ArrayList<TableDataRow> getModel() {
+                ArrayList<IdNameVO> result;
+                ArrayList<TableDataRow> model;
+
+                result = nav.getQueryResult();
+                model = new ArrayList<TableDataRow>();
+                if (result != null) {
+                    for (IdNameVO entry : result)
+                        model.add(new TableDataRow(entry.getId(), entry.getName()));
+                }
+                return model;
+            }
         };
         
         // Set up tabs to recieve State Change events from the main Screen.
@@ -1018,6 +1026,12 @@ public class EnvironmentalSampleLoginScreen extends Screen {
 
         addButton = (AppButton)def.getWidget("add");
         addScreenHandler(addButton, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(state) && 
+                                security.hasAddPermission())
+                    addButton.enable(canEdit());
+            }
+            
             public void onClick(ClickEvent event) {
                 add();
             }
@@ -1040,11 +1054,9 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
             
             public void onDataChange(DataChangeEvent event) {
-                if (canEdit() && EnumSet.of(State.DISPLAY).contains(state) && 
+                if (EnumSet.of(State.DISPLAY).contains(state) && 
                                 security.hasUpdatePermission())
-                    updateButton.enable(true);
-                else
-                    updateButton.enable(false);
+                    updateButton.enable(canEdit());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -1887,11 +1899,14 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     }
     
     private void updateTreeAndCheckPrepTests(ArrayList<SampleDataBundle> bundles){
-        SampleDataBundle bundle;
+        SampleDataBundle bundle, selectedBundle;
+        Integer sampleTypeId;
         AnalysisViewDO aDO;
         TreeDataItem selected;
         
         selected = itemsTree.getSelection();
+        selectedBundle = (SampleDataBundle)selected.data;
+        sampleTypeId = selectedBundle.sampleItemDO.getTypeOfSampleId();
         int selectedIndex = itemsTree.getSelectedRow();
         
         for(int i=0; i<bundles.size(); i++){
@@ -1921,7 +1936,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             try{
                 TestPrepManager prepMan = bundle.testManager.getPrepTests();
                 if(prepMan.count() > 0){
-                    TestPrepDO requiredTestPrepDO = prepMan.getRequiredTestPrep();
+                    TestPrepViewDO requiredTestPrepDO = prepMan.getRequiredTestPrep();
                     if(requiredTestPrepDO == null)
                         drawTestPrepScreen(prepMan);
                     else
