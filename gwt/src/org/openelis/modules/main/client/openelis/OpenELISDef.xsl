@@ -90,7 +90,7 @@ UIRF Software License are applicable instead of those above.
 <menuItem key="secondEntry" icon="secondEntryIcon" label="{resource:getString($constants,'secondEntry')}" description="{resource:getString($constants,'secondEntryDescription')}"/>
   -->
 
-                <menuItem key="tracking" description="{resource:getString($constants,'trackingDescription')}" enable="false" icon="trackingIcon" label="{resource:getString($constants,'tracking')}" />
+                <menuItem key="tracking" description="{resource:getString($constants,'trackingDescription')}" enable="true" icon="trackingIcon" label="{resource:getString($constants,'tracking')}" />
                 <html>&lt;hr/&gt;</html>
                 <code>if(OpenELIS.security.hasModule("sampleenvironmental","SELECT")){</code>
                 <menuItem key="environmentalSampleLogin" description="{resource:getString($constants,'environmentalSampleLoginDescription')}" icon="environmentalSampleLoginIcon" label="{resource:getString($constants,'environmentalSampleLogin')}" />

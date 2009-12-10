@@ -850,18 +850,10 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 return fetchById((entry==null)?null:((IdNameVO)entry).getId());
             }
 
-            public ArrayList<TableDataRow> getModel() {
-                ArrayList<IdNameVO> result;
-                ArrayList<TableDataRow> model;
-
-                result = nav.getQueryResult();
-                model = new ArrayList<TableDataRow>();
-                if (result != null) {
-                    for (IdNameVO entry : result)
-                        model.add(new TableDataRow(entry.getId(), entry.getName()));
-                }
-                return model;
-            }
+			public ArrayList<?> getModel() {
+				return null;
+			}
+			
         };
         
         // Set up tabs to recieve State Change events from the main Screen.

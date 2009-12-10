@@ -78,7 +78,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.worksheetCreation.WorksheetCreation"/>
     <inherits name="org.openelis.modules.scriptlet.Scriptlet"/>
     <inherits name="org.openelis.ELISCommon"/>     
-    
+    <inherits name="org.openelis.modules.sampleTracking.SampleTracking"/>
     <source path="manager"/>
     <source path="cache"/>
     <source path="common"/>
