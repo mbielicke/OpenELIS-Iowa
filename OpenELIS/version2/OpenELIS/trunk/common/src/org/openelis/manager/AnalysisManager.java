@@ -314,9 +314,9 @@ public class AnalysisManager implements RPC, HasNotesInt {
             throw errorsList;
     }
 
-    public void validate(String sampleItemSequence, ValidationErrorsList errorsList)
+    public void validate(String sampleItemSequence, Integer sampleTypeId, ValidationErrorsList errorsList)
                                                                                     throws Exception {
-        proxy().validate(this, sampleItemSequence, errorsList);
+        proxy().validate(this, sampleItemSequence, sampleTypeId, errorsList);
     }
 
     private static AnalysisManagerProxy proxy() {
