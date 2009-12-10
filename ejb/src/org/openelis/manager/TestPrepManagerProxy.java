@@ -91,7 +91,6 @@ public class TestPrepManagerProxy {
         return man;
     }
     
-    
     public void validate(TestPrepManager man) throws Exception {
         ValidationErrorsList list;
         List<Integer> testPrepIdList;
