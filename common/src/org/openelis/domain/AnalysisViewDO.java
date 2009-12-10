@@ -27,6 +27,8 @@ package org.openelis.domain;
 
 import java.util.Date;
 
+import org.openelis.utilcommon.DataBaseUtil;
+
 /**
  * The class extends analysis DO and carries several commonly used fields such
  * as test & method names. The additional fields are for read/display only and
@@ -42,7 +44,7 @@ public class AnalysisViewDO extends AnalysisDO {
     // additional fields for read/display purposes
     //
     protected Integer         methodId;
-    protected String          testName, methodName, sectionName;
+    protected String          testName, methodName, sectionName, unitOfMeasure;
 
     public AnalysisViewDO() {
     }
@@ -53,7 +55,7 @@ public class AnalysisViewDO extends AnalysisDO {
                           Integer parentResultId, String isReportable, Integer unitOfMeasureId,
                           Integer statusId, Date availableDate, Date startedDate,
                           Date completedDate, Date releasedDate, Date printedDate,
-                          String sectionName, String testName, Integer methodId, String methodName) {
+                          String sectionName, String testName, Integer methodId, String methodName, String unitOfMeasure) {
 
         super(id, sampleItemId, revision, testId, sectionId, preAnalysisId, parentAnalysisId,
               parentResultId, isReportable, unitOfMeasureId, statusId, availableDate, startedDate,
@@ -63,6 +65,7 @@ public class AnalysisViewDO extends AnalysisDO {
         setTestName(testName);
         setMethodId(methodId);
         setMethodName(methodName);
+        setUnitOfMeasure(unitOfMeasure);
     }
 
     public String getSectionName() {
@@ -95,5 +98,13 @@ public class AnalysisViewDO extends AnalysisDO {
 
     public void setMethodName(String methodName) {
         this.methodName = methodName;
+    }
+
+    public String getUnitOfMeasure() {
+        return unitOfMeasure;
+    }
+
+    public void setUnitOfMeasure(String unitOfMeasure) {
+        this.unitOfMeasure = DataBaseUtil.trim(unitOfMeasure);
     }
 }

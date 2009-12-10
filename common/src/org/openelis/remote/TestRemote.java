@@ -30,7 +30,9 @@ import java.util.ArrayList;
 import javax.ejb.Remote;
 
 import org.openelis.domain.PanelVO;
+import org.openelis.domain.TestDO;
 import org.openelis.domain.TestMethodVO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.data.QueryData;
 
 @Remote
@@ -39,6 +41,8 @@ public interface TestRemote {
     public ArrayList<TestMethodVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
 
     public ArrayList<TestMethodVO> fetchByName(String name, int maxResults) throws Exception;
+    
+    public TestViewDO fetchByIdAndSampleType(Integer testId, Integer sampleTypeId) throws Exception;
     
     public ArrayList<PanelVO> fetchNameMethodSectionByName(String name, int maxResults) throws Exception;
 }
