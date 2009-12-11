@@ -369,7 +369,7 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
         if(sampleInternalNotes == null){
             if(sample.getId() != null){
                 try{
-                    sampleInternalNotes = NoteManager.fetchByRefTableRefId(ReferenceTable.SAMPLE_INTERNAL_NOTE, sample.getId());
+                    sampleInternalNotes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.SAMPLE, sample.getId(), "N");
                     
                 }catch(NotFoundException e){
                     //ignore
@@ -389,7 +389,7 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
         if(sampleExternalNote == null){
             if(sample.getId() != null){
                 try{
-                    sampleExternalNote = NoteManager.fetchByRefTableRefId(ReferenceTable.SAMPLE, sample.getId());
+                    sampleExternalNote = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.SAMPLE, sample.getId(), "Y");
                     
                 }catch(NotFoundException e){
                     //ignore

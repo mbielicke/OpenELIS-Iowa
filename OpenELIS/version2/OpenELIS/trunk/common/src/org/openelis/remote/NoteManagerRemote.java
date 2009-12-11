@@ -6,5 +6,5 @@ import org.openelis.manager.NoteManager;
 
 @Remote
 public interface NoteManagerRemote {
-    public NoteManager fetchByRefTableRefId(Integer refTableId, Integer refId) throws Exception;
+    public NoteManager fetchByRefTableRefIdIsExt(Integer refTableId, Integer refId, String isExternal) throws Exception;
 }

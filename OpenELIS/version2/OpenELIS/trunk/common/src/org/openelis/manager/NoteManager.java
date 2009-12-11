@@ -162,6 +162,10 @@ public class NoteManager implements RPC {
     public static NoteManager fetchByRefTableRefId(Integer tableId, Integer id) throws Exception {
         return proxy().fetchByRefTableRefId(tableId, id);
     }
+    
+    public static NoteManager fetchByRefTableRefIdIsExt(Integer tableId, Integer id, String isExternal) throws Exception {
+        return proxy().fetchByRefTableRefIdIsExt(tableId, id, isExternal);
+    }
 
     public NoteManager add() throws Exception {
         return proxy().add(this);
