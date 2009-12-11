@@ -106,8 +106,8 @@ public class ReferenceTable {
                             PREFERENCES =                    79,
                             AUX_FIELD_GROUP =                80,
                             INVENTORY_ITEM_MANUFACTURING =   82,
-                            SAMPLE_INTERNAL_NOTE =           83,
-                            ANALYSIS_INTERNAL_NOTE =         84,
+                            //SAMPLE_INTERNAL_NOTE =           83,
+                            //ANALYSIS_INTERNAL_NOTE =         84,
                             SAMPLE_QAEVENT =                 85,
                             WORKSHEET =                      86;
 }
