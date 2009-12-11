@@ -149,11 +149,10 @@ public class AnalysisManagerProxy {
     }
     
     private void add(AnalysisManager man, AnalysisViewDO analysisDO, int i) throws Exception {
-        Integer anRefId, anIntRefId;
+        Integer analysisRefId;
         AnalysisLocal al = getAnalysisLocal();
         
-        anRefId = ReferenceTable.ANALYSIS;
-        anIntRefId = ReferenceTable.ANALYSIS_INTERNAL_NOTE;
+        analysisRefId = ReferenceTable.ANALYSIS;
         
         analysisDO.setSampleItemId(man.getSampleItemId());
         al.add(analysisDO);
@@ -162,25 +161,24 @@ public class AnalysisManagerProxy {
         man.getQAEventAt(i).add();
         
         man.getInternalNotesAt(i).setReferenceId(analysisDO.getId());
-        man.getInternalNotesAt(i).setReferenceTableId(anIntRefId);
+        man.getInternalNotesAt(i).setReferenceTableId(analysisRefId);
         man.getInternalNotesAt(i).add();
         
         man.getExternalNoteAt(i).setReferenceId(analysisDO.getId());
-        man.getExternalNoteAt(i).setReferenceTableId(anRefId);
+        man.getExternalNoteAt(i).setReferenceTableId(analysisRefId);
         man.getExternalNoteAt(i).add();
         
         man.getStorageAt(i).setReferenceId(analysisDO.getId());
-        man.getStorageAt(i).setReferenceTableId(anRefId);
+        man.getStorageAt(i).setReferenceTableId(analysisRefId);
         man.getStorageAt(i).add();
     }
     
     private void update(AnalysisManager man, AnalysisViewDO analysisDO, int i) throws Exception {
-        Integer anRefId, anIntRefId;
+        Integer analysisRefId;
         AnalysisListItem item;
         AnalysisLocal al = getAnalysisLocal();
         
-        anRefId = ReferenceTable.ANALYSIS;
-        anIntRefId = ReferenceTable.ANALYSIS_INTERNAL_NOTE;
+        analysisRefId = ReferenceTable.ANALYSIS;
 
         if(analysisDO.getId() == null){
             analysisDO.setSampleItemId(man.getSampleItemId());
@@ -196,19 +194,19 @@ public class AnalysisManagerProxy {
         
         if(item.analysisInternalNotes != null){
             man.getInternalNotesAt(i).setReferenceId(analysisDO.getId());
-            man.getInternalNotesAt(i).setReferenceTableId(anIntRefId);
+            man.getInternalNotesAt(i).setReferenceTableId(analysisRefId);
             man.getInternalNotesAt(i).update();
         }
         
         if(item.analysisExternalNote != null){
             man.getExternalNoteAt(i).setReferenceId(analysisDO.getId());
-            man.getExternalNoteAt(i).setReferenceTableId(anRefId);
+            man.getExternalNoteAt(i).setReferenceTableId(analysisRefId);
             man.getExternalNoteAt(i).update();
         }
         
         if(item.storage != null){
             man.getStorageAt(i).setReferenceId(analysisDO.getId());
-            man.getStorageAt(i).setReferenceTableId(anRefId);
+            man.getStorageAt(i).setReferenceTableId(analysisRefId);
             man.getStorageAt(i).update();
         }
     }

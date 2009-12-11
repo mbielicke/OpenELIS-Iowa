@@ -49,7 +49,6 @@ public class SampleManagerProxy {
         
         sampleId = man.getSample().getId();
         sampleRefId = ReferenceTable.SAMPLE;
-        sampleInternalRefId = ReferenceTable.SAMPLE_INTERNAL_NOTE;
         
         man.getDomainManager().setSampleId(sampleId);
         man.getDomainManager().add();
@@ -70,7 +69,7 @@ public class SampleManagerProxy {
         man.getAuxData().setReferenceId(sampleId);
         man.getAuxData().add();
         
-        man.getInternalNotes().setReferenceTableId(sampleInternalRefId);
+        man.getInternalNotes().setReferenceTableId(sampleRefId);
         man.getInternalNotes().setReferenceId(sampleId);
         man.getInternalNotes().add();
         
@@ -82,13 +81,12 @@ public class SampleManagerProxy {
     }
 
     public SampleManager update(SampleManager man) throws Exception {
-        Integer sampleId, sampleRefId, sampleInternalRefId;
+        Integer sampleId, sampleRefId;
         SampleLocal sl = getSampleLocal();
         sl.update(man.getSample());
         
         sampleId = man.getSample().getId();
         sampleRefId = ReferenceTable.SAMPLE;
-        sampleInternalRefId = ReferenceTable.SAMPLE_INTERNAL_NOTE;
         
         if(man.sampleDomain != null){
             man.getDomainManager().setSampleId(sampleId);
@@ -122,7 +120,7 @@ public class SampleManagerProxy {
         }
         
         if(man.sampleInternalNotes != null){
-            man.getInternalNotes().setReferenceTableId(sampleInternalRefId);
+            man.getInternalNotes().setReferenceTableId(sampleRefId);
             man.getInternalNotes().setReferenceId(sampleId);
             man.getInternalNotes().update();
         }

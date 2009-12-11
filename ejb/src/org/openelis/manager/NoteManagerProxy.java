@@ -46,6 +46,20 @@ public class NoteManagerProxy {
 
         return m;
     }
+    
+    public NoteManager fetchByRefTableRefIdIsExt(Integer tableId, Integer id, String isExternal) throws Exception {
+        NoteManager m;
+        ArrayList<NoteViewDO> notes;
+
+        notes = local().fetchByRefTableRefIdIsExt(tableId, id, isExternal);
+
+        m = NoteManager.getInstance();
+        m.setNotes(notes);
+        m.setReferenceId(id);
+        m.setReferenceTableId(tableId);
+
+        return m;
+    }
 
     public NoteManager add(NoteManager man) throws Exception {
         NoteViewDO note;

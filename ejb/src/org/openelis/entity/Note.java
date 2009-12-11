@@ -53,7 +53,11 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "Note.FetchByRefTableRefId",
                 query = "select new org.openelis.domain.NoteViewDO(n.id,n.referenceId,n.referenceTableId," +
                 		"n.timestamp,n.isExternal,n.systemUserId,n.subject,n.text, '')"
-                      + "  from Note n where n.referenceTableId = :referenceTable and n.referenceId = :id ORDER BY n.timestamp DESC")})
+                      + "  from Note n where n.referenceTableId = :referenceTable and n.referenceId = :id ORDER BY n.timestamp DESC"),
+    @NamedQuery( name = "Note.FetchByRefTableRefIdIsExternal",
+                 query = "select new org.openelis.domain.NoteViewDO(n.id,n.referenceId,n.referenceTableId," +
+                         "n.timestamp,n.isExternal,n.systemUserId,n.subject,n.text, '')"
+                       + "  from Note n where n.referenceTableId = :referenceTable and n.referenceId = :id and n.isExternal=:isExternal ORDER BY n.timestamp DESC")})
 @Entity
 @Table(name = "note")
 @EntityListeners( {AuditUtil.class})
