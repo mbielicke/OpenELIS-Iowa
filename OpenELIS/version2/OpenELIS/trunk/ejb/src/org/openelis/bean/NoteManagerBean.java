@@ -35,7 +35,10 @@ import org.openelis.remote.NoteManagerRemote;
 @SecurityDomain("openelis")
 public class NoteManagerBean implements NoteManagerRemote {
 
-    public NoteManager fetchByRefTableRefId(Integer refTableId, Integer refId) throws Exception {
-        return NoteManager.fetchByRefTableRefId(refTableId, refId);
+    public NoteManager fetchByRefTableRefIdIsExt(Integer refTableId, Integer refId, String isExternal) throws Exception {
+        if(isExternal != null)
+            return NoteManager.fetchByRefTableRefIdIsExt(refTableId, refId, isExternal);
+        else
+            return NoteManager.fetchByRefTableRefId(refTableId, refId);
     }
 }

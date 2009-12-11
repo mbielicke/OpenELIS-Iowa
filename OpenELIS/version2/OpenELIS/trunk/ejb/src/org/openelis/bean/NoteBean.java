@@ -86,6 +86,38 @@ public class NoteBean implements NoteLocal {
         
         return list;
     }
+    
+    public ArrayList<NoteViewDO> fetchByRefTableRefIdIsExt(Integer refTableId, Integer refId, String isExternal) throws Exception {
+        Query query;
+        NoteViewDO note;
+        SystemUserDO user;
+        ArrayList<NoteViewDO> list;
+
+        // TODO
+        // we are currently returning any requested note without checking to see
+        // if the user have permission to this note -- we need to fix this
+        //        
+        query = manager.createNamedQuery("Note.FetchByRefTableRefIdIsExternal");
+        query.setParameter("referenceTable", refTableId);
+        query.setParameter("id", refId);
+        query.setParameter("isExternal", isExternal);
+
+        list = (ArrayList<NoteViewDO>)query.getResultList();
+        if (list.size() == 0)
+            throw new NotFoundException();
+        
+        for(int i=0; i<list.size(); i++){
+            note = list.get(i);
+
+            if (note.getSystemUserId() != null) {
+                user = sysUser.getSystemUser(note.getSystemUserId());
+                if (user != null)
+                    note.setSystemUser(user.getLoginName());
+            }
+        }
+        
+        return list;
+    }
 
     public NoteViewDO add(NoteViewDO data) throws Exception {
         Note entity;
