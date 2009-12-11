@@ -34,8 +34,9 @@ import org.openelis.remote.NoteManagerRemote;
 
 public class NoteService {
 
-    public NoteManager fetchByRefTableRefId(Query query) throws Exception {
+    public NoteManager fetchByRefTableRefIdIsExt(Query query) throws Exception {
         Integer refTableId = null, refId = null;
+        String isExternal = null;
 
         // parse the query to find refTableId and refId
         for (QueryData field : query.getFields()) {
@@ -44,10 +45,12 @@ public class NoteService {
                     refId = Integer.valueOf(field.query);
                 else if (NoteMeta.getReferenceTableId().equals(field.key))
                     refTableId = Integer.valueOf(field.query);
+                else if (NoteMeta.getIsExternal().equals(field.key))
+                    isExternal = field.query;
             }
         }
 
-        return remote().fetchByRefTableRefId(refTableId, refId);
+        return remote().fetchByRefTableRefIdIsExt(refTableId, refId, isExternal);
     }
     
     private NoteManagerRemote remote() {

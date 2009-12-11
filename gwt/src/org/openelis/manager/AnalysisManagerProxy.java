@@ -27,6 +27,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.NotFoundException;
@@ -93,6 +94,10 @@ public class AnalysisManagerProxy {
     
     public void validate(AnalysisManager man, String sampleItemSequence, Integer sampleTypeId, ValidationErrorsList errorsList) throws Exception {
         AnalysisListItem item;
+        Integer cancelledStatusId;
+        
+        cancelledStatusId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
+        
         if(man.count() == 0)
             errorsList.add(new FormErrorException("minOneAnalysisException", sampleItemSequence));
         
@@ -108,8 +113,12 @@ public class AnalysisManagerProxy {
             if(analysisDO.getTestId() != null && analysisDO.getUnitOfMeasureId() == null)
                 errorsList.add(new FormErrorException("analysisUnitIdMissing", analysisDO.getTestName(), analysisDO.getMethodName()));
             
-            if(analysisDO.getTestId() != null && !testHasSampleType(analysisDO.getTestId(), sampleTypeId))
-                errorsList.add(new FormErrorException("sampleTypeInvalid", analysisDO.getTestName(), analysisDO.getMethodName()));
+            //ignore the sample type check if analysis is cancelled.  This is the only
+            //way they can fix this error in some cases.
+            //FIXME this check is REALLY slow...need to find a better way to do this
+            //if(analysisDO.getTestId() != null && !cancelledStatusId.equals(analysisDO.getStatusId()) && 
+            //                !testHasSampleType(analysisDO.getTestId(), sampleTypeId))
+            //    errorsList.add(new FormErrorException("sampleTypeInvalid", analysisDO.getTestName(), analysisDO.getMethodName()));
             
             item = man.getItemAt(i);
             //validate the children

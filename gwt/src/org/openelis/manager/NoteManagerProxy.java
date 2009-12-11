@@ -58,6 +58,33 @@ public class NoteManagerProxy {
 
         return service.call("fetchByRefTableRefId", query);
     }
+    
+    public NoteManager fetchByRefTableRefIdIsExt(Integer tableId, Integer id, String isExternal) throws Exception {
+        Query query;
+        QueryData field;
+        
+        query = new Query();
+
+        field = new QueryData();
+        field.key = NoteMeta.getReferenceId();
+        field.type = QueryData.Type.INTEGER;
+        field.query = id.toString();
+        query.setFields(field);
+        
+        field = new QueryData();
+        field.key = NoteMeta.getReferenceTableId();
+        field.type = QueryData.Type.INTEGER;
+        field.query = tableId.toString();
+        query.setFields(field);
+        
+        field = new QueryData();
+        field.key = NoteMeta.getIsExternal();
+        field.type = QueryData.Type.STRING;
+        field.query = isExternal;
+        query.setFields(field);
+
+        return service.call("fetchByRefTableRefIdIsExt", query);
+    }
 
     public NoteManager add(NoteManager man) throws Exception {
         assert false : "not supported";
