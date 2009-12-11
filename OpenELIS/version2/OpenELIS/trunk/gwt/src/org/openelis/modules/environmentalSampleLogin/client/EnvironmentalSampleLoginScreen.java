@@ -1126,7 +1126,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 i = event.getItem().intValue();
                 tab = Tabs.values()[i];
 
-                window.setBusy("loadingMessage");
+                window.setBusy(consts.get("loadingMessage"));
                 drawTabs();
                 window.clearStatus();
             }
