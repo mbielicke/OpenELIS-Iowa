@@ -89,7 +89,8 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
                           WorksheetCompletionMeta.getCreatedDate()+", "+
                           WorksheetCompletionMeta.getSystemUserId()+", "+
                           WorksheetCompletionMeta.getStatusId()+", "+
-                          WorksheetCompletionMeta.getFormatId()+") ");
+                          WorksheetCompletionMeta.getFormatId()+", "+
+                          WorksheetCompletionMeta.getRelatedWorksheetId()+") ");
         builder.constructWhere(fields);
         builder.setOrderBy(WorksheetCompletionMeta.getId());
 
@@ -117,6 +118,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
         entity.setSystemUserId(data.getSystemUserId());
         entity.setStatusId(data.getStatusId());
         entity.setFormatId(data.getFormatId());
+        entity.setRelatedWorksheetId(data.getRelatedWorksheetId());
 
         manager.persist(entity);
         data.setId(entity.getId());
@@ -136,6 +138,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
         entity.setSystemUserId(data.getSystemUserId());
         entity.setStatusId(data.getStatusId());
         entity.setFormatId(data.getFormatId());
+        entity.setRelatedWorksheetId(data.getRelatedWorksheetId());
 
         return data;
     }

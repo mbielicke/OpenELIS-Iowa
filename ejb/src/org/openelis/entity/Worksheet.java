@@ -30,7 +30,7 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "Worksheet.FetchById",
-                query = "select new org.openelis.domain.WorksheetDO(w.id,w.createdDate,w.systemUserId,w.statusId,w.formatId) "+
+                query = "select new org.openelis.domain.WorksheetDO(w.id,w.createdDate,w.systemUserId,w.statusId,w.formatId,w.relatedWorksheetId) "+
                         "from Worksheet w where w.id = :id")})
 
 @Entity
@@ -54,6 +54,9 @@ public class Worksheet implements Auditable, Cloneable {
 
     @Column(name = "format_id")
     private Integer                   formatId;
+
+    @Column(name = "related_worksheet_id")
+    private Integer                   relatedWorksheetId;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "worksheet_id")
@@ -107,6 +110,15 @@ public class Worksheet implements Auditable, Cloneable {
             this.formatId = formatId;
     }
 
+    public Integer getRelatedWorksheetId() {
+        return relatedWorksheetId;
+    }
+
+    public void setRelatedWorksheetId(Integer relatedWorksheetId) {
+        if (DataBaseUtil.isDifferent(relatedWorksheetId, this.relatedWorksheetId))
+            this.relatedWorksheetId = relatedWorksheetId;
+    }
+
     public Collection<WorksheetItem> getWorksheetItem() {
         return worksheetItem;
     }
@@ -136,6 +148,8 @@ public class Worksheet implements Auditable, Cloneable {
             AuditUtil.getChangeXML(statusId, original.statusId, doc, "status_id");
 
             AuditUtil.getChangeXML(formatId, original.formatId, doc, "format_id");
+
+            AuditUtil.getChangeXML(relatedWorksheetId, original.relatedWorksheetId, doc, "related_worksheet_id");
 
             if (root.hasChildNodes())
                 return XMLUtil.toString(doc);
