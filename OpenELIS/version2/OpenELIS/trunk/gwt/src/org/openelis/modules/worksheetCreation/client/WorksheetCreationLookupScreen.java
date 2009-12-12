@@ -144,7 +144,7 @@ public class WorksheetCreationLookupScreen extends Screen
             }
         });
 
-        testId.addGetMatchesHandler(new GetMatchesHandler(){
+        testId.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 ArrayList<TableDataRow> model;
                 ArrayList<TestMethodVO> matches;
