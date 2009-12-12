@@ -87,11 +87,11 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'entered')" />:
               </text>
-              <calendar key="{meta:getSampleEnteredDate()}" begin="0" end="4" width="110px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="analysisTable,{meta:getSampleReceivedDate()}" />
+              <calendar key="{meta:getSampleEnteredDate()}" begin="0" end="4" width="110px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="searchButton,{meta:getSampleReceivedDate()}" />
             </row>
           </TablePanel>
           <widget halign="center" valign="middle">
-              <appButton key="searchButton" style="Button" action="search">
+              <appButton key="searchButton" style="Button" action="search" tab="analysisTable,{meta:getSampleEnteredDate()}">
                 <HorizontalPanel>
                   <AbsolutePanel style="FindButtonImage" />
                   <text>
@@ -101,7 +101,7 @@ UIRF Software License are applicable instead of those above.
               </appButton>
           </widget>
         </HorizontalPanel>
-        <table key="analysesTable" width="800" maxRows="9" showScroll="ALWAYS" tab="{meta:getAnalysisTestId()},{meta:getSampleEnteredDate()}" title="" style="ScreenTableWithSides">
+        <table key="analysesTable" width="800" maxRows="9" showScroll="ALWAYS" tab="addButton,searchButton" title="" style="ScreenTableWithSides">
           <col key="{meta:getSampleAccessionNumber()}" width="90" header="{resource:getString($constants,'accessionNum')}" sort="true">
             <label />
           </col>
@@ -138,7 +138,7 @@ UIRF Software License are applicable instead of those above.
         </table>
         <widget style="TableFooterPanel">
           <HorizontalPanel>
-            <appButton key="addButton" style="Button" action="add">
+            <appButton key="addButton" style="Button" action="add" tab="selectAllButton,analysesTable">
               <HorizontalPanel>
                 <AbsolutePanel style="AddRowButtonImage" />
                 <text>
@@ -146,7 +146,7 @@ UIRF Software License are applicable instead of those above.
                 </text>
               </HorizontalPanel>
             </appButton>
-            <appButton key="selectAllButton" style="Button" action="selectAll">
+            <appButton key="selectAllButton" style="Button" action="selectAll" tab="{meta:getAnalysisTestId()},addButton">
               <HorizontalPanel>
                 <AbsolutePanel style="SelectAllButtonImage" />
                 <text>

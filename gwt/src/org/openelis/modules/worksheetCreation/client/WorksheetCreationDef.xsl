@@ -48,8 +48,8 @@ UIRF Software License are applicable instead of those above.
 	        <text style="Prompt">
 	          <xsl:value-of select="resource:getString($constants,'worksheetNumber')" />:
 	        </text>
-	        <textbox key="{meta:getWorksheetId()}" width="100px" case="LOWER" field="String" tab="worksheetItemTable,worksheetItemTable" />
-	        <appButton key="saveButton" style="Button" action="save" >
+	        <textbox key="{meta:getWorksheetId()}" width="100px" case="LOWER" field="String" tab="saveButton,removeRowButton"/>
+	        <appButton key="saveButton" style="Button" action="save" tab="exitButton,{meta:getWorksheetId()}">
 	          <HorizontalPanel>
 	            <AbsolutePanel style="SaveButtonImage" />
 	            <text>
@@ -57,7 +57,7 @@ UIRF Software License are applicable instead of those above.
 	            </text>
 	          </HorizontalPanel>
 	        </appButton>
-	        <appButton key="exitButton" style="Button" action="exit">
+	        <appButton key="exitButton" style="Button" action="exit" tab="worksheetItemTable,saveButton">
 	          <HorizontalPanel>
 	            <AbsolutePanel style="ExitButtonImage" />
 	            <text>
@@ -67,7 +67,7 @@ UIRF Software License are applicable instead of those above.
 	        </appButton>
           </row>
         </TablePanel>
-        <table key="worksheetItemTable" width="800" maxRows="9" showScroll="ALWAYS" tab="{meta:getWorksheetId()},{meta:getWorksheetId()}" title="" style="ScreenTableWithSides">
+        <table key="worksheetItemTable" width="800" maxRows="9" showScroll="ALWAYS" tab="insertQCButton,exitButton" title="" style="ScreenTableWithSides">
           <col key="{meta:getWorksheetItemPosition()}" width="50" header="{resource:getString($constants,'position')}" sort="false">
             <label />
           </col>
@@ -78,7 +78,7 @@ UIRF Software License are applicable instead of those above.
             <label />
           </col>
           <col key="{meta:getWorksheetAnalysisWorksheetAnalysisId}" width="50" header="{resource:getString($constants,'qcLink')}" sort="false">
-            <label />
+            <dropdown width="30"/>
           </col>
           <col key="{meta:getAnalysisTestName()}" width="100" header="{resource:getString($constants,'test')}" sort="true">
             <label />
@@ -104,7 +104,7 @@ UIRF Software License are applicable instead of those above.
         </table>
         <widget style="TableFooterPanel">
           <HorizontalPanel>
-            <appButton key="insertQCButton" style="Button" action="insertQC">
+            <appButton key="insertQCButton" style="Button" action="insertQC" tab="removeRowButton,worksheetItemTable">
               <HorizontalPanel>
                 <AbsolutePanel style="AddRowButtonImage" />
                 <text>
@@ -112,7 +112,7 @@ UIRF Software License are applicable instead of those above.
                 </text>
               </HorizontalPanel>
             </appButton>
-            <appButton key="removeRowButton" style="Button" action="removeRow">
+            <appButton key="removeRowButton" style="Button" action="removeRow" tab="{meta:getWorksheetId()},insertQCButton">
               <HorizontalPanel>
                 <AbsolutePanel style="RemoveRowButtonImage" />
                 <text>
