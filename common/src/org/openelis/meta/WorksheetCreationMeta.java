@@ -37,6 +37,7 @@ import org.openelis.gwt.common.MetaMap;
 
 public class WorksheetCreationMeta implements Meta, MetaMap {
     private static final String WSHT_ID  = "_worksheet.id",
+                                WSHT_RELATED_WORKSHEET_ID = "_worksheet.relatedWorksheetId",
     
                                 WSHT_ITEM_POSITION = "_worksheetItem.position",
                                 
@@ -76,8 +77,8 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
     private static HashSet<String> names;
 
     static {
-        names = new HashSet<String>(Arrays.asList(WSHT_ID, WSHT_ITEM_POSITION, 
-                                                  WSHT_ANA_WORKSHEET_ANALYSIS_ID, 
+        names = new HashSet<String>(Arrays.asList(WSHT_ID, WSHT_RELATED_WORKSHEET_ID,
+                                                  WSHT_ITEM_POSITION, WSHT_ANA_WORKSHEET_ANALYSIS_ID, 
                                                   SAMP_DOMAIN, SAMP_ACCESSION_NUMBER,
                                                   SAMP_COLLECTION_DATE, SAMP_COLLECTION_TIME,
                                                   SAMP_RECEIVED_DATE, SAMP_ENV_DESCRIPTION,
@@ -93,6 +94,10 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
 
     public static String getWorksheetId() {
         return WSHT_ID;
+    }
+
+    public static String getWorksheetRelatedWorksheetId() {
+        return WSHT_RELATED_WORKSHEET_ID;
     }
 
     public static String getWorksheetItemPosition() {
