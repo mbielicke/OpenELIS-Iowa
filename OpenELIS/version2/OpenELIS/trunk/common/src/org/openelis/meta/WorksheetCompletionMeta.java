@@ -36,11 +36,12 @@ import org.openelis.gwt.common.Meta;
 import org.openelis.gwt.common.MetaMap;
 
 public class WorksheetCompletionMeta implements Meta, MetaMap {
-    private static final String ID             = "_worksheet.id",
-                                CREATED_DATE   = "_worksheet.createdDate",
-                                SYSTEM_USER_ID = "_worksheet.systemUserId",
-                                STATUS_ID      = "_worksheet.statusId",
-                                FORMAT_ID      = "_worksheet.formatId",
+    private static final String ID                   = "_worksheet.id",
+                                CREATED_DATE         = "_worksheet.createdDate",
+                                SYSTEM_USER_ID       = "_worksheet.systemUserId",
+                                STATUS_ID            = "_worksheet.statusId",
+                                FORMAT_ID            = "_worksheet.formatId",
+                                RELATED_WORKSHEET_ID = "_worksheet.relatedWorksheetId",
 
                                 ITEM_ID             = "_worksheetItem.id",
                                 ITEM_WORKSHEET_ID   = "_worksheetItem.worksheetId",
@@ -73,16 +74,16 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
 
     static {
         names = new HashSet<String>(Arrays.asList(ID, CREATED_DATE, SYSTEM_USER_ID,
-                                    STATUS_ID, FORMAT_ID, ITEM_ID, ITEM_WORKSHEET_ID,
-                                    ITEM_POSITION, ANALYSIS_ID, ANALYSIS_WORKSHEET_ITEM_ID,
-                                    ANALYSIS_REFERENCE_ID, ANALYSIS_REFERENCE_TABLE_ID,
-                                    ANALYSIS_WORKSHEET_ANALYSIS_ID, RESULT_ID, RESULT_WORKSHEET_ANALYSIS_ID,
-                                    RESULT_TEST_ANALYTE_ID, RESULT_TEST_RESULT_ID,
-                                    RESULT_IS_COLUMN, RESULT_SORT_ORDER, RESULT_ANALYTE_ID,
-                                    RESULT_TYPE_ID, RESULT_VALUE, QC_RESULT_ID,
-                                    QC_RESULT_WORKSHEET_ANALYSIS_ID, QC_RESULT_SORT_ORDER,
-                                    QC_RESULT_QC_ANALYTE_ID, QC_RESULT_TYPE_ID,
-                                    QC_RESULT_VALUE));
+                                    STATUS_ID, FORMAT_ID, ITEM_ID, RELATED_WORKSHEET_ID,
+                                    ITEM_WORKSHEET_ID, ITEM_POSITION, ANALYSIS_ID,
+                                    ANALYSIS_WORKSHEET_ITEM_ID, ANALYSIS_REFERENCE_ID,
+                                    ANALYSIS_REFERENCE_TABLE_ID, ANALYSIS_WORKSHEET_ANALYSIS_ID,
+                                    RESULT_ID, RESULT_WORKSHEET_ANALYSIS_ID, RESULT_TEST_ANALYTE_ID,
+                                    RESULT_TEST_RESULT_ID, RESULT_IS_COLUMN, RESULT_SORT_ORDER,
+                                    RESULT_ANALYTE_ID, RESULT_TYPE_ID, RESULT_VALUE,
+                                    QC_RESULT_ID, QC_RESULT_WORKSHEET_ANALYSIS_ID,
+                                    QC_RESULT_SORT_ORDER, QC_RESULT_QC_ANALYTE_ID,
+                                    QC_RESULT_TYPE_ID, QC_RESULT_VALUE));
     }
 
     public static String getId() {
@@ -103,6 +104,10 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
 
     public static String getFormatId() {
         return FORMAT_ID;
+    }
+
+    public static String getRelatedWorksheetId() {
+        return RELATED_WORKSHEET_ID;
     }
 
     public static String getWorksheetItemId() {

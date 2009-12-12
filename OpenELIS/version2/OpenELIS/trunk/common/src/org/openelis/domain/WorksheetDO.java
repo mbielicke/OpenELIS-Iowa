@@ -38,19 +38,20 @@ public class WorksheetDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer  id, systemUserId, statusId, formatId;
+    protected Integer  id, systemUserId, statusId, formatId, relatedWorksheetId;
     protected Datetime createdDate;
 
     public WorksheetDO() {
     }
 
     public WorksheetDO(Integer id, Date createdDate, Integer systemUserId,
-                       Integer statusId, Integer formatId) {
+                       Integer statusId, Integer formatId, Integer relatedWorksheetId) {
         setId(id);
         setCreatedDate(DataBaseUtil.toYM(createdDate));
         setSystemUserId(systemUserId);
         setStatusId(statusId);
         setFormatId(formatId);
+        setRelatedWorksheetId(relatedWorksheetId);
         _changed = false;
     }
 
@@ -96,6 +97,15 @@ public class WorksheetDO extends DataObject {
 
     public void setFormatId(Integer formatId) {
         this.formatId = formatId;
+        _changed = true;
+    }
+
+    public Integer getRelatedWorksheetId() {
+        return relatedWorksheetId;
+    }
+
+    public void setRelatedWorksheetId(Integer relatedWorksheetId) {
+        this.relatedWorksheetId = relatedWorksheetId;
         _changed = true;
     }
 }
