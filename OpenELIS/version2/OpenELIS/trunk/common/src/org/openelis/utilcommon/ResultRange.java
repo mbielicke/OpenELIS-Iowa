@@ -28,8 +28,8 @@ package org.openelis.utilcommon;
 
 import org.openelis.exception.ParseException;
 
+
 public interface ResultRange {
-        public void setRange(String range) throws ParseException;
         public boolean intersects(ResultRange range);
-        public boolean contains(String value);
+        public void setRange(String range) throws ParseException;
 }
