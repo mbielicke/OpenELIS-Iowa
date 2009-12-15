@@ -28,7 +28,6 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.AnalysisManager;
@@ -41,7 +40,6 @@ public class SampleDataBundle {
     };
 
     public Type                    type;
-    public SampleDO                sampleDO;
     public SampleItemManager       sampleItemManager;
     public SampleItemViewDO        sampleItemDO;
     public AnalysisManager         analysisManager;
@@ -54,14 +52,13 @@ public class SampleDataBundle {
 
     }
 
-    public SampleDataBundle(SampleDO sampleDO, SampleItemManager sampleItemManager, SampleItemViewDO sampleItemDO) {
-        this(sampleDO, sampleItemManager, sampleItemDO, null, null);
+    public SampleDataBundle(SampleItemManager sampleItemManager, SampleItemViewDO sampleItemDO) {
+        this(sampleItemManager, sampleItemDO, null, null);
         type = Type.SAMPLE_ITEM;
     }
 
-    public SampleDataBundle(SampleDO sampleDO, SampleItemManager sampleItemManager, SampleItemViewDO sampleItemDO,
+    public SampleDataBundle(SampleItemManager sampleItemManager, SampleItemViewDO sampleItemDO,
                             AnalysisManager analysisManager, AnalysisViewDO analysisTestDO) {
-        this.sampleDO = sampleDO;
         this.sampleItemManager = sampleItemManager;
         this.sampleItemDO = sampleItemDO;
         this.analysisManager = analysisManager;

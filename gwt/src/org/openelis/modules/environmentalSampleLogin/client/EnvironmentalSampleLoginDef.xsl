@@ -379,34 +379,34 @@ version="1.0"
 	              <row>
 	                <table key="testResultsTable" width="697" maxRows="9" showScroll="ALWAYS" title="">
 	                  <col width="200">
-	                    <label />
+	                    <textbox />
 	                  </col>
 	                  <col width="200">
-	                    <label />
+	                    <textbox />
 	                  </col>
 	                  <col width="200">
-	                    <label />
+	                    <textbox />
 	                  </col>
 	                  <col width="200">
-	                    <label />
+	                    <textbox />
 	                  </col>
 	                  <col width="200">
-	                    <label />
+	                    <textbox />
 	                  </col>
 	                  <col width="200">
-	                    <label />
+	                    <textbox />
 	                  </col>
 	                  <col width="200">
-	                    <label />
+	                    <textbox />
 	                  </col>
 	                  <col width="200">
-	                    <label />
+	                    <textbox />
 	                  </col>
 	                  <col width="200">
-	                    <label />
+	                    <textbox />
 	                  </col>
 	                  <col width="200">
-	                    <label />
+	                    <textbox />
 	                  </col>
 	                </table>
 	                </row>

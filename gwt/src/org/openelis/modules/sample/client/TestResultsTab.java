@@ -31,6 +31,9 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.TestAnalyteViewDO;
+import org.openelis.exception.ParseException;
+import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -44,6 +47,8 @@ import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataCell;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
@@ -71,7 +76,8 @@ public class TestResultsTab extends Screen {
     protected AnalysisManager       analysisMan;
     protected AnalysisViewDO        anDO;
     
-    private Integer analysisCancelledId, analysisReleasedId;
+    private Integer analysisCancelledId, analysisReleasedId, testAnalyteReadOnlyId, 
+    testAnalyteRequiredId;
 
     public TestResultsTab(ScreenDefInt def, ScreenWindow window) {
         setDef(def);
@@ -94,17 +100,99 @@ public class TestResultsTab extends Screen {
                 testResultsTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
+        
+        testResultsTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler(){
+           public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+               int r, c;
+               TableDataRow row;
+               boolean isHeaderRow = false;
+               ResultViewDO resultDO;
+               TestAnalyteViewDO testAnDo;
+               
+               r = event.getRow();
+               c = event.getCol();                                              
+               row = testResultsTable.getRow(r);
+               isHeaderRow = ((Boolean)row.data).booleanValue();
+               resultDO = displayManager.getResultAt(r,c-1);
+               testAnDo = manager.getTestAnalyteList().get(resultDO.getTestAnalyteId());
+               
+               if(isHeaderRow || c == 0 || c >= (displayManager.columnCount(r)+1) || testAnalyteReadOnlyId.equals(testAnDo.getTypeId()))
+                   event.cancel();
+            } 
+        });
 
         testResultsTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
+                int row, col;
+                String val;
+                TableDataRow tableRow;
+                ResultViewDO resultDO;
+                TestAnalyteViewDO testAnDo;
+                
+                row = event.getRow();
+                col = event.getCol();
+                
+                tableRow = testResultsTable.getRow(row);                
+                resultDO = displayManager.getResultAt(row,col-1);
+                val = (String)tableRow.cells.get(col).value;
+                
+                if(!"".equals(val)){
+                    try{
+                        manager.getResultValidator().validate(resultDO.getResultGroup(), (String)val);
+                    }catch(ParseException e){
+                        testResultsTable.clearCellExceptions(row, col);
+                        testResultsTable.setCellException(row, col, e);
+                    }catch(Exception e){
+                        Window.alert(e.getMessage());
+                    }
+                }else{
+                    testResultsTable.clearCellExceptions(row, col);
+                    testAnDo = manager.getTestAnalyteList().get(resultDO.getTestAnalyteId());
+                    if(testAnalyteRequiredId.equals(testAnDo.getTypeId()))
+                        testResultsTable.setCellException(row, col, new LocalizedException("requiredResultException"));
+                }
+                
                 /*
-                int r, c;
-                Object val;
+                try{
+                    storageDO = manager.getStorageAt(row);
+                }catch(Exception e){
+                    Window.alert(e.getMessage());
+                    return;
+                }
+                    
+                Object val = tableRow.cells.get(col).value;
+                Datetime checkin, checkout;
+                
+                switch (col){
+                    case 0:
+                            storageDO.setSystemUserId((Integer)val);
+                            break;
+                    case 1:
+                            TableDataRow selection = location.getSelection();
+                            storageDO.setStorageLocationId((Integer)((TableDataRow)val).key);
+                            storageDO.setStorageLocation((String)selection.getCells().get(0));
+                            break;
+                    case 2:
+                            storageDO.setCheckin((Datetime)val);
+                            
+                            checkin = (Datetime)tableRow.cells.get(2).value;
+                            checkout = (Datetime)tableRow.cells.get(3).value;
+                            
+                            if(checkin != null && checkout != null && checkout.compareTo(checkin) <= 0)
+                                storageTable.setCellException(row, col, new LocalizedException("checkinDateAfterCheckoutDateException"));
+                            break;
+                    case 3:
+                            storageDO.setCheckout((Datetime)val);
+                            
+                            checkin = (Datetime)tableRow.cells.get(2).value;
+                            checkout = (Datetime)tableRow.cells.get(3).value;
+                            
+                            if(checkin != null && checkout != null && checkout.compareTo(checkin) <= 0)
+                                storageTable.setCellException(row, col, new LocalizedException("checkinDateAfterCheckoutDateException"));
+                            break;
+                }
+            }*/
 
-                val = testResultsTable.getRow(r).cells.get(c).value;
------
-MISSING TABLE COL!!! USING OLD TABLE FORMAT?
------*/
             }
         });
 
@@ -171,9 +259,7 @@ MISSING TABLE COL!!! USING OLD TABLE FORMAT?
             public void onStateChange(StateChangeEvent<State> event) {
                 duplicateResultButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
-        });
-
-        
+        });        
     }
     
     private ArrayList<TableDataRow> getTableModel() {
@@ -209,15 +295,12 @@ MISSING TABLE COL!!! USING OLD TABLE FORMAT?
                 row.key = resultDO.getId();
                 if(c == 0) {
                     row.cells.get(0).setValue(resultDO.getAnalyte());
-                    //row.cells.get(0).setValue(new TableDataRow(resultDO.getAnalyteId(),resultDO.getAnalyte()));
-                    //RESULT SOMETIME...
                     row.cells.get(1).setValue(resultDO.getValue());
                     continue;
                 }                        
                 
                 if(!headerFilled) {
                     hrow.cells.get(c+1).setValue(resultDO.getAnalyte());
-                    //hrow.cells.get(c+1).setValue(new TableDataRow(resultDO.getAnalyteId(),resultDO.getAnalyte()));
                 }
                 
                 row.cells.get(c+1).setValue(resultDO.getValue());
@@ -236,11 +319,10 @@ MISSING TABLE COL!!! USING OLD TABLE FORMAT?
         
         cell = row.cells.get(0);
         cell.setValue(consts.get("analyte"));
-        //cell.setValue(new TableDataRow(-1,consts.get("analyte")));      
         
         cell = row.cells.get(1);
         cell.setValue(consts.get("value"));
-        //cell.setValue(new TableDataRow(-1,consts.get("value")));
+
         row.style = "SubHeader";
         row.data = new Boolean(true);
         
@@ -266,32 +348,6 @@ MISSING TABLE COL!!! USING OLD TABLE FORMAT?
             col = resultTableCols.get(i);
             col.setCurrentWidth(width);
             testResultsTable.addColumn(resultTableCols.get(i));
-            /*
-            column = new TableColumn();
-            column.controller = testResultsTable;
-            //column.setKey("");
-            //column.setHeader("");
-            //testResultsTable.showHeader = true;
-            column.setCurrentWidth(150);
-            //column.setSortable(true);
-            //column.setFilterable(true);
-            //column.setQuerayable(true);
-            column.setAlign(HasAlignment.ALIGN_LEFT);
-
-            NodeList editor = col.getChildNodes();
-            for(int j = 0; j < editor.getLength(); j++){
-                if(editor.item(j).getNodeType() == Node.ELEMENT_NODE) {
-                    int child = ++count;
-                    if(!createWidget(editor.item(j),child)){
-                        count--;
-                        continue;
-                    }
-                    //sw.println("if(wid"+child+" instanceof HasBlurHandlers)");
-                    //sw.println("((HasBlurHandlers)wid"+child+").addBlurHandler(wid"+id+");");
-                    sw.println("column"+id+"_"+i+".setColumnWidget(wid"+child+");");
-                    break;
-                }
-            testResultsTable.columns.add(column);*/
         }
     }
     
@@ -299,6 +355,8 @@ MISSING TABLE COL!!! USING OLD TABLE FORMAT?
         try{
             analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
             analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
+            testAnalyteReadOnlyId = DictionaryCache.getIdFromSystemName("test_analyte_read_only");
+            testAnalyteRequiredId = DictionaryCache.getIdFromSystemName("test_analyte_req");
             
         }catch(Exception e){
             Window.alert(e.getMessage());
