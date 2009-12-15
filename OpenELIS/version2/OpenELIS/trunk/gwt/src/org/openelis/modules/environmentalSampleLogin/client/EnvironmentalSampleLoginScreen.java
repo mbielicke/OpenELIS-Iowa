@@ -39,7 +39,6 @@ import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
-import org.openelis.domain.TestPrepDO;
 import org.openelis.domain.TestPrepViewDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestViewDO;
@@ -1458,7 +1457,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         
         try{
             
-            SampleDataBundle data = new SampleDataBundle(manager.getSample(), manager.getSampleItems(),siDO);
+            SampleDataBundle data = new SampleDataBundle(manager.getSampleItems(),siDO);
             newRow.data = data;
         }catch(Exception e){
             Window.alert(e.getMessage());
@@ -1500,7 +1499,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         aDO.setRevision(0);
         
         try{
-            SampleDataBundle data = new SampleDataBundle(manager.getSample(), sampleItemData.sampleItemManager, itemDO,
+            SampleDataBundle data = new SampleDataBundle(sampleItemData.sampleItemManager, itemDO,
                                                          sampleItemData.sampleItemManager.getAnalysisAt(sampleItemIndex),aDO);
             newRow.data = data;
             itemsTree.addChildItem(selectedRow, newRow);
@@ -1645,7 +1644,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 //source,type
                 row.cells.get(1).value = itemDO.getTypeOfSample();
                 
-                SampleDataBundle data = new SampleDataBundle(manager.getSample(), manager.getSampleItems(), itemDO);
+                SampleDataBundle data = new SampleDataBundle(manager.getSampleItems(), itemDO);
                 row.data = data;
                 
                 tmp = keyTable.get(itemDO.getId());
@@ -1667,7 +1666,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                     treeModelItem.cells.get(0).value = formatTreeString(aDO.getTestName()) + " : " + formatTreeString(aDO.getMethodName());
                     treeModelItem.cells.get(1).value = aDO.getStatusId();
                     
-                    SampleDataBundle aData = new SampleDataBundle(manager.getSample(), sim, itemDO, am, aDO);
+                    SampleDataBundle aData = new SampleDataBundle(sim, itemDO, am, aDO);
                     treeModelItem.data = aData;
                     
                     row.addItem(treeModelItem);
@@ -1770,7 +1769,6 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             anDO.setPreAnalysisId(currentPrepId);
         }else{
             bundle = new SampleDataBundle();
-            bundle.sampleDO = manager.getSample();
             bundle.analysisManager = tmpBundle.analysisManager;
             bundle.analysisTestDO = new AnalysisViewDO();
             bundle.sampleItemDO = tmpBundle.sampleItemDO;
@@ -1871,7 +1869,6 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 //set the pre analysis to the negative id for now
                 selectedBundle.analysisTestDO.setPreAnalysisId(analysis.getId());
                 
-                bundle.sampleDO = manager.getSample();
                 bundle.sampleItemDO = selectedBundle.sampleItemDO;
                 bundle.sampleItemManager = selectedBundle.sampleItemManager;
                 bundle.analysisManager = selectedBundle.analysisManager;

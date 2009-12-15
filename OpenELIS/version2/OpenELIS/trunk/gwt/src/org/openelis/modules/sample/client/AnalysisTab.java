@@ -135,7 +135,6 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                                 dataBundle = bundle;
                             else{
                                 dataBundle = new SampleDataBundle();
-                                dataBundle.sampleDO = bundle.sampleDO;
                                 dataBundle.analysisManager = bundle.analysisManager;
                                 dataBundle.analysisTestDO = new AnalysisViewDO();
                                 dataBundle.sampleItemDO = bundle.sampleItemDO;
