@@ -46,7 +46,6 @@ import org.openelis.metamap.TestMetaMap;
 import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utilcommon.ResultRangeNumeric;
 import org.openelis.utilcommon.ResultRangeTiter;
-import org.openelis.utilcommon.TestResultValidator;
 
 public class TestResultManagerProxy {
 
@@ -274,7 +273,7 @@ public class TestResultManagerProxy {
                         tr.setRange(value);
                         addTiterIfNoOverLap(trMap, unitId, tr);
                     } else if (DataBaseUtil.isSame(typeDate,typeId)) {
-                        TestResultValidator.validateDate(value);
+                        //TODO this doesnt exist anymore TestResultValidator.validateDate(value);
                         if (hasDateType) {
                             fieldName = meta.TEST_RESULT.getTypeId();
                             throw new InconsistencyException("testMoreThanOneDateTypeException");

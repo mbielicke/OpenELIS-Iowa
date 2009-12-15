@@ -33,15 +33,16 @@ import javax.ejb.Local;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
-import org.openelis.domain.TestResultDO;
+import org.openelis.utilcommon.ResultValidator;
 
 @Local
 public interface ResultLocal {
     public void fetchByTestIdNoResults(Integer testId, ArrayList<ArrayList<ResultViewDO>> results,
-                                       HashMap<Integer, AnalyteDO> analyteList, HashMap<Integer, TestResultDO> testResultList) throws Exception;
+                                       HashMap<Integer, AnalyteDO> analyteList, 
+                                       HashMap<Integer, TestAnalyteViewDO> testAnalyteList, ResultValidator resultValidator) throws Exception;
     public void fetchByAnalysisIdForDisplay(Integer analysisId, ArrayList<ArrayList<ResultViewDO>> results) throws Exception;
-    public void fetchByAnalysisId(Integer analysisId, ArrayList<ArrayList<ResultViewDO>> results,
-                                  HashMap<Integer, AnalyteDO> analyteList) throws Exception;
+    public void fetchByAnalysisId(Integer analysisId, ArrayList<ArrayList<ResultViewDO>> results, HashMap<Integer, AnalyteDO> analyteList, 
+                                  HashMap<Integer, TestAnalyteViewDO> testAnalyteList, ResultValidator resultValidator) throws Exception;
     
     public TestAnalyteViewDO add(TestAnalyteViewDO data);
     public TestAnalyteViewDO update(TestAnalyteViewDO data);

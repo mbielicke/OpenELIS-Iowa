@@ -55,7 +55,11 @@ import org.openelis.utils.Auditable;
     @NamedQuery(name =  "TestResult.FetchByTestId",
                 query = "select distinct new org.openelis.domain.TestResultDO(tr.id,tr.testId,tr.resultGroup,"+
                         " tr.sortOrder,tr.unitOfMeasureId,tr.typeId,tr.value,tr.significantDigits,tr.roundingMethodId,tr.flagsId)"
-                      + " from TestResult tr where tr.testId = :testId order by tr.sortOrder "),      
+                      + " from TestResult tr where tr.testId = :testId order by tr.resultGroup, tr.sortOrder "),
+    @NamedQuery(name =  "TestResult.FetchByAnalysisId",
+                query = "select distinct new org.openelis.domain.TestResultDO(tr.id,tr.testId,tr.resultGroup,"+
+                        " tr.sortOrder,tr.unitOfMeasureId,tr.typeId,tr.value,tr.significantDigits,tr.roundingMethodId,tr.flagsId)"
+                      + " from Analysis a LEFT JOIN a.test t LEFT JOIN t.testResult tr where a.id = :analysisId order by tr.resultGroup, tr.sortOrder "),
    @NamedQuery(name =   "TestResult.FetchByValue",
                query =  "select distinct new org.openelis.domain.TestResultDO(tr.id,tr.testId,tr.resultGroup,"+
                         " tr.sortOrder,tr.unitOfMeasureId,tr.typeId,tr.value,tr.significantDigits,tr.roundingMethodId,tr.flagsId)"
