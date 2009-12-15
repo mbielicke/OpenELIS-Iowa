@@ -32,9 +32,10 @@ import javax.naming.InitialContext;
 
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.ResultViewDO;
-import org.openelis.domain.TestResultDO;
+import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.ResultLocal;
+import org.openelis.utilcommon.ResultValidator;
 
 public class AnalysisResultManagerProxy {
     
@@ -51,11 +52,15 @@ public class AnalysisResultManagerProxy {
     public AnalysisResultManager fetchByAnalysisId(Integer analysisId, Integer testId) throws Exception {
         ArrayList<ArrayList<ResultViewDO>> results = new ArrayList<ArrayList<ResultViewDO>>();
         HashMap<Integer, AnalyteDO> analyteList = new HashMap<Integer, AnalyteDO>();
+        HashMap<Integer, TestAnalyteViewDO> testAnalyteList = new HashMap<Integer, TestAnalyteViewDO>();
+        ResultValidator resultValidator = new ResultValidator();
         
-        local().fetchByAnalysisId(analysisId, results, analyteList);
+        local().fetchByAnalysisId(analysisId, results, analyteList, testAnalyteList, resultValidator);
         AnalysisResultManager man = AnalysisResultManager.getInstance();
         man.setResults(results);
         man.setAnalyteList(analyteList);
+        man.setTestAnalyteList(testAnalyteList);
+        man.setResultValidator(resultValidator);
         man.setTestManager(TestManager.fetchWithAnalytesAndResults(testId));
         
         return man;
@@ -64,12 +69,15 @@ public class AnalysisResultManagerProxy {
     public AnalysisResultManager fetchNewByTestId(Integer testId) throws Exception {
         ArrayList<ArrayList<ResultViewDO>> results = new ArrayList<ArrayList<ResultViewDO>>();
         HashMap<Integer, AnalyteDO> analyteList = new HashMap<Integer, AnalyteDO>();
-        HashMap<Integer, TestResultDO> testResultList = new HashMap<Integer, TestResultDO>();
+        HashMap<Integer, TestAnalyteViewDO> testAnalyteList = new HashMap<Integer, TestAnalyteViewDO>();
+        ResultValidator resultValidator = new ResultValidator();
         
-        local().fetchByTestIdNoResults(testId, results, analyteList, testResultList);
+        local().fetchByTestIdNoResults(testId, results, analyteList, testAnalyteList, resultValidator);
         AnalysisResultManager man = AnalysisResultManager.getInstance();
         man.setResults(results);
         man.setAnalyteList(analyteList);
+        man.setTestAnalyteList(testAnalyteList);
+        man.setResultValidator(resultValidator);
         man.setTestManager(TestManager.fetchWithAnalytesAndResults(testId));
         
         return man;
