@@ -26,13 +26,16 @@
 package org.openelis.utilcommon;
 
 import org.openelis.exception.ParseException;
+import org.openelis.utilcommon.ResultValidator.Type;
 
 /**
  * This class is used to manage a titer range. The range is specified using a
  * pair of integers separated using a colon (:) such as 1:256. Both the lower
  * and upper limit are inclusive.
  */
-public class ResultRangeTiter implements ResultRange {
+public class ResultRangeTiter implements ResultRange, Result {
+    private static final long serialVersionUID = 1L;
+
     protected boolean valid = false;
     protected int min, max;
 
@@ -60,6 +63,29 @@ public class ResultRangeTiter implements ResultRange {
         valid = true;
     }
 
+    public void validate(String value) throws ParseException {
+        int d;
+        boolean contains;
+
+        if(value.startsWith(">") || value.startsWith("<"))
+            value = value.substring(1);
+        
+        if(value.startsWith("1:"))
+            value = value.substring(2);
+        else
+            throw new ParseException("illegalTiterFormatException");
+        
+        try {
+            d = Integer.parseInt(value);
+            contains = d >= min && d <= max;
+        } catch (Exception e) {
+            contains = false;
+        }
+        
+        if(!contains || !valid)
+            throw new ParseException("illegalTiterFormatException");
+    }
+    
     public boolean intersects(ResultRange value) {
         ResultRangeTiter r;
 
@@ -70,19 +96,6 @@ public class ResultRangeTiter implements ResultRange {
                    (r.getMax() >= max && r.getMin() <= min);
         }
         return false;
-    }
-
-    public boolean contains(String value) {
-        int d;
-        boolean contains;
-
-        try {
-            d = Integer.parseInt(value);
-            contains = d >= min && d <= max;
-        } catch (Exception e) {
-            contains = false;
-        }
-        return contains && valid;
     }
 
     public String toString() {
@@ -101,5 +114,9 @@ public class ResultRangeTiter implements ResultRange {
         if (valid)
             return max;
         return 0;
+    }
+
+    public Type getType() {
+        return Type.NUMERIC_TITER;
     }
 }

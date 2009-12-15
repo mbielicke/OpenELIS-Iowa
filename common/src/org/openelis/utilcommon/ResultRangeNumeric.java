@@ -26,13 +26,16 @@
 package org.openelis.utilcommon;
 
 import org.openelis.exception.ParseException;
+import org.openelis.utilcommon.ResultValidator.Type;
 
 /**
  * This class is used to manage a number range. The range is specified using a
  * pair of floating point numbers separated using a comma (,) such as 12.0,18.0.
  * The lower limit is inclusive and the upper limit is exclusive.
  */
-public class ResultRangeNumeric implements ResultRange {
+public class ResultRangeNumeric implements ResultRange, Result {
+    private static final long serialVersionUID = 1L;
+
     protected boolean valid = false;
     protected double min, max;
 
@@ -58,6 +61,24 @@ public class ResultRangeNumeric implements ResultRange {
         valid = true;
     }
 
+    public void validate(String value) throws ParseException {
+        double d;
+        boolean contains;
+
+        if(value.startsWith(">") || value.startsWith("<"))
+            value = value.substring(1);
+        
+        try {
+            d = Double.parseDouble(value);
+            contains = d >= min && d < max;
+        } catch (Exception e) {
+            contains = false;
+        }
+        
+        if(!contains || !valid)
+            throw new ParseException("illegalNumericRangeException");
+    }
+    
     public boolean intersects(ResultRange value) {
         ResultRangeNumeric r;
 
@@ -68,19 +89,6 @@ public class ResultRangeNumeric implements ResultRange {
                    (r.getMax() >= max && r.getMin() <= min);
         }
         return false;
-    }
-
-    public boolean contains(String value) {
-        double d;
-        boolean contains;
-
-        try {
-            d = Double.parseDouble(value);
-            contains = d >= min && d < max;
-        } catch (Exception e) {
-            contains = false;
-        }
-        return contains && valid;
     }
 
     public String toString() {
@@ -99,5 +107,9 @@ public class ResultRangeNumeric implements ResultRange {
         if (valid)
             return max;
         return 0;
+    }
+
+    public Type getType() {
+        return Type.NUMERIC_RANGE;
     }
 }

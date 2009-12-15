@@ -6,9 +6,9 @@ import java.util.HashMap;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
-import org.openelis.domain.TestResultDO;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.utilcommon.ResultValidator;
 
 public class AnalysisResultManager implements RPC {
     private static final long                               serialVersionUID = 1L;
@@ -17,9 +17,10 @@ public class AnalysisResultManager implements RPC {
     protected ArrayList<ArrayList<ResultViewDO>>            results;
     protected ArrayList<ResultViewDO>                       deletedResults;
 
-    protected transient HashMap<Integer, AnalyteDO>         analyteList;
-    protected transient HashMap<Integer, TestAnalyteViewDO> testAnalyteList;
-    protected transient HashMap<Integer, TestResultDO>      testResultList;
+    protected HashMap<Integer, AnalyteDO>         analyteList;
+    protected HashMap<Integer, TestAnalyteViewDO> testAnalyteList;
+    protected ResultValidator      resultValidator;
+    
     protected transient TestManager                         testManager;
     protected transient static AnalysisResultManagerProxy   proxy;
 
@@ -125,12 +126,12 @@ public class AnalysisResultManager implements RPC {
         this.testAnalyteList = testAnalyteList;
     }
 
-    public HashMap<Integer, TestResultDO> getTestResultList() {
-        return testResultList;
+    public ResultValidator getResultValidator() {
+        return resultValidator;
     }
 
-    public void setTestResultList(HashMap<Integer, TestResultDO> testResultList) {
-        this.testResultList = testResultList;
+    public void setResultValidator(ResultValidator resultValidator) {
+        this.resultValidator = resultValidator;
     }
 
     /*

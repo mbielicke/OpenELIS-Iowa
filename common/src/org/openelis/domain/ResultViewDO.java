@@ -7,7 +7,7 @@ public class ResultViewDO extends ResultDO {
     private static final long serialVersionUID = 1L;
     
     protected String analyte;
-    protected Integer rowGroup;
+    protected Integer rowGroup,resultGroup;
     
     public ResultViewDO(){
         
@@ -15,10 +15,11 @@ public class ResultViewDO extends ResultDO {
     
     public ResultViewDO(Integer id, Integer analysisId, Integer testAnalyteId, Integer testResultId, 
                         String isColumn, Integer sortOrder, String isReportable, Integer analyteId,
-                        Integer typeId, String value, String analyte, Integer rowGroup){
+                        Integer typeId, String value, String analyte, Integer rowGroup, Integer resultGroup){
         super(id, analysisId, testAnalyteId, testResultId, isColumn, sortOrder, isReportable, analyteId, typeId, value);
         setAnalyte(analyte);
         setRowGroup(rowGroup);
+        setResultGroup(resultGroup);
     }
 
     public String getAnalyte() {
@@ -35,6 +36,14 @@ public class ResultViewDO extends ResultDO {
 
     public void setRowGroup(Integer rowGroup) {
         this.rowGroup = rowGroup;
+    }
+
+    public Integer getResultGroup() {
+        return resultGroup;
+    }
+
+    public void setResultGroup(Integer resultGroup) {
+        this.resultGroup = resultGroup;
     }
 
 }
