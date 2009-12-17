@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -45,7 +46,7 @@ import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
 @SecurityDomain("openelis")
-//@RolesAllowed("organization-select")
+@RolesAllowed("auxiliary-select")
 @TransactionManagement(TransactionManagementType.BEAN)
 
 public class AuxFieldGroupManagerBean implements AuxFieldGroupManagerRemote {
@@ -67,7 +68,7 @@ public class AuxFieldGroupManagerBean implements AuxFieldGroupManagerRemote {
     public AuxFieldGroupManager add(AuxFieldGroupManager man) throws Exception {
         UserTransaction ut;
 
-        //checkSecurity(ModuleFlags.ADD);
+        checkSecurity(ModuleFlags.ADD);
 
         man.validate();
 
@@ -82,7 +83,7 @@ public class AuxFieldGroupManagerBean implements AuxFieldGroupManagerRemote {
     public AuxFieldGroupManager update(AuxFieldGroupManager man) throws Exception {
         UserTransaction ut;
         
-        //checkSecurity(ModuleFlags.UPDATE);
+        checkSecurity(ModuleFlags.UPDATE);
 
         man.validate();
 

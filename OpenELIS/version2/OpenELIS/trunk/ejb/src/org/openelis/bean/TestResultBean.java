@@ -255,7 +255,7 @@ public class TestResultBean implements TestResultLocal {
             list.add(new FieldErrorException("fieldRequiredException", fieldName));
         } else if (!DataBaseUtil.isEmpty(value) &&
                    (DataBaseUtil.isSame(typeDateTime,typeId) || DataBaseUtil.isSame(typeTime,typeId) || DataBaseUtil.isSame(typeDate,typeId))) {
-            list.add(new FieldErrorException("valuePresentForDateTypesException", fieldName));
+            list.add(new FieldErrorException("valuePresentForTypeException", fieldName));
         }
 
         if (list.size() > 0)

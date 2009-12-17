@@ -25,6 +25,10 @@
 */
 package org.openelis.bean;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -34,24 +38,41 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.AuxFieldGroupDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.entity.AuxFieldGroup;
 import org.openelis.gwt.common.DatabaseException;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AuxFieldGroupLocal;
+import org.openelis.meta.AuxFieldGroupMeta;
+import org.openelis.remote.AuxFieldGroupRemote;
+import org.openelis.util.QueryBuilderV2;
+import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-//@RolesAllowed("organization-select")
-public class AuxFieldGroupBean implements AuxFieldGroupLocal {
+@RolesAllowed("auxiliary-select")
+public class AuxFieldGroupBean implements AuxFieldGroupRemote, AuxFieldGroupLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager                    manager;
+    
+    private AuxFieldGroupMeta             meta = new AuxFieldGroupMeta();
 
+    public ArrayList<AuxFieldGroupDO> fetchActive(){
+        Query query = manager.createNamedQuery("AuxFieldGroup.FetchActive");
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
     public AuxFieldGroupDO fetchById(Integer id) throws Exception {
         Query query;
         AuxFieldGroupDO data;
         
-        query = manager.createNamedQuery("AuxFieldGroup.AuxFieldGroupDO");
+        query = manager.createNamedQuery("AuxFieldGroup.FetchById");
         query.setParameter("id", id);
         try {
             data = (AuxFieldGroupDO)query.getSingleResult();
@@ -61,6 +82,45 @@ public class AuxFieldGroupBean implements AuxFieldGroupLocal {
             throw new DatabaseException(e);
         }
         return data;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public ArrayList<AuxFieldGroupDO> fetchByName(String name) throws Exception {
+        Query query;
+        
+        query = manager.createNamedQuery("AuxFieldGroup.FetchByName");
+        query.setParameter("name", name);
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
+    @SuppressWarnings("unchecked")
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+
+        Query query;
+        QueryBuilderV2 builder;
+        List list;
+
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + 
+                          meta.getId() + ", " +
+                          meta.getName() + ") ");
+        builder.constructWhere(fields);
+        builder.setOrderBy(meta.getName());
+
+        query = manager.createQuery(builder.getEJBQL());
+        query.setMaxResults(first + max);
+        builder.setQueryParams(query, fields);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+        list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
+        if (list == null)
+            throw new LastPageException();
+
+        return (ArrayList<IdNameVO>)list;
     }
 
     
@@ -98,4 +158,93 @@ public class AuxFieldGroupBean implements AuxFieldGroupLocal {
 
         return data;
     }
+
+    public void validate(AuxFieldGroupDO data) throws Exception {
+        ValidationErrorsList list;
+        boolean checkDuplicate,overlap;
+        ArrayList<AuxFieldGroupDO> groups;
+        AuxFieldGroupDO group;
+        
+        list = new ValidationErrorsList(); 
+        checkDuplicate = true;
+        
+        if (DataBaseUtil.isEmpty(data.getName())) {
+            list.add(new FieldErrorException("fieldRequiredException",
+                                                      meta.getName()));
+            checkDuplicate = false;
+        }
+        
+        if (DataBaseUtil.isEmpty(data.getDescription())) {
+            list.add(new FieldErrorException("fieldRequiredException",
+                                                          meta.getDescription()));
+            checkDuplicate = false;
+        }
+            
+        if (DataBaseUtil.isEmpty(data.getActiveBegin())) {
+            list.add(new FieldErrorException("fieldRequiredException",
+                                                          meta.getActiveBegin()));
+            checkDuplicate = false;
+        }
+
+        if (DataBaseUtil.isEmpty(data.getActiveEnd())) {
+            list.add(new FieldErrorException("fieldRequiredException",
+                                                          meta.getActiveEnd()));
+            checkDuplicate = false;
+        }
+            
+        if(checkDuplicate){
+            if(DataBaseUtil.isAfter(data.getActiveBegin(),data.getActiveEnd())){
+                list.add(new FieldErrorException("endDateAfterBeginDateException", null));  
+                checkDuplicate = false;
+            }
+        }
+            
+        if(checkDuplicate) {            
+            groups = fetchByName(data.getName());
+            
+            for(int i = 0; i < groups.size(); i++) {
+                overlap = false;
+                group = (AuxFieldGroupDO)groups.get(i);
+                if(DataBaseUtil.isDifferent(group.getId(), data.getId())) {                 
+                    if(DataBaseUtil.isSame(group.getIsActive(),data.getIsActive())
+                                    && DataBaseUtil.isSame("Y",data.getIsActive())) {                        
+                        list.add(new FieldErrorException("auxFieldGroupActiveException",null));                                   
+                        break;                                         
+                    }
+                    
+                    if (DataBaseUtil.isAfter(data.getActiveEnd(), group.getActiveBegin()) &&
+                        DataBaseUtil.isAfter(group.getActiveEnd(), data.getActiveBegin())) {
+                        overlap = true;
+                    } else if (DataBaseUtil.isAfter(data.getActiveBegin(), group.getActiveBegin()) &&
+                               DataBaseUtil.isAfter(group.getActiveEnd(), data.getActiveEnd())) {
+                        overlap = true;
+                    } else if (DataBaseUtil.isAfter(data.getActiveEnd(), group.getActiveEnd()) &&
+                               DataBaseUtil.isAfter(group.getActiveBegin(), data.getActiveBegin())) {
+                        overlap = true;
+                    } else if (DataBaseUtil.isAfter(group.getActiveEnd(), data.getActiveEnd()) &&
+                               DataBaseUtil.isAfter(data.getActiveBegin(), group.getActiveBegin())) {
+                        overlap = true;
+                    } else if (!DataBaseUtil.isDifferentYD(group.getActiveBegin(),
+                                                            data.getActiveEnd()) ||
+                               !DataBaseUtil.isDifferentYD(group.getActiveEnd(),
+                                                           data.getActiveBegin())) {
+                        overlap = true;
+                    } else if (!DataBaseUtil.isDifferentYD(group.getActiveBegin(),
+                                                            data.getActiveBegin()) ||
+                               (!DataBaseUtil.isDifferentYD(group.getActiveEnd(),
+                                                             data.getActiveEnd()))) {
+                        overlap = true;
+                    }
+                      
+                    if(overlap)
+                        list.add(new FieldErrorException("auxFieldGroupTimeOverlapException",null));
+                    
+                }
+            } 
+        }
+        
+        if(list.size() > 0)
+            throw list;        
+    } 
+    
 }

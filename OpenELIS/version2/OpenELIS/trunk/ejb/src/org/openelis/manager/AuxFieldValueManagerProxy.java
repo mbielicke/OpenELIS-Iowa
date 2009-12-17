@@ -32,6 +32,7 @@ import javax.naming.InitialContext;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AuxFieldValueLocal;
+import org.openelis.utilcommon.DataBaseUtil;
 
 public class AuxFieldValueManagerProxy {
     public AuxFieldValueManager fetchByAuxFieldId(Integer auxFieldId) throws Exception {
@@ -51,39 +52,42 @@ public class AuxFieldValueManagerProxy {
     }
     
     public AuxFieldValueManager add(AuxFieldValueManager man) throws Exception {
-        AuxFieldValueViewDO auxDO;
+        AuxFieldValueViewDO data;
         AuxFieldValueLocal l;
 
         l = local();
         for(int i=0; i<man.count(); i++){
-            auxDO = man.getAuxFieldValueAt(i);
-            auxDO.setAuxFieldId(man.getAuxiliaryFieldId());
-            l.add(auxDO);
+            data = man.getAuxFieldValueAt(i);
+            data.setAuxFieldId(man.getAuxiliaryFieldId());
+            l.add(data);
         }
         
         return man;
     }
     
     public AuxFieldValueManager update(AuxFieldValueManager man) throws Exception {
-        AuxFieldValueViewDO auxDO;
-        AuxFieldValueLocal l;
+        AuxFieldValueViewDO data;
+        AuxFieldValueLocal l;        
 
         l = local();
-        for(int i=0; i<man.count(); i++){
-            auxDO = man.getAuxFieldValueAt(i);
+        for(int j = 0; j < man.deleteCount(); j++) 
+            l.delete(man.getDeletedAt(j));
+        
+        for(int i=0; i < man.count(); i++){
+            data = man.getAuxFieldValueAt(i);
             
-            if(auxDO.getId() == null){
-                auxDO.setAuxFieldId(man.getAuxiliaryFieldId());
-                l.add(auxDO);
+            if(data.getId() == null){
+                data.setAuxFieldId(man.getAuxiliaryFieldId());
+                l.add(data);
             }else
-                l.update(auxDO);
+                l.update(data);
         }
         
         return man;
     }
     
-    public void validate(AuxFieldValueManager man, ValidationErrorsList errorsList) throws Exception {
-        
+    public void validate(AuxFieldValueManager man, ValidationErrorsList list) throws Exception {
+       
     }
     
     private AuxFieldValueLocal local() {

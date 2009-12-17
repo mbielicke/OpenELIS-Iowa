@@ -34,4 +34,5 @@ public interface AuxFieldGroupLocal {
     public AuxFieldGroupDO fetchById(Integer id) throws Exception;
     public AuxFieldGroupDO add(AuxFieldGroupDO data) throws Exception;
     public AuxFieldGroupDO update(AuxFieldGroupDO data) throws Exception;
+    public void validate(AuxFieldGroupDO data) throws Exception;
 }

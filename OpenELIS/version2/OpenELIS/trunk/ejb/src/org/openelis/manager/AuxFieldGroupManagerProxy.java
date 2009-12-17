@@ -30,6 +30,7 @@ import javax.naming.InitialContext;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AuxFieldGroupLocal;
+import org.openelis.utilcommon.DataBaseUtil;
 
 public class AuxFieldGroupManagerProxy {
     public AuxFieldGroupManager fetchById(Integer id) throws Exception {
@@ -63,9 +64,11 @@ public class AuxFieldGroupManagerProxy {
         l.add(man.getGroup());
         id = man.getGroup().getId();
 
-        man.getFields().setAuxFieldGroupId(id);
-        man.getFields().add();
-
+        if(man.fields != null) {
+            man.getFields().setAuxFieldGroupId(id);
+            man.getFields().add();
+        }
+        
         return man;
     }
     
@@ -77,8 +80,10 @@ public class AuxFieldGroupManagerProxy {
         l.update(man.getGroup());
         id = man.getGroup().getId();
 
-        man.getFields().setAuxFieldGroupId(id);
-        man.getFields().update();
+        if(man.fields != null) {
+            man.getFields().setAuxFieldGroupId(id);
+            man.getFields().update();
+        }
 
         return man;
     }
@@ -93,8 +98,19 @@ public class AuxFieldGroupManagerProxy {
         return null;
     }
     
-    public void validate(AuxFieldGroupManager man, ValidationErrorsList errorsList) throws Exception {
+    public void validate(AuxFieldGroupManager man, ValidationErrorsList list) throws Exception {       
+        try {
+            local().validate(man.getGroup());
+        } catch (Exception e) {
+            DataBaseUtil.mergeException(list, e);
+        }
         
+        try {
+            if (man.fields != null)
+                man.getFields().validate(list);
+        } catch (Exception e) {
+            DataBaseUtil.mergeException(list, e);
+        }
     }
     
     private AuxFieldGroupLocal local() {

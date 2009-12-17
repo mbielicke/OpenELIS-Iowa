@@ -39,4 +39,5 @@ public interface AuxFieldValueLocal {
     public AuxFieldValueViewDO add(AuxFieldValueViewDO data) throws Exception;
     public AuxFieldValueViewDO update(AuxFieldValueViewDO data) throws Exception;
     public void delete(AuxFieldValueViewDO data) throws Exception;
+    public void validate(AuxFieldValueViewDO data) throws Exception;
 }
