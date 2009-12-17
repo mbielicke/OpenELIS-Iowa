@@ -32,6 +32,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
+import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.event.ActionEvent;
@@ -113,8 +114,12 @@ public class TestResultsTab extends Screen {
                c = event.getCol();                                              
                row = testResultsTable.getRow(r);
                isHeaderRow = ((Boolean)row.data).booleanValue();
-               resultDO = displayManager.getResultAt(r,c-1);
-               testAnDo = manager.getTestAnalyteList().get(resultDO.getTestAnalyteId());
+               
+               testAnDo = null;
+               if(c > 0){
+                   resultDO = displayManager.getResultAt(r,c-1);
+                   testAnDo = manager.getTestAnalyteList().get(resultDO.getTestAnalyteId());
+               }
                
                if(isHeaderRow || c == 0 || c >= (displayManager.columnCount(r)+1) || testAnalyteReadOnlyId.equals(testAnDo.getTypeId()))
                    event.cancel();
@@ -128,6 +133,8 @@ public class TestResultsTab extends Screen {
                 TableDataRow tableRow;
                 ResultViewDO resultDO;
                 TestAnalyteViewDO testAnDo;
+                Integer testResultId;
+                TestResultDO testResultDo;
                 
                 row = event.getRow();
                 col = event.getCol();
@@ -138,7 +145,13 @@ public class TestResultsTab extends Screen {
                 
                 if(!"".equals(val)){
                     try{
-                        manager.getResultValidator().validate(resultDO.getResultGroup(), (String)val);
+                        testResultId = manager.getResultValidator().validate(resultDO.getResultGroup(), val);
+                        testResultDo = manager.getTestResultList().get(testResultId);
+                        
+                        resultDO.setTypeId(testResultDo.getTypeId());
+                        resultDO.setTestResultId(testResultDo.getId());
+                        resultDO.setValue(val);
+                        
                     }catch(ParseException e){
                         testResultsTable.clearCellExceptions(row, col);
                         testResultsTable.setCellException(row, col, e);
@@ -151,48 +164,6 @@ public class TestResultsTab extends Screen {
                     if(testAnalyteRequiredId.equals(testAnDo.getTypeId()))
                         testResultsTable.setCellException(row, col, new LocalizedException("requiredResultException"));
                 }
-                
-                /*
-                try{
-                    storageDO = manager.getStorageAt(row);
-                }catch(Exception e){
-                    Window.alert(e.getMessage());
-                    return;
-                }
-                    
-                Object val = tableRow.cells.get(col).value;
-                Datetime checkin, checkout;
-                
-                switch (col){
-                    case 0:
-                            storageDO.setSystemUserId((Integer)val);
-                            break;
-                    case 1:
-                            TableDataRow selection = location.getSelection();
-                            storageDO.setStorageLocationId((Integer)((TableDataRow)val).key);
-                            storageDO.setStorageLocation((String)selection.getCells().get(0));
-                            break;
-                    case 2:
-                            storageDO.setCheckin((Datetime)val);
-                            
-                            checkin = (Datetime)tableRow.cells.get(2).value;
-                            checkout = (Datetime)tableRow.cells.get(3).value;
-                            
-                            if(checkin != null && checkout != null && checkout.compareTo(checkin) <= 0)
-                                storageTable.setCellException(row, col, new LocalizedException("checkinDateAfterCheckoutDateException"));
-                            break;
-                    case 3:
-                            storageDO.setCheckout((Datetime)val);
-                            
-                            checkin = (Datetime)tableRow.cells.get(2).value;
-                            checkout = (Datetime)tableRow.cells.get(3).value;
-                            
-                            if(checkin != null && checkout != null && checkout.compareTo(checkin) <= 0)
-                                storageTable.setCellException(row, col, new LocalizedException("checkinDateAfterCheckoutDateException"));
-                            break;
-                }
-            }*/
-
             }
         });
 
