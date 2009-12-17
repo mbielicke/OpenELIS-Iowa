@@ -33,12 +33,11 @@ import org.openelis.utilcommon.ResultValidator.Type;
  * pair of floating point numbers separated using a comma (,) such as 12.0,18.0.
  * The lower limit is inclusive and the upper limit is exclusive.
  */
-public class ResultRangeNumeric implements ResultRange, ResultType {
+public class ResultRangeNumeric implements ResultRange {
     private static final long serialVersionUID = 1L;
 
     protected boolean valid = false;
     protected double min, max;
-    protected Integer id;
 
     public void setRange(String range) throws ParseException {
         String st[];
@@ -108,17 +107,5 @@ public class ResultRangeNumeric implements ResultRange, ResultType {
         if (valid)
             return max;
         return 0;
-    }
-
-    public Type getType() {
-        return Type.NUMERIC_RANGE;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 }

@@ -26,19 +26,17 @@
 package org.openelis.utilcommon;
 
 import org.openelis.exception.ParseException;
-import org.openelis.utilcommon.ResultValidator.Type;
 
 /**
  * This class is used to manage a titer range. The range is specified using a
  * pair of integers separated using a colon (:) such as 1:256. Both the lower
  * and upper limit are inclusive.
  */
-public class ResultRangeTiter implements ResultRange, ResultType {
+public class ResultRangeTiter implements ResultRange {
     private static final long serialVersionUID = 1L;
 
-    protected boolean valid = false;
-    protected int min, max;
-    protected Integer id;
+    protected boolean         valid            = false;
+    protected int             min, max;
 
     public void setRange(String range) throws ParseException {
         String st[];
@@ -68,28 +66,28 @@ public class ResultRangeTiter implements ResultRange, ResultType {
         int d;
         boolean contains;
 
-        if(value.startsWith(">") || value.startsWith("<"))
+        if (value.startsWith(">") || value.startsWith("<"))
             value = value.substring(1);
-        
-        if(value.startsWith("="))
+
+        if (value.startsWith("="))
             value = value.substring(1);
-        
-        if(value.startsWith("1:"))
+
+        if (value.startsWith("1:"))
             value = value.substring(2);
         else
             throw new ParseException("illegalTiterFormatException");
-        
+
         try {
             d = Integer.parseInt(value);
             contains = d >= min && d <= max;
         } catch (Exception e) {
             contains = false;
         }
-        
-        if(!contains || !valid)
+
+        if ( !contains || !valid)
             throw new ParseException("illegalTiterFormatException");
     }
-    
+
     public boolean intersects(ResultRange value) {
         ResultRangeTiter r;
 
@@ -118,17 +116,5 @@ public class ResultRangeTiter implements ResultRange, ResultType {
         if (valid)
             return max;
         return 0;
-    }
-
-    public Type getType() {
-        return Type.NUMERIC_TITER;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 }

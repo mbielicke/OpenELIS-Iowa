@@ -12,19 +12,19 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.utilcommon.ResultValidator;
 
 public class AnalysisResultManager implements RPC {
-    private static final long                               serialVersionUID = 1L;
+    private static final long                             serialVersionUID = 1L;
 
-    protected Integer                                       analysisId;
-    protected ArrayList<ArrayList<ResultViewDO>>            results;
-    protected ArrayList<ResultViewDO>                       deletedResults;
+    protected Integer                                     analysisId;
+    protected ArrayList<ArrayList<ResultViewDO>>          results;
+    protected ArrayList<ResultViewDO>                     deletedResults;
 
-    protected HashMap<Integer, AnalyteDO>         analyteList;
-    protected HashMap<Integer, TestAnalyteViewDO> testAnalyteList;
-    protected HashMap<Integer, TestResultDO> testResultList;
-    protected ResultValidator      resultValidator;
-    
-    protected transient TestManager                         testManager;
-    protected transient static AnalysisResultManagerProxy   proxy;
+    protected HashMap<Integer, AnalyteDO>                 analyteList;
+    protected HashMap<Integer, TestAnalyteViewDO>         testAnalyteList;
+    protected HashMap<Integer, TestResultDO>              testResultList;
+    protected ResultValidator                             resultValidator[];
+
+    protected transient TestManager                       testManager;
+    protected transient static AnalysisResultManagerProxy proxy;
 
     public static AnalysisResultManager getInstance() {
         AnalysisResultManager arm;
@@ -42,7 +42,7 @@ public class AnalysisResultManager implements RPC {
     public static AnalysisResultManager fetchByAnalysisId(Integer analysisId, Integer testId) throws Exception {
         return proxy().fetchByAnalysisId(analysisId, testId);
     }
-    
+
     public static AnalysisResultManager fetchByAnalysisIdForDisplay(Integer analysisId) throws Exception {
         return proxy().fetchByAnalysisIdForDisplay(analysisId);
     }
@@ -50,7 +50,7 @@ public class AnalysisResultManager implements RPC {
     public static AnalysisResultManager fetchByTestId(Integer testId) throws Exception {
         return proxy().fetchNewByTestId(testId);
     }
-    
+
     public int rowCount() {
         if (results == null)
             return 0;
