@@ -33,6 +33,7 @@ import javax.naming.InitialContext;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
+import org.openelis.domain.TestResultDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.ResultLocal;
 import org.openelis.utilcommon.ResultValidator;
@@ -51,13 +52,15 @@ public class AnalysisResultManagerProxy {
     
     public AnalysisResultManager fetchByAnalysisId(Integer analysisId, Integer testId) throws Exception {
         ArrayList<ArrayList<ResultViewDO>> results = new ArrayList<ArrayList<ResultViewDO>>();
+        HashMap<Integer, TestResultDO> testResultList = new HashMap<Integer, TestResultDO>();
         HashMap<Integer, AnalyteDO> analyteList = new HashMap<Integer, AnalyteDO>();
         HashMap<Integer, TestAnalyteViewDO> testAnalyteList = new HashMap<Integer, TestAnalyteViewDO>();
         ResultValidator resultValidator = new ResultValidator();
         
-        local().fetchByAnalysisId(analysisId, results, analyteList, testAnalyteList, resultValidator);
+        local().fetchByAnalysisId(analysisId, results, testResultList, analyteList, testAnalyteList, resultValidator);
         AnalysisResultManager man = AnalysisResultManager.getInstance();
         man.setResults(results);
+        man.setTestResultList(testResultList);
         man.setAnalyteList(analyteList);
         man.setTestAnalyteList(testAnalyteList);
         man.setResultValidator(resultValidator);
@@ -68,13 +71,15 @@ public class AnalysisResultManagerProxy {
     
     public AnalysisResultManager fetchNewByTestId(Integer testId) throws Exception {
         ArrayList<ArrayList<ResultViewDO>> results = new ArrayList<ArrayList<ResultViewDO>>();
+        HashMap<Integer, TestResultDO> testResultList = new HashMap<Integer, TestResultDO>();
         HashMap<Integer, AnalyteDO> analyteList = new HashMap<Integer, AnalyteDO>();
         HashMap<Integer, TestAnalyteViewDO> testAnalyteList = new HashMap<Integer, TestAnalyteViewDO>();
         ResultValidator resultValidator = new ResultValidator();
         
-        local().fetchByTestIdNoResults(testId, results, analyteList, testAnalyteList, resultValidator);
+        local().fetchByTestIdNoResults(testId, results, testResultList, analyteList, testAnalyteList, resultValidator);
         AnalysisResultManager man = AnalysisResultManager.getInstance();
         man.setResults(results);
+        man.setTestResultList(testResultList);
         man.setAnalyteList(analyteList);
         man.setTestAnalyteList(testAnalyteList);
         man.setResultValidator(resultValidator);
@@ -84,11 +89,60 @@ public class AnalysisResultManagerProxy {
     }
     
     public AnalysisResultManager add(AnalysisResultManager man) throws Exception {
-        return null;
+        System.out.println("*******************************result");
+        ResultLocal rl;
+        ArrayList<ResultViewDO> list;
+        ArrayList<ArrayList<ResultViewDO>> grid;
+        ResultViewDO data;
+        int i, j, so;
+
+        rl = local();
+        grid = man.getResults();
+        so = 0;
+        for (i = 0; i < man.rowCount(); i++ ) {
+            list = grid.get(i);
+            for (j = 0; j < list.size(); j++ ) {
+                data = list.get(j);
+                
+                data.setAnalysisId(man.getAnalysisId());
+                data.setSortOrder( ++so);
+                rl.add(data);
+            }
+        }
+
+        return man;
     }
     
     public AnalysisResultManager update(AnalysisResultManager man) throws Exception {
-        return null;
+        ResultLocal rl;
+        ArrayList<ResultViewDO> list;
+        ArrayList<ArrayList<ResultViewDO>> grid;
+        ResultViewDO data;
+        int i, j, so;
+
+        rl = local();
+        grid = man.getResults();
+        so = 0;
+        
+        for (i = 0; i < man.deleteCount(); i++ ) {
+            rl.delete(man.getDeletedAt(i));
+        }
+
+        for (i = 0; i < man.rowCount(); i++ ) {
+            list = grid.get(i);
+            for (j = 0; j < list.size(); j++ ) {
+                data = list.get(j);
+                data.setSortOrder( ++so);
+                if (data.getId() == null) {
+                    data.setAnalysisId(man.getAnalysisId());
+                    rl.add(data);
+                } else {
+                    rl.update(data);
+                }
+            }
+        }
+
+        return man;
     }
     
     public void validate(AnalysisResultManager man, ValidationErrorsList errorsList) throws Exception {

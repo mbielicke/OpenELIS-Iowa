@@ -35,6 +35,7 @@ import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -44,16 +45,18 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
+import org.openelis.domain.TestResultViewDO;
+import org.openelis.entity.Result;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.ResultLocal;
-import org.openelis.utilcommon.Result;
 import org.openelis.utilcommon.ResultRangeDate;
 import org.openelis.utilcommon.ResultRangeDateTime;
 import org.openelis.utilcommon.ResultRangeDictionary;
 import org.openelis.utilcommon.ResultRangeNumeric;
 import org.openelis.utilcommon.ResultRangeTime;
 import org.openelis.utilcommon.ResultRangeTiter;
+import org.openelis.utilcommon.ResultType;
 import org.openelis.utilcommon.ResultValidator;
 
 @Stateless
@@ -110,6 +113,7 @@ public class ResultBean implements ResultLocal {
     }
     
     public void fetchByTestIdNoResults(Integer testId, ArrayList<ArrayList<ResultViewDO>> results,
+                                  HashMap<Integer, TestResultDO> testResultList,     
                                   HashMap<Integer, AnalyteDO> analyteList, HashMap<Integer, TestAnalyteViewDO> testAnalyteList, 
                                   ResultValidator resultValidator) throws Exception {
         List<TestAnalyteViewDO> testAnalytes = null;
@@ -150,6 +154,13 @@ public class ResultBean implements ResultLocal {
             testAnalyteList.put(testAnalyteDO.getId(), testAnalyteDO);
         }
         
+        testResultList.clear();
+        TestResultDO testResultDO;
+        for(int k=0; k<testResults.size(); k++){
+            testResultDO = testResults.get(k);
+            testResultList.put(testResultDO.getId(), testResultDO);
+        }
+        
         resultValidator.clear();
         createTestResultHash(testResults, resultValidator);
         
@@ -171,11 +182,9 @@ public class ResultBean implements ResultLocal {
                 //create a new resultDO
                 ResultViewDO resultDO = new ResultViewDO();
                 resultDO.setTestAnalyteId(ado.getId());
-                resultDO.setAnalyte(ado.getAnalyteName());
                 resultDO.setIsColumn(ado.getIsColumn());
-                resultDO.setSortOrder(ado.getSortOrder());
                 resultDO.setIsReportable(ado.getIsReportable());
-                resultDO.setTypeId(ado.getTypeId());
+                resultDO.setAnalyte(ado.getAnalyteName());
                 resultDO.setResultGroup(ado.getResultGroup());
                 
                 rg = ado.getRowGroup();
@@ -246,6 +255,7 @@ public class ResultBean implements ResultLocal {
     }
     
     public void fetchByAnalysisId(Integer analysisId, ArrayList<ArrayList<ResultViewDO>> results,
+                                  HashMap<Integer, TestResultDO> testResultList,
                                   HashMap<Integer, AnalyteDO> analyteList, HashMap<Integer, 
                                   TestAnalyteViewDO> testAnalyteList, ResultValidator resultValidator) throws Exception {
         List<TestAnalyteViewDO> testAnalytes = null;
@@ -288,6 +298,13 @@ public class ResultBean implements ResultLocal {
             testAnalyteList.put(testAnalyteDO.getId(), testAnalyteDO);
         }
         
+        testResultList.clear();
+        TestResultDO testResultDO;
+        for(int k=0; k<testResults.size(); k++){
+            testResultDO = testResults.get(k);
+            testResultList.put(testResultDO.getId(), testResultDO);
+        }
+        
         resultValidator.clear();
         createTestResultHash(testResults, resultValidator);
         
@@ -325,25 +342,62 @@ public class ResultBean implements ResultLocal {
         }
     }
     
-    public TestAnalyteViewDO add(TestAnalyteViewDO itemDO) {
-        return null;
-        // TODO Auto-generated method stub
+    public ResultViewDO add(ResultViewDO data) {
+        Result entity;
         
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        entity = new Result();
+        entity.setAnalysisId(data.getAnalysisId());
+        entity.setAnalyteId(data.getAnalyteId());
+        entity.setIsColumn(data.getIsColumn());
+        entity.setIsReportable(data.getIsReportable());
+        entity.setSortOrder(data.getSortOrder());
+        entity.setTestAnalyteId(data.getTestAnalyteId());
+        entity.setTestResultId(data.getTestResultId());
+        entity.setTypeId(data.getTypeId());
+        entity.setValue(data.getValue());
+        
+        manager.persist(entity);
+        data.setId(entity.getId());
+        
+        return data;
     }
 
-    public TestAnalyteViewDO update(TestAnalyteViewDO itemDO) {
-        return null;
-        // TODO Auto-generated method stub
+    public ResultViewDO update(ResultViewDO data) {
+        Result entity;
         
+        if (!data.isChanged())
+            return data;
+        
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        entity = manager.find(Result.class, data.getId());
+        entity.setAnalysisId(data.getAnalysisId());
+        entity.setAnalyteId(data.getAnalyteId());
+        entity.setIsColumn(data.getIsColumn());
+        entity.setIsReportable(data.getIsReportable());
+        entity.setSortOrder(data.getSortOrder());
+        entity.setTestAnalyteId(data.getTestAnalyteId());
+        entity.setTestResultId(data.getTestResultId());
+        entity.setTypeId(data.getTypeId());
+        entity.setValue(data.getValue());
+
+        return data;
     }
     
-    public void delete(TestAnalyteViewDO itemDO) {
-        // TODO Auto-generated method stub
-        
+    public void delete(ResultViewDO data) {
+        Result entity;
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+
+        entity = manager.find(Result.class, data.getId());
+        if (entity != null)
+            manager.remove(entity);
     }
     
     private void createTestResultHash(List<TestResultDO> testResultList, ResultValidator resultValidator){
-        ArrayList<Result> results;
+        ArrayList<ResultType> results;
         Integer rg;
         TestResultDO testResult;
         Integer typeId;
@@ -367,7 +421,7 @@ public class ResultBean implements ResultLocal {
                     if(rg != null)
                         resultValidator.addResultGroup(rg, results);
                     
-                    results = new ArrayList<Result>();
+                    results = new ArrayList<ResultType>();
                     dict = null;
                     rg = testResult.getResultGroup();
                 }
@@ -383,30 +437,32 @@ public class ResultBean implements ResultLocal {
                     //need to lookup the entry
                     dictDO = dictionaryBean.fetchById(new Integer(testResult.getValue()));
                     
-                    dict.addEntry(dictDO.getId(), dictDO.getEntry());
+                    dict.addEntry(dictDO.getId(), dictDO.getEntry(), testResult.getId());
                 }else if(typeId.equals(typeRange)){
                     numericRange = new ResultRangeNumeric();
                     numericRange.setRange(testResult.getValue());
+                    numericRange.setId(testResult.getId());
                     results.add(numericRange);
                     
                 }else if(typeId.equals(typeTiter)){
                     titer = new ResultRangeTiter();
                     titer.setRange(testResult.getValue());
+                    titer.setId(testResult.getId());
                     results.add(titer);
                     
                 }else if(typeId.equals(typeDate)){
                     date = new ResultRangeDate();
-                    //date.validate(testResult.getValue());
+                    date.setId(testResult.getId());
                     results.add(date);
                     
                 }else if(typeId.equals(typeDateTime)){
                     dateTime = new ResultRangeDateTime();
-                    //dateTime.setValue(testResult.getValue());
+                    dateTime.setId(testResult.getId());
                     results.add(dateTime);
                     
                 }else if(typeId.equals(typeTime)){
                     time  = new ResultRangeTime();
-                    //time.setValue(testResult.getValue());
+                    time.setId(testResult.getId());
                     results.add(time);
                     
                 }else if(typeId.equals(typeDefault)){

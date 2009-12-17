@@ -5,10 +5,12 @@ import java.util.Date;
 import org.openelis.exception.ParseException;
 import org.openelis.utilcommon.ResultValidator.Type;
 
-public class ResultRangeTime implements Result {
+public class ResultRangeTime implements ResultType {
     private static final long serialVersionUID = 1L;
 
-    public void validate(String time) throws ParseException {
+    protected Integer id;
+    
+    public void contains(String time) throws ParseException {
         String st[];
         Date date;
         
@@ -30,5 +32,13 @@ public class ResultRangeTime implements Result {
 
     public Type getType() {
         return Type.TIME;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 }

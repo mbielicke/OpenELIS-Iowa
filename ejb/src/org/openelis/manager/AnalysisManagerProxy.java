@@ -149,7 +149,9 @@ public class AnalysisManagerProxy {
     }
     
     private void add(AnalysisManager man, AnalysisViewDO analysisDO, int i) throws Exception {
+        System.out.println("******************************analysis");
         Integer analysisRefId;
+        AnalysisListItem item;
         AnalysisLocal al = getAnalysisLocal();
         
         analysisRefId = ReferenceTable.ANALYSIS;
@@ -157,20 +159,35 @@ public class AnalysisManagerProxy {
         analysisDO.setSampleItemId(man.getSampleItemId());
         al.add(analysisDO);
         
-        man.getQAEventAt(i).setAnalysisId(analysisDO.getId());
-        man.getQAEventAt(i).add();
+        item = man.getItemAt(i);
         
-        man.getInternalNotesAt(i).setReferenceId(analysisDO.getId());
-        man.getInternalNotesAt(i).setReferenceTableId(analysisRefId);
-        man.getInternalNotesAt(i).add();
+        if(item.analysisResult != null){
+            man.getAnalysisResultAt(i).setAnalysisId(analysisDO.getId());
+            man.getAnalysisResultAt(i).add();
+        }
         
-        man.getExternalNoteAt(i).setReferenceId(analysisDO.getId());
-        man.getExternalNoteAt(i).setReferenceTableId(analysisRefId);
-        man.getExternalNoteAt(i).add();
+        if(item.qaEvents != null){
+            man.getQAEventAt(i).setAnalysisId(analysisDO.getId());
+            man.getQAEventAt(i).add();
+        }
         
-        man.getStorageAt(i).setReferenceId(analysisDO.getId());
-        man.getStorageAt(i).setReferenceTableId(analysisRefId);
-        man.getStorageAt(i).add();
+        if(item.analysisInternalNotes != null){
+            man.getInternalNotesAt(i).setReferenceId(analysisDO.getId());
+            man.getInternalNotesAt(i).setReferenceTableId(analysisRefId);
+            man.getInternalNotesAt(i).add();
+        }
+        
+        if(item.analysisExternalNote != null){
+            man.getExternalNoteAt(i).setReferenceId(analysisDO.getId());
+            man.getExternalNoteAt(i).setReferenceTableId(analysisRefId);
+            man.getExternalNoteAt(i).add();
+        }
+        
+        if(item.storage != null){
+            man.getStorageAt(i).setReferenceId(analysisDO.getId());
+            man.getStorageAt(i).setReferenceTableId(analysisRefId);
+            man.getStorageAt(i).add();
+        }
     }
     
     private void update(AnalysisManager man, AnalysisViewDO analysisDO, int i) throws Exception {
@@ -187,6 +204,11 @@ public class AnalysisManagerProxy {
             al.update(analysisDO);
         
         item = man.getItemAt(i);
+        if(item.analysisResult != null){
+            man.getAnalysisResultAt(i).setAnalysisId(analysisDO.getId());
+            man.getAnalysisResultAt(i).add();
+        }
+        
         if(item.qaEvents != null){
             man.getQAEventAt(i).setAnalysisId(analysisDO.getId());
             man.getQAEventAt(i).update();

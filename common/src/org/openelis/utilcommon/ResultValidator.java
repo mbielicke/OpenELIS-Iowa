@@ -12,15 +12,15 @@ public class ResultValidator implements RPC {
     public enum Type {DATE, DATE_TIME, TIME,
         DICTIONARY, NUMERIC_RANGE, NUMERIC_TITER};
         
-        protected HashMap<Integer, ArrayList<Result>> resultGroupHash;
+        protected HashMap<Integer, ArrayList<ResultType>> resultGroupHash;
         
         public ResultValidator(){
-            resultGroupHash = new HashMap<Integer, ArrayList<Result>>();
+            resultGroupHash = new HashMap<Integer, ArrayList<ResultType>>();
         }
         
-        public Type validate(Integer groupId, String value) throws ParseException {
-            ArrayList<Result> results;
-            Result result;
+        public Integer validate(Integer groupId, String value) throws ParseException {
+            ArrayList<ResultType> results;
+            ResultType result;
             
             result = null;
             results = resultGroupHash.get(groupId);
@@ -29,7 +29,7 @@ public class ResultValidator implements RPC {
                 for(int i=0; i<results.size(); i++){
                     try{
                         result = results.get(i);
-                        result.validate(value);
+                        result.contains(value);
                         
                         break;
                     }catch(Exception e){
@@ -39,12 +39,12 @@ public class ResultValidator implements RPC {
             }
             
             if(result != null)
-                return result.getType();
+                return result.getId();
             else
                 throw new ParseException("illegalResultValueException");
         }
         
-        public void addResultGroup(Integer groupId, ArrayList<Result> results){
+        public void addResultGroup(Integer groupId, ArrayList<ResultType> results){
             resultGroupHash.put(groupId, results);
         }
         

@@ -33,11 +33,12 @@ import org.openelis.utilcommon.ResultValidator.Type;
  * pair of integers separated using a colon (:) such as 1:256. Both the lower
  * and upper limit are inclusive.
  */
-public class ResultRangeTiter implements ResultRange, Result {
+public class ResultRangeTiter implements ResultRange, ResultType {
     private static final long serialVersionUID = 1L;
 
     protected boolean valid = false;
     protected int min, max;
+    protected Integer id;
 
     public void setRange(String range) throws ParseException {
         String st[];
@@ -63,11 +64,14 @@ public class ResultRangeTiter implements ResultRange, Result {
         valid = true;
     }
 
-    public void validate(String value) throws ParseException {
+    public void contains(String value) throws ParseException {
         int d;
         boolean contains;
 
         if(value.startsWith(">") || value.startsWith("<"))
+            value = value.substring(1);
+        
+        if(value.startsWith("="))
             value = value.substring(1);
         
         if(value.startsWith("1:"))
@@ -118,5 +122,13 @@ public class ResultRangeTiter implements ResultRange, Result {
 
     public Type getType() {
         return Type.NUMERIC_TITER;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 }
