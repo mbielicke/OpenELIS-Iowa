@@ -43,6 +43,7 @@ import org.openelis.persistence.EJBFactory;
 
 public class SampleManagerProxy {
     public SampleManager add(SampleManager man) throws Exception {
+        System.out.println("*************************sample");
         Integer sampleId, sampleRefId, sampleInternalRefId;
         SampleLocal sl = getSampleLocal();
         sl.add(man.getSample());
@@ -56,26 +57,38 @@ public class SampleManagerProxy {
         man.getSampleItems().setSampleId(sampleId);
         man.getSampleItems().add();
         
-        man.getOrganizations().setSampleId(sampleId);
-        man.getOrganizations().add();
+        if(man.organizations != null){
+            man.getOrganizations().setSampleId(sampleId);
+            man.getOrganizations().add();
+        }
         
-        man.getProjects().setSampleId(sampleId);
-        man.getProjects().add();
+        if(man.projects != null){
+            man.getProjects().setSampleId(sampleId);
+            man.getProjects().add();
+        }
         
-        man.getQaEvents().setSampleId(sampleId);
-        man.getQaEvents().add();
+        if(man.qaEvents != null){
+            man.getQaEvents().setSampleId(sampleId);
+            man.getQaEvents().add();
+        }
         
-        man.getAuxData().setReferenceTableId(sampleRefId);
-        man.getAuxData().setReferenceId(sampleId);
-        man.getAuxData().add();
+        if(man.auxData != null){
+            man.getAuxData().setReferenceTableId(sampleRefId);
+            man.getAuxData().setReferenceId(sampleId);
+            man.getAuxData().add();
+        }
         
-        man.getInternalNotes().setReferenceTableId(sampleRefId);
-        man.getInternalNotes().setReferenceId(sampleId);
-        man.getInternalNotes().add();
+        if(man.sampleInternalNotes != null){
+            man.getInternalNotes().setReferenceTableId(sampleRefId);
+            man.getInternalNotes().setReferenceId(sampleId);
+            man.getInternalNotes().add();
+        }
         
-        man.getExternalNote().setReferenceTableId(sampleRefId);
-        man.getExternalNote().setReferenceId(sampleId);
-        man.getExternalNote().add();
+        if(man.sampleExternalNote != null){
+            man.getExternalNote().setReferenceTableId(sampleRefId);
+            man.getExternalNote().setReferenceId(sampleId);
+            man.getExternalNote().add();
+        }
         
         return man;
     }

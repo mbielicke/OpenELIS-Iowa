@@ -27,7 +27,7 @@ import org.w3c.dom.Element;
 
 @NamedQueries( {
     @NamedQuery(name = "SampleQaevent.SampleQaeventBySampleId", query = "select new org.openelis.domain.SampleQaEventViewDO(q.id, q.sampleId, q.qaeventId, " + 
-                " q.typeId, q.isBillable, q.qaEvent.name) from SampleQaevent q where q.sampleId = :id")})
+                " q.typeId, q.isBillable, q.qaEvent.name) from SampleQaevent q where q.sampleId = :id order by q.id")})
                 
 @Entity
 @Table(name="sample_qaevent")

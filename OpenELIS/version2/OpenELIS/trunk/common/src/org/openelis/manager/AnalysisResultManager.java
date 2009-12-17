@@ -6,6 +6,7 @@ import java.util.HashMap;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
+import org.openelis.domain.TestResultDO;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.utilcommon.ResultValidator;
@@ -19,6 +20,7 @@ public class AnalysisResultManager implements RPC {
 
     protected HashMap<Integer, AnalyteDO>         analyteList;
     protected HashMap<Integer, TestAnalyteViewDO> testAnalyteList;
+    protected HashMap<Integer, TestResultDO> testResultList;
     protected ResultValidator      resultValidator;
     
     protected transient TestManager                         testManager;
@@ -48,8 +50,8 @@ public class AnalysisResultManager implements RPC {
     public static AnalysisResultManager fetchByTestId(Integer testId) throws Exception {
         return proxy().fetchNewByTestId(testId);
     }
-
-    public int count() {
+    
+    public int rowCount() {
         if (results == null)
             return 0;
 
@@ -139,11 +141,6 @@ public class AnalysisResultManager implements RPC {
      * if(items.get(i).analysis == aDO) return i; return -1; }
      */
 
-    public int numberOfTableColsNeeded() {
-
-        return 10;
-    }
-
     // service methods
     public AnalysisResultManager add() throws Exception {
         return proxy().add(this);
@@ -200,5 +197,13 @@ public class AnalysisResultManager implements RPC {
 
     public void setTestManager(TestManager testManager) {
         this.testManager = testManager;
+    }
+
+    public HashMap<Integer, TestResultDO> getTestResultList() {
+        return testResultList;
+    }
+
+    public void setTestResultList(HashMap<Integer, TestResultDO> testResultList) {
+        this.testResultList = testResultList;
     }
 }

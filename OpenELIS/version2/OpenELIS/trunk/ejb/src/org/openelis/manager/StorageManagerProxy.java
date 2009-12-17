@@ -35,6 +35,7 @@ import org.openelis.local.StorageLocal;
 
 public class StorageManagerProxy {
     public StorageManager add(StorageManager man) throws Exception {
+        System.out.println("*****************************storage");
         StorageViewDO storage;
         StorageLocal sl = getStorageLocal();
         
