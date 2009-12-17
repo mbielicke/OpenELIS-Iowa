@@ -23,32 +23,20 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
+package org.openelis.remote;
 
-package org.openelis.metamap;
+import java.util.ArrayList;
 
-import org.openelis.gwt.common.MetaMap;
-import org.openelis.meta.AuxFieldValueMeta;
+import javax.ejb.Remote;
 
-public class AuxFieldValueMetaMap extends AuxFieldValueMeta implements MetaMap {
+import org.openelis.domain.AuxFieldGroupDO;
+import org.openelis.domain.IdNameVO;
+import org.openelis.gwt.common.data.QueryData;
 
-    public AuxFieldValueMetaMap() {
-      super();
-    }
+@Remote
+public interface AuxFieldGroupRemote {
+
+    public ArrayList<AuxFieldGroupDO> fetchActive() throws Exception ;
     
-    public AuxFieldValueMetaMap(String path) {
-        super(path);
-    }
-    
-    public boolean hasColumn(String name){        
-        return super.hasColumn(name);
-    }
-    
-    public static String getTableName(){
-        return "AuxFieldValue";
-    }
-    
-    public String buildFrom(String where) {        
-        return "AuxFieldValue ";
-    }
-
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
 }

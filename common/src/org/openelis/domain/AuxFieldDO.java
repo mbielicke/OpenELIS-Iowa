@@ -82,8 +82,10 @@ public class AuxFieldDO extends DataObject {
     }
 
     public void setSortOrder(Integer sortOrder) {
-        this.sortOrder = sortOrder;
-        _changed = true;
+        if(this.sortOrder == null || !(this.sortOrder.equals(sortOrder))) {
+            this.sortOrder = sortOrder;
+            _changed = true;
+        }
     }
 
     public Integer getAnalyteId() {

@@ -51,8 +51,7 @@ public class TestResultManagerProxy {
 
     private static final TestMetaMap meta = new TestMetaMap();
     
-    private static int               typeDict, typeNumeric, typeTiter, typeDate,
-                                     typeDateTime, typeTime, typeDefault; 
+    private static int               typeDict, typeNumeric, typeTiter, typeDefault; 
     
     private static final Logger      log  = Logger.getLogger(TestResultManagerProxy.class.getName());
     
@@ -88,33 +87,6 @@ public class TestResultManagerProxy {
             log.log(Level.SEVERE,
                     "Failed to lookup dictionary entry by system name='test_res_type_titer'", e);
         }
-        
-        try {
-            data = dl.fetchBySystemName("test_res_type_date");
-            typeDate = data.getId();
-        } catch (Throwable e) {
-            typeDate = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='test_res_type_date'", e);
-        }
-        
-        try {
-            data = dl.fetchBySystemName("test_res_type_date_time");
-            typeDateTime = data.getId();
-        } catch (Throwable e) {
-            typeDateTime = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='test_res_type_date_time'", e);
-        }
-        
-        try {
-            data = dl.fetchBySystemName("test_res_type_time");
-            typeTime = data.getId();
-        } catch (Throwable e) {
-            typeTime = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='test_res_type_time'", e);
-        }   
         
         try {
             data = dl.fetchBySystemName("test_res_type_default");
@@ -201,7 +173,6 @@ public class TestResultManagerProxy {
         Integer typeId, unitId, entryId;
         int i, j;
         String value, fieldName, unitText;
-        boolean hasDateType;
         ResultRangeNumeric nr;
         ResultRangeTiter tr;
         HashMap<Integer, List<ResultRangeTiter>> trMap;
@@ -220,14 +191,11 @@ public class TestResultManagerProxy {
         nrMap = new HashMap<Integer, List<ResultRangeNumeric>>();
         dictList = new ArrayList<Integer>();
         unitsWithDefault = new ArrayList<Integer>();
-        hasDateType = false;
-        
 
         for (i = 0; i < trm.groupCount(); i++ ) {
             trMap.clear();
             nrMap.clear();
             dictList.clear();
-            hasDateType = false;
             unitsWithDefault.clear();
             resIdList = new ArrayList<Integer>();        
             resGrpRsltMap.put(i+1, resIdList);
@@ -272,25 +240,6 @@ public class TestResultManagerProxy {
                         tr = new ResultRangeTiter();
                         tr.setRange(value);
                         addTiterIfNoOverLap(trMap, unitId, tr);
-                    } else if (DataBaseUtil.isSame(typeDate,typeId)) {
-                        //TODO this doesnt exist anymore TestResultValidator.validateDate(value);
-                        if (hasDateType) {
-                            fieldName = meta.TEST_RESULT.getTypeId();
-                            throw new InconsistencyException("testMoreThanOneDateTypeException");
-                        }
-                        hasDateType = true;
-                    } else if (DataBaseUtil.isSame(typeDateTime,typeId)) {                        
-                        if (hasDateType) {
-                            fieldName = meta.TEST_RESULT.getTypeId();
-                            throw new InconsistencyException("testMoreThanOneDateTypeException");
-                        }
-                        hasDateType = true;
-                    } else if (DataBaseUtil.isSame(typeTime,typeId)) {                        
-                        if (hasDateType) {
-                            fieldName = meta.TEST_RESULT.getTypeId();
-                            throw new InconsistencyException("testMoreThanOneDateTypeException");
-                        }
-                        hasDateType = true;
                     } else if (DataBaseUtil.isSame(typeDict,typeId)) {
                         entryId = Integer.parseInt(value);
                         if (entryId == null)

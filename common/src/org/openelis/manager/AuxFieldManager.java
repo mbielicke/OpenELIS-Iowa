@@ -8,12 +8,14 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
+import com.google.gwt.user.client.Window;
+
 public class AuxFieldManager implements RPC {
 
     private static final long                             serialVersionUID = 1L;
 
     protected Integer                                     auxFieldGroupId;
-    protected ArrayList<AuxFieldListItem>                 items, deletedList;
+    protected ArrayList<AuxFieldListItem>                 items, deleted;
 
     protected transient static AuxFieldManagerProxy proxy;
 
@@ -71,14 +73,18 @@ public class AuxFieldManager implements RPC {
     }
 
     public void addAuxField(AuxFieldViewDO auxField) {
-        AuxFieldListItem item = new AuxFieldListItem();
+        AuxFieldListItem item;
+        
+        item = new AuxFieldListItem();
         item.field = auxField;
 
         items.add(item);
     }
     
     public void addAuxFieldAndValues(AuxFieldViewDO auxField, ArrayList<AuxFieldValueViewDO> values) {
-        AuxFieldListItem item = new AuxFieldListItem();
+        AuxFieldListItem item;
+        
+        item = new AuxFieldListItem();
         item.field = auxField;
         item.values = AuxFieldValueManager.getInstance();
         item.values.setAuxiliaryFieldId(auxField.getId());
@@ -88,25 +94,67 @@ public class AuxFieldManager implements RPC {
 
         items.add(item);
     }
+    
+    public void addAuxFieldAndValuesAt(AuxFieldViewDO auxField, ArrayList<AuxFieldValueViewDO> values, int i) {
+        AuxFieldListItem item;
+        
+        item = new AuxFieldListItem();
+        item.field = auxField;
+        item.values = AuxFieldValueManager.getInstance();
+        item.values.setAuxiliaryFieldId(auxField.getId());
+        
+        for(int j=0; j<values.size(); j++)
+            item.values.addAuxFieldValue(values.get(j));
+
+        items.add(i,item);
+    }
 
     public void removeAuxFieldAt(int i) {
+        AuxFieldListItem tmp;
         if (items == null || i >= items.size())
             return;
 
-        AuxFieldListItem tmp = items.remove(i);
+        tmp = items.remove(i);        
 
-        if (deletedList == null)
-            deletedList = new ArrayList<AuxFieldListItem>();
+        if (deleted == null)
+            deleted = new ArrayList<AuxFieldListItem>();
+        
+        if (tmp.field.getId() != null)             
+            deleted.add(tmp);
+        
+    }
+    
+    public void moveField(int oldIndex, int newIndex) {
+        AuxFieldViewDO field;
+        AuxFieldValueManager values;
 
-        if (tmp.field.getId() != null)
-            deletedList.add(tmp);
+        if (items == null)
+            return;
+
+        try {
+            field = getAuxFieldAt(oldIndex);
+            values = getValuesAt(oldIndex);
+            items.remove(oldIndex);
+            
+            if (newIndex > oldIndex)
+                newIndex-- ;
+
+            if (newIndex >= count())
+                addAuxFieldAndValues(field, values.getValues());
+            else
+                addAuxFieldAndValuesAt(field, values.getValues(), newIndex);
+        } catch(Exception e) {
+            Window.alert(e.getMessage());
+        }     
     }
 
     //
     // other managers
     //
     public AuxFieldValueManager getValuesAt(int i) throws Exception {
-        AuxFieldListItem item = items.get(i);
+        AuxFieldListItem item;
+        
+        item = items.get(i);
         if (item.values == null) {
             if (item.field != null && item.field.getId() != null) {
                 try {
@@ -136,16 +184,18 @@ public class AuxFieldManager implements RPC {
     }
 
     public void validate() throws Exception {
-        ValidationErrorsList errorsList = new ValidationErrorsList();
+        ValidationErrorsList list;
+        
+        list = new ValidationErrorsList();
 
-        proxy().validate(this, errorsList);
+        proxy().validate(this, list);
 
-        if (errorsList.size() > 0)
-            throw errorsList;
+        if (list.size() > 0)
+            throw list;
     }
 
-    public void validate(ValidationErrorsList errorsList) throws Exception {
-        proxy().validate(this, errorsList);
+    public void validate(ValidationErrorsList list) throws Exception {
+        proxy().validate(this, list);
     }
 
     private static AuxFieldManagerProxy proxy() {
@@ -156,14 +206,14 @@ public class AuxFieldManager implements RPC {
     }
 
     int deleteCount() {
-        if (deletedList == null)
+        if (deleted == null)
             return 0;
 
-        return deletedList.size();
+        return deleted.size();
     }
 
     AuxFieldListItem getDeletedAt(int i) {
-        return deletedList.get(i);
+        return deleted.get(i);
     }
 
     static class AuxFieldListItem implements RPC {

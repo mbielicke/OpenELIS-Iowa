@@ -11,8 +11,8 @@ public class AuxFieldValueManager implements RPC {
     private static final long                                  serialVersionUID = 1L;
 
     protected Integer                                          auxiliaryFieldId;
-    protected ArrayList<AuxFieldValueViewDO>                            values;
-    protected ArrayList<AuxFieldValueViewDO>                            deletedList;
+    protected ArrayList<AuxFieldValueViewDO>                   values;
+    protected ArrayList<AuxFieldValueViewDO>                   deleted;
 
     protected transient static AuxFieldValueManagerProxy proxy;
     
@@ -69,16 +69,18 @@ public class AuxFieldValueManager implements RPC {
     }
     
     public void removeAuxFieldValueAt(int i){
+        AuxFieldValueViewDO tmp;
         if(values == null || i >= values.size())
             return;
         
-        AuxFieldValueViewDO tmp = values.remove(i);
+        tmp = values.remove(i);                
         
-        if(deletedList == null)
-            deletedList = new ArrayList<AuxFieldValueViewDO>();
+        if(deleted == null)
+            deleted = new ArrayList<AuxFieldValueViewDO>();
         
-        if(tmp.getId() != null)
-            deletedList.add(tmp);
+        if(tmp.getId() != null)             
+            deleted.add(tmp);
+        
     }
     
     // service methods
@@ -91,16 +93,18 @@ public class AuxFieldValueManager implements RPC {
     }
     
     public void validate() throws Exception {
-        ValidationErrorsList errorsList = new ValidationErrorsList();
+        ValidationErrorsList list;
         
-        proxy().validate(this, errorsList);
-        
-        if(errorsList.size() > 0)
-            throw errorsList;
+        list = new ValidationErrorsList();
+
+        proxy().validate(this, list);
+
+        if (list.size() > 0)
+            throw list;
     }
     
-    public void validate(ValidationErrorsList errorsList) throws Exception {
-        proxy().validate(this, errorsList);
+    public void validate(ValidationErrorsList list) throws Exception {
+        proxy().validate(this, list);
     }
 
     private static AuxFieldValueManagerProxy proxy() {
@@ -111,13 +115,13 @@ public class AuxFieldValueManager implements RPC {
     }
     
     int deleteCount() {
-        if (deletedList == null)
+        if (deleted == null)
             return 0;
 
-        return deletedList.size();
+        return deleted.size();
     }
 
     AuxFieldValueViewDO getDeletedAt(int i) {
-        return deletedList.get(i);
+        return deleted.get(i);
     }    
 }

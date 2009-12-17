@@ -84,16 +84,20 @@ public class AuxFieldGroupManager implements RPC {
     }
 
     public void validate() throws Exception {
-        ValidationErrorsList errorsList = new ValidationErrorsList();
+        ValidationErrorsList list;
 
-        proxy().validate(this, errorsList);
+        list = new ValidationErrorsList();
+        proxy().validate(this, list);
 
-        if (errorsList.size() > 0)
-            throw errorsList;
+        if (list.size() > 0)
+            throw list;
     }
 
-    public void validate(ValidationErrorsList errorsList) throws Exception {
-        proxy().validate(this, errorsList);
+    public void validate(ValidationErrorsList list) throws Exception {
+        proxy().validate(this, list);
+        
+        if (list.size() > 0)
+            throw list;
     }
 
     private static AuxFieldGroupManagerProxy proxy() {

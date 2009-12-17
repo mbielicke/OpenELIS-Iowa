@@ -1,5 +1,7 @@
 package org.openelis.domain;
 
+import org.openelis.utilcommon.DataBaseUtil;
+
 public class AuxFieldValueViewDO extends AuxFieldValueDO {
 
     private static final long serialVersionUID = 1L;
@@ -20,6 +22,6 @@ public class AuxFieldValueViewDO extends AuxFieldValueDO {
     }
 
     public void setDictionary(String dictionary) {
-        this.dictionary = dictionary;
+        this.dictionary = DataBaseUtil.trim(dictionary);
     }
 }

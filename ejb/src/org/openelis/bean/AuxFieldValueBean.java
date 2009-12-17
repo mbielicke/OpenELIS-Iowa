@@ -26,142 +26,231 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.DictionaryViewDO;
 import org.openelis.entity.AuxFieldValue;
-import org.openelis.gwt.common.DatabaseException;
+import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AuxFieldValueLocal;
+import org.openelis.local.DictionaryLocal;
+import org.openelis.meta.AuxFieldGroupMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-//@RolesAllowed("organization-select")
+@RolesAllowed("auxiliary-select")
 public class AuxFieldValueBean implements AuxFieldValueLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager                    manager;
+    
+    @EJB
+    private DictionaryLocal                  dictionary;
 
+    private static int                       typeDict, typeNumeric, typeDateTime,
+                                             typeDate, typeTime, typeAlphaLower,
+                                             typeAlphaUpper, typeAlphaMixed;
+    
+    private AuxFieldGroupMeta                meta = new AuxFieldGroupMeta();      
+    
+    private static final Logger              log  = Logger.getLogger(AuxFieldValueBean.class.getName());
+    
+    @PostConstruct
+    public void init() {
+        DictionaryDO data;
+
+        try {
+            data = dictionary.fetchBySystemName("aux_dictionary");
+            typeDict = data.getId();
+        } catch (Throwable e) {
+            typeDict = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='aux_dictionary'", e);
+        }
+        
+        try {
+            data = dictionary.fetchBySystemName("aux_numeric");
+            typeNumeric = data.getId();
+        } catch (Throwable e) {
+            typeNumeric = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='aux_numeric'", e);
+        }
+        
+        try {
+            data = dictionary.fetchBySystemName("aux_date_time");
+            typeDateTime = data.getId();
+        } catch (Throwable e) {
+            typeDateTime = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='aux_date_time'", e);
+        }
+        
+        try {
+            data = dictionary.fetchBySystemName("aux_date");
+            typeDate = data.getId();
+        } catch (Throwable e) {
+            typeDate = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='aux_date'", e);
+        }
+        
+        try {
+            data = dictionary.fetchBySystemName("aux_time");
+            typeTime = data.getId();
+        } catch (Throwable e) {
+            typeTime = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='aux_time'", e);
+        }
+        
+        try {
+            data = dictionary.fetchBySystemName("aux_alpha_lower");
+            typeAlphaLower = data.getId();
+        } catch (Throwable e) {
+            typeAlphaLower = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='aux_alpha_lower'", e);
+        }
+        
+        try {
+            data = dictionary.fetchBySystemName("aux_alpha_upper");
+            typeAlphaUpper = data.getId();
+        } catch (Throwable e) {
+            typeAlphaUpper = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='aux_alpha_upper'", e);
+        }
+        
+        try {
+            data = dictionary.fetchBySystemName("aux_alpha_mixed");
+            typeAlphaMixed = data.getId();
+        } catch (Throwable e) {
+            typeAlphaMixed = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='aux_alpha_mixed'", e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
     public ArrayList<AuxFieldValueViewDO> fetchById(Integer id) throws Exception {
         Query query;
-        ArrayList<AuxFieldValueViewDO> data;
-        AuxFieldValueViewDO dataDO;
-        Integer dictionaryTypeId;
-        DictionaryDO dictDO;
+        List list;
+        AuxFieldValueViewDO data;
+        DictionaryDO dict;
         
         query = manager.createNamedQuery("AuxFieldValue.FetchById");
         query.setParameter("auxFieldId", id);
-        try {
-            data = DataBaseUtil.toArrayList(query.getResultList());
-            
-            if(data.size() > 0){
-                query = manager.createNamedQuery("Dictionary.FetchBySystemName");
-                query.setParameter("name", "aux_dictionary");
-                dictDO = (DictionaryDO)query.getResultList().get(0);
-                dictionaryTypeId = dictDO.getId();
-                
-                for(int i=0; i<data.size(); i++){
-                    dataDO = data.get(i);
-                
-                    if(dictionaryTypeId.equals(dataDO.getTypeId())){
-                        query = manager.createNamedQuery("Dictionary.FetchById");
-                        query.setParameter("id", new Integer(dataDO.getValue()));
-                        dictDO = (DictionaryViewDO)query.getResultList().get(0);
-                        dataDO.setDictionary(dictDO.getEntry());
-                    }
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        list = DataBaseUtil.toArrayList(list);
+        //
+        // for entries that are dictionary, we want to fetch the dictionary
+        // text and set it for display
+        //
+        try {                       
+            for (int i = 0 ; i < list.size(); i++) {
+                data = (AuxFieldValueViewDO)list.get(i);                
+                if (typeDict == data.getTypeId()) {
+                    dict = dictionary.fetchById(Integer.parseInt(data.getValue()));
+                    if (dict != null)
+                        data.setDictionary(dict.getEntry());
                 }
             }
-        } catch (NoResultException e) {
-            throw new NotFoundException();
-        } catch (Exception e) {
-            throw new DatabaseException(e);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-        return data;
+
+        return (ArrayList) list;
     }
     
+    @SuppressWarnings("unchecked")
     public ArrayList<AuxFieldValueViewDO> fetchByAuxDataRefIdRefTableId(Integer referenceId, Integer referenceTableId) throws Exception {
         Query query;
-        ArrayList<AuxFieldValueViewDO> data;
-        AuxFieldValueViewDO dataDO;
-        Integer dictionaryTypeId;
-        DictionaryDO dictDO;
+        List list;
+        AuxFieldValueViewDO data;
+        DictionaryDO dict;
         
         query = manager.createNamedQuery("AuxFieldValue.FetchByDataRefId");
         query.setParameter("id", referenceId);
         query.setParameter("tableId", referenceTableId);
-        try {
-            data = DataBaseUtil.toArrayList(query.getResultList());
-            
-            if(data.size() > 0){
-                query = manager.createNamedQuery("Dictionary.FetchBySystemName");
-                query.setParameter("name", "aux_dictionary");
-                dictDO = (DictionaryDO)query.getResultList().get(0);
-                dictionaryTypeId = dictDO.getId();
-                
-                for(int i=0; i<data.size(); i++){
-                    dataDO = data.get(i);
-                
-                    if(dictionaryTypeId.equals(dataDO.getTypeId())){
-                        query = manager.createNamedQuery("Dictionary.FetchById");
-                        query.setParameter("id", new Integer(dataDO.getValue()));
-                        dictDO = (DictionaryViewDO)query.getResultList().get(0);
-                        dataDO.setDictionary(dictDO.getEntry());
-                    }
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        list = DataBaseUtil.toArrayList(list);
+        //
+        // for entries that are dictionary, we want to fetch the dictionary
+        // text and set it for display
+        //
+        try {                       
+            for (int i = 0 ; i < list.size(); i++) {
+                data = (AuxFieldValueViewDO)list.get(i);                
+                if (typeDict == data.getTypeId()) {
+                    dict = dictionary.fetchById(Integer.parseInt(data.getValue()));
+                    if (dict != null)
+                        data.setDictionary(dict.getEntry());
                 }
             }
-        } catch (NoResultException e) {
-            throw new NotFoundException();
-        } catch (Exception e) {
-            throw new DatabaseException(e);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-        return data;
+
+        return (ArrayList) list;
     }
     
+    @SuppressWarnings("unchecked")
     public ArrayList<AuxFieldValueViewDO> fetchByGroupId(Integer groupId) throws Exception {
         Query query;
-        ArrayList<AuxFieldValueViewDO> data;
-        AuxFieldValueViewDO dataDO;
-        Integer dictionaryTypeId;
-        DictionaryDO dictDO;
+        List list;
+        AuxFieldValueViewDO data;
+        DictionaryDO dict;
         
         query = manager.createNamedQuery("AuxFieldValue.FetchByGroupId");
         query.setParameter("groupId", groupId);
-        try {
-            data = DataBaseUtil.toArrayList(query.getResultList());
-            
-            if(data.size() > 0){
-                query = manager.createNamedQuery("Dictionary.FetchBySystemName");
-                query.setParameter("name", "aux_dictionary");
-                dictDO = (DictionaryDO)query.getResultList().get(0);
-                dictionaryTypeId = dictDO.getId();
-                
-                for(int i=0; i<data.size(); i++){
-                    dataDO = data.get(i);
-                
-                    if(dictionaryTypeId.equals(dataDO.getTypeId())){
-                        query = manager.createNamedQuery("Dictionary.FetchById");
-                        query.setParameter("id", new Integer(dataDO.getValue()));
-                        dictDO = (DictionaryViewDO)query.getResultList().get(0);
-                        dataDO.setDictionary(dictDO.getEntry());
-                    }
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        list = DataBaseUtil.toArrayList(list);
+        //
+        // for entries that are dictionary, we want to fetch the dictionary
+        // text and set it for display
+        //
+        try {                       
+            for (int i = 0 ; i < list.size(); i++) {
+                data = (AuxFieldValueViewDO)list.get(i);                
+                if (typeDict == data.getTypeId()) {
+                    dict = dictionary.fetchById(Integer.parseInt(data.getValue()));
+                    if (dict != null)
+                        data.setDictionary(dict.getEntry());
                 }
             }
-        } catch (NoResultException e) {
-            throw new NotFoundException();
-        } catch (Exception e) {
-            throw new DatabaseException(e);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-        return data;
+
+        return (ArrayList) list;
     }
 
     public AuxFieldValueViewDO add(AuxFieldValueViewDO data) throws Exception {
@@ -203,5 +292,32 @@ public class AuxFieldValueBean implements AuxFieldValueLocal {
         entity = manager.find(AuxFieldValue.class, data.getId());
         if (entity != null)
             manager.remove(entity);
+    }
+
+    public void validate(AuxFieldValueViewDO data) throws Exception {
+        ValidationErrorsList list;
+        Integer typeId;
+        String value;
+        
+        list = new ValidationErrorsList();
+        
+        value = data.getValue();
+        typeId = data.getTypeId();
+        
+        if(DataBaseUtil.isEmpty(typeId))
+            list.add(new FieldErrorException("fieldRequiredException", meta.getFieldValueTypeId()));
+        
+        if(DataBaseUtil.isEmpty(value) && (DataBaseUtil.isSame(typeNumeric,typeId) ||
+                        DataBaseUtil.isSame(typeDict,typeId))) {
+            list.add(new FieldErrorException("fieldRequiredException", meta.getFieldValueValue()));
+        } else if (!DataBaseUtil.isEmpty(value) &&
+                   (DataBaseUtil.isSame(typeDateTime,typeId) || DataBaseUtil.isSame(typeTime,typeId) ||
+                    DataBaseUtil.isSame(typeDate,typeId) || DataBaseUtil.isSame(typeAlphaLower,typeId) || 
+                    DataBaseUtil.isSame(typeAlphaUpper,typeId) || DataBaseUtil.isSame(typeAlphaMixed,typeId))) {
+            list.add(new FieldErrorException("valuePresentForTypeException", meta.getFieldValueValue()));
+        }
+        
+        if (list.size() > 0)
+            throw list;
     }
 }

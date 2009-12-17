@@ -27,16 +27,60 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.naming.InitialContext;
 
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.exception.ParseException;
+import org.openelis.gwt.common.GridFieldErrorException;
+import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AuxFieldLocal;
 import org.openelis.local.AuxFieldValueLocal;
+import org.openelis.local.DictionaryLocal;
+import org.openelis.manager.AuxFieldManager.AuxFieldListItem;
+import org.openelis.meta.AuxFieldGroupMeta;
+import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utilcommon.ResultRangeNumeric;  
 
-public class AuxFieldManagerProxy {
+public class AuxFieldManagerProxy { 
+    
+    private static final AuxFieldGroupMeta meta = new AuxFieldGroupMeta();
+    
+    private static int                        typeDict, typeNumeric;
+    
+    private static final Logger               log  = Logger.getLogger(AuxFieldManagerProxy.class.getName());
+    
+    public AuxFieldManagerProxy() {
+        DictionaryDO data;
+        DictionaryLocal dl;
+        
+        dl = dictLocal();
+        
+        try {
+            data = dl.fetchBySystemName("aux_dictionary");
+            typeDict = data.getId();
+        } catch (Throwable e) {
+            typeDict = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='aux_dictionary'", e);
+        }
+        
+        try {
+            data = dl.fetchBySystemName("aux_numeric");
+            typeNumeric = data.getId();
+        } catch (Throwable e) {
+            typeNumeric = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='aux_numeric'", e);
+        }
+    }
+    
     public AuxFieldManager fetchById(Integer id) throws Exception {
         AuxFieldLocal l;
         ArrayList<AuxFieldViewDO> data;
@@ -56,7 +100,7 @@ public class AuxFieldManagerProxy {
         AuxFieldLocal l;
         AuxFieldValueLocal vl;
         
-        AuxFieldViewDO dataDO;
+        AuxFieldViewDO data;
         ArrayList<AuxFieldViewDO> fields;
         ArrayList<AuxFieldValueViewDO> values, tmpValue;
         int fieldId;
@@ -92,8 +136,8 @@ public class AuxFieldManagerProxy {
         m = AuxFieldManager.getInstance();
         m.setAuxFieldGroupId(groupId);
         for(int k=0; k<fields.size(); k++){
-            dataDO = fields.get(k);
-            m.addAuxFieldAndValues(dataDO, valueHash.get(dataDO.getId()));
+            data = fields.get(k);
+            m.addAuxFieldAndValues(data, valueHash.get(data.getId()));
         }
         
         return m;
@@ -117,16 +161,17 @@ public class AuxFieldManagerProxy {
     
     public AuxFieldManager add(AuxFieldManager man) throws Exception {
         Integer id;
-        AuxFieldViewDO auxDO;
+        AuxFieldViewDO data;
         AuxFieldLocal l;
 
         l = local();
         for(int i=0; i<man.count(); i++){
-            auxDO = man.getAuxFieldAt(i);
-            auxDO.setAuxFieldGroupId(man.getAuxFieldGroupId());
-            l.add(auxDO);
+            data = man.getAuxFieldAt(i);
+            data.setAuxFieldGroupId(man.getAuxFieldGroupId());
+            data.setSortOrder(i+1);
+            l.add(data);
             
-            id = auxDO.getId();
+            id = data.getId();
             man.getValuesAt(i).setAuxiliaryFieldId(id);
             man.getValuesAt(i).add();
         }
@@ -136,30 +181,104 @@ public class AuxFieldManagerProxy {
     
     public AuxFieldManager update(AuxFieldManager man) throws Exception {
         Integer id;
-        AuxFieldViewDO auxDO;
+        AuxFieldViewDO data;
         AuxFieldLocal l;
+        AuxFieldValueLocal vl;        
+        AuxFieldListItem item;
+        
 
         l = local();
+        vl = valueLocal();
+        
+        try {
+        for(int j = 0; j < man.deleteCount(); j++) {
+            item = man.getDeletedAt(j);               
+            for(int k = 0; k < item.values.count(); k++) 
+                vl.delete(item.values.getAuxFieldValueAt(k));   
+            
+            l.delete(item.field);                        
+        }
+        } catch(Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+        
         for(int i=0; i<man.count(); i++){
-            auxDO = man.getAuxFieldAt(i);
-            
-            if(auxDO.getId() == null){
-                auxDO.setAuxFieldGroupId(man.getAuxFieldGroupId());
-                l.add(auxDO);
+            data = man.getAuxFieldAt(i);
+            data.setSortOrder(i+1);
+            if(data.getId() == null){
+                data.setAuxFieldGroupId(man.getAuxFieldGroupId());
+                l.add(data);
             }else
-                l.update(auxDO);
+                l.update(data);
             
-            id = auxDO.getId();
+            id = data.getId();
             man.getValuesAt(i).setAuxiliaryFieldId(id);
-            man.getValuesAt(i).add();
+            man.getValuesAt(i).update();
         }
         
         return man;
     }
     
-    public void validate(AuxFieldManager man, ValidationErrorsList errorsList) throws Exception {
+    public void validate(AuxFieldManager man, ValidationErrorsList list) throws Exception {
+        AuxFieldLocal al;
+        AuxFieldValueLocal vl;
+        AuxFieldValueManager vm;
+        AuxFieldValueViewDO data;
+        List<ResultRangeNumeric> nrList;
+        String value, fieldName;
+        ResultRangeNumeric nr;
+        Integer typeId,entryId;
+        ArrayList<Integer> dictList;
+
+        al = local();
+        vl = valueLocal();
+        value = null;
+        fieldName = meta.getFieldValueValue();
         
-    }
+        for (int i = 0; i < man.count(); i++ ) {
+            try {
+                al.validate(man.getAuxFieldAt(i));
+            } catch (Exception e) {
+                DataBaseUtil.mergeException(list, e, "auxFieldTable", i);
+            }
+            
+            vm = man.getValuesAt(i);
+            dictList = new ArrayList<Integer>();
+            nrList = new ArrayList<ResultRangeNumeric>();
+            for (int j = 0; j < vm.count(); j++ ) {
+                data = vm.getAuxFieldValueAt(j);
+                typeId = data.getTypeId();
+                value = data.getValue();
+                try {
+                    vl.validate(data);
+                } catch (Exception e) {
+                    DataBaseUtil.mergeException(list, e, "auxFieldValueTable", i, j);
+                }
+                
+                try {
+                    if (DataBaseUtil.isSame(typeNumeric,typeId)) {
+                        nr = new ResultRangeNumeric();
+                        nr.setRange(value);
+                        addNumericIfNoOverLap(nrList, nr);
+                    } else if (DataBaseUtil.isSame(typeDict,typeId)) {
+                        entryId = Integer.parseInt(value);                    
+                        if (entryId == null)
+                            throw new ParseException("illegalDictEntryException");
+
+                        if (!dictList.contains(entryId))
+                            dictList.add(entryId);
+                        else
+                            throw new InconsistencyException("auxDictEntryNotUniqueException");
+                    } 
+                } catch (ParseException pe) {
+                    list.add(new GridFieldErrorException(pe.getKey(), i, j, fieldName,"auxFieldValueTable"));
+                } catch (InconsistencyException ie) {
+                    list.add(new GridFieldErrorException(ie.getMessage(), i, j, fieldName,"auxFieldValueTable"));
+                }
+            }           
+        }
+    }  
     
     private AuxFieldLocal local() {
         try {
@@ -179,5 +298,30 @@ public class AuxFieldManagerProxy {
             System.out.println(e.getMessage());
             return null;
         }
+    }  
+    
+    private DictionaryLocal dictLocal() {
+        try {
+            InitialContext ctx = new InitialContext();
+            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
+    
+    private void addNumericIfNoOverLap(List<ResultRangeNumeric> nrList,
+                                       ResultRangeNumeric nr) throws InconsistencyException {
+         ResultRangeNumeric lr;                  
+         for(int i = 0; i < nrList.size(); i++) {
+             lr = nrList.get(i);
+             if(lr.intersects(nr))                    
+                 throw new InconsistencyException("auxNumRangeOverlapException");                                 
+         }
+         
+         nrList.add(nr); 
+         
+                
+    }
+    
 }

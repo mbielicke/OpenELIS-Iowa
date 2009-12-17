@@ -38,4 +38,6 @@ public interface AuxFieldLocal {
     public ArrayList<AuxFieldViewDO> fetchByAuxDataRefIdRefTableId(Integer referenceId, Integer referenceTableId) throws Exception;
     public AuxFieldViewDO add(AuxFieldViewDO data) throws Exception;
     public AuxFieldViewDO update(AuxFieldViewDO data) throws Exception;
+    public void delete(AuxFieldViewDO data) throws Exception;
+    public void validate(AuxFieldViewDO data) throws Exception;
 }

@@ -27,6 +27,7 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -38,17 +39,24 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.entity.AuxField;
 import org.openelis.gwt.common.DatabaseException;
+import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AuxFieldLocal;
+import org.openelis.meta.AuxFieldGroupMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-//@RolesAllowed("organization-select")
+@RolesAllowed("auxiliary-select")
 public class AuxFieldBean implements AuxFieldLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager                    manager;
+    
+    //private AuxFieldGroupMetaMap             meta = new AuxFieldGroupMetaMap();
+    
+    private AuxFieldGroupMeta             meta = new AuxFieldGroupMeta();  
 
     public ArrayList<AuxFieldViewDO> fetchById(Integer id) throws Exception {
         Query query;
@@ -144,4 +152,24 @@ public class AuxFieldBean implements AuxFieldLocal {
 
         return data;
     }
+    
+    public void delete(AuxFieldViewDO data) throws Exception {
+        AuxField entity;
+        
+        manager.setFlushMode(FlushModeType.COMMIT);
+        entity = manager.find(AuxField.class, data.getId());
+        if (entity != null)
+            manager.remove(entity);
+    }
+
+    public void validate(AuxFieldViewDO data) throws Exception {
+        ValidationErrorsList list;
+    
+        list = new ValidationErrorsList();
+        if(DataBaseUtil.isEmpty(data.getAnalyteId())) {
+            list.add(new FieldErrorException("fieldRequiredException",meta.getFieldAnalyteName()));
+            throw list;
+        }        
+    }
+    
 }
