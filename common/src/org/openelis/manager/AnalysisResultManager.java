@@ -21,7 +21,7 @@ public class AnalysisResultManager implements RPC {
     protected HashMap<Integer, AnalyteDO>                 analyteList;
     protected HashMap<Integer, TestAnalyteViewDO>         testAnalyteList;
     protected HashMap<Integer, TestResultDO>              testResultList;
-    protected ResultValidator                             resultValidator[];
+    protected ArrayList<ResultValidator>                  resultValidators;
 
     protected transient TestManager                       testManager;
     protected transient static AnalysisResultManagerProxy proxy;
@@ -128,12 +128,20 @@ public class AnalysisResultManager implements RPC {
         this.testAnalyteList = testAnalyteList;
     }
 
-    public ResultValidator getResultValidator() {
-        return resultValidator;
+    public ArrayList<ResultValidator> getResultValidators() {
+        return resultValidators;
+    }
+    
+    public void setResultValidators(ArrayList<ResultValidator> resultValidators) {
+        this.resultValidators = resultValidators;
     }
 
-    public void setResultValidator(ResultValidator resultValidator) {
-        this.resultValidator = resultValidator;
+    public void addResultValidator(ResultValidator resultValidator) {
+        resultValidators.add(resultValidator);
+    }
+    
+    public Integer validateResultValue(Integer resultGroup, Integer unitId, String value) throws Exception {
+        return resultValidators.get(resultGroup.intValue()-1).validate(unitId, value);
     }
 
     /*

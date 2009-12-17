@@ -51,12 +51,11 @@ import org.openelis.local.DictionaryLocal;
 import org.openelis.local.ResultLocal;
 import org.openelis.utilcommon.ResultRangeDate;
 import org.openelis.utilcommon.ResultRangeDateTime;
-import org.openelis.utilcommon.ResultRangeDictionary;
 import org.openelis.utilcommon.ResultRangeNumeric;
 import org.openelis.utilcommon.ResultRangeTime;
 import org.openelis.utilcommon.ResultRangeTiter;
-import org.openelis.utilcommon.ResultType;
 import org.openelis.utilcommon.ResultValidator;
+import org.openelis.utilcommon.ResultValidator.Type;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -113,7 +112,7 @@ public class ResultBean implements ResultLocal {
                                        HashMap<Integer, TestResultDO> testResultList,
                                        HashMap<Integer, AnalyteDO> analyteList,
                                        HashMap<Integer, TestAnalyteViewDO> testAnalyteList,
-                                       ResultValidator resultValidator) throws Exception {
+                                       ArrayList<ResultValidator> resultValidators) throws Exception {
         List<TestAnalyteViewDO> testAnalytes = null;
         List<AnalyteDO> analytes = null;
         List<TestResultDO> testResults = null;
@@ -159,8 +158,7 @@ public class ResultBean implements ResultLocal {
             testResultList.put(testResultDO.getId(), testResultDO);
         }
 
-        resultValidator.clear();
-        createTestResultHash(testResults, resultValidator);
+        createTestResultHash(testResults, resultValidators);
 
         // build the grid
         j = -1;
@@ -256,7 +254,7 @@ public class ResultBean implements ResultLocal {
                                   HashMap<Integer, TestResultDO> testResultList,
                                   HashMap<Integer, AnalyteDO> analyteList,
                                   HashMap<Integer, TestAnalyteViewDO> testAnalyteList,
-                                  ResultValidator resultValidator) throws Exception {
+                                  ArrayList<ResultValidator> resultValidators) throws Exception {
         List<TestAnalyteViewDO> testAnalytes = null;
         List<AnalyteDO> analytes = null;
         List<TestResultDO> testResults = null;
@@ -304,8 +302,7 @@ public class ResultBean implements ResultLocal {
             testResultList.put(testResultDO.getId(), testResultDO);
         }
 
-        resultValidator.clear();
-        createTestResultHash(testResults, resultValidator);
+        createTestResultHash(testResults, resultValidators);
 
         // build the grid
         int i, j, rg;
@@ -396,81 +393,62 @@ public class ResultBean implements ResultLocal {
     }
 
     private void createTestResultHash(List<TestResultDO> testResultList,
-                                      ResultValidator resultValidator) {
-        ArrayList<ResultType> results;
+                                      ArrayList<ResultValidator> resultValidators) {
         Integer rg;
+        String validRange;
+        ResultValidator rv;
         TestResultDO testResult;
         Integer typeId;
+        Type type;
         DictionaryDO dictDO;
-        ResultRangeDictionary dict;
-        ResultRangeDate date;
-        ResultRangeDateTime dateTime;
-        ResultRangeNumeric numericRange;
-        ResultRangeTime time;
-        ResultRangeTiter titer;
-
-        dict = null;
+        
+        
         rg = null;
-        results = null;
-
+        rv = null;
+        type = null;
+        validRange = null;
         try {
             for (int i = 0; i < testResultList.size(); i++ ) {
                 testResult = testResultList.get(i);
 
                 if ( !testResult.getResultGroup().equals(rg)) {
                     if (rg != null)
-                        resultValidator.addResultGroup(rg, results);
+                        resultValidators.add(rv);
 
-                    results = new ArrayList<ResultType>();
-                    dict = null;
+                    rv = new ResultValidator();
                     rg = testResult.getResultGroup();
                 }
 
                 // need to figure this out by type id
                 typeId = testResult.getTypeId();
-                if (typeId.equals(typeDictionary)) {
-                    if (dict == null) {
-                        dict = new ResultRangeDictionary();
-                        results.add(dict);
-                    }
-
+                if(typeDictionary.equals(typeId)){
+                    type = Type.DICTIONARY;
+                    
                     // need to lookup the entry
                     dictDO = dictionaryBean.fetchById(new Integer(testResult.getValue()));
-
-                    dict.addEntry(dictDO.getId(), dictDO.getEntry(), testResult.getId());
-                } else if (typeId.equals(typeRange)) {
-                    numericRange = new ResultRangeNumeric();
-                    numericRange.setRange(testResult.getValue());
-                    numericRange.setId(testResult.getId());
-                    results.add(numericRange);
-
-                } else if (typeId.equals(typeTiter)) {
-                    titer = new ResultRangeTiter();
-                    titer.setRange(testResult.getValue());
-                    titer.setId(testResult.getId());
-                    results.add(titer);
-
-                } else if (typeId.equals(typeDate)) {
-                    date = new ResultRangeDate();
-                    date.setId(testResult.getId());
-                    results.add(date);
-
-                } else if (typeId.equals(typeDateTime)) {
-                    dateTime = new ResultRangeDateTime();
-                    dateTime.setId(testResult.getId());
-                    results.add(dateTime);
-
-                } else if (typeId.equals(typeTime)) {
-                    time = new ResultRangeTime();
-                    time.setId(testResult.getId());
-                    results.add(time);
-
-                } else if (typeId.equals(typeDefault)) {
-                    // do nothing for now
+                    validRange = dictDO.getEntry();
+                }else if(typeRange.equals(typeId)){
+                    type = Type.NUMERIC;
+                    validRange = testResult.getValue();
+                }else if(typeTiter.equals(typeId)){
+                    type = Type.TITER;
+                    validRange = testResult.getValue();
+                }else if(typeDate.equals(typeId)){
+                    type = Type.DATE;
+                    validRange = testResult.getValue();
+                }else if(typeDateTime.equals(typeId)){                        
+                    type = Type.DATE_TIME;
+                    validRange = testResult.getValue();
+                }else if(typeTime.equals(typeId)){                        
+                    type = Type.TIME;
+                    validRange = testResult.getValue();
                 }
+                
+                rv.addResult(testResult.getId(), testResult.getUnitOfMeasureId(), type, validRange);
+                
             }
         } catch (Exception e) {
-            resultValidator.clear();
+            resultValidators.clear();
             e.printStackTrace();
         }
     }

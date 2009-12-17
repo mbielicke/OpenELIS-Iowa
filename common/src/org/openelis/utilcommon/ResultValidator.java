@@ -76,19 +76,19 @@ public class ResultValidator implements RPC {
 
     public Integer validate(Integer unitId, String value) throws ParseException {
         Integer id;
-
+        ArrayList<Item> list;
 
         list = units.get(unitId);
         if (list == null)
             list = units.get(0);
         
         id = null;
-        for (Item item : items) {
+        for (Item item : list) {
             if (item.type == Type.DICTIONARY) {
                 id = dictionary.get(unitId+"|"+value);
                 if (id == null)
-                    id = dictionary.get("null|"+value);
-            } else if (DataBase) {
+                    id = dictionary.get("0|"+value);
+            } else {
                 try {
                     item.resultRange.contains(value);
                     id = item.id;
@@ -97,29 +97,9 @@ public class ResultValidator implements RPC {
                 }
             }
         }
-        
-        
-        
-        
-        
-        result = null;
-        results = resultGroupHash.get(groupId);
 
-        if (results != null) {
-            for (int i = 0; i < results.size(); i++ ) {
-                try {
-                    result = results.get(i);
-                    result.contains(value);
-
-                    break;
-                } catch (Exception e) {
-                    result = null;
-                }
-            }
-        }
-
-        if (result != null)
-            return result.getId();
+        if (id != null)
+            return id;
         else
             throw new ParseException("illegalResultValueException");
     }
@@ -129,7 +109,6 @@ public class ResultValidator implements RPC {
 
         Integer id;
         Type type;
-        String validRange;
         ResultRange resultRange;
     }
 }

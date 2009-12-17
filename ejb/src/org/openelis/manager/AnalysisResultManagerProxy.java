@@ -55,15 +55,15 @@ public class AnalysisResultManagerProxy {
         HashMap<Integer, TestResultDO> testResultList = new HashMap<Integer, TestResultDO>();
         HashMap<Integer, AnalyteDO> analyteList = new HashMap<Integer, AnalyteDO>();
         HashMap<Integer, TestAnalyteViewDO> testAnalyteList = new HashMap<Integer, TestAnalyteViewDO>();
-        ResultValidator resultValidator = new ResultValidator();
+        ArrayList<ResultValidator> resultValidators = new ArrayList<ResultValidator>();
         
-        local().fetchByAnalysisId(analysisId, results, testResultList, analyteList, testAnalyteList, resultValidator);
+        local().fetchByAnalysisId(analysisId, results, testResultList, analyteList, testAnalyteList, resultValidators);
         AnalysisResultManager man = AnalysisResultManager.getInstance();
         man.setResults(results);
         man.setTestResultList(testResultList);
         man.setAnalyteList(analyteList);
         man.setTestAnalyteList(testAnalyteList);
-        man.setResultValidator(resultValidator);
+        man.setResultValidators(resultValidators);
         man.setTestManager(TestManager.fetchWithAnalytesAndResults(testId));
         
         return man;
@@ -74,15 +74,15 @@ public class AnalysisResultManagerProxy {
         HashMap<Integer, TestResultDO> testResultList = new HashMap<Integer, TestResultDO>();
         HashMap<Integer, AnalyteDO> analyteList = new HashMap<Integer, AnalyteDO>();
         HashMap<Integer, TestAnalyteViewDO> testAnalyteList = new HashMap<Integer, TestAnalyteViewDO>();
-        ResultValidator resultValidator = new ResultValidator();
+        ArrayList<ResultValidator> resultValidators = new ArrayList<ResultValidator>();
         
-        local().fetchByTestIdNoResults(testId, results, testResultList, analyteList, testAnalyteList, resultValidator);
+        local().fetchByTestIdNoResults(testId, results, testResultList, analyteList, testAnalyteList, resultValidators);
         AnalysisResultManager man = AnalysisResultManager.getInstance();
         man.setResults(results);
         man.setTestResultList(testResultList);
         man.setAnalyteList(analyteList);
         man.setTestAnalyteList(testAnalyteList);
-        man.setResultValidator(resultValidator);
+        man.setResultValidators(resultValidators);
         man.setTestManager(TestManager.fetchWithAnalytesAndResults(testId));
         
         return man;

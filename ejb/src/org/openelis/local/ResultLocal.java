@@ -40,11 +40,11 @@ import org.openelis.utilcommon.ResultValidator;
 public interface ResultLocal {
     public void fetchByTestIdNoResults(Integer testId, ArrayList<ArrayList<ResultViewDO>> results,
                                        HashMap<Integer, TestResultDO> testResultList, HashMap<Integer, AnalyteDO> analyteList, 
-                                       HashMap<Integer, TestAnalyteViewDO> testAnalyteList, ResultValidator resultValidator) throws Exception;
+                                       HashMap<Integer, TestAnalyteViewDO> testAnalyteList, ArrayList<ResultValidator> resultValidators) throws Exception;
     public void fetchByAnalysisIdForDisplay(Integer analysisId, ArrayList<ArrayList<ResultViewDO>> results) throws Exception;
     public void fetchByAnalysisId(Integer analysisId, ArrayList<ArrayList<ResultViewDO>> results, 
                                   HashMap<Integer, TestResultDO> testResultList, HashMap<Integer, AnalyteDO> analyteList, 
-                                  HashMap<Integer, TestAnalyteViewDO> testAnalyteList, ResultValidator resultValidator) throws Exception;
+                                  HashMap<Integer, TestAnalyteViewDO> testAnalyteList, ArrayList<ResultValidator> resultValidators) throws Exception;
     
     public ResultViewDO add(ResultViewDO data);
     public ResultViewDO update(ResultViewDO data);
