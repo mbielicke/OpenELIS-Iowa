@@ -81,9 +81,13 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
         man.validate();
 
         ut = ctx.getUserTransaction();
-        ut.begin();
-        man.add();
-        ut.commit();
+        try {
+            ut.begin();
+            man.add();
+            ut.commit();
+        } catch (Exception e) {
+            ut.rollback();
+        }
 
         return man;
     }
@@ -96,11 +100,15 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
         man.validate();
 
         ut = ctx.getUserTransaction();
-        ut.begin();
-        lockBean.validateLock(ReferenceTable.ORGANIZATION, man.getOrganization().getId());        
-        man.update();
-        lockBean.giveUpLock(ReferenceTable.ORGANIZATION, man.getOrganization().getId());
-        ut.commit();
+        try {
+            ut.begin();
+            lockBean.validateLock(ReferenceTable.ORGANIZATION, man.getOrganization().getId());        
+            man.update();
+            lockBean.giveUpLock(ReferenceTable.ORGANIZATION, man.getOrganization().getId());
+            ut.commit();
+        } catch (Exception e) {
+            ut.rollback();
+        }
 
         return man;
     }
