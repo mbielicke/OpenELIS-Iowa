@@ -78,6 +78,8 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.event.RowAddedHandler;
+import org.openelis.gwt.widget.table.event.RowDeletedEvent;
+import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.manager.AnalysisManager;
@@ -720,6 +722,28 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                        manager.getSampleItems().getAnalysisAt(sampleItemIndex).addAnalysis(data.analysisTestDO);
                    }
 
+               }catch(Exception e){
+                   Window.alert(e.getMessage());
+               }
+            } 
+        });
+        
+        itemsTree.addRowDeletedHandler(new RowDeletedHandler(){
+           public void onRowDeleted(RowDeletedEvent event) {
+               TreeDataItem row = (TreeDataItem)event.getRow();
+               SampleDataBundle bundle = (SampleDataBundle)row.data;
+               int itemIndex = -1, anIndex = -1;
+               
+               try{
+                   if(SampleDataBundle.Type.SAMPLE_ITEM.equals(bundle.type)){
+                       itemIndex = manager.getSampleItems().getIndex(bundle.sampleItemDO);
+                       manager.getSampleItems().removeSampleItemAt(itemIndex);
+                       
+                   }else if (SampleDataBundle.Type.ANALYSIS.equals(bundle.type)){
+                       itemIndex = manager.getSampleItems().getIndex(bundle.sampleItemDO);
+                       anIndex = manager.getSampleItems().getAnalysisAt(itemIndex).getIndex(bundle.analysisTestDO);
+                       manager.getSampleItems().getAnalysisAt(itemIndex).removeAnalysisAt(anIndex);
+                   }
                }catch(Exception e){
                    Window.alert(e.getMessage());
                }
