@@ -145,7 +145,7 @@ public class TestResultsTab extends Screen {
                 
                 if(!"".equals(val)){
                     try{
-                        testResultId = manager.getResultValidator().validate(resultDO.getResultGroup(), val);
+                        testResultId = manager.validateResultValue(resultDO.getResultGroup(), anDO.getUnitOfMeasureId(), val);
                         testResultDo = manager.getTestResultList().get(testResultId);
                         
                         resultDO.setTypeId(testResultDo.getTypeId());

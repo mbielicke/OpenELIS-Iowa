@@ -27,8 +27,9 @@
 package org.openelis.utilcommon;
 
 import org.openelis.exception.ParseException;
+import org.openelis.gwt.common.RPC;
 
-public interface ResultRange {
+public interface ResultRange extends RPC  {
     public void setRange(String range) throws ParseException;
 
     public boolean intersects(ResultRange range);
