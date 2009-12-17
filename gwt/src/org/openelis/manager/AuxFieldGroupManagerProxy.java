@@ -33,7 +33,7 @@ public class AuxFieldGroupManagerProxy {
     protected ScreenService service;
     
     public AuxFieldGroupManagerProxy(){
-        service = new ScreenService("OpenELISServlet?service="+AUXILIARY_SERVICE_URL);
+        service = new ScreenService("controller?service="+AUXILIARY_SERVICE_URL);
     }
     
     public AuxFieldGroupManager fetchById(Integer id) throws Exception {
@@ -44,22 +44,20 @@ public class AuxFieldGroupManagerProxy {
         return service.call("fetchGroupByIdWithFields", id);
     }
     
+    public AuxFieldGroupManager add(AuxFieldGroupManager man) throws Exception {
+        return service.call("add", man);
+    }
+    
+    public AuxFieldGroupManager update(AuxFieldGroupManager man) throws Exception {
+        return service.call("update", man);
+    }
+    
     public AuxFieldGroupManager fetchForUpdate(Integer id) throws Exception {
         return service.call("fetchForUpdate", id);
     }
     
     public AuxFieldGroupManager abortUpdate(Integer id) throws Exception {
         return service.call("abortUpdate", id);
-    }
-    
-    public AuxFieldGroupManager add(AuxFieldGroupManager man) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
-    
-    public AuxFieldGroupManager update(AuxFieldGroupManager man) throws Exception {
-        assert false : "not supported";
-        return null;
     }
     
     public void validate(AuxFieldGroupManager man, ValidationErrorsList errorsList) throws Exception {

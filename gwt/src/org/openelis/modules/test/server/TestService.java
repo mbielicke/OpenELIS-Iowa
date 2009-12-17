@@ -51,7 +51,7 @@ public class TestService {
 
     public TestManager fetchById(Integer testId) throws Exception {
         try {
-            return managerRemote().fetchById(testId);
+            return remoteManager().fetchById(testId);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
@@ -75,7 +75,7 @@ public class TestService {
 
     public TestTypeOfSampleManager fetchSampleTypeByTestId(Integer testId) throws Exception {
         try {
-            return managerRemote().fetchSampleTypeByTestId(testId);
+            return remoteManager().fetchSampleTypeByTestId(testId);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
@@ -83,7 +83,7 @@ public class TestService {
 
     public TestAnalyteManager fetchTestAnalyteByTestId(Integer testId) throws Exception {
         try {
-            return managerRemote().fetchTestAnalytesByTestId(testId);
+            return remoteManager().fetchTestAnalytesByTestId(testId);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
@@ -91,7 +91,7 @@ public class TestService {
 
     public TestResultManager fetchTestResultByTestId(Integer testId) throws Exception {
         try {
-            return managerRemote().fetchTestResultsByTestId(testId);
+            return remoteManager().fetchTestResultsByTestId(testId);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
@@ -99,7 +99,7 @@ public class TestService {
 
     public TestPrepManager fetchPrepTestsByTestId(Integer testId) throws Exception {
         try {
-            return managerRemote().fetchPrepTestsByTestId(testId);
+            return remoteManager().fetchPrepTestsByTestId(testId);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
@@ -107,7 +107,7 @@ public class TestService {
 
     public TestReflexManager fetchReflexiveTestByTestId(Integer testId) throws Exception {
         try {
-            return managerRemote().fetchReflexiveTestsByTestId(testId);
+            return remoteManager().fetchReflexiveTestsByTestId(testId);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
@@ -115,7 +115,7 @@ public class TestService {
 
     public TestWorksheetManager fetchWorksheetByTestId(Integer testId) throws Exception {
         try {
-            return managerRemote().fetchWorksheetByTestId(testId);
+            return remoteManager().fetchWorksheetByTestId(testId);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
@@ -123,7 +123,7 @@ public class TestService {
 
     public TestManager fetchWithSampleTypes(Integer testId) throws Exception {
         try {
-            return managerRemote().fetchWithSampleTypes(testId);
+            return remoteManager().fetchWithSampleTypes(testId);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
@@ -131,7 +131,7 @@ public class TestService {
 
     public TestManager fetchWithAnalytesAndResults(Integer testId) throws Exception {
         try {
-            return managerRemote().fetchWithAnalytesAndResults(testId);
+            return remoteManager().fetchWithAnalytesAndResults(testId);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
@@ -140,7 +140,7 @@ public class TestService {
 
     public TestManager fetchWithPrepTests(Integer testId) throws Exception {
         try {
-            return managerRemote().fetchWithPrepTests(testId);
+            return remoteManager().fetchWithPrepTests(testId);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
@@ -153,7 +153,7 @@ public class TestService {
 
     public TestManager fetchWithPrepTestsAndReflexTests(Integer testId) throws Exception {
         try {
-            return managerRemote().fetchWithPrepTestsAndReflexTests(testId);
+            return remoteManager().fetchWithPrepTestsAndReflexTests(testId);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
@@ -161,7 +161,7 @@ public class TestService {
 
     public TestManager fetchWithWorksheet(Integer testId) throws Exception {
         try {
-            return managerRemote().fetchWithWorksheet(testId);
+            return remoteManager().fetchWithWorksheet(testId);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
@@ -177,16 +177,15 @@ public class TestService {
 
     public TestManager add(TestManager man) throws Exception {
         try {
-            return managerRemote().add(man);
+            return remoteManager().add(man);
         } catch (RuntimeException e) {
-            e.printStackTrace();
             throw new DatabaseException(e);
         }
     }
 
     public TestManager update(TestManager man) throws Exception {
         try {
-            return managerRemote().update(man);
+            return remoteManager().update(man);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
@@ -194,7 +193,7 @@ public class TestService {
 
     public TestManager fetchForUpdate(Integer testId) throws Exception {
         try {
-            return managerRemote().fetchForUpdate(testId);
+            return remoteManager().fetchForUpdate(testId);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
@@ -202,7 +201,7 @@ public class TestService {
 
     public TestManager abortUpdate(Integer testId) throws Exception {
         try {
-            return managerRemote().abortUpdate(testId);
+            return remoteManager().abortUpdate(testId);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
@@ -212,12 +211,8 @@ public class TestService {
         return (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
     }
 
-    private TestManagerRemote managerRemote() {
+    private TestManagerRemote remoteManager() {
         return (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
-    }
-
-    private DictionaryRemote dictRemote() {
-        return (DictionaryRemote)EJBFactory.lookup("openelis/DictionaryBean/remote");
     }
 
 }

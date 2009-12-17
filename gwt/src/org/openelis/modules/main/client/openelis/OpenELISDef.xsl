@@ -182,7 +182,9 @@ UIRF Software License are applicable instead of those above.
                 <code>if(OpenELIS.security.hasModule("dictionary","SELECT")){</code>
                 <menuItem key="dictionary" description="{resource:getString($constants,'dictionaryDescription')}" icon="dictionaryIcon" label="{resource:getString($constants,'dictionary')}" />
                 <code>}</code>
-                <menuItem key="auxiliaryPrompt" description="{resource:getString($constants,'auxiliaryPromptDescription')}" enable="false" icon="auxiliaryPromptIcon" label="{resource:getString($constants,'auxiliaryPrompt')}" />
+                <code>if(OpenELIS.security.hasModule("auxiliary","SELECT")){</code>
+                <menuItem key="auxiliaryPrompt" description="{resource:getString($constants,'auxiliaryPromptDescription')}" enable="true" icon="auxiliaryPromptIcon" label="{resource:getString($constants,'auxiliaryPrompt')}" />
+                <code>}</code>
                 <html>&lt;hr/&gt;</html>
                 <code>if(OpenELIS.security.hasModule("label","SELECT")){</code>
                 <menuItem key="label" description="{resource:getString($constants,'labelDescription')}" enable="true" icon="labelIcon" label="{resource:getString($constants,'label')}" />

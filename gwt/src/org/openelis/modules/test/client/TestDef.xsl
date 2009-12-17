@@ -586,7 +586,7 @@ UIRF Software License are applicable instead of those above.
                       <VerticalPanel padding="0" spacing="0">
                         <HorizontalPanel>
                           <widget valign="top">
-                            <table key="testPrepTable" width="auto" maxRows="8" showScroll="ALWAYS" title="">
+                            <table key="testPrepTable" width="auto" maxRows="9" showScroll="ALWAYS" title="">
                               <col key="{prepTestMeta:getName($pt)}" width="312" header="{resource:getString($constants,'prepTest')}">
                                 <autoComplete width="312" field="Integer" required="true">
                                   <col width="140" header="{resource:getString($constants,'test')}" />
@@ -629,9 +629,10 @@ UIRF Software License are applicable instead of those above.
                             </appButton>
                           </widget>
                         </HorizontalPanel>
+                        <VerticalPanel height = "5"/>
                         <HorizontalPanel>
                           <widget valign="top">
-                            <table key="testReflexTable" width="auto" maxRows="10" showScroll="ALWAYS" title="">
+                            <table key="testReflexTable" width="auto" maxRows="9" showScroll="ALWAYS" title="">
                               <col key="{addTestMeta:getName($at)}" width="90" header="{resource:getString($constants,'reflexiveTest')}">
                                 <autoComplete width="80" field="Integer" required="true">
                                   <col width="140" header="{resource:getString($constants,'test')}" />
@@ -685,8 +686,7 @@ UIRF Software License are applicable instead of those above.
                           </widget>
                         </HorizontalPanel>
                       </VerticalPanel>
-                    </VerticalPanel>
-                    <VerticalPanel height="6px" />
+                    </VerticalPanel>                    
                   </VerticalPanel>
                 </tab>
                 <tab key="worksheetTab" text="{resource:getString($constants,'worksheetLayout')}">
