@@ -36,6 +36,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.WindowBrowser;
 import org.openelis.modules.analyte.client.AnalyteScreen;
+import org.openelis.modules.auxiliary.client.AuxiliaryScreen;
 import org.openelis.modules.dictionary.client.DictionaryScreen;
 import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSampleLoginScreen;
 import org.openelis.modules.favorites.client.FavoritesScreen;
@@ -770,7 +771,7 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                         //   browser.addScreen(new AuxiliaryScreen());
+                            browser.addScreen(new AuxiliaryScreen());
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());

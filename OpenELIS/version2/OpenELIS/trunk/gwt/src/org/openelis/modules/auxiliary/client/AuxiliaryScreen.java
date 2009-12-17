@@ -1,689 +1,1254 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.auxiliary.client;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
 
-public class AuxiliaryScreen {//OpenELISScreenForm<AuxiliaryForm, Query<TableDataRow<Integer>>> implements TableManager,
-  //                                                                                                       ClickListener,
-  //                                                                                                       ChangeListener,
-  //                                                                                                       TableWidgetListener,
-  //TableModelListener{
-	/*
-    private ButtonPanel atozButtons;
-    
-    private KeyListManager keyList = new KeyListManager();
-    
-    private AuxFieldGroupMetaMap AuxFGMeta = new AuxFieldGroupMetaMap();
-    
-    private TableWidget auxFieldTableWidget,                             // the widget for the table for auxiliary fields           
-                        auxFieldValueTableWidget;                        // the widget for the table for auxiliary field values 
-    
-    private AppButton removeAuxFieldRowButton,dictionaryLookUpButton,
-                      removeAuxFieldValueRowButton ;    
-    
-    private ArrayList<TableDataRow<Integer>> selectedRows; 
-           
-    private TextBox grpName;     
-    
-    private DictionaryLookupScreen dictEntryPicker;
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.AuxFieldValueViewDO;
+import org.openelis.domain.AuxFieldViewDO;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.IdNameVO;
+import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.GridFieldErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.LocalizedException;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.SecurityException;
+import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
+import org.openelis.gwt.event.BeforeDragStartEvent;
+import org.openelis.gwt.event.BeforeDragStartHandler;
+import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.GetMatchesEvent;
+import org.openelis.gwt.event.GetMatchesHandler;
+import org.openelis.gwt.event.StateChangeEvent;
+import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDefInt;
+import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoComplete;
+import org.openelis.gwt.widget.ButtonGroup;
+import org.openelis.gwt.widget.CalendarLookUp;
+import org.openelis.gwt.widget.CheckBox;
+import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.HasField;
+import org.openelis.gwt.widget.QueryFieldUtil;
+import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.TextBox;
+import org.openelis.gwt.widget.AppButton.ButtonState;
+import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableRow;
+import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
+import org.openelis.gwt.widget.table.event.CellEditedEvent;
+import org.openelis.gwt.widget.table.event.CellEditedHandler;
+import org.openelis.gwt.widget.table.event.RowAddedEvent;
+import org.openelis.gwt.widget.table.event.RowAddedHandler;
+import org.openelis.gwt.widget.table.event.RowDeletedEvent;
+import org.openelis.gwt.widget.table.event.RowDeletedHandler;
+import org.openelis.gwt.widget.table.event.RowMovedEvent;
+import org.openelis.gwt.widget.table.event.RowMovedHandler;
+import org.openelis.manager.AuxFieldGroupManager;
+import org.openelis.manager.AuxFieldValueManager;
+import org.openelis.meta.AuxFieldGroupMeta;
+import org.openelis.metamap.CategoryMetaMap;
+import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
+import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utilcommon.ResultRangeNumeric;
 
-    public AuxiliaryScreen() {
-        super("org.openelis.modules.auxiliary.server.AuxiliaryService");
-        query = new Query<TableDataRow<Integer>>();
-        getScreen(new AuxiliaryForm());
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
+public class AuxiliaryScreen extends Screen {
+    private AuxFieldGroupManager               manager;
+    private AuxFieldGroupMeta               meta = new AuxFieldGroupMeta();
+    private CategoryMetaMap                    catMeta = new CategoryMetaMap();
+    private SecurityModule                     security;
+
+    private ButtonGroup                        atoz;
+    private ScreenNavigator                    nav; 
+
+    private CalendarLookUp                     activeBegin, activeEnd;
+    private TextBox                            name, description;
+    private CheckBox                           isActive;
+    private AppButton                          queryButton, previousButton, nextButton, addButton, updateButton,
+                                               commitButton, abortButton, addAuxFieldButton, removeAuxFieldButton,
+                                               addAuxFieldValueButton,removeAuxFieldValueButton, dictionaryLookUpButton;
+    private Dropdown<Integer>                  unitOfMeasureId, auxFieldValueTypeId;
+    private AutoComplete<Integer>              analyte, scriptlet, method;
+    private TableWidget                        auxFieldTable, auxFieldValueTable;
+    private Integer                            typeDict, typeNumeric, typeDefault, prevSelFieldRow;
+    private DictionaryLookupScreen             dictLookup;
+    
+    private ScreenService                      methodService,scriptletService,analyteService,dictionaryService;
+    private ResultRangeNumeric                 rangeNumeric;   
+    
+    private ArrayList<GridFieldErrorException> valueErrorList;
+
+    public AuxiliaryScreen() throws Exception {
+        super((ScreenDefInt)GWT.create(AuxiliaryDef.class));
+        service = new ScreenService("controller?service=org.openelis.modules.auxiliary.server.AuxiliaryService");
+        scriptletService = new ScreenService("controller?service=org.openelis.modules.scriptlet.server.ScriptletService");
+        methodService = new ScreenService("controller?service=org.openelis.modules.method.server.MethodService"); 
+        analyteService = new ScreenService("controller?service=org.openelis.modules.analyte.server.AnalyteService");
+        dictionaryService = new ScreenService("controller?service=org.openelis.modules.dictionary.server.DictionaryService");
+        
+        security = OpenELIS.security.getModule("auxiliary");
+        if (security == null)
+            throw new SecurityException("screenPermException", "Auxiliary Screen");
+
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                postConstructor();
+            }
+        });
     }
 
-    public void afterDraw(boolean success) {
-        ResultsTable atozTable;
-        ArrayList cache;
-        TableDataModel<TableDataRow> model;
+    private void postConstructor() {
+        manager = AuxFieldGroupManager.getInstance();
 
+        initialize();
+        setState(State.DEFAULT);
+        initializeDropdowns();
+        DataChangeEvent.fire(this);
+    }
+
+    /**
+     * Setup state and data change handles for every widget on the screen
+     */
+    private void initialize() {
+        
+        prevSelFieldRow = -1;
+        
         //
-        // we are interested in getting button actions in two places,
-        // modelwidget and the screen
+        // button panel buttons
         //
-        atozTable = (ResultsTable)getWidget("azTable");
-        ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
-        atozButtons = (ButtonPanel)getWidget("atozButtons");  
-        
-        CommandChain formChain = new CommandChain();
-        formChain.addCommand(this);
-        formChain.addCommand(bpanel);
-        formChain.addCommand(keyList);
-        formChain.addCommand(atozTable);
-        formChain.addCommand(atozButtons);
-        
-        //((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
-        
-        ScreenTableWidget s = (ScreenTableWidget)widgets.get("auxFieldTable");
-        auxFieldTableWidget = (TableWidget)s.getWidget();
-        s = (ScreenTableWidget)widgets.get("auxFieldValueTable");  
-        auxFieldValueTableWidget = (TableWidget)s.getWidget();
-        auxFieldValueTableWidget.model.enableAutoAdd(false);
-        
-        auxFieldTableWidget.model.addTableModelListener(this);
-        auxFieldValueTableWidget.addTableWidgetListener(this);
-        
-        removeAuxFieldRowButton = (AppButton)getWidget("removeAuxFieldRowButton");
-        dictionaryLookUpButton = (AppButton)getWidget("dictionaryLookUpButton");
-        removeAuxFieldValueRowButton = (AppButton)getWidget("removeAuxFieldValueRowButton");
-         
-        grpName = (TextBox)getWidget(AuxFGMeta.getName());
-         
-        updateChain.add(afterUpdate);
-        commitUpdateChain.add(commitUpdateCallback);
-        commitAddChain.add(commitAddCallback);
-        
-        super.afterDraw(success); 
+        queryButton = (AppButton)def.getWidget("query");
+        addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                query();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                          .contains(event.getState()) &&
+                                   security.hasSelectPermission());
+                if (event.getState() == State.QUERY)
+                    queryButton.setState(ButtonState.LOCK_PRESSED);
+            }
+        });
+
+        previousButton = (AppButton)def.getWidget("previous");
+        addScreenHandler(previousButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                previous();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+
+        nextButton = (AppButton)def.getWidget("next");
+        addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                next();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                nextButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+
+        addButton = (AppButton)def.getWidget("add");
+        addScreenHandler(addButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                add();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                        .contains(event.getState()) &&
+                                 security.hasAddPermission());
+                if (event.getState() == State.ADD)
+                    addButton.setState(ButtonState.LOCK_PRESSED);
+            }
+        });
+
+        updateButton = (AppButton)def.getWidget("update");
+        addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                update();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
+                                    security.hasUpdatePermission());
+                if (event.getState() == State.UPDATE)
+                    updateButton.setState(ButtonState.LOCK_PRESSED);
+            }
+        });
+
+        commitButton = (AppButton)def.getWidget("commit");
+        addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                commit();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                                           .contains(event.getState()));
+            }
+        });
+
+        abortButton = (AppButton)def.getWidget("abort");
+        addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                abort();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                                          .contains(event.getState()));
+            }
+        });
+
+        name = (TextBox)def.getWidget(meta.getName());
+        addScreenHandler(name, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                name.setValue(manager.getGroup().getName());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getGroup().setName(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                name.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                   .contains(event.getState()));
+                name.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        description = (TextBox)def.getWidget(meta.getDescription());
+        addScreenHandler(description, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                description.setValue(manager.getGroup().getDescription());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getGroup().setDescription(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                description.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
+                description.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        isActive = (CheckBox)def.getWidget(meta.getIsActive());
+        addScreenHandler(isActive, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                isActive.setValue(manager.getGroup().getIsActive());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getGroup().setIsActive(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                isActive.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                       .contains(event.getState()));
+                isActive.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        activeBegin = (CalendarLookUp)def.getWidget(meta.getActiveBegin());
+        addScreenHandler(activeBegin, new ScreenEventHandler<Datetime>() {
+            public void onDataChange(DataChangeEvent event) {
+                activeBegin.setValue(manager.getGroup().getActiveBegin());
+            }
+
+            public void onValueChange(ValueChangeEvent<Datetime> event) {
+                if (event.getValue() != null)
+                    manager.getGroup().setActiveBegin(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                activeBegin.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
+                activeBegin.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        activeEnd = (CalendarLookUp)def.getWidget(meta.getActiveEnd());
+        addScreenHandler(activeEnd, new ScreenEventHandler<Datetime>() {
+            public void onDataChange(DataChangeEvent event) {
+                activeEnd.setValue(manager.getGroup().getActiveEnd());
+            }
+
+            public void onValueChange(ValueChangeEvent<Datetime> event) {
+                if (event.getValue() != null)
+                    manager.getGroup().setActiveEnd(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                activeEnd.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                        .contains(event.getState()));
+                activeEnd.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        auxFieldTable = (TableWidget)def.getWidget("auxFieldTable");
+        unitOfMeasureId = (Dropdown<Integer>)auxFieldTable.getColumnWidget(meta.getFieldUnitOfMeasureId());
+        analyte = (AutoComplete<Integer>)auxFieldTable.getColumnWidget(meta.getFieldAnalyteName());
+        method = (AutoComplete<Integer>)auxFieldTable.getColumnWidget(meta.getFieldMethodName());
+        scriptlet = (AutoComplete<Integer>)auxFieldTable.getColumnWidget(meta.getFieldScriptletName());        
+        addScreenHandler(auxFieldTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+            public void onDataChange(DataChangeEvent event) {
+                if (state != State.QUERY)
+                    auxFieldTable.load(getAuxFieldModel());
+            }
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                boolean enable;
                 
-        cache = DictionaryCache.getListByCategorySystemName("unit_of_measure");
-        model = getDictionaryIdEntryList(cache);
-        ((TableDropdown)auxFieldTableWidget.columns.get(2).getColumnWidget()).setModel(model);
+                enable = EnumSet.of(State.QUERY, State.ADD, State.UPDATE).contains(event.getState());
+                auxFieldTable.enable(enable);
+                auxFieldTable.setQueryMode(event.getState() == State.QUERY);
+
+                enable = EnumSet.of(State.ADD, State.UPDATE).contains(event.getState());
+                auxFieldTable.enableDrag(enable);
+                auxFieldTable.enableDrop(enable);
+            }
+        });
         
-        cache = DictionaryCache.getListByCategorySystemName("aux_field_value_type");
-        model = getDictionaryIdEntryList(cache);
-        ((TableDropdown)auxFieldValueTableWidget.columns.get(0).getColumnWidget()).setModel(model);        
+        rangeNumeric = new ResultRangeNumeric();     
+        
+        auxFieldTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                AuxFieldValueManager man;
+                int r;
+                
+                try {
+                    r = event.getRow();
+                    auxFieldValueTable.finishEditing();
+                    man = manager.getFields().getValuesAt(r);                    
+                    auxFieldValueTable.load(getAuxFieldValueModel(man));
+                    setFieldValueErrors(r);
+                    addAuxFieldValueButton.enable(true); 
+                    removeAuxFieldValueButton.enable(false);
+                    dictionaryLookUpButton.enable(false);
+                    prevSelFieldRow = r;
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                } 
+                
+            }
+            
+        });
+        
+        auxFieldTable.addCellEditedHandler(new CellEditedHandler() {
+              public void onCellUpdated(CellEditedEvent event) { 
+                  int r, c;
+                  Object val;
+                  AuxFieldViewDO data;
+                  TableDataRow row;
+                  
+                  r = event.getRow();
+                  c = event.getCol();
+                  val = auxFieldTable.getObject(r,c); 
+                  data = null;
+                  
+                  try {
+                      data = manager.getFields().getAuxFieldAt(r);
+                  } catch (Exception e) {
+                      Window.alert(e.getMessage());
+                  }
+                  
+                  switch(c) {
+                      case 0:
+                          row = (TableDataRow)val;
+                          data.setAnalyteId((Integer)row.key);
+                          data.setAnalyteName(analyte.getTextBoxDisplay());
+                          break;
+                      case 1:
+                          row = (TableDataRow)val;
+                          data.setMethodId((Integer)row.key);
+                          data.setMethodName(method.getTextBoxDisplay());
+                          break;
+                      case 2:
+                          data.setUnitOfMeasureId((Integer)val);
+                          break;
+                      case 3:
+                          data.setIsActive((String)val);
+                          break;
+                      case 4:
+                          data.setIsRequired((String)val);
+                          break;
+                      case 5:
+                          data.setIsReportable((String)val);
+                          break;
+                      case 6:
+                          data.setDescription((String)val);
+                          break;
+                      case 7:
+                          row = (TableDataRow)val;
+                          data.setScriptletId((Integer)row.key);
+                          data.setScriptletName(method.getTextBoxDisplay());
+                          break;
+                  }
+              } 
+          });
+         
+        
+        // Screens now must implement AutoCompleteCallInt and set themselves as
+        // the calling interface
+        analyte.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                QueryFieldUtil parser;
+                IdNameVO data;
+                ArrayList<IdNameVO> list;
+                ArrayList<TableDataRow> model;
+
+                parser = new QueryFieldUtil();
+                parser.parse(event.getMatch());
+
+                try {
+                    list = analyteService.callList("fetchByName", parser.getParameter().get(0));
+                    model = new ArrayList<TableDataRow>();
+
+                    for (int i = 0; i < list.size(); i++ ) {
+                        data = list.get(i);
+                        model.add(new TableDataRow(data.getId(), data.getName()));
+                    }
+                    analyte.showAutoMatches(model);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+            }
+        });
+        
+        method.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                QueryFieldUtil parser;
+                ArrayList<IdNameVO> list;
+                ArrayList<TableDataRow> model;
+
+                parser = new QueryFieldUtil();
+                parser.parse(event.getMatch());
+                                
+                try {
+                    list = methodService.callList("fetchByName", parser.getParameter().get(0));
+                    model = new ArrayList<TableDataRow>();
+                    
+                    for (IdNameVO data : list)
+                        model.add(new TableDataRow(data.getId(),data.getName()));                    
+                    method.showAutoMatches(model);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+            }
+
+        });
+        
+        scriptlet.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                QueryFieldUtil parser;
+                ArrayList<TableDataRow> model;
+                ArrayList<IdNameVO> list;
+
+                parser = new QueryFieldUtil();
+                parser.parse(event.getMatch());
+                
+                try {
+                    list = scriptletService.callList("fetchByName", parser.getParameter().get(0));
+                    model = new ArrayList<TableDataRow>();
+                    for (IdNameVO data : list) {                       
+                        model.add(new TableDataRow(data.getId(),data.getName()));
+                    }
+                    scriptlet.showAutoMatches(model);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+            }
+
+        });
+
+        auxFieldTable.addRowAddedHandler(new RowAddedHandler() {
+            public void onRowAdded(RowAddedEvent event) {
+                AuxFieldViewDO data;
+                ArrayList<AuxFieldValueViewDO> values;
+                AuxFieldValueManager man;                
+                int r;
+                
+                r = event.getIndex();
+                try {
+                    data = new AuxFieldViewDO();
+                    data.setIsActive("Y");
+                    data.setIsReportable("N");
+                    data.setIsRequired("N");
+                     
+                    values = new ArrayList<AuxFieldValueViewDO>();
+                    values.add(new AuxFieldValueViewDO());
+                    manager.getFields().addAuxFieldAndValues(data, values);
+                    
+                    auxFieldTable.setCell(r, 3, "Y");
+                    auxFieldTable.setCell(r, 4, "N");
+                    auxFieldTable.setCell(r, 5, "N");
+                                        
+                    auxFieldValueTable.finishEditing();
+                    man = manager.getFields().getValuesAt(r);                    
+                    auxFieldValueTable.load(getAuxFieldValueModel(man));                   
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+            }
+        });
+
+        auxFieldTable.addRowDeletedHandler(new RowDeletedHandler() {
+            public void onRowDeleted(RowDeletedEvent event) {
+                try {
+                    manager.getFields().removeAuxFieldAt(event.getIndex());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+            }
+        });
+        
+        auxFieldTable.addRowMovedHandler(new RowMovedHandler() {
+            public void onRowMoved(RowMovedEvent event) {
+                try {
+                    manager.getFields().moveField(event.getOldIndex(), event.getNewIndex());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }                
+            }
+            
+        });
+        
+        auxFieldTable.enableDrag(true);
+        auxFieldTable.enableDrop(true);
+        auxFieldTable.addTarget(auxFieldTable);
+        
+        auxFieldTable.addBeforeDragStartHandler(new BeforeDragStartHandler<TableRow>(){            
+            public void onBeforeDragStart(BeforeDragStartEvent<TableRow> event) {
+                auxFieldValueTable.finishEditing();                
+            }            
+        });
+
+        addAuxFieldButton = (AppButton)def.getWidget("addAuxFieldButton");
+        addScreenHandler(addAuxFieldButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                int r;
+                
+                auxFieldValueTable.finishEditing();
+                r = auxFieldTable.numRows();
+                auxFieldTable.addRow();
+                auxFieldTable.selectRow(r);
+                prevSelFieldRow = r;
+                auxFieldTable.scrollToSelection(); 
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                addAuxFieldButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+            }
+        });
+        
+        removeAuxFieldButton = (AppButton)def.getWidget("removeAuxFieldButton");
+        addScreenHandler(removeAuxFieldButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                int r;
+                
+                auxFieldValueTable.finishEditing();
+                r = auxFieldTable.getSelectedRow();
+                if (r > -1 && auxFieldTable.numRows() > 0) {
+                    auxFieldTable.deleteRow(r);
+                    auxFieldValueTable.load(getAuxFieldValueModel(null));
+                    prevSelFieldRow = -1;
+                }
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                removeAuxFieldButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+            }
+        });
+
+        auxFieldValueTable = (TableWidget)def.getWidget("auxFieldValueTable");
+        auxFieldValueTypeId = (Dropdown<Integer>)auxFieldValueTable.getColumnWidget(meta.getFieldValueTypeId());
+        addScreenHandler(auxFieldValueTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+            public void onDataChange(DataChangeEvent event) {
+                auxFieldValueTable.load(getAuxFieldValueModel(null));
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                auxFieldValueTable.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                                 .contains(event.getState()));                
+            }
+        });   
+        
+        auxFieldValueTable.addSelectionHandler(new SelectionHandler<TableRow>() {
+            public void onSelection(SelectionEvent<TableRow> event) {
+                int r;
+                GridFieldErrorException ex;
+                
+                auxFieldTable.finishEditing();
+                r = auxFieldValueTable.getSelectedRow();                                    
+                
+                for(int i = 0; i < valueErrorList.size(); i++) {
+                    ex = valueErrorList.get(i);
+                    if(ex.getColumnIndex() == r)
+                        valueErrorList.remove(i);
+                }
+                
+                addAuxFieldValueButton.enable(true);
+                removeAuxFieldValueButton.enable(true);      
+                dictionaryLookUpButton.enable(true);
+            }
+            
+        });        
+        
+        auxFieldValueTable.addCellEditedHandler(new CellEditedHandler() {
+            public void onCellUpdated(CellEditedEvent event) {
+                int r, c, fr;
+                Object val;
+                AuxFieldValueViewDO data;
+                
+                fr = prevSelFieldRow;
+                if(fr == -1) 
+                    fr = auxFieldTable.getSelectedRow(); 
+                r = event.getRow();    
+                c = event.getCol();
+                val = auxFieldValueTable.getObject(r,c);    
+                data = null;                
+                
+                try {
+                    data = manager.getFields().getValuesAt(fr).getAuxFieldValueAt(r);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+                
+                switch(c) {
+                    case 0:
+                        data.setTypeId((Integer)val);
+                        auxFieldValueTable.clearCellExceptions(r, 1);
+                        try {
+                            validateValue(data, (String)auxFieldValueTable.getObject(r, 1));
+                        } catch (LocalizedException e) {
+                            auxFieldValueTable.setCellException(r, 1, e);
+                        }
+                        break;
+                    case 1:
+                        auxFieldValueTable.clearCellExceptions(r, c);
+                        try {
+                            validateValue(data, (String)val);
+                        } catch (LocalizedException e) {
+                            auxFieldValueTable.setCellException(r, c, e);
+                        }
+                        break;
+                }
+                 
+            }
+        });
+
+        auxFieldValueTable.addRowAddedHandler(new RowAddedHandler() {
+            public void onRowAdded(RowAddedEvent event) {    
+                int r;
+                
+                r = auxFieldTable.getSelectedRow();
+                try {
+                    manager.getFields().getValuesAt(r).addAuxFieldValue(new AuxFieldValueViewDO());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+            }
+        });
+        
+        auxFieldValueTable.addRowDeletedHandler(new RowDeletedHandler() {
+            public void onRowDeleted(RowDeletedEvent event) {
+                int fr;
+                
+                fr = auxFieldTable.getSelectedRow();
+                try {
+                    manager.getFields().getValuesAt(fr).removeAuxFieldValueAt(event.getIndex());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }                
+            }            
+        });
+
+        addAuxFieldValueButton = (AppButton)def.getWidget("addAuxFieldValueButton");
+        addScreenHandler(addAuxFieldValueButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                int r;
+
+                r = auxFieldValueTable.numRows();
+                auxFieldValueTable.addRow();
+                auxFieldValueTable.selectRow(r,true);                
+                auxFieldValueTable.scrollToSelection();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                addAuxFieldValueButton.enable(false);                     
+            }
+        });
+        
+        removeAuxFieldValueButton = (AppButton)def.getWidget("removeAuxFieldValueButton");
+        addScreenHandler(removeAuxFieldValueButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                int r;
+
+                r = auxFieldValueTable.getSelectedRow();
+                if (r > -1 && auxFieldValueTable.numRows() > 0) 
+                    auxFieldValueTable.deleteRow(r);                                   
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {               
+                removeAuxFieldValueButton.enable(false); 
+            }
+        });
+
+        dictionaryLookUpButton = (AppButton)def.getWidget("dictionaryLookUpButton");
+        addScreenHandler(dictionaryLookUpButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                showDictionary(null,null);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                dictionaryLookUpButton.enable(false);
+            }
+        });
+
+        //
+        // left hand navigation panel
+        //
+        nav = new ScreenNavigator(def) {
+            public void executeQuery(final Query query) {
+                window.setBusy(consts.get("querying"));
+
+                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                    public void onSuccess(ArrayList<IdNameVO> result) {
+                        setQueryResult(result);
+                    }
+
+                    public void onFailure(Throwable error) {
+                        setQueryResult(null);
+                        if (error instanceof NotFoundException) {
+                            window.setDone(consts.get("noRecordsFound"));
+                            setState(State.DEFAULT);
+                        } else if (error instanceof LastPageException) {
+                            window.setError("No more records in this direction");
+                        } else {
+                            Window.alert("Error: Auxiliary call query failed; " +
+                                         error.getMessage());
+                            window.setError(consts.get("queryFailed"));
+                        }
+                    }
+                });
+            }
+
+            public boolean fetch(RPC entry) {
+                return fetchById( (entry == null) ? null : ((IdNameVO)entry).getId());
+            }
+
+            public ArrayList<TableDataRow> getModel() {
+                ArrayList<IdNameVO> result;
+                ArrayList<TableDataRow> model;
+
+                model = null;
+                result = nav.getQueryResult();
+                if (result != null) {
+                    model = new ArrayList<TableDataRow>();
+                    for (IdNameVO entry : result)
+                        model.add(new TableDataRow(entry.getId(), entry.getName()));
+                }
+                return model;
+            }
+        };
+
+        atoz = (ButtonGroup)def.getWidget("atozButtons");
+        addScreenHandler(atoz, new ScreenEventHandler<Object>() {
+            public void onStateChange(StateChangeEvent<State> event) {
+                boolean enable;
+                enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
+                         security.hasSelectPermission();
+                atoz.enable(enable);
+                nav.enable(enable);
+            }
+
+            public void onClick(ClickEvent event) {
+                Query query;
+                QueryData field;
+
+                field = new QueryData();
+                field.key = meta.getName();
+                field.query = ((AppButton)event.getSource()).getAction();
+                field.type = QueryData.Type.STRING;
+
+                query = new Query();
+                query.setFields(field);
+                nav.setQuery(query);
+            }            
+        });
+
     }
-    
-    public void performCommand(Enum action, Object obj) {
-        if (obj instanceof AppButton) {
-            String query = ((AppButton)obj).action;            
-            if (query.indexOf(":") != -1) 
-                getAuxFieldGroups(query.substring(6));
-            else
-                super.performCommand(action, obj);
-        } else{
-            super.performCommand(action, obj);
+
+    private void initializeDropdowns() {
+        ArrayList<TableDataRow> model;
+
+        // unit of measure dropdown
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("unit_of_measure"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+
+        unitOfMeasureId.setModel(model);
+
+        // aux field value type dropdown
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("aux_field_value_type"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+
+        auxFieldValueTypeId.setModel(model);
+        
+        try {
+            typeDict    = DictionaryCache.getIdFromSystemName("aux_dictionary");
+            typeNumeric = DictionaryCache.getIdFromSystemName("aux_numeric");
+            typeDefault = DictionaryCache.getIdFromSystemName("aux_default");
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            window.close();
         }
     }
-    
-    public boolean canPerformCommand(Enum action, Object obj) {
-        if(action == DictionaryLookupScreen.Action.OK || 
-                        action == DictionaryLookupScreen.Action.CANCEL)
-            return true;
-        else
-            return super.canPerformCommand(action, obj);
+
+    protected void query() {
+        manager = AuxFieldGroupManager.getInstance();
+
+        setState(State.QUERY);
+        DataChangeEvent.fire(this);
+
+        setFocus(name);
+        window.setDone(consts.get("enterFieldsToQuery"));
     }
-    
-    public void query() {
-        super.query();     
-        auxFieldTableWidget.model.enableAutoAdd(false);
-        auxFieldValueTableWidget.model.enableAutoAdd(false);  
-        removeAuxFieldRowButton.changeState(ButtonState.DISABLED);
-        grpName.setFocus(true);
+
+    protected void previous() {
+        nav.previous();
     }
-    
-    public void add() {
-        super.add();
-        auxFieldValueTableWidget.model.enableAutoAdd(false);
-        auxFieldTableWidget.model.enableAutoAdd(true);  
-        grpName.setFocus(true);
-        auxFieldTableWidget.activeRow = -1;
+
+    protected void next() {
+        nav.next();
     }
-    
-    public void abort() {
-        super.abort(); 
-        auxFieldValueTableWidget.model.enableAutoAdd(false); 
-        auxFieldTableWidget.model.enableAutoAdd(false);                    
-        auxFieldValueTableWidget.model.clear();                      
+
+    protected void add() {
+        manager = AuxFieldGroupManager.getInstance();
+        manager.getGroup().setIsActive("N");
+
+        valueErrorList = new ArrayList<GridFieldErrorException>();
+        setState(State.ADD);
+        DataChangeEvent.fire(this);
+
+        prevSelFieldRow = -1;
+        setFocus(name);
+        window.setDone(consts.get("enterInformationPressCommit"));        
     }
-    
-    protected SyncCallback<AuxiliaryForm> afterUpdate = new SyncCallback<AuxiliaryForm>() {
-        public void onFailure(Throwable caught) {
-            Window.alert(caught.getMessage());
+
+    protected void update() {
+        window.setBusy("Locking Record for update...");
+        valueErrorList = new ArrayList<GridFieldErrorException>();
+        prevSelFieldRow = -1; 
+        try {
+            manager = manager.fetchForUpdate();
+
+            setState(State.UPDATE);
+            DataChangeEvent.fire(this);
+            setFocus(name);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
         }
 
-        public void onSuccess(AuxiliaryForm result) {
-            auxFieldValueTableWidget.model.enableAutoAdd(false);   
-            auxFieldTableWidget.model.enableAutoAdd(true);            
-            grpName.setFocus(true);
-            auxFieldTableWidget.activeRow = -1;
+        window.clearStatus();
+    }
+
+    protected void commit() {
+        setFocus(null);
+
+        if ( !validate()) {
+            window.setError(consts.get("correctErrors"));
+            return;
         }
-    };  
-    
-    protected SyncCallback<AuxiliaryForm> commitUpdateCallback = new SyncCallback<AuxiliaryForm>() {
-        public void onSuccess(AuxiliaryForm result) {
-            if (form.status == Form.Status.valid) {               
-                auxFieldValueTableWidget.model.enableAutoAdd(false); 
-                auxFieldTableWidget.model.enableAutoAdd(false);
+
+        if (state == State.QUERY) {
+            Query query;
+
+            query = new Query();
+            query.setFields(getQueryFields());
+            nav.setQuery(query);
+        } else if (state == State.ADD) {
+            window.setBusy(consts.get("adding"));
+            try {
+                manager = manager.add();
+
+                setState(State.DISPLAY);
+                DataChangeEvent.fire(this);
+                window.setDone(consts.get("addingComplete"));
+            } catch (ValidationErrorsList e) {
+                showErrors(e);
+            } catch (Exception e) {
+                Window.alert("commitAdd(): " + e.getMessage());
+                window.clearStatus();
+            }
+        } else if (state == State.UPDATE) {
+            window.setBusy(consts.get("updating"));
+            try {
+                manager = manager.update();
+                setState(State.DISPLAY);
+                DataChangeEvent.fire(this);
+                window.setDone(consts.get("updatingComplete"));
+            } catch (ValidationErrorsList e) {
+                showErrors(e);
+            } catch (Exception e) {
+                Window.alert("commitUpdate(): " + e.getMessage());
+                window.clearStatus();
             }
         }
+    }
 
-        public void onFailure(Throwable caught) {
-            handleError(caught);
-        }
-    };
+    protected void abort() {
+        setFocus(null);
+        clearErrors();
+        window.setBusy(consts.get("cancelChanges"));
 
-    protected SyncCallback<AuxiliaryForm> commitAddCallback = new SyncCallback<AuxiliaryForm>() {
-        public void onSuccess(AuxiliaryForm result) {
-            if (form.status == Form.Status.valid) {               
-                auxFieldValueTableWidget.model.enableAutoAdd(false); 
-                auxFieldTableWidget.model.enableAutoAdd(false);
+        if (state == State.QUERY) {
+            fetchById(null);
+            window.setDone(consts.get("queryAborted"));
+        } else if (state == State.ADD) {
+            fetchById(null);
+            window.setDone(consts.get("addAborted"));
+        } else if (state == State.UPDATE) {
+            try {
+                manager = manager.abortUpdate();
+                setState(State.DISPLAY);
+                DataChangeEvent.fire(this);
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                fetchById(null);
             }
+            window.setDone(consts.get("updateAborted"));
+        } else {
+            window.clearStatus();
         }
 
-        public void onFailure(Throwable caught) {
-            handleError(caught);
+    }
+
+    protected boolean fetchById(Integer id) {
+        if (id == null) {
+            manager = AuxFieldGroupManager.getInstance();
+            setState(State.DEFAULT);
+        } else {
+            window.setBusy(consts.get("fetching"));
+            try {
+                window.setBusy(consts.get("fetching"));
+                manager = AuxFieldGroupManager.fetchWithFields(id);
+            } catch (Exception e) {
+                fetchById(null);
+                e.printStackTrace();
+                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                return false;
+            }
+            setState(State.DISPLAY);
         }
-    };
-    
-    public boolean canAdd(TableWidget widget, TableDataRow set, int row) {        
+        DataChangeEvent.fire(this);
+        window.clearStatus();
+
         return true;
     }
-
-    public boolean canAutoAdd(TableWidget widget, TableDataRow set) {
-       return ((DropDownField)set.cells[0]).getSelectedKey() != null;
-    }
-
-    public boolean canDelete(TableWidget widget, TableDataRow set, int row) {        
-        return false;
-    }
-
-    public boolean canEdit(TableWidget widget, TableDataRow set, int row, int col) {
-        if(widget == auxFieldTableWidget) {
-            if (state == State.UPDATE || state == State.ADD || state == State.QUERY)
-                return true;
-        } else {
-            if (state == State.UPDATE || state == State.ADD)
-                return true;
-        }
-        
-        return false;
-    }
-
-    public boolean canSelect(TableWidget widget, TableDataRow set, int row) {
-        if(widget == auxFieldTableWidget) {
-            return true;
-        }   else  {
-                if (state == State.UPDATE || state == State.ADD)
-                    return true;
-        }
-        
-        return false;          
-    }
-
-    public void onClick(Widget sender) {
-        if(sender == removeAuxFieldRowButton)
-            onRemoveAuxFieldRowButtonClick();
-        if(sender == dictionaryLookUpButton)
-            onDictionaryLookUpButtonClicked();
-        if(sender == removeAuxFieldValueRowButton)
-            onRemoveAuxFieldValueRowButtonClick();                
-    }   
-
-    public void getAuxFieldGroups(String query) {
-        if (state == State.DISPLAY || state == State.DEFAULT) {
-            QueryStringField qField = new QueryStringField(AuxFGMeta.getName());
-            qField.setValue(query);
-            commitQuery(qField);
-        }
-    }    
     
-    public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {
+    public void showErrors(ValidationErrorsList errors) {
+        ArrayList<LocalizedException> formErrors;
+        TableFieldErrorException tfe;
+        GridFieldErrorException gfe;
+        FormErrorException fe;
+        FieldErrorException flde;
         
-    }
-
-    public void stopEditing(SourcesTableWidgetEvents sender, int row, int col) {
+        formErrors = new ArrayList<LocalizedException>();
         
-    }
-    
-    public void cellUpdated(SourcesTableModelEvents sender, int row, int cell) {
-        
-    }
-
-    public void dataChanged(SourcesTableModelEvents sender) {
-        
-    }
-
-    public void rowAdded(SourcesTableModelEvents sender, int rows) {
-        
-    }
-
-    public void rowDeleted(SourcesTableModelEvents sender, int row) {
-        
-    }
-
-    public void rowSelected(SourcesTableModelEvents sender, int row) {      
-        if(sender == auxFieldTableWidget.model) {          
-            if((state == State.UPDATE || state == State.ADD))  
-                if(!auxFieldValueTableWidget.model.getAutoAdd())  
-                    auxFieldValueTableWidget.model.enableAutoAdd(true);           
-            setModelInFieldValueTable(row);            
-        }    
-    }
-
-    public void rowUnselected(SourcesTableModelEvents sender, int row) {
-        
-    }
-
-    public void rowUpdated(SourcesTableModelEvents sender, int row) {
-        
-    }
-
-    public void unload(SourcesTableModelEvents sender) {
-        
-    }
-    
-    private void addAuxFieldValueRows(ArrayList<org.openelis.gwt.widget.table.TableDataRow> selectedRows,
-                                      Integer key) {
-         List<String> entries;
-         TableDataRow<Integer> row, dictSet;
-         org.openelis.gwt.widget.table.TableDataRow set;
-         String entry = null;         
-
-         if (selectedRows != null) {
-             dictSet = new TableDataRow<Integer>(key); 
-             entries = new ArrayList<String>();
-             for (int iter = 0; iter < selectedRows.size(); iter++) {
-                 set = selectedRows.get(iter);
-                 entry = (String)(set.cells.get(0)).getValue();
-                 if (entry != null && !entries.contains(entry.trim())) {
-                     entries.add(entry);
-                     row = (TableDataRow<Integer>)auxFieldValueTableWidget.model.createRow();
-                     row.cells[0].setValue(dictSet);
-                     row.cells[1].setValue(entry);                                                     
-                     auxFieldValueTableWidget.model.addRow(row);                     
-                 }
-             }
-             auxFieldTableWidget.model.refresh();
-         }
-     }
-    
-    private void onRemoveAuxFieldRowButtonClick() {
-        if(auxFieldTableWidget.modelIndexList.length > 0) {
-            int index = auxFieldTableWidget.modelIndexList[auxFieldTableWidget.activeRow];
-            int numRows = 0 ;
-            if (index > -1)
-                auxFieldTableWidget.model.deleteRow(index);  
-        
-            numRows = auxFieldTableWidget.model.numRows(); 
-        //
-        // The following is done because after a row is deleted from auxFieldTableWidget,
-        // auxFieldTableValueWidget should be loaded with the model that belongs to the 
-        // row in auxFieldTableWidget that gets selected next after the deletion.
-        //
-            if(numRows > 0 && index <= numRows)
-                setModelInFieldValueTable(index);
-       } 
-    }
-    
-    private void onRemoveAuxFieldValueRowButtonClick() {
-        if(auxFieldValueTableWidget.modelIndexList.length > 0) {
-            int selIndex = auxFieldValueTableWidget.modelIndexList[auxFieldValueTableWidget.activeRow];
-            if (selIndex > -1)                     
-                auxFieldValueTableWidget.model.deleteRow(selIndex);
-        }
-    }
-    
-    /**
-     * This function opens a dialog window which allows the users to select one
-     * or more dictionary entries to be added to the auxiliary field value  table
-     
-    private void onDictionaryLookUpButtonClicked() {
-        ScreenWindow modal;                                                            
-        if(dictEntryPicker == null) {
-            try {
-                dictEntryPicker = new DictionaryLookupScreen();
-                dictEntryPicker.addActionHandler(new ActionHandler<DictionaryLookupScreen.Action>(){
-
-                    public void onAction(ActionEvent<DictionaryLookupScreen.Action> event) {
-                       int selTab;
-                       ArrayList<org.openelis.gwt.widget.table.TableDataRow> model;
-                       TestResultDO resDO;
-                       org.openelis.gwt.widget.table.TableDataRow row;
-                       Integer dictId;                               
-                       if(event.getAction() == DictionaryLookupScreen.Action.CANCEL) {
-                           model = (ArrayList<org.openelis.gwt.widget.table.TableDataRow>)event.getData();                                                                                      
-                           dictId = null; //DictionaryCache.getIdFromSystemName("aux_dictionary");                             
-                           if(auxFieldValueTableWidget.model.getAutoAdd()) {        
-                               dictId = null; //DictionaryCache.getIdFromSystemName("aux_dictionary");  
-                               addAuxFieldValueRows(model,dictId);                                                      
-                           } else {
-                               Window.alert(consts.get("auxFieldSelFirst"));             
-                           }                                                         
-                       }                                
-                    }
-                    
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-                Window.alert("error: " + e.getMessage());
-                return;
-            }                                       
-        }
-        modal = new ScreenWindow(null,"Dictionary LookUp","dictionaryEntryPickerScreen","",true,false);
-        modal.setName(consts.get("chooseDictEntry"));
-        modal.setContent(dictEntryPicker);
-        dictEntryPicker.setScreenState(Screen.State.DEFAULT);
-    }
-    
-
-    public void finishedEditing(SourcesTableWidgetEvents sender,int row,int col) {            
-        Double[] darray;
-        String finalValue,systemName;
-        if(sender == auxFieldValueTableWidget && col == 1) {            
-            final int currRow = row;            
-            final String value = ((StringField)auxFieldValueTableWidget.model.getRow(row).cells[1]).getValue();            
-            darray = new Double[2];
-            finalValue = "";
-            systemName = getSelectedSystemName(row);                                  
-            if(systemName!=null){
-                if ("aux_dictionary".equals(systemName)) {
-                    //
-                    // Find out if this value is stored in the database if
-                    // the type chosen was "Dictionary"
-                    //
-                    if (!"".equals(value.trim())) {   
-                        AuxiliaryGeneralPurposeRPC agrpc = new AuxiliaryGeneralPurposeRPC();
-                        agrpc.stringValue = value;
-                        screenService.call("getEntryIdForEntryText",agrpc,
-                                           new SyncCallback<AuxiliaryGeneralPurposeRPC>() {
-                                               public void onSuccess(AuxiliaryGeneralPurposeRPC result) {
-                                                   //
-                                                   // If this value is not stored in the
-                                                   // database then add error to this
-                                                   // cell in the "Value" column
-                                                   //
-                                                   if (result.key == null) {
-                                                       auxFieldValueTableWidget.model.setCellError(currRow,1,
-                                                                                                   consts.get("illegalDictEntryException"));
-                                                   } else {  
-                                                       auxFieldValueTableWidget.model.setCell(currRow,1,result.stringValue);
-                                                   }
-                                               }
-
-                                               public void onFailure(Throwable caught) {
-                                                   Window.alert(caught.getMessage());
-                                                   window.clearStatus();
-                                               }
-                        });
-                    } else {
-                        auxFieldValueTableWidget.model.setCellError(currRow,1,
-                                                                    consts.get("fieldRequiredException"));  
-                    }
-                } else if ("aux_numeric".equals(systemName)) {                                              
-                    //
-                    // Get the string that was entered if the type
-                    // chosen was "Numeric" and try to break it up at
-                    // the "," if it follows the pattern number,number
-                    //
-                    if (!"".equals(value.trim())) {    
-                        String[] strList = value.split(",");
-                        boolean convert = false;
-                        if (strList.length == 2) {
-                            for (int iter = 0; iter < strList.length; iter++) {
-                                String token = strList[iter];
-                                try {
-                                    // 
-                                    // Convert each number obtained
-                                    // from the string and store its value
-                                    // converted to double if its a valid
-                                    // number, into an array
-                                    //
-                                    Double doubleVal = Double.valueOf(token);
-                                    darray[iter] = doubleVal.doubleValue();
-                                    convert = true;
-                                } catch (NumberFormatException ex) {
-                                    convert = false;
-                                }
-                            }
-                        }
-                        
-                        if (convert) {
-                            //
-                            // If it's a valid string store the converted
-                            // string back into the column otherwise add
-                            // an error to the cell and store empty
-                            // string into the cell
-                            //  
-                            if (darray[0].toString()
-                                            .indexOf(".") == -1) {
-                                finalValue = darray[0].toString() + ".0"
-                                + ",";
-                            } else {
-                                finalValue = darray[0].toString() + ",";
-                            }
-                            
-                            if (darray[1].toString()
-                                            .indexOf(".") == -1) {
-                                finalValue += darray[1].toString() + ".0";
-                            } else {
-                                finalValue += darray[1].toString();
-                            }
-                            auxFieldValueTableWidget.model.setCell(currRow,1,finalValue);
-                            
-                        } else {
-                            auxFieldValueTableWidget.model.setCellError(currRow,1,
-                                                                        consts.get("illegalNumericFormatException"));
-                                               }    
-                    }  else {
-                        auxFieldValueTableWidget.model.setCellError(currRow,1,
-                                                                    consts.get("fieldRequiredException"));  
-                    }
-                } else if ("aux_alpha_lower".equals(systemName)) {
-                    auxFieldValueTableWidget.model.setCell(currRow,1,value.toLowerCase()); 
-                } else if ("aux_alpha_upper".equals(getSelectedSystemName(row))) {
-                    auxFieldValueTableWidget.model.setCell(currRow,1,value.toUpperCase()); 
-                } else if ("aux_yes_no".equals(systemName)) {
-                    if (!"".equals(value.trim())) {      
-                        if((!"Y".equals(value.trim()))&&(!"N".equals(value.trim()))) {
-                            auxFieldValueTableWidget.model.setCellError(currRow,1,
-                                                                        consts.get("illegalYesNoValueException"));
-                        }
-                    }  
-                } else if ("aux_date".equals(systemName)) {
-                    if (!"".equals(value.trim())) {      
-                        try{                                                                                            
-                            auxFieldValueTableWidget.model.setCell(currRow,1,validateDate(value)); 
-                        }catch(IllegalArgumentException ex) {
-                            auxFieldValueTableWidget.model.setCellError(currRow,1,
-                                                                        consts.get("illegalDateValueException"));                                                 
-                        }
-                    }  
-                } else if ("aux_date_time".equals(systemName)) {                                                
-                    if (!"".equals(value.trim())) { 
-                        try{                                                                                                               
-                            auxFieldValueTableWidget.model.setCell(currRow,1,validateDateTime(value)); 
-                        }catch(IllegalArgumentException ex) {
-                            auxFieldValueTableWidget.model.setCellError(currRow,1,
-                                                                        consts.get("illegalDateTimeValueException"));   
-                                                   
-                        }   
-                    }  
-                } else if ("aux_time".equals(systemName)) { 
-                    if (!"".equals(value.trim())) {  
-                        try{                                                                                                               
-                            auxFieldValueTableWidget.model.setCell(currRow,1,validateTime(value)); 
-                        }catch(IllegalArgumentException ex) {
-                            auxFieldValueTableWidget.model.setCellError(currRow,1,
-                                                                        consts.get("illegalTimeValueException"));   
-                                                      
-                        }                                               
-                    }                                           
+        for (Exception ex : errors.getErrorList()) {            
+            if (ex instanceof TableFieldErrorException) {
+                if(ex instanceof GridFieldErrorException) {
+                    gfe = (GridFieldErrorException)ex;
+                    auxFieldTable.setCellException(gfe.getRowIndex(),meta.getFieldAnalyteName(),
+                                                   new LocalizedException("errorsWithAuxFieldValuesException"));
+                    valueErrorList.add(gfe);
+                } else {
+                    tfe = (TableFieldErrorException)ex;
+                    auxFieldTable.setCellException(tfe.getRowIndex(),tfe.getFieldName(),
+                                                                             tfe);
                 }
-            }                                              
-            
-        }   
-        
-    }
-    
-    private void setModelInFieldValueTable(int row) {       
-       AuxiliaryGeneralPurposeRPC agrpc;
-       TableDataModel<TableDataRow<Integer>> defaultModel;
-       
-       final TableDataRow<Integer> set = auxFieldTableWidget.model.getRow(row);
-       TableDataModel<TableDataRow<Integer>> model = (TableDataModel<TableDataRow<Integer>>)set.getData();
-       if(set.key != null && model == null) {            
-            agrpc = new AuxiliaryGeneralPurposeRPC();
-            defaultModel = new TableDataModel<TableDataRow<Integer>>();
-            defaultModel.setDefaultSet(form.auxFieldValueTable.defaultRow);
-            agrpc.auxFieldValueModel = defaultModel;
-            agrpc.key = set.key;
-            screenService.call("getAuxFieldValueModel", agrpc, new SyncCallback<AuxiliaryGeneralPurposeRPC>(){
-                public void onSuccess(AuxiliaryGeneralPurposeRPC result) {                      
-                    set.setData(result.auxFieldValueModel);                      
-                }            
-                public void onFailure(Throwable caught) {                
-                    Window.alert(caught.getMessage());
-                    window.clearStatus();
-                }
-                   
-               });                       
+            } else if (ex instanceof FormErrorException) {
+                fe = (FormErrorException)ex;
+                formErrors.add(fe);
+
+            } else if (ex instanceof FieldErrorException){
+                flde = (FieldErrorException)ex;
+                ((HasField)def.getWidget(flde.getFieldName())).addException(flde);
+            } 
         }
-       
-       if(set.getData()==null) {
-           defaultModel = new TableDataModel<TableDataRow<Integer>>();
-           defaultModel.setDefaultSet(form.auxFieldValueTable.defaultRow);
-           set.setData(defaultModel);
-       }
-               
-       auxFieldValueTableWidget.model.load((TableDataModel)set.getData());
-    }     
-    
-    private String validateDate(String value) throws IllegalArgumentException {
-        Date date = null;                                               
-        DateField df = null;                                                 
-      try{  
-        date = new Date(value.replaceAll("-", "/"));                                              
-        df = new DateField((byte)0, (byte)2,date);                                                       
-      }catch(IllegalArgumentException ex) {
-           throw ex;                                                 
-       } 
-      
-      if(df!=null)
-          return df.format();
-     
-      return null;
+
+        if (formErrors.size() == 0)
+            window.setError(consts.get("correctErrors"));
+        else if (formErrors.size() == 1)
+            window.setError(formErrors.get(0).getMessage());
+        else {
+            window.setError("(Error 1 of " + formErrors.size() + ") " + formErrors.get(0).getMessage());
+            window.setMessagePopup(formErrors, "ErrorPanel");
+        }
     }
     
-    private String validateDateTime(String value) throws IllegalArgumentException {
-        Date date = null;                                               
-        DateField df = null;
-        String[] split = null;
-        String hhmm = null;
-      try{                  
-        split = value.split(" ");  
-        if(split.length != 2)
-          throw new IllegalArgumentException();
+    private ArrayList<TableDataRow> getAuxFieldModel() {
+        int i;
+        AuxFieldViewDO data;
+        ArrayList<TableDataRow> model;
+        TableDataRow row;
         
-        hhmm = split[1];
-        if(hhmm.split(":").length != 2) 
-            throw new IllegalArgumentException();  
+        model = new ArrayList<TableDataRow>();
+        if (manager == null)
+            return model;
         
-        date = new Date(value.replaceAll("-", "/"));                                              
-        df = new DateField((byte)0, (byte)4,date);                                               
-       
-      }catch(IllegalArgumentException ex) {
-           throw ex;           
-       } 
-      
-      if(df!=null) 
-       return df.format();
-      
-      return null;
+        try {
+            for(i = 0; i < manager.getFields().count(); i++) {
+                data = manager.getFields().getAuxFieldAt(i);
+                row = new TableDataRow(8);
+                row.key = data.getId();
+                row.cells.get(0).setValue(new TableDataRow(data.getAnalyteId(), data.getAnalyteName()));
+                row.cells.get(1).setValue(new TableDataRow(data.getMethodId(), data.getMethodName()));
+                row.cells.get(2).setValue(data.getUnitOfMeasureId());
+                row.cells.get(3).setValue(data.getIsActive());
+                row.cells.get(4).setValue(data.getIsRequired());
+                row.cells.get(5).setValue(data.getIsReportable());
+                row.cells.get(6).setValue(data.getDescription());
+                row.cells.get(7).setValue(new TableDataRow(data.getScriptletId(), data.getScriptletName()));
+                model.add(row);
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
+        return model;       
     }
     
-    /**
-     * This method validates whether the argument "value" is of the format
-     * [HH:mm] and then returns the formatted version of it , if it conforms with
-     * format. For example a string like "7:5" will be converted to "07:05".
-     * It throws an IllegalArgumentException if the value doesn't conform with the format 
-     *
-    private String validateTime(String value) throws IllegalArgumentException {
-     Date date = null;                                               
-     DateField df = null;
-     String[] split = null;
-     String defDate = "2000-01-01 ";
-     String nextDayDate = "2000-01-02 ";
-     String dateStr = defDate + value;
-     boolean nextDay = false;
-     
-     try{                  
-        split = value.split(":");  
-        if(split.length != 2)
-          throw new IllegalArgumentException();               
+    private ArrayList<TableDataRow> getAuxFieldValueModel(AuxFieldValueManager man) {
+        int i;
+        AuxFieldValueViewDO data;
+        ArrayList<TableDataRow> model;
+        TableDataRow row;
+        String value;    
         
-        date = new Date(dateStr.replaceAll("-", "/"));
+        model = new ArrayList<TableDataRow>();
+        if (man == null)
+            return model;
         
-        if(Integer.parseInt(split[0]) > 23) 
-            nextDay = true;
-            
-        df = new DateField((byte)0, (byte)4,date);                                                      
-      }catch(IllegalArgumentException ex) {          
-          throw ex;                   
-       } 
-      
-      if(df!=null) { 
-       if(nextDay)    
-        return df.format().replace(nextDayDate,"");   
-       else   
-        return df.format().replace(defDate,"");
-      } 
-      
-      return null;
+        try {
+            for(i = 0; i < man.count(); i++) {
+                data = man.getAuxFieldValueAt(i);
+                // either show them the value or the dictionary entry
+                value = data.getValue();
+                if (data.getDictionary() != null)
+                    value = data.getDictionary();
+                
+                row = new TableDataRow(2);
+                row.key = data.getId();
+                row.cells.get(0).setValue(data.getTypeId());
+                row.cells.get(1).setValue(value);
+                
+                model.add(row);
+            }                        
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
+        return model;               
     }
     
-    /**
-     * This function returns the system name for the option that was selected
-     * in a given row, represented by the argument "row", from the type dropdown
-     * in auxFieldTableWidget, it returns null if no option was selected   
-     *
-    private String getSelectedSystemName(int row){
-        TableDataRow<Integer> trow;
-        String sysname;
-        Integer key;
+    private IdNameVO getDictionary(String entry) {
+        ArrayList<IdNameVO> list;
+        Query query;  
+        QueryData field;
         
-        if(row > -1) {
-            trow = auxFieldValueTableWidget.model.getRow(row);
-            key = (Integer)(((DropDownField<Integer>)trow.cells[0]).getSelectedKey());            
-            sysname = null; //DictionaryCache.getSystemNameFromId(key);
-            return sysname;
-        }    
+        entry = DataBaseUtil.trim(entry); 
+        if (entry == null)
+            return null;
+        
+        query = new Query();
+        field = new QueryData();
+        field.key = catMeta.getDictionary().getEntry();
+        field.type = QueryData.Type.STRING;
+        field.query = entry;
+        query.setFields(field);       
+        
+        field = new QueryData();
+        field.key = catMeta.getIsSystem();
+        field.type = QueryData.Type.STRING;
+        field.query = "N";
+        query.setFields(field); 
+        
+        try {
+            list = dictionaryService.callList("fetchByEntry", query);
+            if (list.size() == 1)
+                return list.get(0);
+            else if (list.size() > 1)                
+                showDictionary(entry,list);
+        } catch(NotFoundException e){
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+        }
         return null;
     }
     
-    private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
-        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
-        TableDataRow<Integer> row;
-        
-        if(list == null)
-            return m;
-        
-        m = new TableDataModel<TableDataRow>();
-        m.add(new TableDataRow<Integer>(null,new StringObject("")));
-        
-        for(int i=0; i<list.size(); i++){
-            row = new TableDataRow<Integer>(1);
-            DictionaryDO dictDO = (DictionaryDO)list.get(i);
-            row.key = dictDO.getId();
-            row.cells[0] = new StringObject(dictDO.getEntry());
-            m.add(row);
+    private void validateValue(AuxFieldValueViewDO data, String value) throws LocalizedException {
+        IdNameVO dict;
+
+        try {
+            if (typeDict.equals(data.getTypeId())) {
+                dict = getDictionary((String)value);
+                if (dict != null) {
+                    data.setValue(dict.getId().toString());
+                    data.setDictionary(dict.getName());
+                } else {
+                    data.setDictionary(null);
+                    throw new LocalizedException("qc.invalidValueException");
+                }
+            } else if (typeNumeric.equals(data.getTypeId())) {
+                rangeNumeric.setRange((String)value);
+                data.setValue(rangeNumeric.toString());
+            } else if (typeDefault.equals(data.getTypeId())) {
+                data.setValue((String)value);
+            } else if (DataBaseUtil.trim(value) != null){
+                throw new LocalizedException("valuePresentForTypeException");
+            }
+        } catch (LocalizedException e) {
+            data.setValue(null);
+            data.setDictionary(null);
+            throw e;
         }
-        
-        return m;
     }
-    */
-  }      
+    
+    private void showDictionary(String entry,ArrayList<IdNameVO> list) {
+        ScreenWindow modal;
+
+        if (dictLookup == null) {
+            try {
+                dictLookup = new DictionaryLookupScreen();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Window.alert("DictionaryLookup Error: " + e.getMessage());
+                return;
+            }
+        
+            dictLookup.addActionHandler(new ActionHandler<DictionaryLookupScreen.Action>() {
+                public void onAction(ActionEvent<DictionaryLookupScreen.Action> event) {
+                    int r, fr; 
+                    IdNameVO entry;
+                    AuxFieldValueViewDO data;
+                    ArrayList<IdNameVO> list;
+
+                    if (event.getAction() == DictionaryLookupScreen.Action.OK) {
+                        list = (ArrayList<IdNameVO>)event.getData();
+                        if (list != null) {
+                            r = auxFieldValueTable.getSelectedRow();
+                            fr = auxFieldTable.getSelectedRow();
+                            if (r == -1) {
+                                window.setError(consts.get("qc.noSelectedRow"));
+                                return;
+                            }
+                            entry = list.get(0);
+                            try {
+                                data = manager.getFields().getValuesAt(fr).getAuxFieldValueAt(r);
+                                data.setValue(entry.getId().toString());
+                                data.setDictionary(entry.getName());
+                                data.setTypeId(typeDict);            
+                                auxFieldValueTable.setCell(r, 0, typeDict);
+                                auxFieldValueTable.setCell(r, 1, data.getDictionary());
+                                auxFieldValueTable.clearCellExceptions(r, 1);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                auxFieldValueTable.setCell(r, 1, "");
+                                Window.alert("DictionaryLookup Error: " + e.getMessage());
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+        modal.setName(consts.get("chooseDictEntry"));
+        modal.setContent(dictLookup);
+        dictLookup.setScreenState(State.DEFAULT);
+        if (list != null) {
+            dictLookup.clearFields();
+            dictLookup.setQueryResult(entry, list);
+        } else if (entry != null) {
+            dictLookup.clearFields();
+            dictLookup.executeQuery(entry);
+        }
+    }
+    
+    private void setFieldValueErrors(int index) {
+        GridFieldErrorException ex;
+        
+        if(state == State.ADD || state == State.UPDATE) {
+            for(int i = 0; i < valueErrorList.size(); i++) {
+                ex = valueErrorList.get(i);
+                if(ex.getRowIndex() == index) 
+                    auxFieldValueTable.setCellException(ex.getColumnIndex(), ex.getFieldName(),ex);                    
+            }
+        }
+    }
+}

@@ -33,7 +33,7 @@ public class AuxFieldManagerProxy {
     protected ScreenService service;
     
     public AuxFieldManagerProxy(){
-        service = new ScreenService("OpenELISServlet?service="+AUXILIARY_SERVICE_URL);
+        service = new ScreenService("controller?service="+AUXILIARY_SERVICE_URL);
     }
     
     public AuxFieldManager fetchById(Integer id) throws Exception {
