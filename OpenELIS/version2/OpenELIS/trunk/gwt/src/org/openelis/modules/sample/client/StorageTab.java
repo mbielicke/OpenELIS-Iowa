@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
-import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.StorageLocationVO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.Datetime;

@@ -51,7 +51,7 @@ public class OpenELIS implements EntryPoint, NativePreviewHandler {
 		  GWT.runAsync(new RunAsyncCallback() {
 			  public void onSuccess() {
 				  try {
-					  RootPanel.getBodyElement().removeChild(RootPanel.getBodyElement().getElementsByTagName("div").getItem(0));			  
+					  RootPanel.get("load").getElement().removeFromParent();
 					  RootPanel.get().add(new org.openelis.modules.main.client.openelis.OpenELIS());
 				  }catch(Throwable e){
 					  e.printStackTrace();
