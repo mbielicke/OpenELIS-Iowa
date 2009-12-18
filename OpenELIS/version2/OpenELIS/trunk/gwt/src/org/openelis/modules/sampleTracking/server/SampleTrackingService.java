@@ -9,7 +9,7 @@ import org.openelis.remote.SampleTrackingRemote;
 
 public class SampleTrackingService {
 	
-	private static final int rowPP = 20;
+	private static final int rowPP = 15;
 
 	public ArrayList<SampleTrackingVO> query(Query query) throws Exception{
 		 return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);

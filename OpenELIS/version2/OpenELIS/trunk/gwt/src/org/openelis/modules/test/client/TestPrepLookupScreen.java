@@ -122,7 +122,7 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
             window.close();
     }
     
-    protected boolean validate() {
+    public boolean validate() {
         return super.validate();
     }
         

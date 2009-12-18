@@ -46,15 +46,18 @@ version="1.0"
     <screen id="SampleTracking" name="SampleTracking">
       <HorizontalPanel padding="0" spacing="0">
       
-        <CollapsePanel key="collapsePanel" style="LeftSidePanel">
+        <CollapsePanel key="collapsePanel" style="LeftSidePanel" open="true">
           <HorizontalPanel width="225">
             <VerticalPanel>
-              <tree key="atozTable" width="auto" maxRows="20" style="atozTable">
+              <tree key="atozTable" width="auto" maxRows="15" style="atozTable">
                 <header> 
                    <col header="Sample" width="300"/>
                    <col header="Type/Status" width="125"/>
                 </header>
                 <leaf key="sample">
+                  <col>
+                    <label />
+                  </col>
                   <col>
                     <label />
                   </col>
@@ -75,6 +78,31 @@ version="1.0"
                       <label/>
                    </col>
                 </leaf>
+                <leaf key="storage">
+                  <col>
+                    <label/>
+                  </col>
+                </leaf>
+                <leaf key="qaevent">
+                  <col>
+                    <label/>
+                  </col>
+                </leaf>
+                <leaf key="note">
+                  <col>
+                     <label/>
+                  </col>
+                </leaf>
+                <leaf key="auxdata">
+                  <col>
+                     <label/>
+                   </col>
+                 </leaf>
+                 <leaf key="result">
+                   <col>
+                     <label/>
+                   </col>
+                 </leaf>
               </tree>
               <widget halign="center">
                 <HorizontalPanel>
@@ -172,48 +200,11 @@ version="1.0"
               </widget>
             </row>
           </TablePanel>
-                    <VerticalPanel width="98%" style="subform">
-            <text style="FormTitle">
-              <xsl:value-of select="resource:getString($constants,'envInfo')" />
-            </text>
-            <TablePanel width="100%" style="Form">
-              <row>
-                <text style="Prompt">
-                  <xsl:value-of select="resource:getString($constants,'hazardous')" />:
-                </text>
-                <check key="{meta:getEnvIsHazardous()}" tab="{meta:getEnvPriority()},{meta:getClientReference()}" />
-                <text style="Prompt">
-                  <xsl:value-of select="resource:getString($constants,'priority')" />:
-                </text>
-                <textbox key="{meta:getEnvPriority()}" width="90px" tab="{meta:getEnvCollector()},{meta:getEnvIsHazardous()}" field="Integer" />
-              </row>
-              <row>
-                <text style="Prompt">
-                  <xsl:value-of select="resource:getString($constants,'collector')" />:
-                </text>
-                <textbox key="{meta:getEnvCollector()}" width="235px" tab="{meta:getEnvCollectorPhone()},{meta:getEnvDescription()}" field="String"/>
-                <text style="Prompt">
-                  <xsl:value-of select="resource:getString($constants,'phone')" />:
-                </text>
-                <textbox key="{meta:getEnvCollectorPhone()}" width="120px" tab="{meta:getEnvSamplingLocation()},{meta:getEnvCollector()}" field="String" />
-              </row>
-              <row>
-                <text style="Prompt">
-                  <xsl:value-of select="resource:getString($constants,'location')" />:
-                </text>
-                <HorizontalPanel>
-                  <textbox key="{meta:getEnvSamplingLocation()}" width="175px" field="String" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" />
-                  <appButton key="locButton" style="LookupButton">
-                    <AbsolutePanel style="LookupButtonImage" />
-                  </appButton>
-                </HorizontalPanel>
-                <text style="Prompt">
-                  <xsl:value-of select="resource:getString($constants,'desc')" />:
-                </text>
-                <textbox key="{meta:getEnvDescription()}" width="315px" tab="itemsTestsTree,{meta:getEnvSamplingLocation()}" field="String" />
-              </row>
-            </TablePanel>
-          </VerticalPanel>
+          <TabPanel key="SampleContent" width="715" height="250">
+            <tab text="             ">
+              <AbsolutePanel/>
+            </tab>
+          </TabPanel>
       </VerticalPanel>
      </VerticalPanel>
    </HorizontalPanel>
