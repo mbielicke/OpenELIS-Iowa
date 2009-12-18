@@ -49,11 +49,6 @@ import org.openelis.entity.Result;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.ResultLocal;
-import org.openelis.utilcommon.ResultRangeDate;
-import org.openelis.utilcommon.ResultRangeDateTime;
-import org.openelis.utilcommon.ResultRangeNumeric;
-import org.openelis.utilcommon.ResultRangeTime;
-import org.openelis.utilcommon.ResultRangeTiter;
 import org.openelis.utilcommon.ResultValidator;
 import org.openelis.utilcommon.ResultValidator.Type;
 

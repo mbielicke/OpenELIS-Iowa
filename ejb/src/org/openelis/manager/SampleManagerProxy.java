@@ -43,8 +43,7 @@ import org.openelis.persistence.EJBFactory;
 
 public class SampleManagerProxy {
     public SampleManager add(SampleManager man) throws Exception {
-        System.out.println("*************************sample");
-        Integer sampleId, sampleRefId, sampleInternalRefId;
+        Integer sampleId, sampleRefId;
         SampleLocal sl = getSampleLocal();
         sl.add(man.getSample());
         
@@ -195,8 +194,23 @@ public class SampleManagerProxy {
         return sm;
     }
     
-    public SampleManager fetchForUpdate(Integer sampleId) throws Exception {
-        throw new UnsupportedOperationException();
+    public SampleManager fetchByIdWithItemsAnalysesForUpdate(Integer sampleId) throws Exception {
+        SampleLocal sl = getSampleLocal();
+        SampleDO sampleDO = sl.fetchById(sampleId);
+        
+        SampleManager sm = SampleManager.getInstance();
+        sm.setSample(sampleDO);
+        
+        sm.getDomainManager();
+        sm.getOrganizations();
+        sm.getProjects();
+        
+        SampleItemManager sim = sm.getSampleItems();
+        
+        for(int i=0; i<sim.count(); i++)
+            sim.getAnalysisAtForUpdate(i);
+        
+        return sm;
     }
     
     public SampleManager abort(Integer sampleId) throws Exception {

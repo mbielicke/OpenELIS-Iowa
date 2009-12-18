@@ -25,8 +25,6 @@
 */
 package org.openelis.bean;
 
-import java.util.List;
-
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
@@ -35,14 +33,11 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.transaction.UserTransaction;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.local.LockLocal;
 import org.openelis.manager.SampleItemManager;
@@ -73,19 +68,19 @@ public class SampleManagerBean  implements SampleManagerRemote {
     }
     
     public SampleManager fetch(Integer sampleId) throws Exception {
-        SampleManager man = SampleManager.findById(sampleId);
+        SampleManager man = SampleManager.fetchById(sampleId);
         
         return man;
     }
 
     public SampleManager fetchWithItemsAnalysis(Integer sampleId) throws Exception {
-        SampleManager man = SampleManager.findByIdWithItemsAnalyses(sampleId);
+        SampleManager man = SampleManager.fetchByIdWithItemsAnalyses(sampleId);
         
         return man;
     }
 
     public SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception {
-        SampleManager man = SampleManager.findByAccessionNumber(accessionNumber);
+        SampleManager man = SampleManager.fetchByAccessionNumber(accessionNumber);
         
         return man;
     }
@@ -120,10 +115,11 @@ public class SampleManagerBean  implements SampleManagerRemote {
         return man;
     }
 
-    public SampleManager fetchForUpdate(Integer sampleId) throws Exception {
+    public SampleManager fetchByIdWithItemsAnalysesForUpdate(Integer sampleId) throws Exception {
         lockBean.getLock(sampleRefTableId, sampleId);
+        SampleManager man = SampleManager.fetchByIdWithItemsAnalysesForUpdate(sampleId);
         
-        return fetch(sampleId);
+        return man;
     }
 
     public SampleManager abortUpdate(Integer sampleId) throws Exception {
@@ -133,19 +129,19 @@ public class SampleManagerBean  implements SampleManagerRemote {
     }
 
     public SampleOrganizationManager fetchSampleOrgsBySampleId(Integer sampleId) throws Exception {
-        SampleOrganizationManager man = SampleOrganizationManager.findBySampleId(sampleId);   
+        SampleOrganizationManager man = SampleOrganizationManager.fetchBySampleId(sampleId);   
         
         return man;
     }
 
     public SampleProjectManager fetchSampleProjectsBySampleId(Integer sampleId) throws Exception {
-        SampleProjectManager man = SampleProjectManager.findBySampleId(sampleId);   
+        SampleProjectManager man = SampleProjectManager.fetchBySampleId(sampleId);   
         
         return man;
     }
     
     public SampleItemManager fetchSampleItemsBySampleId(Integer sampleId) throws Exception {
-        SampleItemManager man = SampleItemManager.findBySampleId(sampleId);
+        SampleItemManager man = SampleItemManager.fetchBySampleId(sampleId);
         
         return man;
     }

@@ -77,10 +77,11 @@ public class TestManagerProxy {
         return man;
     }
     
-    public TestManager fetchWithPrepTests(Integer testId) throws Exception {
+    public TestManager fetchWithPrepTestsSampleTypes(Integer testId) throws Exception {
         TestManager man;
 
         man = fetchById(testId);
+        man.getSampleTypes();
         man.getPrepTests();
         
         return man;
