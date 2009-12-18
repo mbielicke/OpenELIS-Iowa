@@ -54,10 +54,14 @@ public class AnalysisManager implements RPC, HasNotesInt {
      * Creates a new instance of this object with the specified sample id. Use
      * this function to load an instance of this object from database.
      */
-    public static AnalysisManager findBySampleItemId(Integer sampleItemId) throws Exception {
+    public static AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
         return proxy().fetchBySampleItemId(sampleItemId);
     }
 
+    public static AnalysisManager fetchBySampleItemIdForUpdate(Integer sampleItemId) throws Exception {
+        return proxy().fetchBySampleItemIdForUpdate(sampleItemId);
+    }
+    
     public int count() {
         if (items == null)
             return 0;
@@ -121,7 +125,7 @@ public class AnalysisManager implements RPC, HasNotesInt {
         if (item.qaEvents == null) {
             if (item.analysis != null && item.analysis.getId() != null) {
                 try {
-                    item.qaEvents = AnalysisQaEventManager.findByAnalysisId(item.analysis.getId());
+                    item.qaEvents = AnalysisQaEventManager.fetchByAnalysisId(item.analysis.getId());
 
                 } catch (NotFoundException e) {
                     // ignore
@@ -197,10 +201,10 @@ public class AnalysisManager implements RPC, HasNotesInt {
     public StorageManager getStorageAt(int i) throws Exception {
         AnalysisListItem item = getItemAt(i);
 
-        if (item.storage == null) {
+        if (item.storages == null) {
             if (item.analysis != null && item.analysis.getId() != null) {
                 try {
-                    item.storage = StorageManager.findByRefTableRefId(ReferenceTable.ANALYSIS,
+                    item.storages = StorageManager.fetchByRefTableRefId(ReferenceTable.ANALYSIS,
                                                                       item.analysis.getId());
                 } catch (NotFoundException e) {
                     // ignore
@@ -210,14 +214,14 @@ public class AnalysisManager implements RPC, HasNotesInt {
             }
         }
 
-        if (item.storage == null)
-            item.storage = StorageManager.getInstance();
+        if (item.storages == null)
+            item.storages = StorageManager.getInstance();
 
-        return item.storage;
+        return item.storages;
     }
 
     public void setStorageAt(StorageManager storage, int i) {
-        getItemAt(i).storage = storage;
+        getItemAt(i).storages = storage;
     }
 
     // analysis test result
@@ -277,6 +281,32 @@ public class AnalysisManager implements RPC, HasNotesInt {
 
     public void setAnalysisResultAt(AnalysisResultManager analysisResult, int i) {
         getItemAt(i).analysisResult = analysisResult;
+    }
+    
+    //test
+    public void setTestAt(TestManager test, int i){
+        getItemAt(i).tests = test;
+    }
+    
+    public TestManager getTestAt(int i) throws Exception{
+        AnalysisListItem item = getItemAt(i);
+
+        if (item.tests == null) {
+            if (item.analysis != null && item.analysis.getTestId() != null) {
+                try {
+                    item.tests = TestManager.fetchWithPrepTestsSampleTypes(item.analysis.getTestId());
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+        }
+
+        if (item.tests == null)
+            item.tests = TestManager.getInstance();
+
+        return item.tests;
     }
 
     // item
@@ -342,6 +372,7 @@ public class AnalysisManager implements RPC, HasNotesInt {
         AnalysisViewDO            analysis;
         AnalysisQaEventManager    qaEvents;
         NoteManager               analysisInternalNotes, analysisExternalNote;
-        StorageManager            storage;
+        StorageManager            storages;
+        TestManager               tests;
     }
 }

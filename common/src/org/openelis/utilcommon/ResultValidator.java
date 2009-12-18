@@ -104,7 +104,7 @@ public class ResultValidator implements RPC {
             throw new ParseException("illegalResultValueException");
     }
 
-    private static class Item implements Serializable {
+    static class Item implements RPC {
         private static final long serialVersionUID = 1L;
 
         Integer id;

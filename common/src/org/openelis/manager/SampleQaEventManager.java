@@ -55,7 +55,7 @@ private static final long serialVersionUID = 1L;
     /**
      * Creates a new instance of this object with the specified sample id. Use this function to load an instance of this object from database.
      */
-    public static SampleQaEventManager findBySampleId(Integer sampleId) throws Exception {
+    public static SampleQaEventManager fetchBySampleId(Integer sampleId) throws Exception {
         return proxy().fetchBySampleId(sampleId);
     }
     

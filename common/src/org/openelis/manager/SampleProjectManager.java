@@ -30,7 +30,7 @@ public class SampleProjectManager implements RPC {
      * Creates a new instance of this object with the specified sample id. Use
      * this function to load an instance of this object from database.
      */
-    public static SampleProjectManager findBySampleId(Integer sampleId) throws Exception {
+    public static SampleProjectManager fetchBySampleId(Integer sampleId) throws Exception {
         return proxy().fetchBySampleId(sampleId);
     }
 

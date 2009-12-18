@@ -76,7 +76,7 @@ public class StorageManager implements RPC {
         storageList.remove(i);
     }
 
-    public static StorageManager findByRefTableRefId(Integer tableId, Integer id) throws Exception {
+    public static StorageManager fetchByRefTableRefId(Integer tableId, Integer id) throws Exception {
         return proxy().fetch(tableId, id);
     }
 

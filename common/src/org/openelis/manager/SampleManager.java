@@ -89,26 +89,23 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
     /**
      * Creates a new instance of this object with the specified Specimen. Use this function to load an instance of this object from database.
      */
-    public static SampleManager findById(Integer id) throws Exception {
+    public static SampleManager fetchById(Integer id) throws Exception {
         return proxy().fetch(id);
     }
     
-    public static SampleManager findByIdWithItemsAnalyses(Integer id) throws Exception {
+    public static SampleManager fetchByIdWithItemsAnalyses(Integer id) throws Exception {
         return proxy().fetchWithItemsAnalyses(id);
     }
     
     /**
      * Creates a new instance of this object with the specified Specimen. Use this function to load an instance of this object from database.
      */
-    public static SampleManager findByAccessionNumber(Integer accessionNumber) throws Exception {
+    public static SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception {
         return proxy().fetchByAccessionNumber(accessionNumber);
     }
     
-    public SampleManager fetchForUpdate() throws Exception {
-        if(sample.getId() == null)
-            throw new Exception("sample id is null");
-        
-        return proxy().fetchForUpdate(sample.getId());
+    public static SampleManager fetchByIdWithItemsAnalysesForUpdate(Integer id) throws Exception {
+        return proxy().fetchByIdWithItemsAnalysesForUpdate(id);
     }
     
     public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
@@ -229,7 +226,7 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
                     if(HUMAN_DOMAIN_FLAG.equals(sample.getDomain()))
                         sampleDomain = SampleHumanManager.findBySampleId(sample.getId());
                     else if(ENVIRONMENTAL_DOMAIN_FLAG.equals(sample.getDomain()))
-                        sampleDomain = SampleEnvironmentalManager.findBySampleId(sample.getId());
+                        sampleDomain = SampleEnvironmentalManager.fetchBySampleId(sample.getId());
                     
                 }catch(NotFoundException e){
                     //ignore
@@ -253,7 +250,7 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
         if(sampleItems == null){
             if(sample.getId() != null){
                 try{
-                    sampleItems = SampleItemManager.findBySampleId(sample.getId());
+                    sampleItems = SampleItemManager.fetchBySampleId(sample.getId());
                 }
                 catch(NotFoundException e){
                     //ignore
@@ -273,7 +270,7 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
         if(organizations == null){
             if(sample.getId() != null){
                 try{
-                    organizations = SampleOrganizationManager.findBySampleId(sample.getId());
+                    organizations = SampleOrganizationManager.fetchBySampleId(sample.getId());
                     
                 }
                 catch(NotFoundException e){
@@ -294,7 +291,7 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
         if(projects == null){
             if(sample.getId() != null){
                 try{
-                    projects = SampleProjectManager.findBySampleId(sample.getId());
+                    projects = SampleProjectManager.fetchBySampleId(sample.getId());
                     
                 }
                 catch(NotFoundException e){
@@ -316,7 +313,7 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
         if(qaEvents == null){
             if(sample.getId() != null){
                 try{
-                    qaEvents = SampleQaEventManager.findBySampleId(sample.getId());
+                    qaEvents = SampleQaEventManager.fetchBySampleId(sample.getId());
                     
                 }
                 catch(NotFoundException e){
