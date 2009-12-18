@@ -58,7 +58,7 @@ public class SampleItemManager implements RPC {
     /**
      * Creates a new instance of this object with the specified sample id. Use this function to load an instance of this object from database.
      */
-    public static SampleItemManager findBySampleId(Integer sampleId) throws Exception {
+    public static SampleItemManager fetchBySampleId(Integer sampleId) throws Exception {
         return proxy().fetchBySampleId(sampleId);
     }
     
@@ -114,7 +114,7 @@ public class SampleItemManager implements RPC {
         if (item.storage == null) {
             if(item.sampleItem != null && item.sampleItem.getId() != null){
                 try{
-                    item.storage = StorageManager.findByRefTableRefId(ReferenceTable.SAMPLE_ITEM, item.sampleItem.getId());
+                    item.storage = StorageManager.fetchByRefTableRefId(ReferenceTable.SAMPLE_ITEM, item.sampleItem.getId());
                 }catch(NotFoundException e){
                     //ignore
                 }catch(Exception e){
@@ -135,12 +135,24 @@ public class SampleItemManager implements RPC {
 
     // analysis
     public AnalysisManager getAnalysisAt(int i) throws Exception {
+        return getAnalysisAt(i, false);
+    }
+    
+    public AnalysisManager getAnalysisAtForUpdate(int i) throws Exception {
+        return getAnalysisAt(i, true);
+    }
+    
+    private AnalysisManager getAnalysisAt(int i, boolean update) throws Exception {
         SampleItemListItem item = getItemAt(i);
 
         if (item.analysis == null) {
             if(item.sampleItem != null && item.sampleItem.getId() != null){
                 try{
-                    item.analysis = AnalysisManager.findBySampleItemId(item.sampleItem.getId());
+                    if(update)
+                        item.analysis = AnalysisManager.fetchBySampleItemIdForUpdate(item.sampleItem.getId());
+                    else
+                        item.analysis = AnalysisManager.fetchBySampleItemId(item.sampleItem.getId());
+                    
                 }catch(NotFoundException e){
                     //ignore
                 }catch(Exception e){

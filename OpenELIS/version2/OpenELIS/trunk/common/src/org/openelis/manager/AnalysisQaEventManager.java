@@ -57,7 +57,7 @@ public class AnalysisQaEventManager implements RPC {
      * Creates a new instance of this object with the specified sample id. Use
      * this function to load an instance of this object from database.
      */
-    public static AnalysisQaEventManager findByAnalysisId(Integer analysisId) throws Exception {
+    public static AnalysisQaEventManager fetchByAnalysisId(Integer analysisId) throws Exception {
         return proxy().fetchByAnalysisId(analysisId);
     }
 

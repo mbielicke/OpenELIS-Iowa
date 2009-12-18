@@ -48,7 +48,7 @@ public class SampleEnvironmentalManager implements RPC, SampleDomainInt {
         return sem;
     }
 
-    public static SampleEnvironmentalManager findBySampleId(Integer sampleId) throws Exception {
+    public static SampleEnvironmentalManager fetchBySampleId(Integer sampleId) throws Exception {
         return proxy().fetch(sampleId);
     }
 
