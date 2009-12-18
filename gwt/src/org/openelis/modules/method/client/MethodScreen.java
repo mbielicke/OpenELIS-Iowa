@@ -525,7 +525,7 @@ public class MethodScreen extends Screen {
     }
     
     @Override
-    protected boolean validate() {
+    public boolean validate() {
     	boolean valid = super.validate();
     	if(activeEnd.getFieldValue() != null && activeEnd.getFieldValue().compareTo(activeBegin.getFieldValue()) <= 0){
     		activeEnd.addException(new LocalizedException("endDateAfterBeginDateException"));

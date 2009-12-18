@@ -313,7 +313,7 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
         setState(state);
     }
     
-    protected boolean validate() {
+    public boolean validate() {
         boolean superValue = super.validate();
         
         try{

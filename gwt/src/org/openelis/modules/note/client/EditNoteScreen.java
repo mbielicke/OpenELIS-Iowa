@@ -325,7 +325,7 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
         window.close();
     }
 
-    protected boolean validate() {
+    public boolean validate() {
         boolean valid;
         
         valid = true;

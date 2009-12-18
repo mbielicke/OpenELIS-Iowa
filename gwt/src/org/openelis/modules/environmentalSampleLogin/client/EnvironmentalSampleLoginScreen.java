@@ -51,6 +51,7 @@ import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -91,17 +92,25 @@ import org.openelis.manager.TestPrepManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
+import org.openelis.modules.sample.client.AnalysisNotesTabDef;
 import org.openelis.modules.sample.client.AnalysisTab;
+import org.openelis.modules.sample.client.AnalysisTabDef;
 import org.openelis.modules.sample.client.AuxDataTab;
+import org.openelis.modules.sample.client.AuxDataTabDef;
 import org.openelis.modules.sample.client.QAEventsTab;
+import org.openelis.modules.sample.client.QAEventsTabDef;
 import org.openelis.modules.sample.client.SampleDataBundle;
 import org.openelis.modules.sample.client.SampleItemTab;
+import org.openelis.modules.sample.client.SampleItemTabDef;
 import org.openelis.modules.sample.client.SampleLocationLookupScreen;
 import org.openelis.modules.sample.client.SampleNotesTab;
+import org.openelis.modules.sample.client.SampleNotesTabDef;
 import org.openelis.modules.sample.client.SampleOrganizationLookupScreen;
 import org.openelis.modules.sample.client.SampleProjectLookupScreen;
 import org.openelis.modules.sample.client.StorageTab;
+import org.openelis.modules.sample.client.StorageTabDef;
 import org.openelis.modules.sample.client.TestResultsTab;
+import org.openelis.modules.sample.client.TestResultsTabDef;
 import org.openelis.modules.test.client.TestPrepLookupScreen;
 
 import com.google.gwt.core.client.GWT;
@@ -115,6 +124,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 
 public class EnvironmentalSampleLoginScreen extends Screen {
@@ -886,9 +896,15 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 return model;
             }
         };
-        
+        TabPanel tabPanel = (TabPanel)def.getWidget("sampleItemTabPanel");
         // Set up tabs to recieve State Change events from the main Screen.
-        sampleItemTab = new SampleItemTab(def, window);
+        sampleItemTab = new SampleItemTab((ScreenDefInt)GWT.create(SampleItemTabDef.class), window);
+        try {
+        	sampleItemTab.drawScreen(sampleItemTab.getDefinition());
+        	((ScrollPanel)tabPanel.getWidget(0)).setWidget(sampleItemTab);
+        }catch(Exception e){
+        	
+        }
         addScreenHandler(sampleItemTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 sampleItemTab.setData(new SampleDataBundle());
@@ -902,7 +918,13 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        analysisTab = new AnalysisTab(def, window);
+        analysisTab = new AnalysisTab((ScreenDefInt)GWT.create(AnalysisTabDef.class), window);
+        try {
+        	analysisTab.drawScreen(analysisTab.getDefinition());
+        	((ScrollPanel)tabPanel.getWidget(1)).setWidget(analysisTab);
+        }catch(Exception e) {
+        	
+        }
         addScreenHandler(analysisTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 analysisTab.setData(new SampleDataBundle());
@@ -916,7 +938,13 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        testResultsTab = new TestResultsTab(def, window);
+        testResultsTab = new TestResultsTab((ScreenDefInt)GWT.create(TestResultsTabDef.class), window);
+        try {
+        	testResultsTab.drawScreen(testResultsTab.getDefinition());
+        	((ScrollPanel)tabPanel.getWidget(2)).setWidget(testResultsTab);
+        }catch(Exception e){
+        	
+        }
         addScreenHandler(testResultsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                     testResultsTab.setData(new SampleDataBundle());
@@ -930,7 +958,12 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        analysisNotesTab = new AnalysisNotesTab(def, window, "anExNotesPanel", "anExNoteButton", "anIntNotesPanel", "anIntNoteButton");
+        analysisNotesTab = new AnalysisNotesTab((ScreenDefInt)GWT.create(AnalysisNotesTabDef.class), window, "anExNotesPanel", "anExNoteButton", "anIntNotesPanel", "anIntNoteButton");
+        try {
+        	analysisNotesTab.drawScreen(analysisNotesTab.getDefinition());
+        	((ScrollPanel)tabPanel.getWidget(3)).setWidget(analysisNotesTab);
+        }catch(Exception e) {
+        }
         addScreenHandler(analysisNotesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 analysisNotesTab.setData(new SampleDataBundle());
@@ -944,7 +977,13 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
                 
-        sampleNotesTab = new SampleNotesTab(def, window, "sampleExtNotesPanel", "sampleExtNoteButton", "sampleIntNotesPanel", "sampleIntNoteButton");
+        sampleNotesTab = new SampleNotesTab((ScreenDefInt)GWT.create(SampleNotesTabDef.class), window, "sampleExtNotesPanel", "sampleExtNoteButton", "sampleIntNotesPanel", "sampleIntNoteButton");
+        try {
+        	sampleNotesTab.drawScreen(sampleNotesTab.getDefinition());
+        	((ScrollPanel)tabPanel.getWidget(4)).setWidget(sampleNotesTab);
+        }catch(Exception e){
+        	
+        }
         addScreenHandler(sampleNotesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 sampleNotesTab.setManager(manager);
@@ -958,7 +997,13 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        storageTab = new StorageTab(def, window);
+        storageTab = new StorageTab((ScreenDefInt)GWT.create(StorageTabDef.class), window);
+        try {
+        	storageTab.drawScreen(storageTab.getDefinition());
+        	((ScrollPanel)tabPanel.getWidget(5)).setWidget(storageTab);
+        }catch(Exception e) {
+        	
+        }
         addScreenHandler(storageTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                     storageTab.setData(new SampleDataBundle());
@@ -972,7 +1017,13 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
 
-        qaEventsTab = new QAEventsTab(def, window);
+        qaEventsTab = new QAEventsTab((ScreenDefInt)GWT.create(QAEventsTabDef.class), window);
+        try {
+        	qaEventsTab.drawScreen(qaEventsTab.getDefinition());
+        	((ScrollPanel)tabPanel.getWidget(6)).setWidget(qaEventsTab);
+        }catch(Exception e){
+        	
+        }
         addScreenHandler(qaEventsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                     qaEventsTab.setData(new SampleDataBundle());
@@ -987,7 +1038,13 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        auxDataTab = new AuxDataTab(def, window);
+        auxDataTab = new AuxDataTab((ScreenDefInt)GWT.create(AuxDataTabDef.class), window);
+        try {
+        	auxDataTab.drawScreen(auxDataTab.getDefinition());
+        	((ScrollPanel)tabPanel.getWidget(7)).setWidget(auxDataTab);
+        }catch(Exception e){
+        	
+        }
         addScreenHandler(auxDataTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                     auxDataTab.setManager(manager);
@@ -1235,9 +1292,17 @@ public class EnvironmentalSampleLoginScreen extends Screen {
 
         if (state == State.QUERY) {
             Query query;
-
+            
+            ArrayList<QueryData> queryFields = getQueryFields();
+            queryFields.addAll(sampleItemTab.getQueryFields());
+            queryFields.addAll(analysisTab.getQueryFields());
+            queryFields.addAll(testResultsTab.getQueryFields());
+            queryFields.addAll(storageTab.getQueryFields());
+            queryFields.addAll(qaEventsTab.getQueryFields());
+            queryFields.addAll(auxDataTab.getQueryFields());
+            
             query = new Query();
-            query.setFields(getQueryFields());
+            query.setFields(queryFields);
             nav.setQuery(query);
         } else if (state == State.ADD) {
             window.setBusy(consts.get("adding"));
@@ -2015,10 +2080,40 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         return (!sampleReleasedId.equals(manager.getSample().getStatusId()));
     }
     
-    protected boolean validate() {
-        boolean valid = super.validate();
-        
-        return (storageTab.validate() && valid);
+    public boolean validate() {
+        return super.validate()            & 
+        	   sampleItemTab.validate()    &
+        	   analysisTab.validate()      &
+        	   testResultsTab.validate()   &
+        	   analysisNotesTab.validate() &
+        	   sampleNotesTab.validate()   &
+               storageTab.validate()       &
+               qaEventsTab.validate()      &
+               auxDataTab.validate();
+    }
+    
+    public void clearErrors() {    
+        super.clearErrors();
+        sampleItemTab.clearErrors();
+        analysisTab.clearErrors();
+        testResultsTab.clearErrors();
+        analysisNotesTab.clearErrors();
+        sampleNotesTab.clearErrors();
+        storageTab.clearErrors();
+        qaEventsTab.clearErrors();
+        auxDataTab.clearErrors();
+    }
+    
+    public void showErrors(ValidationErrorsList list) {
+        super.showErrors(list);
+        sampleItemTab.showErrors(list);
+        analysisTab.showErrors(list);
+        testResultsTab.showErrors(list);
+        analysisNotesTab.showErrors(list);
+        sampleNotesTab.showErrors(list);
+        storageTab.showErrors(list);
+        qaEventsTab.showErrors(list);
+        auxDataTab.showErrors(list);
     }
     
     private int getNextTempId() {
