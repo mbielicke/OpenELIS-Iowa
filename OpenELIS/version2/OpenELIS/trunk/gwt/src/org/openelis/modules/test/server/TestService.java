@@ -28,7 +28,6 @@ package org.openelis.modules.test.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.PanelVO;
-import org.openelis.domain.TestDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.DatabaseException;
@@ -138,9 +137,9 @@ public class TestService {
 
     }
 
-    public TestManager fetchWithPrepTests(Integer testId) throws Exception {
+    public TestManager fetchWithPrepTestsSampleTypes(Integer testId) throws Exception {
         try {
-            return remoteManager().fetchWithPrepTests(testId);
+            return remoteManager().fetchWithPrepTestsSampleTypes(testId);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }

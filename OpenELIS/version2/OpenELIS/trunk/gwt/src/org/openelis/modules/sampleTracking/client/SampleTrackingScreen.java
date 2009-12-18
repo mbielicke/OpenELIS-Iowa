@@ -558,7 +558,7 @@ public class SampleTrackingScreen extends Screen {
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
-            manager = manager.fetchForUpdate();
+            manager = SampleManager.fetchByIdWithItemsAnalysesForUpdate(manager.getSample().getId());
 
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
@@ -672,7 +672,7 @@ public class SampleTrackingScreen extends Screen {
             window.setBusy(consts.get("fetching"));
             
             try {
-                manager = SampleManager.findByIdWithItemsAnalyses(id);
+                manager = SampleManager.fetchByIdWithItemsAnalyses(id);
             
             } catch (Exception e) {
                 e.printStackTrace();

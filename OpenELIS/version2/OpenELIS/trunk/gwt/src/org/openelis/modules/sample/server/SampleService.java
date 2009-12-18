@@ -57,8 +57,8 @@ public class SampleService {
         return remote().update(man);
     }
     
-    public SampleManager fetchForUpdate(Integer sampleId) throws Exception {
-        return remote().fetchForUpdate(sampleId);
+    public SampleManager fetchByIdWithItemsAnalysesForUpdate(Integer sampleId) throws Exception {
+        return remote().fetchByIdWithItemsAnalysesForUpdate(sampleId);
     }
     
     public SampleManager abort(Integer sampleId) throws Exception {

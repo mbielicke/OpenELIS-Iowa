@@ -63,8 +63,8 @@ public class SampleManagerProxy {
         return service.call("fetchByAccessionNumber", accessionNumber);
     }
     
-    public SampleManager fetchForUpdate(Integer sampleId) throws Exception {
-        return service.call("fetchForUpdate", sampleId);
+    public SampleManager fetchByIdWithItemsAnalysesForUpdate(Integer sampleId) throws Exception {
+        return service.call("fetchByIdWithItemsAnalysesForUpdate", sampleId);
     }
     
     public SampleManager abort(Integer sampleId) throws Exception {
