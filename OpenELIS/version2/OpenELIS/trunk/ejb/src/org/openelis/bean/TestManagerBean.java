@@ -77,8 +77,8 @@ public class TestManagerBean implements TestManagerRemote {
         return TestManager.fetchWithAnalytesAndResults(testId);
     }
 
-    public TestManager fetchWithPrepTests(Integer testId) throws Exception {
-        return TestManager.fetchWithPrepTests(testId);
+    public TestManager fetchWithPrepTestsSampleTypes(Integer testId) throws Exception {
+        return TestManager.fetchWithPrepTestsSampleTypes(testId);
     }
 
     public TestManager fetchWithPrepTestsAndReflexTests(Integer testId) throws Exception {

@@ -44,6 +44,6 @@ public class StorageManagerBean implements StorageManagerRemote{
     @PersistenceContext(name = "openelis")
     
     public StorageManager fetch(Integer referenceTableId, Integer referenceId) throws Exception {
-        return StorageManager.findByRefTableRefId(referenceTableId, referenceId);
+        return StorageManager.fetchByRefTableRefId(referenceTableId, referenceId);
     }
 }

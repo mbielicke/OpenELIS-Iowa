@@ -38,7 +38,7 @@ import org.openelis.remote.SampleQAEventManagerRemote;
 public class SampleQAEventManagerBean implements SampleQAEventManagerRemote {
 
     public SampleQaEventManager fetchBySampleId(Integer sampleId) throws Exception {
-        SampleQaEventManager man = SampleQaEventManager.findBySampleId(sampleId);   
+        SampleQaEventManager man = SampleQaEventManager.fetchBySampleId(sampleId);   
         
         return man;
     }

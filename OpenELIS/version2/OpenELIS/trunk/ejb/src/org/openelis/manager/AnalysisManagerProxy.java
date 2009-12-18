@@ -39,11 +39,31 @@ import org.openelis.manager.AnalysisManager.AnalysisListItem;
 public class AnalysisManagerProxy {
     public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
         AnalysisLocal al = getAnalysisLocal();
+        AnalysisViewDO anDO;
         ArrayList<AnalysisViewDO> items = (ArrayList<AnalysisViewDO>)al.fetchBySampleItemId(sampleItemId);
         AnalysisManager am = AnalysisManager.getInstance();
         
-        for(int i=0; i<items.size(); i++)
-            am.addAnalysis(items.get(i));
+        for(int i=0; i<items.size(); i++){
+            anDO = items.get(i);
+            am.addAnalysis(anDO);
+        }
+        
+        am.setSampleItemId(sampleItemId);
+        
+        return am;
+    }
+    
+    public AnalysisManager fetchBySampleItemIdForUpdate(Integer sampleItemId) throws Exception {
+        AnalysisLocal al = getAnalysisLocal();
+        AnalysisViewDO anDO;
+        ArrayList<AnalysisViewDO> items = (ArrayList<AnalysisViewDO>)al.fetchBySampleItemId(sampleItemId);
+        AnalysisManager am = AnalysisManager.getInstance();
+        
+        for(int i=0; i<items.size(); i++){
+            anDO = items.get(i);
+            am.addAnalysis(anDO);
+            am.setTestAt(TestManager.fetchWithPrepTestAndReflexTests(anDO.getTestId()), i);
+        }
         
         am.setSampleItemId(sampleItemId);
         
@@ -183,7 +203,7 @@ public class AnalysisManagerProxy {
             man.getExternalNoteAt(i).add();
         }
         
-        if(item.storage != null){
+        if(item.storages != null){
             man.getStorageAt(i).setReferenceId(analysisDO.getId());
             man.getStorageAt(i).setReferenceTableId(analysisRefId);
             man.getStorageAt(i).add();
@@ -226,7 +246,7 @@ public class AnalysisManagerProxy {
             man.getExternalNoteAt(i).update();
         }
         
-        if(item.storage != null){
+        if(item.storages != null){
             man.getStorageAt(i).setReferenceId(analysisDO.getId());
             man.getStorageAt(i).setReferenceTableId(analysisRefId);
             man.getStorageAt(i).update();

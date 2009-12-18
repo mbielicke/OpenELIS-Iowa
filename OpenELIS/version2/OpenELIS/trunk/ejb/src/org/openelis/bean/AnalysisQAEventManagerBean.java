@@ -38,7 +38,7 @@ import org.openelis.remote.AnalysisQAEventManagerRemote;
 public class AnalysisQAEventManagerBean implements AnalysisQAEventManagerRemote {
     
     public AnalysisQaEventManager fetchByAnalysisId(Integer analysisId) throws Exception {
-        AnalysisQaEventManager man = AnalysisQaEventManager.findByAnalysisId(analysisId);   
+        AnalysisQaEventManager man = AnalysisQaEventManager.fetchByAnalysisId(analysisId);   
         
        return man;
     }
