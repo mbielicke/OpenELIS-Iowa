@@ -1212,7 +1212,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
-            manager = manager.fetchForUpdate();
+            manager = SampleManager.fetchByIdWithItemsAnalysesForUpdate(manager.getSample().getId());
 
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
@@ -1360,7 +1360,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             window.setBusy(consts.get("fetching"));
             
             try {
-                manager = SampleManager.findByIdWithItemsAnalyses(id);
+                manager = SampleManager.fetchByIdWithItemsAnalyses(id);
             
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1801,7 +1801,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             
             TestManager testMan = null;
             try{
-                testMan = TestManager.fetchWithPrepTests(prepTestId);
+                testMan = TestManager.fetchWithPrepTestsSampleTypes(prepTestId);
                 
             }catch(Exception e){
                 Window.alert(e.getMessage());
@@ -1872,7 +1872,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         
         try{
             TestManager testMan=null;
-            testMan = TestManager.fetchWithPrepTests(prepTestId);
+            testMan = TestManager.fetchWithPrepTestsSampleTypes(prepTestId);
             
             if(testMan != null){
                 TestViewDO testDO = testMan.getTest();

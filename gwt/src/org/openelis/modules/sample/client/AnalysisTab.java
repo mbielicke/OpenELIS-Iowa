@@ -128,7 +128,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                     
                         bundles = new ArrayList<SampleDataBundle>();
                         for(int i=0; i<testIds.size(); i++){
-                            testMan = TestManager.fetchWithPrepTests(testIds.get(i).getId());
+                            testMan = TestManager.fetchWithPrepTestsSampleTypes(testIds.get(i).getId());
                             dataBundle = null;
                             
                             if(i==0)

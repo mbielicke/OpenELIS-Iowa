@@ -50,6 +50,10 @@ public class AnalysisManagerProxy {
         return service.call("fetchBySampleItemId", sampleItemId);
     }
     
+    public AnalysisManager fetchBySampleItemIdForUpdate(Integer sampleItemId) throws Exception {
+        return service.call("fetchBySampleItemIdForUpdate", sampleItemId);
+    }
+    
     public AnalysisManager add(AnalysisManager man) throws Exception {
         throw new UnsupportedOperationException();
     }
@@ -128,7 +132,7 @@ public class AnalysisManagerProxy {
             if(item.qaEvents != null)
                 man.getQAEventAt(i).validate(errorsList);
             
-            if(item.storage != null)
+            if(item.storages != null)
                 man.getStorageAt(i).validate(errorsList);
         }
     }
