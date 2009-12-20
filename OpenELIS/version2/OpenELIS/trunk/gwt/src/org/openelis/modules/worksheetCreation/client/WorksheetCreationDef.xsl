@@ -78,7 +78,8 @@ UIRF Software License are applicable instead of those above.
             <label />
           </col>
           <col key="{meta:getWorksheetAnalysisWorksheetAnalysisId}" width="50" header="{resource:getString($constants,'qcLink')}" sort="false">
-            <dropdown width="30"/>
+            <label />
+<!--          <dropdown width="30"/>  -->
           </col>
           <col key="{meta:getAnalysisTestName()}" width="100" header="{resource:getString($constants,'test')}" sort="true">
             <label />

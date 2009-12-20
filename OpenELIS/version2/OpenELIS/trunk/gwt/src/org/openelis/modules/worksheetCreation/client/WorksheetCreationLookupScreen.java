@@ -27,6 +27,17 @@ package org.openelis.modules.worksheetCreation.client;
 
 import java.util.ArrayList;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.domain.DictionaryDO;
@@ -58,20 +69,14 @@ import org.openelis.gwt.widget.HasField;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
+import org.openelis.gwt.widget.table.event.UnselectionEvent;
+import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.meta.WorksheetCreationMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class WorksheetCreationLookupScreen extends Screen 
                                            implements HasActionHandlers<WorksheetCreationLookupScreen.Action> {
@@ -259,6 +264,20 @@ public class WorksheetCreationLookupScreen extends Screen
             }
         });
 
+        analysesTable.addSelectionHandler(new SelectionHandler<TableRow>() {
+            public void onSelection(SelectionEvent event) {
+                if (analysesTable.getSelectedRow() != -1)
+                    addButton.enable(true);
+            }
+        });
+        
+        analysesTable.addUnselectionHandler(new UnselectionHandler<TableDataRow>() {
+            public void onUnselection(UnselectionEvent event) {
+                if (analysesTable.getSelectedRow() == -1)
+                    addButton.enable(false);
+            }
+        });
+        
         analysesTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 // this table cannot be edited
@@ -274,7 +293,7 @@ public class WorksheetCreationLookupScreen extends Screen
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addButton.enable(true);
+                addButton.enable(false);
             }
         });
 
@@ -282,6 +301,7 @@ public class WorksheetCreationLookupScreen extends Screen
         addScreenHandler(selectAllButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 analysesTable.selectAll();
+                addButton.enable(true);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
