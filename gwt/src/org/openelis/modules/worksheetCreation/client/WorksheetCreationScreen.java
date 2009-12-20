@@ -28,6 +28,15 @@ package org.openelis.modules.worksheetCreation.client;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QcAnalyteDO;
@@ -74,6 +83,8 @@ import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.gwt.widget.table.event.SortEvent;
 import org.openelis.gwt.widget.table.event.SortHandler;
+import org.openelis.gwt.widget.table.event.UnselectionEvent;
+import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.TestWorksheetManager;
 import org.openelis.manager.WorksheetAnalysisManager;
@@ -83,15 +94,6 @@ import org.openelis.manager.WorksheetQcResultManager;
 import org.openelis.manager.WorksheetResultManager;
 import org.openelis.meta.WorksheetCreationMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
 
 public class WorksheetCreationScreen extends Screen implements HasActionHandlers<WorksheetCreationScreen.Action> {
 
@@ -110,7 +112,8 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
     protected ArrayList<TableDataRow>             analysisItems, qcLastRunList,
                                                   qcLastBothList;
     protected ArrayList<TestWorksheetItemDO>      testWorksheetItems;
-    protected Confirm                             worksheetSaveConfirm, worksheetExitConfirm;
+    protected Confirm                             worksheetRemoveQCConfirm, worksheetSaveConfirm,
+                                                  worksheetExitConfirm;
     protected TableDataRow                        qcItems[];
     protected TableWidget                         worksheetItemTable;
     protected TextBox<Integer>                    worksheetId;
@@ -250,7 +253,12 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
             public void onSelection(SelectionEvent event) {
                 if (worksheetItemTable.getSelectedRow() != -1)
                     removeRowButton.enable(true);
-                else
+            }
+        });
+        
+        worksheetItemTable.addUnselectionHandler(new UnselectionHandler<TableDataRow>() {
+            public void onUnselection(UnselectionEvent event) {
+                if (worksheetItemTable.getSelectedRow() == -1)
                     removeRowButton.enable(false);
             }
         });
@@ -270,9 +278,6 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
 
         worksheetItemTable.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
-                // TODO -- Update to include QC Removal
-//                analysisItems.remove(event.getIndex());
-                mergeAnalysesAndQCs();
             }
         });
 
@@ -300,11 +305,34 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         removeRowButton = (AppButton)def.getWidget("removeRowButton");
         addScreenHandler(removeRowButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int r;
+                int          rowIndex;
+                TableDataRow dataRow;
                 
-                r = worksheetItemTable.getSelectedRow();
-                if (r > -1 && worksheetItemTable.numRows() > 0)
-                    worksheetItemTable.deleteRow(r);
+                rowIndex = worksheetItemTable.getSelectedRow();
+                if (rowIndex > -1 && worksheetItemTable.numRows() > 0) {
+                    dataRow = worksheetItemTable.getRow(rowIndex);
+                    if (dataRow.data instanceof TestWorksheetItemDO) {
+                        if (worksheetRemoveQCConfirm == null) {
+                            worksheetRemoveQCConfirm = new Confirm(Confirm.Type.QUESTION,
+                                                               consts.get("worksheetRemoveQCConfirm"),
+                                                               "Don't Remove", "Remove");
+                            worksheetRemoveQCConfirm.addSelectionHandler(new SelectionHandler<Integer>(){
+                                public void onSelection(SelectionEvent<Integer> event) {
+                                    switch(event.getSelectedItem().intValue()) {
+                                        case 1:
+                                            qcItems[worksheetItemTable.getSelectedRow()] = null;
+                                            mergeAnalysesAndQCs();
+                                            break;
+                                    }
+                                }
+                            });
+                        }
+                        worksheetRemoveQCConfirm.show();
+                    } else if (dataRow.data instanceof WorksheetCreationVO) {
+                        analysisItems.remove(dataRow);
+                        mergeAnalysesAndQCs();
+                    }
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -376,6 +404,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
                                     newRow.cells.get(8).value = row.cells.get(7).value;     // received date and time
                                     newRow.cells.get(9).value = row.cells.get(8).value;     // due days
                                     newRow.cells.get(10).value = row.cells.get(9).value;    // expire date and time
+                                    newRow.data = data;
                                     analysisItems.add(newRow);
                                 }
                                 
