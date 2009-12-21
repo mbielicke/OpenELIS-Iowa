@@ -419,6 +419,10 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
         return proxy().abort(sample.getId());
     }
     
+    public SampleManager abortWithItemsAnalyses() throws Exception {
+        return proxy().abortWithItemsAnalyses(sample.getId());
+    }
+    
     public void validate() throws Exception {
         ValidationErrorsList errorList = new ValidationErrorsList();
         proxy().validate(this, errorList);
