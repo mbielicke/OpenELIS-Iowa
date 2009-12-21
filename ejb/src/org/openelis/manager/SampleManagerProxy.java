@@ -214,7 +214,12 @@ public class SampleManagerProxy {
     }
     
     public SampleManager abort(Integer sampleId) throws Exception {
-        throw new UnsupportedOperationException();    }
+        throw new UnsupportedOperationException();    
+   }
+    
+    public SampleManager abortWithItemsAnalyses(Integer sampleId) throws Exception {
+        throw new UnsupportedOperationException();    
+    }
     
     public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
         ValidationErrorsList errorsList;

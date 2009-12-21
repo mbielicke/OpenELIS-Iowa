@@ -127,6 +127,12 @@ public class SampleManagerBean  implements SampleManagerRemote {
         
         return fetch(sampleId);
     }
+    
+    public SampleManager abortUpdateWithItemsAnalyses(Integer sampleId) throws Exception {
+        lockBean.giveUpLock(sampleRefTableId, sampleId);
+        
+        return fetchWithItemsAnalysis(sampleId);
+    }
 
     public SampleOrganizationManager fetchSampleOrgsBySampleId(Integer sampleId) throws Exception {
         SampleOrganizationManager man = SampleOrganizationManager.fetchBySampleId(sampleId);   
