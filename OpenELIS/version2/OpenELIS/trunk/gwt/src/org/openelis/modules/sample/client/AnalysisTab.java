@@ -79,6 +79,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     protected TextBox revision;
     protected CalendarLookUp startedDate, completedDate, releasedDate, printedDate;
     
+    protected int analysisIndex = -1;
     protected SampleDataBundle bundle;
     protected AnalysisManager manager;
     protected AnalysisViewDO analysis;
@@ -131,15 +132,12 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                             testMan = TestManager.fetchWithPrepTestsSampleTypes(testIds.get(i).getId());
                             dataBundle = null;
                             
-                            if(i==0)
+                            if(i==0){
+                                bundle.analysisManager.setTestAt(testMan, analysisIndex);
                                 dataBundle = bundle;
-                            else{
-                                dataBundle = new SampleDataBundle();
-                                dataBundle.analysisManager = bundle.analysisManager;
-                                dataBundle.analysisTestDO = new AnalysisViewDO();
-                                dataBundle.sampleItemDO = bundle.sampleItemDO;
-                                dataBundle.sampleItemManager = bundle.sampleItemManager;
-                                dataBundle.type = SampleDataBundle.Type.ANALYSIS;
+                            }else{
+                                dataBundle = new SampleDataBundle(bundle.sampleItemManager, bundle.sampleItemDO, 
+                                                                  bundle.analysisManager, new AnalysisViewDO(), testMan);
                                 
                                 bundle.analysisManager.addAnalysis(dataBundle.analysisTestDO);
                             }
@@ -147,7 +145,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                             bundles.add(dataBundle);
                             
                             //figure out which bundle to send
-                            setupBundle(dataBundle, testMan);
+                            setupBundle(dataBundle);
                         }
                         
                         //fire changed before we check for prep tests
@@ -292,14 +290,20 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         sectionId = (Dropdown<Integer>)def.getWidget(SampleMeta.getAnalysisSectionName());
         addScreenHandler(sectionId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                if(analysis.getSectionId() != null)
+                ArrayList<TableDataRow> sections;
+                if(bundle.sectionsDropdownModel != null){
+                    sectionId.setModel(bundle.sectionsDropdownModel);
+                    
+                }else if(bundle.testManager != null){
+                    sections = getSectionsModel(bundle.testManager.getTestSections());
+                    bundle.sectionsDropdownModel = sections;
+                    sectionId.setModel(sections);
+
+                }else if(analysis.getSectionId() != null){
                     sectionId.setModel(getDropdownModel(analysis.getSectionId(), analysis.getSectionName()));
-                else{
-                    if(bundle != null && bundle.sectionsDropdownModel != null)
-                        sectionId.setModel(bundle.sectionsDropdownModel);
-                    else
-                        sectionId.setModel(getSectionsModel(null));
-                }
+                    
+                }else
+                    sectionId.setModel(getSectionsModel(null));
                 
                 sectionId.setSelection(analysis.getSectionId());
             }
@@ -319,14 +323,25 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         unitOfMeasureId = (Dropdown<Integer>)def.getWidget(SampleMeta.getAnalysisUnitOfMeasureId());
         addScreenHandler(sectionId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                if(analysis.getUnitOfMeasureId() != null)
+                ArrayList<TableDataRow> units;
+                if(bundle.unitsDropdownModel != null){
+                    unitOfMeasureId.setModel(bundle.unitsDropdownModel);
+                    
+                }else if(bundle.testManager != null){
+                    try{
+                    units = getUnitsModel(bundle.testManager.getSampleTypes(), bundle.sampleItemDO.getTypeOfSampleId());
+                    }catch(Exception e){
+                        Window.alert(e.getMessage());
+                        units = new ArrayList<TableDataRow>();
+                    }
+                    bundle.unitsDropdownModel = units;
+                    unitOfMeasureId.setModel(units);
+
+                }else if(analysis.getUnitOfMeasureId() != null){
                     unitOfMeasureId.setModel(getDropdownModel(analysis.getUnitOfMeasureId(), analysis.getUnitOfMeasure()));
-                else{
-                    if(bundle != null && bundle.unitsDropdownModel != null)
-                        unitOfMeasureId.setModel(bundle.unitsDropdownModel);
-                    else
-                        unitOfMeasureId.setModel(getUnitsModel(null, null));
-                }
+                    
+                }else
+                    unitOfMeasureId.setModel(getUnitsModel(null, null));
                 
                 unitOfMeasureId.setSelection(analysis.getUnitOfMeasureId());
             }
@@ -462,11 +477,16 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         return model;
     }
     
-    public void setupBundle(SampleDataBundle bundle,  TestManager testMan){
+    public void setupBundle(SampleDataBundle bundle){
+        TestManager testMan = bundle.testManager;
         TestSectionViewDO defaultDO;
-        TestViewDO test = testMan.getTest();
+        ArrayList<TableDataRow> sections;
+        ArrayList<TableDataRow> units;
+        TestViewDO test;
         
-        bundle.testManager = testMan;
+        testMan = bundle.testManager;
+        test = testMan.getTest();
+        
         bundle.analysisTestDO.setTestId(test.getId());
         bundle.analysisTestDO.setTestName(test.getName());
         bundle.analysisTestDO.setMethodId(test.getMethodId());
@@ -476,7 +496,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         bundle.analysisTestDO.setRevision(0);
 
         //setup analysis units     
-        ArrayList<TableDataRow> units = null;
+        units = null;
         try{
             units = getUnitsModel(testMan.getSampleTypes(), bundle.sampleItemDO.getTypeOfSampleId());
         }catch(Exception e){
@@ -487,11 +507,9 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         if(units.size() == 2){
             bundle.analysisTestDO.setUnitOfMeasureId((Integer)units.get(1).key);
             bundle.analysisTestDO.setUnitOfMeasure((String)units.get(1).cells.get(0).value);
-            bundle.unitsDropdownModel = null;
-            
-        }else{
-            bundle.unitsDropdownModel = units;     
         }
+        
+        bundle.unitsDropdownModel = units;     
         
         //setup analysis sections
         defaultDO = null;
@@ -505,12 +523,11 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         if(defaultDO != null){
             bundle.analysisTestDO.setSectionId(defaultDO.getSectionId());
             bundle.analysisTestDO.setSectionName(defaultDO.getSection());
-            bundle.sectionsDropdownModel = null;
-        }else if(testMan.getTestSections().count() > 0){
-            ArrayList<TableDataRow> sections = getSectionsModel(testMan.getTestSections());
-                
-            if(bundle != null)
-                bundle.sectionsDropdownModel = sections;
+        }
+        
+        if(testMan.getTestSections().count() > 0){
+            sections = getSectionsModel(testMan.getTestSections());
+            bundle.sectionsDropdownModel = sections;
         }
     }
     
@@ -546,9 +563,12 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             analysis = data.analysisTestDO;
             manager = data.analysisManager;
             sampleItem = data.sampleItemDO;
+            analysisIndex = manager.getIndex(analysis);
             
-            if(state == State.ADD || state == State.UPDATE)
+            if(state == State.ADD || state == State.UPDATE){
+                analysisIndex = manager.getIndex(analysis);
                 StateChangeEvent.fire(this, State.UPDATE);
+            }
         }else {
             analysis = new AnalysisViewDO();
             manager = null;
@@ -559,9 +579,6 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     }
      
      public void draw(){
-         if(analysis == null)
-             analysis = new AnalysisViewDO();
-         
          if(!loaded)
              DataChangeEvent.fire(this);
          

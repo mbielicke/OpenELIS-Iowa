@@ -1053,7 +1053,8 @@ public class SampleTrackingScreen extends Screen {
     	}
     	if(sindex < -1)
     		return new SampleDataBundle();
-    	return new SampleDataBundle(siManager,siManager.getSampleItemAt(sindex),siManager.getAnalysisAt(sindex),siManager.getAnalysisAt(sindex).getAnalysisAt(aindex));
+    	return new SampleDataBundle(siManager,siManager.getSampleItemAt(sindex),siManager.getAnalysisAt(sindex),siManager.getAnalysisAt(sindex).getAnalysisAt(aindex),
+    	                            siManager.getAnalysisAt(sindex).getTestAt(aindex));
     }
     
 

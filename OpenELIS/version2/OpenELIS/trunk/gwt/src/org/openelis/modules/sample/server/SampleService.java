@@ -65,6 +65,10 @@ public class SampleService {
         return remote().abortUpdate(sampleId);
     }
     
+    public SampleManager abortWithItemsAnalyses(Integer sampleId) throws Exception {
+        return remote().abortUpdateWithItemsAnalyses(sampleId);
+    }
+    
     public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
         remote().validateAccessionNumber(sampleDO);
     }

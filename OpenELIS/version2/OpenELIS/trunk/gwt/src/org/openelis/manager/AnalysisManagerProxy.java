@@ -25,27 +25,21 @@
 */
 package org.openelis.manager;
 
-import java.util.ArrayList;
-
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.manager.AnalysisManager.AnalysisListItem;
 
 public class AnalysisManagerProxy {
     protected static final String ANALYSIS_SERVICE_URL = "org.openelis.modules.analysis.server.AnalysisService";
-    protected static final String TEST_MANAGER_SERVICE_URL = "org.openelis.modules.test.server.TestService";
     protected ScreenService service, testService;
     
     public AnalysisManagerProxy(){
         service = new ScreenService("OpenELISServlet?service="+ANALYSIS_SERVICE_URL);
-        testService = new ScreenService("OpenELISServlet?service="+TEST_MANAGER_SERVICE_URL);
     }
+    
     public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
         return service.call("fetchBySampleItemId", sampleItemId);
     }
@@ -62,36 +56,6 @@ public class AnalysisManagerProxy {
         throw new UnsupportedOperationException();
     }
     
-    public boolean testHasSampleType(Integer testId, Integer sampleTypeId){
-        Query query;
-        QueryData field;
-        ArrayList<QueryData> fields;
-
-        try{
-            fields = new ArrayList<QueryData>();
-            query = new Query();
-        
-            field = new QueryData();
-            field.query = testId.toString();
-            fields.add(field);
-            
-            field = new QueryData();
-            field.query = sampleTypeId.toString();
-            fields.add(field);
-            
-            query.setFields(fields);
-
-            testService.call("fetchTestByIdAndSampleType", query);
-        
-        }catch(NotFoundException e){
-            return false;
-        }catch(Exception e){
-            System.out.println(e.getMessage());
-        }
-        
-        return true;
-    }
-    
     public void validate(AnalysisManager man, ValidationErrorsList errorsList) throws Exception {
         validate(man, null, null, errorsList);
     }
@@ -99,6 +63,8 @@ public class AnalysisManagerProxy {
     public void validate(AnalysisManager man, String sampleItemSequence, Integer sampleTypeId, ValidationErrorsList errorsList) throws Exception {
         AnalysisListItem item;
         Integer cancelledStatusId;
+        AnalysisViewDO analysisDO;
+        TestManager testMan;
         
         cancelledStatusId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
         
@@ -106,7 +72,8 @@ public class AnalysisManagerProxy {
             errorsList.add(new FormErrorException("minOneAnalysisException", sampleItemSequence));
         
         for(int i=0; i<man.count(); i++){
-            AnalysisViewDO analysisDO = man.getAnalysisAt(i);
+            analysisDO = man.getAnalysisAt(i);
+            testMan = man.getTestAt(i);
             
             if(analysisDO.getTestId() == null)
                 errorsList.add(new FormErrorException("analysisTestIdMissing", sampleItemSequence));
@@ -119,10 +86,9 @@ public class AnalysisManagerProxy {
             
             //ignore the sample type check if analysis is cancelled.  This is the only
             //way they can fix this error in some cases.
-            //FIXME this check is REALLY slow...need to find a better way to do this
-            //if(analysisDO.getTestId() != null && !cancelledStatusId.equals(analysisDO.getStatusId()) && 
-            //                !testHasSampleType(analysisDO.getTestId(), sampleTypeId))
-            //    errorsList.add(new FormErrorException("sampleTypeInvalid", analysisDO.getTestName(), analysisDO.getMethodName()));
+            if(analysisDO.getTestId() != null && !cancelledStatusId.equals(analysisDO.getStatusId()) && 
+                            !testMan.getSampleTypes().hasType(sampleTypeId))
+                errorsList.add(new FormErrorException("sampleTypeInvalid", analysisDO.getTestName(), analysisDO.getMethodName()));
             
             item = man.getItemAt(i);
             //validate the children
