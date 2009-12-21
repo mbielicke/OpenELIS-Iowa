@@ -71,6 +71,10 @@ public class SampleManagerProxy {
         return service.call("abort", sampleId);
     }
     
+    public SampleManager abortWithItemsAnalyses(Integer sampleId) throws Exception {
+        return service.call("abortWithItemsAnalyses", sampleId);
+    }
+    
     public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
         service.call("validateAccessionNumber", sampleDO);
     }

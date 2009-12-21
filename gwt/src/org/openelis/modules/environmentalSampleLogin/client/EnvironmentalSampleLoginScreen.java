@@ -1399,7 +1399,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         }else if (state == State.UPDATE) {
             
             try {
-                manager = manager.abort();
+                manager = manager.abortWithItemsAnalyses();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
@@ -1589,7 +1589,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         
         try{
             SampleDataBundle data = new SampleDataBundle(sampleItemData.sampleItemManager, itemDO,
-                                                         sampleItemData.sampleItemManager.getAnalysisAt(sampleItemIndex),aDO);
+                                                         sampleItemData.sampleItemManager.getAnalysisAt(sampleItemIndex),aDO, null);
             newRow.data = data;
             itemsTree.addChildItem(selectedRow, newRow);
             itemsTree.select(newRow);
@@ -1713,6 +1713,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         TreeDataItem tmp;
         TreeDataItem treeModelItem, row;
         ArrayList<TreeDataItem> model = new ArrayList<TreeDataItem>();
+        SampleDataBundle aData;
         
         try{  
             HashMap<Integer, TreeDataItem> keyTable = new HashMap<Integer, TreeDataItem>();
@@ -1755,7 +1756,13 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                     treeModelItem.cells.get(0).value = formatTreeString(aDO.getTestName()) + " : " + formatTreeString(aDO.getMethodName());
                     treeModelItem.cells.get(1).value = aDO.getStatusId();
                     
-                    SampleDataBundle aData = new SampleDataBundle(sim, itemDO, am, aDO);
+                    //only load the test manager in update when the user can edit it
+                    aData = null;
+                    if(state == State.UPDATE)
+                        aData = new SampleDataBundle(sim, itemDO, am, aDO, am.getTestAt(j));
+                    else
+                        aData = new SampleDataBundle(sim, itemDO, am, aDO, null);
+                    
                     treeModelItem.data = aData;
                     
                     row.addItem(treeModelItem);
@@ -1844,8 +1851,10 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         int selectedIndex;
         SampleDataBundle bundle, tmpBundle;
         ArrayList<SampleDataBundle> bundles;
-        Integer currentPrepId = checkForPrepTest(prepTestId);
+        TestManager testMan;
+        Integer currentPrepId;
         
+        currentPrepId = checkForPrepTest(prepTestId);
         bundle = null;
         selectedRow = itemsTree.getSelection();
         selectedIndex = itemsTree.getSelectedRow();
@@ -1857,14 +1866,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             
             anDO.setPreAnalysisId(currentPrepId);
         }else{
-            bundle = new SampleDataBundle();
-            bundle.analysisManager = tmpBundle.analysisManager;
-            bundle.analysisTestDO = new AnalysisViewDO();
-            bundle.sampleItemDO = tmpBundle.sampleItemDO;
-            bundle.sampleItemManager = tmpBundle.sampleItemManager;
-            bundle.type = SampleDataBundle.Type.ANALYSIS;
-            
-            TestManager testMan = null;
+            testMan = null;
             try{
                 testMan = TestManager.fetchWithPrepTestsSampleTypes(prepTestId);
                 
@@ -1872,7 +1874,9 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 Window.alert(e.getMessage());
             }
             
-            analysisTab.setupBundle(bundle, testMan);
+            bundle = new SampleDataBundle(tmpBundle.sampleItemManager, tmpBundle.sampleItemDO, 
+                                          tmpBundle.analysisManager, new AnalysisViewDO(), testMan);
+            analysisTab.setupBundle(bundle);
             
             //need to put new row in tree
             TreeDataItem newPrepRow = new TreeDataItem(2);

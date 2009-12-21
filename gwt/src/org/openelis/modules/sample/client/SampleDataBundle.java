@@ -53,16 +53,18 @@ public class SampleDataBundle {
     }
 
     public SampleDataBundle(SampleItemManager sampleItemManager, SampleItemViewDO sampleItemDO) {
-        this(sampleItemManager, sampleItemDO, null, null);
+        this(sampleItemManager, sampleItemDO, null, null, null);
         type = Type.SAMPLE_ITEM;
     }
 
     public SampleDataBundle(SampleItemManager sampleItemManager, SampleItemViewDO sampleItemDO,
-                            AnalysisManager analysisManager, AnalysisViewDO analysisTestDO) {
+                            AnalysisManager analysisManager, AnalysisViewDO analysisTestDO, 
+                            TestManager testManager) {
         this.sampleItemManager = sampleItemManager;
         this.sampleItemDO = sampleItemDO;
         this.analysisManager = analysisManager;
         this.analysisTestDO = analysisTestDO;
+        this.testManager = testManager;
         type = Type.ANALYSIS;
     }
 }
