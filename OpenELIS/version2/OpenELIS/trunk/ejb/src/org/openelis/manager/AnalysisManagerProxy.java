@@ -62,7 +62,7 @@ public class AnalysisManagerProxy {
         for(int i=0; i<items.size(); i++){
             anDO = items.get(i);
             am.addAnalysis(anDO);
-            am.setTestAt(TestManager.fetchWithPrepTestAndReflexTests(anDO.getTestId()), i);
+            am.setTestAt(TestManager.fetchWithPrepTestsSampleTypes(anDO.getTestId()), i);
         }
         
         am.setSampleItemId(sampleItemId);
