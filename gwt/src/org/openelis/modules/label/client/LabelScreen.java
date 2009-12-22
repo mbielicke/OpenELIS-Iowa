@@ -57,7 +57,7 @@ import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.metamap.LabelMetaMap;
+import org.openelis.meta.LabelMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -70,7 +70,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class LabelScreen extends Screen {
     private LabelViewDO           data;
-    private LabelMetaMap          meta = new LabelMetaMap();
+    private LabelMeta             meta = new LabelMeta();
     private SecurityModule        security;
 
     private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
@@ -275,7 +275,7 @@ public class LabelScreen extends Screen {
             }
         });
 
-        scriptlet = (AutoComplete)def.getWidget(meta.SCRIPTLET.getName());
+        scriptlet = (AutoComplete)def.getWidget(meta.getScriptletName());
         addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 scriptlet.setSelection(data.getScriptletId(), data.getScriptletName());

@@ -48,7 +48,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestResultLocal;
-import org.openelis.metamap.TestMetaMap;
+import org.openelis.meta.TestMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
@@ -64,7 +64,7 @@ public class TestResultBean implements TestResultLocal {
 
     private static int               typeDict, typeNumeric, typeTiter, typeDate,
                                      typeDateTime, typeTime;
-    private static final TestMetaMap meta = new TestMetaMap();
+    private static final TestMeta    meta = new TestMeta();
     private static final Logger      log  = Logger.getLogger(TestResultBean.class.getName());
     
     @PostConstruct
@@ -236,7 +236,7 @@ public class TestResultBean implements TestResultLocal {
     public void validate(TestResultViewDO data) throws Exception {
         ValidationErrorsList list;
         Integer typeId;
-        String value, fieldName;
+        String value;
 
         value = null;
 
@@ -244,18 +244,19 @@ public class TestResultBean implements TestResultLocal {
 
         value = data.getValue();
         typeId = data.getTypeId();
-
-        fieldName = meta.TEST_RESULT.getValue();
+        
+        if(DataBaseUtil.isEmpty(typeId)) 
+            list.add(new FieldErrorException("fieldRequiredException", meta.getResultTypeId()));        
         //
         // dictionary, titers, numeric require a value
         //
         if (DataBaseUtil.isEmpty(value) &&
             (DataBaseUtil.isSame(typeNumeric,typeId) || DataBaseUtil.isSame(typeTiter,typeId)
                             || DataBaseUtil.isSame(typeDict,typeId))) {
-            list.add(new FieldErrorException("fieldRequiredException", fieldName));
+            list.add(new FieldErrorException("fieldRequiredException", meta.getResultValue()));
         } else if (!DataBaseUtil.isEmpty(value) &&
-                   (DataBaseUtil.isSame(typeDateTime,typeId) || DataBaseUtil.isSame(typeTime,typeId) || DataBaseUtil.isSame(typeDate,typeId))) {
-            list.add(new FieldErrorException("valuePresentForTypeException", fieldName));
+                  (DataBaseUtil.isSame(typeDateTime,typeId) || DataBaseUtil.isSame(typeTime,typeId) || DataBaseUtil.isSame(typeDate,typeId))) {
+            list.add(new FieldErrorException("valuePresentForTypeException", meta.getResultValue()));
         }
 
         if (list.size() > 0)

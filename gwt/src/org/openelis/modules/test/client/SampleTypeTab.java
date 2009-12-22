@@ -53,7 +53,7 @@ import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestTypeOfSampleManager;
-import org.openelis.metamap.TestMetaMap;
+import org.openelis.meta.TestMeta;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -66,7 +66,7 @@ public class SampleTypeTab extends Screen implements HasActionHandlers<SampleTyp
     };
 
     private TestManager   manager;
-    private TestMetaMap   meta = new TestMetaMap();
+    private TestMeta   meta = new TestMeta();
     private boolean       loaded;
 
     private SampleTypeTab screen;
@@ -194,7 +194,7 @@ public class SampleTypeTab extends Screen implements HasActionHandlers<SampleTyp
         for (DictionaryDO resultDO : list) {
             model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
         }
-        ((Dropdown)table.getColumnWidget(meta.getTestTypeOfSample().getTypeOfSampleId())).setModel(model);
+        ((Dropdown)table.getColumnWidget(meta.getTypeOfSampleTypeOfSampleId())).setModel(model);
 
         model = new ArrayList<TableDataRow>();
         list = DictionaryCache.getListByCategorySystemName("unit_of_measure");
@@ -202,7 +202,7 @@ public class SampleTypeTab extends Screen implements HasActionHandlers<SampleTyp
         for (DictionaryDO resultDO : list) {
             model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
         }
-        ((Dropdown)table.getColumnWidget(meta.getTestTypeOfSample().getUnitOfMeasureId())).setModel(model);
+        ((Dropdown)table.getColumnWidget(meta.getTypeOfSampleUnitOfMeasureId())).setModel(model);
 
     }
 

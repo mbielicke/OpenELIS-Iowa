@@ -25,6 +25,8 @@
  */
 package org.openelis.domain;
 
+import org.openelis.utilcommon.DataBaseUtil;
+
 /**
  * Class represents the fields in database table test_worksheet_item.
  */
@@ -91,7 +93,7 @@ public class TestWorksheetItemDO extends DataObject {
     }
 
     public void setQcName(String qcName) {
-        this.qcName = qcName;
+        this.qcName = DataBaseUtil.trim(qcName);
         _changed = true;
     }
 }

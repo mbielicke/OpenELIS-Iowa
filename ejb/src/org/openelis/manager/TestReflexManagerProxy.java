@@ -36,12 +36,12 @@ import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.TestReflexLocal;
-import org.openelis.metamap.TestMetaMap;
+import org.openelis.meta.TestMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 public class TestReflexManagerProxy {
     
-    private static final TestMetaMap meta = new TestMetaMap();
+    private static final TestMeta meta = new TestMeta();
     
     public TestReflexManager fetchByTestId(Integer testId) throws Exception {
         TestReflexManager trm;        
@@ -157,11 +157,11 @@ public class TestReflexManagerProxy {
                 if (!idsList.contains(ids)) {
                     idsList.add(ids);
                 } else {
-                    fieldName = meta.TEST_REFLEX.getAddTest().getName();
+                    fieldName = meta.getReflexAddTestName();
                     throw new InconsistencyException("fieldUniqueOnlyException");
                 }
                 
-                fieldName = meta.TEST_REFLEX.getTestResult().getValue();
+                fieldName = meta.getReflexTestResultValue();
                 validateAnalyteResultMapping(anaListValid, resListValid, anaResGrpMap,
                                              resGrpRsltMap, refDO);
             } catch (InconsistencyException ex) {

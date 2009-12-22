@@ -65,7 +65,7 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestWorksheetManager;
-import org.openelis.metamap.TestMetaMap;
+import org.openelis.meta.TestMeta;
 import org.openelis.modules.test.client.AnalyteAndResultTab.Action;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -80,7 +80,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
     private WorksheetLayoutTab               screen;
     private TestWorksheetAnalyteLookupScreen analyteLookup;
 
-    private TestMetaMap                      meta = new TestMetaMap();
+    private TestMeta                      meta = new TestMeta();
 
     private boolean                          loaded;
 
@@ -109,7 +109,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
     private void initialize() {
         screen = this;
 
-        formatId = (Dropdown)def.getWidget(meta.getTestWorksheet().getFormatId());
+        formatId = (Dropdown)def.getWidget(meta.getWorksheetFormatId());
         addScreenHandler(formatId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
@@ -134,7 +134,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
 
-        batchCapacity = (TextBox)def.getWidget(meta.getTestWorksheet().getBatchCapacity());
+        batchCapacity = (TextBox)def.getWidget(meta.getWorksheetBatchCapacity());
         addScreenHandler(batchCapacity, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
@@ -159,7 +159,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
 
-        totalCapacity = (TextBox)def.getWidget(meta.getTestWorksheet().getTotalCapacity());
+        totalCapacity = (TextBox)def.getWidget(meta.getWorksheetTotalCapacity());
         addScreenHandler(totalCapacity, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
@@ -185,7 +185,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
 
-        scriptlet = (AutoComplete)def.getWidget(meta.getTestWorksheet().getScriptlet().getName());
+        scriptlet = (AutoComplete)def.getWidget(meta.getWorksheetScriptletName());
         addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
@@ -245,8 +245,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
 
-        qcname = (AutoComplete<String>)worksheetTable.getColumnWidget(meta.getTestWorksheetItem()
-                                                                          .getQcName());
+        qcname = (AutoComplete<String>)worksheetTable.getColumnWidget(meta.getWorksheetItemQcName());
         qcname.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
@@ -554,7 +553,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         for (DictionaryDO resultDO : list) {
             model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
         }
-        ((Dropdown)worksheetAnalyteTable.getColumnWidget(meta.getTestWorksheetAnalyte().getFlagId())).setModel(model);
+        ((Dropdown)worksheetAnalyteTable.getColumnWidget(meta.getWorksheetAnalyteFlagId())).setModel(model);
 
         model = new ArrayList<TableDataRow>();
         list = DictionaryCache.getListByCategorySystemName("test_worksheet_item_type");
@@ -562,7 +561,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         for (DictionaryDO resultDO : list) {
             model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
         }
-        ((Dropdown)worksheetTable.getColumnWidget(meta.getTestWorksheetItem().getTypeId())).setModel(model);
+        ((Dropdown)worksheetTable.getColumnWidget(meta.getWorksheetItemTypeId())).setModel(model);
 
         model = new ArrayList<TableDataRow>();
         list = DictionaryCache.getListByCategorySystemName("test_worksheet_format");

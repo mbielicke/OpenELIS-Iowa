@@ -29,74 +29,61 @@ package org.openelis.meta;
   * Label META Data
   */
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 import org.openelis.gwt.common.Meta;
+import org.openelis.gwt.common.MetaMap;
 
-public class LabelMeta implements Meta {
-  	protected String path = "";
-	private static final String entityName = "Label";
+public class LabelMeta implements Meta, MetaMap {
 	
-	private static final String
-              ID					="id",
-              NAME					="name",
-              DESCRIPTION					="description",
-              PRINTER_TYPE_ID					="printerTypeId",
-              SCRIPTLET_ID					="scriptletId";
-
-  	private static final String[] columnNames = {
-  	  ID,NAME,DESCRIPTION,PRINTER_TYPE_ID,SCRIPTLET_ID};
+	private static final String ID = "_label.id", 
+	                            NAME = "_label.name",
+                                DESCRIPTION = "_label.description",
+                                PRINTER_TYPE_ID = "_label.printerTypeId",
+                                SCRIPTLET_ID = "_label.scriptletId",
+                                
+                                SCRIPTLET_NAME = "_label.scriptlet.name";
+              
   	  
-	private HashSet<String> columnHashList;
-    
-    private void init() {
-        columnHashList = new HashSet<String>(columnNames.length);
-        for(int i = 0; i < columnNames.length; i++){
-            columnHashList.add(path+columnNames[i]);
-        }
+	private static HashSet<String> names;
+	
+	static {
+        names = new HashSet<String>(Arrays.asList(ID, NAME, DESCRIPTION,PRINTER_TYPE_ID,
+                                                  SCRIPTLET_ID, SCRIPTLET_NAME));
     }
-    
-    public LabelMeta() {
-		init();        
-    }
-    
-    public LabelMeta(String path) {
-        this.path = path;
-		init();        
-    }
-
-    public String[] getColumnList() {
-        return columnNames;
-    }
-
-    public String getEntity() {
-        return entityName;
-    }
-
-    public boolean hasColumn(String columnName) {
-        return columnHashList.contains(columnName);
-    }
-    
-    
+        
     public String getId() {
-        return path + ID;
+        return ID;
     } 
 
     public String getName() {
-        return path + NAME;
+        return NAME;
     } 
 
     public String getDescription() {
-        return path + DESCRIPTION;
+        return DESCRIPTION;
     } 
 
     public String getPrinterTypeId() {
-        return path + PRINTER_TYPE_ID;
+        return PRINTER_TYPE_ID;
     } 
 
     public String getScriptletId() {
-        return path + SCRIPTLET_ID;
-    } 
+        return SCRIPTLET_ID;
+    }
+    
+    public String getScriptletName() {
+        return SCRIPTLET_NAME;
+    }
+    
+    public boolean hasColumn(String columnName) {
+        return names.contains(columnName);
+    }
+    
+    public String buildFrom(String where) {        
+        return "Label _label ";
+    }
 
   
 }   

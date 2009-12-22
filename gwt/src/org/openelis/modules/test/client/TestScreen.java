@@ -85,7 +85,7 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestResultManager;
 import org.openelis.manager.TestSectionManager;
-import org.openelis.metamap.TestMetaMap;
+import org.openelis.meta.TestMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -103,7 +103,7 @@ import com.google.gwt.user.client.ui.TabPanel;
 public class TestScreen extends Screen {    
     
     private TestManager              manager;
-    private TestMetaMap              meta = new TestMetaMap();
+    private TestMeta              meta = new TestMeta();
     protected Tabs                   tab;
     private SampleTypeTab            sampleTypeTab;
     private AnalyteAndResultTab      analyteAndResultTab;
@@ -313,7 +313,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        method = (AutoComplete)def.getWidget(meta.getMethod().getName());
+        method = (AutoComplete)def.getWidget(meta.getMethodName());
         addScreenHandler(method, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 method.setSelection(manager.getTest().getMethodId(),
@@ -531,7 +531,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        label = (AutoComplete)def.getWidget(meta.getLabel().getName());
+        label = (AutoComplete)def.getWidget(meta.getLabelName());
         addScreenHandler(label, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 label.setSelection(manager.getTest().getLabelId(),
@@ -798,7 +798,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        testTrailer = (AutoComplete)def.getWidget(meta.getTestTrailer().getName());
+        testTrailer = (AutoComplete)def.getWidget(meta.getTestTrailerName());
         addScreenHandler(testTrailer, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 TestViewDO testDO = manager.getTest();
@@ -860,7 +860,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        scriptlet = (AutoComplete)def.getWidget(meta.getScriptlet().getName());
+        scriptlet = (AutoComplete)def.getWidget(meta.getScriptletName());
         addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {                
                 scriptlet.setSelection(manager.getTest().getScriptletId(),
@@ -1137,7 +1137,7 @@ public class TestScreen extends Screen {
         for (DictionaryDO resultDO : list) {
             model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
         }
-        ((Dropdown<Integer>)table.getColumnWidget(meta.getTestSection().getFlagId())).setModel(model);
+        ((Dropdown<Integer>)table.getColumnWidget(meta.getSectionFlagId())).setModel(model);
 
         model = new ArrayList<TableDataRow>();
         sectList = SectionCache.getSectionList();
@@ -1145,7 +1145,7 @@ public class TestScreen extends Screen {
         for (SectionDO resultDO : sectList) {
             model.add(new TableDataRow(resultDO.getId(), resultDO.getName()));
         }
-        ((Dropdown<Integer>)table.getColumnWidget(meta.getTestSection().getSectionId())).setModel(model);
+        ((Dropdown<Integer>)table.getColumnWidget(meta.getSectionSectionId())).setModel(model);
     }
 
     /*

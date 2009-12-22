@@ -69,7 +69,7 @@ import org.openelis.manager.TestManager;
 import org.openelis.manager.TestPrepManager;
 import org.openelis.manager.TestReflexManager;
 import org.openelis.manager.TestResultManager;
-import org.openelis.metamap.TestMetaMap;
+import org.openelis.meta.TestMeta;
 import org.openelis.modules.test.client.AnalyteAndResultTab.Action;
 import org.openelis.utilcommon.DataBaseUtil;
 
@@ -81,17 +81,17 @@ import com.google.gwt.user.client.Window;
 public class PrepTestAndReflexTestTab extends Screen implements
                                                     ActionHandler<AnalyteAndResultTab.Action> {
 
-    private TestManager        manager;
-    private TestMetaMap        meta = new TestMetaMap();
-    private TestAnalyteManager testAnalyteManager;
-    private TestResultManager  testResultManager;
+    private TestManager           manager;
+    private TestMeta              meta = new TestMeta();
+    private TestAnalyteManager    testAnalyteManager;
+    private TestResultManager     testResultManager;
 
-    private boolean            loaded;
-    private Integer            typeDict;
+    private boolean               loaded;
+    private Integer               typeDict;
 
-    private TableWidget        testPrepTable, testReflexTable;
-    private AppButton          addPrepTestButton, removePrepTestButton, addReflexTestButton,
-                    removeReflexTestButton;
+    private TableWidget           testPrepTable, testReflexTable;
+    private AppButton             addPrepTestButton, removePrepTestButton, addReflexTestButton,
+                                  removeReflexTestButton;
     private AutoComplete<Integer> prepTestAuto, reflexTestAuto, analyteAuto, resultAuto;
     private Label<String>         prepMethodName, reflexMethodName;
 
@@ -180,9 +180,7 @@ public class PrepTestAndReflexTestTab extends Screen implements
             }
         });
 
-        prepTestAuto = (AutoComplete<Integer>)testPrepTable.getColumnWidget(meta.getTestPrep()
-                                                                                .getPrepTest()
-                                                                                .getName());
+        prepTestAuto = (AutoComplete<Integer>)testPrepTable.getColumnWidget(meta.getPrepPrepTestName());
         prepTestAuto.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
@@ -362,9 +360,7 @@ public class PrepTestAndReflexTestTab extends Screen implements
             }
         });
 
-        reflexTestAuto = (AutoComplete<Integer>)testReflexTable.getColumnWidget(meta.getTestReflex()
-                                                                                    .getAddTest()
-                                                                                    .getName());
+        reflexTestAuto = (AutoComplete<Integer>)testReflexTable.getColumnWidget(meta.getReflexAddTestName());
         reflexTestAuto.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
@@ -415,10 +411,7 @@ public class PrepTestAndReflexTestTab extends Screen implements
 
         });
 
-        analyteAuto = (AutoComplete<Integer>)testReflexTable.getColumnWidget(meta.getTestReflex()
-                                                                                 .getTestAnalyte()
-                                                                                 .getAnalyte()
-                                                                                 .getName());
+        analyteAuto = (AutoComplete<Integer>)testReflexTable.getColumnWidget(meta.getReflexTestAnalyteName());
         analyteAuto.addGetMatchesHandler(new GetMatchesHandler() {
 
             public void onGetMatches(GetMatchesEvent event) {
@@ -445,9 +438,7 @@ public class PrepTestAndReflexTestTab extends Screen implements
 
         });
 
-        resultAuto = (AutoComplete<Integer>)testReflexTable.getColumnWidget(meta.getTestReflex()
-                                                                                .getTestResult()
-                                                                                .getValue());
+        resultAuto = (AutoComplete<Integer>)testReflexTable.getColumnWidget(meta.getReflexTestResultValue());
         resultAuto.addGetMatchesHandler(new GetMatchesHandler() {
 
             public void onGetMatches(GetMatchesEvent event) {
@@ -690,7 +681,7 @@ public class PrepTestAndReflexTestTab extends Screen implements
         for (DictionaryDO data : list) {
             model.add(new TableDataRow(data.getId(), data.getEntry()));
         }
-        ((Dropdown)testReflexTable.getColumnWidget(meta.getTestReflex().getFlagsId())).setModel(model);
+        ((Dropdown)testReflexTable.getColumnWidget(meta.getReflexFlagsId())).setModel(model);
 
         try {
             typeDict = DictionaryCache.getIdFromSystemName("test_res_type_dictionary");

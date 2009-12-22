@@ -41,7 +41,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.TestAnalyteLocal;
-import org.openelis.metamap.TestMetaMap;
+import org.openelis.meta.TestMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
@@ -52,7 +52,7 @@ public class TestAnalyteBean implements TestAnalyteLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager            manager;
 
-    private static final TestMetaMap meta = new TestMetaMap();
+    private static final TestMeta meta = new TestMeta();
 
     public ArrayList<ArrayList<TestAnalyteViewDO>> fetchByTestId(Integer testId) throws Exception {
         Query query;
@@ -163,17 +163,17 @@ public class TestAnalyteBean implements TestAnalyteLocal {
         
         if (anaDO.getAnalyteId() == null) {
             exc = new FieldErrorException("fieldRequiredException",
-                                          meta.TEST_ANALYTE.getAnalyteId());
+                                          meta.getAnalyteAnalyteId());
             list.add(exc);
         }
         if (anaDO.getTypeId() == null) {
             exc = new FieldErrorException("analyteTypeRequiredException",
-                                          meta.TEST_ANALYTE.getTypeId());
+                                          meta.getAnalyteTypeId());
             list.add(exc);
         }
         if (anaDO.getResultGroup() == null) {
             exc = new FieldErrorException("fieldRequiredException",
-                                          meta.TEST_ANALYTE.getResultGroup());
+                                          meta.getAnalyteResultGroup());
             list.add(exc);
         }
 

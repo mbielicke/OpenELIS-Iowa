@@ -27,8 +27,12 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -36,13 +40,16 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestWorksheetItemDO;
 import org.openelis.entity.TestWorksheetItem;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestWorksheetItemLocal;
-import org.openelis.metamap.TestMetaMap;
+import org.openelis.meta.TestMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
@@ -53,7 +60,38 @@ public class TestWorksheetItemBean implements TestWorksheetItemLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager            manager;
     
-    private static final TestMetaMap meta = new TestMetaMap();
+    @EJB
+    private DictionaryLocal          dictionary;
+    
+    private static final TestMeta    meta = new TestMeta();
+    
+    private static int               typeFixed, typeDupl; 
+    
+    private static final Logger      log  = Logger.getLogger(TestWorksheetItemBean.class.getName());
+    
+    @PostConstruct
+    public void init() {
+        DictionaryDO data;
+        
+        
+        try {
+            data = dictionary.fetchBySystemName("pos_fixed");
+            typeFixed = data.getId();
+        } catch (Throwable e) {
+            typeFixed = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='pos_fixed'", e);
+        }
+        
+        try {
+            data = dictionary.fetchBySystemName("pos_duplicate");
+            typeDupl = data.getId();
+        } catch (Throwable e) {
+            typeDupl = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='pos_duplicate'", e);
+        }
+    }
     
     public ArrayList<TestWorksheetItemDO> fetchByTestWorksheetId(Integer twsId) throws Exception {
         Query query;
@@ -104,12 +142,12 @@ public class TestWorksheetItemBean implements TestWorksheetItemLocal {
         return data;
     }
     
-    public void delete(TestWorksheetItemDO deletedItemAt) throws Exception {
+    public void delete(TestWorksheetItemDO data) throws Exception {
         TestWorksheetItem testWorksheetItem;       
         
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        testWorksheetItem = manager.find(TestWorksheetItem.class, deletedItemAt.getId());
+        testWorksheetItem = manager.find(TestWorksheetItem.class, data.getId());
         
         if(testWorksheetItem != null)
             manager.remove(testWorksheetItem);
@@ -117,21 +155,39 @@ public class TestWorksheetItemBean implements TestWorksheetItemLocal {
     }
 
 
-    public void validate(TestWorksheetItemDO item) throws Exception {
+    public void validate(TestWorksheetItemDO data) throws Exception {
         String name;
         ValidationErrorsList list;
+        Integer position, typeId;
 
         list = new ValidationErrorsList();
-        name = item.getQcName();
+        name = data.getQcName();
+        position = data.getPosition();
+        typeId = data.getTypeId();
         
         if (DataBaseUtil.isEmpty(name)) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.TEST_WORKSHEET_ITEM.getQcName()));
+                                             meta.getWorksheetItemQcName()));
         }
-        if (DataBaseUtil.isEmpty(item.getTypeId())) {
+        if (DataBaseUtil.isEmpty(data.getTypeId())) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                                  meta.TEST_WORKSHEET_ITEM.getTypeId()));
+                                                  meta.getWorksheetItemTypeId()));
             
+        }
+        
+        if (position == null) {
+            if (DataBaseUtil.isSame(typeDupl, typeId) || DataBaseUtil.isSame(typeFixed, typeId)) {
+                list.add(new FieldErrorException("fixedDuplicatePosException",
+                                                 meta.getWorksheetItemPosition()));
+            }
+        } else {
+            if (position == 1 && DataBaseUtil.isSame(typeDupl, typeId)) {
+                list.add(new FieldErrorException("posOneDuplicateException",
+                                                 meta.getWorksheetItemTypeId()));
+            } else if (DataBaseUtil.isDifferent(typeDupl, typeId) && DataBaseUtil.isDifferent(typeFixed, typeId)) {
+                list.add(new FieldErrorException("posSpecifiedException",
+                                                 meta.getWorksheetItemPosition()));
+            }
         }
         
         if(list.size() > 0)

@@ -36,12 +36,12 @@ import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestSectionLocal;
-import org.openelis.metamap.TestMetaMap;
+import org.openelis.meta.TestMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 public class TestSectionManagerProxy {
 
-    private static final TestMetaMap meta = new TestMetaMap();
+    private static final TestMeta meta = new TestMeta();
 
     public TestSectionManager add(TestSectionManager man) throws Exception {
         TestSectionLocal tl;
@@ -123,7 +123,7 @@ public class TestSectionManagerProxy {
 
             if (idList.contains(sectId)) {                
                 exc = new TableFieldErrorException("fieldUniqueOnlyException",i,
-                                                   meta.getTestSection().getFlagId(),"sectionTable");
+                                                   meta.getSectionFlagId(),"sectionTable");
                 list.add(exc);
             } else {
                 idList.add(sectId);
@@ -141,7 +141,7 @@ public class TestSectionManagerProxy {
         if (numBlank == man.count()) {
             for (i = 0; i < man.count(); i++ ) {
                 exc = new TableFieldErrorException("allSectCantBeBlankException",i,
-                                                   meta.getTestSection().getFlagId(),"sectionTable");
+                                                   meta.getSectionFlagId(),"sectionTable");
                 list.add(exc);
             }
         } else if (numDef > 1) {
@@ -150,7 +150,7 @@ public class TestSectionManagerProxy {
                 flagId = data.getFlagId();
                 if (flagId != null) {
                     exc = new TableFieldErrorException("allSectBlankIfDefException",i,
-                                                       meta.getTestSection().getFlagId(),"sectionTable");
+                                                       meta.getSectionFlagId(),"sectionTable");
                     list.add(exc);
                 }
             }
@@ -160,7 +160,7 @@ public class TestSectionManagerProxy {
                 flagId = data.getFlagId();
                 if (flagId != null && !defId.equals(flagId)) {
                     exc = new TableFieldErrorException("allSectBlankIfDefException",i,
-                                                       meta.getTestSection().getFlagId(),"sectionTable");
+                                                       meta.getSectionFlagId(),"sectionTable");
                     list.add(exc);
                 }
             }
@@ -171,7 +171,7 @@ public class TestSectionManagerProxy {
 
                 if (flagId == null || (flagId != null && !matchId.equals(flagId))) {
                     exc = new TableFieldErrorException("allSectMatchFlagException",i,
-                                                       meta.getTestSection().getFlagId(),"sectionTable");
+                                                       meta.getSectionFlagId(),"sectionTable");
                     list.add(exc);
                 }
             }
