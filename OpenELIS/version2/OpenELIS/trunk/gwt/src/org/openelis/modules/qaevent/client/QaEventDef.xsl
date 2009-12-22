@@ -36,31 +36,12 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:meta="xalan://org.openelis.metamap.QaEventMetaMap"
-  xmlns:testMeta="xalan://org.openelis.metamap.TestMetaMap">
+  xmlns:meta="xalan://org.openelis.meta.QaEventMeta">
 
   <xsl:import href="IMPORT/aToZTwoColumns.xsl" />
-  <xalan:component prefix="resource">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
-  </xalan:component>
-  <xalan:component prefix="locale">
-    <xalan:script lang="javaclass" src="xalan://java.util.Locale" />
-  </xalan:component>
-  <xalan:component prefix="meta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.QaEventMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="testMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestMetaMap" />
-  </xalan:component>
   <xsl:template match="doc">
-    <xsl:variable name="qae" select="meta:new()" />
-    <xsl:variable name="test" select="meta:getTest($qae)" />
-    <xsl:variable name="language">
-      <xsl:value-of select="locale" />
-    </xsl:variable>
-    <xsl:variable name="props">
-      <xsl:value-of select="props" />
-    </xsl:variable>
+    <xsl:variable name="language" select="locale" />
+    <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen id="QAEvent" name="{resource:getString($constants,'QAEvent')}">
       <HorizontalPanel padding="0" spacing="0">
@@ -165,25 +146,25 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"name")' />:
               </text>
-              <textbox key="{meta:getName($qae)}" width="145" case="LOWER" max="20" tab="{meta:getDescription($qae)},{meta:getReportingText($qae)}" required="true" field="String" />
+              <textbox key="{meta:getName()}" width="145" case="LOWER" max="20" tab="{meta:getDescription()},{meta:getReportingText()}" required="true" field="String" />
             </row>
             <row>
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"description")' />:
               </text>
-              <textbox key="{meta:getDescription($qae)}" width="425" max="60" tab="{meta:getTypeId($qae)},{meta:getName($qae)}" required="true" field="String" />
+              <textbox key="{meta:getDescription()}" width="425" max="60" tab="{meta:getTypeId()},{meta:getName()}" required="true" field="String" />
             </row>
             <row>
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"type")' />:
               </text>
-              <dropdown key="{meta:getTypeId($qae)}" width="120" tab="{testMeta:getName($test)},{meta:getDescription($qae)}" required="true" field="Integer" />
+              <dropdown key="{meta:getTypeId()}" width="120" tab="{meta:getTestName()},{meta:getDescription()}" required="true" field="Integer" />
             </row>
             <row>
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"test")' />:
               </text>
-              <autoComplete key="{testMeta:getName($test)}" width="140" case="LOWER" popWidth="auto" tab="{meta:getIsBillable($qae)},{meta:getTypeId($qae)}" field="Integer">
+              <autoComplete key="{meta:getTestName()}" width="140" case="LOWER" popWidth="auto" tab="{meta:getIsBillable()},{meta:getTypeId()}" field="Integer">
                 <col width="100" header="{resource:getString($constants,'test')}" />
                 <col width="100" header="{resource:getString($constants,'method')}" />
                 <col width="250" header="{resource:getString($constants,'description')}" />
@@ -193,13 +174,13 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"billable")' />:
               </text>
-              <check key="{meta:getIsBillable($qae)}" tab="{meta:getReportingSequence($qae)},{testMeta:getName($test)}" />
+              <check key="{meta:getIsBillable()}" tab="{meta:getReportingSequence()},{meta:getTestName()}" />
             </row>
             <row>
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"sequence")' />:
               </text>
-              <textbox key="{meta:getReportingSequence($qae)}" width="40" tab="{meta:getReportingText($qae)},{meta:getIsBillable($qae)}" field="Integer" />
+              <textbox key="{meta:getReportingSequence()}" width="40" tab="{meta:getReportingText()},{meta:getIsBillable()}" field="Integer" />
             </row>
             <row>
               <widget valign="top">
@@ -207,7 +188,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select='resource:getString($constants,"text")' />:
                 </text>
               </widget>
-              <textarea key="{meta:getReportingText($qae)}" width="425" height="155" tab="{meta:getName($qae)},{meta:getReportingSequence($qae)}" />
+              <textarea key="{meta:getReportingText()}" width="425" height="155" tab="{meta:getName()},{meta:getReportingSequence()}" />
             </row>
           </TablePanel>
         </VerticalPanel>

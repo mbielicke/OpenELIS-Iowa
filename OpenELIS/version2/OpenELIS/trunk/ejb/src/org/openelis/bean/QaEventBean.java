@@ -40,7 +40,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.LockLocal;
-import org.openelis.metamap.QaEventMetaMap;
+import org.openelis.meta.QaEventMeta;
 import org.openelis.remote.QaEventRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -74,7 +74,7 @@ public class QaEventBean implements QaEventRemote {
     @EJB
     private LockLocal                   lockBean;
 
-    private static final QaEventMetaMap meta = new QaEventMetaMap();
+    private static final QaEventMeta meta = new QaEventMeta();
 
     public QaEventBean() {
     }
@@ -132,9 +132,9 @@ public class QaEventBean implements QaEventRemote {
         builder.setSelect("distinct new org.openelis.domain.IdNameVO(" +
                           meta.getId() + "," +
                           meta.getName() + "," +
-                          meta.getTest().getName() + ")");
+                          meta.getTestName() + ")");
         builder.constructWhere(fields);
-        builder.setOrderBy(meta.getName() + "," + meta.getTest().getName());
+        builder.setOrderBy(meta.getName() + "," + meta.getTestName());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);

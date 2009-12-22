@@ -105,7 +105,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class AuxiliaryScreen extends Screen {
     private AuxFieldGroupManager               manager;
-    private AuxFieldGroupMeta               meta = new AuxFieldGroupMeta();
+    private AuxFieldGroupMeta                  meta = new AuxFieldGroupMeta();
     private CategoryMetaMap                    catMeta = new CategoryMetaMap();
     private SecurityModule                     security;
 
@@ -370,13 +370,19 @@ public class AuxiliaryScreen extends Screen {
         
         rangeNumeric = new ResultRangeNumeric();     
         
+        auxFieldTable.addSelectionHandler(new SelectionHandler<TableRow>() {
+            public void onSelection(SelectionEvent<TableRow> event) {
+                clearFieldValueError(auxFieldTable.getSelectedRow());               
+            }
+            
+        });
+        
         auxFieldTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 AuxFieldValueManager man;
-                int r;
-                
+                int r;                                
                 try {
-                    r = event.getRow();
+                    r = event.getRow();                      
                     auxFieldValueTable.finishEditing();
                     man = manager.getFields().getValuesAt(r);                    
                     auxFieldValueTable.load(getAuxFieldValueModel(man));
@@ -384,7 +390,7 @@ public class AuxiliaryScreen extends Screen {
                     addAuxFieldValueButton.enable(true); 
                     removeAuxFieldValueButton.enable(false);
                     dictionaryLookUpButton.enable(false);
-                    prevSelFieldRow = r;
+                    prevSelFieldRow = r;                    
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 } 
@@ -638,7 +644,7 @@ public class AuxiliaryScreen extends Screen {
                 GridFieldErrorException ex;
                 
                 auxFieldTable.finishEditing();
-                r = auxFieldValueTable.getSelectedRow();                                    
+                r = auxFieldValueTable.getSelectedRow();                                                    
                 
                 for(int i = 0; i < valueErrorList.size(); i++) {
                     ex = valueErrorList.get(i);
@@ -1015,20 +1021,31 @@ public class AuxiliaryScreen extends Screen {
         GridFieldErrorException gfe;
         FormErrorException fe;
         FieldErrorException flde;
+        ArrayList<Integer> rowList;
+        Integer row; 
         
         formErrors = new ArrayList<LocalizedException>();
+        rowList = new ArrayList<Integer>();
         
         for (Exception ex : errors.getErrorList()) {            
             if (ex instanceof TableFieldErrorException) {
                 if(ex instanceof GridFieldErrorException) {
                     gfe = (GridFieldErrorException)ex;
-                    auxFieldTable.setCellException(gfe.getRowIndex(),meta.getFieldAnalyteName(),
-                                                   new LocalizedException("errorsWithAuxFieldValuesException"));
+                    row = gfe.getRowIndex();
+                    //
+                    // this check is made here in order to make sure that the same error
+                    // is not added to the same aux field row just because more than one 
+                    // aux field values belonging to it are in error
+                    //
+                    if(!rowList.contains(row)) {
+                        auxFieldTable.setCellException(row,meta.getFieldAnalyteName(),
+                                                       new LocalizedException("errorsWithAuxFieldValuesException"));
+                        rowList.add(row);
+                    }
                     valueErrorList.add(gfe);
                 } else {
                     tfe = (TableFieldErrorException)ex;
-                    auxFieldTable.setCellException(tfe.getRowIndex(),tfe.getFieldName(),
-                                                                             tfe);
+                    auxFieldTable.setCellException(tfe.getRowIndex(),tfe.getFieldName(),tfe);
                 }
             } else if (ex instanceof FormErrorException) {
                 fe = (FormErrorException)ex;
@@ -1163,7 +1180,7 @@ public class AuxiliaryScreen extends Screen {
                     data.setDictionary(dict.getName());
                 } else {
                     data.setDictionary(null);
-                    throw new LocalizedException("qc.invalidValueException");
+                    throw new LocalizedException("aux.invalidValueException");
                 }
             } else if (typeNumeric.equals(data.getTypeId())) {
                 rangeNumeric.setRange((String)value);
@@ -1205,7 +1222,7 @@ public class AuxiliaryScreen extends Screen {
                             r = auxFieldValueTable.getSelectedRow();
                             fr = auxFieldTable.getSelectedRow();
                             if (r == -1) {
-                                window.setError(consts.get("qc.noSelectedRow"));
+                                window.setError(consts.get("aux.noSelectedRow"));
                                 return;
                             }
                             entry = list.get(0);
@@ -1251,4 +1268,28 @@ public class AuxiliaryScreen extends Screen {
             }
         }
     }
+    
+    private void clearFieldValueError(int index) {
+        ArrayList<LocalizedException> list;
+        LocalizedException ex;
+        boolean refresh;
+        
+        refresh = false;
+        list = auxFieldTable.getCell(index, 0).getExceptions();
+        if(list != null) {
+            for(int i = 0 ; i < list.size(); i++) {
+                ex = list.get(i);
+                if("errorsWithAuxFieldValuesException".equals(ex.getKey())) {
+                    //list.remove(ex);
+                    auxFieldTable.removeCellException(index, 0, ex);
+                    refresh = true;
+                } 
+            }
+        
+            if(refresh) {
+                auxFieldTable.refresh();                
+            }
+        }
+    }
+        
 }

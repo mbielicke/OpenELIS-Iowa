@@ -40,12 +40,12 @@ import org.openelis.gwt.common.GridFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestAnalyteLocal;
-import org.openelis.metamap.TestMetaMap;
+import org.openelis.meta.TestMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 public class TestAnalyteManagerProxy {
 
-    private static final TestMetaMap meta = new TestMetaMap();
+    private static final TestMeta    meta = new TestMeta();
 
     private static int               typeSuppl;
 
@@ -182,14 +182,14 @@ public class TestAnalyteManagerProxy {
                     
                     if (rg > results.size()) {
                         exc = new GridFieldErrorException("invalidResultGroupException", i, j,
-                                                          meta.TEST_ANALYTE.getResultGroup(),
+                                                          meta.getAnalyteResultGroup(),
                                                           "analyteTable");
                         list.add(exc);
                     }
                     
                     if(j > 0 && DataBaseUtil.isSame(typeSuppl,data.getTypeId())) {
                         exc = new GridFieldErrorException("columnAnalyteSupplException", i, j,
-                                                          meta.TEST_ANALYTE.getTypeId(),
+                                                          meta.getAnalyteTypeId(),
                                                           "analyteTable");                        
                         list.add(exc);
                     }

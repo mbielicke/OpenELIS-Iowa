@@ -42,7 +42,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.TestSectionLocal;
-import org.openelis.metamap.TestMetaMap;
+import org.openelis.meta.TestMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
@@ -53,7 +53,7 @@ public class TestSectionBean implements TestSectionLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager                    manager;
     
-    private static final TestMetaMap meta = new TestMetaMap(); 
+    private static final TestMeta meta = new TestMeta(); 
     
     public ArrayList<TestSectionViewDO> fetchByTestId(Integer testId) throws Exception {
         Query query;
@@ -122,7 +122,7 @@ public class TestSectionBean implements TestSectionLocal {
         list = new ValidationErrorsList();
         if (secDO.getSectionId() == null) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.TEST_SECTION.getSectionId()));
+                                             meta.getSectionSectionId()));
         } 
         
         if (list.size() > 0)

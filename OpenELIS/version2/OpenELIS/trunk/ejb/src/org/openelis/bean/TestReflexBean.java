@@ -44,7 +44,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestReflexLocal;
-import org.openelis.metamap.TestMetaMap;
+import org.openelis.meta.TestMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
@@ -55,7 +55,7 @@ public class TestReflexBean implements TestReflexLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager            manager;
     
-    private static final TestMetaMap meta = new TestMetaMap();
+    private static final TestMeta meta = new TestMeta();
     
     public ArrayList<TestReflexViewDO> fetchByTestId(Integer testId) throws Exception {
         Query query;
@@ -141,22 +141,22 @@ public class TestReflexBean implements TestReflexLocal {
                 
         if (refDO.getAddTestId() == null) {           
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.TEST_REFLEX.getAddTest().getName()));
+                                             meta.getReflexAddTestName()));
         }
 
         if (refDO.getTestAnalyteId() == null) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.TEST_REFLEX.getTestAnalyte().getAnalyte().getName()));
+                                             meta.getReflexTestAnalyteName()));
         }
 
         if (refDO.getTestResultId() == null) {            
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.TEST_REFLEX.getTestResult().getValue()));
+                                             meta.getReflexTestResultValue()));
         }
 
         if (refDO.getFlagsId() == null) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.TEST_REFLEX.getFlagsId()));
+                                             meta.getReflexFlagsId()));
         }
         
         if(list.size() > 0)

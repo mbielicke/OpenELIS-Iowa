@@ -78,8 +78,8 @@ import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestResultManager;
 import org.openelis.manager.TestTypeOfSampleManager;
+import org.openelis.meta.TestMeta;
 import org.openelis.metamap.CategoryMetaMap;
-import org.openelis.metamap.TestMetaMap;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utilcommon.ResultRangeNumeric;
@@ -102,7 +102,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     };
     
     private TestManager                        manager;
-    private TestMetaMap                        meta = new TestMetaMap();
+    private TestMeta                           meta = new TestMeta();
     private CategoryMetaMap                    catMeta = new CategoryMetaMap();                 
     
     private TestAnalyteManager                 testAnalyteManager;
@@ -536,7 +536,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         
         addMatchesHandlerToAnalyteCells();
 
-        typeId = (Dropdown<Integer>)def.getWidget(meta.getTestAnalyte().getTypeId());
+        typeId = (Dropdown<Integer>)def.getWidget(meta.getAnalyteTypeId());
         addScreenHandler(typeId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {                      
                 TestAnalyteViewDO data;                                              
@@ -594,7 +594,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             }
         });
 
-        isReportable = (CheckBox)def.getWidget(meta.getTestAnalyte().getIsReportable());
+        isReportable = (CheckBox)def.getWidget(meta.getAnalyteIsReportable());
         addScreenHandler(isReportable, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 TestAnalyteViewDO data; 
@@ -652,7 +652,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             }
         });
 
-        scriptlet = (AutoComplete<Integer>)def.getWidget(meta.getTestAnalyte().getScriptletId());
+        scriptlet = (AutoComplete<Integer>)def.getWidget(meta.getAnalyteScriptletId());
         addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 TestAnalyteViewDO data;
@@ -845,13 +845,13 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 
                 switch(c) {
                     case 0:   
-                        clearResultCellError(group,r,meta.getTestResult().getUnitOfMeasureId());
+                        clearResultCellError(group,r,meta.getResultUnitOfMeasureId());
                         break;
                     case 1:   
-                        clearResultCellError(group,r,meta.getTestResult().getTypeId());
+                        clearResultCellError(group,r,meta.getResultTypeId());
                         break;
                     case 2:             
-                        clearResultCellError(group,r,meta.getTestResult().getValue());
+                        clearResultCellError(group,r,meta.getResultValue());
                         break;                    
                 }
             }
@@ -881,7 +881,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                             validateValue(data, (String)resultTable.getObject(r, 2));
                         } catch (LocalizedException e) {
                             resultTable.setCellException(r, 2, e);
-                            addToResultErrorList(group, r, meta.TEST_RESULT.getValue(), e.getMessage());
+                            addToResultErrorList(group, r, meta.getResultValue(), e.getMessage());
                         }
                         break;
                     case 2:                                                                                     
@@ -890,7 +890,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                             validateValue(data, (String)val);
                         } catch (LocalizedException e) {
                             resultTable.setCellException(r, c, e);
-                            addToResultErrorList(group, r, meta.TEST_RESULT.getValue(), e.getMessage());
+                            addToResultErrorList(group, r, meta.getResultValue(), e.getMessage());
                         }
                         ActionEvent.fire(screen, Action.RESULT_CHANGED, data);
                         break;
@@ -1093,7 +1093,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                break;                                         
         }
         
-        if(meta.getTestAnalyte().getResultGroup().equals(field)) {
+        if(meta.getAnalyteResultGroup().equals(field)) {
             errors = analyteTable.getCell(trindex, col+1).getExceptions();
             if(errors == null || !errors.contains(error))
                 analyteTable.setCellException(trindex, col+1, error);
@@ -1336,21 +1336,21 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         for (DictionaryDO resultDO : DictionaryCache.getListByCategorySystemName("test_result_type")) 
             model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
         
-        ((Dropdown<Integer>)resultTable.getColumnWidget(meta.getTestResult().getTypeId())).setModel(model);
+        ((Dropdown<Integer>)resultTable.getColumnWidget(meta.getResultTypeId())).setModel(model);
     
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : DictionaryCache.getListByCategorySystemName("test_result_flags")) 
             model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
         
-        ((Dropdown<Integer>)resultTable.getColumnWidget(meta.getTestResult().getFlagsId())).setModel(model);
+        ((Dropdown<Integer>)resultTable.getColumnWidget(meta.getResultFlagsId())).setModel(model);
     
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : DictionaryCache.getListByCategorySystemName("rounding_method")) 
             model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
         
-        ((Dropdown<Integer>)resultTable.getColumnWidget(meta.getTestResult().getRoundingMethodId())).setModel(model);
+        ((Dropdown<Integer>)resultTable.getColumnWidget(meta.getResultRoundingMethodId())).setModel(model);
         
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow("analyte",consts.get("analyte")));
@@ -1406,7 +1406,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 model.add(new TableDataRow(dict.getId(), dict.getEntry()));
             }
         }
-        ((Dropdown<Integer>)resultTable.getColumnWidget(meta.getTestResult().getUnitOfMeasureId())).setModel(model);
+        ((Dropdown<Integer>)resultTable.getColumnWidget(meta.getResultUnitOfMeasureId())).setModel(model);
     }
     
     private boolean isAnalyteQuery() {

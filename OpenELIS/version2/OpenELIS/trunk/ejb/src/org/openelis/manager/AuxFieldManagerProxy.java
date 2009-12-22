@@ -50,7 +50,7 @@ import org.openelis.utilcommon.ResultRangeNumeric;
 
 public class AuxFieldManagerProxy { 
     
-    private static final AuxFieldGroupMeta meta = new AuxFieldGroupMeta();
+    private static final AuxFieldGroupMeta    meta = new AuxFieldGroupMeta();
     
     private static int                        typeDict, typeNumeric;
     
@@ -229,12 +229,12 @@ public class AuxFieldManagerProxy {
         String value, fieldName;
         ResultRangeNumeric nr;
         Integer typeId,entryId;
-        ArrayList<Integer> dictList;
+        ArrayList<Integer> dictList, typeList;
 
         al = local();
         vl = valueLocal();
-        value = null;
-        fieldName = meta.getFieldValueValue();
+        value = null;      
+        fieldName = null;
         
         for (int i = 0; i < man.count(); i++ ) {
             try {
@@ -246,6 +246,7 @@ public class AuxFieldManagerProxy {
             vm = man.getValuesAt(i);
             dictList = new ArrayList<Integer>();
             nrList = new ArrayList<ResultRangeNumeric>();
+            typeList = new ArrayList<Integer>();
             for (int j = 0; j < vm.count(); j++ ) {
                 data = vm.getAuxFieldValueAt(j);
                 typeId = data.getTypeId();
@@ -257,12 +258,20 @@ public class AuxFieldManagerProxy {
                 }
                 
                 try {
+                    if(typeList.size() == 0) {
+                        typeList.add(typeId);
+                    } else if(!typeList.contains(typeId)){
+                        fieldName = meta.getFieldValueTypeId();
+                        throw new InconsistencyException("auxMoreThanOneTypeException");
+                    }
                     if (DataBaseUtil.isSame(typeNumeric,typeId)) {
                         nr = new ResultRangeNumeric();
+                        fieldName = meta.getFieldValueValue();
                         nr.setRange(value);
                         addNumericIfNoOverLap(nrList, nr);
                     } else if (DataBaseUtil.isSame(typeDict,typeId)) {
-                        entryId = Integer.parseInt(value);                    
+                        entryId = Integer.parseInt(value);   
+                        fieldName = meta.getFieldValueValue();
                         if (entryId == null)
                             throw new ParseException("illegalDictEntryException");
 
@@ -270,7 +279,7 @@ public class AuxFieldManagerProxy {
                             dictList.add(entryId);
                         else
                             throw new InconsistencyException("auxDictEntryNotUniqueException");
-                    } 
+                    }
                 } catch (ParseException pe) {
                     list.add(new GridFieldErrorException(pe.getKey(), i, j, fieldName,"auxFieldValueTable"));
                 } catch (InconsistencyException ie) {
@@ -319,9 +328,7 @@ public class AuxFieldManagerProxy {
                  throw new InconsistencyException("auxNumRangeOverlapException");                                 
          }
          
-         nrList.add(nr); 
-         
-                
+         nrList.add(nr);                        
     }
     
 }

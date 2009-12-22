@@ -34,13 +34,10 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:labelMeta="xalan://org.openelis.metamap.LabelMetaMap"
-  xmlns:scriptlet="xalan://org.openelis.meta.ScriptletMeta">
+  xmlns:meta="xalan://org.openelis.meta.LabelMeta">
 
   <xsl:import href="IMPORT/aToZTwoColumns.xsl" />
   <xsl:template match="doc">
-    <xsl:variable name="lbl" select="labelMeta:new()" />
-    <xsl:variable name="scpt" select="labelMeta:getScriptlet($lbl)" />
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
@@ -141,25 +138,25 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"name")' />:
                 </text>
-                <textbox key="{labelMeta:getName($lbl)}" width="215" case="LOWER" max="30" tab="{labelMeta:getDescription($lbl)},{scriptlet:getName($scpt)}" required="true" />
+                <textbox key="{meta:getName()}" width="215" case="LOWER" max="30" tab="{meta:getDescription()},{meta:getScriptletName()}" required="true" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"description")' />:
                 </text>
-                <textbox key="{labelMeta:getDescription($lbl)}" width="425" max="60" tab="{labelMeta:getPrinterTypeId($lbl)},{labelMeta:getName($lbl)}" />
+                <textbox key="{meta:getDescription()}" width="425" max="60" tab="{meta:getPrinterTypeId()},{meta:getName()}" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"printerType")' />:
                 </text>
-                <dropdown key="{labelMeta:getPrinterTypeId($lbl)}" width="90" tab="{scriptlet:getName($scpt)},{labelMeta:getDescription($lbl)}" required="true" />
+                <dropdown key="{meta:getPrinterTypeId()}" width="90" tab="{meta:getScriptletName()},{meta:getDescription()}" required="true" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"scriptlet")' />:
                 </text>
-                <autoComplete key="{scriptlet:getName($scpt)}" width="180" popWidth="auto" tab="{labelMeta:getName($lbl)},{labelMeta:getPrinterTypeId($lbl)}" field="Integer">
+                <autoComplete key="{meta:getScriptletName()}" width="180" popWidth="auto" tab="{meta:getName()},{meta:getPrinterTypeId()}" field="Integer">
                   <col width="180" />
                 </autoComplete>
               </row>

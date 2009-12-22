@@ -34,12 +34,12 @@ import org.openelis.domain.TestPrepViewDO;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.TestPrepLocal;
-import org.openelis.metamap.TestMetaMap;
+import org.openelis.meta.TestMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 public class TestPrepManagerProxy {
     
-    private static final TestMetaMap meta = new TestMetaMap();
+    private static final TestMeta meta = new TestMeta();
 
     public TestPrepManager fetchByTestId(Integer testId) throws Exception {
         TestPrepManager tpm;
@@ -119,16 +119,14 @@ public class TestPrepManagerProxy {
                 testPrepIdList.add(prepId);
             } else {
                 exc = new TableFieldErrorException("fieldUniqueOnlyException", i,
-                                                   meta.TEST_PREP.getPrepTest()
-                                                   .getName(),"testPrepTable");
+                                                   meta.getPrepPrepTestName(),"testPrepTable");
                 list.add(exc);
             }
             
             if ( !"Y".equals(prepDO.getIsOptional())) {
                 if (numReq >= 1) {
                     exc = new TableFieldErrorException("moreThanOnePrepTestOptionalException", i,
-                                                       meta.TEST_PREP.getPrepTest()
-                                                       .getName(),"testPrepTable");
+                                                       meta.getPrepPrepTestName(),"testPrepTable");
                     list.add(exc);
                 }
                 numReq++ ;

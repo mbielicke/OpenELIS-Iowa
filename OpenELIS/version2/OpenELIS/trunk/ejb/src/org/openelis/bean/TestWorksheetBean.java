@@ -42,7 +42,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.TestWorksheetLocal;
-import org.openelis.metamap.TestMetaMap;
+import org.openelis.meta.TestMeta;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -52,7 +52,7 @@ public class TestWorksheetBean implements TestWorksheetLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager            manager;
     
-    private static final TestMetaMap meta = new TestMetaMap();
+    private static final TestMeta    meta = new TestMeta();
     
     public TestWorksheetViewDO fetchByTestId(Integer testId) throws Exception {
         Query query;
@@ -136,37 +136,36 @@ public class TestWorksheetBean implements TestWorksheetLocal {
         
         if (data.getBatchCapacity() == null) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getTestWorksheet().getBatchCapacity()));
+                                                      meta.getWorksheetBatchCapacity()));
             checkForMultiple = false;
         }
         if (data.getTotalCapacity() == null) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getTestWorksheet().getTotalCapacity()));
+                                                      meta.getWorksheetTotalCapacity()));
             checkForMultiple = false;
         }
 
         if (data.getBatchCapacity() != null && data.getBatchCapacity() <= 0) {
             list.add(new FieldErrorException("batchCapacityMoreThanZeroException",
-                                                      meta.getTestWorksheet().getBatchCapacity()));
+                                                      meta.getWorksheetBatchCapacity()));
             checkForMultiple = false;
         }
 
         if (data.getTotalCapacity() != null && data.getTotalCapacity() <= 0) {
             list.add(new FieldErrorException("totalCapacityMoreThanZeroException",
-                                                      meta.getTestWorksheet().getTotalCapacity()));
+                                                      meta.getWorksheetTotalCapacity()));
             checkForMultiple = false;
         }
 
         if (data.getFormatId() == null) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getTestWorksheet().getFormatId()));
+                                                      meta.getWorksheetFormatId()));
         }
 
         if (checkForMultiple) {
             if ( (data.getTotalCapacity() % data.getBatchCapacity()) != 0) {
                 list.add(new FieldErrorException("totalCapacityMultipleException",
-                                                          meta.getTestWorksheet()
-                                                              .getTotalCapacity()));
+                                                          meta.getWorksheetTotalCapacity()));
             }
         }
         

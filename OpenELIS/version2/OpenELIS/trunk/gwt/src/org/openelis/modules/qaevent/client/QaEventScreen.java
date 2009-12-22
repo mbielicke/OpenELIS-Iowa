@@ -62,7 +62,7 @@ import org.openelis.gwt.widget.TextArea;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.metamap.QaEventMetaMap;
+import org.openelis.meta.QaEventMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -75,7 +75,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class QaEventScreen extends Screen {
     private QaEventViewDO         data;
-    private QaEventMetaMap        meta = new QaEventMetaMap();
+    private QaEventMeta        meta = new QaEventMeta();
     private SecurityModule        security;
 
     private TextBox               name, description, reportingSequence;
@@ -271,7 +271,7 @@ public class QaEventScreen extends Screen {
             }
         });
 
-        testName = (AutoComplete)def.getWidget(meta.getTest().getName());
+        testName = (AutoComplete)def.getWidget(meta.getTestName());
         addScreenHandler(testName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 testName.setSelection(data.getTestId(), data.getTestName());

@@ -35,49 +35,10 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:addTestMeta="xalan://org.openelis.metamap.TestMeta"
-  xmlns:label="xalan://org.openelis.meta.LabelMeta"
-  xmlns:meta="xalan://org.openelis.metamap.TestMetaMap"
-  xmlns:method="xalan://org.openelis.meta.MethodMeta"
-  xmlns:prepTestMeta="xalan://org.openelis.metamap.TestMeta"
-  xmlns:script="xalan://org.openelis.meta.ScriptletMeta"
-  xmlns:testAnalyte="xalan://org.openelis.metamap.TestAnalyteMetaMap"
-  xmlns:testPrep="xalan://org.openelis.metamap.TestPrepMetaMap"
-  xmlns:testRef="xalan://org.openelis.metamap.TestReflexMetaMap"
-  xmlns:testRefAna="xalan://org.openelis.meta.AnalyteMeta"
-  xmlns:testRefRes="xalan://org.openelis.meta.TestResultMeta"
-  xmlns:testRefTana="xalan://org.openelis.metamap.TestAnalyteMetaMap"
-  xmlns:testResult="xalan://org.openelis.metamap.TestResultMetaMap"
-  xmlns:testSection="xalan://org.openelis.metamap.TestSectionMetaMap"
-  xmlns:testTOS="xalan://org.openelis.metamap.TestTypeOfSampleMetaMap"
-  xmlns:testTrailer="xalan://org.openelis.meta.TestTrailerMeta"
-  xmlns:testWrksht="xalan://org.openelis.metamap.TestWorksheetMetaMap"
-  xmlns:testWrkshtAna="xalan://org.openelis.metamap.TestWorksheetAnalyteMetaMap"
-  xmlns:testWrkshtItm="xalan://org.openelis.metamap.TestWorksheetItemMetaMap"
-  xmlns:wsscript="xalan://org.openelis.meta.ScriptletMeta">
+  xmlns:meta="xalan://org.openelis.meta.TestMeta">
 
   <xsl:import href="IMPORT/aToZOneColumn.xsl" />
   <xsl:template match="doc">
-    <xsl:variable name="test" select="meta:new()" />
-    <xsl:variable name="mt" select="meta:getMethod($test)" />
-    <xsl:variable name="scpt" select="meta:getScriptlet($test)" />
-    <xsl:variable name="lbl" select="meta:getLabel($test)" />
-    <xsl:variable name="tt" select="meta:getTestTrailer($test)" />
-    <xsl:variable name="tp" select="meta:getTestPrep($test)" />
-    <xsl:variable name="pt" select="testPrep:getPrepTest($tp)" />
-    <xsl:variable name="tos" select="meta:getTestTypeOfSample($test)" />
-    <xsl:variable name="tref" select="meta:getTestReflex($test)" />
-    <xsl:variable name="at" select="testRef:getAddTest($tref)" />
-    <xsl:variable name="trefr" select="testRef:getTestResult($tref)" />
-    <xsl:variable name="trefta" select="testRef:getTestAnalyte($tref)" />
-    <xsl:variable name="trefa" select="testRefTana:getAnalyte($trefta)" />
-    <xsl:variable name="tws" select="meta:getTestWorksheet($test)" />
-    <xsl:variable name="wss" select="testWrksht:getScriptlet($tws)" />
-    <xsl:variable name="twsi" select="meta:getTestWorksheetItem($test)" />
-    <xsl:variable name="twsa" select="meta:getTestWorksheetAnalyte($test)" />
-    <xsl:variable name="tana" select="meta:getTestAnalyte($test)" />
-    <xsl:variable name="ts" select="meta:getTestSection($test)" />
-    <xsl:variable name="tr" select="meta:getTestResult($test)" />
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />    
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
@@ -175,16 +136,16 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'id')" />:
                   </text>
-                  <textbox key="{meta:getId($test)}" width="50" tab="{meta:getName($test)},{method:getName($mt)}" field="Integer" />
+                  <textbox key="{meta:getId()}" width="50" tab="{meta:getName()},{meta:getMethodName()}" field="Integer" />
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'name')" />:
                   </text>
-                  <textbox key="{meta:getName($test)}" width="145" case="LOWER" max="20" tab="{method:getName($mt)},{meta:getId($test)}" field="String" required="true" />
+                  <textbox key="{meta:getName()}" width="145" case="LOWER" max="20" tab="{meta:getMethodName()},{meta:getId()}" field="String" required="true" />
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'method')" />:
                   </text>
                   <widget>
-                    <autoComplete key="{method:getName($mt)}" width="145" tab="{meta:getId($test)}, {meta:getName($test)}" field="Integer" required="true">
+                    <autoComplete key="{meta:getMethodName()}" width="145" tab="{meta:getId()}, {meta:getName()}" field="Integer" required="true">
                       <col width="145" />
                     </autoComplete>
                   </widget>
@@ -199,7 +160,7 @@ UIRF Software License are applicable instead of those above.
                           <xsl:value-of select="resource:getString($constants,'description')" />:
                         </text>
                         <widget colspan="2">
-                          <textbox key="{meta:getDescription($test)}" width="425px" max="60" tab="{meta:getReportingDescription($test)},{script:getName($scpt)}" field="String" required="true" />
+                          <textbox key="{meta:getDescription()}" width="425px" max="60" tab="{meta:getReportingDescription()},{meta:getScriptletName()}" field="String" required="true" />
                         </widget>
                       </row>
                       <row>
@@ -207,7 +168,7 @@ UIRF Software License are applicable instead of those above.
                           <xsl:value-of select="resource:getString($constants,'reportDescription')" />:
                         </text>
                         <widget colspan="2">
-                          <textbox key="{meta:getReportingDescription($test)}" width="425px" max="60" tab="{meta:getTimeTaMax($test)},{meta:getDescription($test)}" field="String" required="true" />
+                          <textbox key="{meta:getReportingDescription()}" width="425px" max="60" tab="{meta:getTimeTaMax()},{meta:getDescription()}" field="String" required="true" />
                         </widget>
                       </row>
                     </TablePanel>
@@ -221,27 +182,27 @@ UIRF Software License are applicable instead of those above.
                             <text style="Prompt">
                               <xsl:value-of select='resource:getString($constants,"turnAroundMax")' />:
                             </text>
-                            <textbox key="{meta:getTimeTaMax($test)}" width="50px" tab="{meta:getTimeTaAverage($test)},{meta:getIsReportable($test)}" field="Integer" required="true" />
+                            <textbox key="{meta:getTimeTaMax()}" width="50px" tab="{meta:getTimeTaAverage()},{meta:getIsReportable()}" field="Integer" required="true" />
                             <text style="Prompt">
                               <xsl:value-of select="resource:getString($constants,'timeTransit')" />:
                             </text>
-                            <textbox key="{meta:getTimeTransit($test)}" width="50px" tab="{meta:getTimeHolding($test)},{meta:getTimeTaWarning($test)}" field="Integer" required="true" />
+                            <textbox key="{meta:getTimeTransit()}" width="50px" tab="{meta:getTimeHolding()},{meta:getTimeTaWarning()}" field="Integer" required="true" />
                           </row>
                           <row>
                             <text style="Prompt">
                               <xsl:value-of select='resource:getString($constants,"turnAroundAverage")' />:
                             </text>
-                            <textbox key="{meta:getTimeTaAverage($test)}" width="50px" tab="{meta:getTimeTaWarning($test)},{meta:getTimeTaMax($test)}" field="Integer" required="true" />
+                            <textbox key="{meta:getTimeTaAverage()}" width="50px" tab="{meta:getTimeTaWarning()},{meta:getTimeTaMax()}" field="Integer" required="true" />
                             <text style="Prompt">
                               <xsl:value-of select="resource:getString($constants,'timeHolding')" />:
                             </text>
-                            <textbox key="{meta:getTimeHolding($test)}" width="50px" tab="{meta:getIsActive($test)},{meta:getTimeTransit($test)}" field="Integer" required="true" />
+                            <textbox key="{meta:getTimeHolding()}" width="50px" tab="{meta:getIsActive()},{meta:getTimeTransit()}" field="Integer" required="true" />
                           </row>
                           <row>
                             <text style="Prompt">
                               <xsl:value-of select='resource:getString($constants,"turnAroundWarn")' />:
                             </text>
-                            <textbox key="{meta:getTimeTaWarning($test)}" width="50px" tab="{meta:getTimeTransit($test)},{meta:getTimeTaAverage($test)}" field="Integer" required="true" />
+                            <textbox key="{meta:getTimeTaWarning()}" width="50px" tab="{meta:getTimeTransit()},{meta:getTimeTaAverage()}" field="Integer" required="true" />
                           </row>
                         </TablePanel>
                       </VerticalPanel>
@@ -254,19 +215,19 @@ UIRF Software License are applicable instead of those above.
                             <text style="Prompt">
                               <xsl:value-of select='resource:getString($constants,"active")' />:
                             </text>
-                            <check key="{meta:getIsActive($test)}" tab="{meta:getActiveBegin($test)},{meta:getTimeHolding($test)}" required="true" />
+                            <check key="{meta:getIsActive()}" tab="{meta:getActiveBegin()},{meta:getTimeHolding()}" required="true" />
                           </row>
                           <row>
                             <text style="Prompt">
                               <xsl:value-of select='resource:getString($constants,"beginDate")' />:
                             </text>
-                            <calendar key="{meta:getActiveBegin($test)}" begin="0" end="2" width="90px" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getActiveEnd($test)},{meta:getIsActive($test)}" required="true" />
+                            <calendar key="{meta:getActiveBegin()}" begin="0" end="2" width="90px" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getActiveEnd()},{meta:getIsActive()}" required="true" />
                           </row>
                           <row>
                             <text style="Prompt">
                               <xsl:value-of select='resource:getString($constants,"endDate")' />:
                             </text>
-                            <calendar key="{meta:getActiveEnd($test)}" begin="0" end="2" width="90px" pattern="{resource:getString($constants,'datePattern')}" tab="{label:getName($lbl)},{meta:getActiveBegin($test)}" required="true" />
+                            <calendar key="{meta:getActiveEnd()}" begin="0" end="2" width="90px" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getLabelName()},{meta:getActiveBegin()}" required="true" />
                           </row>
                         </TablePanel>
                       </VerticalPanel>
@@ -282,7 +243,7 @@ UIRF Software License are applicable instead of those above.
                               <xsl:value-of select='resource:getString($constants,"type")' />:
                             </text>
                             <widget>
-                              <autoComplete key="{label:getName($lbl)}" width="224" tab="{meta:getLabelQty($test)},{meta:getActiveEnd($test)}" field="Integer">
+                              <autoComplete key="{meta:getLabelName()}" width="224" tab="{meta:getLabelQty()},{meta:getActiveEnd()}" field="Integer">
                                 <col width="224" />
                               </autoComplete>
                             </widget>
@@ -291,7 +252,7 @@ UIRF Software License are applicable instead of those above.
                             <text style="Prompt">
                               <xsl:value-of select='resource:getString($constants,"quantity")' />:
                             </text>
-                            <textbox key="{meta:getLabelQty($test)}" width="50" tab="{meta:getIsReportable($test)},{label:getName($lbl)}" field="Integer" />
+                            <textbox key="{meta:getLabelQty()}" width="50" tab="{meta:getIsReportable()},{meta:getLabelName()}" field="Integer" />
                           </row>
                         </TablePanel>
                       </VerticalPanel>
@@ -301,11 +262,11 @@ UIRF Software License are applicable instead of those above.
                           <xsl:value-of select='resource:getString($constants,"sections")' />
                         </text>
                         <widget valign="bottom">
-                          <table key="sectionTable" width="auto" maxRows="2" showScroll="ALWAYS" tab="removeTestSectionButton,{meta:getIsReportable($test)}" title="">
-                            <col key="{testSection:getSectionId($ts)}" width="119" sort="false" header="{resource:getString($constants,'name')}">
+                          <table key="sectionTable" width="auto" maxRows="2" showScroll="ALWAYS" tab="removeTestSectionButton,{meta:getIsReportable()}" title="">
+                            <col key="{meta:getSectionSectionId()}" width="119" sort="false" header="{resource:getString($constants,'name')}">
                               <dropdown width="85" case="MIXED" field="Integer" required="true" />
                             </col>
-                            <col key="{testSection:getFlagId($ts)}" width="119" sort="false" header="{resource:getString($constants,'options')}">
+                            <col key="{meta:getSectionFlagId()}" width="119" sort="false" header="{resource:getString($constants,'options')}">
                               <dropdown width="110" case="MIXED" field="Integer" />
                             </col>
                           </table>
@@ -339,17 +300,17 @@ UIRF Software License are applicable instead of those above.
                         <text style="Prompt">
                           <xsl:value-of select='resource:getString($constants,"testReportable")' />:
                         </text>
-                        <check key="{meta:getIsReportable($test)}" tab="sectionTable,{meta:getLabelQty($test)}" required="true" />
+                        <check key="{meta:getIsReportable()}" tab="sectionTable,{meta:getLabelQty()}" required="true" />
                       </row>
                       <row>
                         <text style="Prompt">
                           <xsl:value-of select="resource:getString($constants,'revisionMethod')" />:
                         </text>
-                        <dropdown key="{meta:getRevisionMethodId($test)}" width="190px" tab="{meta:getSortingMethodId($test)},removeTestSectionButton" field="Integer" />
+                        <dropdown key="{meta:getRevisionMethodId()}" width="190px" tab="{meta:getSortingMethodId()},removeTestSectionButton" field="Integer" />
                         <text style="Prompt">
                           <xsl:value-of select="resource:getString($constants,'testTrailer')" />:
                         </text>
-                        <autoComplete key="{testTrailer:getName($tt)}" width="180px" case="LOWER" tab="{meta:getTestFormatId($test)},{meta:getReportingSequence($test)}" field="Integer" required="false">
+                        <autoComplete key="{meta:getTestTrailerName()}" width="180px" case="LOWER" tab="{meta:getTestFormatId()},{meta:getReportingSequence()}" field="Integer" required="false">
                           <col width="180" />
                         </autoComplete>
                       </row>
@@ -357,21 +318,21 @@ UIRF Software License are applicable instead of those above.
                         <text style="Prompt">
                           <xsl:value-of select="resource:getString($constants,'sortingMethod')" />:
                         </text>
-                        <dropdown key="{meta:getSortingMethodId($test)}" width="190px" tab="{meta:getReportingMethodId($test)},{meta:getRevisionMethodId($test)}" field="Integer" />
+                        <dropdown key="{meta:getSortingMethodId()}" width="190px" tab="{meta:getReportingMethodId()},{meta:getRevisionMethodId()}" field="Integer" />
                         <text style="Prompt">
                           <xsl:value-of select="resource:getString($constants,'testFormat')" />:
                         </text>
-                        <dropdown key="{meta:getTestFormatId($test)}" width="180px" tab="{script:getName($scpt)},{testTrailer:getName($tt)}" field="Integer" />
+                        <dropdown key="{meta:getTestFormatId()}" width="180px" tab="{meta:getScriptletName()},{meta:getTestTrailerName()}" field="Integer" />
                       </row>
                       <row>
                         <text style="Prompt">
                           <xsl:value-of select="resource:getString($constants,'reportingMethod')" />:
                         </text>
-                        <dropdown key="{meta:getReportingMethodId($test)}" width="190px" tab="{meta:getReportingSequence($test)},{meta:getSortingMethodId($test)}" field="Integer" />
+                        <dropdown key="{meta:getReportingMethodId()}" width="190px" tab="{meta:getReportingSequence()},{meta:getSortingMethodId()}" field="Integer" />
                         <text style="Prompt">
                           <xsl:value-of select="resource:getString($constants,'scriptlet')" />:
                         </text>
-                        <autoComplete key="{script:getName($scpt)}" width="180px" case="LOWER" tab="{meta:getDescription($test)},{meta:getTestFormatId($test)}" field="Integer">
+                        <autoComplete key="{meta:getScriptletName()}" width="180px" case="LOWER" tab="{meta:getDescription()},{meta:getTestFormatId()}" field="Integer">
                           <col width="180" />
                         </autoComplete>
                       </row>
@@ -379,7 +340,7 @@ UIRF Software License are applicable instead of those above.
                         <text style="Prompt">
                           <xsl:value-of select="resource:getString($constants,'reportingSequence')" />:
                         </text>
-                        <textbox key="{meta:getReportingSequence($test)}" width="80px" tab="{testTrailer:getName($tt)},{meta:getReportingMethodId($test)}" field="Integer" />
+                        <textbox key="{meta:getReportingSequence()}" width="80px" tab="{meta:getTestTrailerName()},{meta:getReportingMethodId()}" field="Integer" />
                       </row>
                     </TablePanel>
                     <VerticalPanel height="71px" />
@@ -390,10 +351,10 @@ UIRF Software License are applicable instead of those above.
                     <HorizontalPanel>
                       <widget valign="top">
                         <table key="sampleTypeTable" width="auto" maxRows="21" showScroll="ALWAYS" title="">
-                          <col key="{testTOS:getTypeOfSampleId($tos)}" width="301" sort="false" header="{resource:getString($constants,'sampleType')}">
+                          <col key="{meta:getTypeOfSampleTypeOfSampleId()}" width="301" sort="false" header="{resource:getString($constants,'sampleType')}">
                             <dropdown width="301" case="MIXED" popWidth="301" field="Integer" required="true" />
                           </col>
-                          <col key="{testTOS:getUnitOfMeasureId($tos)}" width="300" sort="false" header="{resource:getString($constants,'unitOfMeasure')}">
+                          <col key="{meta:getTypeOfSampleUnitOfMeasureId()}" width="300" sort="false" header="{resource:getString($constants,'unitOfMeasure')}">
                             <dropdown width="300" case="MIXED" popWidth="300" field="Integer" />
                           </col>
                         </table>
@@ -499,15 +460,15 @@ UIRF Software License are applicable instead of those above.
                           <text style="Prompt">
                             <xsl:value-of select="resource:getString($constants,'type')" />:
                           </text>
-                          <dropdown key="{testAnalyte:getTypeId($tana)}" width="75px" field="Integer" />
+                          <dropdown key="{meta:getAnalyteTypeId()}" width="75px" field="Integer" />
                           <text style="Prompt">
                             <xsl:value-of select="resource:getString($constants,'reportable')" />:
                           </text>
-                          <check key="{testAnalyte:getIsReportable($tana)}" />
+                          <check key="{meta:getAnalyteIsReportable()}" />
                           <text style="Prompt">
                             <xsl:value-of select="resource:getString($constants,'scriptlet')" />:
                           </text>
-                          <autoComplete key="{testAnalyte:getScriptletId($tana)}" width="100px" case="LOWER" field="Integer">
+                          <autoComplete key="{meta:getAnalyteScriptletId()}" width="100px" case="LOWER" field="Integer">
                             <col width="165" />
                           </autoComplete>
                         </row>
@@ -517,22 +478,22 @@ UIRF Software License are applicable instead of those above.
                       <ScrollTabBar key="resultTabPanel" width="610px" />
                       <widget valign="top">
                         <table key="resultTable" width="auto" maxRows="9" showScroll="ALWAYS" title="">
-                          <col key="{testResult:getUnitOfMeasureId($tr)}" width="70" header="{resource:getString($constants,'unit')}">
+                          <col key="{meta:getResultUnitOfMeasureId()}" width="70" header="{resource:getString($constants,'unit')}">
                             <dropdown width="70" case="MIXED" field="Integer" />
                           </col>
-                          <col key="{testResult:getTypeId($tr)}" width="85" header="{resource:getString($constants,'type')}">
+                          <col key="{meta:getResultTypeId()}" width="85" header="{resource:getString($constants,'type')}">
                             <dropdown width="90" case="MIXED" field="Integer" required="true" />
                           </col>
-                          <col key="{testResult:getValue($tr)}" width="190" header="{resource:getString($constants,'value')}">
+                          <col key="{meta:getResultValue()}" width="190" header="{resource:getString($constants,'value')}">
                             <textbox case="MIXED" field="String" />
                           </col>
-                          <col key="{testResult:getFlagsId($tr)}" width="95" header="{resource:getString($constants,'flags')}">
+                          <col key="{meta:getResultFlagsId()}" width="95" header="{resource:getString($constants,'flags')}">
                             <dropdown width="115" case="MIXED" field="Integer" />
                           </col>
-                          <col key="{testResult:getSignificantDigits($tr)}" width="45" header="{resource:getString($constants,'significantDigits')}">
+                          <col key="{meta:getResultSignificantDigits()}" width="45" header="{resource:getString($constants,'significantDigits')}">
                             <textbox case="MIXED" field="Integer" />
                           </col>
-                          <col key="{testResult:getRoundingMethodId($tr)}" width="104" header="{resource:getString($constants,'roundingMethod')}">
+                          <col key="{meta:getResultRoundingMethodId()}" width="104" header="{resource:getString($constants,'roundingMethod')}">
                             <dropdown width="100" case="MIXED" field="Integer" />
                           </col>
                         </table>
@@ -587,7 +548,7 @@ UIRF Software License are applicable instead of those above.
                         <HorizontalPanel>
                           <widget valign="top">
                             <table key="testPrepTable" width="auto" maxRows="9" showScroll="ALWAYS" title="">
-                              <col key="{prepTestMeta:getName($pt)}" width="312" header="{resource:getString($constants,'prepTest')}">
+                              <col key="{meta:getPrepPrepTestName()}" width="312" header="{resource:getString($constants,'prepTest')}">
                                 <autoComplete width="312" field="Integer" required="true">
                                   <col width="140" header="{resource:getString($constants,'test')}" />
                                   <col width="135" header="{resource:getString($constants,'method')}" />
@@ -597,7 +558,7 @@ UIRF Software License are applicable instead of those above.
                               <col key="method" width="212" header="{resource:getString($constants,'method')}">
                                 <label />
                               </col>
-                              <col key="{testPrep:getIsOptional($tp)}" width="74" header="{resource:getString($constants,'optional')}">
+                              <col key="{meta:getPrepIsOptional()}" width="74" header="{resource:getString($constants,'optional')}">
                                 <check />
                               </col>
                             </table>
@@ -633,7 +594,7 @@ UIRF Software License are applicable instead of those above.
                         <HorizontalPanel>
                           <widget valign="top">
                             <table key="testReflexTable" width="auto" maxRows="9" showScroll="ALWAYS" title="">
-                              <col key="{addTestMeta:getName($at)}" width="90" header="{resource:getString($constants,'reflexiveTest')}">
+                              <col key="{meta:getReflexAddTestName()}" width="90" header="{resource:getString($constants,'reflexiveTest')}">
                                 <autoComplete width="80" field="Integer" required="true">
                                   <col width="140" header="{resource:getString($constants,'test')}" />
                                   <col width="135" header="{resource:getString($constants,'method')}" />
@@ -643,17 +604,17 @@ UIRF Software License are applicable instead of those above.
                               <col key="method" width="65" header="{resource:getString($constants,'method')}">
                                 <label />
                               </col>
-                              <col key="{testRefAna:getName($trefa)}" width="194" sort="false" header="{resource:getString($constants,'testAnalyte')}">
+                              <col key="{meta:getReflexTestAnalyteName()}" width="194" sort="false" header="{resource:getString($constants,'testAnalyte')}">
                                 <autoComplete width="194" case="MIXED" popWidth="auto" field="Integer" required="true">
                                   <col width="194" />
                                 </autoComplete>
                               </col>
-                              <col key="{testRefRes:getValue($trefr)}" width="140" header="{resource:getString($constants,'result')}">
+                              <col key="{meta:getReflexTestResultValue()}" width="140" header="{resource:getString($constants,'result')}">
                                 <autoComplete width="140" case="MIXED" popWidth="auto" field="Integer" required="true">
                                   <col width="140" />
                                 </autoComplete>
                               </col>
-                              <col key="{testRef:getFlagsId($tref)}" width="103" header="{resource:getString($constants,'flags')}">
+                              <col key="{meta:getReflexFlagsId()}" width="103" header="{resource:getString($constants,'flags')}">
                                 <dropdown width="200" case="MIXED" popWidth="300" field="Integer" required="true" />
                               </col>
                             </table>
@@ -698,7 +659,7 @@ UIRF Software License are applicable instead of those above.
                             <xsl:value-of select="resource:getString($constants,'numberFormat')" />:
                           </text>
                           <widget colspan="4">
-                            <dropdown key="{testWrksht:getFormatId($tws)}" width="145px" case="MIXED" tab="{testWrksht:getBatchCapacity($tws)}, {wsscript:getName($wss)}" field="Integer" />
+                            <dropdown key="{meta:getWorksheetFormatId()}" width="145px" case="MIXED" tab="{meta:getWorksheetBatchCapacity()}, {meta:getWorksheetScriptletName()}" field="Integer" />
                           </widget>
                         </row>
                         <row>
@@ -706,7 +667,7 @@ UIRF Software License are applicable instead of those above.
                             <xsl:value-of select="resource:getString($constants,'batchCapacity')" />:
                           </text>
                           <widget>
-                            <textbox key="{testWrksht:getBatchCapacity($tws)}" width="40px" tab="{testWrksht:getTotalCapacity($tws)},{testWrksht:getFormatId($tws)}" field="Integer" />
+                            <textbox key="{meta:getWorksheetBatchCapacity()}" width="40px" tab="{meta:getWorksheetTotalCapacity()},{meta:getWorksheetFormatId()}" field="Integer" />
                           </widget>
                           <widget valign="middle">
                             <text style="Prompt">
@@ -714,7 +675,7 @@ UIRF Software License are applicable instead of those above.
                             </text>
                           </widget>
                           <widget>
-                            <textbox key="{testWrksht:getTotalCapacity($tws)}" width="40px" tab="{wsscript:getName($wss)},{testWrksht:getBatchCapacity($tws)}" field="Integer" />
+                            <textbox key="{meta:getWorksheetTotalCapacity()}" width="40px" tab="{meta:getWorksheetScriptletName()},{meta:getWorksheetBatchCapacity()}" field="Integer" />
                           </widget>
                         </row>
                         <row>
@@ -722,7 +683,7 @@ UIRF Software License are applicable instead of those above.
                             <xsl:value-of select="resource:getString($constants,'scriptlet')" />:
                           </text>
                           <widget colspan="3">
-                            <autoComplete key="{wsscript:getName($wss)}" width="235px" field="Integer">
+                            <autoComplete key="{meta:getWorksheetScriptletName()}" width="235px" field="Integer">
                               <col width="235" />
                             </autoComplete>
                           </widget>
@@ -735,14 +696,14 @@ UIRF Software License are applicable instead of those above.
                       </text>
                       <HorizontalPanel>
                         <widget valign="top">
-                          <table key="worksheetTable" width="auto" maxRows="6" showScroll="ALWAYS" tab="removeWSItemButton, {testWrksht:getScriptletId($tws)}" title="">
-                            <col key="{testWrkshtItm:getPosition($twsi)}" width="70" header="{resource:getString($constants,'position')}">
+                          <table key="worksheetTable" width="auto" maxRows="6" showScroll="ALWAYS" tab="worksheetAnalyteTable, {meta:getWorksheetScriptletName()}" title="">
+                            <col key="{meta:getWorksheetItemPosition()}" width="70" header="{resource:getString($constants,'position')}">
                               <textbox field="Integer" />
                             </col>
-                            <col key="{testWrkshtItm:getTypeId($twsi)}" width="150" header="{resource:getString($constants,'type')}">
+                            <col key="{meta:getWorksheetItemTypeId()}" width="150" header="{resource:getString($constants,'type')}">
                               <dropdown width="140" case="MIXED" field="Integer" required="true" />
                             </col>
-                            <col key="{testWrkshtItm:getQcName($twsi)}" width="368" header="{resource:getString($constants,'qcName')}">
+                            <col key="{meta:getWorksheetItemQcName()}" width="368" header="{resource:getString($constants,'qcName')}">
                               <autoComplete width="368" case="MIXED" field="String">
                                 <col width="368" />
                               </autoComplete>
@@ -783,14 +744,14 @@ UIRF Software License are applicable instead of those above.
                       </text>
                       <HorizontalPanel>
                         <widget valign="top">
-                          <table key="worksheetAnalyteTable" width="auto" maxRows="5" showScroll="ALWAYS" tab="removeWSItemButton, {testWrksht:getScriptletId($tws)}" title="">
-                            <col key="{testWrkshtAna:getAnalyteId($twsa)}" width="400" header="{resource:getString($constants,'analyte')}">
+                          <table key="worksheetAnalyteTable" width="auto" maxRows="5" showScroll="ALWAYS" tab="{meta:getWorksheetFormatId()}, worksheetTable" title="">
+                            <col key="{meta:getWorksheetAnalyteAnalyteId()}" width="400" header="{resource:getString($constants,'analyte')}">
                               <label field="String" />
                             </col>
-                            <col key="{testWrkshtAna:getRepeat($twsa)}" width="88" header="{resource:getString($constants,'repeat')}">
+                            <col key="{meta:getWorksheetAnalyteRepeat()}" width="88" header="{resource:getString($constants,'repeat')}">
                               <textbox field="Integer" required="true" />
                             </col>
-                            <col key="{testWrkshtAna:getFlagId($twsa)}" width="100" header="{resource:getString($constants,'flag')}">
+                            <col key="{meta:getWorksheetAnalyteFlagId()}" width="100" header="{resource:getString($constants,'flag')}">
                               <dropdown width="140" field="Integer" />
                             </col>
                           </table>

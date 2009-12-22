@@ -53,7 +53,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.LockLocal;
-import org.openelis.metamap.LabelMetaMap;
+import org.openelis.meta.LabelMeta;
 import org.openelis.remote.LabelRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -73,7 +73,7 @@ public class LabelBean implements LabelRemote {
     @EJB
     private LockLocal                 lockBean;
 
-    private static final LabelMetaMap meta = new LabelMetaMap();
+    private static final LabelMeta meta = new LabelMeta();
 
     public LabelBean() {
     }

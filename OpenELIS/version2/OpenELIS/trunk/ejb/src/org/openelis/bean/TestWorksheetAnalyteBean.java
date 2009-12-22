@@ -42,7 +42,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.TestWorksheetAnalyteLocal;
-import org.openelis.metamap.TestMetaMap;
+import org.openelis.meta.TestMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
@@ -53,7 +53,7 @@ public class TestWorksheetAnalyteBean implements TestWorksheetAnalyteLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager            manager;
     
-    private static final TestMetaMap meta = new TestMetaMap();
+    private static final TestMeta meta = new TestMeta();
     
     public ArrayList<TestWorksheetAnalyteViewDO> fetchByTestId(Integer testId) throws Exception {
         Query query;
@@ -125,7 +125,7 @@ public class TestWorksheetAnalyteBean implements TestWorksheetAnalyteLocal {
         
         if (DataBaseUtil.isEmpty(repeat) || repeat < 1) {
             list.add(new FieldErrorException("repeatNullForAnalyteException",
-                                                   meta.TEST_WORKSHEET_ANALYTE.getRepeat()));
+                                                   meta.getWorksheetAnalyteRepeat()));
         }
         
         if(list.size() > 0)

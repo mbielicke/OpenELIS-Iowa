@@ -42,14 +42,14 @@ import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestResultLocal;
-import org.openelis.metamap.TestMetaMap;
+import org.openelis.meta.TestMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utilcommon.ResultRangeNumeric;
 import org.openelis.utilcommon.ResultRangeTiter;
 
 public class TestResultManagerProxy {
 
-    private static final TestMetaMap meta = new TestMetaMap();
+    private static final TestMeta    meta = new TestMeta();
     
     private static int               typeDict, typeNumeric, typeTiter, typeDefault; 
     
@@ -216,13 +216,12 @@ public class TestResultManagerProxy {
                     unitText = dl.fetchById(unitId).getEntry();
                     
                     list.add(new GridFieldErrorException("illegalUnitOfMeasureException", i, j,
-                                                                  meta.TEST_RESULT
-                                                                          .getUnitOfMeasureId(),
+                                                                  meta.getResultUnitOfMeasureId(),
                                                                   "resultTable",unitText));    
                     continue;
                 }
 
-                fieldName = meta.TEST_RESULT.getValue();
+                fieldName = meta.getResultValue();
                 
                 try {                    
                     rl.validate(data);                    
