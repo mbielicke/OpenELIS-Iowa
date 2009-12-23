@@ -37,71 +37,15 @@ version="1.0"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
   xmlns:meta="xalan://org.openelis.meta.SampleMeta">
   
+  <xsl:import href="OPENELIS/org/openelis/modules/sample/client/SampleTemplates.xsl"/>
+  
   <xsl:template match="doc">
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
   
     <screen id="AuxDataTab" name="{resource:getString($constants,'auxData')}">
-      <VerticalPanel padding="0" spacing="0">
-               <TablePanel padding="0" spacing="0">
-                <row>
-                <widget colspan="6">
-	              <table key="auxValsTable" title="" width="auto" maxRows="6" showScroll="ALWAYS">
-	                 <col width="85" header="{resource:getString($constants,'reportable')}">
-	                 <check/>
-	                 </col>
-	                  <col width="300" header="{resource:getString($constants,'name')}">
-	                    <label />
-	                  </col>
-	                  <col width="303" class="org.openelis.modules.sample.client.AuxTableColumn" header="{resource:getString($constants,'value')}">
-	                  	<label/>
-	                  </col>
-	                </table>
-	                </widget>
-                </row>
-                <row>
-                <widget colspan="6" style="TableButtonFooter">
-                <HorizontalPanel>
-                  <appButton key="removeAuxButton" style="Button">
-                    <HorizontalPanel>
-                      <AbsolutePanel style="RemoveRowButtonImage" />
-                      <text>
-                        <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                      </text>
-                    </HorizontalPanel>
-                  </appButton>
-                  <appButton key="addAuxButton" style="Button">
-                    <HorizontalPanel>
-                      <AbsolutePanel style="PickerButtonImage" />
-                      <text>
-                        <xsl:value-of select="resource:getString($constants,'auxGroups')" />
-                      </text>
-                    </HorizontalPanel>
-                  </appButton>
-                </HorizontalPanel>
-                </widget>
-                </row>
-                </TablePanel>
-                <TablePanel style="Form">
-                <row>
-	                <text style="Prompt">
-	                	<xsl:value-of select="resource:getString($constants,'description')" />:
-	              	</text>
-	              	<widget colspan="3">
-              			<textbox key="auxDesc" width="275px" style="ScreenTextboxDisplayOnly"/>
-              		</widget>
-	                <text style="Prompt">
-	                	<xsl:value-of select="resource:getString($constants,'method')" />:
-	              	</text>
-              		<textbox key="auxMethod" width="125px" style="ScreenTextboxDisplayOnly"/>
-              		<text style="Prompt">
-	                	<xsl:value-of select="resource:getString($constants,'unit')" />:
-	              	</text>
-              		<textbox key="auxUnits" width="125px" style="ScreenTextboxDisplayOnly"/>
-                </row>
-                </TablePanel>
-             </VerticalPanel>      
+	  <xsl:call-template name="AuxDataTab"/>
     </screen>
   </xsl:template>
 </xsl:stylesheet>    

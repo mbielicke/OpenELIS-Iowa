@@ -37,56 +37,15 @@ version="1.0"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
   xmlns:meta="xalan://org.openelis.meta.SampleMeta">
   
+  <xsl:import href="OPENELIS/org/openelis/modules/sample/client/SampleTemplates.xsl"/>
+  
   <xsl:template match="doc">
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
   
     <screen id="StorageTab" name="{resource:getString($constants,'storage')}">
-      <VerticalPanel padding="0" spacing="0">
-              <TablePanel padding="0" spacing="0">
-              <row>
-                <table key="storageTable" width="auto" maxRows="8" showScroll="ALWAYS" title="">
-                  <col width="155" header="{resource:getString($constants,'user')}">
-                    <label />
-                  </col>
-                  <col width="259" header="{resource:getString($constants,'location')}">
-                    <autoComplete key="" width="215px" case="LOWER" popWidth="auto" field="Integer" required="true">
-                      <col width="240" header="{resource:getString($constants,'name')}" />
-                    </autoComplete>
-                  </col>
-                  <col width="135" header="{resource:getString($constants,'checkIn')}">
-                    <calendar key="" begin="0" end="4" width="110" pattern="{resource:getString($constants,'dateTimePattern')}" required="true"/>
-                  </col>
-                  <col width="136" header="{resource:getString($constants,'checkOut')}">
-                    <calendar key="" begin="0" end="4" width="110" pattern="{resource:getString($constants,'dateTimePattern')}"/>
-                  </col>
-                </table>
-                </row>
-                <row>
-                <widget style="TableButtonFooter">
-                <HorizontalPanel>
-                  <appButton key="addStorageButton" style="Button">
-                    <HorizontalPanel>
-                      <AbsolutePanel style="AddRowButtonImage" />
-                      <text>
-                        <xsl:value-of select="resource:getString($constants,'addRow')" />
-                      </text>
-                    </HorizontalPanel>
-                  </appButton>
-                  <appButton key="removeStorageButton" style="Button">
-                    <HorizontalPanel>
-                      <AbsolutePanel style="RemoveRowButtonImage" />
-                      <text>
-                        <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                      </text>
-                    </HorizontalPanel>
-                  </appButton>
-                </HorizontalPanel>
-                </widget>
-                </row>
-                </TablePanel>      
-      </VerticalPanel>
+	  <xsl:call-template name="StorageTab"/>
     </screen>
   </xsl:template>
 </xsl:stylesheet>           
