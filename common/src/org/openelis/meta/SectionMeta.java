@@ -29,79 +29,70 @@ package org.openelis.meta;
   * Section META Data
   */
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 import org.openelis.gwt.common.Meta;
+import org.openelis.gwt.common.MetaMap;
 
-public class SectionMeta implements Meta {
-  	public String path = "";
-	private static final String entityName = "Section";
+public class SectionMeta implements Meta, MetaMap {
 	
-	private static final String
-              ID					="id",
-              PARENT_SECTION_ID					="parentSectionId",
-              NAME					="name",
-              DESCRIPTION					="description",
-              IS_EXTERNAL					="isExternal",
-              ORGANIZATION_ID					="organizationId";
+	private static final String ID = "_section.id",
+                                PARENT_SECTION_ID = "_section.parentSectionId",
+                                NAME = "_section.name",
+                                DESCRIPTION	= "_section.description",
+                                IS_EXTERNAL	= "_section.isExternal",
+                                ORGANIZATION_ID = "_section.organizationId",
+                                
+                                PARENT_SECTION_NAME = "_section.parentSection.name",
+                                ORGANIZATION_NAME = "_section.organization.name";
 
-  	private static final String[] columnNames = {
-  	  ID,PARENT_SECTION_ID,NAME,DESCRIPTION,IS_EXTERNAL,ORGANIZATION_ID};
-  	  
-	private HashSet<String> columnHashList;
+    private static HashSet<String> names;
     
-    private void init() {
-        columnHashList = new HashSet<String>(columnNames.length);
-        for(int i = 0; i < columnNames.length; i++){
-            columnHashList.add(path+columnNames[i]);
-        }
-    }
-    
-    public SectionMeta() {
-		init();        
-    }
-    
-    public SectionMeta(String path) {
-        this.path = path;
-		init();        
-    }
-
-    public String[] getColumnList() {
-        return columnNames;
-    }
-
-    public String getEntity() {
-        return entityName;
+    static {
+        names = new HashSet<String>(Arrays.asList(ID,PARENT_SECTION_ID,NAME,
+                                                  DESCRIPTION,IS_EXTERNAL,ORGANIZATION_ID,
+                                                  PARENT_SECTION_NAME,ORGANIZATION_NAME));
     }
 
     public boolean hasColumn(String columnName) {
-        return columnHashList.contains(columnName);
+        return names.contains(columnName);
     }
     
+    public String buildFrom(String where) {
+        return "Section _section ";                 
+    }
     
     public String getId() {
-        return path + ID;
+        return ID;
     } 
 
     public String getParentSectionId() {
-        return path + PARENT_SECTION_ID;
+        return PARENT_SECTION_ID;
     } 
 
     public String getName() {
-        return path + NAME;
+        return NAME;
     } 
 
     public String getDescription() {
-        return path + DESCRIPTION;
+        return DESCRIPTION;
     } 
 
     public String getIsExternal() {
-        return path + IS_EXTERNAL;
+        return IS_EXTERNAL;
     } 
 
     public String getOrganizationId() {
-        return path + ORGANIZATION_ID;
-    } 
-
+        return ORGANIZATION_ID;
+    }
+    
+    public String getParentSectionName() {
+        return PARENT_SECTION_NAME;
+    }
+    
+    public String getOrganizationName() {
+        return ORGANIZATION_NAME;
+    }
   
 }   

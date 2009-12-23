@@ -29,74 +29,58 @@ package org.openelis.meta;
   * Analyte META Data
   */
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 import org.openelis.gwt.common.Meta;
+import org.openelis.gwt.common.MetaMap;
 
-public class AnalyteMeta implements Meta {
-  	protected String path = "";
-	private static final String entityName = "Analyte";
-	
-	private static final String
-              ID					="id",
-              NAME					="name",
-              IS_ACTIVE				="isActive",
-              PARENT_ANALYTE_ID		="parentAnalyteId",
-              EXTERNAL_ID			="externalId";
+public class AnalyteMeta implements Meta , MetaMap{
 
-  	private static final String[] columnNames = {
-  	  ID,NAME,IS_ACTIVE,PARENT_ANALYTE_ID,EXTERNAL_ID};
-  	  
-	private HashSet<String> columnHashList;
+	private static final String ID = "_analyte.id",
+                                NAME = "_analyte.name",
+                                IS_ACTIVE = "_analyte.isActive",
+                                PARENT_ANALYTE_ID = "_analyte.parentAnalyteId",
+                                EXTERNAL_ID	= "_analyte.externalId",
+                                
+                                PARENT_ANALYTE_NAME = "_analyte.parentAnalyte.name";
+
+	private static HashSet<String> names;
     
-    private void init() {
-        columnHashList = new HashSet<String>(columnNames.length);
-        for(int i = 0; i < columnNames.length; i++){
-            columnHashList.add(path+columnNames[i]);
-        }
-    }
-    
-    public AnalyteMeta() {
-		init();        
-    }
-    
-    public AnalyteMeta(String path) {
-        this.path = path;
-		init();        
-    }
-
-    public String[] getColumnList() {
-        return columnNames;
-    }
-
-    public String getEntity() {
-        return entityName;
+    static {
+        names = new HashSet<String>(Arrays.asList(ID,NAME,IS_ACTIVE,PARENT_ANALYTE_ID,
+                                                  EXTERNAL_ID,PARENT_ANALYTE_NAME));
     }
 
     public boolean hasColumn(String columnName) {
-        return columnHashList.contains(columnName);
+        return names.contains(columnName);
     }
     
+    public String buildFrom(String where) {        
+        return "Analyte _analyte ";
+    }
     
     public String getId() {
-        return path + ID;
+        return ID;
     } 
 
     public String getName() {
-        return path + NAME;
+        return NAME;
     } 
 
     public String getIsActive() {
-        return path + IS_ACTIVE;
+        return IS_ACTIVE;
     } 
 
     public String getParentAnalyteId() {
-        return path + PARENT_ANALYTE_ID;
+        return PARENT_ANALYTE_ID;
     } 
 
     public String getExternalId() {
-        return path + EXTERNAL_ID;
+        return EXTERNAL_ID;
     } 
 
-  
+    public String getParentAnalyteName() {
+        return PARENT_ANALYTE_NAME;
+    }
 }   

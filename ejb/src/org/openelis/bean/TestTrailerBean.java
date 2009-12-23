@@ -53,7 +53,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.LockLocal;
-import org.openelis.metamap.TestTrailerMetaMap;
+import org.openelis.meta.TestTrailerMeta;
 import org.openelis.remote.TestTrailerRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -73,7 +73,7 @@ public class TestTrailerBean implements TestTrailerRemote{
     @EJB
     private LockLocal                          lockBean;
 
-    private static final TestTrailerMetaMap meta = new TestTrailerMetaMap();
+    private static final TestTrailerMeta    meta = new TestTrailerMeta();
 
     public TestTrailerBean() {
     }

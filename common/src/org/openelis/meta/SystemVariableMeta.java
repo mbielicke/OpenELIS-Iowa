@@ -29,64 +29,43 @@ package org.openelis.meta;
   * SystemVariable META Data
   */
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 import org.openelis.gwt.common.Meta;
+import org.openelis.gwt.common.MetaMap;
 
-public class SystemVariableMeta implements Meta {
-  	private String path = "";
-	private static final String entityName = "SystemVariable";
+public class SystemVariableMeta implements Meta, MetaMap {
 	
-	private static final String
-              ID					="id",
-              NAME					="name",
-              VALUE					="value";
+	private static final String ID = "_systemVariable.id",
+                                NAME = "_systemVariable.name",
+                                VALUE = "_systemVariable.value";
 
-  	private static final String[] columnNames = {
-  	  ID,NAME,VALUE};
-  	  
-	private HashSet<String> columnHashList;
+	private static HashSet<String> names;
     
-    private void init() {
-        columnHashList = new HashSet<String>(columnNames.length);
-        for(int i = 0; i < columnNames.length; i++){
-            columnHashList.add(path+columnNames[i]);
-        }
-    }
-    
-    public SystemVariableMeta() {
-		init();        
-    }
-    
-    public SystemVariableMeta(String path) {
-        this.path = path;
-		init();        
-    }
-
-    public String[] getColumnList() {
-        return columnNames;
-    }
-
-    public String getEntity() {
-        return entityName;
+    static {
+        names = new HashSet<String>(Arrays.asList(ID,NAME,VALUE));
     }
 
     public boolean hasColumn(String columnName) {
-        return columnHashList.contains(columnName);
+        return names.contains(columnName);
     }
     
+    public String buildFrom(String where) {        
+        return "SystemVariable _systemVariable ";
+    } 
     
     public String getId() {
-        return path + ID;
+        return ID;
     } 
 
     public String getName() {
-        return path + NAME;
+        return NAME;
     } 
 
     public String getValue() {
-        return path + VALUE;
-    } 
+        return VALUE;
+    }
 
   
 }   

@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.method.client;
 
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.metamap.MethodMetaMap;
+import org.openelis.meta.MethodMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -66,23 +66,24 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class MethodScreen extends Screen {
-    
-	private MethodDO data;
-	private SecurityModule security;
-    
-	private CalendarLookUp activeBegin, activeEnd;
-	private TextBox name, description, reportingDescription;
-	private CheckBox isActive;
-	private AppButton queryButton, previousButton, nextButton, addButton, updateButton, commitButton, abortButton;
-	private ButtonGroup atoz;
-	private ScreenNavigator nav;
-	
-	private MethodMetaMap meta = new MethodMetaMap();
-    
+
+    private MethodDO        data;
+    private SecurityModule  security;
+
+    private CalendarLookUp  activeBegin, activeEnd;
+    private TextBox         name, description, reportingDescription;
+    private CheckBox        isActive;
+    private AppButton       queryButton, previousButton, nextButton, addButton, updateButton,
+                            commitButton, abortButton;
+    private ButtonGroup     atoz;
+    private ScreenNavigator nav;
+
+    private MethodMeta   meta = new MethodMeta();
+
     public MethodScreen() throws Exception {
         super((ScreenDefInt)GWT.create(MethodDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.method.server.MethodService");
-        
+
         security = OpenELIS.security.getModule("method");
         if (security == null)
             throw new SecurityException("screenPermException", "Method Screen");
@@ -98,7 +99,8 @@ public class MethodScreen extends Screen {
 
     /**
      * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred command.
+     * screen is attached to the browser. It is usually called in deferred
+     * command.
      */
     private void postConstructor() {
         data = new MethodDO();
@@ -106,7 +108,7 @@ public class MethodScreen extends Screen {
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
     }
-    
+
     private void initialize() {
         queryButton = (AppButton)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
@@ -115,8 +117,9 @@ public class MethodScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && security.hasSelectPermission());
+                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                          .contains(event.getState()) &&
+                                   security.hasSelectPermission());
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -151,8 +154,9 @@ public class MethodScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && security.hasAddPermission());
+                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                        .contains(event.getState()) &&
+                                 security.hasAddPermission());
                 if (event.getState() == State.ADD)
                     addButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -165,8 +169,8 @@ public class MethodScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState())
-                                     && security.hasUpdatePermission());
+                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
+                                    security.hasUpdatePermission());
                 if (event.getState() == State.UPDATE)
                     updateButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -179,7 +183,8 @@ public class MethodScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                           .contains(event.getState()));
             }
         });
 
@@ -190,7 +195,8 @@ public class MethodScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
             }
         });
 
@@ -205,7 +211,8 @@ public class MethodScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                name.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                name.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                   .contains(event.getState()));
                 name.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -221,7 +228,8 @@ public class MethodScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                description.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                description.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
                 description.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -237,7 +245,7 @@ public class MethodScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                reportingDescription.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                reportingDescription.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE).contains(event.getState()));
                 reportingDescription.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -253,7 +261,8 @@ public class MethodScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isActive.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                isActive.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                       .contains(event.getState()));
                 isActive.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -269,7 +278,8 @@ public class MethodScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                activeBegin.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                activeBegin.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
                 activeBegin.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -285,11 +295,12 @@ public class MethodScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                activeEnd.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                activeEnd.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                        .contains(event.getState()));
                 activeEnd.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
+
         //
         // left hand navigation panel
         //
@@ -310,8 +321,7 @@ public class MethodScreen extends Screen {
                         } else if (error instanceof LastPageException) {
                             window.setError("No more records in this direction");
                         } else {
-                            Window.alert("Error: Method call query failed; " +
-                                         error.getMessage());
+                            Window.alert("Error: Method call query failed; " + error.getMessage());
                             window.setError(consts.get("queryFailed"));
                         }
                     }
@@ -361,7 +371,7 @@ public class MethodScreen extends Screen {
             }
         });
     }
-    
+
     private void query() {
         data = new MethodDO();
         setState(State.QUERY);
@@ -370,25 +380,25 @@ public class MethodScreen extends Screen {
         setFocus(name);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
-    
+
     private void next() {
-    	nav.next();
+        nav.next();
     }
-    
+
     private void previous() {
-    	nav.previous();
+        nav.previous();
     }
-    
+
     private void add() {
         data = new MethodDO();
         data.setIsActive("Y");
         setState(State.ADD);
         DataChangeEvent.fire(this);
-        
+
         setFocus(name);
         window.setDone(consts.get("enterInformationPressCommit"));
     }
-    
+
     private void update() {
         window.setBusy(consts.get("lockForUpdate"));
 
@@ -403,7 +413,7 @@ public class MethodScreen extends Screen {
         }
         window.clearStatus();
     }
- 
+
     private void commit() {
         setFocus(null);
 
@@ -461,7 +471,7 @@ public class MethodScreen extends Screen {
             }
         }
     }
-    
+
     private void abort() {
         setFocus(null);
         clearErrors();
@@ -497,7 +507,7 @@ public class MethodScreen extends Screen {
             window.clearStatus();
         }
     }
-    
+
     private boolean fetchById(Integer id) {
         if (id == null) {
             data = new MethodDO();
@@ -523,16 +533,16 @@ public class MethodScreen extends Screen {
 
         return true;
     }
-    
-    @Override
+
+    /*@Override
     public boolean validate() {
-    	boolean valid = super.validate();
-    	if(activeEnd.getFieldValue() != null && activeEnd.getFieldValue().compareTo(activeBegin.getFieldValue()) <= 0){
-    		activeEnd.addException(new LocalizedException("endDateAfterBeginDateException"));
-    		return false;
-    	}
-    	return valid;
-    }
-   
+        boolean valid = super.validate();
+        if (activeEnd.getFieldValue() != null &&
+            activeEnd.getFieldValue().compareTo(activeBegin.getFieldValue()) <= 0) {
+            activeEnd.addException(new LocalizedException("endDateAfterBeginDateException"));
+            return false;
+        }
+        return valid;
+    }*/
 
 }

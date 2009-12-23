@@ -51,7 +51,7 @@ import org.openelis.gwt.widget.TextArea;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.metamap.TestTrailerMetaMap;
+import org.openelis.meta.TestTrailerMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -64,7 +64,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class TestTrailerScreen extends Screen {
     private TestTrailerDO      data;
-    private TestTrailerMetaMap meta = new TestTrailerMetaMap();
+    private TestTrailerMeta meta = new TestTrailerMeta();
     private SecurityModule     security;
 
     private AppButton          queryButton, previousButton, nextButton, addButton, updateButton,

@@ -51,7 +51,7 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.PanelLocal;
-import org.openelis.metamap.PanelMetaMap;
+import org.openelis.meta.PanelMeta;
 import org.openelis.remote.PanelRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -64,7 +64,7 @@ public class PanelBean implements PanelRemote, PanelLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager             manager;
 
-    private static final PanelMetaMap meta = new PanelMetaMap();
+    private static final PanelMeta meta = new PanelMeta();
 
     public PanelDO fetchById(Integer id) throws Exception {
         Query query;

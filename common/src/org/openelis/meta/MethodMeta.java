@@ -29,84 +29,64 @@ package org.openelis.meta;
   * Method META Data
   */
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 import org.openelis.gwt.common.Meta;
+import org.openelis.gwt.common.MetaMap;
 
-public class MethodMeta implements Meta {
-  	private String path = "";
-	private static final String entityName = "Method";
+public class MethodMeta implements Meta, MetaMap{
 	
-	private static final String
-              ID					="id",
-              NAME					="name",
-              DESCRIPTION					="description",
-              REPORTING_DESCRIPTION					="reportingDescription",
-              IS_ACTIVE					="isActive",
-              ACTIVE_BEGIN					="activeBegin",
-              ACTIVE_END					="activeEnd";
+	private static final String ID = "_method.id",
+                                NAME = "_method.name",
+                                DESCRIPTION	= "_method.description",
+                                REPORTING_DESCRIPTION = "_method.reportingDescription",
+                                IS_ACTIVE = "_method.isActive",
+                                ACTIVE_BEGIN = "_method.activeBegin",
+                                ACTIVE_END = "_method.activeEnd";
 
-  	private static final String[] columnNames = {
-  	  ID,NAME,DESCRIPTION,REPORTING_DESCRIPTION,IS_ACTIVE,ACTIVE_BEGIN,ACTIVE_END};
-  	  
-	private HashSet<String> columnHashList;
+	private static HashSet<String> names;
     
-    private void init() {
-        columnHashList = new HashSet<String>(columnNames.length);
-        for(int i = 0; i < columnNames.length; i++){
-            columnHashList.add(path+columnNames[i]);
-        }
+    static {
+        names = new HashSet<String>(Arrays.asList(ID,NAME,DESCRIPTION,REPORTING_DESCRIPTION,
+                                                  IS_ACTIVE,ACTIVE_BEGIN,ACTIVE_END));
     }
     
-    public MethodMeta() {
-		init();        
-    }
+    public String buildFrom(String where) {        
+        return "Method _method";
+    } 
     
-    public MethodMeta(String path) {
-        this.path = path;
-		init();        
-    }
-
-    public String[] getColumnList() {
-        return columnNames;
-    }
-
-    public String getEntity() {
-        return entityName;
-    }
-
     public boolean hasColumn(String columnName) {
-        return columnHashList.contains(columnName);
+        return names.contains(columnName);
     }
-    
     
     public String getId() {
-        return path + ID;
+        return ID;
     } 
 
     public String getName() {
-        return path + NAME;
+        return NAME;
     } 
 
     public String getDescription() {
-        return path + DESCRIPTION;
+        return DESCRIPTION;
     } 
 
     public String getReportingDescription() {
-        return path + REPORTING_DESCRIPTION;
+        return REPORTING_DESCRIPTION;
     } 
 
     public String getIsActive() {
-        return path + IS_ACTIVE;
+        return IS_ACTIVE;
     } 
 
     public String getActiveBegin() {
-        return path + ACTIVE_BEGIN;
+        return ACTIVE_BEGIN;
     } 
 
     public String getActiveEnd() {
-        return path + ACTIVE_END;
-    } 
+        return ACTIVE_END;
+    }
 
   
 }   

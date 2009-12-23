@@ -37,9 +37,8 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:meta="xalan://org.openelis.metamap.AnalyteMetaMap"
-  xmlns:parentMeta="xalan://org.openelis.meta.AnalyteMeta">
-
+  xmlns:meta="xalan://org.openelis.meta.AnalyteMeta">
+  
   <xsl:import href="IMPORT/aToZTwoColumns.xsl" />
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
@@ -47,23 +46,10 @@ UIRF Software License are applicable instead of those above.
   <xalan:component prefix="locale">
     <xalan:script lang="javaclass" src="xalan://java.util.Locale" />
   </xalan:component>
-  <xalan:component prefix="meta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.AnalyteMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="parentMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.AnalyteMeta" />
-  </xalan:component>
-  <xsl:template match="doc">
-    <xsl:variable name="meta" select="meta:new()" />
-    <xsl:variable name="parentMeta" select="meta:getParentAnalyte($meta)" />
-    <xsl:variable name="language">
-      <xsl:value-of select="locale" />
-    </xsl:variable>
-    <xsl:variable name="props">
-      <xsl:value-of select="props" />
-    </xsl:variable>
+  <xsl:template match="doc">   
+    <xsl:variable name="language"  select="locale" />
+    <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-
 <!-- main screen -->
 
     <screen id="Analyte" name="{resource:getString($constants,'analyte')}">
@@ -161,7 +147,7 @@ UIRF Software License are applicable instead of those above.
 
 <!--end button panel-->
 
-          <VerticalPanel width="590" height="220" padding="0" spacing="0" style="WhiteContentPanel">
+          <VerticalPanel width="580" height="220" padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
                 <HorizontalPanel style="FormVerticalSpacing" />
@@ -170,27 +156,29 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"name")' />:
                 </text>
-                <textbox key="{meta:getName($meta)}" width="350" max="60" tab="{parentMeta:getName($parentMeta)},{meta:getIsActive($meta)}" required="true" />
+                <textbox key="{meta:getName()}" width="350" max="60" tab="{meta:getParentAnalyteName()},{meta:getIsActive()}" required="true" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"parentAnalyte")' />:
                 </text>
                 <widget>
-                  <autoComplete key="{parentMeta:getName($parentMeta)}" width="184" tab="{meta:getExternalId($meta)},{meta:getName($meta)}" />
+                  <autoComplete key="{meta:getParentAnalyteName()}" width="184" tab="{meta:getExternalId()},{meta:getName()}" >
+                    <col width="300" />
+                  </autoComplete>  
                 </widget>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"externalId")' />:
                 </text>
-                <textbox key="{meta:getExternalId($meta)}" width="150" max="20" tab="{meta:getIsActive($meta)},{parentMeta:getName($parentMeta)}" />
+                <textbox key="{meta:getExternalId()}" width="150" max="20" tab="{meta:getIsActive()},{meta:getParentAnalyteName()}" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"active")' />:
                 </text>
-                <check key="{meta:getIsActive($meta)}" tab="{meta:getName($meta)},{meta:getExternalId($meta)}" />
+                <check key="{meta:getIsActive()}" tab="{meta:getName()},{meta:getExternalId()}" />
               </row>
             </TablePanel>
           </VerticalPanel>

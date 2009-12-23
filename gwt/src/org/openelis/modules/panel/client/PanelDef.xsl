@@ -34,8 +34,8 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:meta="xalan://org.openelis.metamap.PanelMetaMap"
-  xmlns:panelItem="xalan://org.openelis.metamap.PanelItemMetaMap">
+  xmlns:meta="xalan://org.openelis.meta.PanelMeta">
+  <!-- xmlns:panelItem="xalan://org.openelis.metamap.PanelItemMetaMap"> -->
 
   <xsl:import href="IMPORT/aToZTwoColumns.xsl" />
   <xalan:component prefix="resource">
@@ -44,21 +44,11 @@ UIRF Software License are applicable instead of those above.
   <xalan:component prefix="locale">
     <xalan:script lang="javaclass" src="xalan://java.util.Locale" />
   </xalan:component>
-  <xalan:component prefix="meta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.PanelMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="panelItem">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.PanelItemMetaMap" />
-  </xalan:component>
   <xsl:template match="doc">
-    <xsl:variable name="panel" select="meta:new()" />
-    <xsl:variable name="pi" select="meta:getPanelItem($panel)" />
-    <xsl:variable name="language">
-      <xsl:value-of select="locale" />
-    </xsl:variable>
-    <xsl:variable name="props">
-      <xsl:value-of select="props" />
-    </xsl:variable>
+    <!-- <xsl:variable name="panel" select="meta:new()" />
+    <xsl:variable name="pi" select="meta:getPanelItem($panel)" /> -->
+    <xsl:variable name="language" select="locale" />
+    <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Panel" name="{resource:getString($constants,'panel')}">
       <HorizontalPanel padding="0" spacing="0">
@@ -159,23 +149,23 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'name')" />:
                 </text>
-                <textbox key="{meta:getName($panel)}" case = "LOWER" width="145" max="20" tab="{meta:getDescription($panel)},{meta:getDescription($panel)}" required="true" />
+                <textbox key="{meta:getName()}" case = "LOWER" width="145" max="20" tab="{meta:getDescription()},{meta:getDescription()}" required="true" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'description')" />:
                 </text>
-                <textbox key="{meta:getDescription($panel)}" width="425" max="60" tab="addedTestTable,{meta:getName($panel)}" />
+                <textbox key="{meta:getDescription()}" width="425" max="60" tab="addedTestTable,{meta:getName()}" />
               </row>
             </TablePanel>
             <HorizontalPanel>
               <VerticalPanel style="Form">
                 <widget valign="top">
-                  <table key="panelItemTable" width="auto" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName($panel)},{meta:getDescription($panel)}" title="">
-                    <col key="{panelItem:getTestName($pi)}" width="135" align="left" sort="false" header="{resource:getString($constants,'test')}">
+                  <table key="panelItemTable" width="auto" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getDescription()}" title="">
+                    <col key="{meta:getItemTestName()}" width="135" align="left" sort="false" header="{resource:getString($constants,'test')}">
                       <textbox field="String" />
                     </col>
-                    <col key="{panelItem:getMethodName($pi)}" width="135" align="left" sort="false" header="{resource:getString($constants,'method')}">
+                    <col key="{meta:getItemMethodName()}" width="135" align="left" sort="false" header="{resource:getString($constants,'method')}">
                       <textbox field="String" />
                     </col>
                   </table>

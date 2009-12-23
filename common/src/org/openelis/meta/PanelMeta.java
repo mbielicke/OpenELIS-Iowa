@@ -29,64 +29,76 @@ package org.openelis.meta;
   * Panel META Data
   */
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 import org.openelis.gwt.common.Meta;
+import org.openelis.gwt.common.MetaMap;
 
-public class PanelMeta implements Meta {
-  	protected String path = "";
-	private static final String entityName = "Panel";
+public class PanelMeta implements Meta,MetaMap {
 	
-	private static final String
-              ID					="id",
-              NAME					="name",
-              DESCRIPTION					="description";
+	private static final String ID = "_panel.id",
+                                NAME = "_panel.name",
+                                DESCRIPTION = "_panel.description",
+                                
+                                ITEM_ID = "_panelItem.id",
+                                ITEM_PANEL_ID = "_panelItem.panelId",
+                                ITEM_SORT_ORDER = "_panelItem.sortOrder",
+                                
+                                ITEM_TEST_NAME = "_panelItem.testName",
+                                ITEM_METHOD_NAME = "_panelItem.methodName";
 
-  	private static final String[] columnNames = {
-  	  ID,NAME,DESCRIPTION};
-  	  
-	private HashSet<String> columnHashList;
+	private static HashSet<String> names;
     
-    private void init() {
-        columnHashList = new HashSet<String>(columnNames.length);
-        for(int i = 0; i < columnNames.length; i++){
-            columnHashList.add(path+columnNames[i]);
-        }
+    static {
+        names = new HashSet<String>(Arrays.asList(ID,NAME,DESCRIPTION,ITEM_ID,
+                                                  ITEM_PANEL_ID,ITEM_SORT_ORDER,
+                                                  ITEM_TEST_NAME,ITEM_METHOD_NAME));
     }
-    
-    public PanelMeta() {
-		init();        
-    }
-    
-    public PanelMeta(String path) {
-        this.path = path;
-		init();        
-    }
-
-    public String[] getColumnList() {
-        return columnNames;
-    }
-
-    public String getEntity() {
-        return entityName;
-    }
-
-    public boolean hasColumn(String columnName) {
-        return columnHashList.contains(columnName);
-    }
-    
     
     public String getId() {
-        return path + ID;
+        return ID;
     } 
 
     public String getName() {
-        return path + NAME;
+        return NAME;
     } 
 
     public String getDescription() {
-        return path + DESCRIPTION;
+        return DESCRIPTION;
+    }
+    
+    public String getItemId() {
+        return ITEM_ID;
     } 
 
-  
+    public String getItemPanelId() {
+        return ITEM_PANEL_ID;
+    } 
+
+    public String getItemSortOrderId() {
+        return ITEM_SORT_ORDER;
+    } 
+
+    public String getItemTestName() {
+        return ITEM_TEST_NAME;
+    } 
+
+    public String getItemMethodName() {
+        return ITEM_METHOD_NAME;
+    } 
+    
+    public boolean hasColumn(String columnName) {
+        return names.contains(columnName);
+    }
+    
+    public String buildFrom(String where) {
+        String from;
+        
+        from = "Panel _panel ";
+        if (where.indexOf("panelItem.") > -1)
+            from += ",IN (_panel.panelItem) _panelItem ";        
+        
+        return from;
+    } 
 }   

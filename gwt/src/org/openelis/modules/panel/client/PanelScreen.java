@@ -59,7 +59,7 @@ import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.PanelManager;
-import org.openelis.metamap.PanelMetaMap;
+import org.openelis.meta.PanelMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -72,7 +72,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class PanelScreen extends Screen {
     private PanelManager    manager;
-    private PanelMetaMap    meta = new PanelMetaMap();
+    private PanelMeta    meta = new PanelMeta();
     private SecurityModule  security;
 
     private ButtonGroup     atoz;

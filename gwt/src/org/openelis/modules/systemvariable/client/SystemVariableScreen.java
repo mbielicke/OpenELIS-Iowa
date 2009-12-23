@@ -50,7 +50,7 @@ import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.metamap.SystemVariableMetaMap;
+import org.openelis.meta.SystemVariableMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -63,7 +63,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class SystemVariableScreen extends Screen {
     private SystemVariableDO      data;
-    private SystemVariableMetaMap meta = new SystemVariableMetaMap();
+    private SystemVariableMeta meta = new SystemVariableMeta();
     private SecurityModule        security;
 
     private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
