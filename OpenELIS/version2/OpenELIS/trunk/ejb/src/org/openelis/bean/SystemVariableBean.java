@@ -53,7 +53,7 @@ import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.LockLocal;
 import org.openelis.local.SystemVariableLocal;
-import org.openelis.metamap.SystemVariableMetaMap;
+import org.openelis.meta.SystemVariableMeta;
 import org.openelis.remote.SystemVariableRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -73,7 +73,7 @@ public class SystemVariableBean implements SystemVariableRemote, SystemVariableL
     @EJB
     private LockLocal                          lockBean;
 
-    private static final SystemVariableMetaMap meta = new SystemVariableMetaMap();
+    private static final SystemVariableMeta meta = new SystemVariableMeta();
 
     public SystemVariableBean() {
     }

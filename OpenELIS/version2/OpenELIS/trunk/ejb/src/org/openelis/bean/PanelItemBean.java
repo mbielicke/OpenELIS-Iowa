@@ -43,7 +43,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.PanelItemLocal;
-import org.openelis.metamap.PanelMetaMap;
+import org.openelis.meta.PanelMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
@@ -54,7 +54,7 @@ public class PanelItemBean implements PanelItemLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager              manager;
     
-    private PanelMetaMap               meta = new PanelMetaMap();   
+    private static final PanelMeta meta = new PanelMeta();   
     
     @SuppressWarnings("unchecked")
     public ArrayList<PanelItemDO> fetchByPanelId(Integer id) throws Exception {
@@ -130,7 +130,7 @@ public class PanelItemBean implements PanelItemLocal {
         match = false;
         
         if(tests.size() == 0) {            
-            list.add(new FieldErrorException("noActiveTestsException",meta.PANEL_ITEM.getTestName()));
+            list.add(new FieldErrorException("noActiveTestsException",meta.getItemTestName()));
             throw list;
         } else {
             for(int i = 0; i < tests.size(); i++) {
@@ -142,7 +142,7 @@ public class PanelItemBean implements PanelItemLocal {
             }
             
             if(!match) {
-                list.add(new FieldErrorException("noActiveTestsException",meta.PANEL_ITEM.getTestName()));
+                list.add(new FieldErrorException("noActiveTestsException",meta.getItemTestName()));
                 throw list;
             }                
         }

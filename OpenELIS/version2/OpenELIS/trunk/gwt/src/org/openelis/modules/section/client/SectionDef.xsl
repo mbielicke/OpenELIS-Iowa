@@ -35,15 +35,10 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:meta="xalan://org.openelis.metamap.SectionMetaMap"
-  xmlns:org="xalan://org.openelis.meta.OrganizationMetaOld"
-  xmlns:parentSect="xalan://org.openelis.meta.SectionMeta">
+  xmlns:meta="xalan://org.openelis.meta.SectionMeta">
 
   <xsl:import href="IMPORT/aToZTwoColumns.xsl" />
   <xsl:template match="doc">
-    <xsl:variable name="sect" select="meta:new()" />
-    <xsl:variable name="o" select="meta:getOrganization($sect)" />
-    <xsl:variable name="psect" select="meta:getParentSection($sect)" />
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
@@ -144,7 +139,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'name')" />:
                 </text>
                 <widget colspan="6">
-                  <textbox key="{meta:getName($sect)}" width="145" case="LOWER" max="20" tab="{meta:getDescription($sect)},{parentSect:getName($psect)}" />
+                  <textbox key="{meta:getName()}" width="145" case="LOWER" max="20" tab="{meta:getDescription()},{meta:getParentSectionName()}" />
                 </widget>
               </row>
               <row>
@@ -152,21 +147,21 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'description')" />:
                 </text>
                 <widget colspan="6">
-                  <textbox key="{meta:getDescription($sect)}" width="425" case="MIXED" max="60" tab="{meta:getIsExternal($sect)},{meta:getName($sect)}" />
+                  <textbox key="{meta:getDescription()}" width="425" case="MIXED" max="60" tab="{meta:getIsExternal()},{meta:getName()}" />
                 </widget>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"external")' />:
                 </text>
-                <check key="{meta:getIsExternal($sect)}" tab="{org:getName($o)},{meta:getDescription($sect)}" />
+                <check key="{meta:getIsExternal()}" tab="{meta:getOrganizationName()},{meta:getDescription()}" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'organization')" />:
                 </text>
                 <widget>
-                  <autoComplete key="{org:getName($o)}" width="285" case="UPPER" popWidth="auto" tab="{parentSect:getName($psect)},{meta:getIsExternal($sect)}" field="Integer">
+                  <autoComplete key="{meta:getOrganizationName()}" width="285" case="UPPER" popWidth="auto" tab="{meta:getParentSectionName()},{meta:getIsExternal()}" field="Integer">
                     <col width="180" header="{resource:getString($constants,'name')}" />
                     <col width="110" header="{resource:getString($constants,'street')}" />
                     <col width="100" header="{resource:getString($constants,'city')}" />
@@ -178,7 +173,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'parentSection')" />:
                 </text>
-                <autoComplete key="{parentSect:getName($psect)}" width="180" case="LOWER" popWidth="auto" tab="{meta:getName($sect)},{org:getName($o)}" field="Integer">
+                <autoComplete key="{meta:getParentSectionName()}" width="180" case="LOWER" popWidth="auto" tab="{meta:getName()},{meta:getOrganizationName()}" field="Integer">
                   <col width="180" />
                 </autoComplete>
               </row>

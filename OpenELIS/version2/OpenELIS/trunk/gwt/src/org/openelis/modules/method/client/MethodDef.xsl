@@ -36,31 +36,17 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:meta="xalan://org.openelis.metamap.MethodMetaMap">
+  xmlns:meta="xalan://org.openelis.meta.MethodMeta">
 
   <xsl:import href="IMPORT/aToZTwoColumns.xsl" />
-  <xalan:component prefix="resource">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
-  </xalan:component>
-  <xalan:component prefix="locale">
-    <xalan:script lang="javaclass" src="xalan://java.util.Locale" />
-  </xalan:component>
-  <xalan:component prefix="meta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.MethodMetaMap" />
-  </xalan:component>
   <xsl:template match="doc">
-    <xsl:variable name="method" select="meta:new()" />
-    <xsl:variable name="language">
-      <xsl:value-of select="locale" />
-    </xsl:variable>
-    <xsl:variable name="props">
-      <xsl:value-of select="props" />
-    </xsl:variable>
+    <xsl:variable name="language" select="locale" />
+    <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
 
 <!-- main screen -->
 
-    <screen id="Test" name="{resource:getString($constants,'method')}">
+    <screen id="Method" name="{resource:getString($constants,'method')}">
       <HorizontalPanel padding="0" spacing="0">
 
 <!--left table goes here -->
@@ -132,19 +118,37 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="language" />
                 </xsl:with-param>
               </xsl:call-template>
+              <xsl:call-template name="buttonPanelDivider" />
+              <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
+                <menuItem>
+                  <menuDisplay>
+                    <appButton style="ButtonPanelButton" action="option">
+                      <HorizontalPanel>
+                        <text>
+                          <xsl:value-of select='resource:getString($constants,"options")' />
+                        </text>
+                        <AbsolutePanel width="20px" height="20px" style="OptionsButtonImage" />
+                      </HorizontalPanel>
+                    </appButton>
+                  </menuDisplay>
+                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                    <xsl:call-template name="historyMenuItem" />
+                  </menuPanel>
+                </menuItem>
+              </menuPanel>
             </HorizontalPanel>
           </AbsolutePanel>
 
 <!--end button panel-->
 
-          <VerticalPanel width="560" height="220" padding="0" spacing="0" style="WhiteContentPanel">
+          <VerticalPanel width="580" height="220" padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'name')" />:
                 </text>
                 <widget colspan="6">
-                  <textbox key="{meta:getName($method)}" width="145" case="LOWER" max="20" tab="{meta:getDescription($method)},{meta:getActiveEnd($method)}" required="true" />
+                  <textbox key="{meta:getName()}" width="145" case="LOWER" max="20" tab="{meta:getDescription()},{meta:getActiveEnd()}" required="true" />
                 </widget>
               </row>
               <row>
@@ -152,7 +156,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'description')" />:
                 </text>
                 <widget colspan="6">
-                  <textbox key="{meta:getDescription($method)}" width="425" case="MIXED" max="60" tab="{meta:getReportingDescription($method)},{meta:getName($method)}" />
+                  <textbox key="{meta:getDescription()}" width="425" case="MIXED" max="60" tab="{meta:getReportingDescription()},{meta:getName()}" />
                 </widget>
               </row>
               <row>
@@ -160,26 +164,26 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'reportDescription')" />:
                 </text>
                 <widget colspan="6">
-                  <textbox key="{meta:getReportingDescription($method)}" width="425" case="MIXED" max="60" tab="{meta:getIsActive($method)},{meta:getDescription($method)}" />
+                  <textbox key="{meta:getReportingDescription()}" width="425" case="MIXED" max="60" tab="{meta:getIsActive()},{meta:getDescription()}" />
                 </widget>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"active")' />:
                 </text>
-                <check key="{meta:getIsActive($method)}" tab="{meta:getActiveBegin($method)},{meta:getReportingDescription($method)}" />
+                <check key="{meta:getIsActive()}" tab="{meta:getActiveBegin()},{meta:getReportingDescription()}" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"beginDate")' />:
                 </text>
-                <calendar key="{meta:getActiveBegin($method)}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getActiveEnd($method)},{meta:getIsActive($method)}" required="true" />
+                <calendar key="{meta:getActiveBegin()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getActiveEnd()},{meta:getIsActive()}" required="true" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"endDate")' />:
                 </text>
-                <calendar key="{meta:getActiveEnd($method)}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getName($method)},{meta:getActiveBegin($method)}" required="true" />
+                <calendar key="{meta:getActiveEnd()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getName()},{meta:getActiveBegin()}" required="true" />
               </row>
             </TablePanel>
           </VerticalPanel>

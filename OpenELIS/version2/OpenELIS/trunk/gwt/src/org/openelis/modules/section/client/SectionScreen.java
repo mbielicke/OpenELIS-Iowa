@@ -56,7 +56,7 @@ import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.metamap.SectionMetaMap;
+import org.openelis.meta.SectionMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -71,7 +71,7 @@ public class SectionScreen extends Screen {
     private SectionViewDO         data;
     private SecurityModule        security;
     
-    private SectionMetaMap        meta = new SectionMetaMap(); 
+    private SectionMeta        meta = new SectionMeta(); 
 
     private AutoComplete<Integer> parentName, organizationName;
     private TextBox               name, description;
@@ -245,7 +245,7 @@ public class SectionScreen extends Screen {
             }
         });
 
-        organizationName = (AutoComplete)def.getWidget(meta.getOrganization().getName());
+        organizationName = (AutoComplete)def.getWidget(meta.getOrganizationName());
         addScreenHandler(organizationName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 organizationName.setSelection(data.getOrganizationId(),
@@ -263,7 +263,7 @@ public class SectionScreen extends Screen {
             }
         });
 
-        parentName = (AutoComplete)def.getWidget(meta.getParentSection().getName());
+        parentName = (AutoComplete)def.getWidget(meta.getParentSectionName());
         addScreenHandler(parentName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 parentName.setSelection(data.getParentSectionId(),
@@ -445,7 +445,8 @@ public class SectionScreen extends Screen {
 
     protected void add() {
         data = new SectionViewDO();
-
+        data.setIsExternal("N");
+        
         setState(State.ADD);
         DataChangeEvent.fire(this);
 

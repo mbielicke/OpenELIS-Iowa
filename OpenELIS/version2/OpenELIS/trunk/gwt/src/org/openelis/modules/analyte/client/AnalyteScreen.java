@@ -54,7 +54,7 @@ import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.metamap.AnalyteMetaMap;
+import org.openelis.meta.AnalyteMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -67,7 +67,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class AnalyteScreen extends Screen {
     private AnalyteViewDO         data;
-    private AnalyteMetaMap        meta = new AnalyteMetaMap();
+    private AnalyteMeta        meta = new AnalyteMeta();
     private SecurityModule        security;
 
     private TextBox               name, externalId;
@@ -214,7 +214,7 @@ public class AnalyteScreen extends Screen {
             }
         });
 
-        parent = (AutoComplete<Integer>)def.getWidget(meta.getParentAnalyte().getName());
+        parent = (AutoComplete<Integer>)def.getWidget(meta.getParentAnalyteName());
         addScreenHandler(parent, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 parent.setSelection(data.getParentAnalyteId(), data.getParentAnalyteName());

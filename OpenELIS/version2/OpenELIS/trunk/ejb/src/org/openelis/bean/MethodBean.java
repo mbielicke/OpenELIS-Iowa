@@ -52,7 +52,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.LockLocal;
-import org.openelis.metamap.MethodMetaMap;
+import org.openelis.meta.MethodMeta;
 import org.openelis.remote.MethodRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -72,7 +72,7 @@ public class MethodBean implements MethodRemote {
     @EJB
     private LockLocal lockBean;
 
-    private static MethodMetaMap MethodMeta = new MethodMetaMap();
+    private static MethodMeta meta = new MethodMeta();
 
     private static Integer methodRefTableId; 
     
@@ -95,16 +95,16 @@ public class MethodBean implements MethodRemote {
         QueryBuilderV2 qb = new QueryBuilderV2();
         List list;
 
-        qb.setMeta(MethodMeta);
+        qb.setMeta(meta);
 
-        qb.setSelect("distinct new org.openelis.domain.IdNameVO(" + MethodMeta.getId()
+        qb.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getId()
                      + ", "
-                     + MethodMeta.getName()
+                     + meta.getName()
                      + ") ");
 
         qb.constructWhere(fields);
 
-        qb.setOrderBy(MethodMeta.getName());
+        qb.setOrderBy(meta.getName());
 
         Query query = manager.createQuery(qb.getEJBQL());
 
@@ -125,8 +125,6 @@ public class MethodBean implements MethodRemote {
     
     public MethodDO add(MethodDO data) throws Exception {
     	Method entity;
-    	
-        Integer methodId = data.getId();
 
         checkSecurity(ModuleFlags.ADD);
                     
@@ -222,13 +220,13 @@ public class MethodBean implements MethodRemote {
 
         if (methodDO.getName() == null || "".equals(methodDO.getName())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      MethodMeta.getName()));
+                                                      meta.getName()));
             checkDuplicate = false;
         }
         
         if (active == null) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      MethodMeta.getIsActive()));
+                                                      meta.getIsActive()));
             checkDuplicate = false;
         } else if("N".equals(active)) {
             query = manager.createNamedQuery("Test.FetchByMethod");
@@ -242,12 +240,12 @@ public class MethodBean implements MethodRemote {
         
         if (activeBegin == null) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      MethodMeta.getActiveBegin()));
+                                                      meta.getActiveBegin()));
             checkDuplicate = false;
         }
         if (activeEnd == null) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      MethodMeta.getActiveEnd()));
+                                                      meta.getActiveEnd()));
             checkDuplicate = false;
         }
         

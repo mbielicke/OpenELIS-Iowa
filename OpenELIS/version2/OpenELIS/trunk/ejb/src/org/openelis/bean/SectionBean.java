@@ -56,7 +56,7 @@ import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.JMSMessageProducerLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.messages.SectionCacheMessage;
-import org.openelis.metamap.SectionMetaMap;
+import org.openelis.meta.SectionMeta;
 import org.openelis.remote.SectionRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -73,7 +73,7 @@ public class SectionBean implements SectionRemote {
     @Resource
     private SessionContext              ctx;
 
-    private static final SectionMetaMap meta = new SectionMetaMap();
+    private static final SectionMeta meta = new SectionMeta();
 
     @EJB
     private LockLocal                   lockBean;
@@ -245,7 +245,7 @@ public class SectionBean implements SectionRemote {
         psecId = data.getParentSectionId();
         if (psecId != null && psecId.equals(data.getId())) {
             exceptionList.add(new FieldErrorException("sectItsOwnParentException",
-                                                      meta.getParentSection().getName()));
+                                                      meta.getParentSectionName()));
         }
 
         if (exceptionList.size() > 0)

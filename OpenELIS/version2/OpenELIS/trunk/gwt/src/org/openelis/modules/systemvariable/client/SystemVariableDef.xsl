@@ -37,26 +37,13 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:meta="xalan://org.openelis.metamap.SystemVariableMetaMap">
+  xmlns:meta="xalan://org.openelis.meta.SystemVariableMeta">
 
   <xsl:import href="IMPORT/aToZTwoColumns.xsl" />
-  <xalan:component prefix="resource">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
-  </xalan:component>
-  <xalan:component prefix="locale">
-    <xalan:script lang="javaclass" src="xalan://java.util.Locale" />
-  </xalan:component>
-  <xalan:component prefix="meta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SystemVariableMetaMap" />
-  </xalan:component>
   <xsl:template match="doc">
-    <xsl:variable name="sv" select="meta:new()" />
-    <xsl:variable name="language">
-      <xsl:value-of select="locale" />
-    </xsl:variable>
-    <xsl:variable name="props">
-      <xsl:value-of select="props" />
-    </xsl:variable>
+    <!-- <xsl:variable name="sv" select="meta:new()" /> -->
+    <xsl:variable name="language" select="locale" />
+    <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen id="SystemVariable" name="{resource:getString($constants,'systemVariable')}">
       <HorizontalPanel padding="0" spacing="0">
@@ -132,24 +119,41 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="language" />
                 </xsl:with-param>
               </xsl:call-template>
+              <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
+                <menuItem>
+                  <menuDisplay>
+                    <appButton style="ButtonPanelButton" action="option">
+                      <HorizontalPanel>
+                        <text>
+                          <xsl:value-of select='resource:getString($constants,"options")' />
+                        </text>
+                        <AbsolutePanel width="20px" height="20px" style="OptionsButtonImage" />
+                      </HorizontalPanel>
+                    </appButton>
+                  </menuDisplay>
+                  <menuPanel layout="vertical" position="below" style="buttonMenuContainer">
+                    <xsl:call-template name="historyMenuItem" />
+                  </menuPanel>
+                </menuItem>
+              </menuPanel>
             </HorizontalPanel>
           </AbsolutePanel>
 
 <!--end button panel-->
 
-          <VerticalPanel width="620" height="215" padding="0" spacing="0" style="WhiteContentPanel">
+          <VerticalPanel width="650" height="215" padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"name")' />:
                 </text>
-                <textbox key="{meta:getName($sv)}" width="215" case="LOWER" max="30" required="true" tab="{meta:getValue($sv)},{meta:getValue($sv)}" />
+                <textbox key="{meta:getName()}" width="215" case="LOWER" max="30" required="true" tab="{meta:getValue()},{meta:getValue()}" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"value")' />:
                 </text>
-                <textbox key="{meta:getValue($sv)}" width="425" case="MIXED" required="true" tab="{meta:getName($sv)},{meta:getName($sv)}" />
+                <textbox key="{meta:getValue()}" width="425" case="MIXED" required="true" tab="{meta:getName()},{meta:getName()}" />
               </row>
             </TablePanel>
           </VerticalPanel>
