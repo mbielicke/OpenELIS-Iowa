@@ -123,11 +123,24 @@ version="1.0"
 <!--button panel code-->
         <AbsolutePanel spacing="0" style="ButtonPanelContainer">
           <HorizontalPanel>
-            <xsl:call-template name="queryButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
+            <menuItem>
+              <menuDisplay>
+            	<xsl:call-template name="queryButton">
+              	  <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+               </xsl:call-template>
+             </menuDisplay>
+             <menuPanel layout="vertical"  position="below" style="topMenuContainer">
+                <menuItem key="environmentalSample" description="" icon="environmentalSampleLoginIcon" label="{resource:getString($constants,'environmentalSampleLogin')}" style="TopMenuRowContainer" />
+                <menuItem key="clinicalSample" description="" enable="false" icon="clinicalSampleLoginIcon" label="{resource:getString($constants,'clinicalSampleLogin')}" style="TopMenuRowContainer" />
+                <menuItem key="animalSample" description="" enable="false" icon="animalSampleLoginIcon" label="{resource:getString($constants,'animalSampleLogin')}" style="TopMenuRowContainer" />
+                <menuItem key="newbornScreeningSample" description="" enable="false" icon="newbornScreeningSampleLoginIcon" label="{resource:getString($constants,'newbornScreeningSampleLogin')}" style="TopMenuRowContainer" />
+                <menuItem key="ptSample" description="" enable="false" icon="ptSampleLoginIcon" label="{resource:getString($constants,'ptSampleLogin')}" style="TopMenuRowContainer" />
+                <menuItem key="sdwisSample" description="" enable="false" icon="sdwisSampleLoginIcon" label="{resource:getString($constants,'sdwisSampleLogin')}" style="TopMenuRowContainer" />
+                <menuItem key="privateWellWaterSample" description="" enable="true" icon="privateWellWaterSampleLoginIcon" label="{resource:getString($constants,'privateWellWaterSampleLogin')}" style="TopMenuRowContainer" />
+             </menuPanel>
+            </menuItem>
             <xsl:call-template name="previousButton">
               <xsl:with-param name="language">
                 <xsl:value-of select="language" />

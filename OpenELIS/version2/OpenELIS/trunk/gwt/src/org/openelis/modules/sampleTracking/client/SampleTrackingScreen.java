@@ -30,6 +30,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataCell;
@@ -61,6 +62,7 @@ import org.openelis.modules.sample.client.TestResultsTab;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -98,6 +100,7 @@ public class SampleTrackingScreen extends Screen {
 	private TabPanel                  	   sampleContent;
 	
 	private EnvironmentTab                 environmentTab;
+	private PrivateWellWaterSampleTab      wellTab;
 	private SampleItemTab                  sampleItemTab;
 	private AnalysisTab                    analysisTab;
 	private QAEventsTab                    qaEventsTab;
@@ -243,7 +246,7 @@ public class SampleTrackingScreen extends Screen {
         addScreenHandler(statusId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 statusId.setSelection(manager.getSample().getStatusId());
-                addButton.enable(canEdit());
+                //addButton.enable(canEdit());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -274,11 +277,26 @@ public class SampleTrackingScreen extends Screen {
             }
         });
         
+        final MenuItem envMenuQuery = (MenuItem)def.getWidget("environmentalSample");
+        envMenuQuery.addClickHandler(new ClickHandler() {
+        	public void onClick(ClickEvent event) {
+        		addEnvironmentTab();
+        		query();
+        	}
+        });
+        
+        final MenuItem wellMenuQuery = (MenuItem)def.getWidget("privateWellWaterSample");
+        wellMenuQuery.addClickHandler(new ClickHandler() {
+        	public void onClick(ClickEvent event) {
+        		addWellTab();
+        		query();
+        	}
+        });
 
         queryButton = (AppButton)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                query();
+                //query();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -586,7 +604,6 @@ public class SampleTrackingScreen extends Screen {
     }
     
     protected void query() {
-    	addEnvironmentTab();
     	
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
@@ -782,6 +799,26 @@ public class SampleTrackingScreen extends Screen {
     	environmentTab.draw();
     	((ScrollPanel)sampleContent.getWidget(0)).setWidget(environmentTab);
     	sampleContent.getTabBar().setTabText(0,environmentTab.getDefinition().getName());
+
+    }
+    
+    private void addWellTab() {
+    	if(wellTab == null) {
+    		wellTab = new PrivateWellWaterSampleTab((ScreenDefInt)GWT.create(PrivateWellWaterSampleTabDef.class),window);
+    		addScreenHandler(wellTab, new ScreenEventHandler<Object>() {
+    			public void onDataChange(DataChangeEvent event) {
+    				wellTab.setData(manager);
+    				wellTab.draw();
+    			}
+    			public void onStateChange(StateChangeEvent<State> event) {
+    				wellTab.setState(event.getState());
+    			}
+    		});
+    	}
+    	wellTab.setData(manager);
+    	wellTab.draw();
+    	((ScrollPanel)sampleContent.getWidget(0)).setWidget(wellTab);
+    	sampleContent.getTabBar().setTabText(0,wellTab.getDefinition().getName());
 
     }
     
