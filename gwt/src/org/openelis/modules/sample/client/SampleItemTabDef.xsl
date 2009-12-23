@@ -37,38 +37,15 @@ version="1.0"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
   xmlns:meta="xalan://org.openelis.meta.SampleMeta">
   
+  <xsl:import href="OPENELIS/org/openelis/modules/sample/client/SampleTemplates.xsl"/>
+  
   <xsl:template match="doc">
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
   
     <screen id="SampleItem" name="{resource:getString($constants,'sampleItem')}">
-      <VerticalPanel padding="0" spacing="0">
-                <TablePanel style="Form">
-                  <row>
-                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sampleType')" />:</text>
-                    <dropdown key="{meta:getItemTypeOfSampleId()}" width="150px" popWidth="150px" field="Integer" />
-                  </row>
-                  <row>
-                  	<text style="Prompt"><xsl:value-of select="resource:getString($constants,'source')" />:</text>
-                    <dropdown key="{meta:getItemSourceOfSampleId()}" width="150px" popWidth="150px" field="Integer" />
-                   	<text style="Prompt"><xsl:value-of select="resource:getString($constants,'sourceOther')" />:</text>
-                 	<textbox key="{meta:getItemSourceOther()}" width="215px" field="String" />
-                  </row>
-                  <row>
-                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'container')" />:</text>
-                    <dropdown key="{meta:getItemContainerId()}" width="225px" popWidth="225px" field="Integer" />
-                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'containerReference')" />:</text>
-                    <textbox key="{meta:getItemContainerReference()}" width="215px" field="String" />
-                  </row>
-                  <row>
-                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'qty')" />:</text>
-                    <textbox key="{meta:getItemQuantity()}" width="150px" field="Double" />
-                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'unit')" />:</text>
-                    <dropdown key="{meta:getItemUnitOfMeasureId()}" width="150px" popWidth="150px" field="Integer" />
-                  </row>
-              </TablePanel>
-      </VerticalPanel>
+      <xsl:call-template name="SampleItemTab"/>
     </screen>
   </xsl:template>
 </xsl:stylesheet>       

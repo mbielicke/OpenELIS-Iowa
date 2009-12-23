@@ -37,80 +37,15 @@ version="1.0"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
   xmlns:meta="xalan://org.openelis.meta.SampleMeta">
   
+  <xsl:import href="OPENELIS/org/openelis/modules/sample/client/SampleTemplates.xsl"/>
+  
   <xsl:template match="doc">
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
   
     <screen name="{resource:getString($constants,'testResults')}">
-      <VerticalPanel padding="0" spacing="0">
-				<TablePanel padding="0" spacing="0">
-	              <row>
-	                <table key="testResultsTable" width="697" maxRows="9" showScroll="ALWAYS" title="">
-	                  <col width="200">
-	                    <textbox />
-	                  </col>
-	                  <col width="200">
-	                    <textbox />
-	                  </col>
-	                  <col width="200">
-	                    <textbox />
-	                  </col>
-	                  <col width="200">
-	                    <textbox />
-	                  </col>
-	                  <col width="200">
-	                    <textbox />
-	                  </col>
-	                  <col width="200">
-	                    <textbox />
-	                  </col>
-	                  <col width="200">
-	                    <textbox />
-	                  </col>
-	                  <col width="200">
-	                    <textbox />
-	                  </col>
-	                  <col width="200">
-	                    <textbox />
-	                  </col>
-	                  <col width="200">
-	                    <textbox />
-	                  </col>
-	                </table>
-	                </row>
-	                <row>
-	                <widget style="TableButtonFooter">
-	                <HorizontalPanel>
-	                  <appButton key="addResultButton" style="Button">
-	                    <HorizontalPanel>
-	                      <AbsolutePanel style="AddRowButtonImage" />
-	                      <text>
-	                        <xsl:value-of select="resource:getString($constants,'addRow')" />
-	                      </text>
-	                    </HorizontalPanel>
-	                  </appButton>
-	                  <appButton key="removeResultButton" style="Button">
-	                    <HorizontalPanel>
-	                      <AbsolutePanel style="RemoveRowButtonImage" />
-	                      <text>
-	                        <xsl:value-of select="resource:getString($constants,'removeRow')" />
-	                      </text>
-	                    </HorizontalPanel>
-	                  </appButton>
-	                  <appButton key="duplicateResultButton" style="Button">
-	                    <HorizontalPanel>
-	                      <AbsolutePanel style="DuplicateRowButtonImage" />
-	                      <text>
-	                        <xsl:value-of select="resource:getString($constants,'duplicateRecord')" />
-	                      </text>
-	                    </HorizontalPanel>
-	                  </appButton>
-	                </HorizontalPanel>
-	                </widget>
-	                </row>
-	                </TablePanel>
-      </VerticalPanel>
+	  <xsl:call-template name="TestResultsTab"/>
     </screen>
   </xsl:template>
 </xsl:stylesheet>    
