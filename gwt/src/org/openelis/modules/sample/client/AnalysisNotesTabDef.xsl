@@ -36,58 +36,20 @@ version="1.0"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
   xmlns:meta="xalan://org.openelis.meta.SampleMeta">
-  
+ 
+  <xsl:import href="OPENELIS/org/openelis/modules/sample/client/SampleTemplates.xsl"/>
+ 
   <xsl:template match="doc">
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
   
     <screen id="AnalysisNotes" name="{resource:getString($constants,'analysisNotes')}">
-      <VerticalPanel padding="0" spacing="0">
-            <HorizontalPanel width="100%" height="100%" padding="0" spacing="0">
-            <TablePanel padding="0" spacing="0" style="TabSubForm">
-                <row>
-		            <text style="Title"><xsl:value-of select="resource:getString($constants,'external')" />:</text>
-		        </row>
-		        <row>
-		        	<notes key="anExNotesPanel" style="ScreenTableWithSides" width="351px" height="190px" />
-		        </row>
-		        <row>
-			        <widget style="TableButtonFooter">
-		                    <appButton key="anExNoteButton" style="Button">
-		                      <HorizontalPanel>
-		                        <AbsolutePanel style="StandardNoteButtonImage" />
-		                        <text>
-		                          <xsl:value-of select="resource:getString($constants,'editNote')" />
-		                        </text>
-		                      </HorizontalPanel>
-		                    </appButton>
-	                    </widget>
-		        </row>
-		    </TablePanel>
-		    <AbsolutePanel style="Divider"/>
-		    <TablePanel padding="0" spacing="0" style="TabSubForm">
-			    <row>
-			    	<text style="Title"><xsl:value-of select="resource:getString($constants,'internal')" />:</text>    
-			    </row>
-		     	<row>
-           			<notes key="anIntNotesPanel" style="ScreenTableWithSides" width="351px" height="190px" />
-           		</row>
-                  <row>
-		              <widget style="TableButtonFooter">
-		               	<appButton key="anIntNoteButton" style="Button">
-	                      <HorizontalPanel>
-	                        <AbsolutePanel style="StandardNoteButtonImage" />
-	                        <text>
-	                          <xsl:value-of select="resource:getString($constants,'addNote')" />
-	                        </text>
-	                      </HorizontalPanel>
-	                    </appButton>
-                    </widget>
-                  </row>
-                </TablePanel>
-                </HorizontalPanel>      
-      </VerticalPanel>
+	  <xsl:call-template name="AnalysisNotesTab"/>
     </screen>
   </xsl:template>
-</xsl:stylesheet>           
+  
+
+</xsl:stylesheet>
+
+            
