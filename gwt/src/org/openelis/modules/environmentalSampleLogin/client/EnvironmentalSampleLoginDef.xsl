@@ -37,12 +37,15 @@ version="1.0"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
   xmlns:meta="xalan://org.openelis.meta.SampleMeta">
   
-  <xsl:import href="IMPORT/aToZOneColumn.xsl" />
-  <xsl:template match="doc">
-    <xsl:variable name="language" select="locale" />
-    <xsl:variable name="props" select="props" />
-    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
+  <xsl:import href="IMPORT/button.xsl"/>
+  <xsl:import href="OPENELIS/org/openelis/modules/sample/client/SampleTemplates.xsl"/>
   
+  <xsl:variable name="language" select="doc/locale" />
+  <xsl:variable name="props" select="doc/props" />
+  <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
+    
+  <xsl:template match="doc">
+   
     <screen id="EnvironmentalSampleLogin" name="{resource:getString($constants,'environmentalSampleLogin')}">
       <VerticalPanel padding="0" spacing="0">
 
@@ -50,43 +53,15 @@ version="1.0"
 
         <AbsolutePanel spacing="0" style="ButtonPanelContainer">
           <HorizontalPanel>
-            <xsl:call-template name="queryButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="previousButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="nextButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
+            <xsl:call-template name="queryButton"/>
+            <xsl:call-template name="previousButton"/>
+            <xsl:call-template name="nextButton"/>
             <xsl:call-template name="buttonPanelDivider" />
-            <xsl:call-template name="addButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="updateButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
+            <xsl:call-template name="addButton"/>
+            <xsl:call-template name="updateButton"/>
             <xsl:call-template name="buttonPanelDivider" />
-            <xsl:call-template name="commitButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="abortButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
+            <xsl:call-template name="commitButton"/>
+            <xsl:call-template name="abortButton"/>
             <xsl:call-template name="buttonPanelDivider" />
    			<menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
     			<menuItem>
@@ -305,28 +280,28 @@ version="1.0"
           </HorizontalPanel>
           <TabPanel key="sampleItemTabPanel" height="236px" width="715px">
             <tab key="tab0" text="{resource:getString($constants,'sampleItem')}" tab="{meta:getItemTypeOfSampleId()},{meta:getItemUnitOfMeasureId()}">
-              <AbsolutePanel/>
+              <xsl:call-template name="SampleItemTab"/>
             </tab>
             <tab key="tab1" text="{resource:getString($constants,'analysis')}" tab="{meta:getAnalysisTestName()},{meta:getAnalysisPrintedDate()}">
-			  <AbsolutePanel/>
+			  <xsl:call-template name="AnalysisTab"/>
             </tab>
             <tab key="tab2" text="{resource:getString($constants,'testResults')}" tab="testResultsTable,testResultsTable">
-			     <AbsolutePanel/>
+			  <xsl:call-template name="TestResultsTab"/>
             </tab>
             <tab key="tab3" text="{resource:getString($constants,'analysisNotes')}" tab="anExNoteButton,anIntNoteButton">
-			  <AbsolutePanel/>
+			  <xsl:call-template name="AnalysisNotesTab"/>
             </tab>
             <tab key="tab4" text="{resource:getString($constants,'sampleNotes')}" tab="sampleExtNoteButton,sampleIntNoteButton">
-				<AbsolutePanel/>
+              <xsl:call-template name="SampleNotesTab"/>
             </tab>
             <tab key="tab5" text="{resource:getString($constants,'storage')}" tab="storageTable,storageTable">
-			    <AbsolutePanel/>
+			  <xsl:call-template name="StorageTab"/>
             </tab>
             <tab key="tab6" text="{resource:getString($constants,'qaEvents')}" tab="sampleQATable,analysisQATable">
-				<AbsolutePanel/>
+			  <xsl:call-template name="QAEventsTab"/>
             </tab>
             <tab key="tab7" text="{resource:getString($constants,'auxData')}" tab="auxValsTable,auxValsTable">
-				<AbsolutePanel/>
+			  <xsl:call-template name="AuxDataTab"/>
             </tab>
           </TabPanel>
         </VerticalPanel>
