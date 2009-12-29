@@ -47,7 +47,7 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.CategoryLocal;
-import org.openelis.metamap.CategoryMetaMap;
+import org.openelis.meta.CategoryMeta;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -60,7 +60,7 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager          manager;
 
-    private static CategoryMetaMap meta = new CategoryMetaMap();
+    private static CategoryMeta meta = new CategoryMeta();
 
     public CategoryBean() {        
     }

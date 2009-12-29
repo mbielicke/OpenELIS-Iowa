@@ -39,12 +39,12 @@ import org.openelis.local.CategoryLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.JMSMessageProducerLocal;
 import org.openelis.messages.DictionaryCacheMessage;
-import org.openelis.metamap.CategoryMetaMap;
+import org.openelis.meta.CategoryMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 public class DictionaryManagerProxy {
 
-    private static CategoryMetaMap meta = new CategoryMetaMap();
+    private static CategoryMeta meta = new CategoryMeta();
 
     public DictionaryManager fetchByCategoryId(Integer id) throws Exception {
         DictionaryManager man;
@@ -207,7 +207,7 @@ public class DictionaryManagerProxy {
                     entries.add(name);
                 } else {
                     list.add(new TableFieldErrorException("fieldUniqueOnlyException", i,
-                                                          meta.getDictionary().getEntry(),
+                                                          meta.getDictionaryEntry(),
                                                           "dictEntTable"));
                 }
             } catch(Exception e) {
@@ -226,17 +226,17 @@ public class DictionaryManagerProxy {
                    }
                    if (!DataBaseUtil.isEmpty(catId) && DataBaseUtil.isDifferent(catId,categoryId)) {
                         list.add(new TableFieldErrorException("fieldUniqueException", i,
-                                                              meta.getDictionary().getSystemName(),
+                                                              meta.getDictionarySystemName(),
                                                               "dictEntTable"));                        
                    }
                     systemNames.add(systemName);
                 } else if (DataBaseUtil.isEmpty(data.getId())) {
                         list.add(new TableFieldErrorException("fieldUniqueOnlyException", i,
-                                                              meta.getDictionary().getSystemName(),
+                                                              meta.getDictionarySystemName(),
                                                               "dictEntTable"));                        
                 } else {
                     list.add(new TableFieldErrorException("fieldUniqueException", i,
-                                                              meta.getDictionary().getSystemName(),
+                                                              meta.getDictionarySystemName(),
                                                               "dictEntTable"));                    
                 }
             }                    

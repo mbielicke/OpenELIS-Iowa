@@ -43,7 +43,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.InstrumentLogLocal;
-import org.openelis.metamap.InstrumentMetaMap;
+import org.openelis.meta.InstrumentMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
@@ -54,7 +54,7 @@ public class InstrumentLogBean implements InstrumentLogLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager                    manager;
     
-    private InstrumentMetaMap                meta = new InstrumentMetaMap();
+    private InstrumentMeta                meta = new InstrumentMeta();
 
     @SuppressWarnings("unchecked")
     public ArrayList<InstrumentLogDO> fetchByInstrumentId(Integer id) throws Exception {
@@ -128,23 +128,23 @@ public class InstrumentLogBean implements InstrumentLogLocal {
         list = new ValidationErrorsList();
         
         if(DataBaseUtil.isEmpty(data.getTypeId())) 
-            list.add(new FieldErrorException("fieldRequiredException", meta.INSTRUMENT_LOG.getTypeId()));        
+            list.add(new FieldErrorException("fieldRequiredException", meta.getLogTypeId()));        
         
         wsId = data.getWorksheetId();
         if(!DataBaseUtil.isEmpty(wsId)) {
             query = manager.createNamedQuery("Worksheet.FetchById");
             query.setParameter("id",wsId );
             if(query.getResultList().size() == 0)
-                list.add(new FieldErrorException("illegalWorksheetIdException", meta.INSTRUMENT_LOG.getWorksheetId()));           
+                list.add(new FieldErrorException("illegalWorksheetIdException", meta.getLogWorksheetId()));           
         }
          
         eb = data.getEventBegin();
         ee = data.getEventEnd();
         
         if(DataBaseUtil.isEmpty(eb)) 
-            list.add(new FieldErrorException("fieldRequiredException", meta.INSTRUMENT_LOG.getEventBegin()));
+            list.add(new FieldErrorException("fieldRequiredException", meta.getLogEventBegin()));
         else if(!DataBaseUtil.isEmpty(ee) && DataBaseUtil.isAfter(eb,ee)) 
-            list.add(new FieldErrorException("endDateAfterBeginDateException", meta.INSTRUMENT_LOG.getEventEnd()));
+            list.add(new FieldErrorException("endDateAfterBeginDateException", meta.getLogEventEnd()));
                   
         if (list.size() > 0)
             throw list;

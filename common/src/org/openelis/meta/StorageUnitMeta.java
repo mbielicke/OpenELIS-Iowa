@@ -29,69 +29,46 @@ package org.openelis.meta;
   * StorageUnit META Data
   */
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 import org.openelis.gwt.common.Meta;
+import org.openelis.gwt.common.MetaMap;
 
-public class StorageUnitMeta implements Meta {
-  	private String path = "";
-	private static final String entityName = "StorageUnit";
+public class StorageUnitMeta implements Meta, MetaMap {
 	
-	private static final String
-              ID					="id",
-              CATEGORY_ID					="categoryId",
-              DESCRIPTION					="description",
-              IS_SINGULAR					="isSingular";
+	private static final String ID = "_storageUnit.id",
+                                CATEGORY_ID	= "_storageUnit.categoryId",
+                                DESCRIPTION	= "_storageUnit.description",
+                                IS_SINGULAR	= "_storageUnit.isSingular";
 
-  	private static final String[] columnNames = {
-  	  ID,CATEGORY_ID,DESCRIPTION,IS_SINGULAR};
-  	  
-	private HashSet<String> columnHashList;
+	private static HashSet<String> names;
     
-    private void init() {
-        columnHashList = new HashSet<String>(columnNames.length);
-        for(int i = 0; i < columnNames.length; i++){
-            columnHashList.add(path+columnNames[i]);
-        }
+    static {
+        names = new HashSet<String>(Arrays.asList(ID,CATEGORY_ID,DESCRIPTION,IS_SINGULAR));
     }
-    
-    public StorageUnitMeta() {
-		init();        
-    }
-    
-    public StorageUnitMeta(String path) {
-        this.path = path;
-		init();        
-    }
-
-    public String[] getColumnList() {
-        return columnNames;
-    }
-
-    public String getEntity() {
-        return entityName;
-    }
-
-    public boolean hasColumn(String columnName) {
-        return columnHashList.contains(columnName);
-    }
-    
     
     public String getId() {
-        return path + ID;
+        return ID;
     } 
 
     public String getCategoryId() {
-        return path + CATEGORY_ID;
+        return CATEGORY_ID;
     } 
 
     public String getDescription() {
-        return path + DESCRIPTION;
+        return DESCRIPTION;
     } 
 
     public String getIsSingular() {
-        return path + IS_SINGULAR;
-    } 
+        return IS_SINGULAR;
+    }
 
-  
+    public boolean hasColumn(String columnName) {
+        return names.contains(columnName);
+    }
+
+    public String buildFrom(String where) {        
+        return "StorageUnit _storageUnit ";
+    }  
 }   

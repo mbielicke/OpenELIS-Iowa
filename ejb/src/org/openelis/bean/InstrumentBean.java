@@ -38,20 +38,17 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.InstrumentLogDO;
 import org.openelis.domain.InstrumentViewDO;
 import org.openelis.entity.Instrument;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.InstrumentLocal;
-import org.openelis.metamap.InstrumentMetaMap;
+import org.openelis.meta.InstrumentMeta;
 import org.openelis.remote.InstrumentRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -64,7 +61,7 @@ public class InstrumentBean implements InstrumentRemote , InstrumentLocal{
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
     
-    private static final InstrumentMetaMap meta = new InstrumentMetaMap();
+    private static final InstrumentMeta meta = new InstrumentMeta();
     
     public InstrumentViewDO fetchById(Integer id) throws Exception {
         Query query;

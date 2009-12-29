@@ -29,83 +29,120 @@ package org.openelis.meta;
   * StorageLocation META Data
   */
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 import org.openelis.gwt.common.Meta;
+import org.openelis.gwt.common.MetaMap;
 
-public class StorageLocationMeta implements Meta {
-  	protected String path = "";
-	private static final String entityName = "StorageLocation";
+public class StorageLocationMeta implements Meta, MetaMap {
 	
-	private static final String
-              ID					="id",
-              SORT_ORDER					="sortOrder",
-              NAME					="name",
-              LOCATION					="location",
-              PARENT_STORAGE_LOCATION_ID					="parentStorageLocationId",
-              STORAGE_UNIT_ID					="storageUnitId",
-              IS_AVAILABLE					="isAvailable";
+	private static final String ID = "_storageLocation.id",
+                                SORT_ORDER = "_storageLocation.sortOrder",
+                                NAME = "_storageLocation.name",
+                                LOCATION = "_storageLocation.location",
+                                PARENT_STORAGE_LOCATION_ID	= "_storageLocation.parentStorageLocationId",
+                                STORAGE_UNIT_ID	= "_storageLocation.storageUnitId",
+                                IS_AVAILABLE = "_storageLocation.isAvailable",
+	
+                                CHILD_ID = "_childStorageLocation.id",
+                                CHILD_SORT_ORDER = "_childStorageLocation.sortOrder",
+                                CHILD_NAME = "_childStorageLocation.name",
+                                CHILD_LOCATION = "_childStorageLocation.location",
+                                CHILD_PARENT_STORAGE_LOCATION_ID  = "_childStorageLocation.parentStorageLocationId",
+                                CHILD_STORAGE_UNIT_ID = "_childStorageLocation.storageUnitId",
+                                CHILD_IS_AVAILABLE = "_childStorageLocation.isAvailable", 
+                                
+                                STORAGE_UNIT_DESCRIPTION = "_storageLocation.storageUnit.description",
+                                CHILD_STORAGE_UNIT_DESCRIPTION = "_childStorageLocation.storageUnit.description";	                            		                          
 
-  	private static final String[] columnNames = {
-  	  ID,SORT_ORDER,NAME,LOCATION,PARENT_STORAGE_LOCATION_ID,STORAGE_UNIT_ID,IS_AVAILABLE};
-  	  
-	private HashSet<String> columnHashList;
+	private static HashSet<String> names;
     
-    private void init() {
-        columnHashList = new HashSet<String>(columnNames.length);
-        for(int i = 0; i < columnNames.length; i++){
-            columnHashList.add(path+columnNames[i]);
-        }
+    static {
+        names = new HashSet<String>(Arrays.asList(ID,SORT_ORDER,NAME,LOCATION,
+                                                  PARENT_STORAGE_LOCATION_ID,
+                                                  STORAGE_UNIT_ID,IS_AVAILABLE,CHILD_ID,
+                                                  CHILD_SORT_ORDER,CHILD_NAME,CHILD_LOCATION,
+                                                  CHILD_PARENT_STORAGE_LOCATION_ID,
+                                                  CHILD_STORAGE_UNIT_ID,CHILD_IS_AVAILABLE,
+                                                  STORAGE_UNIT_DESCRIPTION,
+                                                  CHILD_STORAGE_UNIT_DESCRIPTION));
     }
-    
-    public StorageLocationMeta() {
-		init();        
-    }
-    
-    public StorageLocationMeta(String path) {
-        this.path = path;
-		init();        
-    }
-
-    public String[] getColumnList() {
-        return columnNames;
-    }
-
-    public String getEntity() {
-        return entityName;
-    }
-
-    public boolean hasColumn(String columnName) {
-        return columnHashList.contains(columnName);
-    }
-    
-    
+        
     public String getId() {
-        return path + ID;
+        return ID;
     } 
 
     public String getSortOrder() {
-        return path + SORT_ORDER;
+        return SORT_ORDER;
     } 
 
     public String getName() {
-        return path + NAME;
+        return NAME;
     } 
 
     public String getLocation() {
-        return path + LOCATION;
+        return LOCATION;
     } 
 
     public String getParentStorageLocationId() {
-        return path + PARENT_STORAGE_LOCATION_ID;
+        return PARENT_STORAGE_LOCATION_ID;
     } 
 
     public String getStorageUnitId() {
-        return path + STORAGE_UNIT_ID;
+        return STORAGE_UNIT_ID;
     } 
 
     public String getIsAvailable() {
-        return path + IS_AVAILABLE;
+        return IS_AVAILABLE;
+    }
+    
+    public String getStorageUnitDescription() {
+        return STORAGE_UNIT_DESCRIPTION;
+    } 
+    
+    public String getChildId() {
+        return CHILD_ID;
+    } 
+
+    public String getChildSortOrder() {
+        return CHILD_SORT_ORDER;
+    } 
+
+    public String getChildName() {
+        return CHILD_NAME;
+    } 
+
+    public String getChildLocation() {
+        return CHILD_LOCATION;
+    } 
+
+    public String getChildParentStorageLocationId() {
+        return CHILD_PARENT_STORAGE_LOCATION_ID;
+    } 
+
+    public String getChildStorageUnitId() {
+        return CHILD_STORAGE_UNIT_ID;
+    } 
+
+    public String getChildIsAvailable() {
+        return CHILD_IS_AVAILABLE;
+    }
+    
+    public String getChildStorageUnitDescription() {
+        return CHILD_STORAGE_UNIT_DESCRIPTION;
+    } 
+
+    public boolean hasColumn(String columnName) {
+        return names.contains(columnName);
+    }
+    
+    public String buildFrom(String where) {
+        String from = "StorageLocation _storageLocation ";
+        if(where.indexOf("childStorageLocation.") > -1)
+            from += ", IN (_storageLocation.childStorageLocation) _childStorageLocation ";
+
+        return from;
     } 
 
   

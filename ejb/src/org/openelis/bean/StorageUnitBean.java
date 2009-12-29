@@ -53,7 +53,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.LockLocal;
-import org.openelis.metamap.StorageUnitMetaMap;
+import org.openelis.meta.StorageUnitMeta;
 import org.openelis.remote.StorageUnitRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -73,7 +73,7 @@ public class StorageUnitBean implements StorageUnitRemote {
     @EJB
     private LockLocal                       lockBean;
 
-    private static final StorageUnitMetaMap meta = new StorageUnitMetaMap();
+    private static final StorageUnitMeta meta = new StorageUnitMeta();
 
     public StorageUnitBean() {
     }
