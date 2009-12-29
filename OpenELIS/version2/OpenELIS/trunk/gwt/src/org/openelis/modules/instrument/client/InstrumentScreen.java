@@ -69,7 +69,7 @@ import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.InstrumentManager;
-import org.openelis.metamap.InstrumentMetaMap;
+import org.openelis.meta.InstrumentMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -83,7 +83,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class InstrumentScreen extends Screen {
     
     private InstrumentManager           manager;
-    private InstrumentMetaMap           meta = new InstrumentMetaMap();
+    private InstrumentMeta           meta = new InstrumentMeta();
     private SecurityModule              security;
     
     private CalendarLookUp              activeBegin, activeEnd;
@@ -348,7 +348,7 @@ public class InstrumentScreen extends Screen {
             }
         });
 
-        scriptlet = (AutoComplete)def.getWidget(meta.SCRIPTLET.getName());
+        scriptlet = (AutoComplete)def.getWidget(meta.getScriptletName());
         addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 scriptlet.setSelection(manager.getInstrument().getScriptletId(),
@@ -609,7 +609,7 @@ public class InstrumentScreen extends Screen {
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("instrument_log_type"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
-        ((Dropdown<Integer>)(logTable.getColumnWidget(meta.INSTRUMENT_LOG.getTypeId()))).setModel(model);        
+        ((Dropdown<Integer>)(logTable.getColumnWidget(meta.getLogTypeId()))).setModel(model);        
     }
     
     /*

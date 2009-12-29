@@ -75,7 +75,7 @@ import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.QcManager;
 import org.openelis.meta.QcMeta;
-import org.openelis.metamap.CategoryMetaMap;
+import org.openelis.meta.CategoryMeta;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -92,7 +92,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class QcScreen extends Screen {
     private QcManager                   manager;
-    private CategoryMetaMap             catMeta = new CategoryMetaMap();
+    private CategoryMeta             catMeta = new CategoryMeta();
     private SecurityModule              security;
 
     private AppButton                   queryButton, previousButton, nextButton, addButton,
@@ -957,7 +957,7 @@ public class QcScreen extends Screen {
         
         query = new Query();
         field = new QueryData();
-        field.key = catMeta.getDictionary().getEntry();
+        field.key = catMeta.getDictionaryEntry();
         field.type = QueryData.Type.STRING;
         field.query = entry;
         query.setFields(field);       
@@ -1046,6 +1046,8 @@ public class QcScreen extends Screen {
                                 data = manager.getAnalytes().getAnalyteAt(r);
                                 data.setValue(entry.getId().toString());
                                 data.setDictionary(entry.getName());
+                                data.setTypeId(typeDict);
+                                qcAnalyteTable.setCell(r, 1, typeDict);
                                 qcAnalyteTable.setCell(r, 3, data.getDictionary());
                                 qcAnalyteTable.clearCellExceptions(r, 3);
                             } catch (Exception e) {

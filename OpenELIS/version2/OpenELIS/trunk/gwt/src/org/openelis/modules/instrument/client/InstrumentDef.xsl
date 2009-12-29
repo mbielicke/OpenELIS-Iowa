@@ -34,15 +34,10 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:instLog="xalan://org.openelis.metamap.InstrumentLogMetaMap"
-  xmlns:meta="xalan://org.openelis.metamap.InstrumentMetaMap"
-  xmlns:script="xalan://org.openelis.meta.ScriptletMeta">
+  xmlns:meta="xalan://org.openelis.meta.InstrumentMeta">
 
   <xsl:import href="IMPORT/aToZOneColumn.xsl" />
   <xsl:template match="doc">
-    <xsl:variable name="inst" select="meta:new()" />
-    <xsl:variable name="scpt" select="meta:getScriptlet($inst)" />
-    <xsl:variable name="il" select="meta:getInstrumentLog($inst)" />
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
@@ -145,7 +140,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'name')" />:
                 </text>
                 <widget>
-                  <textbox key="{meta:getName($inst)}" width="145" case="LOWER" max="20" tab="{meta:getDescription($inst)},{meta:getActiveEnd($inst)}" required="true" />
+                  <textbox key="{meta:getName()}" width="145" case="LOWER" max="20" tab="{meta:getDescription()},{meta:getActiveEnd()}" required="true" />
                 </widget>
               </row>
               <row>
@@ -153,7 +148,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'description')" />:
                 </text>
                 <widget colspan="6">
-                  <textbox key="{meta:getDescription($inst)}" width="425" max="60" tab="{meta:getModelNumber($inst)},{meta:getName($inst)}" />
+                  <textbox key="{meta:getDescription()}" width="425" max="60" tab="{meta:getModelNumber()},{meta:getName()}" />
                 </widget>
               </row>
               <row>
@@ -161,7 +156,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'modelNumber')" />:
                 </text>
                 <widget>
-                  <textbox key="{meta:getModelNumber($inst)}" width="285" max="40" tab="{meta:getSerialNumber($inst)},{meta:getDescription($inst)}" />
+                  <textbox key="{meta:getModelNumber()}" width="285" max="40" tab="{meta:getSerialNumber()},{meta:getDescription()}" />
                 </widget>
               </row>
               <row>
@@ -169,59 +164,59 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'serialNumber')" />:
                 </text>
                 <widget>
-                  <textbox key="{meta:getSerialNumber($inst)}" width="285" max="40" tab="{meta:getTypeId($inst)},{meta:getModelNumber($inst)}" required="true" />
+                  <textbox key="{meta:getSerialNumber()}" width="285" max="40" tab="{meta:getTypeId()},{meta:getModelNumber()}" required="true" />
                 </widget>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"type")' />:
                 </text>
-                <dropdown key="{meta:getTypeId($inst)}" width="150" tab="{meta:getLocation($inst)},{meta:getSerialNumber($inst)}" required="true" />
+                <dropdown key="{meta:getTypeId()}" width="150" tab="{meta:getLocation()},{meta:getSerialNumber()}" required="true" />
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"active")' />:
                 </text>
-                <check key="{meta:getIsActive($inst)}" tab="{meta:getActiveBegin($inst)},{script:getName($scpt)}" />
+                <check key="{meta:getIsActive()}" tab="{meta:getActiveBegin()},{meta:getScriptletName()}" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'location')" />:
                 </text>
                 <widget>
-                  <textbox key="{meta:getLocation($inst)}" width="425" max="60" tab="{script:getName($scpt)},{meta:getTypeId($inst)}" required="true" />
+                  <textbox key="{meta:getLocation()}" width="425" max="60" tab="{meta:getScriptletName()},{meta:getTypeId()}" required="true" />
                 </widget>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"beginDate")' />:
                 </text>
-                <calendar key="{meta:getActiveBegin($inst)}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getActiveEnd($inst)},{meta:getIsActive($inst)}" />
+                <calendar key="{meta:getActiveBegin()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getActiveEnd()},{meta:getIsActive()}" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'scriptlet')" />:
                 </text>
-                <autoComplete key="{script:getName($scpt)}" width="180" case="LOWER" tab="{meta:getIsActive($inst)},{meta:getLocation($inst)}">
+                <autoComplete key="{meta:getScriptletName()}" width="180" case="LOWER" tab="{meta:getIsActive()},{meta:getLocation()}">
                   <col width="180" />
                 </autoComplete>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"endDate")' />:
                 </text>
-                <calendar key="{meta:getActiveEnd($inst)}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="logTable,{meta:getActiveBegin($inst)}" />
+                <calendar key="{meta:getActiveEnd()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="logTable,{meta:getActiveBegin()}" />
               </row>
             </TablePanel>
             <widget valign="top">
-              <table key="logTable" width="668" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" title="" tab="{meta:getName($inst)},{meta:getActiveEnd($inst)}">
-                <col key="{instLog:getTypeId($il)}" width="120" align="left" header="{resource:getString($constants,'type')}">
+              <table key="logTable" width="668" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" title="" tab="{meta:getName()},{meta:getActiveEnd()}">
+                <col key="{meta:getLogTypeId()}" width="120" align="left" header="{resource:getString($constants,'type')}">
                   <dropdown width="155" field="Integer" required="true" />
                 </col>
-                <col key="{instLog:getWorksheetId($il)}" width="100" align="left" header="{resource:getString($constants,'worksheet')}">
+                <col key="{meta:getLogWorksheetId()}" width="100" align="left" header="{resource:getString($constants,'worksheet')}">
                   <textbox field="Integer" />
                 </col>
-                <col key="{instLog:getEventBegin($il)}" width="140" align="left" header="{resource:getString($constants,'beginDate')}">
+                <col key="{meta:getLogEventBegin()}" width="140" align="left" header="{resource:getString($constants,'beginDate')}">
                   <calendar begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
                 </col>
-                <col key="{instLog:getEventEnd($il)}" width="140" align="left" header="{resource:getString($constants,'endDate')}">
+                <col key="{meta:getLogEventEnd()}" width="140" align="left" header="{resource:getString($constants,'endDate')}">
                   <calendar begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
                 </col>
-                <col key="{instLog:getText($il)}" width="400" align="left" header="{resource:getString($constants,'note')}">
+                <col key="{meta:getLogText()}" width="400" align="left" header="{resource:getString($constants,'note')}">
                   <textbox field="String" />
                 </col>
               </table>

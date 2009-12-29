@@ -34,15 +34,10 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:dictionary="xalan://org.openelis.metamap.DictionaryMetaMap"
-  xmlns:meta="xalan://org.openelis.metamap.CategoryMetaMap"
-  xmlns:relentry="xalan://org.openelis.meta.DictionaryMeta">
+  xmlns:meta="xalan://org.openelis.meta.CategoryMeta">
 
   <xsl:import href="IMPORT/aToZOneColumn.xsl" />
   <xsl:template match="doc">
-    <xsl:variable name="cat" select="meta:new()" />
-    <xsl:variable name="dictNew" select="meta:getDictionary($cat)" />
-    <xsl:variable name="rel" select="dictionary:getRelatedEntry($dictNew)" />
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />    
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
@@ -140,7 +135,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select='resource:getString($constants,"catName")' />:
                 </text>
                 <widget colspan="5">
-                  <textbox key="{meta:getName($cat)}" width="355px" case="MIXED" max="50" tab="{meta:getDescription($cat)},{meta:getSystemName($cat)}" required="true" />
+                  <textbox key="{meta:getName()}" width="355px" case="MIXED" max="50" tab="{meta:getDescription()},{meta:getSystemName()}" required="true" />
                 </widget>
               </row>
               <row>
@@ -148,44 +143,44 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select='resource:getString($constants,"description")' />:
                 </text>
                 <widget colspan="3">
-                  <textbox key="{meta:getDescription($cat)}" width="425px" case="MIXED" max="60" tab="{meta:getSectionId($cat)},{meta:getName($cat)}" />
+                  <textbox key="{meta:getDescription()}" width="425px" case="MIXED" max="60" tab="{meta:getSectionId()},{meta:getName()}" />
                 </widget>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"section")' />:
                 </text>
-                <dropdown key="{meta:getSectionId($cat)}" width="100px" case="LOWER" tab="{meta:getSystemName($cat)},{meta:getDescription($cat)}" />
+                <dropdown key="{meta:getSectionId()}" width="100px" case="LOWER" tab="{meta:getSystemName()},{meta:getDescription()}" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"systemName")' />:
                 </text>
-                <textbox key="{meta:getSystemName($cat)}" width="215px" case="MIXED" max="30" tab="{meta:getIsSystem($cat)},{meta:getSectionId($cat)}" required="true" />
+                <textbox key="{meta:getSystemName()}" width="215px" case="MIXED" max="30" tab="{meta:getIsSystem()},{meta:getSectionId()}" required="true" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"system")' />:
                 </text>
-                <check key="{meta:getIsSystem($cat)}" tab="dictEntTable,{meta:getSystemName($cat)}" />
+                <check key="{meta:getIsSystem()}" tab="dictEntTable,{meta:getSystemName()}" />
               </row>
             </TablePanel>
             <VerticalPanel>
               <widget valign="top">
-                <table key="dictEntTable" width="auto" maxRows="12" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName($cat)},{meta:getSystemName($cat)}" title="">
-                  <col key="{dictionary:getIsActive($dictNew)}" width="60" header="{resource:getString($constants,'active')}">
+                <table key="dictEntTable" width="auto" maxRows="12" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getSystemName()}" title="">
+                  <col key="{meta:getDictionaryIsActive()}" width="60" header="{resource:getString($constants,'active')}">
                     <check>Y</check>
                   </col>
-                  <col key="{dictionary:getSystemName($dictNew)}" width="120" header="{resource:getString($constants,'systemName')}">
+                  <col key="{meta:getDictionarySystemName()}" width="120" header="{resource:getString($constants,'systemName')}">
                     <textbox case="LOWER" max="30" field="String" />
                   </col>
-                  <col key="{dictionary:getLocalAbbrev($dictNew)}" width="120" header="{resource:getString($constants,'abbr')}">
+                  <col key="{meta:getDictionaryLocalAbbrev()}" width="120" header="{resource:getString($constants,'abbr')}">
                     <textbox max="10" field="String" />
                   </col>
-                  <col key="{dictionary:getEntry($dictNew)}" width="180" sort="true" header="{resource:getString($constants,'entry')}">
+                  <col key="{meta:getDictionaryEntry()}" width="180" sort="true" header="{resource:getString($constants,'entry')}">
                     <textbox max="255" field="String" required="true" />
                   </col>
-                  <col key="{relentry:getEntry($rel)}" width="150" header="{resource:getString($constants,'relEntry')}">
+                  <col key="{meta:getDictionaryRelatedEntryEntry()}" width="150" header="{resource:getString($constants,'relEntry')}">
                     <autoComplete width="130" field="Integer">
                       <col width="200" />
                     </autoComplete>

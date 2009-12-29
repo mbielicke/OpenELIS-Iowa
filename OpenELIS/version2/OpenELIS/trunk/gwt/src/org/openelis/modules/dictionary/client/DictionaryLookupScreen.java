@@ -46,7 +46,7 @@ import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.metamap.CategoryMetaMap;
+import org.openelis.meta.CategoryMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 import com.google.gwt.core.client.GWT;
@@ -71,7 +71,7 @@ public class DictionaryLookupScreen extends Screen
 
     private ArrayList<TableDataRow> selectionList;
 
-    private CategoryMetaMap         meta = new CategoryMetaMap();
+    private CategoryMeta         meta = new CategoryMeta();
 
     public enum Action {
         OK, CANCEL
@@ -270,7 +270,7 @@ public class DictionaryLookupScreen extends Screen
             fields.add(field);
         }
         field = new QueryData();
-        field.key = meta.getDictionary().getEntry();
+        field.key = meta.getDictionaryEntry();
         field.type = QueryData.Type.STRING;
         field.query = pattern;
         fields.add(field);

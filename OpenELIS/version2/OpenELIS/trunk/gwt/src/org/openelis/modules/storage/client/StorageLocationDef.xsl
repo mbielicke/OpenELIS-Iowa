@@ -34,15 +34,10 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:meta="xalan://org.openelis.metamap.StorageLocationMetaMap"
-  xmlns:storageUnit="xalan://org.openelis.meta.StorageUnitMeta">
+  xmlns:meta="xalan://org.openelis.meta.StorageLocationMeta">
 
   <xsl:import href="IMPORT/aToZOneColumn.xsl" />
   <xsl:template match="doc">
-    <xsl:variable name="sloc" select="meta:new()" />
-    <xsl:variable name="su" select="meta:getStorageUnit($sloc)" />
-    <xsl:variable name="slc" select="meta:getChildStorageLocation($sloc)" />
-    <xsl:variable name="slcu" select="meta:getStorageUnit($slc)" />
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
@@ -143,19 +138,19 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"name")' />:
                 </text>
-                <textbox key="{meta:getName($sloc)}" width="150" case="LOWER" max="20" tab="{meta:getLocation($sloc)},{meta:getIsAvailable($sloc)}" required = "true"/>
+                <textbox key="{meta:getName()}" width="150" case="LOWER" max="20" tab="{meta:getLocation()},{meta:getIsAvailable()}" required = "true"/>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"location")' />:
                 </text>
-                <textbox key="{meta:getLocation($sloc)}" width="395" max="80" tab="{storageUnit:getDescription($su)},{meta:getName($sloc)}" required = "true"/>
+                <textbox key="{meta:getLocation()}" width="395" max="80" tab="{meta:getStorageUnitDescription()},{meta:getName()}" required = "true"/>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"storageUnit")' />:
                 </text>
-                <autoComplete key="{storageUnit:getDescription($su)}" width="366" tab="{meta:getIsAvailable($sloc)},{meta:getLocation($sloc)}" field="Integer" required = "true">
+                <autoComplete key="{meta:getStorageUnitDescription()}" width="366" tab="{meta:getIsAvailable()},{meta:getLocation()}" field="Integer" required = "true">
                   <col width="267" header="{resource:getString($constants,'description')}" />
                   <col width="90" header="{resource:getString($constants,'category')}" />
                 </autoComplete>
@@ -164,22 +159,22 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"isAvailable")' />:
                 </text>
-                <check key="{meta:getIsAvailable($sloc)}" tab="childStorageLocsTable,{storageUnit:getDescription($su)}" />
+                <check key="{meta:getIsAvailable()}" tab="childStorageLocsTable,{meta:getStorageUnitDescription()}" />
               </row>
             </TablePanel>
             <VerticalPanel spacing="3">
               <widget>
-                <table key="childStorageLocsTable" width="auto" maxRows="11" showScroll="ALWAYS" style="ScreenTableWithSides" title="" tab="{meta:getName($sloc)},{meta:getIsAvailable($sloc)}">
-                  <col key="{storageUnit:getDescription($slcu)}" width="225" header="{resource:getString($constants,'storageSubUnit')}">
+                <table key="childStorageLocsTable" width="auto" maxRows="11" showScroll="ALWAYS" style="ScreenTableWithSides" title="" tab="{meta:getName()},{meta:getIsAvailable()}">
+                  <col key="{meta:getChildStorageUnitDescription()}" width="225" header="{resource:getString($constants,'storageSubUnit')}">
                     <autoComplete field="Integer" required = "true">
                       <col width="180" header="{resource:getString($constants,'description')}" />
                       <col width="70" header="{resource:getString($constants,'category')}" />
                     </autoComplete>
                   </col>
-                  <col key="{meta:getLocation($slc)}" width="275" header="{resource:getString($constants,'location')}">
+                  <col key="{meta:getChildLocation()}" width="275" header="{resource:getString($constants,'location')}">
                     <textbox max="80" required = "true"/>
                   </col>
-                  <col key="{meta:getIsAvailable($slc)}" width="80" header="{resource:getString($constants,'isAvailable')}">
+                  <col key="{meta:getChildIsAvailable()}" width="80" header="{resource:getString($constants,'isAvailable')}">
                     <check>Y</check>
                   </col>
                 </table>

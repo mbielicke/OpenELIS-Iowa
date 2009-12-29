@@ -475,7 +475,7 @@ UIRF Software License are applicable instead of those above.
                       </TablePanel>
                     </HorizontalPanel>
                     <VerticalPanel>
-                      <ScrollTabBar key="resultTabPanel" width="610px" />
+                      <ScrollTabBar key="resultTabPanel" width="583px" />
                       <widget valign="top">
                         <table key="resultTable" width="auto" maxRows="9" showScroll="ALWAYS" title="">
                           <col key="{meta:getResultUnitOfMeasureId()}" width="70" header="{resource:getString($constants,'unit')}">
