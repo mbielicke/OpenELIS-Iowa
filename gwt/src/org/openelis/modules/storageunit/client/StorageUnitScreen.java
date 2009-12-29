@@ -54,7 +54,7 @@ import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.metamap.StorageUnitMetaMap;
+import org.openelis.meta.StorageUnitMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -67,7 +67,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class StorageUnitScreen extends Screen {
     private StorageUnitDO      data;
-    private StorageUnitMetaMap meta = new StorageUnitMetaMap();
+    private StorageUnitMeta meta = new StorageUnitMeta();
     private SecurityModule     security;
 
     private ButtonGroup        atoz;

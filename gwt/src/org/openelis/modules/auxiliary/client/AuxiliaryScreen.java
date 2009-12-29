@@ -87,7 +87,7 @@ import org.openelis.gwt.widget.table.event.RowMovedHandler;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.AuxFieldValueManager;
 import org.openelis.meta.AuxFieldGroupMeta;
-import org.openelis.metamap.CategoryMetaMap;
+import org.openelis.meta.CategoryMeta;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -106,7 +106,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class AuxiliaryScreen extends Screen {
     private AuxFieldGroupManager               manager;
     private AuxFieldGroupMeta                  meta = new AuxFieldGroupMeta();
-    private CategoryMetaMap                    catMeta = new CategoryMetaMap();
+    private CategoryMeta                    catMeta = new CategoryMeta();
     private SecurityModule                     security;
 
     private ButtonGroup                        atoz;
@@ -1143,7 +1143,7 @@ public class AuxiliaryScreen extends Screen {
         
         query = new Query();
         field = new QueryData();
-        field.key = catMeta.getDictionary().getEntry();
+        field.key = catMeta.getDictionaryEntry();
         field.type = QueryData.Type.STRING;
         field.query = entry;
         query.setFields(field);       

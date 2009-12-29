@@ -79,7 +79,7 @@ import org.openelis.manager.TestManager;
 import org.openelis.manager.TestResultManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.TestMeta;
-import org.openelis.metamap.CategoryMetaMap;
+import org.openelis.meta.CategoryMeta;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utilcommon.ResultRangeNumeric;
@@ -103,7 +103,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     
     private TestManager                        manager;
     private TestMeta                           meta = new TestMeta();
-    private CategoryMetaMap                    catMeta = new CategoryMetaMap();                 
+    private CategoryMeta                    catMeta = new CategoryMeta();                 
     
     private TestAnalyteManager                 testAnalyteManager;
     private TestResultManager                  testResultManager;
@@ -1243,7 +1243,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         query = new Query();
         fields = new ArrayList<QueryData>();
         field = new QueryData();
-        field.key = catMeta.getDictionary().getEntry();
+        field.key = catMeta.getDictionaryEntry();
         field.type = QueryData.Type.STRING;
         field.query = entry;
         fields.add(field);       
@@ -1777,17 +1777,17 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                     ArrayList<IdNameVO> list;
                     TestResultViewDO data;
                     IdNameVO entry;
-                    TableDataRow row;
 
                     selTab = resultTabPanel.getTabBar().getSelectedTab();
                     numTabs = resultTabPanel.getTabBar().getTabCount();
                     if (event.getAction() == DictionaryLookupScreen.Action.OK) {
-                        list = (ArrayList<IdNameVO>)event.getData();
+                        list = (ArrayList<IdNameVO>)event.getData();                        
                         if (list != null) {
                             if (list.size() > 0 && numTabs == 0) {
                                 Window.alert(consts.get("atleastOneResGrp"));
                                 return;
-                            }                
+                            }     
+                            resultTable.finishEditing();
                             
                             r = resultTable.numRows();
                             

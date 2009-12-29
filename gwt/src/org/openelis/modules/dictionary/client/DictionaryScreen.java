@@ -74,7 +74,7 @@ import org.openelis.gwt.widget.table.event.SortEvent;
 import org.openelis.gwt.widget.table.event.SortHandler;
 import org.openelis.gwt.widget.table.event.SortEvent.SortDirection;
 import org.openelis.manager.CategoryManager;
-import org.openelis.metamap.CategoryMetaMap;
+import org.openelis.meta.CategoryMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.utilcommon.DataBaseUtil;
 
@@ -88,7 +88,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class DictionaryScreen extends Screen {
     private CategoryManager       manager;
-    private CategoryMetaMap       meta = new CategoryMetaMap();
+    private CategoryMeta       meta = new CategoryMeta();
     private SecurityModule        security;
 
     private DictionaryScreen      screen; 
@@ -351,7 +351,7 @@ public class DictionaryScreen extends Screen {
 
         dictTable = (TableWidget)def.getWidget("dictEntTable");
         relatedEntry = (AutoComplete<Integer>)dictTable.getColumnWidget(
-                           meta.getDictionary().getRelatedEntry().getEntry());
+                           meta.getDictionaryRelatedEntryEntry());
         addScreenHandler(dictTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
                 if (state != State.QUERY)

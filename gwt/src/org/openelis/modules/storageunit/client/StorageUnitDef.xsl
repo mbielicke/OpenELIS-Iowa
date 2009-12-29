@@ -34,17 +34,12 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:storageUnitMeta="xalan://org.openelis.metamap.StorageUnitMetaMap">
+  xmlns:meta="xalan://org.openelis.meta.StorageUnitMeta">
 
   <xsl:import href="IMPORT/aToZTwoColumns.xsl" />
   <xsl:template match="doc">
-    <xsl:variable name="meta" select="storageUnitMeta:new()" />
-    <xsl:variable name="language">
-      <xsl:value-of select="locale" />
-    </xsl:variable>
-    <xsl:variable name="props">
-      <xsl:value-of select="props" />
-    </xsl:variable>
+    <xsl:variable name="language" select="locale" />
+    <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Storage" name="{resource:getString($constants,'storageUnit')}">
       <HorizontalPanel padding="0" spacing="0">
@@ -145,19 +140,19 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"category")' />:
                 </text>
-                <dropdown key="{storageUnitMeta:getCategoryId($meta)}" required = "true" field = "Integer" width="110" tab="{storageUnitMeta:getDescription($meta)},{storageUnitMeta:getIsSingular($meta)}" />
+                <dropdown key="{meta:getCategoryId()}" required = "true" field = "Integer" width="110" tab="{meta:getDescription()},{meta:getIsSingular()}" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"description")' />:
                 </text>
-                <textbox key="{storageUnitMeta:getDescription($meta)}" required = "true" width="300" case="LOWER" max="60" tab="{storageUnitMeta:getIsSingular($meta)},{storageUnitMeta:getCategoryId($meta)}" />
+                <textbox key="{meta:getDescription()}" required = "true" width="300" case="LOWER" max="60" tab="{meta:getIsSingular()},{meta:getCategoryId()}" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"isSingular")' />:
                 </text>
-                <check key="{storageUnitMeta:getIsSingular($meta)}" tab="{storageUnitMeta:getCategoryId($meta)},{storageUnitMeta:getDescription($meta)}" />
+                <check key="{meta:getIsSingular()}" tab="{meta:getCategoryId()},{meta:getDescription()}" />
               </row>
             </TablePanel>
           </VerticalPanel>

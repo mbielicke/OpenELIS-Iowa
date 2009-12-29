@@ -63,7 +63,7 @@ import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.StorageLocationManager;
-import org.openelis.metamap.StorageLocationMetaMap;
+import org.openelis.meta.StorageLocationMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -77,7 +77,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class StorageLocationScreen extends Screen {
     private StorageLocationManager manager;
     private SecurityModule         security;
-    private StorageLocationMetaMap meta = new StorageLocationMetaMap();
+    private StorageLocationMeta meta = new StorageLocationMeta();
 
     private AutoComplete<Integer>  storageUnit, childStorageUnit;
     private TextBox                name, location;
@@ -250,7 +250,7 @@ public class StorageLocationScreen extends Screen {
             }
         });
 
-        storageUnit = (AutoComplete)def.getWidget(meta.STORAGE_UNIT_META.getDescription());
+        storageUnit = (AutoComplete)def.getWidget(meta.getStorageUnitDescription());
         addScreenHandler(storageUnit, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 storageUnit.setSelection(manager.getStorageLocation().getStorageUnitId(),
@@ -315,7 +315,7 @@ public class StorageLocationScreen extends Screen {
         });
 
         childStorageLocsTable = (TableWidget)def.getWidget("childStorageLocsTable");
-        childStorageUnit = (AutoComplete<Integer>)childStorageLocsTable.getColumnWidget(meta.CHILD_STORAGE_LOCATION_META.STORAGE_UNIT_META.getDescription());
+        childStorageUnit = (AutoComplete<Integer>)childStorageLocsTable.getColumnWidget(meta.getChildStorageUnitDescription());
 
         addScreenHandler(childStorageLocsTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
