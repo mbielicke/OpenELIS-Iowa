@@ -48,7 +48,7 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.DictionaryLocal;
-import org.openelis.metamap.CategoryMetaMap;
+import org.openelis.meta.CategoryMeta;
 import org.openelis.remote.DictionaryRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -61,7 +61,7 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
     @PersistenceContext(name = "openelis")
     private EntityManager            manager;
 
-    private static CategoryMetaMap   meta = new CategoryMetaMap();
+    private static CategoryMeta   meta = new CategoryMeta();
 
     public ArrayList<DictionaryViewDO> fetchByCategoryId(Integer id) throws Exception {
         List<DictionaryViewDO> list;
@@ -122,11 +122,11 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
 
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getDictionary().getId() + ", " +                     
-                     meta.getDictionary().getEntry()+ ", " + meta.getName() +") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getDictionaryId() + ", " +                     
+                     meta.getDictionaryEntry()+ ", " + meta.getName() +") ");
 
         builder.constructWhere(fields);
-        builder.setOrderBy(meta.getDictionary().getEntry()+", "+meta.getName());
+        builder.setOrderBy(meta.getDictionaryEntry()+", "+meta.getName());
 
         query = manager.createQuery(builder.getEJBQL());
         builder.setQueryParams(query, fields);
@@ -212,8 +212,7 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
         entry = data.getEntry();
 
         if (DataBaseUtil.isEmpty(entry))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getDictionary()
-                                                                              .getEntry()));
+            list.add(new FieldErrorException("fieldRequiredException", meta.getDictionaryEntry()));
 
         if (list.size() > 0)
             throw list;

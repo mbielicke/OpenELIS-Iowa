@@ -48,7 +48,7 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.StorageLocationLocal;
-import org.openelis.metamap.StorageLocationMetaMap;
+import org.openelis.meta.StorageLocationMeta;
 import org.openelis.remote.StorageLocationRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -61,10 +61,7 @@ public class StorageLocationBean implements StorageLocationRemote, StorageLocati
     @PersistenceContext(name = "openelis")
     private EntityManager                       manager;
 
-    private static final StorageLocationMetaMap meta = new StorageLocationMetaMap();
-
-    public StorageLocationBean() {
-    }
+    private static final StorageLocationMeta meta = new StorageLocationMeta();
 
     public StorageLocationViewDO fetchById(Integer id) throws Exception {
         Query query;
@@ -202,7 +199,7 @@ public class StorageLocationBean implements StorageLocationRemote, StorageLocati
         // storage unit required
         if (DataBaseUtil.isEmpty(data.getStorageUnitId()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.STORAGE_UNIT_META.getDescription()));
+                                             meta.getStorageUnitDescription()));
 
         // location required
         if (DataBaseUtil.isEmpty(data.getLocation()))
@@ -222,12 +219,12 @@ public class StorageLocationBean implements StorageLocationRemote, StorageLocati
         if (DataBaseUtil.isEmpty(storageLocationDO.getStorageUnitId()))
             list.add(new FieldErrorException(
                                              "fieldRequiredException",
-                                             meta.CHILD_STORAGE_LOCATION_META.STORAGE_UNIT_META.getDescription()));
+                                             meta.getChildStorageUnitDescription()));
 
         // location required
         if (DataBaseUtil.isEmpty(storageLocationDO.getLocation()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.CHILD_STORAGE_LOCATION_META.getLocation()));
+                                             meta.getChildStorageUnitDescription()));
 
         if (list.size() > 0)
             throw list;
@@ -258,6 +255,6 @@ public class StorageLocationBean implements StorageLocationRemote, StorageLocati
         query.setMaxResults(max);
     
         return DataBaseUtil.toArrayList(query.getResultList());
-}
+    }
 
 }

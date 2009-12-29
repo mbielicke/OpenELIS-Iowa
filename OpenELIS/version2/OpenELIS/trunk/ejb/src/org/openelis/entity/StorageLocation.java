@@ -115,7 +115,7 @@ public class StorageLocation implements Auditable, Cloneable {
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_storage_location_id", insertable = false, updatable = false)
-    private Collection<StorageLocation> childLocations;
+    private Collection<StorageLocation> childStorageLocation;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_storage_location_id", insertable = false, updatable = false)
@@ -191,12 +191,12 @@ public class StorageLocation implements Auditable, Cloneable {
             this.isAvailable = isAvailable;
     }
     
-    public Collection<StorageLocation> getChildLocations() {
-        return childLocations;
+    public Collection<StorageLocation> getChildStorageLocation() {
+        return childStorageLocation;
     }
 
-    public void setChildLocations(Collection<StorageLocation> childLocations) {
-        this.childLocations = childLocations;
+    public void setChildStorageLocationn(Collection<StorageLocation> childStorageLocation) {
+        this.childStorageLocation = childStorageLocation;
     }
 
     public StorageUnit getStorageUnit() {
