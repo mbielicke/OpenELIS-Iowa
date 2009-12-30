@@ -103,6 +103,7 @@ public class SampleMeta implements Meta, MetaMap {
                     ANALYSIS_COMPLETED_DATE = "_analysis.completedDate",
                     ANALYSIS_RELEASED_DATE = "_analysis.releasedDate",
                     ANALYSIS_PRINTED_DATE = "_analysis.printedDate",
+                    ANALYSIS_SAMPLE_PREP = "analysisSamplePrep",
 
                     ANALYSISQA_ID = "_analysisQaevent.id",
                     ANALYSISQA_ANALYSIS_ID = "_analysisQaevent.analysisId",
@@ -449,6 +450,10 @@ public class SampleMeta implements Meta, MetaMap {
 
     public static String getAnalysisPrintedDate() {
         return ANALYSIS_PRINTED_DATE;
+    }
+    
+    public static String getAnalysisSamplePrep() {
+        return ANALYSIS_SAMPLE_PREP;
     }
 
     public static String getAnalysisQaId() {
