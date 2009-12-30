@@ -79,9 +79,13 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
         man.validate();
 
         ut = ctx.getUserTransaction();
-        ut.begin();
-        man.add();
-        ut.commit();
+        try {
+            ut.begin();
+            man.add();
+            ut.commit();
+        } catch (Exception e) {
+            ut.rollback();
+        }
 
         return man;
     }
@@ -94,11 +98,15 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
         man.validate();
 
         ut = ctx.getUserTransaction();
-        ut.begin();
-        lockBean.validateLock(ReferenceTable.WORKSHEET, man.getWorksheet().getId());        
-        man.update();
-        lockBean.giveUpLock(ReferenceTable.WORKSHEET, man.getWorksheet().getId());
-        ut.commit();
+        try {
+            ut.begin();
+            lockBean.validateLock(ReferenceTable.WORKSHEET, man.getWorksheet().getId());        
+            man.update();
+            lockBean.giveUpLock(ReferenceTable.WORKSHEET, man.getWorksheet().getId());
+            ut.commit();
+        } catch (Exception e) {
+            ut.rollback();
+        }
 
         return man;
     }

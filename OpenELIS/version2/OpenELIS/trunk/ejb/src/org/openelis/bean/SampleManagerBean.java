@@ -93,9 +93,13 @@ public class SampleManagerBean  implements SampleManagerRemote {
         man.validate();
         
         ut = ctx.getUserTransaction();
-        ut.begin();
-        man.add();
-        ut.commit();
+        try {
+            ut.begin();
+            man.add();
+            ut.commit();
+        } catch (Exception e) {
+            ut.rollback();
+        }
         
         return man;
     }
@@ -108,9 +112,13 @@ public class SampleManagerBean  implements SampleManagerRemote {
         man.validate();
         
         ut = ctx.getUserTransaction();
-        ut.begin();
-        man.update();
-        ut.commit();
+        try {
+            ut.begin();
+            man.update();
+            ut.commit();
+        } catch (Exception e) {
+            ut.rollback();
+        }
         
         return man;
     }

@@ -50,9 +50,13 @@ public class ProviderManagerBean implements ProviderManagerRemote {
 		man.validate();
 		
 		ut = ctx.getUserTransaction();
-		ut.begin();
-		man.add();
-		ut.commit();
+		try {
+    		ut.begin();
+    		man.add();
+    		ut.commit();
+		} catch (Exception e) {
+            ut.rollback();
+        }
 		
 		return man;
 		
@@ -71,11 +75,15 @@ public class ProviderManagerBean implements ProviderManagerRemote {
         man.validate();
 
         ut = ctx.getUserTransaction();
-        ut.begin();
-        lockBean.validateLock(ReferenceTable.PROVIDER, man.getProvider().getId());        
-        man.update();
-        lockBean.giveUpLock(ReferenceTable.PROVIDER, man.getProvider().getId());
-        ut.commit();
+        try {
+            ut.begin();
+            lockBean.validateLock(ReferenceTable.PROVIDER, man.getProvider().getId());        
+            man.update();
+            lockBean.giveUpLock(ReferenceTable.PROVIDER, man.getProvider().getId());
+            ut.commit();
+        } catch (Exception e) {
+            ut.rollback();
+        }
 
         return man;
 	}

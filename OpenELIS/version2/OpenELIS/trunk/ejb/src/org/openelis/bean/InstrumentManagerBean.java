@@ -72,9 +72,13 @@ public class InstrumentManagerBean implements InstrumentManagerRemote {
         man.validate();
 
         ut = ctx.getUserTransaction();
-        ut.begin();
-        man.add();
-        ut.commit();
+        try {
+            ut.begin();
+            man.add();
+            ut.commit();
+        } catch (Exception e) {
+            ut.rollback();
+        }
 
         return man;
     }
@@ -87,11 +91,15 @@ public class InstrumentManagerBean implements InstrumentManagerRemote {
         man.validate();
 
         ut = ctx.getUserTransaction();
-        ut.begin();
-        lockBean.validateLock(ReferenceTable.INSTRUMENT, man.getInstrument().getId());        
-        man.update();
-        lockBean.giveUpLock(ReferenceTable.INSTRUMENT, man.getInstrument().getId());
-        ut.commit();
+        try {
+            ut.begin();
+            lockBean.validateLock(ReferenceTable.INSTRUMENT, man.getInstrument().getId());        
+            man.update();
+            lockBean.giveUpLock(ReferenceTable.INSTRUMENT, man.getInstrument().getId());
+            ut.commit();
+        } catch (Exception e) {
+            ut.rollback();
+        }
 
         return man;
     }
