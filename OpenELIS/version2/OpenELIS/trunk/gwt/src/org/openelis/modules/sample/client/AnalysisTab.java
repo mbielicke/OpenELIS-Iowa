@@ -326,7 +326,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         });
         
         unitOfMeasureId = (Dropdown<Integer>)def.getWidget(SampleMeta.getAnalysisUnitOfMeasureId());
-        addScreenHandler(sectionId, new ScreenEventHandler<Integer>() {
+        addScreenHandler(unitOfMeasureId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 ArrayList<TableDataRow> units;
                 if(bundle.unitsDropdownModel != null){
@@ -541,7 +541,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                     if(sampleTypeId.equals(sampleType.getTypeOfSampleId())){
                         entry = DictionaryCache.getEntryFromId(sampleType.getUnitOfMeasureId());
                         
-                        model.add(new TableDataRow(sampleType.getUnitOfMeasureId(), entry.getEntry()));
+                        model.add(new TableDataRow(entry.getId(), entry.getEntry()));
                     }
                 }
             }catch(Exception e){
