@@ -68,8 +68,10 @@ version="1.0"
                     <dropdown key="{meta:getAnalysisSectionName()}" width="150px" popWidth="150px" case="LOWER" field="Integer"/>
                   </row>
                   <row>
-                  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'unit')" />:</text>
+                  	<text style="Prompt"><xsl:value-of select="resource:getString($constants,'unit')" />:</text>
                     <dropdown key="{meta:getAnalysisUnitOfMeasureId()}" width="150px" popWidth="150px" field="Integer" />
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'samplePrep')" />:</text>
+                    <dropdown key="{meta:getAnalysisSamplePrep()}" width="150px" popWidth="150px" field="Integer" />
                   </row>
                   <row>
                     <text style="Prompt"><xsl:value-of select="resource:getString($constants,'started')" />:</text>

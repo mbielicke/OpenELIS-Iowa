@@ -227,7 +227,9 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
     public void setData(SampleDataBundle data) {
         if(data.sampleItemDO == null){
             sampleItem = new SampleItemViewDO();
-            StateChangeEvent.fire(this, State.DEFAULT);   
+            
+            if(state != State.QUERY)
+                StateChangeEvent.fire(this, State.DEFAULT);   
         }else{
             sampleItem = data.sampleItemDO;
             
