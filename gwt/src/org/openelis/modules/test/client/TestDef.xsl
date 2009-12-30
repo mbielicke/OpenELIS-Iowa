@@ -145,14 +145,14 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'method')" />:
                   </text>
                   <widget>
-                    <autoComplete key="{meta:getMethodName()}" width="145" tab="{meta:getId()}, {meta:getName()}" field="Integer" required="true">
+                    <autoComplete key="{meta:getMethodName()}" width="145" tab="testTabPanel, {meta:getName()}" field="Integer" required="true">
                       <col width="145" />
                     </autoComplete>
                   </widget>
                 </row>
               </TablePanel>
               <TabPanel key="testTabPanel" width="625" height="515">
-                <tab key="detailsTab" text="{resource:getString($constants,'testDetails')}">
+                <tab key="detailsTab" text="{resource:getString($constants,'testDetails')}" tab="{meta:getDescription()},{meta:getDescription()}">
                   <VerticalPanel padding="0" spacing="0">
                     <TablePanel style="Form">
                       <row>
@@ -346,7 +346,7 @@ UIRF Software License are applicable instead of those above.
                     <VerticalPanel height="71px" />
                   </VerticalPanel>
                 </tab>
-                <tab key="sampleTypeTab" text="{resource:getString($constants,'sampleType')}">
+                <tab key="sampleTypeTab" text="{resource:getString($constants,'sampleType')}" tab = "sampleTypeTable,sampleTypeTable">
                   <VerticalPanel>
                     <HorizontalPanel>
                       <widget valign="top">
@@ -385,7 +385,7 @@ UIRF Software License are applicable instead of those above.
                     <VerticalPanel height="10px" />
                   </VerticalPanel>
                 </tab>
-                <tab key="analyteTab" text="{resource:getString($constants,'analytesResults')}">
+                <tab key="analyteTab" text="{resource:getString($constants,'analytesResults')}" tab = "analyteTable,analyteTable">
                   <VerticalPanel padding="0" spacing="0">
                     <table key="analyteTable" width="607px" maxRows="8" showScroll="ALWAYS">
                       <col key="analyteLookup" width="152" sort="false" header="1">
@@ -541,7 +541,7 @@ UIRF Software License are applicable instead of those above.
                     </TablePanel>
                   </VerticalPanel>
                 </tab>
-                <tab key="prepAndReflexTab" text="{resource:getString($constants,'prepAndReflex')}">
+                <tab key="prepAndReflexTab" text="{resource:getString($constants,'prepAndReflex')}" tab = "testPrepTable,testPrepTable">
                   <VerticalPanel>
                     <VerticalPanel padding="0" spacing="0">
                       <VerticalPanel padding="0" spacing="0">
@@ -650,7 +650,7 @@ UIRF Software License are applicable instead of those above.
                     </VerticalPanel>                    
                   </VerticalPanel>
                 </tab>
-                <tab key="worksheetTab" text="{resource:getString($constants,'worksheetLayout')}">
+                <tab key="worksheetTab" text="{resource:getString($constants,'worksheetLayout')}" tab = "{meta:getWorksheetFormatId()},{meta:getWorksheetFormatId()}">
                   <VerticalPanel>
                     <VerticalPanel>
                       <TablePanel style="Form">

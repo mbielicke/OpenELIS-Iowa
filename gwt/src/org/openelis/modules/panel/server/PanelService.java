@@ -81,9 +81,9 @@ public class PanelService {
         }
     }
     
-    public PanelManager delete(PanelManager man) throws Exception {
+    public void delete(PanelManager man) throws Exception {
         try {
-            return remoteManager().delete(man);
+             remoteManager().delete(man);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }

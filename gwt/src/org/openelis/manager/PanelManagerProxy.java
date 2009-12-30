@@ -52,8 +52,8 @@ public class PanelManagerProxy {
         return service.call("update", man);
     }
     
-    public PanelManager delete(PanelManager man) throws Exception {
-        return service.call("delete", man);
+    public void delete(PanelManager man) throws Exception {
+        service.call("delete", man);
     }
     
     public PanelManager fetchForUpdate(Integer id) throws Exception {
