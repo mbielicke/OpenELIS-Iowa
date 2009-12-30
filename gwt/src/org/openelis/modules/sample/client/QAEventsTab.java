@@ -454,8 +454,10 @@ public class QAEventsTab extends Screen {
                         analysisQAManager = anMan.getQAEventAt(index);
                 }
 
-                StateChangeEvent.fire(this, state);
-                DataChangeEvent.fire(this);
+                if(state != State.QUERY){
+                    StateChangeEvent.fire(this, state);
+                    DataChangeEvent.fire(this);
+                }
                 loaded = true;
             } catch (Exception e) {
                 Window.alert(e.getMessage());
