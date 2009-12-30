@@ -1,3 +1,4 @@
+
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -25,27 +26,67 @@ license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
 
-<xsl:stylesheet 
-version="1.0"
+<xsl:stylesheet
   extension-element-prefixes="resource"
+  version="1.0"
   xmlns:locale="xalan://java.util.Locale"
+  xmlns:meta="xalan://org.openelis.meta.SampleMeta"
   xmlns:resource="xalan://org.openelis.util.UTFResource"
   xmlns:xalan="http://xml.apache.org/xalan"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
-  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:meta="xalan://org.openelis.meta.SampleMeta">
-  
-  <xsl:import href="OPENELIS/org/openelis/modules/sample/client/SampleTemplates.xsl"/>
-  
-  <xsl:template match="doc">
-    <xsl:variable name="language" select="locale" />
-    <xsl:variable name="props" select="props" />
-    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-  
-    <screen id="SampleNote" name="{resource:getString($constants,'sampleNotes')}">
-      <xsl:call-template name="SampleNotesTab"/>
-    </screen>
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
+
+  <xsl:template name="SampleNotesTab">
+    <VerticalPanel padding="0" spacing="0">
+      <HorizontalPanel height="100%" padding="0" spacing="0" width="100%">
+        <TablePanel padding="0" spacing="0" style="TabSubForm">
+          <row>
+            <text style="Title">
+              <xsl:value-of select="resource:getString($constants,'external')" />:
+            </text>
+          </row>
+          <row>
+            <notes height="190px" key="sampleExtNotesPanel" style="ScreenTableWithSides" width="351px" />
+          </row>
+          <row>
+            <widget style="TableButtonFooter">
+              <appButton key="sampleExtNoteButton" style="Button">
+                <HorizontalPanel>
+                  <AbsolutePanel style="StandardNoteButtonImage" />
+                  <text>
+                    <xsl:value-of select="resource:getString($constants,'editNote')" />
+                  </text>
+                </HorizontalPanel>
+              </appButton>
+            </widget>
+          </row>
+        </TablePanel>
+        <AbsolutePanel style="Divider" />
+        <TablePanel padding="0" spacing="0" style="TabSubForm">
+          <row>
+            <text style="Title">
+              <xsl:value-of select="resource:getString($constants,'internal')" />:
+            </text>
+          </row>
+          <row>
+            <notes height="190px" key="sampleIntNotesPanel" style="ScreenTableWithSides" width="351px" />
+          </row>
+          <row>
+            <widget style="TableButtonFooter">
+              <appButton key="sampleIntNoteButton" style="Button">
+                <HorizontalPanel>
+                  <AbsolutePanel style="StandardNoteButtonImage" />
+                  <text>
+                    <xsl:value-of select="resource:getString($constants,'addNote')" />
+                  </text>
+                </HorizontalPanel>
+              </appButton>
+            </widget>
+          </row>
+        </TablePanel>
+      </HorizontalPanel>
+    </VerticalPanel>
   </xsl:template>
-</xsl:stylesheet>        
+</xsl:stylesheet>

@@ -56,7 +56,7 @@ public class EnvironmentTab extends Screen {
     protected boolean loaded = false;
 	
 	public EnvironmentTab(ScreenDefInt def, ScreenWindow window) {
-        super(def);
+        setDef(def);
         setWindow(window);
         
         initialize();
