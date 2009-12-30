@@ -47,6 +47,7 @@ public class SampleDataBundle {
     public TestManager             testManager;
     public ArrayList<TableDataRow> sectionsDropdownModel;
     public ArrayList<TableDataRow> unitsDropdownModel;
+    public ArrayList<TableDataRow> samplePrepDropdownModel;
 
     public SampleDataBundle() {
 

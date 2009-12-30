@@ -185,10 +185,11 @@ public class QAEventsTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                analysisQATable.enable(canEditAnalysisQA() && (SampleDataBundle.Type.ANALYSIS == type) &&
+                analysisQATable.enable((State.QUERY == event.getState()) || 
+                                       (canEditAnalysisQA() && (SampleDataBundle.Type.ANALYSIS == type) &&
                                        anDO.getTestId() != null &&
-                                       EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                              .contains(event.getState()));
+                                       EnumSet.of(State.ADD, State.UPDATE)
+                                              .contains(event.getState())));
                 analysisQATable.setQueryMode(event.getState() == State.QUERY);
             }
         });

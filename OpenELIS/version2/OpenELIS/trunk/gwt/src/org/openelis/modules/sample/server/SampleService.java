@@ -57,16 +57,12 @@ public class SampleService {
         return remote().update(man);
     }
     
-    public SampleManager fetchByIdWithItemsAnalysesForUpdate(Integer sampleId) throws Exception {
-        return remote().fetchByIdWithItemsAnalysesForUpdate(sampleId);
+    public SampleManager fetchForUpdate(Integer sampleId) throws Exception {
+        return remote().fetchForUpdate(sampleId);
     }
     
-    public SampleManager abort(Integer sampleId) throws Exception {
+    public SampleManager abortUpdate(Integer sampleId) throws Exception {
         return remote().abortUpdate(sampleId);
-    }
-    
-    public SampleManager abortWithItemsAnalyses(Integer sampleId) throws Exception {
-        return remote().abortUpdateWithItemsAnalyses(sampleId);
     }
     
     public void validateAccessionNumber(SampleDO sampleDO) throws Exception {

@@ -651,7 +651,7 @@ public class SampleTrackingScreen extends Screen {
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
-            manager = SampleManager.fetchByIdWithItemsAnalysesForUpdate(manager.getSample().getId());
+            manager = manager.fetchForUpdate();
 
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
@@ -739,7 +739,7 @@ public class SampleTrackingScreen extends Screen {
         }else if (state == State.UPDATE) {
             
             try {
-                manager = manager.abort();
+                manager = manager.abortUpdate();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);

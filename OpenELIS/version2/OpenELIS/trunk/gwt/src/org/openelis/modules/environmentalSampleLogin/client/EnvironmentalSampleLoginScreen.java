@@ -40,8 +40,6 @@ import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.TestPrepViewDO;
-import org.openelis.domain.TestSectionViewDO;
-import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.LastPageException;
@@ -92,25 +90,17 @@ import org.openelis.manager.TestPrepManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
-import org.openelis.modules.sample.client.AnalysisNotesTabDef;
 import org.openelis.modules.sample.client.AnalysisTab;
-import org.openelis.modules.sample.client.AnalysisTabDef;
 import org.openelis.modules.sample.client.AuxDataTab;
-import org.openelis.modules.sample.client.AuxDataTabDef;
 import org.openelis.modules.sample.client.QAEventsTab;
-import org.openelis.modules.sample.client.QAEventsTabDef;
 import org.openelis.modules.sample.client.SampleDataBundle;
 import org.openelis.modules.sample.client.SampleItemTab;
-import org.openelis.modules.sample.client.SampleItemTabDef;
 import org.openelis.modules.sample.client.SampleLocationLookupScreen;
 import org.openelis.modules.sample.client.SampleNotesTab;
-import org.openelis.modules.sample.client.SampleNotesTabDef;
 import org.openelis.modules.sample.client.SampleOrganizationLookupScreen;
 import org.openelis.modules.sample.client.SampleProjectLookupScreen;
 import org.openelis.modules.sample.client.StorageTab;
-import org.openelis.modules.sample.client.StorageTabDef;
 import org.openelis.modules.sample.client.TestResultsTab;
-import org.openelis.modules.sample.client.TestResultsTabDef;
 import org.openelis.modules.test.client.TestPrepLookupScreen;
 
 import com.google.gwt.core.client.GWT;
@@ -124,7 +114,6 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 
 public class EnvironmentalSampleLoginScreen extends Screen {
@@ -1225,7 +1214,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
-            manager = SampleManager.fetchByIdWithItemsAnalysesForUpdate(manager.getSample().getId());
+            manager = manager.fetchForUpdate();
 
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
@@ -1348,7 +1337,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         }else if (state == State.UPDATE) {
             
             try {
-                manager = manager.abortWithItemsAnalyses();
+                manager = manager.abortUpdate();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
@@ -1509,7 +1498,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     }
     
     public void onAddAnalysisButtonClick() {
-        TreeDataItem selectedRow;
+        TreeDataItem selectedRow, firstAnalysisRow;
         int selectedIndex;
         TreeDataItem newRow;
         
@@ -1527,18 +1516,24 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         if(!"sampleItem".equals(selectedRow.leafType))
             selectedRow = selectedRow.parent;
         
+        firstAnalysisRow = selectedRow.getFirstChild();
+        
         SampleDataBundle sampleItemData = (SampleDataBundle)selectedRow.data;
         SampleItemViewDO itemDO = sampleItemData.sampleItemDO;
         int sampleItemIndex = sampleItemData.sampleItemManager.getIndex(itemDO);
         
-        AnalysisViewDO aDO = new AnalysisViewDO();
-        aDO.setId(getNextTempId());
-        aDO.setStatusId(analysisLoggedInId);
-        aDO.setRevision(0);
-        
         try{
             SampleDataBundle data = new SampleDataBundle(sampleItemData.sampleItemManager, itemDO,
-                                                         sampleItemData.sampleItemManager.getAnalysisAt(sampleItemIndex),aDO, null);
+                                                         sampleItemData.sampleItemManager.getAnalysisAt(sampleItemIndex),
+                                                         new AnalysisViewDO(), null);
+            analysisTab.setupBundle(data);
+            if(firstAnalysisRow != null)
+                data.samplePrepDropdownModel = ((SampleDataBundle)firstAnalysisRow.data).samplePrepDropdownModel;
+            else
+                data.samplePrepDropdownModel = new ArrayList<TableDataRow>();
+            
+            data.sampleItemManager.setChangedAt(true, sampleItemIndex);
+            
             newRow.data = data;
             itemsTree.addChildItem(selectedRow, newRow);
             itemsTree.select(newRow);
@@ -1552,16 +1547,24 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     }
     
     public void onRemoveRowButtonClick() {
-        TreeDataItem selectedTreeRow = itemsTree.getSelection();
+        final TreeDataItem selectedTreeRow;
+        SampleDataBundle bundle;
+        int sampleItemIndex = -1;
         
+        selectedTreeRow = itemsTree.getSelection();
         if("analysis".equals(selectedTreeRow.leafType) && selectedTreeRow.key != null){
             if(cancelAnalysisConfirm == null){
                 cancelAnalysisConfirm = new Confirm(Confirm.Type.QUESTION, consts.get("cancelAnalysisMessage"), "No", "Yes");
                 cancelAnalysisConfirm.addSelectionHandler(new SelectionHandler<Integer>(){
                     public void onSelection(SelectionEvent<Integer> event) {
+                        SampleDataBundle bundle = (SampleDataBundle)selectedTreeRow.data;
+                        int sampleItemIndex = -1;
+                        sampleItemIndex = bundle.sampleItemManager.getIndex(bundle.sampleItemDO);
+                        
                         switch(event.getSelectedItem().intValue()) {
                             case 1 : 
                                 cancelAnalysisRow(itemsTree.getSelectedRow());
+                                bundle.sampleItemManager.setChangedAt(true, sampleItemIndex);
                                 break;
                         }
                     }
@@ -1571,7 +1574,13 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             cancelAnalysisConfirm.show();
 
         }else{
+            bundle = (SampleDataBundle)selectedTreeRow.data;
+            sampleItemIndex = bundle.sampleItemManager.getIndex(bundle.sampleItemDO);
+            
+            cleanupTestsWithPrep(bundle.analysisTestDO.getId());
+            
             itemsTree.deleteRow(selectedTreeRow);
+            bundle.sampleItemManager.setChangedAt(true, sampleItemIndex);
         }
     }
     
@@ -1654,7 +1663,6 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         return envManager; 
     }
     
-    
     private ArrayList<TreeDataItem> getTreeModel() {
         int i, j;
         AnalysisManager am;
@@ -1662,7 +1670,9 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         TreeDataItem tmp;
         TreeDataItem treeModelItem, row;
         ArrayList<TreeDataItem> model = new ArrayList<TreeDataItem>();
+        ArrayList<TableDataRow> prepRows;
         SampleDataBundle aData;
+        DictionaryDO dictDO;
         
         try{  
             HashMap<Integer, TreeDataItem> keyTable = new HashMap<Integer, TreeDataItem>();
@@ -1695,6 +1705,9 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 }
                 
                 am = manager.getSampleItems().getAnalysisAt(i);
+                prepRows = new ArrayList<TableDataRow>();
+                prepRows.add(new TableDataRow(null, ""));
+                
                 for(j=0; j<am.count(); j++){
                     AnalysisViewDO aDO = (AnalysisViewDO)am.getAnalysisAt(j);
                     
@@ -1711,6 +1724,11 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                         aData = new SampleDataBundle(sim, itemDO, am, aDO, am.getTestAt(j));
                     else
                         aData = new SampleDataBundle(sim, itemDO, am, aDO, null);
+                    
+                    dictDO = DictionaryCache.getEntryFromId(aDO.getStatusId());
+                    prepRows.add(new TableDataRow(aDO.getId(), formatTreeString(aDO.getTestName()) + " : " + 
+                                                  formatTreeString(aDO.getMethodName() + " : " + dictDO.getEntry().trim())));
+                    aData.samplePrepDropdownModel = prepRows;
                     
                     treeModelItem.data = aData;
                     
@@ -1764,7 +1782,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         if(val == null || "".equals(val))
             return "<>";
         
-        return val;
+        return val.trim();
     }
     
     private void drawTestPrepScreen(TestPrepManager manager){
@@ -1825,6 +1843,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             
             bundle = new SampleDataBundle(tmpBundle.sampleItemManager, tmpBundle.sampleItemDO, 
                                           tmpBundle.analysisManager, new AnalysisViewDO(), testMan);
+            bundle.samplePrepDropdownModel = tmpBundle.samplePrepDropdownModel;
             analysisTab.setupBundle(bundle);
             
             //need to put new row in tree
@@ -1836,6 +1855,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             //set the selected row to in prep
             itemsTree.setCell(selectedIndex, 1, analysisInPrep);
             tmpBundle.analysisTestDO.setStatusId(analysisInPrep);
+            tmpBundle.analysisTestDO.setAvailableDate(null);
             
             //set the pre analysis id
             bundle.analysisTestDO.setId(getNextTempId());
@@ -1879,73 +1899,48 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         
     }
     
-    private TreeDataItem createPrepRowTestRowById(Integer prepTestId){
-        SampleDataBundle bundle, selectedBundle;
-        TreeDataItem selected = itemsTree.getSelection();
-        selectedBundle = (SampleDataBundle)selected.data;
+    private void cleanupTestsWithPrep(Integer analysisId){
+        boolean changed = false;
+        TreeDataItem treeItem;
         
-        TreeDataItem newRow = new TreeDataItem(2);
-        newRow.leafType = "analysis";
-        newRow.checkForChildren(false);
-        
-        try{
-            TestManager testMan=null;
-            testMan = TestManager.fetchWithPrepTestsSampleTypes(prepTestId);
+        //grab the sample item parent
+        TreeDataItem selectedRow = itemsTree.getSelection();
+        if("analysis".equals(selectedRow.leafType))
+            selectedRow = selectedRow.parent;
+
+        //iterate through all the children
+        for(int i=0; i<selectedRow.getItems().size(); i++){
+            treeItem = selectedRow.getItem(i);
+            SampleDataBundle bundle = (SampleDataBundle)treeItem.data;
+            AnalysisViewDO anDO = bundle.analysisTestDO;
             
-            if(testMan != null){
-                TestViewDO testDO = testMan.getTest();
-                bundle = new SampleDataBundle();
-                bundle.type = SampleDataBundle.Type.ANALYSIS;
-                
-                AnalysisViewDO analysis = new AnalysisViewDO();
-                bundle.analysisTestDO = analysis;
-                analysis.setId(getNextTempId());
-                analysis.setStatusId(analysisLoggedInId);
-                analysis.setTestId(prepTestId);
-                analysis.setTestName(testDO.getName());
-                analysis.setMethodId(testDO.getMethodId());
-                analysis.setMethodName(testDO.getMethodName());
-                analysis.setIsReportable(testDO.getIsReportable());
-                analysis.setRevision(0);
-                
-                //set the pre analysis to the negative id for now
-                selectedBundle.analysisTestDO.setPreAnalysisId(analysis.getId());
-                
-                bundle.sampleItemDO = selectedBundle.sampleItemDO;
-                bundle.sampleItemManager = selectedBundle.sampleItemManager;
-                bundle.analysisManager = selectedBundle.analysisManager;
-                bundle.testManager = testMan;
-                
-                //sections
-                TestSectionViewDO defaultDO = testMan.getTestSections().getDefaultSection();
-                
-                if(defaultDO != null){
-                    analysis.setSectionId(defaultDO.getSectionId());
-                    analysis.setSectionName(defaultDO.getSection());
-                    bundle.sectionsDropdownModel = null;
-                }else if(testMan.getTestSections().count() > 0){
-                    ArrayList<TestSectionViewDO> sections = testMan.getTestSections().getSections();
-                    bundle.sectionsDropdownModel = getSectionsModel(sections);
-                }
-                newRow.data = bundle;
-            }   
-        }catch(Exception e){
-            Window.alert(e.getMessage());
-            return null;
+            //this test points to the prep, we need to clean it up
+            if(analysisId.equals(anDO.getPreAnalysisId())){
+                anDO.setPreAnalysisId(null);
+                anDO.setStatusId(analysisLoggedInId);
+                anDO.setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+                treeItem.cells.get(1).value = analysisLoggedInId;
+                changed = true;
+            }
         }
-            
-        return newRow;
+        
+        if(changed)
+            itemsTree.refresh(true);
+    }
+    
+    private ArrayList<TreeDataItem> getTreeRowsByPreAnalysisId(Integer prepId){
+        ArrayList<TreeDataItem> returnList;
+        
+        returnList = null;
+        return returnList;
     }
     
     private void updateTreeAndCheckPrepTests(ArrayList<SampleDataBundle> bundles){
-        SampleDataBundle bundle, selectedBundle;
-        Integer sampleTypeId;
+        SampleDataBundle bundle;
         AnalysisViewDO aDO;
         TreeDataItem selected;
         
         selected = itemsTree.getSelection();
-        selectedBundle = (SampleDataBundle)selected.data;
-        sampleTypeId = selectedBundle.sampleItemDO.getTypeOfSampleId();
         int selectedIndex = itemsTree.getSelectedRow();
         
         for(int i=0; i<bundles.size(); i++){
@@ -2003,6 +1998,10 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         index = bundle.analysisManager.getIndex(bundle.analysisTestDO);
         anDO = bundle.analysisManager.getAnalysisAt(index);
         anDO.setStatusId(analysisCancelledId);
+        anDO.setPreAnalysisId(null);
+        
+        //cleanup the other rows
+        cleanupTestsWithPrep(anDO.getId());
         
         //update the sample manager status boolean and the tabs.
         //then redraw the tabs to make sure this change didn't change the status
@@ -2015,18 +2014,6 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         qaEventsTab.setData(bundle);
         
         drawTabs();
-    }
-    
-    private ArrayList<TableDataRow> getSectionsModel(ArrayList<TestSectionViewDO> sections) {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        
-        for(int i=0; i<sections.size(); i++){
-            TestSectionViewDO sectionDO = sections.get(i);
-            model.add(new TableDataRow(sectionDO.getSectionId(), sectionDO.getSection()));
-        }
-        
-        return model;
     }
     
     private boolean canEdit(){

@@ -63,16 +63,12 @@ public class SampleManagerProxy {
         return service.call("fetchByAccessionNumber", accessionNumber);
     }
     
-    public SampleManager fetchByIdWithItemsAnalysesForUpdate(Integer sampleId) throws Exception {
-        return service.call("fetchByIdWithItemsAnalysesForUpdate", sampleId);
+    public SampleManager fetchForUpdate(Integer sampleId) throws Exception {
+        return service.call("fetchForUpdate", sampleId);
     }
     
-    public SampleManager abort(Integer sampleId) throws Exception {
-        return service.call("abort", sampleId);
-    }
-    
-    public SampleManager abortWithItemsAnalyses(Integer sampleId) throws Exception {
-        return service.call("abortWithItemsAnalyses", sampleId);
+    public SampleManager abortUpdate(Integer sampleId) throws Exception {
+        return service.call("abortUpdate", sampleId);
     }
     
     public void validateAccessionNumber(SampleDO sampleDO) throws Exception {

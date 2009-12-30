@@ -92,8 +92,10 @@ public class AnalysisManagerProxy {
             
             item = man.getItemAt(i);
             //validate the children
-            if(item.analysisResult != null)
-                man.getAnalysisResultAt(i).validate(errorsList);
+            
+            //we want to always run thorugh validate so it loads the data
+            //if the user didnt click on the tab
+            man.getAnalysisResultAt(i).validate(errorsList);
             
             if(item.qaEvents != null)
                 man.getQAEventAt(i).validate(errorsList);

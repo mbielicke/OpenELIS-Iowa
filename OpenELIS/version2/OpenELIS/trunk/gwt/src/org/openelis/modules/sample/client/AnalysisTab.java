@@ -74,7 +74,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     private boolean loaded;
     
     protected AutoComplete<Integer> test, method;
-    protected Dropdown<Integer> sectionId, unitOfMeasureId, statusId;
+    protected Dropdown<Integer> sectionId, unitOfMeasureId, statusId, samplePrep;
     protected CheckBox isReportable;
     protected TextBox revision;
     protected CalendarLookUp startedDate, completedDate, releasedDate, printedDate;
@@ -85,7 +85,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     protected AnalysisViewDO analysis;
     protected SampleItemViewDO sampleItem;
     
-    protected Integer analysisLoggedInId, analysisCancelledId, analysisReleasedId;
+    protected Integer analysisLoggedInId, analysisCancelledId, analysisReleasedId, analysisInPrepId;
     
     protected ScreenService panelService;
     
@@ -134,11 +134,13 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                             
                             if(i==0){
                                 bundle.analysisManager.setTestAt(testMan, analysisIndex);
+                                bundle.testManager = testMan;
                                 dataBundle = bundle;
                             }else{
                                 dataBundle = new SampleDataBundle(bundle.sampleItemManager, bundle.sampleItemDO, 
                                                                   bundle.analysisManager, new AnalysisViewDO(), testMan);
                                 
+                                dataBundle.samplePrepDropdownModel = bundle.samplePrepDropdownModel;
                                 bundle.analysisManager.addAnalysis(dataBundle.analysisTestDO);
                             }
                             
@@ -153,6 +155,9 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                         
                     }else
                         method.setSelections(new ArrayList());
+                    
+                    bundle.sampleItemManager.setChangedAt(true, bundle.sampleItemManager.getIndex(bundle.sampleItemDO));
+                    
                 }catch(Exception e){
                     Window.alert(e.getMessage());
                 }
@@ -315,7 +320,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sectionId.enable(canEdit() && EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                sectionId.enable(canEdit() && EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
                 sectionId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -352,7 +357,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                unitOfMeasureId.enable(canEdit() && EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                unitOfMeasureId.enable(canEdit() && EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
                 unitOfMeasureId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -424,6 +429,77 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 printedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
+        
+        samplePrep = (Dropdown<Integer>)def.getWidget(SampleMeta.getAnalysisSamplePrep());
+        addScreenHandler(samplePrep, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                
+                samplePrep.setModel(getSamplePrepDropdown());
+
+                samplePrep.setSelection(analysis.getPreAnalysisId());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                if(event.getValue() == null){
+                    analysis.setStatusId(analysisLoggedInId);
+                    analysis.setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+                }else{
+                    analysis.setStatusId(analysisInPrepId);
+                    analysis.setAvailableDate(null);
+                }
+                
+                analysis.setPreAnalysisId(event.getValue());
+                ArrayList<SampleDataBundle> bundles = new ArrayList<SampleDataBundle>();
+                bundles.add(bundle);
+                ActionEvent.fire(anTab, Action.CHANGED, bundles);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                samplePrep.enable(canEdit() && EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                samplePrep.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+    }
+    
+    private ArrayList<TableDataRow> getSamplePrepDropdown(){
+        ArrayList<TableDataRow> returnList;
+        DictionaryDO dictDO;
+        AnalysisViewDO anDO;
+        
+        if(bundle == null || bundle.sampleItemManager == null || bundle.analysisManager == null){
+            returnList = new ArrayList<TableDataRow>();
+            returnList.add(new TableDataRow(null,""));
+            
+            return returnList;
+        }
+        
+        if(!bundle.sampleItemManager.hasChangedAt(bundle.sampleItemManager.getIndex(bundle.sampleItemDO)))
+            return bundle.samplePrepDropdownModel;
+        else{
+            returnList = bundle.samplePrepDropdownModel;
+            returnList.clear();
+            returnList.add(new TableDataRow(null,""));
+            
+            try{
+                for(int i=0; i<bundle.analysisManager.count(); i++){
+                    anDO = bundle.analysisManager.getAnalysisAt(i);
+                    dictDO = DictionaryCache.getEntryFromId(anDO.getStatusId());
+                    
+                    returnList.add(new TableDataRow(anDO.getId(), formatTreeString(anDO.getTestName()) + " : " + formatTreeString(anDO.getMethodName()) + " : " + dictDO.getEntry().trim()));
+                }
+            }catch(Exception e){
+                Window.alert(e.getMessage());
+            }
+        }
+        
+        return returnList;
+    }
+    
+    private String formatTreeString(String val){
+        if(val == null || "".equals(val))
+            return "<>";
+        
+        return val.trim();
     }
     
     private ArrayList<TableDataRow> getDropdownModel(Integer id, String name) {
@@ -478,56 +554,59 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     }
     
     public void setupBundle(SampleDataBundle bundle){
-        TestManager testMan = bundle.testManager;
+        TestManager testMan;
         TestSectionViewDO defaultDO;
         ArrayList<TableDataRow> sections;
         ArrayList<TableDataRow> units;
         TestViewDO test;
         
         testMan = bundle.testManager;
-        test = testMan.getTest();
         
-        bundle.analysisTestDO.setTestId(test.getId());
-        bundle.analysisTestDO.setTestName(test.getName());
-        bundle.analysisTestDO.setMethodId(test.getMethodId());
-        bundle.analysisTestDO.setMethodName(test.getMethodName());
-        bundle.analysisTestDO.setIsReportable(test.getIsReportable());
         bundle.analysisTestDO.setStatusId(analysisLoggedInId);
         bundle.analysisTestDO.setRevision(0);
+        bundle.analysisTestDO.setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
 
-        //setup analysis units     
-        units = null;
-        try{
-            units = getUnitsModel(testMan.getSampleTypes(), bundle.sampleItemDO.getTypeOfSampleId());
-        }catch(Exception e){
-            Window.alert(e.getMessage());
-            return;
-        }
-        
-        if(units.size() == 2){
-            bundle.analysisTestDO.setUnitOfMeasureId((Integer)units.get(1).key);
-            bundle.analysisTestDO.setUnitOfMeasure((String)units.get(1).cells.get(0).value);
-        }
-        
-        bundle.unitsDropdownModel = units;     
-        
-        //setup analysis sections
-        defaultDO = null;
-        try{
-            defaultDO = testMan.getTestSections().getDefaultSection();
-        }catch(Exception e){
-            Window.alert(e.getMessage());
-            return;
-        }
-           
-        if(defaultDO != null){
-            bundle.analysisTestDO.setSectionId(defaultDO.getSectionId());
-            bundle.analysisTestDO.setSectionName(defaultDO.getSection());
-        }
-        
-        if(testMan.getTestSections().count() > 0){
-            sections = getSectionsModel(testMan.getTestSections());
-            bundle.sectionsDropdownModel = sections;
+        if(testMan != null){
+            test = testMan.getTest();
+            bundle.analysisTestDO.setTestId(test.getId());
+            bundle.analysisTestDO.setTestName(test.getName());
+            bundle.analysisTestDO.setMethodId(test.getMethodId());
+            bundle.analysisTestDO.setMethodName(test.getMethodName());
+            bundle.analysisTestDO.setIsReportable(test.getIsReportable());
+            //setup analysis units     
+            units = null;
+            try{
+                units = getUnitsModel(testMan.getSampleTypes(), bundle.sampleItemDO.getTypeOfSampleId());
+            }catch(Exception e){
+                Window.alert(e.getMessage());
+                return;
+            }
+            
+            if(units.size() == 2){
+                bundle.analysisTestDO.setUnitOfMeasureId((Integer)units.get(1).key);
+                bundle.analysisTestDO.setUnitOfMeasure((String)units.get(1).cells.get(0).value);
+            }
+            
+            bundle.unitsDropdownModel = units;     
+            
+            //setup analysis sections
+            defaultDO = null;
+            try{
+                defaultDO = testMan.getTestSections().getDefaultSection();
+            }catch(Exception e){
+                Window.alert(e.getMessage());
+                return;
+            }
+               
+            if(defaultDO != null){
+                bundle.analysisTestDO.setSectionId(defaultDO.getSectionId());
+                bundle.analysisTestDO.setSectionName(defaultDO.getSection());
+            }
+            
+            if(testMan.getTestSections().count() > 0){
+                sections = getSectionsModel(testMan.getTestSections());
+                bundle.sectionsDropdownModel = sections;
+            }
         }
     }
     
@@ -537,6 +616,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
             analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
             analysisLoggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
+            analysisInPrepId = DictionaryCache.getIdFromSystemName("analysis_inprep");
             
         }catch(Exception e){
             Window.alert(e.getMessage());
@@ -572,7 +652,9 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         }else {
             analysis = new AnalysisViewDO();
             manager = null;
-            StateChangeEvent.fire(this, State.DEFAULT);   
+            
+            if(state != State.QUERY)
+                StateChangeEvent.fire(this, State.DEFAULT);   
         } 
         bundle = data;
         loaded = false;
