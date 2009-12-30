@@ -194,7 +194,7 @@ public class SampleManagerProxy {
         return sm;
     }
     
-    public SampleManager fetchByIdWithItemsAnalysesForUpdate(Integer sampleId) throws Exception {
+    public SampleManager fetchForUpdate(Integer sampleId) throws Exception {
         SampleLocal sl = getSampleLocal();
         SampleDO sampleDO = sl.fetchById(sampleId);
         
@@ -213,13 +213,9 @@ public class SampleManagerProxy {
         return sm;
     }
     
-    public SampleManager abort(Integer sampleId) throws Exception {
+    public SampleManager abortUpdate(Integer sampleId) throws Exception {
         throw new UnsupportedOperationException();    
    }
-    
-    public SampleManager abortWithItemsAnalyses(Integer sampleId) throws Exception {
-        throw new UnsupportedOperationException();    
-    }
     
     public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
         ValidationErrorsList errorsList;
