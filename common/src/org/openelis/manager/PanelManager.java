@@ -80,8 +80,8 @@ public class PanelManager implements RPC {
         return proxy().update(this);
     }
     
-    public PanelManager delete() throws Exception {
-        return proxy().delete(this);
+    public void delete() throws Exception {
+        proxy().delete(this);
     }
     
     public PanelManager fetchForUpdate() throws Exception {

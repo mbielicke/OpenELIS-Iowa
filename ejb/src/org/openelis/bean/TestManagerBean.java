@@ -97,9 +97,13 @@ public class TestManagerBean implements TestManagerRemote {
         man.validate();
 
         ut = ctx.getUserTransaction();
-        ut.begin();
-        man.add();
-        ut.commit();
+        try {
+            ut.begin();
+            man.add();
+            ut.commit();
+        } catch (Exception e) {
+            ut.rollback();
+        }
 
         return man;
     }
@@ -112,11 +116,15 @@ public class TestManagerBean implements TestManagerRemote {
         man.validate();
 
         ut = ctx.getUserTransaction();
-        ut.begin();
-        lockBean.validateLock(ReferenceTable.TEST, man.getTest().getId());
-        man.update();
-        lockBean.giveUpLock(ReferenceTable.TEST, man.getTest().getId());
-        ut.commit();
+        try {
+            ut.begin();
+            lockBean.validateLock(ReferenceTable.TEST, man.getTest().getId());
+            man.update();
+            lockBean.giveUpLock(ReferenceTable.TEST, man.getTest().getId());
+            ut.commit();
+        } catch (Exception e) {
+            ut.rollback();
+        }
 
         return man;
     }

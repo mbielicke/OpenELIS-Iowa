@@ -47,11 +47,15 @@ public class ProjectManagerBean implements ProjectManagerRemote {
         checkSecurity(ModuleFlags.ADD);
 
         man.validate();
-
+        
         ut = ctx.getUserTransaction();
-        ut.begin();
-        man.add();
-        ut.commit();
+        try {
+            ut.begin();
+            man.add();
+            ut.commit();
+        } catch (Exception e) {
+            ut.rollback();
+        }
 
         return man;
     }
@@ -63,12 +67,15 @@ public class ProjectManagerBean implements ProjectManagerRemote {
 
         man.validate();
 
-        ut = ctx.getUserTransaction();
-        ut.begin();
-        lockBean.validateLock(ReferenceTable.PROJECT, man.getProject().getId());
-        man.update();
-        lockBean.giveUpLock(ReferenceTable.PROJECT, man.getProject().getId());
-        ut.commit();
+        ut = ctx.getUserTransaction(); 
+        try {
+            ut.begin();
+            lockBean.validateLock(ReferenceTable.PROJECT, man.getProject().getId());
+            man.update();
+            lockBean.giveUpLock(ReferenceTable.PROJECT, man.getProject().getId());
+        ut.commit();} catch (Exception e) {
+            ut.rollback();
+        }
 
         return man;
     }

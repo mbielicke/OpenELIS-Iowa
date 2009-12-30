@@ -70,11 +70,15 @@ public class PanelManagerBean implements PanelManagerRemote {
         checkSecurity(ModuleFlags.ADD);
 
         man.validate();
-
+        
         ut = ctx.getUserTransaction();
-        ut.begin();
-        man.add();
-        ut.commit();
+        try {
+            ut.begin();
+            man.add();
+            ut.commit();
+        } catch (Exception e) {
+            ut.rollback();
+        }
 
         return man;
     }
@@ -87,11 +91,15 @@ public class PanelManagerBean implements PanelManagerRemote {
         man.validate();
 
         ut = ctx.getUserTransaction();
-        ut.begin();
-        lockBean.validateLock(ReferenceTable.PANEL, man.getPanel().getId());        
-        man.update();
-        lockBean.giveUpLock(ReferenceTable.PANEL, man.getPanel().getId());
-        ut.commit();
+        try {
+            ut.begin();
+            lockBean.validateLock(ReferenceTable.PANEL, man.getPanel().getId());        
+            man.update();
+            lockBean.giveUpLock(ReferenceTable.PANEL, man.getPanel().getId());
+            ut.commit();
+        } catch (Exception e) {
+            ut.rollback();
+        }
 
         return man;
     }
@@ -112,11 +120,15 @@ public class PanelManagerBean implements PanelManagerRemote {
         checkSecurity(ModuleFlags.DELETE);
     
         ut = ctx.getUserTransaction();
-        ut.begin();
-        lockBean.validateLock(ReferenceTable.PANEL, man.getPanel().getId());        
-        man.delete();
-        lockBean.giveUpLock(ReferenceTable.PANEL, man.getPanel().getId());
-        ut.commit();
+        try {
+            ut.begin();
+            lockBean.validateLock(ReferenceTable.PANEL, man.getPanel().getId());        
+            man.delete();
+            lockBean.giveUpLock(ReferenceTable.PANEL, man.getPanel().getId());
+            ut.commit();
+        } catch (Exception e) {
+            ut.rollback();
+        }
     
         return man;
     }

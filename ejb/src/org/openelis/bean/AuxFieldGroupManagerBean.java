@@ -73,9 +73,13 @@ public class AuxFieldGroupManagerBean implements AuxFieldGroupManagerRemote {
         man.validate();
 
         ut = ctx.getUserTransaction();
-        ut.begin();
-        man.add();
-        ut.commit();
+        try {
+            ut.begin();
+            man.add();
+            ut.commit();
+        } catch (Exception e) {
+            ut.rollback();
+        }
 
         return man;
     }
@@ -88,11 +92,15 @@ public class AuxFieldGroupManagerBean implements AuxFieldGroupManagerRemote {
         man.validate();
 
         ut = ctx.getUserTransaction();
-        ut.begin();
-        lockBean.validateLock(ReferenceTable.AUX_FIELD_GROUP, man.getGroup().getId());        
-        man.update();
-        lockBean.giveUpLock(ReferenceTable.AUX_FIELD_GROUP, man.getGroup().getId());
-        ut.commit();
+        try {
+            ut.begin();
+            lockBean.validateLock(ReferenceTable.AUX_FIELD_GROUP, man.getGroup().getId());        
+            man.update();
+            lockBean.giveUpLock(ReferenceTable.AUX_FIELD_GROUP, man.getGroup().getId());
+            ut.commit();
+        } catch (Exception e) {
+            ut.rollback();
+        }
 
         return man;
     }
