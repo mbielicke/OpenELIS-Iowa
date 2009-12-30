@@ -104,18 +104,14 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
         return proxy().fetchByAccessionNumber(accessionNumber);
     }
     
-    public static SampleManager fetchByIdWithItemsAnalysesForUpdate(Integer id) throws Exception {
-        return proxy().fetchByIdWithItemsAnalysesForUpdate(id);
+    public SampleManager fetchForUpdate() throws Exception {
+        return proxy().fetchForUpdate(sample.getId());
     }
     
     public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
         proxy().validateAccessionNumber(sampleDO);
     }
     
-    public void unrelease() {
-
-    }
-
     protected void updateSampleStatus() throws Exception {
         int      e = 0, l = 0, c = 0, r = 0;
         SampleItemManager itemMan;
@@ -415,12 +411,8 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
         
     }
     
-    public SampleManager abort() throws Exception {
-        return proxy().abort(sample.getId());
-    }
-    
-    public SampleManager abortWithItemsAnalyses() throws Exception {
-        return proxy().abortWithItemsAnalyses(sample.getId());
+    public SampleManager abortUpdate() throws Exception {
+        return proxy().abortUpdate(sample.getId());
     }
     
     public void validate() throws Exception {

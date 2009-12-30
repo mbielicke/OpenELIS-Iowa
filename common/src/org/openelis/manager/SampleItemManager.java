@@ -106,6 +106,14 @@ public class SampleItemManager implements RPC {
         if(tmpList.sampleItem.getId() != null)
             deletedList.add(tmpList);
     }
+    
+    public void setChangedAt(boolean changed, int i){
+        getItemAt(i).changed = changed;
+    }
+    
+    public boolean hasChangedAt(int i){
+        return getItemAt(i).changed;
+    }
 
     // storage
     public StorageManager getStorageAt(int i) throws Exception {
@@ -235,6 +243,7 @@ public class SampleItemManager implements RPC {
     static class SampleItemListItem implements RPC {
         private static final long serialVersionUID = 1L;
 
+        boolean changed = false;
         SampleItemViewDO    sampleItem;
         StorageManager  storage;
         AnalysisManager analysis;
