@@ -175,9 +175,11 @@ public class ResultBean implements ResultLocal {
                 resultDO.setTestAnalyteId(ado.getId());
                 resultDO.setIsColumn(ado.getIsColumn());
                 resultDO.setIsReportable(ado.getIsReportable());
+                resultDO.setAnalyteId(ado.getAnalyteId());
                 resultDO.setAnalyte(ado.getAnalyteName());
+                resultDO.setTypeId(ado.getTypeId());
                 resultDO.setResultGroup(ado.getResultGroup());
-
+                
                 rg = ado.getRowGroup();
                 resultDO.setRowGroup(rg);
 
@@ -263,7 +265,7 @@ public class ResultBean implements ResultLocal {
         // get test analytes by analysis id
         query = manager.createNamedQuery("TestAnalyte.FetchByAnalysisId");
         query.setParameter("analysisId", analysisId);
-        analytes = query.getResultList();
+        testAnalytes = query.getResultList();
 
         // get results by analysis id
         query = manager.createNamedQuery("Result.FetchByAnalysisId");

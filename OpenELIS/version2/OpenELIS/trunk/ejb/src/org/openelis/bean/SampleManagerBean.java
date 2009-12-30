@@ -115,20 +115,18 @@ public class SampleManagerBean  implements SampleManagerRemote {
         return man;
     }
 
-    public SampleManager fetchByIdWithItemsAnalysesForUpdate(Integer sampleId) throws Exception {
+    public SampleManager fetchForUpdate(Integer sampleId) throws Exception {
         lockBean.getLock(sampleRefTableId, sampleId);
-        SampleManager man = SampleManager.fetchByIdWithItemsAnalysesForUpdate(sampleId);
         
-        return man;
+        SampleManager man = SampleManager.getInstance();
+        SampleDO sampleDO = new SampleDO();
+        sampleDO.setId(sampleId);
+        man.setSample(sampleDO);
+        
+        return man.fetchForUpdate();
     }
 
     public SampleManager abortUpdate(Integer sampleId) throws Exception {
-        lockBean.giveUpLock(sampleRefTableId, sampleId);
-        
-        return fetch(sampleId);
-    }
-    
-    public SampleManager abortUpdateWithItemsAnalyses(Integer sampleId) throws Exception {
         lockBean.giveUpLock(sampleRefTableId, sampleId);
         
         return fetchWithItemsAnalysis(sampleId);

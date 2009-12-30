@@ -89,7 +89,6 @@ public class AnalysisResultManagerProxy {
     }
     
     public AnalysisResultManager add(AnalysisResultManager man) throws Exception {
-        System.out.println("*******************************result");
         ResultLocal rl;
         ArrayList<ResultViewDO> list;
         ArrayList<ArrayList<ResultViewDO>> grid;
@@ -106,6 +105,18 @@ public class AnalysisResultManagerProxy {
                 
                 data.setAnalysisId(man.getAnalysisId());
                 data.setSortOrder( ++so);
+                
+                System.out.println("["+data.getId()+"]");
+                System.out.println("["+data.getAnalysisId()+"]");
+                System.out.println("["+data.getTestAnalyteId()+"]");
+                System.out.println("["+data.getTestResultId()+"]");
+                System.out.println("["+data.getIsColumn()+"]");
+                System.out.println("["+data.getSortOrder()+"]");
+                System.out.println("["+data.getIsReportable()+"]");
+                System.out.println("["+data.getAnalyteId()+"]");
+                System.out.println("["+data.getTypeId()+"]");
+                System.out.println("["+data.getValue()+"]");
+                
                 rl.add(data);
             }
         }

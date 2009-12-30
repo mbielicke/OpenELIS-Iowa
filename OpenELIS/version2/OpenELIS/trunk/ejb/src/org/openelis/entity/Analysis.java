@@ -58,7 +58,7 @@ import org.openelis.utils.Auditable;
     @NamedQuery(name = "Analysis.AnalysisTestBySampleItemId", query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision, " + 
                 " a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId, " + 
                 " a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, s.name, t.name, t.method.id, t.method.name,d.entry) from " +
-                " Analysis a LEFT JOIN a.section s LEFT JOIN a.test t, Dictionary d where d.id=a.unitOfMeasureId and a.sampleItemId = :id")})
+                " Analysis a LEFT JOIN a.section s LEFT JOIN a.unitDict d LEFT JOIN a.test t where a.sampleItemId = :id")})
                 
 @Entity
 @Table(name="analysis")
@@ -122,6 +122,10 @@ public class Analysis implements Auditable, Cloneable {
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "section_id", insertable = false, updatable = false)
   private Section section;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "unit_of_measure_id", insertable = false, updatable = false)
+  private Dictionary unitDict;
   
   //analysis qa events
   @OneToMany(fetch = FetchType.LAZY)

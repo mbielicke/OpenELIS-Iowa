@@ -54,15 +54,26 @@ public class AnalysisManagerProxy {
     }
     
     public AnalysisManager fetchBySampleItemIdForUpdate(Integer sampleItemId) throws Exception {
+        HashMap<Integer, TestManager> testManagerHash;
         AnalysisLocal al = getAnalysisLocal();
         AnalysisViewDO anDO;
         ArrayList<AnalysisViewDO> items = (ArrayList<AnalysisViewDO>)al.fetchBySampleItemId(sampleItemId);
         AnalysisManager am = AnalysisManager.getInstance();
+        TestManager tm;
         
+        testManagerHash = new HashMap<Integer, TestManager>();
         for(int i=0; i<items.size(); i++){
             anDO = items.get(i);
             am.addAnalysis(anDO);
-            am.setTestAt(TestManager.fetchWithPrepTestsSampleTypes(anDO.getTestId()), i);
+            
+            tm = testManagerHash.get(anDO.getTestId());
+            
+            if(tm == null){
+                tm = TestManager.fetchWithPrepTestsSampleTypes(anDO.getTestId());
+                testManagerHash.put(anDO.getTestId(), tm);
+            }
+         
+            am.setTestAt(tm, i);
         }
         
         am.setSampleItemId(sampleItemId);
