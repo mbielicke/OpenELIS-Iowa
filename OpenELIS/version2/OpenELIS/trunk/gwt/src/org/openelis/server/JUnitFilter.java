@@ -114,7 +114,7 @@ public class JUnitFilter implements Filter {
                     props.load(is);
                 }catch(Exception e){
                     props.setProperty("java.naming.factory.url.pkgs","org.jboss.naming:org.jnp.interfaces");
-                    props.setProperty("java.naming.provider.url","localhost");
+                    props.setProperty("java.naming.provider.url","nabu.uhl.uiowa.edu:1299");
                 }
                 props.setProperty(Context.INITIAL_CONTEXT_FACTORY,
                 "org.jboss.security.jndi.LoginInitialContextFactory");

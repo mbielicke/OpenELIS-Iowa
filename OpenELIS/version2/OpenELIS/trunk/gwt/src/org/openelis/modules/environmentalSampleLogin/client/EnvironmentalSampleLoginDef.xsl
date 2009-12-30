@@ -38,7 +38,14 @@ version="1.0"
   xmlns:meta="xalan://org.openelis.meta.SampleMeta">
   
   <xsl:import href="IMPORT/button.xsl"/>
-  <xsl:import href="OPENELIS/org/openelis/modules/sample/client/SampleTemplates.xsl"/>
+  <xsl:import href="OPENELIS/org/openelis/modules/sample/client/AnalysisTabDef.xsl"/>
+  <xsl:import href="OPENELIS/org/openelis/modules/sample/client/AnalysisNotesTabDef.xsl"/>
+  <xsl:import href="OPENELIS/org/openelis/modules/sample/client/AuxDataTabDef.xsl"/>
+  <xsl:import href="OPENELIS/org/openelis/modules/sample/client/QAEventsTabDef.xsl"/>
+  <xsl:import href="OPENELIS/org/openelis/modules/sample/client/SampleItemTabDef.xsl"/>
+  <xsl:import href="OPENELIS/org/openelis/modules/sample/client/SampleNotesTabDef.xsl"/>
+  <xsl:import href="OPENELIS/org/openelis/modules/sample/client/StorageTabDef.xsl"/>
+  <xsl:import href="OPENELIS/org/openelis/modules/sample/client/TestResultsTabDef.xsl"/>
   
   <xsl:variable name="language" select="doc/locale" />
   <xsl:variable name="props" select="doc/props" />

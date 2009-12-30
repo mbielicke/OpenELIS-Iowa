@@ -1,3 +1,4 @@
+
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -25,27 +26,77 @@ license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
 
-<xsl:stylesheet 
-version="1.0"
+<xsl:stylesheet
   extension-element-prefixes="resource"
+  version="1.0"
   xmlns:locale="xalan://java.util.Locale"
+  xmlns:meta="xalan://org.openelis.meta.SampleMeta"
   xmlns:resource="xalan://org.openelis.util.UTFResource"
   xmlns:xalan="http://xml.apache.org/xalan"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
-  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:meta="xalan://org.openelis.meta.SampleMeta">
-  
-  <xsl:import href="OPENELIS/org/openelis/modules/sample/client/SampleTemplates.xsl"/>
-  
-  <xsl:template match="doc">
-    <xsl:variable name="language" select="locale" />
-    <xsl:variable name="props" select="props" />
-    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-  
-    <screen id="AuxDataTab" name="{resource:getString($constants,'auxData')}">
-	  <xsl:call-template name="AuxDataTab"/>
-    </screen>
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
+
+  <xsl:template name="AuxDataTab">
+    <VerticalPanel padding="0" spacing="0">
+      <TablePanel padding="0" spacing="0">
+        <row>
+          <widget colspan="6">
+            <table key="auxValsTable" maxRows="6" showScroll="ALWAYS" title="" width="auto">
+              <col header="{resource:getString($constants,'reportable')}" width="85">
+                <check />
+              </col>
+              <col header="{resource:getString($constants,'name')}" width="300">
+                <label />
+              </col>
+              <col class="org.openelis.modules.sample.client.AuxTableColumn" header="{resource:getString($constants,'value')}" width="303">
+                <label />
+              </col>
+            </table>
+          </widget>
+        </row>
+        <row>
+          <widget colspan="6" style="TableButtonFooter">
+            <HorizontalPanel>
+              <appButton key="removeAuxButton" style="Button">
+                <HorizontalPanel>
+                  <AbsolutePanel style="RemoveRowButtonImage" />
+                  <text>
+                    <xsl:value-of select="resource:getString($constants,'removeRow')" />
+                  </text>
+                </HorizontalPanel>
+              </appButton>
+              <appButton key="addAuxButton" style="Button">
+                <HorizontalPanel>
+                  <AbsolutePanel style="PickerButtonImage" />
+                  <text>
+                    <xsl:value-of select="resource:getString($constants,'auxGroups')" />
+                  </text>
+                </HorizontalPanel>
+              </appButton>
+            </HorizontalPanel>
+          </widget>
+        </row>
+      </TablePanel>
+      <TablePanel style="Form">
+        <row>
+          <text style="Prompt">
+            <xsl:value-of select="resource:getString($constants,'description')" />:
+          </text>
+          <widget colspan="3">
+            <textbox key="auxDesc" style="ScreenTextboxDisplayOnly" width="275px" />
+          </widget>
+          <text style="Prompt">
+            <xsl:value-of select="resource:getString($constants,'method')" />:
+          </text>
+          <textbox key="auxMethod" style="ScreenTextboxDisplayOnly" width="125px" />
+          <text style="Prompt">
+            <xsl:value-of select="resource:getString($constants,'unit')" />:
+          </text>
+          <textbox key="auxUnits" style="ScreenTextboxDisplayOnly" width="125px" />
+        </row>
+      </TablePanel>
+    </VerticalPanel>
   </xsl:template>
-</xsl:stylesheet>    
+</xsl:stylesheet>
