@@ -53,11 +53,64 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen id="SampleTracking" name="SampleTracking">
-      <HorizontalPanel padding="0" spacing="0">
+      <VerticalPanel padding="0" spacing="0">
+      <!--button panel code-->
+
+          <AbsolutePanel spacing="0" style="ButtonPanelContainer">
+            <HorizontalPanel>
+              <appButton key="expand" action="expand" style="ButtonPanelButton">
+				<HorizontalPanel>
+	     		  <AbsolutePanel style="expandButtonImage" width="20" height="20"/>
+        		  <text><xsl:value-of select='resource:getString($constants,"expand")'/></text>
+	 			</HorizontalPanel>
+			  </appButton>
+			  <appButton key="collapse" action="collapse" style="ButtonPanelButton">
+				<HorizontalPanel>
+	     		  <AbsolutePanel style="collapseButtonImage" width="20" height="20"/>
+        		  <text><xsl:value-of select='resource:getString($constants,"collapse")'/></text>
+	 			</HorizontalPanel>
+			  </appButton>
+              <appButton key="similar" action="similar" style="ButtonPanelButton">
+				<HorizontalPanel>
+	     		  <AbsolutePanel style="similarButtonImage" width="20" height="20"/>
+        		  <text><xsl:value-of select='resource:getString($constants,"similar")'/></text>
+	 			</HorizontalPanel>
+			  </appButton>
+			  <xsl:call-template name="buttonPanelDivider" />			  
+              <menuItem>
+                <menuDisplay>
+               	  <appButton key="query" action="query" toggle="true" style="ButtonPanelButton" shortcut="ctrl+q">	
+		            <HorizontalPanel>
+		              <AbsolutePanel style="QueryButtonImage" width="20" height="20"/>
+                      <text><xsl:value-of select='resource:getString($constants,"query")'/></text>
+                      <AbsolutePanel style="OptionsButtonImage" width="20px" height="20px"/>
+		            </HorizontalPanel>
+             	  </appButton>
+                </menuDisplay>
+                <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                  <menuItem description="" icon="environmentalSampleLoginIcon" key="environmentalSample" label="{resource:getString($constants,'environmentalSampleLogin')}" style="TopMenuRowContainer" />
+                  <menuItem description="" enable="false" icon="clinicalSampleLoginIcon" key="clinicalSample" label="{resource:getString($constants,'clinicalSampleLogin')}" style="TopMenuRowContainer" />
+                  <menuItem description="" enable="false" icon="animalSampleLoginIcon" key="animalSample" label="{resource:getString($constants,'animalSampleLogin')}" style="TopMenuRowContainer" />
+                  <menuItem description="" enable="false" icon="newbornScreeningSampleLoginIcon" key="newbornScreeningSample" label="{resource:getString($constants,'newbornScreeningSampleLogin')}" style="TopMenuRowContainer" />
+                  <menuItem description="" enable="false" icon="ptSampleLoginIcon" key="ptSample" label="{resource:getString($constants,'ptSampleLogin')}" style="TopMenuRowContainer" />
+                  <menuItem description="" enable="false" icon="sdwisSampleLoginIcon" key="sdwisSample" label="{resource:getString($constants,'sdwisSampleLogin')}" style="TopMenuRowContainer" />
+                  <menuItem description="" enable="true" icon="privateWellWaterSampleLoginIcon" key="privateWellWaterSample" label="{resource:getString($constants,'privateWellWaterSampleLogin')}" style="TopMenuRowContainer" />
+                </menuPanel>
+              </menuItem>
+              <xsl:call-template name="previousButton" />
+              <xsl:call-template name="nextButton" />
+              <xsl:call-template name="buttonPanelDivider" />
+              <xsl:call-template name="updateButton" />
+              <xsl:call-template name="buttonPanelDivider" />
+              <xsl:call-template name="commitButton" />
+              <xsl:call-template name="abortButton" />
+            </HorizontalPanel>
+          </AbsolutePanel>
+       <HorizontalPanel>
         <AbsolutePanel key="collapsePanel" style="LeftSidePanel">
           <HorizontalPanel width="225">
             <VerticalPanel>
-              <tree key="atozTable" maxRows="15" style="atozTable" width="auto">
+              <tree key="atozTable" maxRows="15" width="auto">
                 <header>
                   <col header="Sample" width="200" />
                   <col header="Type/Status" width="100" />
@@ -128,33 +181,7 @@ UIRF Software License are applicable instead of those above.
         <AbsolutePanel style="Divider" width="2"></AbsolutePanel>
         <VerticalPanel padding="0" spacing="0">
 
-<!--button panel code-->
 
-          <AbsolutePanel spacing="0" style="ButtonPanelContainer">
-            <HorizontalPanel>
-              <menuItem>
-                <menuDisplay>
-                  <xsl:call-template name="queryButton" />
-                </menuDisplay>
-                <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                  <menuItem description="" icon="environmentalSampleLoginIcon" key="environmentalSample" label="{resource:getString($constants,'environmentalSampleLogin')}" style="TopMenuRowContainer" />
-                  <menuItem description="" enable="false" icon="clinicalSampleLoginIcon" key="clinicalSample" label="{resource:getString($constants,'clinicalSampleLogin')}" style="TopMenuRowContainer" />
-                  <menuItem description="" enable="false" icon="animalSampleLoginIcon" key="animalSample" label="{resource:getString($constants,'animalSampleLogin')}" style="TopMenuRowContainer" />
-                  <menuItem description="" enable="false" icon="newbornScreeningSampleLoginIcon" key="newbornScreeningSample" label="{resource:getString($constants,'newbornScreeningSampleLogin')}" style="TopMenuRowContainer" />
-                  <menuItem description="" enable="false" icon="ptSampleLoginIcon" key="ptSample" label="{resource:getString($constants,'ptSampleLogin')}" style="TopMenuRowContainer" />
-                  <menuItem description="" enable="false" icon="sdwisSampleLoginIcon" key="sdwisSample" label="{resource:getString($constants,'sdwisSampleLogin')}" style="TopMenuRowContainer" />
-                  <menuItem description="" enable="true" icon="privateWellWaterSampleLoginIcon" key="privateWellWaterSample" label="{resource:getString($constants,'privateWellWaterSampleLogin')}" style="TopMenuRowContainer" />
-                </menuPanel>
-              </menuItem>
-              <xsl:call-template name="previousButton" />
-              <xsl:call-template name="nextButton" />
-              <xsl:call-template name="buttonPanelDivider" />
-              <xsl:call-template name="updateButton" />
-              <xsl:call-template name="buttonPanelDivider" />
-              <xsl:call-template name="commitButton" />
-              <xsl:call-template name="abortButton" />
-            </HorizontalPanel>
-          </AbsolutePanel>
           <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
@@ -193,7 +220,7 @@ UIRF Software License are applicable instead of those above.
               </row>
             </TablePanel>
             <TabBar key="SampleBar" style="None" width="724"></TabBar>
-            <DeckPanel height="254" key="SampleContent" width="724">
+            <DeckPanel height="274" key="SampleContent" width="724">
               <deck>
                 <AbsolutePanel />
               </deck>
@@ -381,6 +408,7 @@ UIRF Software License are applicable instead of those above.
           </VerticalPanel>
         </VerticalPanel>
       </HorizontalPanel>
+      </VerticalPanel>
     </screen>
   </xsl:template>
 </xsl:stylesheet>
