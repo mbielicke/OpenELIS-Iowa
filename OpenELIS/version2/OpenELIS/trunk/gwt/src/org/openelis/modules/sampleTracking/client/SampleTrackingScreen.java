@@ -75,14 +75,14 @@ public class SampleTrackingScreen extends Screen {
     };
 	
     protected Tabs                         tab = Tabs.BLANK;
-    protected ArrayList<Tabs>           tabIndexes = new ArrayList<Tabs>();
+    protected ArrayList<Tabs>              tabIndexes = new ArrayList<Tabs>();
     protected TextBox                      clientReference;
     protected TextBox<Integer>             accessionNumber, orderNumber;
     protected TextBox<Datetime>            collectedTime;
    
     protected Dropdown<Integer>            statusId;
     protected TreeWidget                   itemsTree;
-    protected AppButton                    removeRow, 
+    protected AppButton                    removeRow, similarButton, expandButton, collapseButton,
     									   addItem, addAnalysis, queryButton, updateButton,
     									   nextButton, prevButton, commitButton, abortButton;
     protected CalendarLookUp               collectedDate, receivedDate;
@@ -105,6 +105,7 @@ public class SampleTrackingScreen extends Screen {
 	private AnalysisNotesTab               analysisNotesTab;
 	private AuxDataTab                     auxDataTab;
 	private TestResultsTab				   testResultsTab;
+	private TreeWidget                     atozTree;
 	
     public SampleTrackingScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SampleTrackingDef.class));
@@ -150,7 +151,7 @@ public class SampleTrackingScreen extends Screen {
     			sampleContent.showWidget(tab.ordinal());
     		}
     	});
-        
+    	
     	accessionNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -389,6 +390,39 @@ public class SampleTrackingScreen extends Screen {
             }
         });
         
+        expandButton = (AppButton)def.getWidget("expand");
+        addScreenHandler(expandButton, new ScreenEventHandler<Object>() {
+        	public void onClick(ClickEvent event){
+        		atozTree.expand();
+        	}
+        	
+        	public void onStateChange(StateChangeEvent<State> event) {
+        		expandButton.enable(event.getState() == State.DISPLAY);
+        	}
+        });
+        
+        collapseButton = (AppButton)def.getWidget("collapse");
+        addScreenHandler(collapseButton, new ScreenEventHandler<Object>() {
+        	public void onClick(ClickEvent event){
+        		atozTree.collapse();
+        	}
+        	
+        	public void onStateChange(StateChangeEvent<State> event) {
+        		collapseButton.enable(event.getState() == State.DISPLAY);
+        	}
+        });
+        
+        similarButton = (AppButton)def.getWidget("similar");
+        addScreenHandler(similarButton, new ScreenEventHandler<Object>() {
+        	public void onClick(ClickEvent event){
+        		similar();
+        	}
+        	
+        	public void onStateChange(StateChangeEvent<State> event) {
+        		similarButton.enable(event.getState() == State.DISPLAY);
+        	}
+        });
+        
         nav = new ScreenNavigator(def) {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
@@ -507,8 +541,8 @@ public class SampleTrackingScreen extends Screen {
         	}
         });
         
-        final TreeWidget tree = (TreeWidget)def.getWidget("atozTable");
-        tree.addSelectionHandler(new SelectionHandler<TreeDataItem>() {
+        atozTree = (TreeWidget)def.getWidget("atozTable");
+        atozTree.addSelectionHandler(new SelectionHandler<TreeDataItem>() {
         	public void onSelection(SelectionEvent<TreeDataItem> event) {
         		if(event.getSelectedItem().parent == null)
         			return;
@@ -1059,5 +1093,10 @@ public class SampleTrackingScreen extends Screen {
     	sampleBar.selectTab(0);
     	sampleBar.setStyleName("gwt-TabBar");
     }
+    
+    protected void similar() {
+    	
+    }
+    
    
 }
