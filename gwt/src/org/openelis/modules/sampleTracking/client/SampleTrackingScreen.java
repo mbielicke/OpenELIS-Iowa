@@ -473,14 +473,14 @@ public class SampleTrackingScreen extends Screen {
 						for(SampleItemVO si : vo.getItems()) {
 							TreeDataItem item = new TreeDataItem();
 							item.leafType = "item";
-							item.key = si.getId();
+							item.key = vo.getId()+":"+si.getId();
 							item.cells.add(new TableDataCell(si.getSequence()+"-"+si.getContainer()));
 							item.cells.add(new TableDataCell(si.getType()));
 							if(si.getAnalysis() != null){
 								for(AnalysisVO avo : si.getAnalysis()) {
 									TreeDataItem analysis = new TreeDataItem();
 									analysis.leafType = "analysis";
-									analysis.key = avo.getId();
+									analysis.key = vo.getId()+":"+avo.getId();
 									analysis.cells.add(new TableDataCell(avo.getTest()+" : "+avo.getMethod()));
 									try {
 										analysis.cells.add(new TableDataCell(DictionaryCache.getEntryFromId(avo.getStatus()).getEntry()));
@@ -489,17 +489,17 @@ public class SampleTrackingScreen extends Screen {
 									}
 									TreeDataItem results = new TreeDataItem();
 									results.leafType = "result";
-									results.key = avo.getId();
+									results.key = vo.getId()+":"+avo.getId();
 									results.cells.add(new TableDataCell("Results"));
 									analysis.addItem(results);
 									TreeDataItem qaevent = new TreeDataItem();
 									qaevent.leafType = "qaevent";
-									qaevent.key = avo.getId();
+									qaevent.key = vo.getId()+":"+avo.getId();
 									qaevent.cells.add(new TableDataCell("QA Events"));
 									analysis.addItem(qaevent);
 									TreeDataItem note = new TreeDataItem();
 									note.leafType = "note";
-									note.key = avo.getId();
+									note.key = vo.getId()+":"+avo.getId();
 									note.cells.add(new TableDataCell("Notes"));
 									analysis.addItem(note);																			
 									item.addItem(analysis);
@@ -507,12 +507,12 @@ public class SampleTrackingScreen extends Screen {
 							}
 							TreeDataItem storage = new TreeDataItem();
 							storage.leafType = "storage";
-							storage.key = si.getId();
+							storage.key = vo.getId()+":"+si.getId();
 							storage.cells.add(new TableDataCell("Storage"));
 							item.addItem(storage);
 							TreeDataItem qaevent = new TreeDataItem();
 							qaevent.leafType = "qaevent";
-							qaevent.key = si.getId();
+							qaevent.key = vo.getId()+":"+si.getId();
 							qaevent.cells.add(new TableDataCell("QA Events"));
 							item.addItem(qaevent);	
 							sample.addItem(item);
@@ -548,7 +548,10 @@ public class SampleTrackingScreen extends Screen {
         			return;
         		if(event.getSelectedItem().leafType.equals("item")){
         			try {
-        				sampleItemTab.setData(getSampleItemBundle((Integer)event.getSelectedItem().key));
+        				String[] ids = ((String)event.getSelectedItem().key).split(":");
+        				if(!(ids[0].equals(manager.getSample().getId())))
+        					fetchById(new Integer(ids[0]));
+        				sampleItemTab.setData(getSampleItemBundle(new Integer(ids[1])));
         				sampleItemTab.draw();
         				showTabs(Tabs.SAMPLE_ITEM);
         			}catch(Exception e) {

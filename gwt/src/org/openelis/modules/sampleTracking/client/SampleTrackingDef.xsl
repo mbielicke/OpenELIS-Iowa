@@ -87,7 +87,7 @@ UIRF Software License are applicable instead of those above.
 		            </HorizontalPanel>
              	  </appButton>
                 </menuDisplay>
-                <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                <menuPanel layout="vertical" position="below" style="buttonMenuContainer">
                   <menuItem description="" icon="environmentalSampleLoginIcon" key="environmentalSample" label="{resource:getString($constants,'environmentalSampleLogin')}" style="TopMenuRowContainer" />
                   <menuItem description="" enable="false" icon="clinicalSampleLoginIcon" key="clinicalSample" label="{resource:getString($constants,'clinicalSampleLogin')}" style="TopMenuRowContainer" />
                   <menuItem description="" enable="false" icon="animalSampleLoginIcon" key="animalSample" label="{resource:getString($constants,'animalSampleLogin')}" style="TopMenuRowContainer" />
