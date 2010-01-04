@@ -549,7 +549,7 @@ public class SampleTrackingScreen extends Screen {
         		if(event.getSelectedItem().leafType.equals("item")){
         			try {
         				String[] ids = ((String)event.getSelectedItem().key).split(":");
-        				if(!(ids[0].equals(manager.getSample().getId())))
+        				if(!(ids[0].equals(manager.getSample().getId().toString())))
         					fetchById(new Integer(ids[0]));
         				sampleItemTab.setData(getSampleItemBundle(new Integer(ids[1])));
         				sampleItemTab.draw();
@@ -561,7 +561,10 @@ public class SampleTrackingScreen extends Screen {
         		}
         		if(event.getSelectedItem().leafType.equals("analysis")){
         			try {
-        				analysisTab.setData(getAnalysisBundle(((Integer)event.getSelectedItem().key)));
+        				String[] ids = ((String)event.getSelectedItem().key).split(":");
+        				if(!(ids[0].equals(manager.getSample().getId().toString())))
+        					fetchById(new Integer(ids[0]));
+        				analysisTab.setData(getAnalysisBundle(new Integer(ids[1])));
         				analysisTab.draw();
         				showTabs(Tabs.ANALYSIS);
         			}catch(Exception e) {
@@ -570,15 +573,18 @@ public class SampleTrackingScreen extends Screen {
         			}
         		}
         		if(event.getSelectedItem().leafType.equals("qaevent")) {
+    				String[] ids = ((String)event.getSelectedItem().key).split(":");
+    				if(!(ids[0].equals(manager.getSample().getId().toString())))
+    					fetchById(new Integer(ids[0]));
         			if(event.getSelectedItem().parent.leafType.equals("item")) {
         				try {
-        					qaEventsTab.setData(getSampleItemBundle((((Integer)event.getSelectedItem().key))));
+        					qaEventsTab.setData(getSampleItemBundle(new Integer(ids[1])));
         				}catch(Exception e){
         					
         				}
         			}else{
         				try {
-        					qaEventsTab.setData(getAnalysisBundle((((Integer)event.getSelectedItem().key))));
+        					qaEventsTab.setData(getAnalysisBundle(new Integer(ids[1])));
         				}catch(Exception e) {
         					Window.alert(e.getMessage());
         					e.printStackTrace();
@@ -590,7 +596,10 @@ public class SampleTrackingScreen extends Screen {
         		}
         		if(event.getSelectedItem().leafType.equals("storage")) {
         			try {
-        				storageTab.setData(getSampleItemBundle((Integer)event.getSelectedItem().key));
+        				String[] ids = ((String)event.getSelectedItem().key).split(":");
+        				if(!(ids[0].equals(manager.getSample().getId().toString())))
+        					fetchById(new Integer(ids[0]));
+        				storageTab.setData(getSampleItemBundle(new Integer(ids[1])));
         				storageTab.draw();
         				showTabs(Tabs.STORAGE);
         			}catch(Exception e) {
@@ -601,6 +610,8 @@ public class SampleTrackingScreen extends Screen {
         		if(event.getSelectedItem().leafType.equals("note")) {
         			if(event.getSelectedItem().parent.leafType.equals("sample")) {
         				try {
+        					if(!((Integer)event.getSelectedItem().key).equals(manager.getSample().getId()))
+        						fetchById((Integer)event.getSelectedItem().key);
         					sampleNotesTab.setManager(manager);
         					sampleNotesTab.draw();
         					showTabs(Tabs.SAMPLE_NOTES);
@@ -610,7 +621,10 @@ public class SampleTrackingScreen extends Screen {
         				}
         			}else{
         				try {
-        					analysisNotesTab.setData(getAnalysisBundle((Integer)event.getSelectedItem().key));
+            				String[] ids = ((String)event.getSelectedItem().key).split(":");
+            				if(!(ids[0].equals(manager.getSample().getId().toString())))
+            					fetchById(new Integer(ids[0]));
+        					analysisNotesTab.setData(getAnalysisBundle(new Integer(ids[1])));
         					analysisNotesTab.draw();
         					showTabs(Tabs.ANALYSIS_NOTES);
         				}catch(Exception e) {
@@ -621,6 +635,8 @@ public class SampleTrackingScreen extends Screen {
         		}
         		if(event.getSelectedItem().leafType.equals("auxdata")){
         			try {
+        				if(!((Integer)event.getSelectedItem().key).equals(manager.getSample().getId()))
+    						fetchById((Integer)event.getSelectedItem().key);
         				auxDataTab.setManager(manager);
         				auxDataTab.draw();
         				showTabs(Tabs.AUX_DATA);
@@ -631,7 +647,10 @@ public class SampleTrackingScreen extends Screen {
         		}
         		if(event.getSelectedItem().leafType.equals("result")) {
         			try {
-        				testResultsTab.setData(getAnalysisBundle((Integer)event.getSelectedItem().key));
+        				String[] ids = ((String)event.getSelectedItem().key).split(":");
+        				if(!(ids[0].equals(manager.getSample().getId().toString())))
+        					fetchById(new Integer(ids[0]));
+        				testResultsTab.setData(getAnalysisBundle(new Integer(ids[1])));
         				testResultsTab.draw();
         				showTabs(Tabs.TEST_RESULT);
         			}catch(Exception e) {
