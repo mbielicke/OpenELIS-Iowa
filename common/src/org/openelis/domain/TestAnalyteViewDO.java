@@ -38,7 +38,7 @@ public class TestAnalyteViewDO extends TestAnalyteDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String          scriptletName, analyteName;
+    protected String          scriptletName, analyteName, isAlias;
 
     public TestAnalyteViewDO() {
     }
@@ -51,6 +51,8 @@ public class TestAnalyteViewDO extends TestAnalyteDO {
               resultGroup, scriptletId);
         setScriptletName(scriptletName);
         setAnalyteName(analyteName);
+        setIsAlias("N");
+        
     }
 
     public String getAnalyteName() {
@@ -75,6 +77,14 @@ public class TestAnalyteViewDO extends TestAnalyteDO {
 
     public void setIsColumn(String isColumn) {
         this.isColumn = DataBaseUtil.trim(isColumn);
+    }
+
+    public String getIsAlias() {
+        return isAlias;
+    }
+
+    public void setIsAlias(String isAlias) {
+        this.isAlias = DataBaseUtil.trim(isAlias);
     }
 
 }

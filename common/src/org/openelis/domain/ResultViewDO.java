@@ -45,5 +45,4 @@ public class ResultViewDO extends ResultDO {
     public void setResultGroup(Integer resultGroup) {
         this.resultGroup = resultGroup;
     }
-
 }

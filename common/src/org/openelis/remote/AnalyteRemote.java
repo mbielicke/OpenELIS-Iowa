@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import javax.ejb.Remote;
 
+import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.data.QueryData;
@@ -46,6 +47,8 @@ public interface AnalyteRemote {
     public AnalyteViewDO fetchForUpdate(Integer id) throws Exception;
 
     public AnalyteViewDO abortUpdate(Integer id) throws Exception;
+    
+    public ArrayList<AnalyteDO> getAlias(ArrayList<Integer> analyteIds) throws Exception;
 
     public void delete(AnalyteViewDO data) throws Exception;
     
