@@ -70,7 +70,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
 public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab.Action> {
-    public enum Action {CHANGED};
+    public enum Action {CHANGED, CHANGED_DONT_CHECK_PREPS};
     private boolean loaded;
     
     protected AutoComplete<Integer> test, method;
@@ -440,18 +440,26 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
+                Integer value = null;
                 if(event.getValue() == null){
                     analysis.setStatusId(analysisLoggedInId);
                     analysis.setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
                 }else{
-                    analysis.setStatusId(analysisInPrepId);
-                    analysis.setAvailableDate(null);
+                    if(event.getValue().equals(analysis.getId())){
+                        window.setError(consts.get("samplePrepSampleException"));
+                        samplePrep.setSelection(analysis.getPreAnalysisId());
+                        value = analysis.getPreAnalysisId();
+                    }else{
+                        analysis.setStatusId(analysisInPrepId);
+                        analysis.setAvailableDate(null);
+                        value = event.getValue();
+                    }
                 }
                 
-                analysis.setPreAnalysisId(event.getValue());
+                analysis.setPreAnalysisId(value);
                 ArrayList<SampleDataBundle> bundles = new ArrayList<SampleDataBundle>();
                 bundles.add(bundle);
-                ActionEvent.fire(anTab, Action.CHANGED, bundles);
+                ActionEvent.fire(anTab, Action.CHANGED_DONT_CHECK_PREPS, bundles);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
