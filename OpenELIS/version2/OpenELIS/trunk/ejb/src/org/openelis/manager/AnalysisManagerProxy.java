@@ -237,7 +237,7 @@ public class AnalysisManagerProxy {
         item = man.getItemAt(i);
         if(item.analysisResult != null){
             man.getAnalysisResultAt(i).setAnalysisId(analysisDO.getId());
-            man.getAnalysisResultAt(i).add();
+            man.getAnalysisResultAt(i).update();
         }
         
         if(item.qaEvents != null){

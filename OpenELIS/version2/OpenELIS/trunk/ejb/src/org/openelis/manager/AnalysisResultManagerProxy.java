@@ -36,6 +36,7 @@ import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.ResultLocal;
+import org.openelis.manager.AnalysisResultManager.TestAnalyteListItem;
 import org.openelis.utilcommon.ResultValidator;
 
 public class AnalysisResultManagerProxy {
@@ -54,7 +55,7 @@ public class AnalysisResultManagerProxy {
         ArrayList<ArrayList<ResultViewDO>> results = new ArrayList<ArrayList<ResultViewDO>>();
         HashMap<Integer, TestResultDO> testResultList = new HashMap<Integer, TestResultDO>();
         HashMap<Integer, AnalyteDO> analyteList = new HashMap<Integer, AnalyteDO>();
-        HashMap<Integer, TestAnalyteViewDO> testAnalyteList = new HashMap<Integer, TestAnalyteViewDO>();
+        HashMap<Integer, TestAnalyteListItem> testAnalyteList = new HashMap<Integer, TestAnalyteListItem>();
         ArrayList<ResultValidator> resultValidators = new ArrayList<ResultValidator>();
         
         local().fetchByAnalysisId(analysisId, results, testResultList, analyteList, testAnalyteList, resultValidators);
@@ -73,7 +74,7 @@ public class AnalysisResultManagerProxy {
         ArrayList<ArrayList<ResultViewDO>> results = new ArrayList<ArrayList<ResultViewDO>>();
         HashMap<Integer, TestResultDO> testResultList = new HashMap<Integer, TestResultDO>();
         HashMap<Integer, AnalyteDO> analyteList = new HashMap<Integer, AnalyteDO>();
-        HashMap<Integer, TestAnalyteViewDO> testAnalyteList = new HashMap<Integer, TestAnalyteViewDO>();
+        HashMap<Integer, TestAnalyteListItem> testAnalyteList = new HashMap<Integer, TestAnalyteListItem>();
         ArrayList<ResultValidator> resultValidators = new ArrayList<ResultValidator>();
         
         local().fetchByTestIdNoResults(testId, results, testResultList, analyteList, testAnalyteList, resultValidators);
@@ -145,15 +146,21 @@ public class AnalysisResultManagerProxy {
                 data = list.get(j);
                 data.setSortOrder( ++so);
                 if (data.getId() == null) {
+                    System.out.println("88888888888888888888888add");
                     data.setAnalysisId(man.getAnalysisId());
                     rl.add(data);
                 } else {
+                    System.out.println("7777777777777777update");
                     rl.update(data);
                 }
             }
         }
 
         return man;
+    }
+    
+    public ArrayList<AnalyteDO> getAlias(Integer analyteId) throws Exception {
+        throw new UnsupportedOperationException();
     }
     
     public void validate(AnalysisResultManager man, ValidationErrorsList errorsList) throws Exception {

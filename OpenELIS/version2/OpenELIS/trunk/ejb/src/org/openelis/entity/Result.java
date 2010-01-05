@@ -26,8 +26,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 @NamedQueries({@NamedQuery(name = "Result.FetchByAnalysisId", query = "select new org.openelis.domain.ResultViewDO(r.id,r.analysisId,r.testAnalyteId,r.testResultId, " + 
-                        " r.isColumn, r.sortOrder, r.isReportable, r.analyteId, r.typeId, r.value, a.name, ta.rowGroup, tr.resultGroup) "+
-                        " from Result r LEFT JOIN r.analysis an LEFT JOIN an.test t LEFT JOIN r.testResult tr LEFT JOIN r.analyte a LEFT JOIN r.testAnalyte ta " + 
+                        " r.isColumn, r.sortOrder, r.isReportable, r.analyteId, r.typeId, r.value, a.name, ta.rowGroup, ta.resultGroup) "+
+                        " from Result r LEFT JOIN r.analysis an LEFT JOIN an.test t LEFT JOIN r.analyte a LEFT JOIN r.testAnalyte ta " + 
                         " where r.analysisId = :id order by r.sortOrder"),
                @NamedQuery(name = "Result.ResultByAnalyteId", query = "select r.id from Result r where r.analyteId = :id"),
                @NamedQuery(name = "Result.AnalyteByAnalysisId", query = "select new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId) "+
@@ -81,10 +81,6 @@ public class Result implements Auditable, Cloneable {
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "test_analyte_id", insertable = false, updatable = false)
   private TestAnalyte testAnalyte;
-  
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "test_result_id", insertable = false, updatable = false)
-  private TestResult testResult;
 
   @Transient
   private Result original;
@@ -222,11 +218,4 @@ public Analysis getAnalysis() {
 public void setAnalysis(Analysis analysis) {
     this.analysis = analysis;
 }
-public TestResult getTestResult() {
-    return testResult;
-}
-public void setTestResult(TestResult testResult) {
-    this.testResult = testResult;
-}
-  
 }   

@@ -41,6 +41,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ReferenceTable;
@@ -205,6 +206,27 @@ public class AnalyteBean implements AnalyteRemote {
     public AnalyteViewDO abortUpdate(Integer id) throws Exception {
         lockBean.giveUpLock(ReferenceTable.ANALYTE, id);
         return fetchById(id);
+    }
+    
+    public ArrayList<AnalyteDO> getAlias(ArrayList<Integer> analyteIds) throws Exception {
+        Query query;
+        ArrayList<AnalyteDO> data, returnList;
+
+        query = manager.createNamedQuery("Analyte.FetchAliases");
+        
+        returnList = new ArrayList<AnalyteDO>();
+        for(int i=0; i<analyteIds.size(); i++){
+            query.setParameter("id", analyteIds.get(i));
+            
+            try {
+                data = DataBaseUtil.toArrayList(query.getResultList());
+                returnList.addAll(data);
+            } catch (Exception e) {
+                throw new DatabaseException(e);
+            }
+        }
+        
+        return returnList; 
     }
 
     public void validateForDelete(Integer id) throws Exception {

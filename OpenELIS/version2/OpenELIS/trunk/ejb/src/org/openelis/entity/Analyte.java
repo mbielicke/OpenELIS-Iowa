@@ -64,7 +64,10 @@ import org.w3c.dom.Element;
     @NamedQuery(name = "Analyte.FetchByName", 
     		    query = "select new org.openelis.domain.IdNameVO(a.id, a.name) " +
                         " from Analyte a where a.name like :name and a.isActive = 'Y' order by a.name"),
-    
+                        
+   @NamedQuery(name = "Analyte.FetchAliases", 
+               query = "select new org.openelis.domain.AnalyteDO(a.id, a.name, a.isActive, a.parentAnalyteId, a.externalId) " +
+                       " from Analyte a where a.parentAnalyteId = :id and a.isActive = 'Y' order by a.name"),
     @NamedQuery(name =  "Analyte.FetchByTest", 
                 query = "select distinct new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId) " +
                         " from TestAnalyte ta left join ta.analyte a where ta.testId = :testId")
