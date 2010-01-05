@@ -25,9 +25,18 @@
  */
 package org.openelis.manager;
 
+import java.util.ArrayList;
+
 import org.openelis.domain.AnalysisDO;
+import org.openelis.domain.AnalyteDO;
+import org.openelis.domain.TestAnalyteViewDO;
+import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.widget.QueryFieldUtil;
+import org.openelis.gwt.widget.table.TableDataRow;
 
 public class AnalysisResultManagerProxy {
     protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.result.server.ResultService";
@@ -62,6 +71,25 @@ public class AnalysisResultManagerProxy {
         throw new UnsupportedOperationException();
     }
 
+    public ArrayList<AnalyteDO> getAlias(ArrayList<TestAnalyteViewDO> analytes) throws Exception {
+        Query query;
+        QueryData field;
+        ArrayList<QueryData> fields;
+        
+        
+        fields = new ArrayList<QueryData>();
+        query = new Query();
+        
+        for(int i=0; i<analytes.size(); i++){
+            field = new QueryData();
+            field.query = analytes.get(i).getAnalyteId().toString();
+            fields.add(field);
+        }
+        
+        query.setFields(fields);
+        return service.callList("getAlias", query);
+    }
+    
     public void validate(AnalysisResultManager man, ValidationErrorsList errorsList)
                                                                                     throws Exception {
 

@@ -46,7 +46,7 @@ UIRF Software License are applicable instead of those above.
   <xsl:import href="OPENELIS/org/openelis/modules/sample/client/SampleItemTabDef.xsl" />
   <xsl:import href="OPENELIS/org/openelis/modules/sample/client/SampleNotesTabDef.xsl" />
   <xsl:import href="OPENELIS/org/openelis/modules/sample/client/StorageTabDef.xsl" />
-  <xsl:import href="OPENELIS/org/openelis/modules/sample/client/TestResultsTabDef.xsl" />
+  <xsl:import href="OPENELIS/org/openelis/modules/sample/client/ResultTabDef.xsl" />
   
   <xsl:template match="doc">
     <xsl:variable name="language" select="locale" />
@@ -386,8 +386,8 @@ UIRF Software License are applicable instead of those above.
               <deck tab="{meta:getAnalysisTestName()},{meta:getAnalysisPrintedDate()}">
                 <xsl:call-template name="AnalysisTab" />
               </deck>
-              <deck tab="testResultsTable,testResultsTable">
-                <xsl:call-template name="TestResultsTab" />
+              <deck tab="estResultsTable,testResultsTable">
+                <xsl:call-template name="ResultTab" />
               </deck>
               <deck tab="anExNoteButton,anIntNoteButton">
                 <xsl:call-template name="AnalysisNotesTab" />

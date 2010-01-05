@@ -25,10 +25,16 @@
  */
 package org.openelis.modules.result.server;
 
+import java.util.ArrayList;
+
 import org.openelis.domain.AnalysisDO;
+import org.openelis.domain.AnalyteDO;
 import org.openelis.gwt.common.DatabaseException;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.manager.AnalysisResultManager;
 import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.AnalyteRemote;
 import org.openelis.remote.ResultManagerRemote;
 
 public class ResultService {
@@ -47,8 +53,22 @@ public class ResultService {
             throw new DatabaseException(e);
         }
     }
+    
+    public ArrayList<AnalyteDO> getAlias(Query query) throws Exception {
+        ArrayList<Integer> ids = new ArrayList<Integer>();
+        ArrayList<QueryData> fields = query.getFields();
+        
+        for(int i=0; i<fields.size(); i++)
+            ids.add(new Integer(fields.get(i).query));
+        
+        return analyteRemote().getAlias(ids);
+    }
 
     private ResultManagerRemote remote() {
         return (ResultManagerRemote)EJBFactory.lookup("openelis/ResultManagerBean/remote");
+    }
+    
+    private AnalyteRemote analyteRemote() {
+        return (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
     }
 }

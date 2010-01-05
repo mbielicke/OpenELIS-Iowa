@@ -100,7 +100,7 @@ import org.openelis.modules.sample.client.SampleNotesTab;
 import org.openelis.modules.sample.client.SampleOrganizationLookupScreen;
 import org.openelis.modules.sample.client.SampleProjectLookupScreen;
 import org.openelis.modules.sample.client.StorageTab;
-import org.openelis.modules.sample.client.TestResultsTab;
+import org.openelis.modules.sample.client.ResultTab;
 import org.openelis.modules.test.client.TestPrepLookupScreen;
 
 import com.google.gwt.core.client.GWT;
@@ -130,7 +130,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
 
     private SampleItemTab                  sampleItemTab;
     private AnalysisTab                    analysisTab;
-    private TestResultsTab                 testResultsTab;
+    private ResultTab                 testResultsTab;
     private AnalysisNotesTab               analysisNotesTab;
     private SampleNotesTab                 sampleNotesTab;
     private StorageTab                     storageTab;
@@ -917,7 +917,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        testResultsTab = new TestResultsTab(def, window);
+        testResultsTab = new ResultTab(def, window);
 
         addScreenHandler(testResultsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
