@@ -1025,10 +1025,10 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         
         analysisTab.addActionHandler(new ActionHandler<AnalysisTab.Action>(){
             public void onAction(ActionEvent<AnalysisTab.Action> event) {
-                if(state != State.QUERY && event.getAction() == AnalysisTab.Action.CHANGED){
+                if(state != State.QUERY && event.getAction() == AnalysisTab.Action.CHANGED)
                     updateTreeAndCheckPrepTests((ArrayList<SampleDataBundle>)event.getData());
-
-                }
+                else if(state != State.QUERY && event.getAction() == AnalysisTab.Action.CHANGED_DONT_CHECK_PREPS)
+                    updateTree((ArrayList<SampleDataBundle>)event.getData());
             }
         });
         
@@ -1527,6 +1527,8 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                                                          sampleItemData.sampleItemManager.getAnalysisAt(sampleItemIndex),
                                                          new AnalysisViewDO(), null);
             analysisTab.setupBundle(data);
+            data.analysisTestDO.setId(getNextTempId());
+            
             if(firstAnalysisRow != null)
                 data.samplePrepDropdownModel = ((SampleDataBundle)firstAnalysisRow.data).samplePrepDropdownModel;
             else
@@ -1552,35 +1554,39 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         int sampleItemIndex = -1;
         
         selectedTreeRow = itemsTree.getSelection();
-        if("analysis".equals(selectedTreeRow.leafType) && selectedTreeRow.key != null){
-            if(cancelAnalysisConfirm == null){
-                cancelAnalysisConfirm = new Confirm(Confirm.Type.QUESTION, consts.get("cancelAnalysisMessage"), "No", "Yes");
-                cancelAnalysisConfirm.addSelectionHandler(new SelectionHandler<Integer>(){
-                    public void onSelection(SelectionEvent<Integer> event) {
-                        SampleDataBundle bundle = (SampleDataBundle)selectedTreeRow.data;
-                        int sampleItemIndex = -1;
-                        sampleItemIndex = bundle.sampleItemManager.getIndex(bundle.sampleItemDO);
-                        
-                        switch(event.getSelectedItem().intValue()) {
-                            case 1 : 
-                                cancelAnalysisRow(itemsTree.getSelectedRow());
-                                bundle.sampleItemManager.setChangedAt(true, sampleItemIndex);
-                                break;
+        if("analysis".equals(selectedTreeRow.leafType)) {
+            if(selectedTreeRow.key != null){
+                if(cancelAnalysisConfirm == null){
+                    cancelAnalysisConfirm = new Confirm(Confirm.Type.QUESTION, consts.get("cancelAnalysisMessage"), "No", "Yes");
+                    cancelAnalysisConfirm.addSelectionHandler(new SelectionHandler<Integer>(){
+                        public void onSelection(SelectionEvent<Integer> event) {
+                            SampleDataBundle bundle = (SampleDataBundle)selectedTreeRow.data;
+                            int sampleItemIndex = -1;
+                            sampleItemIndex = bundle.sampleItemManager.getIndex(bundle.sampleItemDO);
+                            
+                            switch(event.getSelectedItem().intValue()) {
+                                case 1 : 
+                                    cancelAnalysisRow(itemsTree.getSelectedRow());
+                                    bundle.sampleItemManager.setChangedAt(true, sampleItemIndex);
+                                    break;
+                            }
                         }
-                    }
-                });
-            }
-            
-            cancelAnalysisConfirm.show();
+                    });
+                }
+                
+                cancelAnalysisConfirm.show();
 
+            }else {
+                bundle = (SampleDataBundle)selectedTreeRow.data;
+                sampleItemIndex = bundle.sampleItemManager.getIndex(bundle.sampleItemDO);
+                
+                cleanupTestsWithPrep(bundle.analysisTestDO.getId());
+                
+                itemsTree.deleteRow(selectedTreeRow);
+                bundle.sampleItemManager.setChangedAt(true, sampleItemIndex);
+            }
         }else{
-            bundle = (SampleDataBundle)selectedTreeRow.data;
-            sampleItemIndex = bundle.sampleItemManager.getIndex(bundle.sampleItemDO);
-            
-            cleanupTestsWithPrep(bundle.analysisTestDO.getId());
-            
             itemsTree.deleteRow(selectedTreeRow);
-            bundle.sampleItemManager.setChangedAt(true, sampleItemIndex);
         }
     }
     
@@ -1935,7 +1941,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         return returnList;
     }
     
-    private void updateTreeAndCheckPrepTests(ArrayList<SampleDataBundle> bundles){
+    private void updateTree(ArrayList<SampleDataBundle> bundles){
         SampleDataBundle bundle;
         AnalysisViewDO aDO;
         TreeDataItem selected;
@@ -1945,26 +1951,47 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         
         for(int i=0; i<bundles.size(); i++){
             bundle = bundles.get(i);
-            aDO = bundle.analysisTestDO;
             
-            if(i == 0)
-                selected.data = bundle;
-            else{
-                //the row doesnt exist.  Check to make sure the sample type is right
-                //and if it is make a new row and fill it.
-                TreeDataItem newRow = new TreeDataItem(2);
-                newRow.leafType = "analysis";
-                newRow.checkForChildren(false);
-                newRow.data = bundle;
+            updateTreeRow(selected, selectedIndex, bundle, (i==0));
+        }
+    }
+    
+    private void updateTreeRow(TreeDataItem selected, int selectedIndex, SampleDataBundle bundle, boolean exists){
+        AnalysisViewDO aDO;
                 
-                itemsTree.addChildItem(selected.parent, newRow);
-                selected = newRow;
-            }
+        aDO = bundle.analysisTestDO;
+        
+        if(exists)
+            selected.data = bundle;
+        else{
+            //the row doesnt exist.  Check to make sure the sample type is right
+            //and if it is make a new row and fill it.
+            TreeDataItem newRow = new TreeDataItem(2);
+            newRow.leafType = "analysis";
+            newRow.checkForChildren(false);
+            newRow.data = bundle;
+            
+            itemsTree.addChildItem(selected.parent, newRow);
+            selected = newRow;
+        }
 
-            itemsTree.select(selected);
-            selectedIndex = itemsTree.getSelectedRow();
-            itemsTree.setCell(selectedIndex, 0, formatTreeString(aDO.getTestName()) + " : " + formatTreeString(aDO.getMethodName()));
-            itemsTree.setCell(selectedIndex, 1, aDO.getStatusId());
+        itemsTree.select(selected);
+        selectedIndex = itemsTree.getSelectedRow();
+        itemsTree.setCell(selectedIndex, 0, formatTreeString(aDO.getTestName()) + " : " + formatTreeString(aDO.getMethodName()));
+        itemsTree.setCell(selectedIndex, 1, aDO.getStatusId());
+    }
+    
+    private void updateTreeAndCheckPrepTests(ArrayList<SampleDataBundle> bundles){
+        SampleDataBundle bundle;
+        TreeDataItem selected;
+        
+        selected = itemsTree.getSelection();
+        int selectedIndex = itemsTree.getSelectedRow();
+        
+        for(int i=0; i<bundles.size(); i++){
+            bundle = bundles.get(i);
+            
+            updateTreeRow(selected, selectedIndex, bundle, (i==0));
             
             //check for prep tests
             try{
