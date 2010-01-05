@@ -52,11 +52,11 @@ import org.openelis.utils.Auditable;
     @NamedQuery(name =  "TestAnalyte.FetchByAnalyteId",
                 query = "select distinct new org.openelis.domain.TestAnalyteViewDO(ta.id,ta.testId,ta.sortOrder,"+
                         "ta.rowGroup,ta.isColumn,ta.analyteId,ta.typeId,ta.isReportable,ta.resultGroup,ta.scriptletId,a.name,s.name)"
-                      + " from TestAnalyte ta left join ta.scriptlet s left join ta.analyte a where ta.analyteId = :id"),
+                      + " from TestAnalyte ta left join ta.scriptlet s left join ta.analyte a where ta.analyteId = :id order by ta.sortOrder "),
     @NamedQuery(name =  "TestAnalyte.FetchByTestId",
                 query = "select distinct new org.openelis.domain.TestAnalyteViewDO(ta.id,ta.testId,ta.sortOrder,"+
                 		"ta.rowGroup,ta.isColumn,ta.analyteId,ta.typeId,ta.isReportable,ta.resultGroup,ta.scriptletId,a.name,s.name)"
-                      + " from TestAnalyte ta left join ta.scriptlet s left join ta.analyte a where ta.testId = :testId order by ta.sortOrder"),
+                      + " from TestAnalyte ta left join ta.scriptlet s left join ta.analyte a where ta.testId = :testId order by ta.sortOrder "),
     @NamedQuery(name =  "TestAnalyte.FetchByAnalysisId",
                 query = "select distinct new org.openelis.domain.TestAnalyteViewDO(ta.id,ta.testId,ta.sortOrder,"+
                         "ta.rowGroup,ta.isColumn,ta.analyteId,ta.typeId,ta.isReportable,ta.resultGroup,ta.scriptletId,a.name,s.name)"

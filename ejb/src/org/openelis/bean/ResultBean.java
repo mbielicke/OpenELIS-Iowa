@@ -49,6 +49,7 @@ import org.openelis.entity.Result;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.ResultLocal;
+import org.openelis.manager.AnalysisResultManager.TestAnalyteListItem;
 import org.openelis.utilcommon.ResultValidator;
 import org.openelis.utilcommon.ResultValidator.Type;
 
@@ -106,14 +107,17 @@ public class ResultBean implements ResultLocal {
                                        ArrayList<ArrayList<ResultViewDO>> results,
                                        HashMap<Integer, TestResultDO> testResultList,
                                        HashMap<Integer, AnalyteDO> analyteList,
-                                       HashMap<Integer, TestAnalyteViewDO> testAnalyteList,
+                                       HashMap<Integer, TestAnalyteListItem> testAnalyteList,
                                        ArrayList<ResultValidator> resultValidators) throws Exception {
-        List<TestAnalyteViewDO> testAnalytes = null;
         List<AnalyteDO> analytes = null;
         List<TestResultDO> testResults = null;
+        List<TestAnalyteViewDO> testAnalytes = null;
         int i, j, rg;
-        TestAnalyteViewDO ado;
+        Integer rowGroup;
+        TestAnalyteViewDO tado;
+        TestAnalyteListItem taLI;
         ArrayList<ResultViewDO> ar;
+        ArrayList<TestAnalyteViewDO> tmpList;
         boolean suppRow = false;
 
         // get test_analytes by test id
@@ -138,12 +142,21 @@ public class ResultBean implements ResultLocal {
             analyteDO = analytes.get(k);
             analyteList.put(analyteDO.getId(), analyteDO);
         }
-
-        testAnalyteList.clear();
-        TestAnalyteViewDO testAnalyteDO;
+        
+        rowGroup = -1;
+        tmpList = null;
         for (int k = 0; k < testAnalytes.size(); k++ ) {
-            testAnalyteDO = testAnalytes.get(k);
-            testAnalyteList.put(testAnalyteDO.getId(), testAnalyteDO);
+            tado = testAnalytes.get(k);
+            if(!rowGroup.equals(tado.getRowGroup())){
+                rowGroup = tado.getRowGroup();
+                taLI = new TestAnalyteListItem();
+                tmpList = new ArrayList<TestAnalyteViewDO>();
+
+                taLI.testAnalytes = tmpList;
+                testAnalyteList.put(rowGroup, taLI);
+            }
+            
+            tmpList.add(tado);
         }
 
         testResultList.clear();
@@ -160,27 +173,32 @@ public class ResultBean implements ResultLocal {
         ar = null;
         results.clear();
 
-        if (testAnalytes == null || testAnalytes.size() == 0)
+        if (testAnalyteList == null || testAnalyteList.size() == 0)
             throw new NotFoundException();
 
         for (i = 0; i < testAnalytes.size(); i++ ) {
-            ado = testAnalytes.get(i);
+            tado = testAnalytes.get(i);
 
-            if ("N".equals(ado.getIsColumn()))
+            if ("N".equals(tado.getIsColumn()))
                 suppRow = false;
 
-            if ( !suppRow && !supplementalTypeId.equals(ado.getTypeId())) {
+            //
+            //we are assuming there will be at least 1 non supplemental
+            //if there are only supplementals in a row group it will not
+            //show a header so the user wont be able to add any analytes
+            //
+            if ( !suppRow && !supplementalTypeId.equals(tado.getTypeId())) {
                 // create a new resultDO
                 ResultViewDO resultDO = new ResultViewDO();
-                resultDO.setTestAnalyteId(ado.getId());
-                resultDO.setIsColumn(ado.getIsColumn());
-                resultDO.setIsReportable(ado.getIsReportable());
-                resultDO.setAnalyteId(ado.getAnalyteId());
-                resultDO.setAnalyte(ado.getAnalyteName());
-                resultDO.setTypeId(ado.getTypeId());
-                resultDO.setResultGroup(ado.getResultGroup());
+                resultDO.setTestAnalyteId(tado.getId());
+                resultDO.setIsColumn(tado.getIsColumn());
+                resultDO.setIsReportable(tado.getIsReportable());
+                resultDO.setAnalyteId(tado.getAnalyteId());
+                resultDO.setAnalyte(tado.getAnalyteName());
+                resultDO.setTypeId(tado.getTypeId());
+                resultDO.setResultGroup(tado.getResultGroup());
                 
-                rg = ado.getRowGroup();
+                rg = tado.getRowGroup();
                 resultDO.setRowGroup(rg);
 
                 if (j != rg) {
@@ -190,7 +208,7 @@ public class ResultBean implements ResultLocal {
                     j = rg;
                     continue;
                 }
-                if ("N".equals(ado.getIsColumn())) {
+                if ("N".equals(tado.getIsColumn())) {
                     ar = new ArrayList<ResultViewDO>(1);
                     ar.add(resultDO);
                     results.add(ar);
@@ -250,12 +268,17 @@ public class ResultBean implements ResultLocal {
                                   ArrayList<ArrayList<ResultViewDO>> results,
                                   HashMap<Integer, TestResultDO> testResultList,
                                   HashMap<Integer, AnalyteDO> analyteList,
-                                  HashMap<Integer, TestAnalyteViewDO> testAnalyteList,
+                                  HashMap<Integer, TestAnalyteListItem> testAnalyteList,
                                   ArrayList<ResultValidator> resultValidators) throws Exception {
-        List<TestAnalyteViewDO> testAnalytes = null;
         List<AnalyteDO> analytes = null;
         List<TestResultDO> testResults = null;
         List<ResultViewDO> rslts = null;
+        List<TestAnalyteViewDO> testAnalytes = null;
+        Integer rowGroup;
+        TestAnalyteViewDO tado;
+        TestAnalyteListItem taLI;
+        ArrayList<ResultViewDO> ar;
+        ArrayList<TestAnalyteViewDO> tmpList;
 
         // get analytes by analysis id
         Query query = manager.createNamedQuery("Result.AnalyteByAnalysisId");
@@ -284,12 +307,21 @@ public class ResultBean implements ResultLocal {
             analyteDO = analytes.get(k);
             analyteList.put(analyteDO.getId(), analyteDO);
         }
-
-        testAnalyteList.clear();
-        TestAnalyteViewDO testAnalyteDO;
+        
+        rowGroup = -1;
+        tmpList = null;
         for (int k = 0; k < testAnalytes.size(); k++ ) {
-            testAnalyteDO = testAnalytes.get(k);
-            testAnalyteList.put(testAnalyteDO.getId(), testAnalyteDO);
+            tado = testAnalytes.get(k);
+            if(!rowGroup.equals(tado.getRowGroup())){
+                rowGroup = tado.getRowGroup();
+                taLI = new TestAnalyteListItem();
+                tmpList = new ArrayList<TestAnalyteViewDO>();
+
+                taLI.testAnalytes = tmpList;
+                testAnalyteList.put(rowGroup, taLI);
+            }
+            
+            tmpList.add(tado);
         }
 
         testResultList.clear();
@@ -304,8 +336,7 @@ public class ResultBean implements ResultLocal {
         // build the grid
         int i, j, rg;
         ResultViewDO rdo;
-        ArrayList<ResultViewDO> ar;
-
+        
         j = -1;
         ar = null;
         results.clear();
