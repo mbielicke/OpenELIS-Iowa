@@ -27,6 +27,7 @@ package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -41,8 +42,6 @@ import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.gwt.widget.table.event.CellEditedEvent;
-import org.openelis.gwt.widget.table.event.CellEditedHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -51,11 +50,14 @@ import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
 
 public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers<TestAnalyteLookupScreen.Action>{
 
     private AppButton commitButton, abortButton;
     private TableWidget testAnalyteTable;
+    
+    protected ArrayList<TestAnalyteViewDO> analytes;
     
     //private TestAnalyteManager testAnalyteManager;
     
@@ -92,7 +94,7 @@ public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers
         testAnalyteTable = (TableWidget)def.getWidget("testAnalyteTable");
         addScreenHandler(testAnalyteTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                //testAnalyteTable.load(); // FIXME load(model)
+                testAnalyteTable.load(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -100,18 +102,6 @@ public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers
             }
         });
 
-        testAnalyteTable.addCellEditedHandler(new CellEditedHandler() {
-            public void onCellUpdated(CellEditedEvent event) {
-                int r, c;
-                Object val;
-
-                //val = testAnalyteTable.getObject(r,c);
-
-// FIXME missing table col!!! using old table format?
-
-            }
-        });
-        
         testAnalyteTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>(){
            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
                //always allow
@@ -148,11 +138,57 @@ public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers
     }
     
     private void ok(){
+        ArrayList<TestAnalyteViewDO> rows;
+        TestAnalyteViewDO ta;
+        ArrayList<TableDataRow> selections = testAnalyteTable.getSelections();
+        
+        rows = new ArrayList<TestAnalyteViewDO>();
+        for(int i=0; i<selections.size(); i++){
+            ta = (TestAnalyteViewDO)selections.get(i).data;
+            rows.add(ta);
+        }
+        
+        if(rows.size() > 0)
+            ActionEvent.fire(this, Action.OK, rows);
+        
         window.close();
     }
     
     private void cancel(){
         window.close();
+    }
+    
+    private ArrayList<TableDataRow> getTableModel() {
+        int i;
+        TableDataRow row;
+        TestAnalyteViewDO data;
+        ArrayList<TableDataRow> model;
+        
+        model = new ArrayList<TableDataRow>();
+        if (analytes == null)
+            return model;
+
+        try {
+            for (i = 0; i < analytes.size(); i++) {
+                data = analytes.get(i);
+
+                row = new TableDataRow(2);
+                row.key = data.getId();
+                row.cells.get(0).value = data.getIsAlias();
+                row.cells.get(1).value = data.getAnalyteName();
+                row.data = data;
+                model.add(row);
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
+        return model;
+    }
+    
+    public void setData(ArrayList<TestAnalyteViewDO> analytes){
+        this.analytes = analytes;
+        DataChangeEvent.fire(this);
     }
     
     public HandlerRegistration addActionHandler(ActionHandler<TestAnalyteLookupScreen.Action> handler) {

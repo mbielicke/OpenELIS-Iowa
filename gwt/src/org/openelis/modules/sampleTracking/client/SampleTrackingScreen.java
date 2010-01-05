@@ -35,7 +35,6 @@ import org.openelis.gwt.widget.table.TableDataCell;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.gwt.widget.tree.TreeWidget;
-import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
@@ -44,11 +43,11 @@ import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
 import org.openelis.modules.sample.client.AuxDataTab;
 import org.openelis.modules.sample.client.QAEventsTab;
+import org.openelis.modules.sample.client.ResultTab;
 import org.openelis.modules.sample.client.SampleDataBundle;
 import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleNotesTab;
 import org.openelis.modules.sample.client.StorageTab;
-import org.openelis.modules.sample.client.TestResultsTab;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -104,7 +103,7 @@ public class SampleTrackingScreen extends Screen {
 	private SampleNotesTab                 sampleNotesTab;
 	private AnalysisNotesTab               analysisNotesTab;
 	private AuxDataTab                     auxDataTab;
-	private TestResultsTab				   testResultsTab;
+	private ResultTab      				   testResultsTab;
 	private TreeWidget                     atozTree;
 	
     public SampleTrackingScreen() throws Exception {
@@ -705,7 +704,7 @@ public class SampleTrackingScreen extends Screen {
             }
         });
         
-        testResultsTab = new TestResultsTab(def, window);
+        testResultsTab = new ResultTab(def, window);
 
         addScreenHandler(testResultsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {

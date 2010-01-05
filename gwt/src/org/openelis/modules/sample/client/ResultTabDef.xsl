@@ -38,7 +38,7 @@ UIRF Software License are applicable instead of those above.
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
 
-  <xsl:template name="TestResultsTab">
+  <xsl:template name="ResultTab">
     <VerticalPanel padding="0" spacing="0">
       <TablePanel padding="0" spacing="0">
         <row>
@@ -91,14 +91,6 @@ UIRF Software License are applicable instead of those above.
                   <AbsolutePanel style="RemoveRowButtonImage" />
                   <text>
                     <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
-              <appButton key="duplicateResultButton" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="DuplicateRowButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'duplicateRecord')" />
                   </text>
                 </HorizontalPanel>
               </appButton>

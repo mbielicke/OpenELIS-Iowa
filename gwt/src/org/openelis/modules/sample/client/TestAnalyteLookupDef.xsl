@@ -47,7 +47,7 @@ UIRF Software License are applicable instead of those above.
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
  <screen id="testAnalyteLookup" name="{resource:getString($constants,'testAnalyteSelection')}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
  	<VerticalPanel padding="0" spacing="0">
-        	<table key="testAnalyteTable" width="auto" maxRows="10" showScroll="ALWAYS" title="">
+        	<table key="testAnalyteTable" width="auto" maxRows="10" showScroll="ALWAYS" multiSelect="true" title="">
             	<col width="50" header="{resource:getString($constants,'alias')}">
                 	<check/>
                 </col>

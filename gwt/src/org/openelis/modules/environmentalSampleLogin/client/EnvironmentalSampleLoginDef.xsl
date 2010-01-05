@@ -45,7 +45,7 @@ version="1.0"
   <xsl:import href="OPENELIS/org/openelis/modules/sample/client/SampleItemTabDef.xsl"/>
   <xsl:import href="OPENELIS/org/openelis/modules/sample/client/SampleNotesTabDef.xsl"/>
   <xsl:import href="OPENELIS/org/openelis/modules/sample/client/StorageTabDef.xsl"/>
-  <xsl:import href="OPENELIS/org/openelis/modules/sample/client/TestResultsTabDef.xsl"/>
+  <xsl:import href="OPENELIS/org/openelis/modules/sample/client/ResultTabDef.xsl"/>
   
   <xsl:variable name="language" select="doc/locale" />
   <xsl:variable name="props" select="doc/props" />
@@ -293,7 +293,7 @@ version="1.0"
 			  <xsl:call-template name="AnalysisTab"/>
             </tab>
             <tab key="tab2" text="{resource:getString($constants,'testResults')}" tab="testResultsTable,testResultsTable">
-			  <xsl:call-template name="TestResultsTab"/>
+			  <xsl:call-template name="ResultTab"/>
             </tab>
             <tab key="tab3" text="{resource:getString($constants,'analysisNotes')}" tab="anExNoteButton,anIntNoteButton">
 			  <xsl:call-template name="AnalysisNotesTab"/>

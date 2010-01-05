@@ -34,7 +34,6 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
-import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -47,6 +46,7 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataCell;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
@@ -60,12 +60,16 @@ import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Window;
 
-public class TestResultsTab extends Screen {
+public class ResultTab extends Screen {
     private boolean                 loaded;
 
-    protected AppButton               addResultButton, removeResultButton, duplicateResultButton;
+    protected AppButton               addResultButton, removeResultButton;
     protected TableWidget             testResultsTable;
     private ArrayList<TableColumn> resultTableCols;
     
@@ -78,9 +82,10 @@ public class TestResultsTab extends Screen {
     protected AnalysisViewDO        anDO;
     
     private Integer analysisCancelledId, analysisReleasedId, testAnalyteReadOnlyId, 
-    testAnalyteRequiredId;
+    testAnalyteRequiredId, addedTestAnalyteId, addedAnalyteId;
+    private String addedAnalyteName;
 
-    public TestResultsTab(ScreenDefInt def, ScreenWindow window) {
+    public ResultTab(ScreenDefInt def, ScreenWindow window) {
         setDef(def);
         setWindow(window);
         
@@ -102,26 +107,53 @@ public class TestResultsTab extends Screen {
             }
         });
         
+        testResultsTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>(){
+            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+                TableDataRow row; 
+                boolean isHeader;
+                
+                row = event.getItem().row;
+                isHeader = ((Boolean)row.data).booleanValue();
+                
+                if(isHeader)
+                    event.cancel();
+            }
+        });
+        
+        testResultsTable.addSelectionHandler(new SelectionHandler<TableRow>(){
+           public void onSelection(SelectionEvent<TableRow> event) {
+               int row;
+               ResultViewDO resultDO;
+               
+               row = testResultsTable.getSelectedRow();
+               resultDO = displayManager.getResultAt(row,0);
+               
+               if(testAnalyteRequiredId.equals(resultDO.getTypeId()))
+                   removeResultButton.enable(false);
+               else
+                   removeResultButton.enable(true);
+               
+               addResultButton.enable(true);
+           }
+        });
+        
         testResultsTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler(){
            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                int r, c;
                TableDataRow row;
                boolean isHeaderRow = false;
                ResultViewDO resultDO;
-               TestAnalyteViewDO testAnDo;
                
                r = event.getRow();
                c = event.getCol();                                              
                row = testResultsTable.getRow(r);
                isHeaderRow = ((Boolean)row.data).booleanValue();
                
-               testAnDo = null;
-               if(c > 0){
+               resultDO = null;
+               if(c > 0)
                    resultDO = displayManager.getResultAt(r,c-1);
-                   testAnDo = manager.getTestAnalyteList().get(resultDO.getTestAnalyteId());
-               }
                
-               if(isHeaderRow || c == 0 || c >= (displayManager.columnCount(r)+1) || testAnalyteReadOnlyId.equals(testAnDo.getTypeId()))
+               if(isHeaderRow || c == 0 || c >= (displayManager.columnCount(r)+1) || testAnalyteReadOnlyId.equals(resultDO.getTypeId()))
                    event.cancel();
             } 
         });
@@ -132,7 +164,6 @@ public class TestResultsTab extends Screen {
                 String val;
                 TableDataRow tableRow;
                 ResultViewDO resultDO;
-                TestAnalyteViewDO testAnDo;
                 Integer testResultId;
                 TestResultDO testResultDo;
                 
@@ -160,35 +191,69 @@ public class TestResultsTab extends Screen {
                     }
                 }else{
                     testResultsTable.clearCellExceptions(row, col);
-                    testAnDo = manager.getTestAnalyteList().get(resultDO.getTestAnalyteId());
-                    if(testAnalyteRequiredId.equals(testAnDo.getTypeId()))
-                        testResultsTable.setCellException(row, col, new LocalizedException("requiredResultException"));
                 }
             }
         });
 
         testResultsTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
-                //<CHANGE-ME>;
+                TableDataRow prow;
+                int index,prowIndex;
+                Integer rowGroup;
+                
+                try {
+
+                    index = event.getIndex();                                        
+                    prow = testResultsTable.getRow(index-1); 
+                    prowIndex = index-1;
+                    
+                    //if the row is a header try the row after
+                    //this assumes there was at least 1 analyte row before the current row was added
+                    if(((Boolean)prow.data).booleanValue()){
+                        prow = testResultsTable.getRow(index+1);
+                        prowIndex = index+1;
+                    }
+                    
+                    rowGroup = displayManager.getResultAt(prowIndex, 0).getRowGroup();
+                    
+                    manager.addRowAt(index, rowGroup, addedTestAnalyteId, addedAnalyteId, addedAnalyteName);
+                    
+                    addedTestAnalyteId = null;
+                    addedAnalyteId = null;
+                    addedAnalyteName = null;
+                    
+                    displayManager.setDataGrid(manager.getResults());
+                } catch(Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         });
 
         testResultsTable.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
-                //<CHANGE-ME>;
+                int index;
+                try {
+                    index = displayManager.getIndexAt(event.getIndex());
+                    manager.removeRowAt(index);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
             }
         });
 
         addResultButton = (AppButton)def.getWidget("addResultButton");
         addScreenHandler(addResultButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                int row = testResultsTable.getSelectedRow();
+                Integer rowGroup = displayManager.getResultAt(row, 0).getRowGroup();
+                
                 if (testAnalyteScreen == null) {
                     try {
                         testAnalyteScreen = new TestAnalyteLookupScreen();
                         testAnalyteScreen.addActionHandler(new ActionHandler<TestAnalyteLookupScreen.Action>() {
                             public void onAction(ActionEvent<TestAnalyteLookupScreen.Action> event) {
                                 if (event.getAction() == TestAnalyteLookupScreen.Action.OK) {
-                                    //do something
+                                    addResultRows((ArrayList<TestAnalyteViewDO>)event.getData());
                                 }
                             }
                         });
@@ -203,34 +268,29 @@ public class TestResultsTab extends Screen {
                 ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
                 modal.setName(consts.get("testAnalyteSelection"));
                 modal.setContent(testAnalyteScreen);
+                
+                testAnalyteScreen.setData(manager.getNonColumnTestAnalytes(rowGroup));
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addResultButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                addResultButton.enable(false);
             }
         });
 
         removeResultButton = (AppButton)def.getWidget("removeResultButton");
         addScreenHandler(removeResultButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                //<CHANGE-ME>;
+                int r;
+                
+                r = testResultsTable.getSelectedRow();
+                if (r > -1 && testResultsTable.numRows() > 0)
+                    testResultsTable.deleteRow(r);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeResultButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                removeResultButton.enable(false);
             }
         });
-
-        duplicateResultButton = (AppButton)def.getWidget("duplicateResultButton");
-        addScreenHandler(duplicateResultButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                //<CHANGE-ME>;
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                duplicateResultButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
-            }
-        });        
     }
     
     private ArrayList<TableDataRow> getTableModel() {
@@ -239,6 +299,12 @@ public class TestResultsTab extends Screen {
         TableDataRow hrow,row;
         ResultViewDO resultDO;
         boolean headerFilled;
+        
+        //
+        //we are assuming there will be at least 1 non supplemental
+        //if there are only supplementals in a row group it will not
+        //show a header so the user wont be able to add any analytes
+        //
         
         model = new ArrayList<TableDataRow>();
         if (manager == null || displayManager == null)
@@ -320,6 +386,34 @@ public class TestResultsTab extends Screen {
             col.setCurrentWidth(width);
             testResultsTable.addColumn(resultTableCols.get(i));
         }
+    }
+    
+    private void addResultRows(ArrayList<TestAnalyteViewDO> rows) {
+        int r, numCols;
+        TableDataRow row;
+        TestAnalyteViewDO an;
+        
+        r = testResultsTable.getSelectedRow();
+        numCols = displayManager.columnCount(r)+1;
+        
+        for(int i=0; i<rows.size(); i++){
+            an = rows.get(i);
+            row = new TableDataRow(numCols);
+            
+            row.data = new Boolean(false);
+            row.cells.get(0).value = an.getAnalyteName();
+            
+            addedTestAnalyteId = an.getId();
+            addedAnalyteId = an.getAnalyteId();
+            addedAnalyteName = an.getAnalyteName();
+            
+            r++;
+            testResultsTable.addRow(r, row);
+        }
+    }
+    
+    private void duplicateRow(){
+        
     }
     
     private void initializeDropdowns() {
