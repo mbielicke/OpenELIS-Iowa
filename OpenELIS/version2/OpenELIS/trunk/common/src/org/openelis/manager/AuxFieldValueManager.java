@@ -2,9 +2,12 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
+
+import com.google.gwt.user.client.Window;
 
 public class AuxFieldValueManager implements RPC {
 
@@ -81,6 +84,29 @@ public class AuxFieldValueManager implements RPC {
         if(tmp.getId() != null)             
             deleted.add(tmp);
         
+    }
+    
+    public AuxFieldValueViewDO getDefaultValue(){
+        AuxFieldValueViewDO item,tmp;
+        Integer defaultTypeId;
+        
+        try{
+            defaultTypeId = DictionaryCache.getIdFromSystemName("aux_default");
+        }catch(Exception e){
+            e.printStackTrace(); 
+            return null;
+        }
+        
+        item = null;
+        for(int i=0; i<count(); i++){
+            tmp = values.get(i);
+            if(defaultTypeId.equals(tmp.getTypeId())){
+                item = tmp;
+                break;
+            }
+        }
+        
+        return item;
     }
     
     // service methods

@@ -26,7 +26,6 @@
 package org.openelis.utilcommon;
 
 import org.openelis.exception.ParseException;
-import org.openelis.utilcommon.ResultValidator.Type;
 
 /**
  * This class is used to manage a number range. The range is specified using a
@@ -76,7 +75,7 @@ public class ResultRangeNumeric implements ResultRange {
         }
         
         if(!contains || !valid)
-            throw new ParseException("illegalNumericRangeException");
+            throw new ParseException("illegalNumericValueException", String.valueOf(min), String.valueOf(max));
     }
     
     public boolean intersects(ResultRange value) {
