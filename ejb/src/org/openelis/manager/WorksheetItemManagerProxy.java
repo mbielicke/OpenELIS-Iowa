@@ -34,6 +34,7 @@ import org.openelis.domain.WorksheetItemDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.WorksheetItemLocal;
 import org.openelis.manager.WorksheetItemManager;
+import org.openelis.manager.WorksheetItemManager.WorksheetItemListItem;
 import org.openelis.utilcommon.DataBaseUtil;
 
 public class WorksheetItemManagerProxy {
@@ -53,9 +54,10 @@ public class WorksheetItemManagerProxy {
     }
     
     public WorksheetItemManager add(WorksheetItemManager manager) throws Exception {
-        int                i;
-        WorksheetItemDO    item;
-        WorksheetItemLocal local;
+        int                   i;
+        WorksheetItemDO       item;
+        WorksheetItemListItem listItem;
+        WorksheetItemLocal    local;
         
         local = local();
         for (i = 0; i < manager.count(); i++) {
@@ -63,17 +65,21 @@ public class WorksheetItemManagerProxy {
             item.setWorksheetId(manager.getWorksheetId());
             local.add(item);
             
-            manager.getWorksheetAnalysisAt(i).setWorksheetItemId(item.getId());
-            manager.getWorksheetAnalysisAt(i).add();
+            listItem = manager.getItemAt(i);
+            if (listItem.analysis != null) {
+                manager.getWorksheetAnalysisAt(i).setWorksheetItemId(item.getId());
+                manager.getWorksheetAnalysisAt(i).add();
+            }
         }
         
         return manager;
     }
 
     public WorksheetItemManager update(WorksheetItemManager manager) throws Exception {
-        int                i, j;
-        WorksheetItemLocal local;
-        WorksheetItemDO    item;
+        int                   i, j;
+        WorksheetItemDO       item;
+        WorksheetItemListItem listItem;
+        WorksheetItemLocal    local;
         
         local = local();
         for (j = 0; j < manager.deleteCount(); j++)
@@ -89,24 +95,31 @@ public class WorksheetItemManagerProxy {
                 local.update(item);
             }
             
-            manager.getWorksheetAnalysisAt(i).setWorksheetItemId(item.getId());
-            manager.getWorksheetAnalysisAt(i).update();
+            listItem = manager.getItemAt(i);
+            if (listItem.analysis != null) {
+                manager.getWorksheetAnalysisAt(i).setWorksheetItemId(item.getId());
+                manager.getWorksheetAnalysisAt(i).update();
+            }
         }
 
         return manager;
     }
 
     public void validate(WorksheetItemManager manager) throws Exception {
-        int                  i;
-        ValidationErrorsList list;
-        WorksheetItemLocal   local;
+        int                   i;
+        ValidationErrorsList  list;
+        WorksheetItemListItem listItem;
+        WorksheetItemLocal    local;
 
         local = local();
         list  = new ValidationErrorsList();
         for (i = 0; i < manager.count(); i++) {
             try {
                 local.validate(manager.getWorksheetItemAt(i));
-                manager.getWorksheetAnalysisAt(i).validate();
+                
+                listItem = manager.getItemAt(i);
+                if (listItem.analysis != null)
+                    manager.getWorksheetAnalysisAt(i).validate();
             } catch (Exception e) {
                 DataBaseUtil.mergeException(list, e, "itemTable", i);
             }

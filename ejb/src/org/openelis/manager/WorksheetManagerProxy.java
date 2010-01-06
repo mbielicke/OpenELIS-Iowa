@@ -75,12 +75,16 @@ public class WorksheetManagerProxy {
         local.add(manager.getWorksheet());
         id = manager.getWorksheet().getId();
 
-        manager.getItems().setWorksheetId(id);
-        manager.getItems().add();
-
-        manager.getNotes().setReferenceId(id);
-        manager.getNotes().setReferenceTableId(ReferenceTable.WORKSHEET);
-        manager.getNotes().add();
+        if (manager.items != null) {
+            manager.getItems().setWorksheetId(id);
+            manager.getItems().add();
+        }
+        
+        if (manager.notes != null) {
+            manager.getNotes().setReferenceId(id);
+            manager.getNotes().setReferenceTableId(ReferenceTable.WORKSHEET);
+            manager.getNotes().add();
+        }
 
         return manager;
     }
@@ -93,13 +97,17 @@ public class WorksheetManagerProxy {
         local.update(manager.getWorksheet());
         id = manager.getWorksheet().getId();
         
-        manager.getItems().setWorksheetId(id);
-        manager.getItems().update();
-
-        manager.getNotes().setReferenceId(id);
-        manager.getNotes().setReferenceTableId(ReferenceTable.WORKSHEET);
-        manager.getNotes().update();
-
+        if (manager.items != null) {
+            manager.getItems().setWorksheetId(id);
+            manager.getItems().update();
+        }
+        
+        if (manager.notes != null) {
+            manager.getNotes().setReferenceId(id);
+            manager.getNotes().setReferenceTableId(ReferenceTable.WORKSHEET);
+            manager.getNotes().update();
+        }
+        
         return manager;
     }
 
