@@ -2,8 +2,8 @@ package org.openelis.modules.sampleTracking.server;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.SampleTrackingVO;
 import org.openelis.gwt.common.data.Query;
+import org.openelis.manager.SampleManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.SampleTrackingRemote;
 
@@ -11,7 +11,7 @@ public class SampleTrackingService {
 	
 	private static final int rowPP = 15;
 
-	public ArrayList<SampleTrackingVO> query(Query query) throws Exception{
+	public ArrayList<SampleManager> query(Query query) throws Exception{
 		 return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
 	}
 	
