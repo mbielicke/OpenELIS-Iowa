@@ -324,42 +324,38 @@ UIRF Software License are applicable instead of those above.
                       <text style="Prompt">Depth:</text>
                       <textbox field="String" key="depth" width="80px" />
                     </row>
-                  </TablePanel>
-                  <VerticalPanel style="subform">
-                    <text style="FormTitle">Results Reported To</text>
-                    <TablePanel style="Form">
-                      <row>
-                        <text style="Prompt">Name:</text>
-                        <widget colspan="3">
+                    <row>
+                       <text style="Prompt">Name:</text>
+                       <widget colspan="3">
                           <textbox key="name" tab="??,??" width="180px" />
-                        </widget>
+                       </widget>
+                    </row>
+                    <row>
+                       <text style="Prompt">
+                         <xsl:value-of select='resource:getString($constants,"aptSuite")' />:
+                       </text>
+                       <widget colspan="3">
+                         <textbox case="UPPER" field="String" key="1" max="30" width="180px" />
+                       </widget>
                       </row>
-                      <row>
-                        <text style="Prompt">
-                          <xsl:value-of select='resource:getString($constants,"aptSuite")' />:
-                        </text>
-                        <widget colspan="3">
-                          <textbox case="UPPER" field="String" key="1" max="30" width="180px" />
-                        </widget>
-                      </row>
-                      <row>
-                        <text style="Prompt">
-                          <xsl:value-of select='resource:getString($constants,"address")' />:
-                        </text>
-                        <widget colspan="3">
-                          <textbox case="UPPER" field="String" key="2" max="30" width="180px" />
-                        </widget>
-                      </row>
-                      <row>
-                        <text style="Prompt">
-                          <xsl:value-of select='resource:getString($constants,"city")' />:
-                        </text>
-                        <widget colspan="3">
-                          <textbox case="UPPER" field="String" key="3" max="30" width="180px" />
-                        </widget>
-                      </row>
-                      <row>
-                        <text style="Prompt">
+                    <row>
+                       <text style="Prompt">
+                         <xsl:value-of select='resource:getString($constants,"address")' />:
+                       </text>
+                       <widget colspan="3">
+                         <textbox case="UPPER" field="String" key="2" max="30" width="180px" />
+                       </widget>
+                    </row>
+                    <row>
+                       <text style="Prompt">
+                         <xsl:value-of select='resource:getString($constants,"city")' />:
+                       </text>
+                       <widget colspan="3">
+                         <textbox case="UPPER" field="String" key="3" max="30" width="180px" />
+                       </widget>
+                    </row>
+                    <row>
+                       <text style="Prompt">
                           <xsl:value-of select='resource:getString($constants,"state")' />:
                         </text>
                         <dropdown case="UPPER" field="String" key="4" tab="??,??" width="40px" />
@@ -367,8 +363,8 @@ UIRF Software License are applicable instead of those above.
                           <xsl:value-of select='resource:getString($constants,"zipcode")' />:
                         </text>
                         <textbox case="UPPER" field="String" key="5" max="30" width="73px" />
-                      </row>
-                      <row>
+                    </row>
+                    <row>
                         <text style="Prompt">
                           <xsl:value-of select='resource:getString($constants,"country")' />:
                         </text>
@@ -377,8 +373,7 @@ UIRF Software License are applicable instead of those above.
                         </widget>
                       </row>
                     </TablePanel>
-                  </VerticalPanel>
-                </VerticalPanel>
+                 </VerticalPanel>
               </deck>
               <deck tab="{meta:getItemTypeOfSampleId()},{meta:getItemUnitOfMeasureId()}">
                 <xsl:call-template name="SampleItemTab" />
