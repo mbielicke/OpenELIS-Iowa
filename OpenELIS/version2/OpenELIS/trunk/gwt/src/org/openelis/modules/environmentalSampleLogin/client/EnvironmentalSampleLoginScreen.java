@@ -1816,6 +1816,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
         modal.setName(consts.get("prepTestPicker"));
         modal.setContent(prepPickerScreen);
+        modal.setName("test"); //FIXME need this to make sense...fix
         prepPickerScreen.setManager(manager);
     }
     

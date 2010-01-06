@@ -34,7 +34,9 @@ import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.SampleDO;
+import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -61,6 +63,8 @@ import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.AuxFieldValueManager;
 import org.openelis.manager.HasAuxDataInt;
 import org.openelis.manager.SampleManager;
+import org.openelis.utilcommon.AuxDataValidator;
+import org.openelis.utilcommon.ResultValidator.Type;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -135,8 +139,23 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                         data.setIsReportable((String)val);
                         break;
                     case 2:
-                        fieldDO = (AuxFieldViewDO)auxValsTable.getRow(r).data;
-                        data.setValue(getCorrectManValueByType(val, fieldDO.getTypeId()));
+                        TableDataRow row = auxValsTable.getRow(r);
+                        AuxDataBundle adb = (AuxDataBundle)row.data;
+                        AuxDataValidator adv = adb.validator;
+                        fieldDO = (AuxFieldViewDO)adb.fieldDO;
+                        data.setValue(val.toString());
+                        
+                        if(adv != null){
+                            try{
+                                adv.validate(null, getCorrectManValueByType(val, fieldDO.getTypeId()));
+                            }catch(ParseException e){
+                                auxValsTable.clearCellExceptions(r, c);
+                                auxValsTable.setCellException(r, c, e);
+                            }catch(Exception e){
+                                Window.alert(e.getMessage());
+                            }
+                        }
+                        
                         break;
                 }
             }
@@ -145,7 +164,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
         auxValsTable.addSelectionHandler(new SelectionHandler<TableRow>() {
             public void onSelection(SelectionEvent<TableRow> event) {
                 TableRow row = event.getSelectedItem();
-                AuxFieldViewDO fieldDO = (AuxFieldViewDO)row.row.data;
+                AuxFieldViewDO fieldDO = ((AuxDataBundle)row.row.data).fieldDO;
 
                 auxMethod.setValue(fieldDO.getMethodName());
                 auxDesc.setValue(fieldDO.getDescription());
@@ -246,9 +265,12 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
         TableDataRow row;
         AuxDataViewDO data;
         AuxFieldViewDO field;
+        ArrayList<AuxFieldValueViewDO> values;
         AuxFieldValueViewDO val;
         ArrayList<TableDataRow> model;
-
+        AuxDataBundle adb;
+        AuxDataValidator validatorItem;
+        
         model = new ArrayList<TableDataRow>();
         if (manager == null)
             return model;
@@ -257,7 +279,8 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             for (i = 0; i < manager.count(); i++ ) {
                 data = manager.getAuxDataAt(i);
                 field = manager.getFieldsAt(i).getAuxFieldAt(0);
-                val = manager.getFieldsAt(i).getValuesAt(0).getAuxFieldValueAt(0);
+                values = manager.getFieldsAt(i).getValuesAt(0).getValues();
+                val = values.get(0);
 
                 row = new TableDataRow(3);
                 row.cells.get(0).value = data.getIsReportable();
@@ -267,7 +290,9 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                                                                   val.getTypeId());
 
                 field.setTypeId(val.getTypeId());
-                row.data = field;
+                validatorItem = getDataItemForRow(field.getTypeId(), values);
+                adb = new AuxDataBundle(validatorItem, field);
+                row.data = adb;
 
                 model.add(row);
             }
@@ -282,10 +307,12 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
         AuxFieldManager man;
         AuxFieldViewDO fieldDO;
         ArrayList<AuxFieldValueViewDO> values;
-        AuxFieldValueViewDO valueDO;
+        AuxFieldValueViewDO valueDO, defaultValue;
         AuxDataViewDO dataDO;
         TableDataRow row;
-
+        AuxDataBundle adb;
+        AuxDataValidator validatorItem;
+        
         try {
             auxValsTable.fireEvents(false);
             for (int i = 0; i < fields.size(); i++ ) {
@@ -294,6 +321,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                 for (int j = 0; j < man.count(); j++ ) {
                     fieldDO = man.getAuxFieldAt(j);
                     values = man.getValuesAt(j).getValues();
+                    defaultValue = man.getValuesAt(j).getDefaultValue();
                     valueDO = values.get(0);
                     dataDO = new AuxDataViewDO();
 
@@ -302,21 +330,44 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                     dataDO.setIsReportable(fieldDO.getIsReportable());
                     dataDO.setValue(valueDO.getValue());
                     dataDO.setDictionary(valueDO.getDictionary());
-
+                    fieldDO.setTypeId(valueDO.getTypeId());
+                    
                     manager.addAuxDataFieldsAndValues(dataDO, fieldDO, values);
 
                     row = new TableDataRow(3);
                     row.cells.get(0).value = fieldDO.getIsReportable();
                     row.cells.get(1).value = fieldDO.getAnalyteName();
-                    if (valueDO.getValue() != null &&
-                        !DictionaryCache.getIdFromSystemName("aux_dictionary")
-                                        .equals(valueDO.getTypeId()))
-                        row.cells.get(2).value = getCorrectColValueByType(valueDO.getValue(),
-                                                                          valueDO.getDictionary(),
-                                                                          valueDO.getTypeId());
-
-                    fieldDO.setTypeId(valueDO.getTypeId());
-                    row.data = fieldDO;
+                    
+                    validatorItem = getDataItemForRow(valueDO.getTypeId(), values);
+                    adb = new AuxDataBundle(validatorItem, fieldDO);
+                    row.data = adb;
+                    
+                    
+                    if(defaultValue != null){
+                        try{
+                            if(dictionaryId.equals(valueDO.getTypeId())){
+                                String dictionary, value;
+                                AuxFieldValueViewDO a;
+                                
+                                dictionary = defaultValue.getValue();
+                                
+                                value = null;
+                                for(int k=0; k<values.size(); k++){
+                                    a = values.get(k);
+                                    if(a.getDictionary().equals(dictionary)){
+                                        value = a.getValue();
+                                        break;
+                                    }
+                                }
+                                row.cells.get(2).value = getCorrectColValueByType(value, dictionary, valueDO.getTypeId());
+                                
+                            }else
+                                row.cells.get(2).value = getCorrectColValueByType(defaultValue.getValue(), null, valueDO.getTypeId());
+                            
+                        }catch(Exception e){
+                            row.cells.get(2).addException(new LocalizedException("illegalDefaultValueException"));
+                        }
+                    }
                     auxValsTable.addRow(row);
                 }
             }
@@ -328,7 +379,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
         }
     }
 
-    private Object getCorrectColValueByType(String value, String dictionary, Integer typeId) {
+    private Object getCorrectColValueByType(String value, String dictionary, Integer typeId) throws Exception {
         if (alphaLowerId.equals(typeId) || alphaUpperId.equals(typeId) ||
             alphaMixedId.equals(typeId) || timeId.equals(typeId))
             return value;
@@ -342,12 +393,39 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
         else if (dateTimeId.equals(typeId))
             return new Datetime(Datetime.YEAR, Datetime.MINUTE, new Date(value));
 
-        else if (dictionaryId.equals(typeId))
+        else if (dictionaryId.equals(typeId)){
+            if(dictionary == null)
+                throw new Exception();
             return new TableDataRow(new Integer(value), dictionary);
+        }
 
         return null;
     }
 
+    private AuxDataValidator getDataItemForRow(Integer typeId, ArrayList<AuxFieldValueViewDO> values){
+        AuxDataValidator adv = new AuxDataValidator();
+        AuxFieldValueViewDO af;
+
+        //we only need to validate numerics and times because the widget will validate everything else
+        if (numericId.equals(typeId) || timeId.equals(typeId)){
+            try{
+                for(int i=0; i<values.size(); i++){
+                    af = values.get(i);
+                    if(numericId.equals(typeId))
+                        adv.addResult(af.getId(), null, Type.NUMERIC, af.getValue());
+                    else
+                        adv.addResult(af.getId(), null, Type.TIME, af.getValue());
+                }
+            }catch(Exception e){
+                Window.alert(e.getMessage());
+                return null;
+            }
+        }else
+            adv = null;
+        
+        return adv;
+    }
+    
     private String getCorrectManValueByType(Object value, Integer typeId) {
         if (alphaLowerId.equals(typeId) || alphaUpperId.equals(typeId) ||
             alphaMixedId.equals(typeId) || timeId.equals(typeId))

@@ -188,6 +188,8 @@ public class AuxTableColumn extends TableColumn {
             return getCalendar(Datetime.YEAR, Datetime.DAY);
         else if (dateTimeId.equals(typeId))
             return getCalendar(Datetime.YEAR, Datetime.MINUTE);
+        else if (timeId.equals(typeId))
+            return getAlphaTextbox(Case.MIXED);
         else if (dictionaryId.equals(typeId))
             return getAutoComplete(Case.MIXED);
 
@@ -195,12 +197,12 @@ public class AuxTableColumn extends TableColumn {
     }
 
     private Integer getCellTypeId(TableDataRow row) {
-        AuxFieldViewDO data = (AuxFieldViewDO)row.data;
-
+        AuxDataBundle data = (AuxDataBundle)row.data;
+        
         if (data == null)
             return null;
         else
-            return data.getTypeId();
+            return data.fieldDO.getTypeId();
     }
 
     public void setScreen(GetMatchesHandler screen) {
