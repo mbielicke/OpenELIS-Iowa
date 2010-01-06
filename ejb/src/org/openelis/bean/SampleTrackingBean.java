@@ -10,12 +10,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.AnalysisVO;
-import org.openelis.domain.IdNameVO;
-import org.openelis.domain.SampleItemVO;
-import org.openelis.domain.SampleQaEventViewDO;
-import org.openelis.domain.SampleTrackingVO;
-import org.openelis.domain.StorageLocationVO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.QueryData;
@@ -23,29 +17,27 @@ import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.remote.SampleTrackingRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 
 @SecurityDomain("openelis")
-@RolesAllowed("sampleenvironmental-select")
+@RolesAllowed("sample-select")
 public class SampleTrackingBean implements SampleTrackingRemote {
+
 	@PersistenceContext(name = "openelis")
 	private EntityManager manager;
 
-
-
 	@SuppressWarnings("unchecked")
-	public ArrayList<SampleTrackingVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+	public ArrayList<SampleManager> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
 		Query query;
 		QueryBuilderV2 builder;
 		List list;
+		ArrayList<SampleManager> managers;
 
 		builder = new QueryBuilderV2();
 		builder.setMeta(new SampleMeta());
-		builder.setSelect("distinct new org.openelis.domain.SampleTrackingVO(" + SampleMeta.getId() + ","+SampleMeta.getAccessionNumber()+","+SampleMeta.getStatusId()+") ");
+		builder.setSelect("distinct " + SampleMeta.getId() + " ");
 		builder.constructWhere(fields);
-		builder.addWhere(SampleMeta.getDomain() + "='" + SampleManager.ENVIRONMENTAL_DOMAIN_FLAG + "'");
 		builder.setOrderBy(SampleMeta.getId());
 
 		query = manager.createQuery(builder.getEJBQL());
@@ -56,41 +48,17 @@ public class SampleTrackingBean implements SampleTrackingRemote {
 
 		if (list.isEmpty())
 			throw new NotFoundException();
-		list = (ArrayList<SampleTrackingVO>)DataBaseUtil.subList(list, first, max);
+		
 		if (list == null)
 			throw new LastPageException();
-		try {
-		for(int i = 0; i < list.size(); i++) {	
-			ArrayList<SampleItemVO> itemList = null;
-			ArrayList<SampleQaEventViewDO> qaList = null;
-			ArrayList<IdNameVO> sampNotes = null;
-			SampleTrackingVO vo = (SampleTrackingVO)list.get(i);
-			Query siQuery = manager.createQuery("select new org.openelis.domain.SampleItemVO(s.id,s.itemSequence,contDict.entry, sourceDict.entry, typeDict.entry) from SampleItem s LEFT JOIN s.containerDict contDict LEFT JOIN s.sourceDict sourceDict LEFT JOIN s.typeDict typeDict where s.sampleId = :id order by s.itemSequence");
-			siQuery.setParameter("id", vo.getId());
-			List sis = siQuery.getResultList();
-			if(!sis.isEmpty()) {
-				itemList = (ArrayList<SampleItemVO>)DataBaseUtil.subList(sis,0,sis.size());
-				ArrayList<AnalysisVO> analList = null; 
-				ArrayList<StorageLocationVO> storList = null;
-				
-				for(int j = 0; j < sis.size(); j++) {
-					SampleItemVO si = (SampleItemVO)sis.get(j);
-					
-					Query anQuery = manager.createQuery("select new org.openelis.domain.AnalysisVO(a.id,a.test.name, a.test.method.name,a.statusId) from Analysis a where a.sampleItemId = :id");
-					anQuery.setParameter("id", si.getId());
-					List ans = anQuery.getResultList();
-					if(!ans.isEmpty())
-						analList = (ArrayList<AnalysisVO>)DataBaseUtil.subList(ans, 0, ans.size());
-					si.setAnalysis(analList);	
-				}
-			}
-			vo.setItems(itemList);
-		}
-		}catch(Exception e) {
-			e.printStackTrace();
+		
+		managers = new ArrayList<SampleManager>(max);
+		
+		for(int i = first; i < list.size(); i++) {
+			managers.add(SampleManager.fetchByIdWithItemsAnalyses((Integer)list.get(i)));
 		}
 
-		return (ArrayList<SampleTrackingVO>)list;
+		return managers;
 	}
 
 }
