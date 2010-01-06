@@ -137,6 +137,10 @@ public class WorksheetAnalysisManager implements RPC {
         analyses.get(i).worksheetQcResult = qcResult;
     }
 
+    public WorksheetAnalysisListItem getItemAt(int i) {
+        return (WorksheetAnalysisListItem)analyses.get(i);
+    }
+        
     //service methods
     public static WorksheetAnalysisManager fetchByWorksheetItemId(Integer id) throws Exception {
         return proxy().fetchByWorksheetItemId(id);

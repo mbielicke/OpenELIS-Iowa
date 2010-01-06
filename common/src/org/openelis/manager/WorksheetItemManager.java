@@ -112,6 +112,10 @@ public class WorksheetItemManager implements RPC {
         items.get(i).analysis = analysis;
     }
 
+    public WorksheetItemListItem getItemAt(int i) {
+        return (WorksheetItemListItem)items.get(i);
+    }
+    
     //service methods
     public static WorksheetItemManager fetchByWorksheetId(Integer id) throws Exception {
         return proxy().fetchByWorksheetId(id);
