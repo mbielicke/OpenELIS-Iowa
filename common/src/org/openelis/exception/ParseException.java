@@ -39,5 +39,8 @@ public class ParseException extends LocalizedException {
     public ParseException(String arg) {
         super(arg);
     }
-
+    
+    public ParseException(String key, String... params) {
+        super(key,params);
+    }
 }

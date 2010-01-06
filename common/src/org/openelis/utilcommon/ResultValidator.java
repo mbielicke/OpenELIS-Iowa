@@ -1,6 +1,5 @@
 package org.openelis.utilcommon;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -102,6 +101,13 @@ public class ResultValidator implements RPC {
             return id;
         else
             throw new ParseException("illegalResultValueException");
+    }
+    
+    public Type getType(Integer unit, int index){
+        if(unit == null)
+            unit = 0;
+        
+        return units.get(unit).get(0).type;
     }
 
     static class Item implements RPC {
