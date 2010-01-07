@@ -78,8 +78,6 @@ public class MethodScreen extends Screen {
     private ButtonGroup     atoz;
     private ScreenNavigator nav;
 
-    private MethodMeta   meta = new MethodMeta();
-
     public MethodScreen() throws Exception {
         super((ScreenDefInt)GWT.create(MethodDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.method.server.MethodService");
@@ -200,7 +198,7 @@ public class MethodScreen extends Screen {
             }
         });
 
-        name = (TextBox)def.getWidget(meta.getName());
+        name = (TextBox)def.getWidget(MethodMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(data.getName());
@@ -217,7 +215,7 @@ public class MethodScreen extends Screen {
             }
         });
 
-        description = (TextBox)def.getWidget(meta.getDescription());
+        description = (TextBox)def.getWidget(MethodMeta.getDescription());
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 description.setValue(data.getDescription());
@@ -234,7 +232,7 @@ public class MethodScreen extends Screen {
             }
         });
 
-        reportingDescription = (TextBox)def.getWidget(meta.getReportingDescription());
+        reportingDescription = (TextBox)def.getWidget(MethodMeta.getReportingDescription());
         addScreenHandler(reportingDescription, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 reportingDescription.setValue(data.getReportingDescription());
@@ -250,7 +248,7 @@ public class MethodScreen extends Screen {
             }
         });
 
-        isActive = (CheckBox)def.getWidget(meta.getIsActive());
+        isActive = (CheckBox)def.getWidget(MethodMeta.getIsActive());
         addScreenHandler(isActive, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isActive.setValue(data.getIsActive());
@@ -267,7 +265,7 @@ public class MethodScreen extends Screen {
             }
         });
 
-        activeBegin = (CalendarLookUp)def.getWidget(meta.getActiveBegin());
+        activeBegin = (CalendarLookUp)def.getWidget(MethodMeta.getActiveBegin());
         addScreenHandler(activeBegin, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 activeBegin.setValue(data.getActiveBegin());
@@ -284,7 +282,7 @@ public class MethodScreen extends Screen {
             }
         });
 
-        activeEnd = (CalendarLookUp)def.getWidget(meta.getActiveEnd());
+        activeEnd = (CalendarLookUp)def.getWidget(MethodMeta.getActiveEnd());
         addScreenHandler(activeEnd, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 activeEnd.setValue(data.getActiveEnd());
@@ -361,7 +359,7 @@ public class MethodScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = meta.getName();
+                field.key = MethodMeta.getName();
                 field.query = ((AppButton)event.getSource()).action;
                 field.type = QueryData.Type.STRING;
 
@@ -533,16 +531,5 @@ public class MethodScreen extends Screen {
 
         return true;
     }
-
-    /*@Override
-    public boolean validate() {
-        boolean valid = super.validate();
-        if (activeEnd.getFieldValue() != null &&
-            activeEnd.getFieldValue().compareTo(activeBegin.getFieldValue()) <= 0) {
-            activeEnd.addException(new LocalizedException("endDateAfterBeginDateException"));
-            return false;
-        }
-        return valid;
-    }*/
 
 }

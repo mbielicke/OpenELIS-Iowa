@@ -46,9 +46,9 @@ public class MethodService  {
         }
     }
     
-    public ArrayList<IdNameVO> fetchByName(String search) throws Exception {
+    public ArrayList<MethodDO> fetchByName(String search) throws Exception {
     	try {
-    		return remote().findByName(search+"%", 10);
+    		return remote().fetchActiveByName(search+"%", 10);
     	}catch(RuntimeException e) {
     		throw new DatabaseException(e);
     	}

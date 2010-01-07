@@ -33,6 +33,7 @@ import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.MethodDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -483,7 +484,7 @@ public class AuxiliaryScreen extends Screen {
         method.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
-                ArrayList<IdNameVO> list;
+                ArrayList<MethodDO> list;
                 ArrayList<TableDataRow> model;
 
                 parser = new QueryFieldUtil();
@@ -493,7 +494,7 @@ public class AuxiliaryScreen extends Screen {
                     list = methodService.callList("fetchByName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
                     
-                    for (IdNameVO data : list)
+                    for (MethodDO data : list)
                         model.add(new TableDataRow(data.getId(),data.getName()));                    
                     method.showAutoMatches(model);
                 } catch (Exception e) {

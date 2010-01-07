@@ -33,6 +33,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.MethodDO;
 import org.openelis.domain.SectionDO;
 import org.openelis.domain.TestDO;
 import org.openelis.domain.TestMethodVO;
@@ -103,7 +104,7 @@ import com.google.gwt.user.client.ui.TabPanel;
 public class TestScreen extends Screen {    
     
     private TestManager              manager;
-    private TestMeta              meta = new TestMeta();
+    private TestMeta                 meta = new TestMeta();
     protected Tabs                   tab;
     private SampleTypeTab            sampleTypeTab;
     private AnalyteAndResultTab      analyteAndResultTab;
@@ -337,7 +338,7 @@ public class TestScreen extends Screen {
         method.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
-                ArrayList<IdNameVO> list;
+                ArrayList<MethodDO> list;
                 ArrayList<TableDataRow> model;
 
                 parser = new QueryFieldUtil();
@@ -347,7 +348,7 @@ public class TestScreen extends Screen {
                     list = methodService.callList("fetchByName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
                     
-                    for (IdNameVO data : list)
+                    for (MethodDO data : list)
                         model.add(new TableDataRow(data.getId(),data.getName()));                    
                     method.showAutoMatches(model);
                 } catch (Exception e) {
