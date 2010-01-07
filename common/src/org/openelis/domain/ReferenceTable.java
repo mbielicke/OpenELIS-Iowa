@@ -118,7 +118,6 @@ public class ReferenceTable {
                             TEST_WORKSHEET_ANALYTE =         92,
                             WORKSHEET_ANALYSIS =             93,
                             WORKSHEET_ITEM =                 94,
-                            WORKSHEET_QC =                   95,
                             WORKSHEET_QC_RESULT =            96,
                             WORKSHEET_RESULT =               97,
                             INVENTORY_TRANSACTION =          98;

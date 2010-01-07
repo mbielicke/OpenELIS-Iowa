@@ -37,6 +37,8 @@ import org.openelis.gwt.common.data.QueryData;
 public interface MethodRemote {
 
     public MethodDO fetchById(Integer id) throws Exception;
+    
+    public ArrayList<MethodDO> fetchActiveByName(String name, int max) throws Exception;
 
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
 
@@ -47,7 +49,7 @@ public interface MethodRemote {
     public MethodDO fetchForUpdate(Integer id) throws Exception;
 
     public MethodDO abortUpdate(Integer id) throws Exception;
-
-    public ArrayList<IdNameVO> findByName(String name, int maxResults);
+    
+    public void validate(MethodDO data) throws Exception;
 
 }
