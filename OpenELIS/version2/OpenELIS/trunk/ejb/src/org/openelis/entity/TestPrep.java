@@ -29,10 +29,6 @@ package org.openelis.entity;
  * TestPrep Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.XMLUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -46,16 +42,19 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries( {@NamedQuery(name = "TestPrep.FetchByTestId",
-                            query = "select distinct new org.openelis.domain.TestPrepViewDO(tp.id, tp.testId, tp.prepTestId,tp.isOptional,t.name,m.name) "
-                            + "  from TestPrep tp left join tp.prepTest t left join t.method m where tp.testId = :id "),
-                @NamedQuery(name = "TestPrep.FetchByPrepTestId",
-                            query = " select distinct new org.openelis.domain.TestPrepViewDO(tp.id, tp.testId, tp.prepTestId,tp.isOptional,t.name,m.name) "
-                            + " from TestPrep tp left join tp.test t left join t.method m where tp.prepTestId = :testId and t.isActive = 'Y' ")})
+@NamedQueries( {
+    @NamedQuery( name = "TestPrep.FetchByTestId",
+                query = "select distinct new org.openelis.domain.TestPrepViewDO(tp.id, tp.testId, tp.prepTestId,tp.isOptional,t.name,m.name) "
+                      + "  from TestPrep tp left join tp.prepTest t left join t.method m where tp.testId = :id "),
+    @NamedQuery( name = "TestPrep.FetchByPrepTestId",
+                query = " select distinct new org.openelis.domain.TestPrepViewDO(tp.id, tp.testId, tp.prepTestId,tp.isOptional,t.name,m.name) "
+                      + " from TestPrep tp left join tp.test t left join t.method m where tp.prepTestId = :testId and t.isActive = 'Y' ")})
 @Entity
 @Table(name = "test_prep")
 @EntityListeners( {AuditUtil.class})
@@ -142,29 +141,22 @@ public class TestPrep implements Auditable, Cloneable {
         try {
             original = (TestPrep)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(testId, original.testId, doc, "test_id");
-            AuditUtil.getChangeXML(prepTestId, original.prepTestId, doc, "prep_test_id");
-            AuditUtil.getChangeXML(isOptional, original.isOptional, doc, "is_optional");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 
-    public String getTableName() {
-        return "test_prep";
-    }
+    public Audit getAudit() {
+        Audit audit;
 
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.TEST_PREP);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("test_id", testId, original.testId)
+                 .setField("prep_test_id", prepTestId, original.prepTestId)
+                 .setField("is_optional", isOptional, original.isOptional);
+
+        return audit;
+    }
 }

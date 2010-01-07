@@ -18,12 +18,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.util.XMLUtil;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 @NamedQueries( {
     @NamedQuery(name = "SampleQaevent.SampleQaeventBySampleId", query = "select new org.openelis.domain.SampleQaEventViewDO(q.id, q.sampleId, q.qaeventId, " + 
@@ -99,38 +98,35 @@ public class SampleQaevent implements Auditable, Cloneable {
       this.isBillable = isBillable;
   }
   
-  public void setClone() {
-    try {
-      original = (SampleQaevent)this.clone();
-    }catch(Exception e){}
+  public QaEvent getQaEvent() {
+      return qaEvent;
   }
   
-  public String getChangeXML() {
+  public void setQaEvent(QaEvent qaEvent) {
+      this.qaEvent = qaEvent;
+  }
+  
+  public void setClone() {
     try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
-      AuditUtil.getChangeXML(sampleId,original.sampleId,doc,"sample_id");
-      AuditUtil.getChangeXML(qaeventId,original.qaeventId,doc,"qaevent_id");
-      AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
-      AuditUtil.getChangeXML(isBillable,original.isBillable,doc,"is_billable");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
+        original = (SampleQaevent)this.clone();
     }catch(Exception e){
-      e.printStackTrace();
+        e.printStackTrace();
     }
-    return null;
   }
-   
-  public String getTableName() {
-    return "sample_qaevent";
+  
+  public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.SAMPLE_QAEVENT);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("sample_id", sampleId, original.sampleId)
+                 .setField("qaevent_id", qaeventId, original.qaeventId)
+                 .setField("type_id", typeId, original.typeId)
+                 .setField("is_billable", isBillable, original.isBillable);
+
+        return audit;
   }
-public QaEvent getQaEvent() {
-    return qaEvent;
-}
-public void setQaEvent(QaEvent qaEvent) {
-    this.qaEvent = qaEvent;
-}
 }   

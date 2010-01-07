@@ -18,12 +18,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.util.XMLUtil;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 @NamedQueries({@NamedQuery(name = "Result.FetchByAnalysisId", query = "select new org.openelis.domain.ResultViewDO(r.id,r.analysisId,r.testAnalyteId,r.testResultId, " + 
                         " r.isColumn, r.sortOrder, r.isReportable, r.analyteId, r.typeId, r.value, a.name, ta.rowGroup, ta.resultGroup) "+
@@ -166,56 +165,51 @@ public class Result implements Auditable, Cloneable {
       this.value = value;
   }
 
+  public Analyte getAnalyte() {
+      return analyte;
+  }
+  public void setAnalyte(Analyte analyte) {
+      this.analyte = analyte;
+  }
+  public TestAnalyte getTestAnalyte() {
+      return testAnalyte;
+  }
+  public void setTestAnalyte(TestAnalyte testAnalyte) {
+      this.testAnalyte = testAnalyte;
+  }
+  public Analysis getAnalysis() {
+      return analysis;
+  }
+  public void setAnalysis(Analysis analysis) {
+      this.analysis = analysis;
+  }
   
   public void setClone() {
     try {
-      original = (Result)this.clone();
-    }catch(Exception e){}
+        original = (Result)this.clone();
+    }catch(Exception e){
+        e.printStackTrace();
+    }
   }
   
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
-      AuditUtil.getChangeXML(analysisId,original.analysisId,doc,"analysis_id");
-      AuditUtil.getChangeXML(testAnalyteId,original.testAnalyteId,doc,"test_analyte_id");
-      AuditUtil.getChangeXML(testResultId,original.testResultId,doc,"test_result_id");
-      AuditUtil.getChangeXML(isColumn,original.isColumn,doc,"is_column");
-      AuditUtil.getChangeXML(sortOrder,original.sortOrder,doc,"sort_order");
-      AuditUtil.getChangeXML(isReportable,original.isReportable,doc,"is_reportable");
-      AuditUtil.getChangeXML(analyteId,original.analyteId,doc,"analyte_id");
-      AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
-      AuditUtil.getChangeXML(value,original.value,doc,"value");
+  public Audit getAudit() {
+        Audit audit;
 
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
-    }catch(Exception e){
-      e.printStackTrace();
-    }
-    return null;
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.RESULT);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("analysis_id", analysisId, original.analysisId)
+                 .setField("test_analyte_id", testAnalyteId, original.testAnalyteId)
+                 .setField("test_result_id", testResultId, original.testResultId)
+                 .setField("is_column", isColumn, original.isColumn)
+                 .setField("sort_order", sortOrder, original.sortOrder)
+                 .setField("is_reportable", isReportable, original.isReportable)
+                 .setField("analyte_id", analyteId, original.analyteId)
+                 .setField("type_id", typeId, original.typeId)
+                 .setField("value", value, original.value);
+
+        return audit;
   }
-   
-  public String getTableName() {
-    return "result";
-  }
-public Analyte getAnalyte() {
-    return analyte;
-}
-public void setAnalyte(Analyte analyte) {
-    this.analyte = analyte;
-}
-public TestAnalyte getTestAnalyte() {
-    return testAnalyte;
-}
-public void setTestAnalyte(TestAnalyte testAnalyte) {
-    this.testAnalyte = testAnalyte;
-}
-public Analysis getAnalysis() {
-    return analysis;
-}
-public void setAnalysis(Analysis analysis) {
-    this.analysis = analysis;
-}
 }   

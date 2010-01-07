@@ -43,11 +43,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.util.XMLUtil;
+import org.openelis.domain.ReferenceTable;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 @NamedQueries( {
     @NamedQuery(name = "InventoryXAdjust.InventoryXAdjust", query = "select distinct new org.openelis.domain.InventoryAdjustmentChildDO(trans.id, il.id, " +
@@ -131,42 +130,33 @@ public class InventoryXAdjust implements Auditable, Cloneable {
        (physicalCount != null && !physicalCount.equals(this.physicalCount)))
       this.physicalCount = physicalCount;
   }
-
   
+  public InventoryLocation getInventoryLocation() {
+      return inventoryLocation;
+  }
+
   public void setClone() {
     try {
-      original = (InventoryXAdjust)this.clone();
-    }catch(Exception e){}
+        original = (InventoryXAdjust)this.clone();
+    }catch(Exception e){
+        e.printStackTrace();
+    }
   }
   
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
+  public Audit getAudit() {
+        Audit audit;
 
-      AuditUtil.getChangeXML(inventoryAdjustmentId,original.inventoryAdjustmentId,doc,"inventory_adjustment_id");
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.INVENTORY_X_ADJUST);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("inventory_adjustment_id", inventoryAdjustmentId, original.inventoryAdjustmentId)
+                 .setField("inventory_location_id", inventoryLocationId, original.inventoryLocationId)
+                 .setField("quantity", quantity, original.quantity)
+                 .setField("physical_count", physicalCount, original.physicalCount);
 
-      AuditUtil.getChangeXML(inventoryLocationId,original.inventoryLocationId,doc,"inventory_location_id");
-
-      AuditUtil.getChangeXML(quantity,original.quantity,doc,"quantity");
-
-      AuditUtil.getChangeXML(physicalCount,original.physicalCount,doc,"physical_count");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
-    }catch(Exception e){
-      e.printStackTrace();
+        return audit;
     }
-    return null;
-  }
-   
-  public String getTableName() {
-    return "inventory_x_adjust";
-  }
-public InventoryLocation getInventoryLocation() {
-    return inventoryLocation;
-}
   
 }   

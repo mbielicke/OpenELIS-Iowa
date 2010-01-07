@@ -4,10 +4,6 @@ package org.openelis.entity;
  * WorksheetQcResult Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.XMLUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -18,7 +14,9 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -112,39 +110,24 @@ public class WorksheetQcResult implements Auditable, Cloneable {
         try {
             original = (WorksheetQcResult)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-
-            AuditUtil.getChangeXML(worksheetAnalysisId,
-                                   original.worksheetAnalysisId,
-                                   doc,
-                                   "worksheet_analysis_id");
-
-            AuditUtil.getChangeXML(sortOrder, original.sortOrder, doc, "sort_order");
-
-            AuditUtil.getChangeXML(qcAnalyteId, original.qcAnalyteId, doc, "qc_analyte_id");
-
-            AuditUtil.getChangeXML(typeId, original.typeId, doc, "type_id");
-
-            AuditUtil.getChangeXML(value, original.value, doc, "value");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 
-    public String getTableName() {
-        return "worksheet_qc_result";
-    }
+    public Audit getAudit() {
+        Audit audit;
 
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.WORKSHEET_QC_RESULT);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("worksheet_analysis_id", worksheetAnalysisId, original.worksheetAnalysisId)
+                 .setField("sort_order", sortOrder, original.sortOrder)
+                 .setField("qc_analyte_id", qcAnalyteId, original.qcAnalyteId)
+                 .setField("type_id", typeId, original.typeId)
+                 .setField("value", value, original.value);
+
+        return audit;
+    }
 }

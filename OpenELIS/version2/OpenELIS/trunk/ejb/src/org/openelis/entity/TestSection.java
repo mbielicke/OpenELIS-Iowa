@@ -4,10 +4,6 @@ package org.openelis.entity;
  * TestSection Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.XMLUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -20,13 +16,15 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQuery(name = "TestSection.FetchByTestId", 
-            query = "select distinct new org.openelis.domain.TestSectionViewDO(ts.id,ts.testId,ts.sectionId,ts.flagId,s.name) "
-            + " from TestSection ts left join ts.section s where ts.testId = :testId")
+@NamedQuery( name = "TestSection.FetchByTestId", 
+            query = "select distinct new org.openelis.domain.TestSectionViewDO(ts.id,ts.testId,ts.sectionId,ts.flagId,s.name)"
+                  + " from TestSection ts left join ts.section s where ts.testId = :testId")
 @Entity
 @Table(name = "test_section")
 @EntityListeners( {AuditUtil.class})
@@ -101,29 +99,23 @@ public class TestSection implements Auditable, Cloneable {
         try {
             original = (TestSection)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(testId, original.testId, doc, "test_id");
-            AuditUtil.getChangeXML(sectionId, original.sectionId, doc, "section_id");
-            AuditUtil.getChangeXML(flagId, original.flagId, doc, "flag_id");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 
-    public String getTableName() {
-        return "test_section";
+    public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.TEST_SECTION);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("test_id", testId, original.testId)
+                 .setField("section_id", sectionId, original.sectionId)
+                 .setField("flag_id", flagId, original.flagId);
+
+        return audit;
     }
 
 }

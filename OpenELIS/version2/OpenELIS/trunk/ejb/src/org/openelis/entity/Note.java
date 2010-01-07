@@ -29,12 +29,8 @@ package org.openelis.entity;
  * Note Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -45,7 +41,10 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -168,32 +167,26 @@ public class Note implements Auditable, Cloneable {
         try {
             original = (Note)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(referenceId, original.referenceId, doc, "reference_id");
-            AuditUtil.getChangeXML(referenceTableId, original.referenceTableId, doc, "reference_table_id");
-            AuditUtil.getChangeXML(timestamp, original.timestamp, doc, "timestamp");
-            AuditUtil.getChangeXML(isExternal, original.isExternal, doc, "is_external");
-            AuditUtil.getChangeXML(systemUserId, original.systemUserId, doc, "system_user_id");
-            AuditUtil.getChangeXML(subject, original.subject, doc, "subject");
-            AuditUtil.getChangeXML(text, original.text, doc, "text");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 
-    public String getTableName() {
-        return "note";
+    public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.NOTE);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("reference_id", referenceId, original.referenceId)
+                 .setField("reference_table_id", referenceTableId, original.referenceTableId)
+                 .setField("timestamp", timestamp, original.timestamp)
+                 .setField("is_external", isExternal, original.isExternal)
+                 .setField("system_user_id", systemUserId, original.systemUserId)
+                 .setField("subject", subject, original.subject)
+                 .setField("text", text, original.text);
+
+        return audit;
     }
 }

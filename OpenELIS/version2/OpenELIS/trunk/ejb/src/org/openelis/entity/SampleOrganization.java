@@ -42,12 +42,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.util.XMLUtil;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 @NamedQueries( {
     @NamedQuery(name = "SampleOrg.SampleOrgBySampleId", query = "select new org.openelis.domain.SampleOrganizationViewDO(so.id, so.sampleId, " + 
@@ -116,44 +115,42 @@ public class SampleOrganization implements Auditable, Cloneable {
       this.typeId = typeId;
   }
   
+  public Organization getOrganization() {
+      return organization;
+  }
+  
+  public void setOrganization(Organization organization) {
+      this.organization = organization;
+  }
+  
+  public Sample getSample() {
+      return sample;
+  }
+  
+  public void setSample(Sample sample) {
+      this.sample = sample;
+  }
+  
   public void setClone() {
     try {
-      original = (SampleOrganization)this.clone();
-    }catch(Exception e){}
-  }
-  
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
-      AuditUtil.getChangeXML(sampleId,original.sampleId,doc,"sample_id");
-      AuditUtil.getChangeXML(organizationId,original.organizationId,doc,"organization_id");
-      AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
+        original = (SampleOrganization)this.clone();
     }catch(Exception e){
-      e.printStackTrace();
+        e.printStackTrace();
     }
-    return null;
   }
-   
-  public String getTableName() {
-    return "sample_organization";
-  }
-public Organization getOrganization() {
-    return organization;
-}
-public void setOrganization(Organization organization) {
-    this.organization = organization;
-}
-public Sample getSample() {
-    return sample;
-}
-public void setSample(Sample sample) {
-    this.sample = sample;
-}
   
+  public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.SAMPLE_ORGANIZATION);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("sample_id", sampleId, original.sampleId)
+                 .setField("organization_id", organizationId, original.organizationId)
+                 .setField("type_id", typeId, original.typeId);
+
+        return audit;
+  }
 }   

@@ -42,12 +42,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.util.XMLUtil;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 @NamedQueries({
 	@NamedQuery( name = "StandardNote.FetchById", 
 			    query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.typeId,s.text)"
@@ -131,35 +130,28 @@ public class StandardNote implements Auditable, Cloneable {
     if(DataBaseUtil.isDifferent(text,this.text))
       this.text = text;
   }
-
   
   public void setClone() {
     try {
-      original = (StandardNote)this.clone();
-    }catch(Exception e){}
-  }
-  
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
-      AuditUtil.getChangeXML(name,original.name,doc,"name");
-      AuditUtil.getChangeXML(description,original.description,doc,"description");
-      AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
-      AuditUtil.getChangeXML(text,original.text,doc,"text");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
+        original = (StandardNote)this.clone();
     }catch(Exception e){
-      e.printStackTrace();
+        e.printStackTrace();
     }
-    return null;
-  }
-   
-  public String getTableName() {
-    return "standard_note";
   }
   
+  public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.STANDARD_NOTE);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("name", name, original.name)
+                 .setField("description", description, original.description)
+                 .setField("type_id", typeId, original.typeId)
+                 .setField("text", text, original.text);
+
+        return audit;
+  } 
 }   

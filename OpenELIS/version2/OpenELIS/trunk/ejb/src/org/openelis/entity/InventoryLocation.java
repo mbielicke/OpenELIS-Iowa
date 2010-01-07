@@ -29,13 +29,8 @@ package org.openelis.entity;
  * InventoryLocation Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.entity.StorageLocation;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -49,7 +44,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -195,27 +193,20 @@ public class InventoryLocation implements Auditable, Cloneable {
         }
     }
 
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
+    public Audit getAudit() {
+        Audit audit;
 
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(inventoryItemId, original.inventoryItemId, doc, "inventory_item_id");
-            AuditUtil.getChangeXML(lotNumber, original.lotNumber, doc, "lot_number");
-            AuditUtil.getChangeXML(storageLocationId, original.storageLocationId, doc, "storage_location_id");
-            AuditUtil.getChangeXML(quantityOnhand, original.quantityOnhand, doc, "quantity_onhand");
-            AuditUtil.getChangeXML(expirationDate, original.expirationDate, doc, "expiration_date");
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.INVENTORY_LOCATION);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("inventory_item_id", inventoryItemId, original.inventoryItemId)
+                 .setField("lot_number", lotNumber, original.lotNumber)
+                 .setField("storage_location_id", storageLocationId, original.storageLocationId)
+                 .setField("quantity_onhand", quantityOnhand, original.quantityOnhand)
+                 .setField("expiration_date", expirationDate, original.expirationDate);
 
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public String getTableName() {
-        return "inventory_location";
+        return audit;
     }
 }

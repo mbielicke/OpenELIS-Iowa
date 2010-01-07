@@ -29,11 +29,6 @@ package org.openelis.entity;
  * OrganizationContact Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.entity.Address;
-import org.openelis.util.XMLUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -47,7 +42,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -148,26 +145,20 @@ public class OrganizationContact implements Auditable, Cloneable {
         }
     }
 
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
+    public Audit getAudit() {
+        Audit audit;
 
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(organizationId, original.organizationId, doc, "organization_id");
-            AuditUtil.getChangeXML(contactTypeId, original.contactTypeId, doc, "contact_type_id");
-            AuditUtil.getChangeXML(name, original.name, doc, "name");
-            AuditUtil.getChangeXML(addressId, original.addressId, doc, "address_id");
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.ORGANIZATION_CONTACT);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("organization_id", organizationId, original.organizationId)
+                 .setField("contact_type_id", contactTypeId, original.contactTypeId)
+                 .setField("name", name, original.name)
+                 .setField("address_id", addressId, original.addressId);
 
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        return audit;
     }
-
-    public String getTableName() {
-        return "organization_contact";
-    }
+    
 }

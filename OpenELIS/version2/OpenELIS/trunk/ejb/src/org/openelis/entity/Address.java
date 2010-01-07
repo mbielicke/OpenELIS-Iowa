@@ -29,13 +29,6 @@ package org.openelis.entity;
  * Address Entity POJO for database
  */
 
-import org.openelis.util.XMLUtil;
-import org.openelis.utilcommon.DataBaseUtil;
-import org.openelis.utils.AuditUtil;
-import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -45,6 +38,12 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.domain.ReferenceTable;
+import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
+import org.openelis.utils.AuditUtil;
+import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "Address.FetchById",
@@ -211,34 +210,27 @@ public class Address implements Auditable, Cloneable {
             e.printStackTrace();
         }
     }
+    
+    public Audit getAudit() {
+        Audit audit;
 
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.ADDRESS);
+        audit.setReferenceId(getId());        
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("multiple_unit", multipleUnit, original.multipleUnit)
+                 .setField("street_address", streetAddress, original.streetAddress)
+                 .setField("city", city, original.city)
+                 .setField("state", state, original.state)
+                 .setField("zip_code", zipCode, original.zipCode)
+                 .setField("work_phone", workPhone, original.workPhone)
+                 .setField("home_phone", homePhone, original.homePhone)
+                 .setField("cell_phone", cellPhone, original.cellPhone)
+                 .setField("fax_phone", faxPhone, original.faxPhone)
+                 .setField("email", email, original.email)
+                 .setField("country", country, original.country);
 
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(multipleUnit, original.multipleUnit, doc, "multiple_unit");
-            AuditUtil.getChangeXML(streetAddress, original.streetAddress, doc, "street_address");
-            AuditUtil.getChangeXML(city, original.city, doc, "city");
-            AuditUtil.getChangeXML(state, original.state, doc, "state");
-            AuditUtil.getChangeXML(zipCode, original.zipCode, doc, "zip_code");
-            AuditUtil.getChangeXML(workPhone, original.workPhone, doc, "work_phone");
-            AuditUtil.getChangeXML(homePhone, original.homePhone, doc, "home_phone");
-            AuditUtil.getChangeXML(cellPhone, original.cellPhone, doc, "cell_phone");
-            AuditUtil.getChangeXML(faxPhone, original.faxPhone, doc, "fax_phone");
-            AuditUtil.getChangeXML(email, original.email, doc, "email");
-            AuditUtil.getChangeXML(country, original.country, doc, "country");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public String getTableName() {
-        return "address";
+        return audit;
     }
 }

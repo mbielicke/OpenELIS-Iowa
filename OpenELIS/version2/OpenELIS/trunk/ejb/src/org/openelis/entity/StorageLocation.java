@@ -48,33 +48,32 @@ import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.util.XMLUtil;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 @NamedQueries({
-    @NamedQuery(name = "StorageLocation.FetchById",
-               query = "select new org.openelis.domain.StorageLocationViewDO(s.id,s.sortOrder,s.name, " +
-                       "s.location,s.parentStorageLocationId,s.storageUnitId,s.isAvailable,s.storageUnit.description)"
-                     + " from StorageLocation s where s.id = :id"),
-    @NamedQuery(name = "StorageLocation.FetchByParentStorageLocationId",
-               query = "select new org.openelis.domain.StorageLocationViewDO(s.id,s.sortOrder,s.name, " +
-                       "s.location,s.parentStorageLocationId,s.storageUnitId,s.isAvailable, s.storageUnit.description)"
-                     + " from StorageLocation s where s.parentStorageLocationId = :id order by s.sortOrder"),
-    @NamedQuery(name = "StorageLocation.FetchByName",
-               query = "select new org.openelis.domain.StorageLocationViewDO(s.id,s.sortOrder,s.name, " +
-                       "s.location,s.parentStorageLocationId,s.storageUnitId,s.isAvailable,s.storageUnit.description)"
-                     + " from StorageLocation s where s.name = :name"),
-@NamedQuery(name = "StorageLocation.FetchAvailableByName",
-            query = "select new org.openelis.domain.StorageLocationVO(childLoc.id, childLoc.name, childLoc.location, " +
-                    "parentLoc.name, childLoc.storageUnit.description) " 
-                  + " from StorageLocation childLoc left join childLoc.parentStorageLocation parentLoc where "
-                  + " (childLoc.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId=childLoc.id))"
-                  + " and (childLoc.name like :name OR childLoc.location like :loc OR childLoc.storageUnit.description like :desc) and childLoc.isAvailable = 'Y'"
-                  + " order by childLoc.name")})
+    @NamedQuery( name = "StorageLocation.FetchById",
+                query = "select new org.openelis.domain.StorageLocationViewDO(s.id,s.sortOrder,s.name," +
+                        "s.location,s.parentStorageLocationId,s.storageUnitId,s.isAvailable,s.storageUnit.description)"
+                      + " from StorageLocation s where s.id = :id"),
+    @NamedQuery( name = "StorageLocation.FetchByParentStorageLocationId",
+                query = "select new org.openelis.domain.StorageLocationViewDO(s.id,s.sortOrder,s.name, " +
+                        "s.location,s.parentStorageLocationId,s.storageUnitId,s.isAvailable, s.storageUnit.description)"
+                      + " from StorageLocation s where s.parentStorageLocationId = :id order by s.sortOrder"),
+    @NamedQuery( name = "StorageLocation.FetchByName",
+                query = "select new org.openelis.domain.StorageLocationViewDO(s.id,s.sortOrder,s.name, " +
+                        "s.location,s.parentStorageLocationId,s.storageUnitId,s.isAvailable,s.storageUnit.description)"
+                      + " from StorageLocation s where s.name = :name"),
+    @NamedQuery( name = "StorageLocation.FetchAvailableByName",
+                query = "select new org.openelis.domain.StorageLocationVO(childLoc.id, childLoc.name, childLoc.location," +
+                        "parentLoc.name, childLoc.storageUnit.description) " 
+                      + " from StorageLocation childLoc left join childLoc.parentStorageLocation parentLoc where"
+                      + " (childLoc.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId=childLoc.id))"
+                      + " and (childLoc.name like :name OR childLoc.location like :loc OR childLoc.storageUnit.description like :desc) and childLoc.isAvailable = 'Y'"
+                      + " order by childLoc.name")})
 
 @NamedNativeQuery(name = "StorageLocation.ReferenceCheck",
                   query = "select storage_location_id as STORAGE_LOCATION_ID from storage where storage_location_id = :id " +
@@ -219,32 +218,25 @@ public class StorageLocation implements Auditable, Cloneable {
         try {
             original = (StorageLocation)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(sortOrder, original.sortOrder, doc, "sort_order_id");
-            AuditUtil.getChangeXML(name, original.name, doc, "name");
-            AuditUtil.getChangeXML(location, original.location, doc, "location");
-            AuditUtil.getChangeXML(parentStorageLocationId, original.parentStorageLocationId, doc, "parent_storage_location_id");
-            AuditUtil.getChangeXML(storageUnitId, original.storageUnitId, doc, "storage_unit_id");
-            AuditUtil.getChangeXML(isAvailable, original.isAvailable, doc, "is_available");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 
-    public String getTableName() {
-        return "storage_location";
-    }
+    public Audit getAudit() {
+        Audit audit;
 
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.STORAGE_LOCATION);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("sort_order", sortOrder, original.sortOrder)
+                 .setField("name", name, original.name)
+                 .setField("location", location, original.location)
+                 .setField("parent_storage_location_id", parentStorageLocationId, original.parentStorageLocationId)
+                 .setField("storage_unit_id", storageUnitId, original.storageUnitId)
+                 .setField("is_available", isAvailable, original.isAvailable);
+
+        return audit;
+    }
 }

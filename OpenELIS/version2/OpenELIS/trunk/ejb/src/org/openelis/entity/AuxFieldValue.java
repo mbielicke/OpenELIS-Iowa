@@ -29,10 +29,6 @@ package org.openelis.entity;
  * AuxFieldValue Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.XMLUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -43,20 +39,22 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-    @NamedQuery(name = "AuxFieldValue.FetchById",
-               query = "select distinct new org.openelis.domain.AuxFieldValueViewDO(afv.id,afv.auxFieldId,afv.typeId,afv.value,'')"
-                     + " from AuxFieldValue afv where afv.auxFieldId = :auxFieldId"),
-    @NamedQuery(name = "AuxFieldValue.FetchByGroupId",
-               query = "select distinct new org.openelis.domain.AuxFieldValueViewDO(afv.id,afv.auxFieldId, afv.typeId,afv.value,'')"
-                     + " from AuxField af left join af.auxFieldValue afv where af.auxFieldGroupId = :groupId order by afv.auxFieldId "),
-    @NamedQuery(name = "AuxFieldValue.FetchByDataRefId", 
-               query = "select distinct new org.openelis.domain.AuxFieldValueViewDO(afv.id,afv.auxFieldId, afv.typeId,afv.value,'')" 
-                     + " from AuxData ad, IN (ad.auxField) af left join af.auxFieldValue afv where ad.referenceId = :id and ad.referenceTableId = :tableId order by afv.auxFieldId")})
+    @NamedQuery( name = "AuxFieldValue.FetchById",
+                query = "select distinct new org.openelis.domain.AuxFieldValueViewDO(afv.id,afv.auxFieldId,afv.typeId,afv.value,'')"
+                      + " from AuxFieldValue afv where afv.auxFieldId = :auxFieldId"),
+    @NamedQuery( name = "AuxFieldValue.FetchByGroupId",
+                query = "select distinct new org.openelis.domain.AuxFieldValueViewDO(afv.id,afv.auxFieldId, afv.typeId,afv.value,'')"
+                      + " from AuxField af left join af.auxFieldValue afv where af.auxFieldGroupId = :groupId order by afv.auxFieldId "),
+    @NamedQuery( name = "AuxFieldValue.FetchByDataRefId", 
+                query = "select distinct new org.openelis.domain.AuxFieldValueViewDO(afv.id,afv.auxFieldId, afv.typeId,afv.value,'')" 
+                      + " from AuxData ad, IN (ad.auxField) af left join af.auxFieldValue afv where ad.referenceId = :id and ad.referenceTableId = :tableId order by afv.auxFieldId")})
 @Entity
 @Table(name = "aux_field_value")
 @EntityListeners( {AuditUtil.class})
@@ -119,29 +117,23 @@ public class AuxFieldValue implements Auditable, Cloneable {
         try {
             original = (AuxFieldValue)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(auxFieldId, original.auxFieldId, doc, "aux_field_id");
-            AuditUtil.getChangeXML(typeId, original.typeId, doc, "type_id");
-            AuditUtil.getChangeXML(value, original.value, doc, "value");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
+    
+    public Audit getAudit() {
+        Audit audit;
 
-    public String getTableName() {
-        return "aux_field_value";
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.AUX_FIELD_VALUE);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("aux_field_id", auxFieldId, original.auxFieldId)
+                 .setField("type_id", typeId, original.typeId)
+                 .setField("value", value, original.value);
+
+        return audit;
     }
 
 }

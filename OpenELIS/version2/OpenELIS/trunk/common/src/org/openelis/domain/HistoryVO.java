@@ -23,54 +23,43 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.entity;
+
+package org.openelis.domain;
 
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
 
 import org.openelis.gwt.common.Datetime;
 import org.openelis.utilcommon.DataBaseUtil;
 
-@NamedQueries({
-    @NamedQuery( name  = "History.FetchByReferenceIdAndTable",
-                 query = "select new org.openelis.domain.HistoryVO(h.id,h.referenceId,h.referenceTableId," +
-                         "h.timestamp,h.activityId,h.systemUserId,h.changes)"
-                       + " from History h where referenceId = :referenceId and referenceTableId = :referenceTableId")})
+import org.openelis.gwt.common.RPC;
 
-@Entity
-@Table(name = "history")
-public class History {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Integer id;
+/**
+ * The class is used to carry the fields in history table and some additional
+ * fields. The fields are considered read/display and do not get committed to
+ * the database.
+ */
 
-    @Column(name = "reference_id")
-    private Integer referenceId;
+public class HistoryVO implements RPC {
 
-    @Column(name = "reference_table_id")
-    private Integer referenceTableId;
+    private static final long serialVersionUID = 1L;
 
-    @Column(name = "timestamp")
-    private Date    timestamp;
+    protected Integer         id, referenceId, referenceTableId, activityId, systemUserId;
+    protected Datetime        timestamp;
+    protected String          changes, systemUserLoginName;
 
-    @Column(name = "activity_id")
-    private Integer activityId;
+    public HistoryVO() {
+    }
 
-    @Column(name = "system_user_id")
-    private Integer systemUserId;
-    
-    @Lob
-    @Column(name = "changes")
-    private String  changes;
+    public HistoryVO(Integer id, Integer referenceId, Integer referenceTableId, Date timestamp,
+                     Integer activityId, Integer systemUserId, String changes) {
+        setId(id);
+        setReferenceId(referenceId);
+        setReferenceTableId(referenceTableId);
+        setTimestamp(DataBaseUtil.toYS(timestamp));
+        setActivityId(activityId);
+        setSystemUserId(systemUserId);
+        setChanges(changes);
+    }
 
     public Integer getId() {
         return id;
@@ -96,28 +85,36 @@ public class History {
         this.referenceTableId = referenceTableId;
     }
 
-    public Datetime getTimestamp() {
-        return DataBaseUtil.toYS(timestamp);
-    }
-
-    public void setTimestamp(Datetime timestamp) {
-        this.timestamp = DataBaseUtil.toDate(timestamp);
-    }
-
     public Integer getActivityId() {
         return activityId;
     }
 
-    public void setActivityId(Integer activity) {
-        this.activityId = activity;
+    public void setActivityId(Integer activityId) {
+        this.activityId = activityId;
     }
 
     public Integer getSystemUserId() {
         return systemUserId;
     }
 
-    public void setSystemUserId(Integer systemUser) {
-        this.systemUserId = systemUser;
+    public void setSystemUserId(Integer systemUserId) {
+        this.systemUserId = systemUserId;
+    }
+
+    public String getSystemUserLoginName() {
+        return systemUserLoginName;
+    }
+
+    public void setSystemUserLoginName(String systemUserLoginName) {
+        this.systemUserLoginName = DataBaseUtil.trim(systemUserLoginName);
+    }
+
+    public Datetime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Datetime timestamp) {
+        this.timestamp = DataBaseUtil.toYS(timestamp);
     }
 
     public String getChanges() {
@@ -125,6 +122,6 @@ public class History {
     }
 
     public void setChanges(String changes) {
-        this.changes = changes;
+        this.changes = DataBaseUtil.trim(changes);
     }
 }

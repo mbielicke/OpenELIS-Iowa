@@ -29,9 +29,9 @@ public interface Auditable {
 
     public void setClone();
 
-    public String getChangeXML();
+    public Audit getAudit();
 
-    public String getTableName();
+    //public Integer getTableReferenceId();
 
-    public Integer getId();
+    //public Integer getId();
 }

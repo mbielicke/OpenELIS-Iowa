@@ -5,12 +5,6 @@ package org.openelis.entity;
   * InventoryReceiptOrderItem Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -18,6 +12,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.domain.ReferenceTable;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -72,31 +69,24 @@ public class InventoryReceiptOrderItem implements Auditable, Cloneable {
   
   public void setClone() {
     try {
-      original = (InventoryReceiptOrderItem)this.clone();
-    }catch(Exception e){}
+        original = (InventoryReceiptOrderItem)this.clone();
+    }catch(Exception e){
+        e.printStackTrace();
+    }
   }
   
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
+  public Audit getAudit() {
+        Audit audit;
 
-      AuditUtil.getChangeXML(inventoryReceiptId,original.inventoryReceiptId,doc,"inventory_receipt_id");
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.INVENTORY_RECEIPT_ORDER_ITEM);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("inventory_receipt_id", inventoryReceiptId, original.inventoryReceiptId)
+                 .setField("order_item_id", orderItemId, original.orderItemId);
 
-      AuditUtil.getChangeXML(orderItemId,original.orderItemId,doc,"order_item_id");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
-    }catch(Exception e){
-      e.printStackTrace();
+        return audit;
     }
-    return null;
-  }
-   
-  public String getTableName() {
-    return "inventory_receipt_order_item";
-  }
   
 }   

@@ -29,10 +29,6 @@ package org.openelis.entity;
   * Scriptlet Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.XMLUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -42,6 +38,9 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.domain.ReferenceTable;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -102,30 +101,22 @@ public class Scriptlet implements Auditable, Cloneable {
   public void setClone() {
     try {
       original = (Scriptlet)this.clone();
-    }catch(Exception e){}
-  }
-  
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
-
-      AuditUtil.getChangeXML(name,original.name,doc,"name");
-
-      AuditUtil.getChangeXML(codeSource,original.codeSource,doc,"code_source");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
     }catch(Exception e){
-      e.printStackTrace();
+        e.printStackTrace();
     }
-    return null;
-  }
-   
-  public String getTableName() {
-    return "scriptlet";
   }
   
+  public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.SCRIPTLET);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("name", name, original.name)
+                 .setField("code_source", codeSource, original.codeSource);
+
+        return audit;
+  }
 }   

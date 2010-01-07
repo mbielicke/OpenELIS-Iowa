@@ -42,11 +42,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.util.XMLUtil;
+import org.openelis.domain.ReferenceTable;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
     @NamedQueries( {
         @NamedQuery(name = "ShippingItem.ShippingItem", query = "select new org.openelis.domain.ShippingItemDO(s.id, s.shippingId, s.referenceTableId, s.referenceId, oi.quantity, loc.id, trans.id) "+
@@ -133,51 +132,43 @@ public class ShippingItem implements Auditable, Cloneable {
   public String getDescription() {
       return description;
     }
-    public void setDescription(String description) {
+  
+  public void setDescription(String description) {
       if((description == null && this.description != null) || 
          (description != null && !description.equals(this.description)))
-        this.description = description;
-    }
+          this.description = description;
+  }
+  
+  public OrderItem getOrderItem() {
+      return orderItem;
+  }
+  
+  public void setOrderItem(OrderItem orderItem) {
+      this.orderItem = orderItem;
+  }
   
   public void setClone() {
     try {
-      original = (ShippingItem)this.clone();
-    }catch(Exception e){}
-  }
-  
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
-
-      AuditUtil.getChangeXML(shippingId,original.shippingId,doc,"shipping_id");
-
-      AuditUtil.getChangeXML(referenceTableId,original.referenceTableId,doc,"reference_table_id");
-
-      AuditUtil.getChangeXML(referenceId,original.referenceId,doc,"reference_id");
-      
-      AuditUtil.getChangeXML(quantity,original.quantity,doc,"quantity");
-      
-      AuditUtil.getChangeXML(description,original.description,doc,"description");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
+        original = (ShippingItem)this.clone();
     }catch(Exception e){
-      e.printStackTrace();
+        e.printStackTrace();
     }
-    return null;
   }
-   
-  public String getTableName() {
-    return "shipping_item";
-  }
-public OrderItem getOrderItem() {
-    return orderItem;
-}
-public void setOrderItem(OrderItem orderItem) {
-    this.orderItem = orderItem;
-}
   
+  public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.SHIPPING_ITEM);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("shipping_id", shippingId, original.shippingId)
+                 .setField("reference_table_id", referenceTableId, original.referenceTableId)
+                 .setField("reference_id", referenceId, original.referenceId)
+                 .setField("quantity", quantity, original.quantity)
+                 .setField("description", description, original.description);
+
+        return audit;
+  }
 }   

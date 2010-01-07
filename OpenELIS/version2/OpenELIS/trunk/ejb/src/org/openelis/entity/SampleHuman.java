@@ -42,11 +42,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.util.XMLUtil;
+import org.openelis.domain.ReferenceTable;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 @NamedQueries( {
     @NamedQuery(name = "SampleHuman.SampleHumanBySampleId", query = "select new org.openelis.domain.SampleHumanDO(sh.id, sh.sampleId, sh.patientId, " + 
@@ -135,56 +134,46 @@ public class SampleHuman implements Auditable, Cloneable {
       this.providerPhone = providerPhone;
   }
 
+  public Sample getSample() {
+      return sample;
+  }
+  public void setSample(Sample sample) {
+      this.sample = sample;
+  }
+  public Patient getPatient() {
+      return patient;
+  }
+  public void setPatient(Patient patient) {
+      this.patient = patient;
+  }
+  public Provider getProvider() {
+      return provider;
+  }
+  public void setProvider(Provider provider) {
+      this.provider = provider;
+  }
   
   public void setClone() {
     try {
-      original = (SampleHuman)this.clone();
-    }catch(Exception e){}
-  }
-  
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
-
-      AuditUtil.getChangeXML(sampleId,original.sampleId,doc,"sample_id");
-
-      AuditUtil.getChangeXML(patientId,original.patientId,doc,"patient_id");
-
-      AuditUtil.getChangeXML(providerId,original.providerId,doc,"provider_id");
-
-      AuditUtil.getChangeXML(providerPhone,original.providerPhone,doc,"provider_phone");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
+        original = (SampleHuman)this.clone();
     }catch(Exception e){
-      e.printStackTrace();
+        e.printStackTrace();
     }
-    return null;
   }
-   
-  public String getTableName() {
-    return "sample_human";
-  }
-public Sample getSample() {
-    return sample;
-}
-public void setSample(Sample sample) {
-    this.sample = sample;
-}
-public Patient getPatient() {
-    return patient;
-}
-public void setPatient(Patient patient) {
-    this.patient = patient;
-}
-public Provider getProvider() {
-    return provider;
-}
-public void setProvider(Provider provider) {
-    this.provider = provider;
-}
   
+  public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.SAMPLE_HUMAN);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("sample_id", sampleId, original.sampleId)
+                 .setField("patient_id", patientId, original.patientId)
+                 .setField("provider_id", providerId, original.providerId)
+                 .setField("provider_phone", providerPhone, original.providerPhone);
+
+        return audit;
+  }
 }   

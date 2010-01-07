@@ -29,13 +29,9 @@ package org.openelis.entity;
  * Qc Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
 import java.util.Collection;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -50,7 +46,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -266,34 +265,27 @@ public class Qc implements Auditable, Cloneable {
         }
     }
 
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
+    public Audit getAudit() {
+        Audit audit;
 
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(name, original.name, doc, "name");
-            AuditUtil.getChangeXML(typeId, original.typeId, doc, "type_id");
-            AuditUtil.getChangeXML(inventoryItemId, original.inventoryItemId, doc, "inventory_item_id");
-            AuditUtil.getChangeXML(source, original.source, doc, "source");
-            AuditUtil.getChangeXML(lotNumber, original.lotNumber, doc, "lot_number");
-            AuditUtil.getChangeXML(preparedDate, original.preparedDate, doc, "prepared_date");
-            AuditUtil.getChangeXML(preparedVolume, original.preparedVolume, doc, "prepared_volume");
-            AuditUtil.getChangeXML(preparedUnitId, original.preparedUnitId, doc, "prepared_unit_id");
-            AuditUtil.getChangeXML(preparedById, original.preparedById, doc, "prepared_by_id");
-            AuditUtil.getChangeXML(usableDate, original.usableDate, doc, "usable_date");
-            AuditUtil.getChangeXML(expireDate, original.expireDate, doc, "expire_date");
-            AuditUtil.getChangeXML(isActive, original.isActive, doc, "is_active");
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.QC);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("name", name, original.name)
+                 .setField("type_id", typeId, original.typeId)
+                 .setField("inventory_item_id", inventoryItemId, original.inventoryItemId)
+                 .setField("source", source, original.source)
+                 .setField("lot_number", lotNumber, original.lotNumber)
+                 .setField("prepared_date", preparedDate, original.preparedDate)
+                 .setField("prepared_volume", preparedVolume, original.preparedVolume)
+                 .setField("prepared_unit_id", preparedUnitId, original.preparedUnitId)
+                 .setField("prepared_by_id", preparedById, original.preparedById)
+                 .setField("usable_date", usableDate, original.usableDate)
+                 .setField("expire_date", expireDate, original.expireDate)
+                 .setField("is_active", isActive, original.isActive);
 
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public String getTableName() {
-        return "qc";
+        return audit;
     }
 }

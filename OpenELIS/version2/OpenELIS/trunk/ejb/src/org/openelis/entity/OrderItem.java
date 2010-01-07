@@ -47,11 +47,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.util.XMLUtil;
+import org.openelis.domain.ReferenceTable;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 @NamedQueries( {
     /*@NamedQuery(name = "OrderItem.OrderItemsWithLocByOrderId", query = "select distinct new org.openelis.domain.OrderItemDO(oi.id, oi.orderId, oi.inventoryItemId, ii.name,oi.quantity, " +
@@ -169,41 +168,6 @@ public class OrderItem implements Auditable, Cloneable {
          (catalogNumber != null && !catalogNumber.equals(this.catalogNumber)))
           this.catalogNumber = catalogNumber;
   }
-
-  public void setClone() {
-    try {
-      original = (OrderItem)this.clone();
-    }catch(Exception e){}
-  }
-  
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
-
-      AuditUtil.getChangeXML(orderId,original.orderId,doc,"order_id");
-
-      AuditUtil.getChangeXML(inventoryItemId,original.inventoryItemId,doc,"inventory_item_id");
-
-      AuditUtil.getChangeXML(quantity,original.quantity,doc,"quantity");
-      
-      AuditUtil.getChangeXML(catalogNumber,original.catalogNumber,doc,"catalog_number");
-      
-      AuditUtil.getChangeXML(unitCost,original.unitCost,doc,"unit_cost");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
-    }catch(Exception e){
-      e.printStackTrace();
-    }
-    return null;
-  }
-   
-  public String getTableName() {
-    return "order_item";
-  }
   
   public InventoryItem getInventoryItem() {
       return inventoryItem;
@@ -211,20 +175,48 @@ public class OrderItem implements Auditable, Cloneable {
   public void setInventoryItem(InventoryItem inventoryItem) {
       this.inventoryItem = inventoryItem;
   }
-public Order getOrder() {
-    return order;
-}
-public Collection<InventoryReceipt> getInventoryReceipts() {
-    return inventoryReceipts;
-}
-public void setInventoryReceipts(Collection<InventoryReceipt> inventoryReceipts) {
-    this.inventoryReceipts = inventoryReceipts;
-}
-public Collection<InventoryXUse> getInventoryXUse() {
-    return inventoryXUse;
-}
-public void setInventoryXUse(Collection<InventoryXUse> inventoryXUse) {
-    this.inventoryXUse = inventoryXUse;
-}
+
+  public Order getOrder() {
+      return order;
+  }
+  public Collection<InventoryReceipt> getInventoryReceipts() {
+      return inventoryReceipts;
+  }
   
+  public void setInventoryReceipts(Collection<InventoryReceipt> inventoryReceipts) {
+      this.inventoryReceipts = inventoryReceipts;
+  }
+  
+  public Collection<InventoryXUse> getInventoryXUse() {
+      return inventoryXUse;
+  }
+
+  public void setInventoryXUse(Collection<InventoryXUse> inventoryXUse) {
+      this.inventoryXUse = inventoryXUse;
+  }
+
+  public void setClone() {
+      try {
+          original = (OrderItem)this.clone();
+      }catch(Exception e){
+          e.printStackTrace();
+      }
+  }
+  
+  public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.ORDER_ITEM);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("order_id", orderId, original.orderId)
+                 .setField("inventory_item_id", inventoryItemId, original.inventoryItemId)
+                 .setField("quantity", quantity, original.quantity)
+                 .setField("catalog_number", catalogNumber, original.catalogNumber)
+                 .setField("unit_cost", unitCost, original.unitCost);
+
+        return audit;
+    }
 }   

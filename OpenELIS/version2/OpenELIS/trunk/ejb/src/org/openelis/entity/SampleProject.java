@@ -42,12 +42,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.util.XMLUtil;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 @NamedQueries( {
     @NamedQuery(name = "SampleProject.SampleProjectBySampleId", query = "select new org.openelis.domain.SampleProjectViewDO(sp.id, sp.sampleId, " + 
@@ -115,44 +114,42 @@ public class SampleProject implements Auditable, Cloneable {
       this.isPermanent = isPermanent;
   }
   
+  public Project getProject() {
+      return project;
+  }
+  
+  public void setProject(Project project) {
+      this.project = project;
+  }
+  
+  public Sample getSample() {
+      return sample;
+  }
+  
+  public void setSample(Sample sample) {
+      this.sample = sample;
+  }
+  
   public void setClone() {
     try {
       original = (SampleProject)this.clone();
-    }catch(Exception e){}
-  }
-  
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
-      AuditUtil.getChangeXML(sampleId,original.sampleId,doc,"sample_id");
-      AuditUtil.getChangeXML(projectId,original.projectId,doc,"project_id");
-      AuditUtil.getChangeXML(isPermanent,original.isPermanent,doc,"is_permanent");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
     }catch(Exception e){
-      e.printStackTrace();
+        e.printStackTrace();
     }
-    return null;
   }
-   
-  public String getTableName() {
-    return "sample_project";
-  }
-public Project getProject() {
-    return project;
-}
-public void setProject(Project project) {
-    this.project = project;
-}
-public Sample getSample() {
-    return sample;
-}
-public void setSample(Sample sample) {
-    this.sample = sample;
-}
   
+  public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.SAMPLE_PROJECT);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("sample_id", sampleId, original.sampleId)
+                 .setField("project_id", projectId, original.projectId)
+                 .setField("is_permanent", isPermanent, original.isPermanent);
+
+        return audit;
+  }
 }   

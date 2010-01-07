@@ -29,10 +29,6 @@ package org.openelis.entity;
  * ProjectParameter Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.XMLUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -43,7 +39,9 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -130,28 +128,21 @@ public class ProjectParameter implements Auditable, Cloneable {
             e.printStackTrace();
         }
     }
+    
+    public Audit getAudit() {
+        Audit audit;
 
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(projectId, original.projectId, doc, "project_id");
-            AuditUtil.getChangeXML(parameter, original.parameter, doc, "parameter");
-            AuditUtil.getChangeXML(operationId, original.operationId, doc, "operation_id");
-            AuditUtil.getChangeXML(value, original.value, doc, "value");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public String getTableName() {
-        return "project_parameter";
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.PROJECT_PARAMETER);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("project_id", projectId, original.projectId)
+                 .setField("parameter", parameter, original.parameter)
+                 .setField("operation_id", operationId, original.operationId)
+                 .setField("value", value, original.value);
+        
+        return audit;
     }
 
 }

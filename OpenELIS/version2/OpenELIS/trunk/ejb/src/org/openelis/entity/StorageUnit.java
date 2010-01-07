@@ -29,10 +29,6 @@ package org.openelis.entity;
  * StorageUnit Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.XMLUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -43,19 +39,21 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-    @NamedQuery(name = "StorageUnit.FetchById",
-               query = "select new org.openelis.domain.StorageUnitDO(s.id,s.categoryId,s.description,s.isSingular)"
-                     + " from StorageUnit s where s.id = :id"),
-    @NamedQuery(name = "StorageUnit.FetchByDescription",
-               query = "select new org.openelis.domain.IdNameVO(s.id,s.description,d.entry) "
-                     + " from StorageUnit s, Dictionary d where s.categoryId = d.id and s.description like :description order by s.description"),
-    @NamedQuery(name = "StorageUnit.ReferenceCheck",
-               query = "select storageUnitId from StorageLocation s where s.storageUnitId = :id"),                     
+    @NamedQuery( name = "StorageUnit.FetchById",
+                query = "select new org.openelis.domain.StorageUnitDO(s.id,s.categoryId,s.description,s.isSingular)"
+                      + " from StorageUnit s where s.id = :id"),
+    @NamedQuery( name = "StorageUnit.FetchByDescription",
+                query = "select new org.openelis.domain.IdNameVO(s.id,s.description,d.entry) "
+                      + " from StorageUnit s, Dictionary d where s.categoryId = d.id and s.description like :description order by s.description"),
+    @NamedQuery( name = "StorageUnit.ReferenceCheck",
+                query = "select storageUnitId from StorageLocation s where s.storageUnitId = :id"),                     
 })
 
 @Entity
@@ -120,29 +118,22 @@ public class StorageUnit implements Auditable, Cloneable {
         try {
             original = (StorageUnit)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(categoryId, original.categoryId, doc, "category");
-            AuditUtil.getChangeXML(description, original.description, doc, "description");
-            AuditUtil.getChangeXML(isSingular, original.isSingular, doc, "is_singular");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 
-    public String getTableName() {
-        return "storage_unit";
-    }
+    public Audit getAudit() {
+        Audit audit;
 
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.STORAGE_UNIT);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("category_id", categoryId, original.categoryId)
+                 .setField("description", description, original.description)
+                 .setField("is_singular", isSingular, original.isSingular);
+
+        return audit;
+    }
 }

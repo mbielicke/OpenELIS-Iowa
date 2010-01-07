@@ -42,12 +42,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.util.XMLUtil;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 @NamedQueries({
     @NamedQuery( name = "InventoryComponent.FetchByInventoryItemId",
@@ -132,28 +131,21 @@ public class InventoryComponent implements Auditable, Cloneable {
         try {
             original = (InventoryComponent)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(inventoryItemId, original.inventoryItemId, doc, "inventory_item_id");
-            AuditUtil.getChangeXML(componentId, original.componentId, doc, "component_id");
-            AuditUtil.getChangeXML(quantity, original.quantity, doc, "quantity");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
+    
+    public Audit getAudit() {
+        Audit audit;
 
-    public String getTableName() {
-        return "inventory_component";
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.INVENTORY_COMPONENT);
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("inventory_item_id", inventoryItemId, original.inventoryItemId)
+                 .setField("component_id", componentId, original.componentId)
+                 .setField("quantity", quantity, original.quantity);
+
+        return audit;
     }
 }

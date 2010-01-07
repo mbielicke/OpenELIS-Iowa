@@ -29,13 +29,8 @@ package org.openelis.entity;
  * Category Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.entity.Category;
-import org.openelis.entity.Dictionary;
-import org.openelis.util.XMLUtil;
-
 import java.util.Collection;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -49,19 +44,22 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries( {@NamedQuery(name = "Category.FetchById", 
-                            query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.sectionId,c.isSystem)"
-                                  + "  from Category c where c.id = :id"),
-                @NamedQuery(name = "Category.FetchBySystemName",
-                            query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.sectionId,c.isSystem)"
-                                  + "  from Category c where c.systemName = :systemName"),
-                @NamedQuery(name = "Category.FetchByName", 
-                            query = "select distinct new org.openelis.domain.IdNameVO(c.id, c.name) "
-                                  + "  from Category c where c.name like :name and c.isSystem = 'N' order by c.name")})
+@NamedQueries( {
+    @NamedQuery( name = "Category.FetchById", 
+                query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.sectionId,c.isSystem)"
+                      + "  from Category c where c.id = :id"),
+    @NamedQuery( name = "Category.FetchBySystemName",
+                query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.sectionId,c.isSystem)"
+                      + "  from Category c where c.systemName = :systemName"),
+    @NamedQuery( name = "Category.FetchByName", 
+                query = "select distinct new org.openelis.domain.IdNameVO(c.id, c.name) "
+                      + "  from Category c where c.name like :name and c.isSystem = 'N' order by c.name")})
 @Entity
 @Table(name = "category")
 @EntityListeners( {AuditUtil.class})
@@ -168,31 +166,25 @@ public class Category implements Auditable, Cloneable {
         try {
             original = (Category)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(systemName, original.systemName, doc, "system_name");
-            AuditUtil.getChangeXML(name, original.name, doc, "name");
-            AuditUtil.getChangeXML(description, original.description, doc, "description");
-            AuditUtil.getChangeXML(sectionId, original.sectionId, doc, "section_id");
-            AuditUtil.getChangeXML(isSystem, original.isSystem, doc, "is_system");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
+    
+    public Audit getAudit() {
+        Audit audit;
 
-    public String getTableName() {
-        return "category";
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.CATEGORY);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("system_name", systemName, original.systemName)
+                 .setField("name", name, original.name)
+                 .setField("description", description, original.description)
+                 .setField("section_id", sectionId, original.sectionId)
+                 .setField("is_system", isSystem, original.isSystem);
+
+        return audit;
     }
 
 }

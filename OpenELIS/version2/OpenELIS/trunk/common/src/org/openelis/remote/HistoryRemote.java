@@ -23,14 +23,15 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.local;
+package org.openelis.remote;
 
-import javax.ejb.Local;
+import java.util.ArrayList;
+
+import javax.ejb.Remote;
 
 import org.openelis.domain.HistoryVO;
 
-@Local
-public interface HistoryLocal {
-
-    public HistoryVO add(HistoryVO data);
+@Remote
+public interface HistoryRemote {
+    public ArrayList<HistoryVO> fetchByReferenceIdAndTable(Integer referenceId, Integer referenceTableId);
 }

@@ -29,12 +29,6 @@ package org.openelis.entity;
   * PatientRelation Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -42,6 +36,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.domain.ReferenceTable;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -108,33 +105,24 @@ public class PatientRelation implements Auditable, Cloneable {
   
   public void setClone() {
     try {
-      original = (PatientRelation)this.clone();
-    }catch(Exception e){}
-  }
-  
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
-
-      AuditUtil.getChangeXML(relationId,original.relationId,doc,"relation_id");
-
-      AuditUtil.getChangeXML(fromPatientId,original.fromPatientId,doc,"from_patient_id");
-
-      AuditUtil.getChangeXML(toPatientId,original.toPatientId,doc,"to_patient_id");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
+        original = (PatientRelation)this.clone();
     }catch(Exception e){
-      e.printStackTrace();
+        e.printStackTrace();
     }
-    return null;
-  }
-   
-  public String getTableName() {
-    return "patient_relation";
   }
   
+  public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.PATIENT_RELATION);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("relation_id", relationId, original.relationId)
+                 .setField("from_patient_id", fromPatientId, original.fromPatientId)
+                 .setField("to_patient_id", toPatientId, original.toPatientId);
+        
+        return audit;
+  }     
 }   

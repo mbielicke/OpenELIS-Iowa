@@ -29,15 +29,6 @@ package org.openelis.entity;
   * InventoryTransaction Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.entity.InventoryLocation;
-import org.openelis.entity.InventoryReceipt;
-import org.openelis.entity.OrderItem;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -48,6 +39,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.domain.ReferenceTable;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -173,46 +167,6 @@ public class InventoryTransaction implements Auditable, Cloneable {
        (quantity != null && !quantity.equals(this.quantity)))
       this.quantity = quantity;
   }
-
-  
-  public void setClone() {
-    try {
-      original = (InventoryTransaction)this.clone();
-    }catch(Exception e){}
-  }
-  
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
-
-      AuditUtil.getChangeXML(fromLocationId,original.fromLocationId,doc,"from_location_id");
-
-      AuditUtil.getChangeXML(fromReceiptId,original.fromReceiptId,doc,"from_receipt_id");
-
-      AuditUtil.getChangeXML(fromAdjustmentId,original.fromAdjustmentId,doc,"from_adjustment_id");
-
-      AuditUtil.getChangeXML(toOrderId,original.toOrderId,doc,"to_order_id");
-
-      AuditUtil.getChangeXML(toLocationId,original.toLocationId,doc,"to_location_id");
-
-      AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
-
-      AuditUtil.getChangeXML(quantity,original.quantity,doc,"quantity");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
-    }catch(Exception e){
-      e.printStackTrace();
-    }
-    return null;
-  }
-   
-  public String getTableName() {
-    return "inventory_transaction";
-  }
   
   public InventoryLocation getFromLocation() {
       return fromLocation;
@@ -221,24 +175,54 @@ public class InventoryTransaction implements Auditable, Cloneable {
   public void setFromLocation(InventoryLocation fromLocation) {
       this.fromLocation = fromLocation;
   }
-
+    
   public OrderItem getToOrder() {
       return toOrder;
   }
-
+    
   public void setToOrder(OrderItem toOrder) {
       this.toOrder = toOrder;
   }
-
+    
   public InventoryReceipt getFromReceipt() {
       return fromReceipt;
   }
-
+    
   public void setFromReceipt(InventoryReceipt fromReceipt) {
       this.fromReceipt = fromReceipt;
   }
-public InventoryLocation getToLocation() {
-    return toLocation;
-}
+    
+  public InventoryLocation getToLocation() {
+      return toLocation;
+  }
+
+  
+  public void setClone() {
+    try {
+        original = (InventoryTransaction)this.clone();
+    }catch(Exception e){
+        e.printStackTrace();
+    }
+  }
+  
+  public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.INVENTORY_TRANSACTION);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("from_location_id", fromLocationId, original.fromLocationId)
+                 .setField("from_receipt_id", fromReceiptId, original.fromReceiptId)
+                 .setField("from_adjustment_id", fromAdjustmentId, original.fromAdjustmentId)
+                 .setField("to_order_id", toOrderId, original.toOrderId)
+                 .setField("to_location_id", toLocationId, original.toLocationId)
+                 .setField("type_id", typeId, original.typeId)
+                 .setField("quantity", quantity, original.quantity);
+
+        return audit;
+
+    }
   
 }   

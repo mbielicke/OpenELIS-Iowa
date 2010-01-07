@@ -29,12 +29,6 @@ package org.openelis.entity;
   * ShippingTracking Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -44,6 +38,9 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.domain.ReferenceTable;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -93,6 +90,7 @@ public class ShippingTracking implements Auditable, Cloneable {
   public String getTrackingNumber() {
     return trackingNumber;
   }
+  
   public void setTrackingNumber(String trackingNumber) {
     if((trackingNumber == null && this.trackingNumber != null) || 
        (trackingNumber != null && !trackingNumber.equals(this.trackingNumber)))
@@ -102,31 +100,23 @@ public class ShippingTracking implements Auditable, Cloneable {
   
   public void setClone() {
     try {
-      original = (ShippingTracking)this.clone();
-    }catch(Exception e){}
-  }
-  
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
-
-      AuditUtil.getChangeXML(shippingId,original.shippingId,doc,"shipping_id");
-
-      AuditUtil.getChangeXML(trackingNumber,original.trackingNumber,doc,"tracking_number");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
+        original = (ShippingTracking)this.clone();
     }catch(Exception e){
-      e.printStackTrace();
+        e.printStackTrace();
     }
-    return null;
-  }
-   
-  public String getTableName() {
-    return "shipping_tracking";
   }
   
+  public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.SHIPPING_TRACKING);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("shipping_id", shippingId, original.shippingId)
+                 .setField("tracking_number", trackingNumber, original.trackingNumber);
+
+        return audit;
+  }
 }   

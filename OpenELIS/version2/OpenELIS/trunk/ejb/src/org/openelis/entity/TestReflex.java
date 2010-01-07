@@ -29,10 +29,6 @@ package org.openelis.entity;
  * TestReflex Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.XMLUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -47,18 +43,24 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries( {@NamedQuery(name = "TestReflex.FetchByTestId",
-                            query = " select new org.openelis.domain.TestReflexViewDO(tr.id, tr.testId,tr.testAnalyteId,tr.testResultId,"+
-                            " tr.flagsId,tr.addTestId,t.name,m.name,a.name,trs.value,trs.typeId) "
-                          + " from TestReflex tr left join tr.testResult trs left join tr.testAnalyte tra left join tra.analyte a left join tr.addTest t left join t.method m where tr.testId = :testId"),
-                @NamedQuery(name = "TestReflex.FetchByAddTestId",
-                            query = " select new org.openelis.domain.TestReflexViewDO(tr.id, tr.testId,tr.testAnalyteId,"+
-                            " tr.testResultId,tr.flagsId,tr.addTestId,t.name,m.name,a.name,trs.value,trs.typeId) "
-                          + " from TestReflex tr left join tr.testAnalyte tra left join tra.analyte a left join tr.testResult trs left join tr.test t left join t.method m where tr.addTestId = :testId and t.isActive = 'Y' ")})
+@NamedQueries( {
+    
+    @NamedQuery( name = "TestReflex.FetchByTestId",
+                query = "select new org.openelis.domain.TestReflexViewDO(tr.id, tr.testId,tr.testAnalyteId,tr.testResultId," +
+                        "tr.flagsId,tr.addTestId,t.name,m.name,a.name,trs.value,trs.typeId)"
+                      + " from TestReflex tr left join tr.testResult trs left join tr.testAnalyte tra left join tra.analyte a left join tr.addTest t left join t.method m where tr.testId = :testId"),
+    @NamedQuery( name = "TestReflex.FetchByAddTestId",
+                query = "select new org.openelis.domain.TestReflexViewDO(tr.id, tr.testId,tr.testAnalyteId," +
+                        "tr.testResultId,tr.flagsId,tr.addTestId,t.name,m.name,a.name,trs.value,trs.typeId)"
+                      + " from TestReflex tr left join tr.testAnalyte tra left join tra.analyte a left join tr.testResult trs left join tr.test t left join t.method m where tr.addTestId = :testId and t.isActive = 'Y' ")
+})
+
 @Entity
 @Table(name = "test_reflex")
 @EntityListeners( {AuditUtil.class})
@@ -205,31 +207,24 @@ public class TestReflex implements Auditable, Cloneable {
         try {
             original = (TestReflex)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(testId, original.testId, doc, "test_id");
-            AuditUtil.getChangeXML(testAnalyteId, original.testAnalyteId, doc, "test_analyte_id");
-            AuditUtil.getChangeXML(testResultId, original.testResultId, doc, "test_result_id");
-            AuditUtil.getChangeXML(flagsId, original.flagsId, doc, "flags_id");
-            AuditUtil.getChangeXML(addTestId, original.addTestId, doc, "add_test_id");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 
-    public String getTableName() {
-        return "test_reflex";
-    }
+    public Audit getAudit() {
+        Audit audit;
 
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.TEST_REFLEX);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("test_id", testId, original.testId)
+                 .setField("test_analyte_id", testAnalyteId, original.testAnalyteId)
+                 .setField("test_result_id", testResultId, original.testResultId)
+                 .setField("flags_id", flagsId, original.flagsId)
+                 .setField("add_test_id", addTestId, original.addTestId);
+
+        return audit;
+    }
 }

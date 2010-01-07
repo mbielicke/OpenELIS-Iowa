@@ -29,13 +29,9 @@ package org.openelis.entity;
   * InventoryAdjustment Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
 import java.util.Collection;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -48,6 +44,10 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.Datetime;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -122,40 +122,32 @@ public class InventoryAdjustment implements Auditable, Cloneable {
        (adjustmentDate != null && !adjustmentDate.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.adjustmentDate))))
       this.adjustmentDate = adjustmentDate.getDate();
   }
-
   
+  public Collection<InventoryXAdjust> getTransAdjustmentLocation() {
+      return transAdjustmentLocation;
+  }
+
   public void setClone() {
     try {
-      original = (InventoryAdjustment)this.clone();
-    }catch(Exception e){}
+        original = (InventoryAdjustment)this.clone();
+    }catch(Exception e){
+        e.printStackTrace();
+    }
   }
   
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
+  public Audit getAudit() {
+        Audit audit;
 
-      AuditUtil.getChangeXML(description,original.description,doc,"description");
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.INVENTORY_ADJUSTMENT);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("description", description, original.description)
+                 .setField("system_user_id", systemUserId, original.systemUserId)
+                 .setField("adjustment_date", adjustmentDate, original.adjustmentDate);
 
-      AuditUtil.getChangeXML(systemUserId,original.systemUserId,doc,"system_user_id");
-
-      AuditUtil.getChangeXML(adjustmentDate,original.adjustmentDate,doc,"adjustment_date");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
-    }catch(Exception e){
-      e.printStackTrace();
+        return audit;
     }
-    return null;
-  }
-   
-  public String getTableName() {
-    return "inventory_adjustment";
-  }
-public Collection<InventoryXAdjust> getTransAdjustmentLocation() {
-    return transAdjustmentLocation;
-}
   
 }   

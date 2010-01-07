@@ -45,12 +45,11 @@ import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.util.XMLUtil;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 @NamedQueries({
 	
@@ -69,8 +68,8 @@ import org.w3c.dom.Element;
                query = "select new org.openelis.domain.AnalyteDO(a.id, a.name, a.isActive, a.parentAnalyteId, a.externalId) " +
                        " from Analyte a where a.parentAnalyteId = :id and a.isActive = 'Y' order by a.name"),
     @NamedQuery(name =  "Analyte.FetchByTest", 
-                query = "select distinct new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId) " +
-                        " from TestAnalyte ta left join ta.analyte a where ta.testId = :testId")
+                query = "select distinct new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId)"
+                      + " from TestAnalyte ta left join ta.analyte a where ta.testId = :testId")
 })
      
 @NamedNativeQuery(name = "Analyte.ReferenceCheck",
@@ -162,41 +161,36 @@ public class Analyte implements Auditable, Cloneable {
     if(DataBaseUtil.isDifferent(externalId,this.externalId))
       this.externalId = externalId;
   }
+  
+  public Analyte getParentAnalyte() {
+      return parentAnalyte;
+  }
+  public void setParentAnalyte(Analyte parentAnalyte) {
+      this.parentAnalyte = parentAnalyte;
+  }
 
   public void setClone() {
     try {
-      original = (Analyte)this.clone();
-    }catch(Exception e){}
-  }
-  
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
-      AuditUtil.getChangeXML(name,original.name,doc,"name");
-      AuditUtil.getChangeXML(isActive,original.isActive,doc,"is_active");
-      AuditUtil.getChangeXML(parentAnalyteId,original.parentAnalyteId,doc,"parent_analyte_id");
-      AuditUtil.getChangeXML(externalId,original.externalId,doc,"external_id");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
+        original = (Analyte)this.clone();
     }catch(Exception e){
-      e.printStackTrace();
+        e.printStackTrace();
     }
-    return null;
-  }
-   
-  public String getTableName() {
-    return "analyte";
   }
   
-  public Analyte getParentAnalyte() {
-    return parentAnalyte;
-  }
-  public void setParentAnalyte(Analyte parentAnalyte) {
-    this.parentAnalyte = parentAnalyte;
-  }
+  public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.ANALYTE);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("name", name, original.name)
+                 .setField("is_active", isActive, original.isActive)
+                 .setField("parent_analyte_id", parentAnalyteId, original.parentAnalyteId)
+                 .setField("external_id", externalId, original.externalId);
+
+        return audit;
+    }
   
 }   

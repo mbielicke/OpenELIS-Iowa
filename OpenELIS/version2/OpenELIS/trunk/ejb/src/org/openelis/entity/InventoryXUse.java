@@ -30,12 +30,6 @@ package org.openelis.entity;
   * TransLocationOrder Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -46,6 +40,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.domain.ReferenceTable;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -120,39 +117,31 @@ public Integer getId() {
       this.quantity = quantity;
   }
 
+  public InventoryLocation getInventoryLocation() {
+      return inventoryLocation;
+  }
   
   public void setClone() {
     try {
-      original = (InventoryXUse)this.clone();
-    }catch(Exception e){}
+        original = (InventoryXUse)this.clone();
+    }catch(Exception e){
+        e.printStackTrace();
+    }
   }
   
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
+  public Audit getAudit() {
+        Audit audit;
 
-      AuditUtil.getChangeXML(inventoryLocationId,original.inventoryLocationId,doc,"inventory_location_id");
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.INVENTORY_X_USE);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("inventory_location_id", inventoryLocationId, original.inventoryLocationId)
+                 .setField("order_item_id", orderItemId, original.orderItemId)
+                 .setField("quantity", quantity, original.quantity);
 
-      AuditUtil.getChangeXML(orderItemId,original.orderItemId,doc,"order_item_id");
-
-      AuditUtil.getChangeXML(quantity,original.quantity,doc,"quantity");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
-    }catch(Exception e){
-      e.printStackTrace();
+        return audit;
     }
-    return null;
-  }
-   
-  public String getTableName() {
-    return "inventory_x_use";
-  }
-public InventoryLocation getInventoryLocation() {
-    return inventoryLocation;
-}
   
 }   

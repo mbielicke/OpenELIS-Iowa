@@ -29,10 +29,6 @@ package org.openelis.entity;
  * TestWorksheetItem Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.XMLUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -42,7 +38,9 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -123,35 +121,23 @@ public class TestWorksheetItem implements Auditable, Cloneable {
         try {
             original = (TestWorksheetItem)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-
-            AuditUtil.getChangeXML(testWorksheetId, original.testWorksheetId, doc,
-                                   "test_worksheet_id");
-
-            AuditUtil.getChangeXML(position, original.position, doc, "position");
-
-            AuditUtil.getChangeXML(typeId, original.typeId, doc, "type_id");
-
-            AuditUtil.getChangeXML(qcName, original.qcName, doc, "qc_name");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 
-    public String getTableName() {
-        return "test_worksheet_item";
-    }
+    public Audit getAudit() {
+        Audit audit;
 
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.TEST_WORKSHEET_ITEM);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("test_worksheet_id", testWorksheetId, original.testWorksheetId)
+                 .setField("position", position, original.position)
+                 .setField("type_id", typeId, original.typeId)
+                 .setField("qc_name", qcName, original.qcName);
+
+        return audit;
+    }
 }
