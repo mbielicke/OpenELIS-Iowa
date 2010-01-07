@@ -52,6 +52,34 @@ public class MethodMeta implements Meta, MetaMap{
                                                   IS_ACTIVE,ACTIVE_BEGIN,ACTIVE_END));
     }
     
+    public static String getId() {
+        return ID;
+    } 
+
+    public static String getName() {
+        return NAME;
+    } 
+
+    public static String getDescription() {
+        return DESCRIPTION;
+    } 
+
+    public static String getReportingDescription() {
+        return REPORTING_DESCRIPTION;
+    } 
+
+    public static String getIsActive() {
+        return IS_ACTIVE;
+    } 
+
+    public static String getActiveBegin() {
+        return ACTIVE_BEGIN;
+    } 
+
+    public static String getActiveEnd() {
+        return ACTIVE_END;
+    }
+    
     public String buildFrom(String where) {        
         return "Method _method";
     } 
@@ -59,34 +87,4 @@ public class MethodMeta implements Meta, MetaMap{
     public boolean hasColumn(String columnName) {
         return names.contains(columnName);
     }
-    
-    public String getId() {
-        return ID;
-    } 
-
-    public String getName() {
-        return NAME;
-    } 
-
-    public String getDescription() {
-        return DESCRIPTION;
-    } 
-
-    public String getReportingDescription() {
-        return REPORTING_DESCRIPTION;
-    } 
-
-    public String getIsActive() {
-        return IS_ACTIVE;
-    } 
-
-    public String getActiveBegin() {
-        return ACTIVE_BEGIN;
-    } 
-
-    public String getActiveEnd() {
-        return ACTIVE_END;
-    }
-
-  
 }   

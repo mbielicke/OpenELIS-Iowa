@@ -56,7 +56,6 @@ public class Audit {
         return referenceId;
     }
 
-
     /**
      * Set the primary key for the current record that is being archived.
      */
@@ -65,51 +64,62 @@ public class Audit {
     }
 
     /**
-     * Get the reference table constant key for the current record that is being archived.    
+     * Get the reference table constant key for the current record that is being
+     * archived.
      */
     public Integer getReferenceTableId() {
         return referenceTableId;
     }
 
     /**
-     * Set the reference table constant key for the current record that is being archived.    
+     * Set the reference table constant key for the current record that is being
+     * archived.
      */
     public void setReferenceTableId(Integer referenceTableId) {
         this.referenceTableId = referenceTableId;
     }
 
+    /**
+     * Adds a field given by field name and current and original values 
+     * to the list of xml elements, that can later retrieved through getXML(boolean)  
+     */
     public Audit setField(String fieldName, Object currentValue, Object originalValue) {
-        Field field;               
-        
+        Field field;
+
         field = new Field();
-        field.changed = DataBaseUtil.isDifferent(currentValue, originalValue);
+        field.changed = isDifferent(currentValue, originalValue);
         field.name = fieldName;
         field.value = originalValue;
 
-        if(fields == null)        
-            fields = new ArrayList<Field>();        
+        if (fields == null)
+            fields = new ArrayList<Field>();
         fields.add(field);
 
         return this;
     }
 
+    /**
+     * This method creates a list of xml elements that represent the changes made to 
+     * certain fields. The withDifferences flag indicates that elements should be
+     * created regardless of whether or not the field was changed.
+     */
     public String getXML(boolean withDifferences) {
         Document doc;
         Element root, elem;
-        
-        if(fields != null) {
+
+        if (fields != null) {
             try {
                 doc = XMLUtil.createNew("doc");
                 root = doc.getDocumentElement();
-        
+
                 for (Field f : fields) {
-                    if ((f.changed || !withDifferences) && f.value != null) {
+                    if ( (f.changed || !withDifferences) && f.value != null) {
                         elem = doc.createElement(f.name);
                         elem.appendChild(doc.createTextNode(f.value.toString()));
                         doc.getDocumentElement().appendChild(elem);
                     }
                 }
-        
+
                 if (root.hasChildNodes())
                     return XMLUtil.toString(doc);
             } catch (Exception e) {
@@ -117,5 +127,15 @@ public class Audit {
             }
         }
         return null;
-    }        
+    }
+    
+    /*
+     * Overridden because the string value from the original clone contains trailing
+     * spaces, thus trimming. 
+     */
+    private boolean isDifferent(Object a, Object b) {
+        if (b instanceof String)
+            return DataBaseUtil.isDifferent(a, ((String)b).trim());
+        return DataBaseUtil.isDifferent(a,b);
+    }
 }

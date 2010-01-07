@@ -35,6 +35,7 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -43,7 +44,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.Method;
-import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
@@ -72,7 +73,7 @@ public class MethodBean implements MethodRemote {
     @EJB
     private LockLocal lockBean;
 
-    private static MethodMeta meta = new MethodMeta();
+    private static final MethodMeta meta = new MethodMeta();
 
     private static Integer methodRefTableId; 
     
@@ -80,38 +81,68 @@ public class MethodBean implements MethodRemote {
         methodRefTableId = ReferenceTable.METHOD;
     } 
     
-    public MethodDO fetchById(Integer id) {
+    public MethodDO fetchById(Integer id) throws Exception {
     	Query query;
-    	MethodDO methodDO;
+    	MethodDO data;
     	
         query = manager.createNamedQuery("Method.FetchById");
         query.setParameter("id",id);
-        methodDO = (MethodDO)query.getSingleResult();
+        try {
+            data = (MethodDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
         
-        return methodDO;
+        return data;
     }
     
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
-        QueryBuilderV2 qb = new QueryBuilderV2();
+    @SuppressWarnings("unchecked")
+    public MethodDO fetchByName(String name) throws Exception {
+        Query query;
+        MethodDO data;
+        
+        query = manager.createNamedQuery("Method.FetchByName");
+        query.setParameter("name", name);
+
+        try {
+            data = (MethodDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        
+        return data;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public ArrayList<MethodDO> fetchActiveByName(String name, int maxResults) {
+        Query query = null;
+        
+        query = manager.createNamedQuery("Method.FetchActiveByName");        
+        query.setParameter("name", name);
+        query.setMaxResults(maxResults);
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {        
+        Query query;
+        QueryBuilderV2 builder;
         List list;
 
-        qb.setMeta(meta);
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getId()
+                          + "," + meta.getName() + ") ");
+        builder.constructWhere(fields);
+        builder.setOrderBy(MethodMeta.getName());
 
-        qb.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getId()
-                     + ", "
-                     + meta.getName()
-                     + ") ");
-
-        qb.constructWhere(fields);
-
-        qb.setOrderBy(meta.getName());
-
-        Query query = manager.createQuery(qb.getEJBQL());
-
-        if (first > -1 && max > -1)
-            query.setMaxResults(first + max);
-
-        QueryBuilderV2.setQueryParams(query, fields);
+        query = manager.createQuery(builder.getEJBQL());
+        query.setMaxResults(first + max);
+        builder.setQueryParams(query, fields);
 
         list = query.getResultList();
         if (list.isEmpty())
@@ -128,7 +159,7 @@ public class MethodBean implements MethodRemote {
 
         checkSecurity(ModuleFlags.ADD);
                     
-        validateMethod(data);
+        validate(data);
 
         manager.setFlushMode(FlushModeType.COMMIT);
        
@@ -155,7 +186,7 @@ public class MethodBean implements MethodRemote {
     	
     	checkSecurity(ModuleFlags.UPDATE);
     	
-        validateMethod(data);
+        validate(data);
     	
         lockBean.validateLock(methodRefTableId, data.getId());
            
@@ -179,120 +210,44 @@ public class MethodBean implements MethodRemote {
         return fetchById(id);
     }
     
-    public MethodDO abortUpdate(Integer id) {
+    public MethodDO abortUpdate(Integer id) throws Exception {
         lockBean.giveUpLock(methodRefTableId, id);
         return fetchById(id);
     }
+    
+    public void validate(MethodDO data) throws Exception {
+        ValidationErrorsList list;
+        
+        list = new ValidationErrorsList();
 
-    @SuppressWarnings("unchecked")
-	public ArrayList<IdNameVO> findByName(String name, int maxResults) {
-        Query query = null;
+        if (DataBaseUtil.isEmpty(data.getName())) {
+            list.add(new FieldErrorException("fieldRequiredException", meta.getName()));
+        } else {
+            MethodDO dup;
+            
+            try {
+                dup = fetchByName(data.getName());
+                if (DataBaseUtil.isDifferent(data.getId(), dup.getId()))
+                    list.add(new FieldErrorException("fieldUniqueException", meta.getName()));
+            } catch (NotFoundException ignE) {
+            }
+        }
         
-        query = manager.createNamedQuery("Method.FetchActiveByName");        
-        query.setParameter("name", name);
-        query.setMaxResults(maxResults);
+        if (DataBaseUtil.isEmpty(data.getActiveBegin())) 
+            list.add(new FieldErrorException("fieldRequiredException", meta.getActiveBegin()));
         
-        return DataBaseUtil.toArrayList(query.getResultList());
+        if (DataBaseUtil.isEmpty(data.getActiveEnd())) 
+            list.add(new FieldErrorException("fieldRequiredException", meta.getActiveEnd()));                
+                
+        if (DataBaseUtil.isAfter(data.getActiveBegin(),data.getActiveEnd())) 
+            list.add(new FormErrorException("endDateAfterBeginDateException"));                   
+
+        if (list.size() > 0)
+            throw list;
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
         SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
                                           "method", flag);
     }
-    
-    private void validateMethod(MethodDO methodDO) throws Exception {
-        ValidationErrorsList exceptionList;
-        boolean checkDuplicate, overlap;
-        Datetime activeEnd, activeBegin;
-        Integer id;
-        String active;
-        Method method;
-        int iter;
-        List list;
-        Query query;
-
-        checkDuplicate = true;
-        activeBegin = methodDO.getActiveBegin();
-        activeEnd = methodDO.getActiveEnd();
-        id = methodDO.getId();
-        active = methodDO.getIsActive();
-        exceptionList = new ValidationErrorsList();
-
-        if (methodDO.getName() == null || "".equals(methodDO.getName())) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getName()));
-            checkDuplicate = false;
-        }
-        
-        if (active == null) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getIsActive()));
-            checkDuplicate = false;
-        } else if("N".equals(active)) {
-            query = manager.createNamedQuery("Test.FetchByMethod");
-            query.setParameter("id", methodDO.getId());
-            list = query.getResultList();
-            if(list.size() > 0) {
-                exceptionList.add(new FormErrorException("methodAssignedToActiveTestException"));
-                checkDuplicate = false;
-            }
-        } 
-        
-        if (activeBegin == null) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getActiveBegin()));
-            checkDuplicate = false;
-        }
-        if (activeEnd == null) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getActiveEnd()));
-            checkDuplicate = false;
-        }
-        
-        
-        
-        if (checkDuplicate) {
-            if (activeEnd.before(activeBegin)) {
-                exceptionList.add(new FormErrorException("endDateAfterBeginDateException"));
-                checkDuplicate = false;
-            }
-        }               
-
-        if (checkDuplicate) {
-            query = manager.createNamedQuery("Method.FetchEntityByName");
-            query.setParameter("name", methodDO.getName());
-            list = query.getResultList();
-
-            for (iter = 0; iter < list.size(); iter++) {
-                overlap = false;
-                method = (Method)list.get(iter);
-                if (!method.getId().equals(id)) {
-                    if (method.getIsActive().equals(active)) {
-                        if ("Y".equals(active)) {
-                            exceptionList.add(new FormErrorException("methodActiveException"));
-                            break;
-                        }
-                        if (method.getActiveBegin().before(activeEnd) && (method.getActiveEnd().after(activeBegin))) {
-                            overlap = true;
-                        } else if(method.getActiveBegin().before(methodDO.getActiveBegin())&&
-                                        (method.getActiveEnd().after(methodDO.getActiveEnd()))){
-                            overlap = true;  
-                        } else if (method.getActiveBegin().equals(activeEnd) || (method.getActiveEnd().equals(activeBegin))) {
-                            overlap = true;
-                        } else if (method.getActiveBegin().equals(activeBegin) || (method.getActiveEnd().equals(activeEnd))) {
-                            overlap = true;
-                        }
-
-                        if (overlap) {
-                            exceptionList.add(new FormErrorException("methodTimeOverlapException"));
-                        }
-
-                    }
-                }
-            }
-        }
-        if (exceptionList.size() > 0)
-            throw exceptionList;
-    }
-
 }
