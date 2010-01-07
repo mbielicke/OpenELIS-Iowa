@@ -32,10 +32,6 @@ package org.openelis.entity;
 
 import java.util.Collection;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.XMLUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -51,32 +47,34 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-    @NamedQuery(name = "AuxField.FetchById",
-               query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder, " +
-                       "af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired, " +
-                       "af.isActive,af.isReportable,s.id,a.name,m.name,s.name, d.entry) "
-                     + " from AuxField af left join af.scriptlet s left join af.analyte a left join af.method m LEFT JOIN af.unitOfMeasure d where af.id = :id"),
-    @NamedQuery(name = "AuxField.FetchAllByGroupId",
-               query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder, " + 
-                       "af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired, " +
-                       "af.isActive,af.isReportable,s.id,a.name,m.name,s.name, d.entry) "
-                     + " from AuxField af left join af.scriptlet s left join af.analyte a left join af.method m LEFT JOIN af.unitOfMeasure d where af.auxFieldGroupId = :auxFieldGroupId order by af.sortOrder "),
-    @NamedQuery(name = "AuxField.FetchByDataRefId", query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder, " +
-                       "af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired, " +
-                       "af.isActive,af.isReportable,s.id,a.name,m.name,s.name, d.entry) "
-                     + " from AuxData ad, IN (ad.auxField) af left join af.scriptlet s left join af.analyte a left join af.method m LEFT JOIN af.unitOfMeasure d where "
-                     + " ad.referenceId = :id and ad.referenceTableId = :tableId order by af.auxFieldGroupId, af.sortOrder "),
-    @NamedQuery(name = "AuxField.FetchAllActiveByGroupId",
-               query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder, " +
-                       "af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired, " +
-                       "af.isActive,af.isReportable,s.id,a.name,m.name,s.name, d.entry) "
-                     + " from AuxField af left join af.scriptlet s left join af.analyte a left join af.method m LEFT JOIN af.unitOfMeasure d where "
-                     + " af.auxFieldGroupId = :auxFieldGroupId and af.isActive = 'Y' order by af.sortOrder ")})
+    @NamedQuery( name = "AuxField.FetchById",
+                query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder," +
+                        "af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired," +
+                        "af.isActive,af.isReportable,s.id,a.name,m.name,s.name, d.entry)"
+                      + " from AuxField af left join af.scriptlet s left join af.analyte a left join af.method m LEFT JOIN af.unitOfMeasure d where af.id = :id"),
+    @NamedQuery( name = "AuxField.FetchAllByGroupId",
+                query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder," + 
+                        "af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired," +
+                        "af.isActive,af.isReportable,s.id,a.name,m.name,s.name, d.entry)"
+                      + " from AuxField af left join af.scriptlet s left join af.analyte a left join af.method m LEFT JOIN af.unitOfMeasure d where af.auxFieldGroupId = :auxFieldGroupId order by af.sortOrder "),
+    @NamedQuery( name = "AuxField.FetchByDataRefId", query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder, " +
+                        "af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired," +
+                        "af.isActive,af.isReportable,s.id,a.name,m.name,s.name, d.entry)"
+                      + " from AuxData ad, IN (ad.auxField) af left join af.scriptlet s left join af.analyte a left join af.method m LEFT JOIN af.unitOfMeasure d where"
+                      + " ad.referenceId = :id and ad.referenceTableId = :tableId order by af.auxFieldGroupId, af.sortOrder "),
+    @NamedQuery( name = "AuxField.FetchAllActiveByGroupId",
+                query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder," +
+                        "af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired," +
+                        "af.isActive,af.isReportable,s.id,a.name,m.name,s.name, d.entry)"
+                      + " from AuxField af left join af.scriptlet s left join af.analyte a left join af.method m LEFT JOIN af.unitOfMeasure d where "
+                      + " af.auxFieldGroupId = :auxFieldGroupId and af.isActive = 'Y' order by af.sortOrder ")})
     
 @Entity
 @Table(name = "aux_field")
@@ -284,36 +282,30 @@ public class AuxField implements Auditable, Cloneable {
         try {
             original = (AuxField)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(auxFieldGroupId, original.auxFieldGroupId, doc, "aux_field_group_id");
-            AuditUtil.getChangeXML(sortOrder, original.sortOrder, doc, "sort_order");
-            AuditUtil.getChangeXML(analyteId, original.analyteId, doc, "analyte_id");
-            AuditUtil.getChangeXML(description, original.description, doc, "description");
-            AuditUtil.getChangeXML(methodId, original.methodId, doc, "method_id");
-            AuditUtil.getChangeXML(unitOfMeasureId, original.unitOfMeasureId, doc, "unit_of_measure_id");
-            AuditUtil.getChangeXML(isRequired, original.isRequired, doc, "is_required");
-            AuditUtil.getChangeXML(isActive, original.isActive, doc, "is_active");
-            AuditUtil.getChangeXML(isReportable, original.isReportable, doc, "is_reportable");
-            AuditUtil.getChangeXML(scriptletId, original.scriptletId, doc, "scriptlet_id");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
+    
+    public Audit getAudit() {
+        Audit audit;
 
-    public String getTableName() {
-        return "aux_field";
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.AUX_FIELD);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("aux_field_group_id", auxFieldGroupId, original.auxFieldGroupId)
+                 .setField("sort_order", sortOrder, original.sortOrder)
+                 .setField("analyte_id", analyteId, original.analyteId)
+                 .setField("description", description, original.description)
+                 .setField("method_id", methodId, original.methodId)
+                 .setField("unit_of_measure_id", unitOfMeasureId, original.unitOfMeasureId)
+                 .setField("is_required", isRequired, original.isRequired)
+                 .setField("is_active", isActive, original.isActive)
+                 .setField("is_reportable", isReportable, original.isReportable)
+                 .setField("scriptlet_id", scriptletId, original.scriptletId);
+
+        return audit;
     }
 
 }

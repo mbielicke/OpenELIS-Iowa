@@ -29,13 +29,9 @@ package org.openelis.entity;
   * Project Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
 import java.util.Collection;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -50,12 +46,15 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-    @NamedQuery(name = "Project.FetchById", 
+    @NamedQuery( name = "Project.FetchById", 
     		    query = "select new org.openelis.domain.ProjectViewDO(p.id, p.name, " + 
                         "p.description, p.startedDate, p.completedDate, p.isActive, p.referenceTo, p.ownerId, s.id,s.name, '')" 
                       + " from Project p left join p.scriptlet s where p.id = :id "),
@@ -214,33 +213,27 @@ public class Project implements Auditable, Cloneable {
         try {
             original = (Project)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(name, original.name, doc, "name");
-            AuditUtil.getChangeXML(description, original.description, doc, "description");
-            AuditUtil.getChangeXML(startedDate, original.startedDate, doc, "started_date");
-            AuditUtil.getChangeXML(completedDate, original.completedDate, doc, "completed_date");
-            AuditUtil.getChangeXML(isActive, original.isActive, doc, "is_active");
-            AuditUtil.getChangeXML(referenceTo, original.referenceTo, doc, "reference_to");
-            AuditUtil.getChangeXML(ownerId, original.ownerId, doc, "owner_id");
-            AuditUtil.getChangeXML(scriptletId, original.scriptletId, doc, "scriptlet_id");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 
-    public String getTableName() {
-        return "project";
+    public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.PROJECT);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("name", name, original.name)
+                 .setField("description", description, original.description)
+                 .setField("started_date", startedDate, original.startedDate)
+                 .setField("completed_date", completedDate, original.completedDate)
+                 .setField("is_active", isActive, original.isActive)
+                 .setField("reference_to", referenceTo, original.referenceTo)
+                 .setField("owner_id", ownerId, original.ownerId)
+                 .setField("scriptlet_id", scriptletId, original.scriptletId);
+
+        return audit;
     }
 }

@@ -31,10 +31,6 @@ package org.openelis.entity;
 
 import java.util.Collection;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.XMLUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -48,17 +44,18 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({
-    
-    @NamedQuery(name = "Panel.FetchById", 
-               query = "select distinct new org.openelis.domain.PanelDO(p.id,p.name,p.description)"
+@NamedQueries({    
+    @NamedQuery( name = "Panel.FetchById", 
+                query = "select distinct new org.openelis.domain.PanelDO(p.id,p.name,p.description)"
                       + " from Panel p where p.id = :id"),
-    @NamedQuery(name = "Panel.FetchByName",
-               query = "select distinct new org.openelis.domain.PanelDO(p.id,p.name,p.description)"
+    @NamedQuery( name = "Panel.FetchByName",
+                query = "select distinct new org.openelis.domain.PanelDO(p.id,p.name,p.description)"
                       + " from Panel p where p.name like :name order by p.name")
 })
 
@@ -128,24 +125,18 @@ public class Panel implements Auditable, Cloneable {
         }
     }
 
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
+    public Audit getAudit() {
+        Audit audit;
 
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(name, original.name, doc, "name");
-            AuditUtil.getChangeXML(description, original.description, doc, "description");
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.PANEL);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("name", name, original.name)
+                 .setField("description", description, original.description);
 
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        return audit;
     }
 
-    public String getTableName() {
-        return "panel";
-    }
 }

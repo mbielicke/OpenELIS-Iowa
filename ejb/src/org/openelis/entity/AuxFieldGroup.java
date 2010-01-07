@@ -30,13 +30,9 @@ package org.openelis.entity;
  * AuxFieldGroup Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
 import java.util.Collection;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -50,23 +46,26 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-    @NamedQuery(name = "AuxFieldGroup.FetchByName",
-               query = "select distinct new org.openelis.domain.AuxFieldGroupDO(afg.id,afg.name,afg.description, " +
-                       "afg.isActive,afg.activeBegin,afg.activeEnd) "
-                     + " from AuxFieldGroup afg where afg.name = :name order by afg.name"),
-    @NamedQuery(name = "AuxFieldGroup.FetchById",                
-               query = "select distinct new org.openelis.domain.AuxFieldGroupDO(afg.id,afg.name,afg.description, " +
-                       "afg.isActive,afg.activeBegin,afg.activeEnd) "
-                     + " from AuxFieldGroup afg where afg.id = :id "),
-    @NamedQuery(name = "AuxFieldGroup.FetchActive",
-               query = "select distinct new org.openelis.domain.AuxFieldGroupDO(afg.id,afg.name,afg.description, " +
-                       "afg.isActive,afg.activeBegin,afg.activeEnd) "
-                     + " from AuxFieldGroup afg where afg.isActive = 'Y' order by afg.name")})
+    @NamedQuery( name = "AuxFieldGroup.FetchByName",
+                query = "select distinct new org.openelis.domain.AuxFieldGroupDO(afg.id,afg.name,afg.description," +
+                        "afg.isActive,afg.activeBegin,afg.activeEnd)"
+                      + " from AuxFieldGroup afg where afg.name = :name order by afg.name"),
+    @NamedQuery( name = "AuxFieldGroup.FetchById",                
+                query = "select distinct new org.openelis.domain.AuxFieldGroupDO(afg.id,afg.name,afg.description," +
+                        "afg.isActive,afg.activeBegin,afg.activeEnd)"
+                      + " from AuxFieldGroup afg where afg.id = :id "),
+    @NamedQuery( name = "AuxFieldGroup.FetchActive",
+                query = "select distinct new org.openelis.domain.AuxFieldGroupDO(afg.id,afg.name,afg.description," +
+                        "afg.isActive,afg.activeBegin,afg.activeEnd)"
+                      + " from AuxFieldGroup afg where afg.isActive = 'Y' order by afg.name")})
 @Entity
 @Table(name = "aux_field_group")
 @EntityListeners( {AuditUtil.class})
@@ -165,31 +164,25 @@ public class AuxFieldGroup implements Auditable, Cloneable {
         try {
             original = (AuxFieldGroup)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(name, original.name, doc, "name");
-            AuditUtil.getChangeXML(description, original.description, doc, "description");
-            AuditUtil.getChangeXML(isActive, original.isActive, doc, "is_active");
-            AuditUtil.getChangeXML(activeBegin, original.activeBegin, doc, "active_begin");
-            AuditUtil.getChangeXML(activeEnd, original.activeEnd, doc, "active_end");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 
-    public String getTableName() {
-        return "aux_field_group";
+    public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.AUX_FIELD_GROUP);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("name", name, original.name)
+                 .setField("description", description, original.description)
+                 .setField("is_active", isActive, original.isActive)
+                 .setField("active_begin", activeBegin, original.activeBegin)
+                 .setField("active_end", activeEnd, original.activeEnd);
+
+        return audit;
     }
 
 }

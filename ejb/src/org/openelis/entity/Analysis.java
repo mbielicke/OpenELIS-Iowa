@@ -29,13 +29,9 @@ package org.openelis.entity;
   * Analysis Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
 import java.util.Collection;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -50,7 +46,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -274,62 +273,57 @@ public class Analysis implements Auditable, Cloneable {
       this.printedDate = printedDate.getDate();
   }
   
+  public Test getTest() {
+      return test;
+  }
+  public void setTest(Test test) {
+      this.test = test;
+  }
+  public Section getSection() {
+      return section;
+  }
+  public void setSection(Section section) {
+      this.section = section;
+  }
+  public Collection<AnalysisQaevent> getAnalysisQAEvent() {
+      return analysisQAEvent;
+  }
+  public void setAnalysisQAEvent(Collection<AnalysisQaevent> analysisQAEvent) {
+      this.analysisQAEvent = analysisQAEvent;
+  }
+  
   public void setClone() {
     try {
-      original = (Analysis)this.clone();
-    }catch(Exception e){}
+            original = (Analysis)this.clone();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
   }
   
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
-      AuditUtil.getChangeXML(sampleItemId,original.sampleItemId,doc,"sample_item_id");
-      AuditUtil.getChangeXML(revision,original.revision,doc,"revision");
-      AuditUtil.getChangeXML(testId,original.testId,doc,"test_id");
-      AuditUtil.getChangeXML(sectionId,original.sectionId,doc,"section_id");
-      AuditUtil.getChangeXML(preAnalysisId,original.preAnalysisId,doc,"pre_analysis_id");
-      AuditUtil.getChangeXML(parentAnalysisId,original.parentAnalysisId,doc,"parent_analysis_id");
-      AuditUtil.getChangeXML(parentResultId,original.parentResultId,doc,"parent_result_id");
-      AuditUtil.getChangeXML(isReportable,original.isReportable,doc,"is_reportable");
-      AuditUtil.getChangeXML(unitOfMeasureId,original.unitOfMeasureId,doc,"unit_of_measure_id");
-      AuditUtil.getChangeXML(statusId,original.statusId,doc,"status_id");
-      AuditUtil.getChangeXML(availableDate,original.availableDate,doc,"available_date");
-      AuditUtil.getChangeXML(startedDate,original.startedDate,doc,"started_date");
-      AuditUtil.getChangeXML(completedDate,original.completedDate,doc,"completed_date");
-      AuditUtil.getChangeXML(releasedDate,original.releasedDate,doc,"released_date");
-      AuditUtil.getChangeXML(printedDate,original.printedDate,doc,"printed_date");
+  public Audit getAudit() {
+        Audit audit;
 
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
-    }catch(Exception e){
-      e.printStackTrace();
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.ANALYSIS);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("sample_item_id", sampleItemId, original.sampleItemId)
+                 .setField("revision", revision, original.revision)
+                 .setField("test_id", testId, original.testId)
+                 .setField("section_id", sectionId, original.sectionId)
+                 .setField("pre_analysis_id", preAnalysisId, original.preAnalysisId)
+                 .setField("parent_analysis_id", parentAnalysisId, original.parentAnalysisId)
+                 .setField("parent_result_id", parentResultId, original.parentResultId)
+                 .setField("is_reportable", isReportable, original.isReportable)
+                 .setField("unit_of_measure_id", unitOfMeasureId, original.unitOfMeasureId)
+                 .setField("status_id", statusId, original.statusId)
+                 .setField("available_date", availableDate, original.availableDate)
+                 .setField("started_date", startedDate, original.startedDate)
+                 .setField("completed_date", completedDate, original.completedDate)
+                 .setField("released_date", releasedDate, original.releasedDate)
+                 .setField("printed_date", printedDate, original.printedDate);
+
+        return audit;
     }
-    return null;
-  }
-   
-  public String getTableName() {
-    return "analysis";
-  }
-public Test getTest() {
-    return test;
-}
-public void setTest(Test test) {
-    this.test = test;
-}
-public Section getSection() {
-    return section;
-}
-public void setSection(Section section) {
-    this.section = section;
-}
-public Collection<AnalysisQaevent> getAnalysisQAEvent() {
-    return analysisQAEvent;
-}
-public void setAnalysisQAEvent(Collection<AnalysisQaevent> analysisQAEvent) {
-    this.analysisQAEvent = analysisQAEvent;
-}
-  
 }   

@@ -47,13 +47,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 @NamedQueries( {
     @NamedQuery(name = "Sample.SampleById", query = "select new org.openelis.domain.SampleDO(smpl.id, smpl.nextItemSequence, smpl.domain, "+
@@ -272,89 +271,98 @@ public class Sample implements Auditable, Cloneable {
       return null;
     return new Datetime(Datetime.YEAR,Datetime.MINUTE,releasedDate);
   }
+  
   public void setReleasedDate (Datetime releasedDate){
     if(DataBaseUtil.isDifferentYM(releasedDate, this.releasedDate))
       this.releasedDate = releasedDate.getDate();
   }
 
-  
-  public void setClone() {
-    try {
-      original = (Sample)this.clone();
-    }catch(Exception e){}
-  }
-  
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
-      AuditUtil.getChangeXML(nextItemSequence,original.nextItemSequence,doc,"next_item_sequence");
-      AuditUtil.getChangeXML(domain,original.domain,doc,"domain");
-      AuditUtil.getChangeXML(accessionNumber,original.accessionNumber,doc,"accession_number");
-      AuditUtil.getChangeXML(revision,original.revision,doc,"revision");
-      AuditUtil.getChangeXML(enteredDate,original.enteredDate,doc,"entered_date");
-      AuditUtil.getChangeXML(receivedDate,original.receivedDate,doc,"received_date");
-      AuditUtil.getChangeXML(receivedById,original.receivedById,doc,"received_by_id");
-      AuditUtil.getChangeXML(collectionDate,original.collectionDate,doc,"collection_date");
-      AuditUtil.getChangeXML(collectionTime,original.collectionTime,doc,"collection_time");
-      AuditUtil.getChangeXML(statusId,original.statusId,doc,"status_id");
-      AuditUtil.getChangeXML(packageId,original.packageId,doc,"package_id");
-      AuditUtil.getChangeXML(clientReference,original.clientReference,doc,"client_reference");
-      AuditUtil.getChangeXML(releasedDate,original.releasedDate,doc,"released_date");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
-    }catch(Exception e){
-      e.printStackTrace();
-    }
-    return null;
-  }
-   
-  public String getTableName() {
-    return "sample";
-  }
   public Collection<SampleItem> getSampleItem() {
-    return sampleItem;
+      return sampleItem;
   }
+  
   public void setSampleItem(Collection<SampleItem> sampleItem) {
-    this.sampleItem = sampleItem;
+      this.sampleItem = sampleItem;
   }
+  
   public Collection<SampleEnvironmental> getSampleEnvironmental() {
-    return sampleEnvironmental;
+      return sampleEnvironmental;
   }
+  
   public void setSampleEnvironmental(Collection<SampleEnvironmental> sampleEnvironmental) {
-    this.sampleEnvironmental = sampleEnvironmental;
+      this.sampleEnvironmental = sampleEnvironmental;
   }
+  
   public Collection<SampleHuman> getSampleHuman() {
-    return sampleHuman;
+      return sampleHuman;
   }
+  
   public void setSampleHuman(Collection<SampleHuman> sampleHuman) {
-    this.sampleHuman = sampleHuman;
+      this.sampleHuman = sampleHuman;
   }
+  
   public Collection<SampleOrganization> getSampleOrganization() {
-    return sampleOrganization;
+      return sampleOrganization;
   }
+  
   public void setSampleOrganization(Collection<SampleOrganization> sampleOrganization) {
-    this.sampleOrganization = sampleOrganization;
+      this.sampleOrganization = sampleOrganization;
   }
+  
   public Collection<SampleProject> getSampleProject() {
-    return sampleProject;
+      return sampleProject;
   }
+  
   public void setSampleProject(Collection<SampleProject> sampleProject) {
-    this.sampleProject = sampleProject;
+      this.sampleProject = sampleProject;
   }
+  
   public Collection<SampleQaevent> getSampleQAEvent() {
-    return sampleQAEvent;
+      return sampleQAEvent;
   }
+  
   public void setSampleQAEvent(Collection<SampleQaevent> sampleQAEvent) {
-    this.sampleQAEvent = sampleQAEvent;
+      this.sampleQAEvent = sampleQAEvent;
   }
+  
   public Collection<Project> getProject() {
       return project;
   }
+  
   public void setProject(Collection<Project> project) {
       this.project = project;
   }
+    
+  public void setClone() {
+    try {
+        original = (Sample)this.clone();
+    }catch(Exception e){
+        e.printStackTrace();
+    }
+  }
+  
+  public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.SAMPLE);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("next_item_sequence", nextItemSequence, original.nextItemSequence)
+                 .setField("domain", domain, original.domain)
+                 .setField("accession_number", accessionNumber, original.accessionNumber)
+                 .setField("revision", revision, original.revision)
+                 .setField("entered_date", enteredDate, original.enteredDate)
+                 .setField("received_date", receivedDate, original.receivedDate)
+                 .setField("received_by_id", receivedById, original.receivedById)
+                 .setField("collection_date", collectionDate, original.collectionDate)
+                 .setField("collection_time", collectionTime, original.collectionTime)
+                 .setField("status_id", statusId, original.statusId)
+                 .setField("package_id", packageId, original.packageId)
+                 .setField("client_reference", clientReference, original.clientReference)
+                 .setField("released_date", releasedDate, original.releasedDate);
+
+        return audit;
+  }  
 }   

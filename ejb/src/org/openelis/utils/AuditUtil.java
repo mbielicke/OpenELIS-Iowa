@@ -25,69 +25,101 @@
  */
 package org.openelis.utils;
 
+import java.util.Date;
+
 import javax.naming.InitialContext;
 import javax.persistence.PostLoad;
 import javax.persistence.PostPersist;
 import javax.persistence.PostRemove;
 import javax.persistence.PostUpdate;
 
+import org.openelis.domain.HistoryVO;
 import org.openelis.local.HistoryLocal;
-import org.openelis.utilcommon.DataBaseUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.openelis.local.LoginLocal;
 
 public class AuditUtil {
-
+    
+    private static HistoryLocal local;
+    
     public AuditUtil() {
     }
 
     @PostLoad
     void postLoad(Object entity) {
-        if (entity instanceof Auditable) {
+        if (entity instanceof Auditable)
             ((Auditable)entity).setClone();
-        }
     }
-
+    
     @PostPersist
     void postCreate(Object entity) {
+        Audit audit;
+        HistoryVO data;
+        
         if (entity instanceof Auditable) {
-            Auditable aud = (Auditable)entity;
-            getHistory().write(aud, 1, null);
+            audit = ((Auditable)entity).getAudit();
+
+            data = new HistoryVO(null, audit.getReferenceId(), audit.getReferenceTableId(),
+                                 new Date(), 1, getSystemUserId(), null);
+            local().add(data);
         }
     }
 
     @PostUpdate
     void postUpdate(Object entity) {
+        Audit audit;
+        HistoryVO data;
+
         if (entity instanceof Auditable) {
-            Auditable aud = (Auditable)entity;
-            getHistory().write(aud, 2, aud.getChangeXML());
+            audit = ((Auditable)entity).getAudit();
+
+            data = new HistoryVO(null, audit.getReferenceId(), audit.getReferenceTableId(),
+                                 new Date(), 2, getSystemUserId(), audit.getXML(true));
+            local().add(data);
         }
     }
 
     @PostRemove
-    void postDelete(Object entity) {
+    void postRemove(Object entity) {
+        Audit audit;
+        HistoryVO data;
+
         if (entity instanceof Auditable) {
-            Auditable aud = (Auditable)entity;
-            getHistory().write(aud, 3, null);
+            audit = ((Auditable)entity).getAudit();
+
+            data = new HistoryVO(null, audit.getReferenceId(), audit.getReferenceTableId(),
+                                 new Date(), 3, getSystemUserId(), audit.getXML(false));
+            local().add(data);
         }
     }
 
-    public static void getChangeXML(Object field, Object original, Document doc, String key) {
-        if (DataBaseUtil.isDifferent(field, original)) {
-            Element elem = doc.createElement(key);
-            if (original != null)
-                elem.appendChild(doc.createTextNode(original.toString()));
-            doc.getDocumentElement().appendChild(elem);
-        }
-    }
+    /*
+     * Returns the user id within this transaction. 
+     */
+    private Integer getSystemUserId() {
+        InitialContext ctx;
+        LoginLocal login;
 
-    private HistoryLocal getHistory() {
         try {
-            InitialContext ctx = new InitialContext();
-            return (HistoryLocal)ctx.lookup("openelis/HistoryBean/local");
+            ctx = new InitialContext();
+            login = (LoginLocal)ctx.lookup("openelis/LoginBean/local");
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return null;
         }
+        return login.getSystemUserId();
+    }
+
+    private HistoryLocal local() {
+        InitialContext ctx;
+        
+        if (local == null) {
+            try {
+                ctx = new InitialContext();
+                local = (HistoryLocal)ctx.lookup("openelis/HistoryBean/local");
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                return null;
+            }
+        }
+        return local;
     }
 }

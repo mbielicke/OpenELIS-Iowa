@@ -42,12 +42,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.util.XMLUtil;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 @NamedQueries({
     @NamedQuery( name = "SampleEnvironmental.FetchBySampleId",
@@ -205,30 +204,23 @@ public class SampleEnvironmental implements Auditable, Cloneable {
         }
     }
 
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
+    public Audit getAudit() {
+        Audit audit;
 
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(sampleId, original.sampleId, doc, "sample_id");
-            AuditUtil.getChangeXML(isHazardous, original.isHazardous, doc, "is_hazardous");
-            AuditUtil.getChangeXML(priority, original.priority, doc, "priority");
-            AuditUtil.getChangeXML(description, original.description, doc, "description");
-            AuditUtil.getChangeXML(collector, original.collector, doc, "collector");
-            AuditUtil.getChangeXML(collectorPhone, original.collectorPhone, doc, "collector_phone");
-            AuditUtil.getChangeXML(samplingLocation, original.samplingLocation, doc, "sampling_location");
-            AuditUtil.getChangeXML(addressId, original.addressId, doc, "address_id");
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.SAMPLE_ENVIRONMENTAL);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("sample_id", sampleId, original.sampleId)
+                 .setField("is_hazardous", isHazardous, original.isHazardous)
+                 .setField("priority", priority, original.priority)
+                 .setField("description", description, original.description)
+                 .setField("collector", collector, original.collector)
+                 .setField("collector_phone", collectorPhone, original.collectorPhone)
+                 .setField("sampling_location", samplingLocation, original.samplingLocation)
+                 .setField("address_id", addressId, original.addressId);
 
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public String getTableName() {
-        return "sample_environmental";
+        return audit;
     }
 }

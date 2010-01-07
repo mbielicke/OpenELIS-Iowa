@@ -29,12 +29,6 @@ package org.openelis.entity;
   * AnalysisUser Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -42,6 +36,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.domain.ReferenceTable;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -109,32 +106,24 @@ public class AnalysisUser implements Auditable, Cloneable {
   public void setClone() {
     try {
       original = (AnalysisUser)this.clone();
-    }catch(Exception e){}
+    }catch(Exception e){
+        e.printStackTrace();
+    }
   }
   
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
+  public Audit getAudit() {
+        Audit audit;
 
-      AuditUtil.getChangeXML(analysisId,original.analysisId,doc,"analysis_id");
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.ANALYSIS_USER);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("analysis_id", analysisId, original.analysisId)
+                 .setField("system_user_id", systemUserId, original.systemUserId)
+                 .setField("action_id", actionId, original.actionId);
 
-      AuditUtil.getChangeXML(systemUserId,original.systemUserId,doc,"system_user_id");
-
-      AuditUtil.getChangeXML(actionId,original.actionId,doc,"action_id");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
-    }catch(Exception e){
-      e.printStackTrace();
-    }
-    return null;
-  }
-   
-  public String getTableName() {
-    return "analysis_user";
+        return audit;
   }
   
 }   

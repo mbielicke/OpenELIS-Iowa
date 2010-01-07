@@ -29,10 +29,6 @@ package org.openelis.entity;
  * TestWorksheetAnalyte Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.XMLUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -45,11 +41,13 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQuery(name = "TestWorksheetAnalyte.FetchByTestId",
+@NamedQuery( name = "TestWorksheetAnalyte.FetchByTestId",
             query = "select distinct new org.openelis.domain.TestWorksheetAnalyteViewDO(twa.id,twa.testId,twa.testAnalyteId, twa.repeat,twa.flagId,a.name,ta.sortOrder)"
                   + " from TestWorksheetAnalyte twa left join twa.testAnalyte ta left join ta.analyte a where twa.testId = :testId order by ta.sortOrder ")
 @Entity
@@ -138,30 +136,23 @@ public class TestWorksheetAnalyte implements Auditable, Cloneable {
         try {
             original = (TestWorksheetAnalyte)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(testId, original.testId, doc, "test_id");
-            AuditUtil.getChangeXML(testAnalyteId, original.testAnalyteId, doc, "test_Analyte_id");
-            AuditUtil.getChangeXML(repeat, original.repeat, doc, "repeat");
-            AuditUtil.getChangeXML(flagId, original.flagId, doc, "flag_id");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 
-    public String getTableName() {
-        return "test_worksheet_analyte";
-    }
+    public Audit getAudit() {
+        Audit audit;
 
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.TEST_WORKSHEET_ANALYTE);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("test_id", testId, original.testId)
+                 .setField("test_Analyte_id", testAnalyteId, original.testAnalyteId)
+                 .setField("repeat", repeat, original.repeat)
+                 .setField("flag_id", flagId, original.flagId);
+
+        return audit;
+    }
 }

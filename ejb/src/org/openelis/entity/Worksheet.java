@@ -4,13 +4,9 @@ package org.openelis.entity;
  * Worksheet Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
 import java.util.Collection;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -24,7 +20,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -131,35 +130,24 @@ public class Worksheet implements Auditable, Cloneable {
         try {
             original = (Worksheet)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-
-            AuditUtil.getChangeXML(createdDate, original.createdDate, doc, "created_date");
-
-            AuditUtil.getChangeXML(systemUserId, original.systemUserId, doc, "system_user_id");
-
-            AuditUtil.getChangeXML(statusId, original.statusId, doc, "status_id");
-
-            AuditUtil.getChangeXML(formatId, original.formatId, doc, "format_id");
-
-            AuditUtil.getChangeXML(relatedWorksheetId, original.relatedWorksheetId, doc, "related_worksheet_id");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 
-    public String getTableName() {
-        return "worksheet";
+    public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.WORKSHEET);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("created_date", createdDate, original.createdDate)
+                 .setField("system_user_id", systemUserId, original.systemUserId)
+                 .setField("status_id", statusId, original.statusId)
+                 .setField("format_id", formatId, original.formatId)
+                 .setField("related_worksheet_id", relatedWorksheetId, original.relatedWorksheetId);
+
+        return audit;
     }
 }

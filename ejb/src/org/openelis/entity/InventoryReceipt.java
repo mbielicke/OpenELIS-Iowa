@@ -29,13 +29,9 @@ package org.openelis.entity;
   * InventoryReceipt Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
 import java.util.Collection;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -51,6 +47,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.Datetime;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -236,67 +236,54 @@ public class InventoryReceipt implements Auditable, Cloneable {
        (upc != null && !upc.equals(this.upc)))
       this.upc = upc;
   }
+  
+  public InventoryItem getInventoryItem() {
+      return inventoryItem;
+  }
+  public void setInventoryItem(InventoryItem inventoryItem) {
+      this.inventoryItem = inventoryItem;
+  }
+  public Organization getOrganization() {
+      return organization;
+  }
+  public Collection<InventoryXPut> getTransReceiptLocations() {
+      return transReceiptLocations;
+  }
+  public Collection<OrderItem> getOrderItems() {
+      return orderItems;
+  }
+  public void setOrderItems(Collection<OrderItem> orderItems) {
+      this.orderItems = orderItems;
+  }
 
   
   public void setClone() {
     try {
-      original = (InventoryReceipt)this.clone();
-    }catch(Exception e){}
+        original = (InventoryReceipt)this.clone();
+    }catch(Exception e){
+        e.printStackTrace();
+    }
   }
   
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
+  public Audit getAudit() {
+        Audit audit;
 
-      AuditUtil.getChangeXML(inventoryItemId,original.inventoryItemId,doc,"inventory_item_id");
-      
-      AuditUtil.getChangeXML(orderItemId,original.orderItemId,doc,"order_item_id");
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.INVENTORY_RECEIPT);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("inventory_item_id", inventoryItemId, original.inventoryItemId)
+                 .setField("order_item_id", orderItemId, original.orderItemId)
+                 .setField("organization_id", organizationId, original.organizationId)
+                 .setField("received_date", receivedDate, original.receivedDate)
+                 .setField("quantity_received", quantityReceived, original.quantityReceived)
+                 .setField("unit_cost", unitCost, original.unitCost)
+                 .setField("qc_reference", qcReference, original.qcReference)
+                 .setField("external_reference", externalReference, original.externalReference)
+                 .setField("upc", upc, original.upc);
 
-      AuditUtil.getChangeXML(organizationId,original.organizationId,doc,"organization_id");
-
-      AuditUtil.getChangeXML(receivedDate,original.receivedDate,doc,"received_date");
-
-      AuditUtil.getChangeXML(quantityReceived,original.quantityReceived,doc,"quantity_received");
-
-      AuditUtil.getChangeXML(unitCost,original.unitCost,doc,"unit_cost");
-
-      AuditUtil.getChangeXML(qcReference,original.qcReference,doc,"qc_reference");
-
-      AuditUtil.getChangeXML(externalReference,original.externalReference,doc,"external_reference");
-
-      AuditUtil.getChangeXML(upc,original.upc,doc,"upc");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
-    }catch(Exception e){
-      e.printStackTrace();
+        return audit;
     }
-    return null;
-  }
-   
-  public String getTableName() {
-    return "inventory_receipt";
-  }
-public InventoryItem getInventoryItem() {
-    return inventoryItem;
-}
-public void setInventoryItem(InventoryItem inventoryItem) {
-    this.inventoryItem = inventoryItem;
-}
-public Organization getOrganization() {
-    return organization;
-}
-public Collection<InventoryXPut> getTransReceiptLocations() {
-    return transReceiptLocations;
-}
-public Collection<OrderItem> getOrderItems() {
-    return orderItems;
-}
-public void setOrderItems(Collection<OrderItem> orderItems) {
-    this.orderItems = orderItems;
-}
   
 }   

@@ -29,12 +29,6 @@ package org.openelis.entity;
   * SampleAnimal Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -42,6 +36,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.domain.ReferenceTable;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -152,45 +149,31 @@ public class SampleAnimal implements Auditable, Cloneable {
        (addressId != null && !addressId.equals(this.addressId)))
       this.addressId = addressId;
   }
-
   
   public void setClone() {
     try {
-      original = (SampleAnimal)this.clone();
-    }catch(Exception e){}
-  }
-  
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
-
-      AuditUtil.getChangeXML(sampleId,original.sampleId,doc,"sample_id");
-
-      AuditUtil.getChangeXML(animalCommonNameId,original.animalCommonNameId,doc,"animal_common_name_id");
-
-      AuditUtil.getChangeXML(animalScientificNameId,original.animalScientificNameId,doc,"animal_scientific_name_id");
-
-      AuditUtil.getChangeXML(collector,original.collector,doc,"collector");
-
-      AuditUtil.getChangeXML(collectorPhone,original.collectorPhone,doc,"collector_phone");
-
-      AuditUtil.getChangeXML(samplingLocation,original.samplingLocation,doc,"sampling_location");
-
-      AuditUtil.getChangeXML(addressId,original.addressId,doc,"address_id");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
+        original = (SampleAnimal)this.clone();
     }catch(Exception e){
-      e.printStackTrace();
+        e.printStackTrace();
     }
-    return null;
-  }
-   
-  public String getTableName() {
-    return "sample_animal";
   }
   
+  public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.SAMPLE_ANIMAL);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("sample_id", sampleId, original.sampleId)
+                 .setField("animal_common_name_id", animalCommonNameId, original.animalCommonNameId)
+                 .setField("animal_scientific_name_id", animalScientificNameId, original.animalScientificNameId)
+                 .setField("collector", collector, original.collector)
+                 .setField("collector_phone", collectorPhone, original.collectorPhone)
+                 .setField("sampling_location", samplingLocation, original.samplingLocation)
+                 .setField("address_id", addressId, original.addressId);
+
+        return audit;
+  }
 }   

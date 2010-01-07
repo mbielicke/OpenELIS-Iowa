@@ -31,10 +31,6 @@ package org.openelis.entity;
 
 import java.util.Collection;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.XMLUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -48,12 +44,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQuery(name = "TestWorksheet.FetchByTestId",
-           query = "select distinct new org.openelis.domain.TestWorksheetViewDO(tw.id,tw.testId,tw.batchCapacity, "+
+           query = "select distinct new org.openelis.domain.TestWorksheetViewDO(tw.id,tw.testId,tw.batchCapacity," +
                    "tw.totalCapacity,tw.formatId,tw.scriptletId,s.name)"
                  + " from TestWorksheet tw left join tw.scriptlet s where tw.testId = :testId")
 @Entity
@@ -166,31 +164,24 @@ public class TestWorksheet implements Auditable, Cloneable {
         try {
             original = (TestWorksheet)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(testId, original.testId, doc, "test_id");
-            AuditUtil.getChangeXML(batchCapacity, original.batchCapacity, doc, "batch_capacity");
-            AuditUtil.getChangeXML(totalCapacity, original.totalCapacity, doc, "total_capacity");
-            AuditUtil.getChangeXML(formatId, original.formatId, doc, "format_id");
-            AuditUtil.getChangeXML(scriptletId, original.scriptletId, doc, "scriptlet_id");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 
-    public String getTableName() {
-        return "test_worksheet";
-    }
+    public Audit getAudit() {
+        Audit audit;
 
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.TEST_WORKSHEET);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("test_id", testId, original.testId)
+                 .setField("batch_capacity", batchCapacity, original.batchCapacity)
+                 .setField("total_capacity", totalCapacity, original.totalCapacity)
+                 .setField("format_id", formatId, original.formatId)
+                 .setField("scriptlet_id", scriptletId, original.scriptletId);
+
+        return audit;
+    }
 }

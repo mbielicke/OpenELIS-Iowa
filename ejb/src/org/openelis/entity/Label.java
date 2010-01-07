@@ -29,10 +29,6 @@ package org.openelis.entity;
  * Label Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.XMLUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -46,20 +42,21 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries( {
-    
-    @NamedQuery(name = "Label.FetchById",
-               query = "select new org.openelis.domain.LabelViewDO(l.id,l.name,l.description,l.printerTypeId,l.scriptletId, s.name)"
-                     + " from Label l left join l.scriptlet s where l.id = :id"),
-    @NamedQuery(name = "Label.FetchByName", 
-               query = "select distinct new org.openelis.domain.IdNameVO(l.id, l.name) "
-                     + " from Label l where l.name like :name order by l.name"),
-    @NamedQuery(name = "Label.ReferenceCheck",
-               query = "select labelId from Test t where t.labelId = :id ")   
+@NamedQueries( {    
+    @NamedQuery( name = "Label.FetchById",
+                query = "select new org.openelis.domain.LabelViewDO(l.id,l.name,l.description,l.printerTypeId,l.scriptletId, s.name)"
+                      + " from Label l left join l.scriptlet s where l.id = :id"),
+    @NamedQuery( name = "Label.FetchByName", 
+                query = "select distinct new org.openelis.domain.IdNameVO(l.id, l.name)"
+                      + " from Label l where l.name like :name order by l.name"),
+    @NamedQuery( name = "Label.ReferenceCheck",
+                query = "select labelId from Test t where t.labelId = :id ")   
 })                     
 
 @Entity
@@ -148,30 +145,24 @@ public class Label implements Auditable, Cloneable {
         try {
             original = (Label)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(name, original.name, doc, "name");
-            AuditUtil.getChangeXML(description, original.description, doc, "description");
-            AuditUtil.getChangeXML(printerTypeId, original.printerTypeId, doc, "printer_type_id");
-            AuditUtil.getChangeXML(scriptletId, original.scriptletId, doc, "scriptlet_id");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
+    
+    public Audit getAudit() {
+        Audit audit;
 
-    public String getTableName() {
-        return "label";
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.LABEL);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("name", name, original.name)
+                 .setField("description", description, original.description)
+                 .setField("printer_type_id", printerTypeId, original.printerTypeId)
+                 .setField("scriptlet_id", scriptletId, original.scriptletId);
+        
+        return audit;
     }
 
 }

@@ -29,12 +29,6 @@ package org.openelis.entity;
   * AttachmentItem Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -42,6 +36,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.domain.ReferenceTable;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -108,33 +105,26 @@ public class AttachmentItem implements Auditable, Cloneable {
   
   public void setClone() {
     try {
-      original = (AttachmentItem)this.clone();
-    }catch(Exception e){}
+        original = (AttachmentItem)this.clone();
+    }catch(Exception e){
+        e.printStackTrace();
+    }
   }
   
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
+  public Audit getAudit() {
+        Audit audit;
 
-      AuditUtil.getChangeXML(referenceId,original.referenceId,doc,"reference_id");
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.ATTACHMENT_ITEM);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("reference_id", referenceId, original.referenceId)
+                 .setField("reference_table_id", referenceTableId, original.referenceTableId)
+                 .setField("attachment_id", attachmentId, original.attachmentId);
 
-      AuditUtil.getChangeXML(referenceTableId,original.referenceTableId,doc,"reference_table_id");
+        return audit;
 
-      AuditUtil.getChangeXML(attachmentId,original.attachmentId,doc,"attachment_id");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
-    }catch(Exception e){
-      e.printStackTrace();
-    }
-    return null;
-  }
-   
-  public String getTableName() {
-    return "attachment_item";
   }
   
 }   

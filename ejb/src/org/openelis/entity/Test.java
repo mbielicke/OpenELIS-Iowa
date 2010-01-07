@@ -29,7 +29,6 @@ package org.openelis.entity;
  * Test Entity POJO for database
  */
 
-import org.w3c.dom.Document;
 import java.util.Collection;
 import java.util.Date;
 
@@ -47,51 +46,50 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.w3c.dom.Element;
-
+import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-    @NamedQuery(name = "Test.FetchById",
+    @NamedQuery( name = "Test.FetchById",
                 query = "select distinct new org.openelis.domain.TestViewDO(t.id, t.name,t.description,t.reportingDescription," +
-                        "t.methodId,t.isActive,t.activeBegin,t.activeEnd,t.isReportable,"+
-                        "t.timeTransit,t.timeHolding,t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId,"+
-                        "t.labelQty,t.testTrailerId,t.scriptletId,t.testFormatId,t.revisionMethodId,"+
-                        "t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name,s.name) "
+                        "t.methodId,t.isActive,t.activeBegin,t.activeEnd,t.isReportable," +
+                        "t.timeTransit,t.timeHolding,t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId," +
+                        "t.labelQty,t.testTrailerId,t.scriptletId,t.testFormatId,t.revisionMethodId," +
+                        "t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name,s.name)"
                       + " from Test t left join t.scriptlet s left join t.testTrailer tt left join t.label l left join t.method m where t.id = :id"),                                                    
-    @NamedQuery(name = "Test.FetchByName",
+    @NamedQuery( name = "Test.FetchByName",
                 query = "select distinct new org.openelis.domain.TestViewDO(t.id, t.name,t.description,t.reportingDescription," +
-                        "t.methodId,t.isActive,t.activeBegin,t.activeEnd,t.isReportable,"+
-                        "t.timeTransit,t.timeHolding,t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId,"+
-                        "t.labelQty,t.testTrailerId,t.scriptletId,t.testFormatId,t.revisionMethodId,"+
-                        "t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name,s.name) "
+                        "t.methodId,t.isActive,t.activeBegin,t.activeEnd,t.isReportable," +
+                        "t.timeTransit,t.timeHolding,t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId," +
+                        "t.labelQty,t.testTrailerId,t.scriptletId,t.testFormatId,t.revisionMethodId," +
+                        "t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name,s.name)"
                       + " from Test t left join t.scriptlet s left join t.testTrailer tt left join t.label l left join t.method m where t.name = :name order by t.name"),
-    @NamedQuery(name = "Test.FetchByNameMethodName",
+    @NamedQuery( name = "Test.FetchByNameMethodName",
                 query = "select distinct new org.openelis.domain.TestViewDO(t.id, t.name,t.description,t.reportingDescription," +
                         " t.methodId,t.isActive,t.activeBegin,t.activeEnd,t.isReportable,"+
-                        " t.timeTransit,t.timeHolding,t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId,"+
-                        " t.labelQty,t.testTrailerId,t.scriptletId,t.testFormatId,t.revisionMethodId,"+
+                        " t.timeTransit,t.timeHolding,t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId," +
+                        " t.labelQty,t.testTrailerId,t.scriptletId,t.testFormatId,t.revisionMethodId," +
                         " t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name,s.name) " +
                         " from Test t left join t.scriptlet s left join t.testTrailer tt left join t.label l left join t.method m where t.name = :name and " +
                         " m.name=:methodName order by t.name"),
-    @NamedQuery(name = "Test.FetchNameMethodSectionByName",
+    @NamedQuery( name = "Test.FetchNameMethodSectionByName",
                 query = "select distinct new org.openelis.domain.PanelVO(t.id,t.name,m.name,s.name)"
                       + "  from Test t left join t.method m left join t.testSection ts left join ts.section s where t.isActive = 'Y' and t.name like :name order by t.name,m.name,s.name "),
-    @NamedQuery(name = "Test.FetchWithMethodByName", 
+    @NamedQuery( name = "Test.FetchWithMethodByName", 
                 query = "select new org.openelis.domain.TestMethodVO(t.id, t.name,t.description, m.id, m.name,m.description)"
                       + " from Test t LEFT JOIN t.method m where t.name like :name and t.isActive='Y' order by t.name"),
-    @NamedQuery(name = "Test.FetchByNameSampleItemType",
-                query = "select distinct new org.openelis.domain.TestMethodVO(t.id, t.name, t.description, m.id, m.name, m.description) "
+    @NamedQuery( name = "Test.FetchByNameSampleItemType",
+                query = "select distinct new org.openelis.domain.TestMethodVO(t.id, t.name, t.description, m.id, m.name, m.description)"
                       + " from Test t left join t.method m LEFT JOIN t.testTypeOfSample type where t.name like :name and type.typeOfSampleId = :typeId and t.isActive='Y' order by t.name"),
-    @NamedQuery(name = "Test.FetchByMethod",
+    @NamedQuery( name = "Test.FetchByMethod",
                 query = "select distinct new org.openelis.domain.TestViewDO(t.id, t.name,t.description,t.reportingDescription," +
                         "t.methodId,t.isActive,t.activeBegin,t.activeEnd,t.isReportable,"+
-                        "t.timeTransit,t.timeHolding,t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId,"+
-                        "t.labelQty,t.testTrailerId,t.scriptletId,t.testFormatId,t.revisionMethodId,"+
+                        "t.timeTransit,t.timeHolding,t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId," +
+                        "t.labelQty,t.testTrailerId,t.scriptletId,t.testFormatId,t.revisionMethodId," +
                         "t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name,s.name) "
                       + " from Test t left join t.scriptlet s left join t.testTrailer tt left join t.label l left join t.method m where t.methodId = :id and t.isActive = 'Y'")})
     
@@ -534,45 +532,38 @@ public class Test implements Auditable, Cloneable {
         }
     }
 
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
+    public Audit getAudit() {
+        Audit audit;
 
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(name, original.name, doc, "name");
-            AuditUtil.getChangeXML(description, original.description, doc, "description");
-            AuditUtil.getChangeXML(reportingDescription, original.reportingDescription, doc, "reporting_description");
-            AuditUtil.getChangeXML(methodId, original.methodId, doc, "method_id");
-            AuditUtil.getChangeXML(isActive, original.isActive, doc, "is_active");
-            AuditUtil.getChangeXML(activeBegin, original.activeBegin, doc, "active_begin");
-            AuditUtil.getChangeXML(activeEnd, original.activeEnd, doc, "active_end");
-            AuditUtil.getChangeXML(isReportable, original.isReportable, doc, "is_reportable");
-            AuditUtil.getChangeXML(timeTransit, original.timeTransit, doc, "time_transit");
-            AuditUtil.getChangeXML(timeHolding, original.timeHolding, doc, "time_holding");
-            AuditUtil.getChangeXML(timeTaAverage, original.timeTaAverage, doc, "time_ta_average");
-            AuditUtil.getChangeXML(timeTaWarning, original.timeTaWarning, doc, "time_ta_warning");
-            AuditUtil.getChangeXML(timeTaMax, original.timeTaMax, doc, "time_ta_max");
-            AuditUtil.getChangeXML(labelId, original.labelId, doc, "label_id");
-            AuditUtil.getChangeXML(labelQty, original.labelQty, doc, "label_qty");
-            AuditUtil.getChangeXML(testTrailerId, original.testTrailerId, doc, "test_trailer_id");
-            AuditUtil.getChangeXML(scriptletId, original.scriptletId, doc, "scriptlet_id");
-            AuditUtil.getChangeXML(testFormatId, original.testFormatId, doc, "test_format_id");
-            AuditUtil.getChangeXML(revisionMethodId, original.revisionMethodId, doc, "revision_method_id");
-            AuditUtil.getChangeXML(reportingMethodId, original.reportingMethodId, doc, "reporting_method_id");
-            AuditUtil.getChangeXML(sortingMethodId, original.sortingMethodId, doc, "sorting_method_id");
-            AuditUtil.getChangeXML(reportingSequence, original.reportingSequence, doc, "reporting_sequence");
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.TEST);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("name", name, original.name)
+                 .setField("description", description, original.description)
+                 .setField("reporting_description", reportingDescription, original.reportingDescription)
+                 .setField("method_id", methodId, original.methodId)
+                 .setField("is_active", isActive, original.isActive)
+                 .setField("active_begin", activeBegin, original.activeBegin)
+                 .setField("active_end", activeEnd, original.activeEnd)
+                 .setField("is_reportable", isReportable, original.isReportable)
+                 .setField("time_transit", timeTransit, original.timeTransit)
+                 .setField("time_holding", timeHolding, original.timeHolding)
+                 .setField("time_ta_average", timeTaAverage, original.timeTaAverage)
+                 .setField("time_ta_warning", timeTaWarning, original.timeTaWarning)
+                 .setField("time_ta_max", timeTaMax, original.timeTaMax)
+                 .setField("label_id", labelId, original.labelId)
+                 .setField("label_qty", labelQty, original.labelQty)
+                 .setField("test_trailer_id", testTrailerId, original.testTrailerId)
+                 .setField("scriptlet_id", scriptletId, original.scriptletId)
+                 .setField("test_format_id", testFormatId, original.testFormatId)
+                 .setField("revision_method_id", revisionMethodId, original.revisionMethodId)
+                 .setField("reporting_method_id", reportingMethodId, original.reportingMethodId)
+                 .setField("sorting_method_id", sortingMethodId, original.sortingMethodId)
+                 .setField("reporting_sequence", reportingSequence, original.reportingSequence);
 
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        return audit;
+
     }
-    
-    public String getTableName() {
-        return "test";
-    }
-
 }

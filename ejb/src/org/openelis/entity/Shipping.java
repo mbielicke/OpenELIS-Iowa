@@ -29,13 +29,9 @@ package org.openelis.entity;
   * Shipping Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
 import java.util.Collection;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -49,6 +45,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.Datetime;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -199,61 +199,50 @@ public class Shipping implements Auditable, Cloneable {
       if((cost == null && this.cost != null) || 
          (cost != null && !cost.equals(this.cost)))
         this.cost = cost;
-    }
+  }
+  
+  public Collection<ShippingTracking> getShippingTracking() {
+      return shippingTracking;
+  }
+  
+  public void setShippingTracking(Collection<ShippingTracking> shippingTracking) {
+      this.shippingTracking = shippingTracking;
+  }
+  
+  public Organization getShipTo() {
+      return shipTo;
+  }
+  
+  public void setShipTo(Organization shipTo) {
+      this.shipTo = shipTo;
+  }
   
   public void setClone() {
     try {
       original = (Shipping)this.clone();
-    }catch(Exception e){}
-  }
-  
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
-
-      AuditUtil.getChangeXML(statusId,original.statusId,doc,"status_id");
-
-      AuditUtil.getChangeXML(shippedFromId,original.shippedFromId,doc,"shipped_from_id");
-      
-      AuditUtil.getChangeXML(shippedToId,original.shippedToId,doc,"shipped_to_id");
-
-      AuditUtil.getChangeXML(processedById,original.processedById,doc,"processed_by_id");
-
-      AuditUtil.getChangeXML(processedDate,original.processedDate,doc,"processed_date");
-
-      AuditUtil.getChangeXML(shippedMethodId,original.shippedMethodId,doc,"shipped_method_id");
-
-      AuditUtil.getChangeXML(shippedDate,original.shippedDate,doc,"shipped_date");
-
-      AuditUtil.getChangeXML(numberOfPackages,original.numberOfPackages,doc,"number_of_packages");
-      
-      AuditUtil.getChangeXML(cost,original.cost,doc,"cost");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
     }catch(Exception e){
-      e.printStackTrace();
+        e.printStackTrace();
     }
-    return null;
   }
-   
-  public String getTableName() {
-    return "shipping";
-  }
-public Collection<ShippingTracking> getShippingTracking() {
-    return shippingTracking;
-}
-public void setShippingTracking(Collection<ShippingTracking> shippingTracking) {
-    this.shippingTracking = shippingTracking;
-}
-public Organization getShipTo() {
-    return shipTo;
-}
-public void setShipTo(Organization shipTo) {
-    this.shipTo = shipTo;
-}
   
+  public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.SHIPPING);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("status_id", statusId, original.statusId)
+                 .setField("shipped_from_id", shippedFromId, original.shippedFromId)
+                 .setField("shipped_to_id", shippedToId, original.shippedToId)
+                 .setField("processed_by_id", processedById, original.processedById)
+                 .setField("processed_date", processedDate, original.processedDate)
+                 .setField("shipped_method_id", shippedMethodId, original.shippedMethodId)
+                 .setField("shipped_date", shippedDate, original.shippedDate)
+                 .setField("number_of_packages", numberOfPackages, original.numberOfPackages)
+                 .setField("cost", cost, original.cost);
+
+        return audit;
+  }  
 }   

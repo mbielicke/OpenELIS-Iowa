@@ -29,10 +29,6 @@ package org.openelis.entity;
  * Qaevent Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.XMLUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -46,7 +42,9 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -192,32 +190,26 @@ public class QaEvent implements Auditable, Cloneable {
         try {
             original = (QaEvent)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(name, original.name, doc, "name");
-            AuditUtil.getChangeXML(description, original.description, doc, "description");
-            AuditUtil.getChangeXML(testId, original.testId, doc, "test_id");
-            AuditUtil.getChangeXML(typeId, original.typeId, doc, "type_id");
-            AuditUtil.getChangeXML(isBillable, original.isBillable, doc, "is_billable");
-            AuditUtil.getChangeXML(reportingSequence, original.reportingSequence, doc, "reporting_sequence");
-            AuditUtil.getChangeXML(reportingText, original.reportingText, doc, "reporting_text");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 
-    public String getTableName() {
-        return "qaevent";
+    public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.QAEVENT);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("name", name, original.name)
+                 .setField("description", description, original.description)
+                 .setField("test_id", testId, original.testId)
+                 .setField("type_id", typeId, original.typeId)
+                 .setField("is_billable", isBillable, original.isBillable)
+                 .setField("reporting_sequence", reportingSequence, original.reportingSequence)
+                 .setField("reporting_text", reportingText, original.reportingText);
+
+        return audit;
     }
 }

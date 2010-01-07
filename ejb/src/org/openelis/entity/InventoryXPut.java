@@ -43,11 +43,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.util.XMLUtil;
+import org.openelis.domain.ReferenceTable;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 @NamedQueries({ @NamedQuery(name = "InventoryXPut.TransIdsLocIdsByReceiptId", query = "select tr.id, tr.inventoryLocationId from InventoryXPut tr where tr.inventoryReceiptId = :id " +
                                             " and quantity > 0 order by tr.quantity desc")})
@@ -120,43 +119,35 @@ public class InventoryXPut implements Auditable, Cloneable {
        (quantity != null && !quantity.equals(this.quantity)))
       this.quantity = quantity;
   }
-
+  
+  public InventoryLocation getInventoryLocation() {
+      return inventoryLocation;
+  }
+  public InventoryReceipt getInventoryReceipt() {
+      return inventoryReceipt;
+  }
   
   public void setClone() {
     try {
-      original = (InventoryXPut)this.clone();
-    }catch(Exception e){}
+        original = (InventoryXPut)this.clone();
+    }catch(Exception e){
+        e.printStackTrace();
+    }
   }
   
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
+  public Audit getAudit() {
+        Audit audit;
 
-      AuditUtil.getChangeXML(inventoryReceiptId,original.inventoryReceiptId,doc,"inventory_receipt_id");
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.INVENTORY_X_PUT);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("inventory_receipt_id", inventoryReceiptId, original.inventoryReceiptId)
+                 .setField("inventory_location_id", inventoryLocationId, original.inventoryLocationId)
+                 .setField("quantity", quantity, original.quantity);
 
-      AuditUtil.getChangeXML(inventoryLocationId,original.inventoryLocationId,doc,"inventory_location_id");
-
-      AuditUtil.getChangeXML(quantity,original.quantity,doc,"quantity");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
-    }catch(Exception e){
-      e.printStackTrace();
+        return audit;
     }
-    return null;
-  }
-   
-  public String getTableName() {
-    return "inventory_x_put";
-  }
-public InventoryLocation getInventoryLocation() {
-    return inventoryLocation;
-}
-public InventoryReceipt getInventoryReceipt() {
-    return inventoryReceipt;
-}
   
 }   

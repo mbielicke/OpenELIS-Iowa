@@ -31,6 +31,7 @@ package org.openelis.entity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.util.XMLUtil;
 
 import javax.persistence.Column;
@@ -44,25 +45,26 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-    @NamedQuery(name =  "TestResult.FetchByTestIdResultGroup",
-                query = "select distinct new org.openelis.domain.TestResultViewDO(tr.id,tr.testId,tr.resultGroup,"+
-                        " tr.sortOrder,tr.unitOfMeasureId,tr.typeId,tr.value,tr.significantDigits,tr.roundingMethodId,tr.flagsId,'')"
+    @NamedQuery( name = "TestResult.FetchByTestIdResultGroup",
+                query = "select distinct new org.openelis.domain.TestResultViewDO(tr.id,tr.testId,tr.resultGroup," +
+                        "tr.sortOrder,tr.unitOfMeasureId,tr.typeId,tr.value,tr.significantDigits,tr.roundingMethodId,tr.flagsId,'')"
                       + " from TestResult tr where tr.testId = :testId and tr.resultGroup = :resultGroup order by tr.sortOrder "),      
-    @NamedQuery(name =  "TestResult.FetchByTestId",
-                query = "select distinct new org.openelis.domain.TestResultDO(tr.id,tr.testId,tr.resultGroup,"+
-                        " tr.sortOrder,tr.unitOfMeasureId,tr.typeId,tr.value,tr.significantDigits,tr.roundingMethodId,tr.flagsId)"
+    @NamedQuery( name = "TestResult.FetchByTestId",
+                query = "select distinct new org.openelis.domain.TestResultDO(tr.id,tr.testId,tr.resultGroup," +
+                        "tr.sortOrder,tr.unitOfMeasureId,tr.typeId,tr.value,tr.significantDigits,tr.roundingMethodId,tr.flagsId)"
                       + " from TestResult tr where tr.testId = :testId order by tr.resultGroup, tr.sortOrder "),
-    @NamedQuery(name =  "TestResult.FetchByAnalysisId",
-                query = "select distinct new org.openelis.domain.TestResultDO(tr.id,tr.testId,tr.resultGroup,"+
-                        " tr.sortOrder,tr.unitOfMeasureId,tr.typeId,tr.value,tr.significantDigits,tr.roundingMethodId,tr.flagsId)"
+    @NamedQuery( name = "TestResult.FetchByAnalysisId",
+                query = "select distinct new org.openelis.domain.TestResultDO(tr.id,tr.testId,tr.resultGroup," +
+                        "tr.sortOrder,tr.unitOfMeasureId,tr.typeId,tr.value,tr.significantDigits,tr.roundingMethodId,tr.flagsId)"
                       + " from Analysis a LEFT JOIN a.test t LEFT JOIN t.testResult tr where a.id = :analysisId order by tr.resultGroup, tr.sortOrder "),
-   @NamedQuery(name =   "TestResult.FetchByValue",
-               query =  "select distinct new org.openelis.domain.TestResultDO(tr.id,tr.testId,tr.resultGroup,"+
-                        " tr.sortOrder,tr.unitOfMeasureId,tr.typeId,tr.value,tr.significantDigits,tr.roundingMethodId,tr.flagsId)"
+   @NamedQuery( name =  "TestResult.FetchByValue",
+               query =  "select distinct new org.openelis.domain.TestResultDO(tr.id,tr.testId,tr.resultGroup," +
+                        "tr.sortOrder,tr.unitOfMeasureId,tr.typeId,tr.value,tr.significantDigits,tr.roundingMethodId,tr.flagsId)"
                       + " from TestResult tr where tr.value = :value" )})
    
 @Entity
@@ -199,35 +201,29 @@ public class TestResult implements Auditable, Cloneable {
         try {
             original = (TestResult)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(testId, original.testId, doc, "test_id");
-            AuditUtil.getChangeXML(resultGroup, original.resultGroup, doc, "result_group");
-            AuditUtil.getChangeXML(sortOrder, original.sortOrder, doc, "sort_order");
-            AuditUtil.getChangeXML(flagsId, original.flagsId, doc, "flags_id");
-            AuditUtil.getChangeXML(typeId, original.typeId, doc, "type_id");
-            AuditUtil.getChangeXML(value, original.value, doc, "value");
-            AuditUtil.getChangeXML(significantDigits, original.significantDigits, doc,"significant_digits");
-            AuditUtil.getChangeXML(roundingMethodId, original.roundingMethodId, doc,"rounding_method_id");
-            AuditUtil.getChangeXML(unitOfMeasureId, original.unitOfMeasureId, doc,"unit_of_measure_id");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 
-    public String getTableName() {
-        return "test_result";
-    }
+    public Audit getAudit() {
+        Audit audit;
 
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.TEST_RESULT);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("test_id", testId, original.testId)
+                 .setField("result_group", resultGroup, original.resultGroup)
+                 .setField("sort_order", sortOrder, original.sortOrder)
+                 .setField("unit_of_measure_id", unitOfMeasureId, original.unitOfMeasureId)
+                 .setField("type_id", typeId, original.typeId)
+                 .setField("value", value, original.value)
+                 .setField("significant_digits", significantDigits, original.significantDigits)
+                 .setField("rounding_method_id", roundingMethodId, original.roundingMethodId)
+                 .setField("flags_id", flagsId, original.flagsId);
+
+        return audit;
+
+    }
 }

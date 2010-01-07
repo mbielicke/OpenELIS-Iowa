@@ -41,14 +41,13 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.util.XMLUtil;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
-@NamedQuery(name = "ProviderLocation.FetchByProviderId", 
+@NamedQuery( name = "ProviderLocation.FetchByProviderId", 
 		    query = "select new org.openelis.domain.ProviderLocationDO(pl.id,pl.location,pl.externalId,pl.providerId," +
 		    		"a.id,a.multipleUnit,a.streetAddress,a.city,a.state,a.zipCode,a.workPhone,a.homePhone," +
 		    		"a.cellPhone,a.faxPhone,a.email,a.country)"
@@ -140,29 +139,23 @@ public class ProviderLocation implements Auditable, Cloneable {
         try {
             original = (ProviderLocation)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(location, original.location, doc, "location");
-            AuditUtil.getChangeXML(externalId, original.externalId, doc, "external_id");
-            AuditUtil.getChangeXML(providerId, original.providerId, doc, "provider_id");
-            AuditUtil.getChangeXML(addressId, original.addressId, doc, "address_id");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 
-    public String getTableName() {
-        return "provider_address"; // this is wrong but will do until we change to static constants
+    public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.PROVIDER_LOCATION);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("location", location, original.location)
+                 .setField("external_id", externalId, original.externalId)
+                 .setField("provider_id", providerId, original.providerId)
+                 .setField("address_id", addressId, original.addressId);
+
+        return audit;
     }
 }

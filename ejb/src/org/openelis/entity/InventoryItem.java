@@ -45,12 +45,11 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.util.XMLUtil;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 @NamedQueries({
     @NamedQuery( name = "InventoryItem.FetchById",
@@ -221,7 +220,7 @@ public class InventoryItem implements Auditable, Cloneable {
     @Column(name = "average_daily_use")
     private Integer                        averageDailyUse;
 
-    @Column(name = "parent_inventory_item")
+    @Column(name = "parent_inventory_item_id")
     private Integer                        parentInventoryItemId;
 
     @Column(name = "parent_ratio")
@@ -489,46 +488,40 @@ public class InventoryItem implements Auditable, Cloneable {
             e.printStackTrace();
         }
     }
+    
+    public Audit getAudit() {
+        Audit audit;
 
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.INVENTORY_ITEM);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("name", name, original.name)
+                 .setField("description", description, original.description)
+                 .setField("category_id", categoryId, original.categoryId)
+                 .setField("store_id", storeId, original.storeId)
+                 .setField("quantity_min_level", quantityMinLevel, original.quantityMinLevel)
+                 .setField("quantity_max_level", quantityMaxLevel, original.quantityMaxLevel)
+                 .setField("quantity_to_reorder", quantityToReorder, original.quantityToReorder)
+                 .setField("dispensed_units_id", dispensedUnitsId, original.dispensedUnitsId)
+                 .setField("is_reorder_auto", isReorderAuto, original.isReorderAuto)
+                 .setField("is_lot_maintained", isLotMaintained, original.isLotMaintained)
+                 .setField("is_serial_maintained", isSerialMaintained, original.isSerialMaintained)
+                 .setField("is_active", isActive, original.isActive)
+                 .setField("is_bulk", isBulk, original.isBulk)
+                 .setField("is_not_for_sale", isNotForSale, original.isNotForSale)
+                 .setField("is_sub_assembly", isSubAssembly, original.isSubAssembly)
+                 .setField("is_labor", isLabor, original.isLabor)
+                 .setField("is_not_inventoried", isNotInventoried, original.isNotInventoried)
+                 .setField("product_uri", productUri, original.productUri)
+                 .setField("average_lead_time", averageLeadTime, original.averageLeadTime)
+                 .setField("average_cost", averageCost, original.averageCost)
+                 .setField("average_daily_use", averageDailyUse, original.averageDailyUse)
+                 .setField("parent_inventory_item_id", parentInventoryItemId, original.parentInventoryItemId)
+                 .setField("parent_ratio", parentRatio, original.parentRatio);
 
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(name, original.name, doc, "name");
-            AuditUtil.getChangeXML(description, original.description, doc, "description");
-            AuditUtil.getChangeXML(categoryId, original.categoryId, doc, "category_id");
-            AuditUtil.getChangeXML(storeId, original.storeId, doc, "store_id");
-            AuditUtil.getChangeXML(quantityMinLevel, original.quantityMinLevel, doc, "quantity_min_level");
-            AuditUtil.getChangeXML(quantityMaxLevel, original.quantityMaxLevel, doc, "quantity_max_level");
-            AuditUtil.getChangeXML(quantityToReorder, original.quantityToReorder, doc, "quantity_to_reorder");
-            AuditUtil.getChangeXML(dispensedUnitsId, original.dispensedUnitsId, doc, "dispensed_units_id");
-            AuditUtil.getChangeXML(isReorderAuto, original.isReorderAuto, doc, "is_reorder_auto");
-            AuditUtil.getChangeXML(isLotMaintained, original.isLotMaintained, doc, "is_lot_maintained");
-            AuditUtil.getChangeXML(isSerialMaintained, original.isSerialMaintained, doc, "is_serial_maintained");
-            AuditUtil.getChangeXML(isActive, original.isActive, doc, "is_active");
-            AuditUtil.getChangeXML(isBulk, original.isBulk, doc, "is_bulk");
-            AuditUtil.getChangeXML(isNotForSale, original.isNotForSale, doc, "is_not_for_sale");
-            AuditUtil.getChangeXML(isSubAssembly, original.isSubAssembly, doc, "is_sub_assembly");
-            AuditUtil.getChangeXML(isLabor, original.isLabor, doc, "is_labor");
-            AuditUtil.getChangeXML(isNotInventoried, original.isNotInventoried, doc, "is_not_inventoried");
-            AuditUtil.getChangeXML(productUri, original.productUri, doc, "product_uri");
-            AuditUtil.getChangeXML(averageLeadTime, original.averageLeadTime, doc, "average_lead_time");
-            AuditUtil.getChangeXML(averageCost, original.averageCost, doc, "average_cost");
-            AuditUtil.getChangeXML(averageDailyUse, original.averageDailyUse, doc, "average_daily_use");
-            AuditUtil.getChangeXML(parentInventoryItemId, original.parentInventoryItemId, doc, "parent_inventory_item");
-            AuditUtil.getChangeXML(parentRatio, original.parentRatio, doc, "parent_ratio");
+        return audit;
 
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public String getTableName() {
-        return "inventory_item";
     }
 }

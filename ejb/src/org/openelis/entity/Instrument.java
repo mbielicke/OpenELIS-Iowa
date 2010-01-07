@@ -29,13 +29,9 @@ package org.openelis.entity;
  * Instrument Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
 import java.util.Collection;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -50,19 +46,22 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-    @NamedQuery(name = "Instrument.FetchById",
-               query = "select new org.openelis.domain.InstrumentViewDO(inst.id,inst.name,inst.description,inst.modelNumber, " +
-                       "inst.serialNumber,inst.typeId,inst.location,inst.isActive,inst.activeBegin,inst.activeEnd,s.id,s.name)" 
-                     + " from Instrument inst left join inst.scriptlet s where inst.id = :id "),
-    @NamedQuery(name = "Instrument.FetchByNameSerialNumber",
-               query = "select new org.openelis.domain.InstrumentViewDO(inst.id,inst.name,inst.description,inst.modelNumber, " +
-                       "inst.serialNumber,inst.typeId,inst.location,inst.isActive,inst.activeBegin,inst.activeEnd,s.id,s.name)" 
-                     + " from Instrument inst left join inst.scriptlet s where inst.name = :name and inst.serialNumber = :serialNumber")
+    @NamedQuery( name = "Instrument.FetchById",
+                query = "select new org.openelis.domain.InstrumentViewDO(inst.id,inst.name,inst.description,inst.modelNumber," +
+                        "inst.serialNumber,inst.typeId,inst.location,inst.isActive,inst.activeBegin,inst.activeEnd,s.id,s.name)" 
+                      + " from Instrument inst left join inst.scriptlet s where inst.id = :id "),
+    @NamedQuery( name = "Instrument.FetchByNameSerialNumber",
+                query = "select new org.openelis.domain.InstrumentViewDO(inst.id,inst.name,inst.description,inst.modelNumber," +
+                        "inst.serialNumber,inst.typeId,inst.location,inst.isActive,inst.activeBegin,inst.activeEnd,s.id,s.name)" 
+                      + " from Instrument inst left join inst.scriptlet s where inst.name = :name and inst.serialNumber = :serialNumber")
 })
 
 @Entity
@@ -235,36 +234,31 @@ public class Instrument implements Auditable, Cloneable {
         try {
             original = (Instrument)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(name, original.name, doc, "name");
-            AuditUtil.getChangeXML(description, original.description, doc, "description");
-            AuditUtil.getChangeXML(modelNumber, original.modelNumber, doc, "model_number");
-            AuditUtil.getChangeXML(serialNumber, original.serialNumber, doc, "serial_number");
-            AuditUtil.getChangeXML(typeId, original.typeId, doc, "type_id");
-            AuditUtil.getChangeXML(location, original.location, doc, "location");
-            AuditUtil.getChangeXML(isActive, original.isActive, doc, "is_active");
-            AuditUtil.getChangeXML(activeBegin, original.activeBegin, doc, "active_begin");
-            AuditUtil.getChangeXML(activeEnd, original.activeEnd, doc, "active_end");
-            AuditUtil.getChangeXML(scriptletId, original.scriptletId, doc, "scriptlet_id");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
+    
+    public Audit getAudit() {
+        Audit audit;
 
-    public String getTableName() {
-        return "instrument";
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.INSTRUMENT);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("name", name, original.name)
+                 .setField("description", description, original.description)
+                 .setField("model_number", modelNumber, original.modelNumber)
+                 .setField("serial_number", serialNumber, original.serialNumber)
+                 .setField("type_id", typeId, original.typeId)
+                 .setField("location", location, original.location)
+                 .setField("is_active", isActive, original.isActive)
+                 .setField("active_begin", activeBegin, original.activeBegin)
+                 .setField("active_end", activeEnd, original.activeEnd)
+                 .setField("scriptlet_id", scriptletId, original.scriptletId);
+
+        return audit;
+
     }
 
 }

@@ -46,12 +46,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.util.XMLUtil;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 @NamedQueries({
     @NamedQuery( name = "Organization.FetchById",
@@ -214,26 +213,20 @@ public class Organization implements Auditable, Cloneable {
         }
     }
 
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
+    public Audit getAudit() {
+        Audit audit;
 
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(parentOrganizationId, original.parentOrganizationId, doc,"parent_organization_id");
-            AuditUtil.getChangeXML(name, original.name, doc, "name");
-            AuditUtil.getChangeXML(isActive, original.isActive, doc, "is_active");
-            AuditUtil.getChangeXML(addressId, original.addressId, doc, "address_id");
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.ORGANIZATION);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("parent_organization_id", parentOrganizationId, original.parentOrganizationId)
+                 .setField("name", name, original.name)
+                 .setField("is_active", isActive, original.isActive)
+                 .setField("address_id", addressId, original.addressId);
 
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        return audit;
     }
 
-    public String getTableName() {
-        return "organization";
-    }
 }

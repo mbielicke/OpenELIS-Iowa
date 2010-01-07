@@ -42,12 +42,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.util.XMLUtil;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 @NamedQueries({@NamedQuery(name = "AuxData.FetchById", query = "select distinct new org.openelis.domain.AuxDataViewDO(a.id, a.sortOrder, " + 
                            " a.auxFieldId, a.referenceId, a.referenceTableId, a.isReportable, a.typeId, a.value, '') " +
@@ -158,40 +157,29 @@ public class AuxData implements Auditable, Cloneable {
   
   public void setClone() {
     try {
-      original = (AuxData)this.clone();
-    }catch(Exception e){}
+        original = (AuxData)this.clone();
+    }catch(Exception e){
+        e.printStackTrace();
+    }
   }
   
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
-      AuditUtil.getChangeXML(sortOrder,original.sortOrder,doc,"sort_order_id");
-      AuditUtil.getChangeXML(auxFieldId,original.auxFieldId,doc,"aux_field_id");
-      AuditUtil.getChangeXML(referenceId,original.referenceId,doc,"reference_id");
-      AuditUtil.getChangeXML(referenceTableId,original.referenceTableId,doc,"reference_table_id");
-      AuditUtil.getChangeXML(isReportable,original.isReportable,doc,"is_reportable");
-      AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
-      AuditUtil.getChangeXML(value,original.value,doc,"value");
+  public Audit getAudit() {
+        Audit audit;
 
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
-    }catch(Exception e){
-      e.printStackTrace();
-    }
-    return null;
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.AUX_DATA);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("sort_order", sortOrder, original.sortOrder)
+                 .setField("aux_field_id", auxFieldId, original.auxFieldId)
+                 .setField("reference_id", referenceId, original.referenceId)
+                 .setField("reference_table_id", referenceTableId, original.referenceTableId)
+                 .setField("is_reportable", isReportable, original.isReportable)
+                 .setField("type_id", typeId, original.typeId)
+                 .setField("value", value, original.value);
+
+        return audit;
   }
-   
-  public String getTableName() {
-    return "aux_data";
-  }
-public AuxField getAuxField() {
-    return auxField;
-}
-public void setAuxField(AuxField auxField) {
-    this.auxField = auxField;
-}
   
 }   

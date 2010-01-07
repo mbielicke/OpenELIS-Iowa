@@ -29,10 +29,6 @@ package org.openelis.entity;
  * PanelItem Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.XMLUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -42,12 +38,14 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQuery(name = "PanelItem.FetchByPanelId", 
-           query = "select distinct new org.openelis.domain.PanelItemDO(p.id,p.panelId,p.sortOrder,p.testName,p.methodName) "
+           query = "select distinct new org.openelis.domain.PanelItemDO(p.id,p.panelId,p.sortOrder,p.testName,p.methodName)"
                  + " from PanelItem p where p.panelId = :id order by p.sortOrder")
 
 @Entity
@@ -124,30 +122,23 @@ public class PanelItem implements Auditable, Cloneable {
         try {
             original = (PanelItem)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(panelId, original.panelId, doc, "panel_id");
-            AuditUtil.getChangeXML(sortOrder, original.sortOrder, doc, "sort_order_id");
-            AuditUtil.getChangeXML(testName, original.testName, doc, "test_name");
-            AuditUtil.getChangeXML(methodName, original.methodName, doc, "method_name");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 
-    public String getTableName() {
-        return "panel_item";
-    }
+    public Audit getAudit() {
+        Audit audit;
 
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.PANEL_ITEM);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("panel_id", panelId, original.panelId)
+                 .setField("sort_order", sortOrder, original.sortOrder)
+                 .setField("test_name", testName, original.testName)
+                 .setField("method_name", methodName, original.methodName);
+
+        return audit;
+    }
 }

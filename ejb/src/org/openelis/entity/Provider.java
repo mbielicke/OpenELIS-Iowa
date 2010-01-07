@@ -44,15 +44,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.util.XMLUtil;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 @NamedQueries({
-	@NamedQuery(name = "Provider.FetchById", 
+	@NamedQuery( name = "Provider.FetchById", 
 			    query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.typeId,p.npi)"                                                                                                  
 					  + " from Provider p where p.id = :id")
 })
@@ -142,43 +141,36 @@ public class Provider implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(npi, this.npi))
             this.npi = npi;
     }
-
-    public void setClone() {
-        try {
-            original = (Provider)this.clone();
-        } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(lastName, original.lastName, doc, "last_name");
-            AuditUtil.getChangeXML(firstName, original.firstName, doc, "first_name");
-            AuditUtil.getChangeXML(middleName, original.middleName, doc, "middle_name");
-            AuditUtil.getChangeXML(typeId, original.typeId, doc, "type_id");
-            AuditUtil.getChangeXML(npi, original.npi, doc, "npi");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public String getTableName() {
-        return "provider";
-    }
-
+    
     public Collection<ProviderLocation> getProviderLocation() {
         return providerLocation;
     }
 
     public void setProviderLocation(Collection<ProviderLocation> providerLocation) {
         this.providerLocation = providerLocation;
+    }
+
+    public void setClone() {
+        try {
+            original = (Provider)this.clone();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.PROVIDER);
+        audit.setReferenceId(getId());
+        audit.setField("id", id, original.id)
+             .setField("last_name", lastName, original.lastName)
+             .setField("first_name", firstName, original.firstName)
+             .setField("middle_name", middleName, original.middleName)
+             .setField("type_id", typeId, original.typeId)
+             .setField("npi", npi, original.npi);
+
+        return audit;
     }
 }

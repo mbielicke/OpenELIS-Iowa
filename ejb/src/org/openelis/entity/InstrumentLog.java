@@ -29,12 +29,8 @@ package org.openelis.entity;
  * InstrumentLog Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -45,13 +41,16 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
     @NamedQuery(name = "InstrumentLog.FetchByInstrumentId",
-               query = "select new org.openelis.domain.InstrumentLogDO(il.id,il.instrumentId,il.typeId, " + 
+               query = "select new org.openelis.domain.InstrumentLogDO(il.id,il.instrumentId,il.typeId," + 
                        "il.worksheetId,il.eventBegin,il.eventEnd,il.text)"
                      + " from InstrumentLog il where il.instrumentId = :id order by il.eventBegin desc")})
 @Entity 
@@ -152,32 +151,26 @@ public class InstrumentLog implements Auditable, Cloneable {
         try {
             original = (InstrumentLog)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(instrumentId, original.instrumentId, doc, "instrument_id");
-            AuditUtil.getChangeXML(typeId, original.typeId, doc, "type_id");
-            AuditUtil.getChangeXML(worksheetId, original.worksheetId, doc, "worksheet_id");
-            AuditUtil.getChangeXML(eventBegin, original.eventBegin, doc, "event_begin");
-            AuditUtil.getChangeXML(eventEnd, original.eventEnd, doc, "event_end");
-            AuditUtil.getChangeXML(text, original.text, doc, "text");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 
-    public String getTableName() {
-        return "instrument_log";
+    public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.INSTRUMENT_LOG);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("instrument_id", instrumentId, original.instrumentId)
+                 .setField("type_id", typeId, original.typeId)
+                 .setField("worksheet_id", worksheetId, original.worksheetId)
+                 .setField("event_begin", eventBegin, original.eventBegin)
+                 .setField("event_end", eventEnd, original.eventEnd)
+                 .setField("text", text, original.text);
+
+        return audit;
     }
 
 }

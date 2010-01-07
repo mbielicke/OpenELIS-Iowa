@@ -29,11 +29,6 @@ package org.openelis.entity;
  * Dictionary Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.entity.Dictionary;
-import org.openelis.util.XMLUtil;
-
 import javax.persistence.Column;
 import javax.persistence.ColumnResult;
 import javax.persistence.Entity;
@@ -52,30 +47,33 @@ import javax.persistence.SqlResultSetMappings;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries( {@NamedQuery(name = "Dictionary.FetchByCategoryId",
-                            query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder, " +
-                            		"d.categoryId, d.relatedEntryId, d.systemName,d.isActive,  d.localAbbrev, d.entry, dre.entry) "
-                                  + "from  Dictionary d left join d.relatedEntry dre  where d.categoryId = :id order by d.sortOrder "),
-                @NamedQuery(name = "Dictionary.FetchBySystemName",
-                            query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId, " +
-                                    " d.systemName,d.isActive,  d.localAbbrev, d.entry)"
-                                  + " from  Dictionary d where d.systemName = :name "),
-                @NamedQuery(name = "Dictionary.FetchById",
-                            query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId, " +
-                                    " d.systemName,d.isActive,  d.localAbbrev, d.entry, dre.entry)"
-                                  + " from  Dictionary d left join d.relatedEntry dre where d.id = :id"),
-                @NamedQuery(name = "Dictionary.FetchByCategorySystemName",
-                            query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId, " +
-                                    " d.systemName,d.isActive,  d.localAbbrev, d.entry)"
-                                  + " from  Dictionary d left join d.category c where c.systemName = :name order by d.sortOrder "),                                        
-                @NamedQuery(name = "Dictionary.FetchByEntry",
-                            query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId, " +
-                                    " d.systemName,d.isActive,  d.localAbbrev, d.entry) "
-                                  + " from  Dictionary d left join d.category c where c.isSystem = 'N' and d.entry like :entry")})
+@NamedQueries( {
+    @NamedQuery( name = "Dictionary.FetchByCategoryId",
+                query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder," +
+                   		"d.categoryId, d.relatedEntryId, d.systemName,d.isActive,  d.localAbbrev, d.entry, dre.entry)"
+                      + " from  Dictionary d left join d.relatedEntry dre  where d.categoryId = :id order by d.sortOrder "),
+    @NamedQuery( name = "Dictionary.FetchBySystemName",
+                query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId," +
+                        "d.systemName,d.isActive,  d.localAbbrev, d.entry)"
+                      + " from  Dictionary d where d.systemName = :name "),
+    @NamedQuery( name = "Dictionary.FetchById",
+                query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId," +
+                        "d.systemName,d.isActive,  d.localAbbrev, d.entry, dre.entry)"
+                      + " from  Dictionary d left join d.relatedEntry dre where d.id = :id"),
+    @NamedQuery( name = "Dictionary.FetchByCategorySystemName",
+                query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId," +
+                        "d.systemName,d.isActive,  d.localAbbrev, d.entry)"
+                      + " from  Dictionary d left join d.category c where c.systemName = :name order by d.sortOrder "),                                        
+    @NamedQuery( name = "Dictionary.FetchByEntry",
+                query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId," +
+                        "d.systemName,d.isActive,  d.localAbbrev, d.entry)"
+                      + " from  Dictionary d left join d.category c where c.isSystem = 'N' and d.entry like :entry")})
                                   
  @NamedNativeQueries({@NamedNativeQuery(name = "Dictionary.ReferenceCheckForId",     
                   query = "select operation_id as DICTIONARY_ID from project_parameter where operation_id = :id " +
@@ -304,32 +302,27 @@ public class Dictionary implements Auditable, Cloneable {
         try {
             original = (Dictionary)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(categoryId, original.categoryId, doc, "category_id");
-            AuditUtil.getChangeXML(relatedEntryId, original.relatedEntryId, doc, "related_entry_id");
-            AuditUtil.getChangeXML(systemName, original.systemName, doc, "system_name");
-            AuditUtil.getChangeXML(isActive, original.isActive, doc, "is_active");
-            AuditUtil.getChangeXML(localAbbrev, original.localAbbrev, doc, "local_abbrev");
-            AuditUtil.getChangeXML(entry, original.entry, doc, "entry");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
+    
+    public Audit getAudit() {
+        Audit audit;
 
-    public String getTableName() {
-        return "dictionary";
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.DICTIONARY);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("category_id", categoryId, original.categoryId)
+                 .setField("sort_order", sortOrder, original.sortOrder)
+                 .setField("related_entry_id", relatedEntryId, original.relatedEntryId)
+                 .setField("system_name", systemName, original.systemName)
+                 .setField("is_active", isActive, original.isActive)
+                 .setField("local_abbrev", localAbbrev, original.localAbbrev)
+                 .setField("entry", entry, original.entry);
+
+        return audit;
     }
 
 }

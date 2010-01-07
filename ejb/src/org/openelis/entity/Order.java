@@ -29,15 +29,9 @@ package org.openelis.entity;
   * Order Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.entity.OrderItem;
-import org.openelis.entity.Organization;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
 import java.util.Collection;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -45,12 +39,14 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.Datetime;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 /*
@@ -255,59 +251,14 @@ public class Order implements Auditable, Cloneable {
   
   public Integer getShipFromId() {
       return shipFromId;
-    }
-    public void setShipFromId(Integer shipFromId) {
-      if((shipFromId == null && this.shipFromId != null) || 
-         (shipFromId != null && !shipFromId.equals(this.shipFromId)))
-        this.shipFromId = shipFromId;
-    }
-  
-  public void setClone() {
-    try {
-      original = (Order)this.clone();
-    }catch(Exception e){}
   }
-  
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      AuditUtil.getChangeXML(statusId,original.statusId,doc,"status_id");
-
-      AuditUtil.getChangeXML(orderedDate,original.orderedDate,doc,"ordered_date");
-
-      AuditUtil.getChangeXML(neededInDays,original.neededInDays,doc,"needed_in_days");
-
-      AuditUtil.getChangeXML(requestedBy,original.requestedBy,doc,"requested_by");
-
-      AuditUtil.getChangeXML(costCenterId,original.costCenterId,doc,"cost_center_id");
-
-      AuditUtil.getChangeXML(organizationId,original.organizationId,doc,"organization_id");
-
-      AuditUtil.getChangeXML(isExternal,original.isExternal,doc,"is_external");
-
-      AuditUtil.getChangeXML(externalOrderNumber,original.externalOrderNumber,doc,"external_order_number");
-
-      AuditUtil.getChangeXML(reportToId,original.reportToId,doc,"report_to_id");
-
-      AuditUtil.getChangeXML(billToId,original.billToId,doc,"bill_to_id");
-      
-      AuditUtil.getChangeXML(shipFromId,original.shipFromId,doc,"ship_from_id");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
-    }catch(Exception e){
-      e.printStackTrace();
-    }
-    return null;
+  public void setShipFromId(Integer shipFromId) {
+      if ((shipFromId == null && this.shipFromId != null) ||
+          (shipFromId != null && !shipFromId.equals(this.shipFromId)))
+          this.shipFromId = shipFromId;
   }
-   
-  public String getTableName() {
-    return "order";
-  }
+
   public Organization getBillTo() {
       return billTo;
   }
@@ -319,11 +270,45 @@ public class Order implements Auditable, Cloneable {
   public Organization getReportTo() {
       return reportTo;
   }
+
   public Collection<OrderItem> getOrderItem() {
       return orderItem;
   }
+
   public void setOrderItem(Collection<OrderItem> orderItem) {
-      this.orderItem = orderItem;
+      this.orderItem = orderItem;   
   } 
+  
+  public void setClone() {
+    try {
+        original = (Order)this.clone();
+    }catch(Exception e){
+        e.printStackTrace();
+    }
+  }
+  
+  public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.ORDER);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("description", description, original.description)
+                 .setField("status_id", statusId, original.statusId)
+                 .setField("ordered_date", orderedDate, original.orderedDate)
+                 .setField("needed_in_days", neededInDays, original.neededInDays)
+                 .setField("requested_by", requestedBy, original.requestedBy)
+                 .setField("cost_center_id", costCenterId, original.costCenterId)
+                 .setField("organization_id", organizationId, original.organizationId)
+                 .setField("is_external", isExternal, original.isExternal)
+                 .setField("external_order_number", externalOrderNumber, original.externalOrderNumber)
+                 .setField("report_to_id", reportToId, original.reportToId)
+                 .setField("bill_to_id", billToId, original.billToId)
+                 .setField("ship_from_id", shipFromId, original.shipFromId);
+
+        return audit;
+    }
   
 }   

@@ -4,10 +4,6 @@ package org.openelis.entity;
  * WorksheetResult Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.XMLUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -18,7 +14,9 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -148,54 +146,27 @@ public class WorksheetResult implements Auditable, Cloneable {
         try {
             original = (WorksheetResult)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-
-            AuditUtil.getChangeXML(worksheetAnalysisId,
-                                   original.worksheetAnalysisId,
-                                   doc,
-                                   "worksheet_analysis_id");
-
-            AuditUtil.getChangeXML(testAnalyteId,
-                                   original.testAnalyteId,
-                                   doc,
-                                   "test_analyte_id");
-
-            AuditUtil.getChangeXML(testResultId,
-                                   original.testResultId,
-                                   doc,
-                                   "test_resul_id");
-
-            AuditUtil.getChangeXML(isColumn,
-                                   original.isColumn,
-                                   doc,
-                                   "is_column");
-
-            AuditUtil.getChangeXML(sortOrder, original.sortOrder, doc, "sort_order");
-
-            AuditUtil.getChangeXML(analyteId, original.analyteId, doc, "analyte_id");
-
-            AuditUtil.getChangeXML(typeId, original.typeId, doc, "type_id");
-
-            AuditUtil.getChangeXML(value, original.value, doc, "value");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 
-    public String getTableName() {
-        return "worksheet_result";
-    }
+    public Audit getAudit() {
+        Audit audit;
 
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.WORKSHEET_RESULT);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("worksheet_analysis_id", worksheetAnalysisId, original.worksheetAnalysisId)
+                 .setField("test_analyte_id", testAnalyteId, original.testAnalyteId)
+                 .setField("test_result_id", testResultId, original.testResultId)
+                 .setField("is_column", isColumn, original.isColumn)
+                 .setField("sort_order", sortOrder, original.sortOrder)
+                 .setField("analyte_id", analyteId, original.analyteId)
+                 .setField("type_id", typeId, original.typeId)
+                 .setField("value", value, original.value);
+
+        return audit;
+    }
 }

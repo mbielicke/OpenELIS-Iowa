@@ -45,12 +45,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.util.XMLUtil;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 @NamedQueries( {
     @NamedQuery(name = "SampleItem.SampleItemById", query = "select new org.openelis.domain.SampleItemViewDO(item.id, item.sampleId, " + 
@@ -220,81 +219,89 @@ public class SampleItem implements Auditable, Cloneable {
       this.unitOfMeasureId = unitOfMeasureId;
   }
   
+  public Sample getSample() {
+      return sample;
+  }
+  
+  public void setSample(Sample sample) {
+      this.sample = sample;
+  }
+  
+  public Sample getSampleItem() {
+      return parentSampleItem;
+  }
+  
+  public void setSampleItem(Sample sampleItem) {
+      this.parentSampleItem = sampleItem;
+  }
+  
+  public Collection<Analysis> getAnalysis() {
+      return analysis;
+  }
+  
+  public void setAnalysis(Collection<Analysis> analysis) {
+      this.analysis = analysis;
+  }
+  
+  public Sample getParentSampleItem() {
+      return parentSampleItem;
+  }
+  
+  public void setParentSampleItem(Sample parentSampleItem) {
+      this.parentSampleItem = parentSampleItem;
+  }
+  
+  public Dictionary getSourceDict() {
+      return sourceDict;
+  }
+  
+  public void setSourceDict(Dictionary sourceDict) {
+      this.sourceDict = sourceDict;
+  }
+  
+  public Dictionary getTypeDict() {
+      return typeDict;
+  }
+  
+  public void setTypeDict(Dictionary typeDict) {
+      this.typeDict = typeDict;
+  }
+  
+  public Dictionary getContainerDict() {
+      return containerDict;
+  }
+  
+  public void setContainerDict(Dictionary containerDict) {
+      this.containerDict = containerDict;
+  }
+  
   public void setClone() {
     try {
-      original = (SampleItem)this.clone();
-    }catch(Exception e){}
-  }
-  
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
-      AuditUtil.getChangeXML(sampleId,original.sampleId,doc,"sample_id");
-      AuditUtil.getChangeXML(sampleItemId,original.sampleItemId,doc,"sample_item_id");
-      AuditUtil.getChangeXML(itemSequence,original.itemSequence,doc,"item_sequence");
-      AuditUtil.getChangeXML(typeOfSampleId,original.typeOfSampleId,doc,"type_of_sample_id");
-      AuditUtil.getChangeXML(sourceOfSampleId,original.sourceOfSampleId,doc,"source_of_sample_id");
-      AuditUtil.getChangeXML(sourceOther,original.sourceOther,doc,"source_other");
-      AuditUtil.getChangeXML(containerId,original.containerId,doc,"container_id");
-      AuditUtil.getChangeXML(containerReference,original.containerReference,doc,"container_reference");
-      AuditUtil.getChangeXML(quantity,original.quantity,doc,"quantity");
-      AuditUtil.getChangeXML(unitOfMeasureId,original.unitOfMeasureId,doc,"unit_of_measure_id");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
+        original = (SampleItem)this.clone();
     }catch(Exception e){
-      e.printStackTrace();
+        e.printStackTrace();
     }
-    return null;
   }
-   
-  public String getTableName() {
-    return "sample_item";
-  }
-public Sample getSample() {
-    return sample;
-}
-public void setSample(Sample sample) {
-    this.sample = sample;
-}
-public Sample getSampleItem() {
-    return parentSampleItem;
-}
-public void setSampleItem(Sample sampleItem) {
-    this.parentSampleItem = sampleItem;
-}
-public Collection<Analysis> getAnalysis() {
-    return analysis;
-}
-public void setAnalysis(Collection<Analysis> analysis) {
-    this.analysis = analysis;
-}
-public Sample getParentSampleItem() {
-    return parentSampleItem;
-}
-public void setParentSampleItem(Sample parentSampleItem) {
-    this.parentSampleItem = parentSampleItem;
-}
-public Dictionary getSourceDict() {
-    return sourceDict;
-}
-public void setSourceDict(Dictionary sourceDict) {
-    this.sourceDict = sourceDict;
-}
-public Dictionary getTypeDict() {
-    return typeDict;
-}
-public void setTypeDict(Dictionary typeDict) {
-    this.typeDict = typeDict;
-}
-public Dictionary getContainerDict() {
-    return containerDict;
-}
-public void setContainerDict(Dictionary containerDict) {
-    this.containerDict = containerDict;
-}
   
+  public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.SAMPLE_ITEM);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("sample_id", sampleId, original.sampleId)
+                 .setField("sample_item_id", sampleItemId, original.sampleItemId)
+                 .setField("item_sequence", itemSequence, original.itemSequence)
+                 .setField("type_of_sample_id", typeOfSampleId, original.typeOfSampleId)
+                 .setField("source_of_sample_id", sourceOfSampleId, original.sourceOfSampleId)
+                 .setField("source_other", sourceOther, original.sourceOther)
+                 .setField("container_id", containerId, original.containerId)
+                 .setField("container_reference", containerReference, original.containerReference)
+                 .setField("quantity", quantity, original.quantity)
+                 .setField("unit_of_measure_id", unitOfMeasureId, original.unitOfMeasureId);
+
+        return audit;
+  }
 }   

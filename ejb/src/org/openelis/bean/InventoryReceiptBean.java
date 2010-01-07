@@ -54,14 +54,11 @@ import org.openelis.entity.InventoryXUse;
 import org.openelis.entity.Order;
 import org.openelis.entity.OrderItem;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.local.LockLocal;
 import org.openelis.persistence.CachingManager;
 import org.openelis.remote.InventoryReceiptRemote;
 import org.openelis.security.domain.SystemUserDO;
-import org.openelis.utils.GetPage;
 
 @Stateless
 @EJBs({

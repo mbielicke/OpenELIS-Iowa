@@ -31,6 +31,7 @@ package org.openelis.entity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.util.XMLUtil;
 
 import javax.persistence.Column;
@@ -47,6 +48,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -115,35 +117,6 @@ public class TestTypeOfSample implements Auditable, Cloneable {
             this.unitOfMeasureId = unitOfMeasureId;
     }
 
-    public void setClone() {
-        try {
-            original = (TestTypeOfSample)this.clone();
-        } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(testId, original.testId, doc, "test_id");
-            AuditUtil.getChangeXML(typeOfSampleId, original.typeOfSampleId, doc,"type_of_sample_id");
-            AuditUtil.getChangeXML(unitOfMeasureId, original.unitOfMeasureId, doc,"unit_of_measure_id");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public String getTableName() {
-        return "test_type_of_sample";
-    }
-
     public Dictionary getDictionary() {
         return dictionary;
     }
@@ -151,5 +124,27 @@ public class TestTypeOfSample implements Auditable, Cloneable {
     public void setDictionary(Dictionary dictionary) {
         this.dictionary = dictionary;
     }
+    
+    public void setClone() {
+        try {
+            original = (TestTypeOfSample)this.clone();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }        
 
+    public Audit getAudit() {
+        Audit audit;
+
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.TEST_TYPE_OF_SAMPLE);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("test_id", testId, original.testId)
+                 .setField("type_of_sample_id", typeOfSampleId, original.typeOfSampleId)
+                 .setField("unit_of_measure_id", unitOfMeasureId, original.unitOfMeasureId);
+
+        return audit;
+    }
 }

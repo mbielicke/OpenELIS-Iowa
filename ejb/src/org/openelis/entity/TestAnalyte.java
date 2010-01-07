@@ -29,10 +29,6 @@ package org.openelis.entity;
  * TestAnalyte Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.XMLUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -45,9 +41,13 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+
 @NamedQueries({
     @NamedQuery(name =  "TestAnalyte.FetchByAnalyteId",
                 query = "select distinct new org.openelis.domain.TestAnalyteViewDO(ta.id,ta.testId,ta.sortOrder,"+
@@ -232,35 +232,28 @@ public class TestAnalyte implements Auditable, Cloneable {
         try {
             original = (TestAnalyte)this.clone();
         } catch (Exception e) {
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(testId, original.testId, doc, "test_id");
-            AuditUtil.getChangeXML(rowGroup, original.rowGroup, doc, "row_group");
-            AuditUtil.getChangeXML(resultGroup, original.resultGroup, doc, "result_group");
-            AuditUtil.getChangeXML(sortOrder, original.sortOrder, doc, "sort_order");
-            AuditUtil.getChangeXML(typeId, original.typeId, doc, "type_id");
-            AuditUtil.getChangeXML(analyteId, original.analyteId, doc, "analyte_id");
-            AuditUtil.getChangeXML(isReportable, original.isReportable, doc, "is_reportable");
-            AuditUtil.getChangeXML(isColumn, original.isColumn, doc, "is_column");
-            AuditUtil.getChangeXML(scriptletId, original.scriptletId, doc, "scriptlet_id");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 
-    public String getTableName() {
-        return "test_analyte";
-    }
+    public Audit getAudit() {
+        Audit audit;
 
+        audit = new Audit();
+        audit.setReferenceTableId(ReferenceTable.TEST_ANALYTE);
+        audit.setReferenceId(getId());
+        if (original != null)
+            audit.setField("id", id, original.id)
+                 .setField("test_id", testId, original.testId)
+                 .setField("sort_order", sortOrder, original.sortOrder)
+                 .setField("row_group", rowGroup, original.rowGroup)
+                 .setField("is_column", isColumn, original.isColumn)
+                 .setField("analyte_id", analyteId, original.analyteId)
+                 .setField("type_id", typeId, original.typeId)
+                 .setField("is_reportable", isReportable, original.isReportable)
+                 .setField("result_group", resultGroup, original.resultGroup)
+                 .setField("scriptlet_id", scriptletId, original.scriptletId);
+
+        return audit;
+    }
 }
