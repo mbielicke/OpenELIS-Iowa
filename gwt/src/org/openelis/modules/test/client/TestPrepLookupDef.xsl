@@ -46,13 +46,10 @@
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
     <screen id="PrepTestPicker" name="{resource:getString($constants,'prepTestPicker')}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <VerticalPanel padding="0" spacing="0">
-        <VerticalPanel width="300px" padding="0" spacing="0" style="WhiteContentPanel">
+        <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
         	<table key="prepTestTable" width="auto" maxRows="10" showScroll="ALWAYS" title="">
-            	<col width="400" header="{resource:getString($constants,'prepTestMethod')}">
+            	<col width="500" header="{resource:getString($constants,'prepTestMethod')}">
                 	<label/>
-                </col>
-                <col width ="70" header="{resource:getString($constants,'optional')}">
-                 	<check />
                 </col>
          	</table>
      	</VerticalPanel>

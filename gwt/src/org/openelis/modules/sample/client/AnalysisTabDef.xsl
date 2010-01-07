@@ -86,7 +86,7 @@ UIRF Software License are applicable instead of those above.
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'samplePrep')" />:
           </text>
-          <dropdown field="Integer" key="{meta:getAnalysisSamplePrep()}" popWidth="150px" width="150px" />
+          <dropdown field="Integer" key="{meta:getAnalysisSamplePrep()}" popWidth="350px" width="350px" />
         </row>
         <row>
           <text style="Prompt">
