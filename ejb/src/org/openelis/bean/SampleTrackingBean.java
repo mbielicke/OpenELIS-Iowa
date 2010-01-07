@@ -36,9 +36,9 @@ public class SampleTrackingBean implements SampleTrackingRemote {
 
 		builder = new QueryBuilderV2();
 		builder.setMeta(new SampleMeta());
-		builder.setSelect("distinct " + SampleMeta.getId() + " ");
+		builder.setSelect("distinct " + SampleMeta.getId() + ", "+SampleMeta.getAccessionNumber()+" ");
 		builder.constructWhere(fields);
-		builder.setOrderBy(SampleMeta.getId());
+		builder.setOrderBy(SampleMeta.getAccessionNumber());
 
 		query = manager.createQuery(builder.getEJBQL());
 		query.setMaxResults(first + max);
@@ -55,7 +55,7 @@ public class SampleTrackingBean implements SampleTrackingRemote {
 		managers = new ArrayList<SampleManager>(max);
 		
 		for(int i = first; i < list.size(); i++) {
-			managers.add(SampleManager.fetchByIdWithItemsAnalyses((Integer)list.get(i)));
+			managers.add(SampleManager.fetchByIdWithItemsAnalyses((Integer)((Object[])list.get(i))[0]));
 		}
 
 		return managers;
