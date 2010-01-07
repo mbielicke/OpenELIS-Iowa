@@ -733,9 +733,9 @@ public class SampleTrackingScreen extends Screen {
         addScreenHandler(analysisTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 analysisTab.setData(new SampleDataBundle());
-
-                if (tab == Tabs.ANALYSIS)
+                if (tab == Tabs.ANALYSIS){
                     analysisTab.draw();
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -872,6 +872,8 @@ public class SampleTrackingScreen extends Screen {
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
             window.clearStatus();
+            if(atozTree.getSelection() != null)
+            	SelectionEvent.fire(atozTree,atozTree.getSelection());
             
         } catch (EntityLockedException e) {
             window.clearStatus();
