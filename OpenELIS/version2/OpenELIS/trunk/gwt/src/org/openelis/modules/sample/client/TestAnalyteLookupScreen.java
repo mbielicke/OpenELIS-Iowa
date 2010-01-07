@@ -27,6 +27,8 @@ package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
 
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -37,6 +39,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -69,14 +72,11 @@ public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers
         super((ScreenDefInt)GWT.create(TestAnalyteLookupDef.class));
 
         // Setup link between Screen and widget Handlers
-        initialize();    
-
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-   
+        initialize(); 
+        initializeDropdowns();
+        
+        setState(State.DEFAULT);
+        DataChangeEvent.fire(this);
     }
     
     /**
@@ -85,8 +85,7 @@ public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers
      * command.
      */
     private void postConstructor() {
-        setState(State.DEFAULT);
-        DataChangeEvent.fire(this);
+
 
     }
     
@@ -172,10 +171,11 @@ public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers
             for (i = 0; i < analytes.size(); i++) {
                 data = analytes.get(i);
 
-                row = new TableDataRow(2);
+                row = new TableDataRow(3);
                 row.key = data.getId();
                 row.cells.get(0).value = data.getIsAlias();
                 row.cells.get(1).value = data.getAnalyteName();
+                row.cells.get(2).value = data.getTypeId();
                 row.data = data;
                 model.add(row);
             }
@@ -184,6 +184,18 @@ public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers
             e.printStackTrace();
         }
         return model;
+    }
+    
+    private void initializeDropdowns(){
+        ArrayList<TableDataRow> model;
+        
+        //type dropdown
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("test_analyte_type"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+
+        ((Dropdown<Integer>)testAnalyteTable.getColumns().get(2).colWidget).setModel(model);
     }
     
     public void setData(ArrayList<TestAnalyteViewDO> analytes){

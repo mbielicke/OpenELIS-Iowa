@@ -216,7 +216,7 @@ public class ResultTab extends Screen {
                     
                     rowGroup = displayManager.getResultAt(prowIndex, 0).getRowGroup();
                     
-                    manager.addRowAt(index, rowGroup, addedTestAnalyteId, addedAnalyteId, addedAnalyteName);
+                    manager.addRowAt(displayManager.getIndexAt(index), rowGroup, addedTestAnalyteId, addedAnalyteId, addedAnalyteName);
                     
                     addedTestAnalyteId = null;
                     addedAnalyteId = null;
@@ -394,7 +394,8 @@ public class ResultTab extends Screen {
         TestAnalyteViewDO an;
         
         r = testResultsTable.getSelectedRow();
-        numCols = displayManager.columnCount(r)+1;
+        
+        numCols = displayManager.maxColumnCount();
         
         for(int i=0; i<rows.size(); i++){
             an = rows.get(i);

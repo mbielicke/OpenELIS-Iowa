@@ -54,6 +54,9 @@ UIRF Software License are applicable instead of those above.
                 <col width ="400" header="{resource:getString($constants,'analyte')}">
                  	<label/>
                 </col>
+                <col width ="120" header="{resource:getString($constants,'type')}">
+                 	<dropdown width="100"/>
+                </col>
          	</table>
      	<AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
           <HorizontalPanel>

@@ -39,6 +39,7 @@ import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
 import org.openelis.modules.sample.client.AuxDataTab;
+import org.openelis.modules.sample.client.EnvironmentalTab;
 import org.openelis.modules.sample.client.QAEventsTab;
 import org.openelis.modules.sample.client.ResultTab;
 import org.openelis.modules.sample.client.SampleDataBundle;
@@ -93,7 +94,7 @@ public class SampleTrackingScreen extends Screen {
 	private DeckPanel                  	   sampleContent;
 	private TabBar                         sampleBar;
 	
-	private EnvironmentTab                 environmentTab;
+	private EnvironmentalTab               environmentalTab;
 	private PrivateWellWaterSampleTab      wellTab;
 	private SampleItemTab                  sampleItemTab;
 	private AnalysisTab                    analysisTab;
@@ -685,17 +686,17 @@ public class SampleTrackingScreen extends Screen {
         	}
         });
         
-        environmentTab = new EnvironmentTab(def,window);
+        environmentalTab = new EnvironmentalTab(def,window);
         
-        addScreenHandler(environmentTab, new ScreenEventHandler<Object>() {
+        addScreenHandler(environmentalTab, new ScreenEventHandler<Object>() {
         	public void onDataChange(DataChangeEvent event) {
-        		environmentTab.setData(manager);
+        		environmentalTab.setData(manager);
         		
         		if(tab == Tabs.ENVIRONMENT)
-        			environmentTab.draw();
+        			environmentalTab.draw();
         	}
         	public void onStateChange(StateChangeEvent<State> event) {
-        		environmentTab.setState(event.getState());
+        		environmentalTab.setState(event.getState());
         	}
         });
         /*
@@ -838,7 +839,7 @@ public class SampleTrackingScreen extends Screen {
     		setState(Screen.State.QUERY);
     		DataChangeEvent.fire(this);
             //we need to make sure the tabs are cleared
-    		environmentTab.draw();
+    		environmentalTab.draw();
             sampleItemTab.draw();
             analysisTab.draw();
             testResultsTab.draw();
@@ -1067,7 +1068,7 @@ public class SampleTrackingScreen extends Screen {
     private void drawTabs() {
         switch (tab) {
         	case ENVIRONMENT:
-        		environmentTab.draw();
+        		environmentalTab.draw();
         		break;
             case SAMPLE_ITEM:
                 sampleItemTab.draw();

@@ -1,4 +1,29 @@
-package org.openelis.modules.sampleTracking.client;
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
+package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -28,41 +53,40 @@ import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
-import org.openelis.modules.sample.client.SampleLocationLookupScreen;
-import org.openelis.modules.sample.client.SampleOrganizationLookupScreen;
-import org.openelis.modules.sample.client.SampleProjectLookupScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Window;
 
-public class EnvironmentTab extends Screen {
-	
-    protected CheckBox                     isHazardous;
+public class EnvironmentalTab extends Screen {
+    protected TextBox                      location, description, collector, collectorPhone;
     protected TextBox<Integer>             priority;
-    protected TextBox                      description,collector,collectorPhone,location;
-    protected AppButton					   billToLookup, reportToLookup, projectLookup, locationLookup;
     protected AutoComplete<Integer>        project, reportTo, billTo;
-    
-    protected SampleManager     manager;
-    
+    protected AppButton                    billToLookup, reportToLookup, projectLookup, locationLookup;
+    protected CheckBox                     isHazardous;
+
     private SampleLocationLookupScreen     locationScreen;
     private SampleOrganizationLookupScreen organizationScreen;
     private SampleProjectLookupScreen      projectScreen;
 
     protected ScreenService                orgService;
     protected ScreenService                projectService;
+
+    private SampleManager                  manager;
     
     protected boolean loaded = false;
-	
-	public EnvironmentTab(ScreenDefInt def, ScreenWindow window) {
+    
+    public EnvironmentalTab(ScreenDefInt def, ScreenWindow window) {
         setDef(def);
         setWindow(window);
         
+        orgService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
+        projectService = new ScreenService("controller?service=org.openelis.modules.project.server.ProjectService");
+
         initialize();
-	}
-	
-	public void initialize() {
+    }
+    
+    public void initialize() {
         isHazardous = (CheckBox)def.getWidget(SampleMeta.getEnvIsHazardous());
         addScreenHandler(isHazardous, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -215,38 +239,38 @@ public class EnvironmentTab extends Screen {
         });
         
         project.addGetMatchesHandler(new GetMatchesHandler(){
-            public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
-                TableDataRow row;
-                ProjectDO data;
-                ArrayList<ProjectDO> list;
-                ArrayList<TableDataRow> model;
+           public void onGetMatches(GetMatchesEvent event) {
+               QueryFieldUtil parser;
+               TableDataRow row;
+               ProjectDO data;
+               ArrayList<ProjectDO> list;
+               ArrayList<TableDataRow> model;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
+               parser = new QueryFieldUtil();
+               parser.parse(event.getMatch());
 
-                window.setBusy();
-                try {
-                    list = projectService.callList("fetchActiveByName", parser.getParameter().get(0));
-                    model = new ArrayList<TableDataRow>();
-                    for (int i = 0; i < list.size(); i++ ) {
-                        row = new TableDataRow(4);
-                        data = list.get(i);
+               window.setBusy();
+               try {
+                   list = projectService.callList("fetchActiveByName", parser.getParameter().get(0));
+                   model = new ArrayList<TableDataRow>();
+                   for (int i = 0; i < list.size(); i++ ) {
+                       row = new TableDataRow(4);
+                       data = list.get(i);
 
-                        row.key = data.getId();
-                        row.cells.get(0).value = data.getName();
-                        row.cells.get(1).value = data.getDescription();
-                       
-                        model.add(row);
-                    }
-                    project.showAutoMatches(model);
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                    Window.alert(e.getMessage());
-                }
-                window.clearStatus();
-             } 
-         });
+                       row.key = data.getId();
+                       row.cells.get(0).value = data.getName();
+                       row.cells.get(1).value = data.getDescription();
+                      
+                       model.add(row);
+                   }
+                   project.showAutoMatches(model);
+               } catch (Throwable e) {
+                   e.printStackTrace();
+                   Window.alert(e.getMessage());
+               }
+               window.clearStatus();
+            } 
+        });
         
         reportTo = (AutoComplete<Integer>)def.getWidget(SampleMeta.getOrgName());
         addScreenHandler(reportTo, new ScreenEventHandler<String>() {
@@ -406,25 +430,47 @@ public class EnvironmentTab extends Screen {
                 locationLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
                                    .contains(event.getState()));
             }
-        });        
-	}
-	
-	public void setData(SampleManager manager) {
-		this.manager = manager;
-		loaded = false;
-	}
-	
-	public void draw() {
-        if(!loaded)
-            DataChangeEvent.fire(this);
-        
-        loaded = true;
-	}
-	
+        });
+    }
+    
+    private void getOrganizationMatches(String match, AutoComplete widget){
+        QueryFieldUtil parser;
+        TableDataRow row;
+        OrganizationDO data;
+        ArrayList<OrganizationDO> list;
+        ArrayList<TableDataRow> model;
+
+        parser = new QueryFieldUtil();
+        parser.parse(match);
+
+        window.setBusy();
+        try {
+            list = orgService.callList("fetchByIdOrName", parser.getParameter().get(0));
+            model = new ArrayList<TableDataRow>();
+            for (int i = 0; i < list.size(); i++ ) {
+                row = new TableDataRow(4);
+                data = list.get(i);
+
+                row.key = data.getId();
+                row.cells.get(0).value = data.getName();
+                row.cells.get(1).value = data.getAddress().getStreetAddress();
+                row.cells.get(2).value = data.getAddress().getCity();
+                row.cells.get(3).value = data.getAddress().getState();
+
+                model.add(row);
+            }
+            widget.showAutoMatches(model);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+        }
+        window.clearStatus();
+    }
+    
     private void onProjectLookupClick(){
         try {
             if (projectScreen == null) {
-                final EnvironmentTab env = this;
+                final EnvironmentalTab env = this;
                 projectScreen = new SampleProjectLookupScreen();
                 projectScreen.addActionHandler(new ActionHandler<SampleProjectLookupScreen.Action>() {
                         public void onAction(ActionEvent<SampleProjectLookupScreen.Action> event) {
@@ -449,11 +495,11 @@ public class EnvironmentTab extends Screen {
             return;
         }
     }
-	
+    
     private void onOrganizationLookupClick(){
         try{
             if(organizationScreen == null){
-                final EnvironmentTab env = this;
+                final EnvironmentalTab env = this;
                 organizationScreen = new SampleOrganizationLookupScreen();
                 
                 organizationScreen.addActionHandler(new ActionHandler<SampleOrganizationLookupScreen.Action>() {
@@ -483,7 +529,7 @@ public class EnvironmentTab extends Screen {
     private void onLocationLookupClick(){
         try {
             if (locationScreen == null) {
-                    final EnvironmentTab env = this;
+                    final EnvironmentalTab env = this;
                     locationScreen = new SampleLocationLookupScreen();
                     
                     locationScreen.addActionHandler(new ActionHandler<SampleLocationLookupScreen.Action>() {
@@ -526,38 +572,16 @@ public class EnvironmentTab extends Screen {
         
         return envManager; 
     }
-
-    private void getOrganizationMatches(String match, AutoComplete widget){
-        QueryFieldUtil parser;
-        TableDataRow row;
-        OrganizationDO data;
-        ArrayList<OrganizationDO> list;
-        ArrayList<TableDataRow> model;
-
-        parser = new QueryFieldUtil();
-        parser.parse(match);
-
-        window.setBusy();
-        try {
-            list = orgService.callList("fetchByIdOrName", parser.getParameter().get(0));
-            model = new ArrayList<TableDataRow>();
-            for (int i = 0; i < list.size(); i++ ) {
-                row = new TableDataRow(4);
-                data = list.get(i);
-
-                row.key = data.getId();
-                row.cells.get(0).value = data.getName();
-                row.cells.get(1).value = data.getAddress().getStreetAddress();
-                row.cells.get(2).value = data.getAddress().getCity();
-                row.cells.get(3).value = data.getAddress().getState();
-
-                model.add(row);
-            }
-            widget.showAutoMatches(model);
-        } catch (Throwable e) {
-            e.printStackTrace();
-            Window.alert(e.getMessage());
-        }
-        window.clearStatus();
+    
+    public void setData(SampleManager manager) {
+        this.manager = manager;
+        loaded = false;
+    }
+    
+    public void draw() {
+        if(!loaded)
+            DataChangeEvent.fire(this);
+        
+        loaded = true;
     }
 }
