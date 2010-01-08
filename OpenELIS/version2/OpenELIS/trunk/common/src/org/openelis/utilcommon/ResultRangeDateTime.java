@@ -32,7 +32,7 @@ import org.openelis.exception.ParseException;
 
 public class ResultRangeDateTime implements ResultRange {
     private static final long serialVersionUID = 1L;
-
+    
     public void setRange(String range) throws ParseException {
         //
         // this is not currently implemented
@@ -63,5 +63,9 @@ public class ResultRangeDateTime implements ResultRange {
 
     public boolean intersects(ResultRange range) {
         return false;
+    }
+
+    public String toString() {
+        return "yyyy-mm-dd hh:mm";
     }
 }

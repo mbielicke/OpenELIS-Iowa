@@ -59,4 +59,8 @@ public class ResultRangeTime implements ResultRange {
     public boolean intersects(ResultRange range) {
         return false;
     }
+
+    public String toString() {
+        return "hh:mm";
+    }
 }
