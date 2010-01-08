@@ -74,12 +74,11 @@ UIRF Software License are applicable instead of those above.
           <col key="{meta:getSampleAccessionNumber()}" width="90" header="{resource:getString($constants,'accessionNum')}" sort="true">
             <label />
           </col>
-          <col key="{meta:getSampleDescription()}" width="150" header="{resource:getString($constants,'description')}" sort="true">
+          <col key="{meta:getSampleDescription()}" width="110" header="{resource:getString($constants,'description')}" sort="true">
             <label />
           </col>
-          <col key="{meta:getWorksheetAnalysisWorksheetAnalysisId}" width="50" header="{resource:getString($constants,'qcLink')}" sort="false">
-            <label />
-<!--          <dropdown width="30"/>  -->
+          <col key="{meta:getWorksheetAnalysisWorksheetAnalysisId}" width="90" header="{resource:getString($constants,'qcLink')}" sort="false">
+            <dropdown width="70" field="Integer"/>
           </col>
           <col key="{meta:getAnalysisTestName()}" width="100" header="{resource:getString($constants,'test')}" sort="true">
             <label />
