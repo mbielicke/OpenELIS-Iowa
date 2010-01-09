@@ -28,7 +28,6 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 
 import org.openelis.cache.DictionaryCache;
-import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.screen.Screen;
@@ -105,23 +104,25 @@ public class AuxTableColumn extends TableColumn {
             alphaTextBox = new TextBox();
             alphaTextBox.setStyleName("ScreenTextBox");
             alphaTextBox.setField(new StringField());
+            alphaTextBox.setLength(80);
         }
 
         alphaTextBox.setCase(boxCase);
 
         return alphaTextBox;
     }
-
+/*
     private TextBox<Double> getNumTextbox() {
         if (numTextBox == null) {
             numTextBox = new TextBox<Double>();
             numTextBox.setStyleName("ScreenTextBox");
-            alphaTextBox.setCase(Case.MIXED);
+            numTextBox.setCase(Case.MIXED);
             numTextBox.setField(new DoubleField());
+            numTextBox.setLength(80);
         }
 
         return numTextBox;
-    }
+    }*/
 
     private CalendarLookUp getCalendar(byte begin, byte end) {
         if (calendar == null) {
@@ -183,7 +184,7 @@ public class AuxTableColumn extends TableColumn {
         else if (alphaMixedId.equals(typeId) || timeId.equals(typeId))
             return getAlphaTextbox(Case.MIXED);
         else if (numericId.equals(typeId))
-            return getNumTextbox();
+            return getAlphaTextbox(Case.MIXED);
         else if (dateId.equals(typeId))
             return getCalendar(Datetime.YEAR, Datetime.DAY);
         else if (dateTimeId.equals(typeId))

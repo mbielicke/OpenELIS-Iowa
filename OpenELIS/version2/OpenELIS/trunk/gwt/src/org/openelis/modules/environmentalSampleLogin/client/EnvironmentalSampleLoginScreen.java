@@ -89,31 +89,32 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
         AUX_DATA
     };
 
-    protected Tabs           tab;
-    private Integer          sampleLoggedInId, sampleErrorStatusId, sampleReleasedId, userId;
+    protected Tabs                    tab;
+    private Integer                   sampleLoggedInId, sampleErrorStatusId, sampleReleasedId,
+                    userId;
 
-    private SampleTab        sampleTab;
-    private SampleItemAnalysisTreeTab  treeTab;
-    private EnvironmentalTab environmentalTab;
-    private SampleItemTab    sampleItemTab;
-    private AnalysisTab      analysisTab;
-    private ResultTab        testResultsTab;
-    private AnalysisNotesTab analysisNotesTab;
-    private SampleNotesTab   sampleNotesTab;
-    private StorageTab       storageTab;
-    private QAEventsTab      qaEventsTab;
-    private AuxDataTab       auxDataTab;
+    private SampleTab                 sampleTab;
+    private SampleItemAnalysisTreeTab treeTab;
+    private EnvironmentalTab          environmentalTab;
+    private SampleItemTab             sampleItemTab;
+    private AnalysisTab               analysisTab;
+    private ResultTab                 testResultsTab;
+    private AnalysisNotesTab          analysisNotesTab;
+    private SampleNotesTab            sampleNotesTab;
+    private StorageTab                storageTab;
+    private QAEventsTab               qaEventsTab;
+    private AuxDataTab                auxDataTab;
 
-    protected AppButton      billToLookup, reportToLookup, projectLookup, locationLookup,
+    protected AppButton               billToLookup, reportToLookup, projectLookup, locationLookup,
                     queryButton, addButton, updateButton, nextButton, prevButton, commitButton,
                     abortButton;
-    protected MenuItem       history;
-    protected TabPanel       tabs;
+    protected MenuItem                history;
+    protected TabPanel                tabs;
 
-    ScreenNavigator          nav;
-    private SecurityModule   security;
+    ScreenNavigator                   nav;
+    private SecurityModule            security;
 
-    private SampleManager    manager;
+    private SampleManager             manager;
 
     public EnvironmentalSampleLoginScreen() throws Exception {
         // Call base to get ScreenDef and draw screen
@@ -232,7 +233,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
                 sampleTab.setState(event.getState());
             }
         });
-        
+
         // analysis tree section of the screen
         treeTab = new SampleItemAnalysisTreeTab(def, window, envScreen);
 
@@ -392,12 +393,12 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
                     qaEventsTab.setData(data);
 
                     drawTabs();
-                }else if (event.getAction() == SampleItemAnalysisTreeTab.Action.SETUP_BUNDLE) {
+                } else if (event.getAction() == SampleItemAnalysisTreeTab.Action.SETUP_BUNDLE) {
                     analysisTab.setupBundle((SampleDataBundle)event.getData());
                 }
             }
         });
-        
+
         sampleItemTab.addActionHandler(new ActionHandler<SampleItemTab.Action>() {
             public void onAction(ActionEvent<SampleItemTab.Action> event) {
                 if (state != State.QUERY && event.getAction() == SampleItemTab.Action.CHANGED) {

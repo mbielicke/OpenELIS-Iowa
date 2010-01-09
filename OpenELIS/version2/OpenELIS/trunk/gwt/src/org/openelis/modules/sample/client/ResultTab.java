@@ -37,11 +37,14 @@ import org.openelis.exception.ParseException;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.GetMatchesEvent;
+import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataCell;
@@ -77,7 +80,7 @@ public class ResultTab extends Screen {
     
     protected AnalysisResultManager manager;
     private ResultDisplayManager    displayManager;
-
+    protected GetMatchesHandler     resultMatchesHandler;
     protected AnalysisManager       analysisMan;
     protected AnalysisViewDO        anDO;
     
@@ -172,7 +175,7 @@ public class ResultTab extends Screen {
                 
                 tableRow = testResultsTable.getRow(row);                
                 resultDO = displayManager.getResultAt(row,col-1);
-                val = (String)tableRow.cells.get(col).value;
+                val = (String)((TableDataRow)tableRow.cells.get(col).value).key;
                 
                 if(!"".equals(val)){
                     try{
@@ -240,6 +243,41 @@ public class ResultTab extends Screen {
                 }
             }
         });
+        
+        resultMatchesHandler = new GetMatchesHandler(){
+            public void onGetMatches(GetMatchesEvent event) {
+                String valueEntered;
+                int row, col;
+                ResultViewDO resultDO;
+                ArrayList<String> suggestions;
+                ArrayList<TableDataRow> model;
+                
+                valueEntered= event.getMatch();
+                row= testResultsTable.getSelectedRow();
+                col = testResultsTable.getSelectedCol();
+                
+                resultDO = displayManager.getResultAt(row,col-1);
+                suggestions = manager.getResultValidator(resultDO.getResultGroup()).getRanges(anDO.getUnitOfMeasureId());
+                model = new ArrayList<TableDataRow>();
+                model.add(new TableDataRow(valueEntered, valueEntered));
+                
+                for(int i=0; i<suggestions.size(); i++)
+                    model.add(new TableDataRow(suggestions.get(i),suggestions.get(i)));
+                
+                ((AutoComplete<String>)event.getSource()).showAutoMatches(model);
+            }
+        };
+        
+        //set the same matches handler to all cols in the result table
+        ((AutoComplete<String>)testResultsTable.getColumns().get(1).colWidget).addGetMatchesHandler(resultMatchesHandler);
+        ((AutoComplete<String>)testResultsTable.getColumns().get(2).colWidget).addGetMatchesHandler(resultMatchesHandler);
+        ((AutoComplete<String>)testResultsTable.getColumns().get(3).colWidget).addGetMatchesHandler(resultMatchesHandler);
+        ((AutoComplete<String>)testResultsTable.getColumns().get(4).colWidget).addGetMatchesHandler(resultMatchesHandler);
+        ((AutoComplete<String>)testResultsTable.getColumns().get(5).colWidget).addGetMatchesHandler(resultMatchesHandler);
+        ((AutoComplete<String>)testResultsTable.getColumns().get(6).colWidget).addGetMatchesHandler(resultMatchesHandler);
+        ((AutoComplete<String>)testResultsTable.getColumns().get(7).colWidget).addGetMatchesHandler(resultMatchesHandler);
+        ((AutoComplete<String>)testResultsTable.getColumns().get(8).colWidget).addGetMatchesHandler(resultMatchesHandler);
+        ((AutoComplete<String>)testResultsTable.getColumns().get(9).colWidget).addGetMatchesHandler(resultMatchesHandler);
 
         addResultButton = (AppButton)def.getWidget("addResultButton");
         addScreenHandler(addResultButton, new ScreenEventHandler<Object>() {
@@ -332,15 +370,15 @@ public class ResultTab extends Screen {
                 row.key = resultDO.getId();
                 if(c == 0) {
                     row.cells.get(0).setValue(resultDO.getAnalyte());
-                    row.cells.get(1).setValue(resultDO.getValue());
+                    row.cells.get(1).setValue(new TableDataRow(resultDO.getValue(),resultDO.getValue()));
                     continue;
                 }                        
                 
                 if(!headerFilled) {
-                    hrow.cells.get(c+1).setValue(resultDO.getAnalyte());
+                    hrow.cells.get(c+1).setValue(new TableDataRow(resultDO.getAnalyte(),resultDO.getAnalyte()));
                 }
                 
-                row.cells.get(c+1).setValue(resultDO.getValue());
+                row.cells.get(c+1).setValue(new TableDataRow(resultDO.getValue(),resultDO.getValue()));
             }
             headerFilled = true;
             model.add(row);
@@ -358,7 +396,7 @@ public class ResultTab extends Screen {
         cell.setValue(consts.get("analyte"));
         
         cell = row.cells.get(1);
-        cell.setValue(consts.get("value"));
+        cell.setValue(new TableDataRow(consts.get("value"),consts.get("value")));
 
         row.style = "SubHeader";
         row.data = new Boolean(true);

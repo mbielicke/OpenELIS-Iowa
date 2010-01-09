@@ -54,6 +54,8 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.UnselectionEvent;
@@ -63,7 +65,7 @@ import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.AuxFieldValueManager;
 import org.openelis.manager.HasAuxDataInt;
 import org.openelis.manager.SampleManager;
-import org.openelis.utilcommon.AuxDataValidator;
+import org.openelis.utilcommon.ResultValidator;
 import org.openelis.utilcommon.ResultValidator.Type;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -113,6 +115,15 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             }
         });
 
+        auxValsTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler(){
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                int r,c;
+                c = event.getCol();
+                r = event.getRow();
+                
+                auxValsTable.clearCellExceptions(r, c);
+            }
+        });
         auxValsTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
@@ -141,13 +152,13 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                     case 2:
                         TableDataRow row = auxValsTable.getRow(r);
                         AuxDataBundle adb = (AuxDataBundle)row.data;
-                        AuxDataValidator adv = adb.validator;
+                        ResultValidator rv = adb.validator;
                         fieldDO = (AuxFieldViewDO)adb.fieldDO;
                         data.setValue(val.toString());
                         
-                        if(adv != null){
+                        if(rv != null){
                             try{
-                                adv.validate(null, getCorrectManValueByType(val, fieldDO.getTypeId()));
+                                rv.validate(null, getCorrectManValueByType(val, fieldDO.getTypeId()));
                             }catch(ParseException e){
                                 auxValsTable.clearCellExceptions(r, c);
                                 auxValsTable.setCellException(r, c, e);
@@ -269,7 +280,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
         AuxFieldValueViewDO val;
         ArrayList<TableDataRow> model;
         AuxDataBundle adb;
-        AuxDataValidator validatorItem;
+        ResultValidator validatorItem;
         
         model = new ArrayList<TableDataRow>();
         if (manager == null)
@@ -311,7 +322,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
         AuxDataViewDO dataDO;
         TableDataRow row;
         AuxDataBundle adb;
-        AuxDataValidator validatorItem;
+        ResultValidator validatorItem;
         
         try {
             auxValsTable.fireEvents(false);
@@ -359,7 +370,11 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                                         break;
                                     }
                                 }
-                                row.cells.get(2).value = getCorrectColValueByType(value, dictionary, valueDO.getTypeId());
+                                
+                                if(value == null)
+                                    throw new Exception();
+                                else
+                                    row.cells.get(2).value = getCorrectColValueByType(value, dictionary, valueDO.getTypeId());
                                 
                             }else
                                 row.cells.get(2).value = getCorrectColValueByType(defaultValue.getValue(), null, valueDO.getTypeId());
@@ -402,8 +417,8 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
         return null;
     }
 
-    private AuxDataValidator getDataItemForRow(Integer typeId, ArrayList<AuxFieldValueViewDO> values){
-        AuxDataValidator adv = new AuxDataValidator();
+    private ResultValidator getDataItemForRow(Integer typeId, ArrayList<AuxFieldValueViewDO> values){
+        ResultValidator rv = new ResultValidator();
         AuxFieldValueViewDO af;
 
         //we only need to validate numerics and times because the widget will validate everything else
@@ -412,27 +427,25 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                 for(int i=0; i<values.size(); i++){
                     af = values.get(i);
                     if(numericId.equals(typeId))
-                        adv.addResult(af.getId(), null, Type.NUMERIC, af.getValue());
+                        rv.addResult(af.getId(), null, Type.NUMERIC, af.getValue());
                     else
-                        adv.addResult(af.getId(), null, Type.TIME, af.getValue());
+                        rv.addResult(af.getId(), null, Type.TIME, af.getValue());
                 }
             }catch(Exception e){
                 Window.alert(e.getMessage());
                 return null;
             }
         }else
-            adv = null;
+            rv = null;
         
-        return adv;
+        return rv;
     }
     
     private String getCorrectManValueByType(Object value, Integer typeId) {
         if (alphaLowerId.equals(typeId) || alphaUpperId.equals(typeId) ||
-            alphaMixedId.equals(typeId) || timeId.equals(typeId))
+            alphaMixedId.equals(typeId) || timeId.equals(typeId) || 
+            numericId.equals(typeId))
             return (String)value;
-
-        else if (numericId.equals(typeId))
-            return ((Double)value).toString();
 
         else if (dateId.equals(typeId) || dateTimeId.equals(typeId))
             return ((Datetime)value).toString();
@@ -463,7 +476,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             for (int i = 0; i < valMan.count(); i++ ) {
                 valDO = valMan.getAuxFieldValueAt(i);
 
-                if (showWholeList || valDO.getDictionary().startsWith(match))
+                if (valDO.getDictionary() != null && (showWholeList || valDO.getDictionary().startsWith(match)))
                     model.add(new TableDataRow(new Integer(valDO.getValue()), valDO.getDictionary()));
             }
         } catch (Exception e) {

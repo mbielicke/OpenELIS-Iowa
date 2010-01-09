@@ -145,24 +145,83 @@ version="1.0"
               </widget>
             </row>
           </TablePanel>
-          <VerticalPanel width="98%" style="subform">
+          <VerticalPanel style="subform" width="99%">
             <text style="FormTitle">
-					Sample Info</text>
-					<TablePanel style="Form" width="100%">
-							<row>
-								<text style="Prompt">Sampling Point:</text>
-								<textbox key="samplingpoint" width="120px" field="String"/>	
-								<text style="Prompt">Collector:</text>
-								<textbox key="collector" width="200px" field="String"/>	
-							</row>
-							<row>
-								<text style="Prompt">Owner:</text>
-								<textbox key="owner" tab="??,??" width="200px" field="String"/>
-								<text style="Prompt">Depth:</text>
-								<textbox key="depth" width="80px" field="String"/>	
-							</row>
-							</TablePanel>
-							</VerticalPanel>
+					Private Well Info</text>
+					<HorizontalPanel width="100%">
+					<TablePanel style="Form">
+					<row>
+							<text style="Prompt">Report To:</text>
+							<widget colspan="3">
+								<textbox key="name" tab="??,??" width="180px"/>
+							</widget>
+							<text style="Prompt">Org Id:</text>
+							<textbox key="name" tab="??,??" width="60px"/>		
+						</row>
+						<row>
+							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
+							<widget colspan="3">
+								<textbox case="UPPER" key="1" width="180px" max="30" field="String"/>
+							</widget>
+						</row>	
+						<row>
+							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
+							<widget colspan="3">
+								<textbox case="UPPER" key="2" width="180px" max="30" field="String"/>
+							</widget>
+						</row>
+						<row>
+							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
+							<widget colspan="3">
+								<textbox case="UPPER" key="3" width="180px" max="30" field="String"/>
+							</widget>
+						</row>
+						<row>
+							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
+							<dropdown case="UPPER" key="4" width="40px" tab="??,??" field="String"/>
+							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
+							<textbox case="UPPER" key="5" width="73px" max="30" field="String"/>
+							<text style="Prompt">Phone:</text>
+							<textbox key="name" tab="??,??" width="100px"/>
+						</row>
+						<row>
+
+						</row>
+					</TablePanel>
+					<TablePanel style="Form" halign="right">
+					<row>	
+						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'location')" />:</text>
+						<widget colspan="3">
+							<textbox key="{meta:getEnvSamplingLocation()}" width="180px" field="String" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" />
+						</widget>	
+					</row>
+					<row>
+							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
+							<widget colspan="3">
+								<textbox case="UPPER" key="1" width="180px" max="30" field="String"/>
+							</widget>	
+					</row>
+					<row>
+							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
+							<widget colspan="3">
+								<textbox case="UPPER" key="2" width="180px" max="30" field="String"/>
+							</widget>
+						</row>
+						<row>
+							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
+							<widget colspan="3">
+								<textbox case="UPPER" key="3" width="180px" max="30" field="String"/>
+							</widget>		
+						</row>
+						<row>
+							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
+							<dropdown case="UPPER" key="4" width="40px" tab="??,??" field="String"/>
+							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
+							<textbox case="UPPER" key="5" width="73px" max="30" field="String"/>
+						</row>
+				</TablePanel>
+				</HorizontalPanel>
+			</VerticalPanel>
 				<HorizontalPanel>
 					<VerticalPanel style="subform">
               <text style="FormTitle">
@@ -226,44 +285,36 @@ version="1.0"
               </TablePanel>
             </VerticalPanel>
 	                  	<VerticalPanel style="subform">
-	                  	<text style="FormTitle">Results Reported To</text>
+	                  	<text style="FormTitle">Well/Collector Info</text>
 	                  <TablePanel style="Form">
-                 		<row>
-							<text style="Prompt">Name:</text>
-							<widget colspan="3">
-								<textbox key="name" tab="??,??" width="180px"/>		
-							</widget>
-						</row>
-						<row>
-							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
-							<widget colspan="3">
-								<textbox case="UPPER" key="1" width="180px" max="30" field="String"/>
-							</widget>		
-						</row>
-						<row>
-							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
-							<widget colspan="3">
-								<textbox case="UPPER" key="2" width="180px" max="30" field="String"/>
-							</widget>		
-						</row>
-						<row>
-							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
-							<widget colspan="3">
-								<textbox case="UPPER" key="3" width="180px" max="30" field="String"/>
-							</widget>		
-						</row>
-						<row>
-							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
-							<dropdown case="UPPER" key="4" width="40px" tab="??,??" field="String"/>
-							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
-							<textbox case="UPPER" key="5" width="73px" max="30" field="String"/>
-						</row>
-						<row>
-						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"country")'/>:</text>
-							<widget colspan="3">
-								<dropdown key="6" width="180px" tab="??,??" field="String"/>
-							</widget>
-						</row>
+	                  <row>
+						<text style="Prompt">Owner:</text>
+						<textbox key="owner" tab="??,??" width="200px" field="String"/>
+					</row>
+					<row>
+						<text style="Prompt">
+                  			Collector:
+                		</text>
+                		<textbox key="collector" width="200px" field="String"/>
+					</row>
+					<row>
+						<text style="Prompt">Well Num:</text>
+						<textbox key="depth" width="80px" field="String"/>	
+					</row>
+					<row>
+                  <text style="Prompt">
+                    <xsl:value-of select="resource:getString($constants,'project')" />:
+                  </text>
+                  <HorizontalPanel>
+                    <autoComplete key="{meta:getProjectName()}" width="182px" case="UPPER" popWidth="auto" field="Integer" tab="{meta:getOrgName()},itemsTestsTree">
+                      <col width="115" header="{resource:getString($constants,'name')}" />
+                      <col width="190" header="{resource:getString($constants,'desc')}" />
+                    </autoComplete>
+                    <appButton key="projectLookup" style="LookupButton">
+                      <AbsolutePanel style="LookupButtonImage" />
+                    </appButton>
+                  </HorizontalPanel>
+                </row>
 					</TablePanel>
 					</VerticalPanel>
 				</HorizontalPanel>
