@@ -145,12 +145,14 @@ public class ResultValidator implements RPC {
                 return id;
         }
         
-        for (Item item : list) {
-            try {
-                item.resultRange.contains(value);
-                id = item.id;
-            } catch (Exception e) {
-                // ignore it
+        if(list != null){
+            for (Item item : list) {
+                try {
+                    item.resultRange.contains(value);
+                    id = item.id;
+                } catch (Exception e) {
+                    // ignore it
+                }
             }
         }
 
