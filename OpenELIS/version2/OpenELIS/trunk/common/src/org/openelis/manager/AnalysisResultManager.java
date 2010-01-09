@@ -221,6 +221,10 @@ public class AnalysisResultManager implements RPC {
     public ArrayList<ResultValidator> getResultValidators() {
         return resultValidators;
     }
+    
+    public ResultValidator getResultValidator(Integer resultGroup) { 
+        return resultValidators.get(resultGroup.intValue()-1);
+    }
 
     public void setResultValidators(ArrayList<ResultValidator> resultValidators) {
         this.resultValidators = resultValidators;
