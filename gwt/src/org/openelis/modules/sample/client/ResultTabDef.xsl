@@ -47,31 +47,49 @@ UIRF Software License are applicable instead of those above.
               <textbox />
             </col>
             <col width="200">
-              <textbox />
+              <autoComplete width="180" popWidth="auto" field="String">
+                  <col width="180" header="Suggested Values" />
+                </autoComplete>
             </col>
             <col width="200">
-              <textbox />
+            <autoComplete width="180" popWidth="auto" field="String">
+                  <col width="180" header="Suggested Values" />
+                </autoComplete>
             </col>
             <col width="200">
-              <textbox />
+            <autoComplete width="180" popWidth="auto" field="String">
+                  <col width="180" header="Suggested Values" />
+                </autoComplete>
             </col>
             <col width="200">
-              <textbox />
+            <autoComplete width="180" popWidth="auto" field="String">
+                  <col width="180" header="Suggested Values" />
+                </autoComplete>
             </col>
             <col width="200">
-              <textbox />
+            <autoComplete width="180" popWidth="auto" field="String">
+                  <col width="180" header="Suggested Values" />
+                </autoComplete>
             </col>
             <col width="200">
-              <textbox />
+            <autoComplete width="180" popWidth="auto" field="String">
+                  <col width="180" header="Suggested Values" />
+                </autoComplete>
             </col>
             <col width="200">
-              <textbox />
+            <autoComplete width="180" popWidth="auto" field="String">
+                  <col width="180" header="Suggested Values" />
+                </autoComplete>
             </col>
             <col width="200">
-              <textbox />
+            <autoComplete width="180" popWidth="auto" field="String">
+                  <col width="180" header="Suggested Values" />
+                </autoComplete>
             </col>
-            <col width="200">
-              <textbox />
+           <col width="200">
+            <autoComplete width="180" popWidth="auto" field="String">
+                  <col width="180" header="Suggested Values" />
+                </autoComplete>
             </col>
           </table>
         </row>

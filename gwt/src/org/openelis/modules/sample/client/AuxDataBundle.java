@@ -26,15 +26,14 @@
 package org.openelis.modules.sample.client;
 
 import org.openelis.domain.AuxFieldViewDO;
-import org.openelis.utilcommon.AuxDataValidator;
 import org.openelis.utilcommon.ResultValidator;
 
 public class AuxDataBundle {
     
-    public AuxDataValidator validator;
+    public ResultValidator validator;
     public AuxFieldViewDO fieldDO;
     
-    public AuxDataBundle(AuxDataValidator validator, AuxFieldViewDO fieldDO){
+    public AuxDataBundle(ResultValidator validator, AuxFieldViewDO fieldDO){
         this.validator = validator;
         this.fieldDO = fieldDO;
     }
