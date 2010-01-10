@@ -105,9 +105,8 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
     private QAEventsTab               qaEventsTab;
     private AuxDataTab                auxDataTab;
 
-    protected AppButton               billToLookup, reportToLookup, projectLookup, locationLookup,
-                    queryButton, addButton, updateButton, nextButton, prevButton, commitButton,
-                    abortButton;
+    protected AppButton               queryButton, addButton, updateButton, nextButton, prevButton,
+                    commitButton, abortButton;
     protected MenuItem                history;
     protected TabPanel                tabs;
 

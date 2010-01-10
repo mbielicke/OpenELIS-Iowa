@@ -25,7 +25,22 @@
 */
 package org.openelis.modules.privateWellWaterSampleLogin.server;
 
+import java.util.ArrayList;
+
+import org.openelis.domain.IdNameVO;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.SampleEnvironmentalRemote;
+
 
 public class PrivateWellWaterSampleLoginService {
+private static final int rowPP = 12;
     
+    public ArrayList<IdNameVO> query(Query query) throws Exception {
+        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+    }
+    
+    private SampleEnvironmentalRemote remote() {
+        return (SampleEnvironmentalRemote)EJBFactory.lookup("openelis/SampleEnvironmentalBean/remote");
+    }
 }
