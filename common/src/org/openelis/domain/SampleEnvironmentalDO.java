@@ -36,17 +36,17 @@ public class SampleEnvironmentalDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, sampleId, priority, addressId;
+    protected Integer         id, sampleId, priority, locationAddressId;
     protected String          isHazardous, description, collector, collectorPhone,
-                              samplingLocation;
-    protected AddressDO       addressDO        = new AddressDO();
+                              location;
+    protected AddressDO       locationAddressDO        = new AddressDO();
 
     public SampleEnvironmentalDO() {
     }
 
     public SampleEnvironmentalDO(Integer id, Integer sampleId, String isHazardous, Integer priority,
                                  String description, String collector, String collectorPhone,
-                                 String samplingLocation, Integer addressId, String multipleUnit,
+                                 String location, Integer locationAddressId, String multipleUnit,
                                  String streetAddress, String city, String state, String zipCode,
                                  String country) {
         setId(id);
@@ -56,16 +56,16 @@ public class SampleEnvironmentalDO extends DataObject {
         setDescription(description);
         setCollector(collector);
         setCollectorPhone(collectorPhone);
-        setSamplingLocation(samplingLocation);
-        setAddressId(addressId);
+        setLocation(location);
+        setLocationAddressId(locationAddressId);
 
-        addressDO.setId(addressId);
-        addressDO.setMultipleUnit(multipleUnit);
-        addressDO.setStreetAddress(streetAddress);
-        addressDO.setCity(city);
-        addressDO.setState(state);
-        addressDO.setZipCode(zipCode);
-        addressDO.setCountry(country);
+        locationAddressDO.setId(locationAddressId);
+        locationAddressDO.setMultipleUnit(multipleUnit);
+        locationAddressDO.setStreetAddress(streetAddress);
+        locationAddressDO.setCity(city);
+        locationAddressDO.setState(state);
+        locationAddressDO.setZipCode(zipCode);
+        locationAddressDO.setCountry(country);
         _changed = false;
     }
 
@@ -123,26 +123,26 @@ public class SampleEnvironmentalDO extends DataObject {
         _changed = true;
     }
 
-    public String getSamplingLocation() {
-        return samplingLocation;
+    public String getLocation() {
+        return location;
     }
 
-    public void setSamplingLocation(String samplingLocation) {
-        this.samplingLocation = DataBaseUtil.trim(samplingLocation);
+    public void setLocation(String location) {
+        this.location = DataBaseUtil.trim(location);
         _changed = true;
     }
 
-    public Integer getAddressId() {
-        return addressId;
+    public Integer getLocationAddressId() {
+        return locationAddressId;
     }
 
-    public void setAddressId(Integer addressId) {
-        this.addressId = addressId;
+    public void setLocationAddressId(Integer locationAddressId) {
+        this.locationAddressId = locationAddressId;
         _changed = true;
     }
 
-    public AddressDO getAddressDO() {
-        return addressDO;
+    public AddressDO getLocationAddressDO() {
+        return locationAddressDO;
     }
 
     public Integer getPriority() {

@@ -60,6 +60,7 @@ public class ReferenceTable {
                             SECTION =                        28,
                             TEST_TRAILER =                   29,
                             METHOD =                         30,
+                            SAMPLE_PRIVATE_WELL =            31,
                             PROJECT =                        33,
                             PROJECT_PARAMETER =              34,
                             INVENTORY_ITEM =                 35,
