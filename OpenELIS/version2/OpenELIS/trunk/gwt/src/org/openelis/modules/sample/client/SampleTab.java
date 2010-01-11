@@ -104,11 +104,11 @@ public class SampleTab extends Screen {
         orderNumber = (TextBox<Integer>)def.getWidget("orderNumber");
         addScreenHandler(orderNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                //orderNumber.setValue(getString(manager.getSample().getorgetAccessionNumber()));
+                orderNumber.setValue(getString(manager.getSample().getOrderId()));
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                //manager.getSample().setAccessionNumber(event.getValue());
+                manager.getSample().setOrderId(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {

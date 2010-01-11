@@ -112,6 +112,16 @@ public class ResultTab extends Screen {
         
         testResultsTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>(){
             public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+                if(anDO.getUnitOfMeasureId() == null){
+                    event.cancel();
+                    window.setError(consts.get("unitOfMeasureException"));
+                    
+                    addResultButton.enable(false);
+                    removeResultButton.enable(false);
+                    return;
+                }else
+                    window.clearStatus();
+                
                 TableDataRow row; 
                 boolean isHeader;
                 

@@ -55,6 +55,7 @@ import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.SampleManager;
+import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
@@ -118,7 +119,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
         // Call base to get ScreenDef and draw screen
         super((ScreenDefInt)GWT.create(PrivateWellWaterSampleLoginDef.class));
         service = new ScreenService(
-                                    "controller?service=org.openelis.modules.privateWellWaterSampleLogin.server.PrivateWellWaterSampleLoginService");
+                                    "controller?service=org.openelis.modules.sample.server.SampleService");
 
         //FIXME need to add a module for this
         security = OpenELIS.security.getModule("sampleenvironmental");
@@ -625,10 +626,19 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
 
         if (state == State.QUERY) {
             Query query;
-
+            QueryData domain;
+            
             ArrayList<QueryData> queryFields = getQueryFields();
             query = new Query();
             query.setFields(queryFields);
+            
+            //add the domain
+            domain = new QueryData();
+            domain.key = SampleMeta.getDomain();
+            domain.query = SampleManager.WELL_DOMAIN_FLAG;
+            domain.type = QueryData.Type.STRING;
+            query.getFields().add(domain);
+            
             nav.setQuery(query);
         } else if (state == State.ADD) {
             window.setBusy(consts.get("adding"));
