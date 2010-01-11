@@ -25,6 +25,9 @@
 */
 package org.openelis.bean;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -33,17 +36,25 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
 import org.openelis.entity.Sample;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.LockLocal;
 import org.openelis.local.SampleLocal;
+import org.openelis.meta.SampleMeta;
+import org.openelis.remote.SampleRemote;
+import org.openelis.util.QueryBuilderV2;
+import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 
 @SecurityDomain("openelis")
 //@RolesAllowed("inventory-select")
-public class SampleBean implements SampleLocal {
+public class SampleBean implements SampleLocal, SampleRemote {
 
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
@@ -52,9 +63,36 @@ public class SampleBean implements SampleLocal {
     @EJB private LockLocal lockBean;
     
     private static int sampleRefTableId;
+    private static final SampleMeta meta = new SampleMeta();
     
     public SampleBean(){
         sampleRefTableId = ReferenceTable.SAMPLE;
+    }
+    
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+        Query query;
+        QueryBuilderV2 builder;
+        List list;
+
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + SampleMeta.getId() + ",'') ");
+        builder.constructWhere(fields);
+        builder.setOrderBy(SampleMeta.getId());
+
+        query = manager.createQuery(builder.getEJBQL());
+        query.setMaxResults(first + max);
+        builder.setQueryParams(query, fields);
+
+        list = query.getResultList();
+        
+        if (list.isEmpty())
+            throw new NotFoundException();
+        list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
+        if (list == null)
+            throw new LastPageException();
+
+        return (ArrayList<IdNameVO>)list;
     }
     
     public SampleDO fetchById(Integer sampleId) throws Exception {
@@ -85,6 +123,7 @@ public class SampleBean implements SampleLocal {
         entity.setDomain(data.getDomain());
         entity.setEnteredDate(data.getEnteredDate());
         entity.setNextItemSequence(data.getNextItemSequence());
+        entity.setOrderId(data.getOrderId());
         entity.setPackageId(data.getPackageId());
         entity.setReceivedById(data.getReceivedById());
         entity.setReceivedDate(data.getReceivedDate());
@@ -117,6 +156,7 @@ public class SampleBean implements SampleLocal {
         entity.setDomain(data.getDomain());
         entity.setEnteredDate(data.getEnteredDate());
         entity.setNextItemSequence(data.getNextItemSequence());
+        entity.setOrderId(data.getOrderId());
         entity.setPackageId(data.getPackageId());
         entity.setReceivedById(data.getReceivedById());
         entity.setReceivedDate(data.getReceivedDate());

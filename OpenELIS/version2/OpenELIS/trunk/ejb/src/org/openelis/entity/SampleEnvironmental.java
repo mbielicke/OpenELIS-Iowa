@@ -51,7 +51,7 @@ import org.openelis.utils.Auditable;
 @NamedQueries({
     @NamedQuery( name = "SampleEnvironmental.FetchBySampleId",
                 query = "select new org.openelis.domain.SampleEnvironmentalDO(s.id,s.sampleId,s.isHazardous, s.priority, "+
-                        "s.description,s.collector,s.collectorPhone,s.samplingLocation,s.addressId,a.multipleUnit," +
+                        "s.description,s.collector,s.collectorPhone,s.location,s.locationAddressId,a.multipleUnit," +
                         "a.streetAddress,a.city,a.state,a.zipCode,a.country)"
                       + " from SampleEnvironmental s LEFT JOIN s.address a where s.sampleId = :id")})
 @Entity
@@ -82,14 +82,14 @@ public class SampleEnvironmental implements Auditable, Cloneable {
     @Column(name = "collector_phone")
     private String              collectorPhone;
 
-    @Column(name = "sampling_location")
-    private String              samplingLocation;
+    @Column(name = "location")
+    private String              location;
 
-    @Column(name = "address_id")
-    private Integer             addressId;
+    @Column(name = "location_address_id")
+    private Integer             locationAddressId;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "address_id", insertable = false, updatable = false)
+    @JoinColumn(name = "location_address_id", insertable = false, updatable = false)
     private Address             address;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -162,22 +162,22 @@ public class SampleEnvironmental implements Auditable, Cloneable {
             this.collectorPhone = collectorPhone;
     }
 
-    public String getSamplingLocation() {
-        return samplingLocation;
+    public String getLocation() {
+        return location;
     }
 
-    public void setSamplingLocation(String samplingLocation) {
-        if (DataBaseUtil.isDifferent(samplingLocation, this.samplingLocation))
-            this.samplingLocation = samplingLocation;
+    public void setLocation(String location) {
+        if (DataBaseUtil.isDifferent(location, this.location))
+            this.location = location;
     }
 
-    public Integer getAddressId() {
-        return addressId;
+    public Integer getLocationAddressId() {
+        return locationAddressId;
     }
 
-    public void setAddressId(Integer addressId) {
-        if (DataBaseUtil.isDifferent(addressId, this.addressId))
-            this.addressId = addressId;
+    public void setLocationAddressId(Integer locationAddressId) {
+        if (DataBaseUtil.isDifferent(locationAddressId, this.locationAddressId))
+            this.locationAddressId = locationAddressId;
     }
 
     public Address getAddress() {
@@ -218,8 +218,8 @@ public class SampleEnvironmental implements Auditable, Cloneable {
                  .setField("description", description, original.description)
                  .setField("collector", collector, original.collector)
                  .setField("collector_phone", collectorPhone, original.collectorPhone)
-                 .setField("sampling_location", samplingLocation, original.samplingLocation)
-                 .setField("address_id", addressId, original.addressId);
+                 .setField("location", location, original.location)
+                 .setField("location_address_id", locationAddressId, original.locationAddressId);
 
         return audit;
     }
