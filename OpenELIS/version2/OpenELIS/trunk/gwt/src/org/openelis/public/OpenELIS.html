@@ -9,11 +9,23 @@
 		<!--                                           -->
 		<!-- Use normal html, such as style            -->
 		<!--                                           -->
-		<style>
-		.spinnerIcon {width:16px; height:16px;background:transparent url(../Images/OSXspinnerGIF.gif) no-repeat scroll center;}
-		</style>
+	<style>
+	.spinnerIconLarge {
+		width: 225px;
+		height: 200px;
+		background: transparent url(ajax-loader.gif) no-repeat scroll bottom
+			right;
+	}
+	
+	.inputbackground {
+		background-image: url(signInBg.jpg);
+		background-repeat: no-repeat;
+		height: 312px;
+		width: 433px;
+	}
+	</style>
 
-		<!--                                           -->
+<!--                                           -->
 		<!-- This script loads your compiled module.   -->
 		<!-- If you add any GWT meta tags, they must   -->
 		<!-- be added before this line.                -->
@@ -26,22 +38,32 @@
 	<!-- you can leave the body empty if you want  -->
 	<!-- to create a completely dynamic ui         -->
 	<!--                                           -->
-	<body>
-	    <div id="load">
-		    <table align="center">
-        <tr><td height="200px"></td></tr>
 
-        <tr>
-            <td>
-                    <center>
-                       <p id="message">Loading...</p>
-                    </center>
-            </td>
-            <td>
-                <div class="spinnerIcon"/>
-            <td>
-        </tr>
-    </table>
-     </div>
-	</body>
+<body>
+
+<div id="load">
+<table align="center" id="load"
+	style="position: absolute; left: 28%; top: 28%;">
+	<tr>
+		<td>
+		    <div class="inputbackground">
+		        <div class="spinnerIconLarge"/>
+		    </div>
+		</td>
+	</tr>
+	<tr id="credentials">
+		<td>
+		<table>
+			<tr>
+				<td><font face="Arial,Helvetica" id="message">Starting
+				Application...</font></td>
+			</tr>
+		</table>
+		</td>
+	</tr>
+</table>
+</div>
+
+</body>
+
 </html>

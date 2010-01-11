@@ -83,9 +83,7 @@ UIRF Software License are applicable instead of those above.
 
 <body onLoad="focusLogin()">
 
-    <table align="center" id="table">
-        <tr><td height="200px"></td></tr>
-
+    <table align="center" id="table" style="position:absolute;left:28%;top:28%;">
         <tr>
             <td>
                 <form method="post" name="login_form" autocomplete="off" action="{action}" onsubmit="document.getElementById('credentials').style.display='';">
