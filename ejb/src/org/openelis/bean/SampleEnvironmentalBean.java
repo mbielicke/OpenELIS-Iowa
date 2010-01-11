@@ -25,9 +25,6 @@
 */
 package org.openelis.bean;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -37,25 +34,17 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.entity.SampleEnvironmental;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AddressLocal;
 import org.openelis.local.SampleEnvironmentalLocal;
-import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
-import org.openelis.remote.SampleEnvironmentalRemote;
-import org.openelis.util.QueryBuilderV2;
-import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 
 @SecurityDomain("openelis")
 @RolesAllowed("sampleenvironmental-select")
-public class SampleEnvironmentalBean implements SampleEnvironmentalRemote, SampleEnvironmentalLocal {
+public class SampleEnvironmentalBean implements SampleEnvironmentalLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
     
@@ -72,33 +61,6 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalRemote, Sampl
         return (SampleEnvironmentalDO) query.getSingleResult();
     }
 
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
-        Query query;
-        QueryBuilderV2 builder;
-        List list;
-
-        builder = new QueryBuilderV2();
-        builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + SampleMeta.getId() + ",'') ");
-        builder.constructWhere(fields);
-        builder.addWhere(SampleMeta.getDomain() + "='" + SampleManager.ENVIRONMENTAL_DOMAIN_FLAG + "'");
-        builder.setOrderBy(SampleMeta.getId());
-
-        query = manager.createQuery(builder.getEJBQL());
-        query.setMaxResults(first + max);
-        builder.setQueryParams(query, fields);
-
-        list = query.getResultList();
-        
-        if (list.isEmpty())
-            throw new NotFoundException();
-        list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
-        if (list == null)
-            throw new LastPageException();
-
-        return (ArrayList<IdNameVO>)list;
-    }
-    
     public void add(SampleEnvironmentalDO data) throws Exception {
         SampleEnvironmental entity;
         
@@ -106,16 +68,16 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalRemote, Sampl
 
         entity = new SampleEnvironmental();
         
-        addressBean.add(data.getAddressDO());
+        addressBean.add(data.getLocationAddressDO());
         
-        entity.setAddressId(data.getAddressDO().getId());
+        entity.setLocationAddressId(data.getLocationAddressDO().getId());
         entity.setCollector(data.getCollector());
         entity.setCollectorPhone(data.getCollectorPhone());
         entity.setDescription(data.getDescription());
         entity.setIsHazardous(data.getIsHazardous());
         entity.setPriority(data.getPriority());
         entity.setSampleId(data.getSampleId());
-        entity.setSamplingLocation(data.getSamplingLocation());
+        entity.setLocation(data.getLocation());
         
         manager.persist(entity);
         
@@ -132,16 +94,16 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalRemote, Sampl
         
         entity = manager.find(SampleEnvironmental.class, data.getId());
         
-        addressBean.update(data.getAddressDO());
+        addressBean.update(data.getLocationAddressDO());
         
-        entity.setAddressId(data.getAddressDO().getId());
+        entity.setLocationAddressId(data.getLocationAddressDO().getId());
         entity.setCollector(data.getCollector());
         entity.setCollectorPhone(data.getCollectorPhone());
         entity.setDescription(data.getDescription());
         entity.setIsHazardous(data.getIsHazardous());
         entity.setPriority(data.getPriority());
         entity.setSampleId(data.getSampleId());
-        entity.setSamplingLocation(data.getSamplingLocation());
+        entity.setLocation(data.getLocation());
     }
 
     public void validate() throws Exception {

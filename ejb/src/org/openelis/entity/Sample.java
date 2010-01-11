@@ -56,10 +56,10 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries( {
     @NamedQuery(name = "Sample.SampleById", query = "select new org.openelis.domain.SampleDO(smpl.id, smpl.nextItemSequence, smpl.domain, "+
-                " smpl.accessionNumber, smpl.revision, smpl.enteredDate, smpl.receivedDate, smpl.receivedById, smpl.collectionDate, smpl.collectionTime, "+
+                " smpl.accessionNumber, smpl.revision, smpl.orderId, smpl.enteredDate, smpl.receivedDate, smpl.receivedById, smpl.collectionDate, smpl.collectionTime, "+
                 "smpl.statusId, smpl.packageId, smpl.clientReference, smpl.releasedDate) from Sample smpl where smpl.id = :id"),
     @NamedQuery(name = "Sample.SampleByAccessionNumber", query = "select new org.openelis.domain.SampleDO(smpl.id, smpl.nextItemSequence, smpl.domain, "+
-                " smpl.accessionNumber, smpl.revision, smpl.enteredDate, smpl.receivedDate, smpl.receivedById, smpl.collectionDate, smpl.collectionTime, "+
+                " smpl.accessionNumber, smpl.revision, smpl.orderId, smpl.enteredDate, smpl.receivedDate, smpl.receivedById, smpl.collectionDate, smpl.collectionTime, "+
                 "smpl.statusId, smpl.packageId, smpl.clientReference, smpl.releasedDate) from Sample smpl where smpl.accessionNumber = :id"),
     @NamedQuery(name = "Sample.AccessionNumberCheck", query = "select smpl.accessionNumber from Sample smpl where smpl.accessionNumber = :id")})
 
@@ -84,6 +84,9 @@ public class Sample implements Auditable, Cloneable {
 
   @Column(name="revision")
   private Integer revision;             
+  
+  @Column(name="order_id")
+  private Integer orderId;             
 
   @Column(name="entered_date")
   private Date enteredDate;             
@@ -192,6 +195,14 @@ public class Sample implements Auditable, Cloneable {
     if(DataBaseUtil.isDifferent(revision, this.revision))
       this.revision = revision;
   }
+  
+  public Integer getOrderId() {
+      return orderId;
+    }
+    public void setOrderId(Integer orderId) {
+      if(DataBaseUtil.isDifferent(orderId, this.orderId))
+        this.orderId = orderId;
+    }
 
   public Datetime getEnteredDate() {
     if(enteredDate == null)
@@ -353,6 +364,7 @@ public class Sample implements Auditable, Cloneable {
                  .setField("domain", domain, original.domain)
                  .setField("accession_number", accessionNumber, original.accessionNumber)
                  .setField("revision", revision, original.revision)
+                 .setField("order_id", orderId, original.orderId)
                  .setField("entered_date", enteredDate, original.enteredDate)
                  .setField("received_date", receivedDate, original.receivedDate)
                  .setField("received_by_id", receivedById, original.receivedById)
