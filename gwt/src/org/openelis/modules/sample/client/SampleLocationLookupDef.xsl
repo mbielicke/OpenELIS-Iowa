@@ -40,13 +40,13 @@
 					<row>
 					<text style="Prompt"><xsl:value-of select='resource:getString($constants,"location")'/>:</text>
 						<widget colspan="3">
-							<textbox key="{meta:getEnvSamplingLocation()}" width="214px" max="30" tab="{meta:getAddrMultipleUnit()},{meta:getAddrCountry()}" field="String"/>
+							<textbox key="{meta:getEnvLocation()}" width="214px" max="30" tab="{meta:getAddrMultipleUnit()},{meta:getAddrCountry()}" field="String"/>
 						</widget>
 					</row>
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
 						<widget colspan="3">
-							<textbox case="UPPER" key="{meta:getAddrMultipleUnit()}" width="214px" max="30" tab="{meta:getAddrStreetAddress()},{meta:getEnvSamplingLocation()}" field="String"/>
+							<textbox case="UPPER" key="{meta:getAddrMultipleUnit()}" width="214px" max="30" tab="{meta:getAddrStreetAddress()},{meta:getEnvLocation()}" field="String"/>
 						</widget>		
 					</row>
 					<row>
@@ -75,7 +75,7 @@
 					<row>
 					<text style="Prompt"><xsl:value-of select="resource:getString($constants,'country')"/>:</text>
 					<widget colspan="3">
-						<dropdown key="{meta:getAddrCountry()}" width="214px" tab="{meta:getEnvSamplingLocation()},{meta:getAddrZipCode()}" field="String"/>
+						<dropdown key="{meta:getAddrCountry()}" width="214px" tab="{meta:getEnvLocation()},{meta:getAddrZipCode()}" field="String"/>
 					</widget>
 					</row>
 					</TablePanel>

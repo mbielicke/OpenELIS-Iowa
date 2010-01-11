@@ -72,14 +72,14 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
     }
     
     private void initialize() {
-        final TextBox samplingLocation = (TextBox)def.getWidget(SampleMeta.getEnvSamplingLocation());
+        final TextBox samplingLocation = (TextBox)def.getWidget(SampleMeta.getEnvLocation());
         addScreenHandler(samplingLocation, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                samplingLocation.setValue(envDO.getSamplingLocation());
+                samplingLocation.setValue(envDO.getLocation());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                envDO.setSamplingLocation(event.getValue());
+                envDO.setLocation(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -91,11 +91,11 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
         final TextBox multipleUnit = (TextBox)def.getWidget(SampleMeta.getAddrMultipleUnit());
         addScreenHandler(multipleUnit, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                multipleUnit.setValue(envDO.getAddressDO().getMultipleUnit());
+                multipleUnit.setValue(envDO.getLocationAddressDO().getMultipleUnit());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                envDO.getAddressDO().setMultipleUnit(event.getValue());
+                envDO.getLocationAddressDO().setMultipleUnit(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -107,11 +107,11 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
         final TextBox streetAddress = (TextBox)def.getWidget(SampleMeta.getAddrStreetAddress());
         addScreenHandler(streetAddress, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                streetAddress.setValue(envDO.getAddressDO().getStreetAddress());
+                streetAddress.setValue(envDO.getLocationAddressDO().getStreetAddress());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                envDO.getAddressDO().setStreetAddress(event.getValue());
+                envDO.getLocationAddressDO().setStreetAddress(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -123,11 +123,11 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
         final TextBox city = (TextBox)def.getWidget(SampleMeta.getAddrCity());
         addScreenHandler(city, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                city.setValue(envDO.getAddressDO().getCity());
+                city.setValue(envDO.getLocationAddressDO().getCity());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                envDO.getAddressDO().setCity(event.getValue());
+                envDO.getLocationAddressDO().setCity(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -139,11 +139,11 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
         state = (Dropdown)def.getWidget(SampleMeta.getAddrState());
         addScreenHandler(state, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                state.setSelection(envDO.getAddressDO().getState());
+                state.setSelection(envDO.getLocationAddressDO().getState());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                envDO.getAddressDO().setState(event.getValue());
+                envDO.getLocationAddressDO().setState(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -155,11 +155,11 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
         final TextBox zipCode = (TextBox)def.getWidget(SampleMeta.getAddrZipCode());
         addScreenHandler(zipCode, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                zipCode.setValue(envDO.getAddressDO().getZipCode());
+                zipCode.setValue(envDO.getLocationAddressDO().getZipCode());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                envDO.getAddressDO().setZipCode(event.getValue());
+                envDO.getLocationAddressDO().setZipCode(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -171,11 +171,11 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
         country = (Dropdown)def.getWidget(SampleMeta.getAddrCountry());
         addScreenHandler(country, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                country.setSelection(envDO.getAddressDO().getCountry());
+                country.setSelection(envDO.getLocationAddressDO().getCountry());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                envDO.getAddressDO().setCountry(event.getValue());
+                envDO.getLocationAddressDO().setCountry(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {

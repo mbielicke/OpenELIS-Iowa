@@ -172,14 +172,14 @@ public class EnvironmentalTab extends Screen {
             }
         });
         
-        location = (TextBox)def.getWidget(SampleMeta.getEnvSamplingLocation());
+        location = (TextBox)def.getWidget(SampleMeta.getEnvLocation());
         addScreenHandler(location, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                location.setValue(getEnvManager().getEnvironmental().getSamplingLocation());
+                location.setValue(getEnvManager().getEnvironmental().getLocation());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getEnvManager().getEnvironmental().setSamplingLocation(event.getValue());
+                getEnvManager().getEnvironmental().setLocation(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {

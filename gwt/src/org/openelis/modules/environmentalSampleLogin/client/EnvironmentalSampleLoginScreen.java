@@ -42,6 +42,8 @@ import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
+import org.openelis.gwt.event.BeforeCloseEvent;
+import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
@@ -52,10 +54,12 @@ import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.MenuItem;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleManager;
+import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
@@ -119,7 +123,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
         // Call base to get ScreenDef and draw screen
         super((ScreenDefInt)GWT.create(EnvironmentalSampleLoginDef.class));
         service = new ScreenService(
-                                    "controller?service=org.openelis.modules.environmentalSampleLogin.server.EnvironmentalSampleLoginService");
+                                    "controller?service=org.openelis.modules.sample.server.SampleService");
 
         security = OpenELIS.security.getModule("sampleenvironmental");
         if (security == null)
@@ -164,6 +168,15 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
     private void initialize() {
         final EnvironmentalSampleLoginScreen envScreen = this;
 
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+                if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
+                    event.cancel();
+                    window.setError(consts.get("mustCommitOrAbort"));
+                }
+            }
+        });
+        
         history = (MenuItem)def.getWidget("history");
         addScreenHandler(history, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -627,10 +640,19 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
 
         if (state == State.QUERY) {
             Query query;
-
+            QueryData domain;
+            
             ArrayList<QueryData> queryFields = getQueryFields();
             query = new Query();
             query.setFields(queryFields);
+            
+            //add the domain
+            domain = new QueryData();
+            domain.key = SampleMeta.getDomain();
+            domain.query = SampleManager.ENVIRONMENTAL_DOMAIN_FLAG;
+            domain.type = QueryData.Type.STRING;
+            query.getFields().add(domain);
+            
             nav.setQuery(query);
         } else if (state == State.ADD) {
             window.setBusy(consts.get("adding"));

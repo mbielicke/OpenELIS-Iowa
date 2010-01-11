@@ -184,13 +184,15 @@ version="1.0"
 							<widget colspan="3">
 								<textbox case="UPPER" key="3" width="180px" max="30" field="String"/>
 							</widget>
+							<text style="Prompt">Phone:</text>
+							<textbox key="name" tab="??,??" width="100px"/>
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
 							<dropdown case="UPPER" key="4" width="40px" tab="??,??" field="String"/>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
 							<textbox case="UPPER" key="5" width="73px" max="30" field="String"/>
-							<text style="Prompt">Phone:</text>
+							<text style="Prompt">Fax:</text>
 							<textbox key="name" tab="??,??" width="100px"/>
 						</row>
 						<row>
@@ -201,7 +203,7 @@ version="1.0"
 					<row>	
 						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'location')" />:</text>
 						<widget colspan="3">
-							<textbox key="{meta:getEnvSamplingLocation()}" width="180px" field="String" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" />
+							<textbox key="{meta:getEnvLocation()}" width="180px" field="String" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" />
 						</widget>	
 					</row>
 					<row>
@@ -238,7 +240,7 @@ version="1.0"
               </text>
               <TablePanel spacing="0" padding="0">
               	<row>
-	                <tree key="itemsTestsTree" width="auto" maxRows="4" showScroll="ALWAYS" tab="{meta:getProjectName()},{meta:getEnvSamplingLocation()}">
+	                <tree key="itemsTestsTree" width="auto" maxRows="4" showScroll="ALWAYS" tab="{meta:getProjectName()},{meta:getEnvLocation()}">
 	                  <header>
 	                    <col width="280" header="{resource:getString($constants,'itemAnalyses')}" />
 	                    <col width="130" header="{resource:getString($constants,'typeStatus')}" />

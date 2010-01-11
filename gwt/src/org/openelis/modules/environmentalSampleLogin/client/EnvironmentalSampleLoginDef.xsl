@@ -150,14 +150,14 @@ version="1.0"
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'phone')" />:
                 </text>
-                <textbox key="{meta:getEnvCollectorPhone()}" width="120px" tab="{meta:getEnvSamplingLocation()},{meta:getEnvCollector()}" field="String" />
+                <textbox key="{meta:getEnvCollectorPhone()}" width="120px" tab="{meta:getEnvLocation()},{meta:getEnvCollector()}" field="String" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'location')" />:
                 </text>
                 <HorizontalPanel>
-                  <textbox key="{meta:getEnvSamplingLocation()}" width="175px" field="String" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" />
+                  <textbox key="{meta:getEnvLocation()}" width="175px" field="String" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" />
                   <appButton key="locButton" style="LookupButton">
                     <AbsolutePanel style="LookupButtonImage" />
                   </appButton>
@@ -165,7 +165,7 @@ version="1.0"
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'desc')" />:
                 </text>
-                <textbox key="{meta:getEnvDescription()}" width="315px" tab="itemsTestsTree,{meta:getEnvSamplingLocation()}" field="String" />
+                <textbox key="{meta:getEnvDescription()}" width="315px" tab="itemsTestsTree,{meta:getEnvLocation()}" field="String" />
               </row>
             </TablePanel>
           </VerticalPanel>
@@ -176,7 +176,7 @@ version="1.0"
               </text>
               <TablePanel spacing="0" padding="0">
               	<row>
-	                <tree key="itemsTestsTree" width="auto" maxRows="4" showScroll="ALWAYS" tab="{meta:getProjectName()},{meta:getEnvSamplingLocation()}">
+	                <tree key="itemsTestsTree" width="auto" maxRows="4" showScroll="ALWAYS" tab="{meta:getProjectName()},{meta:getEnvLocation()}">
 	                  <header>
 	                    <col width="280" header="{resource:getString($constants,'itemAnalyses')}" />
 	                    <col width="130" header="{resource:getString($constants,'typeStatus')}" />

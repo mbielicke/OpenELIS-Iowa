@@ -245,14 +245,14 @@ UIRF Software License are applicable instead of those above.
                       <text style="Prompt">
                         <xsl:value-of select="resource:getString($constants,'phone')" />:
                       </text>
-                      <textbox field="String" key="{meta:getEnvCollectorPhone()}" tab="{meta:getEnvSamplingLocation()},{meta:getEnvCollector()}" width="120px" />
+                      <textbox field="String" key="{meta:getEnvCollectorPhone()}" tab="{meta:getEnvLocation()},{meta:getEnvCollector()}" width="120px" />
                     </row>
                     <row>
                       <text style="Prompt">
                         <xsl:value-of select="resource:getString($constants,'location')" />:
                       </text>
                       <HorizontalPanel>
-                        <textbox field="String" key="{meta:getEnvSamplingLocation()}" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" width="175px" />
+                        <textbox field="String" key="{meta:getEnvLocation()}" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" width="175px" />
                         <appButton key="locButton" style="LookupButton">
                           <AbsolutePanel style="LookupButtonImage" />
                         </appButton>
@@ -260,7 +260,7 @@ UIRF Software License are applicable instead of those above.
                       <text style="Prompt">
                         <xsl:value-of select="resource:getString($constants,'desc')" />:
                       </text>
-                      <textbox field="String" key="{meta:getEnvDescription()}" tab="{meta:getProjectName()},{meta:getEnvSamplingLocation()}" width="315px" />
+                      <textbox field="String" key="{meta:getEnvDescription()}" tab="{meta:getProjectName()},{meta:getEnvLocation()}" width="315px" />
                     </row>
                     <row>
                       <text style="Prompt">
