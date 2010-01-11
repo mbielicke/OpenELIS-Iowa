@@ -38,7 +38,7 @@ public class SampleDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, nextItemSequence, accessionNumber, revision, receivedById,
+    protected Integer         id, nextItemSequence, accessionNumber, revision, orderId, receivedById,
                               statusId, packageId;
     protected Datetime        enteredDate, receivedDate, collectionDate, collectionTime,
                               releasedDate;
@@ -48,7 +48,7 @@ public class SampleDO extends DataObject {
     }
 
     public SampleDO(Integer id, Integer nextItemSequence, String domain, Integer accessionNumber,
-                    Integer revision, Date enteredDate, Date receivedDate, Integer receivedById,
+                    Integer revision, Integer orderId, Date enteredDate, Date receivedDate, Integer receivedById,
                     Date collectionDate, Date collectionTime, Integer statusId, Integer packageId,
                     String clientReference, Date releasedDate) {
         setId(id);
@@ -56,6 +56,7 @@ public class SampleDO extends DataObject {
         setDomain(domain);
         setAccessionNumber(accessionNumber);
         setRevision(revision);
+        setOrderId(orderId);
         setEnteredDate(DataBaseUtil.toYM(enteredDate));
         setReceivedDate(DataBaseUtil.toYM(receivedDate));
         setReceivedById(receivedById);
@@ -110,6 +111,15 @@ public class SampleDO extends DataObject {
 
     public void setRevision(Integer revision) {
         this.revision = revision;
+        _changed = true;
+    }
+    
+    public Integer getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Integer orderId) {
+        this.orderId = orderId;
         _changed = true;
     }
 

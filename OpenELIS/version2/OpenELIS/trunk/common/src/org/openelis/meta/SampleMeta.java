@@ -44,14 +44,15 @@ public class SampleMeta implements Meta, MetaMap {
                     ENV_DESCRIPTION = "_sampleEnvironmental.description",
                     ENV_COLLECTOR = "_sampleEnvironmental.collector",
                     ENV_COLLECTOR_PHONE = "_sampleEnvironmental.collectorPhone",
-                    ENV_SAMPLING_LOCATION = "_sampleEnvironmental.samplingLocation",
-                    ENV_ADDRESS_ID = "_sampleEnvironmental.addressId",
+                    ENV_LOCATION = "_sampleEnvironmental.location",
+                    ENV_LOCATION_ADDRESS_ID = "_sampleEnvironmental.locationAddressId",
 
                     ID = "_sample.id", 
                     NEXT_ITEM_SEQUENCE = "_sample.nextItemSequence",
                     DOMAIN = "_sample.domain", 
                     ACCESSION_NUMBER = "_sample.accessionNumber",
                     REVISION = "_sample.revision", 
+                    ORDER_ID = "_sample.orderId",
                     ENTERED_DATE = "_sample.enteredDate",
                     RECEIVED_DATE = "_sample.receivedDate",
                     RECEIVED_BY_ID = "_sample.receivedById",
@@ -168,9 +169,9 @@ public class SampleMeta implements Meta, MetaMap {
     static {
         names = new HashSet<String>(Arrays.asList(ENV_ID, ENV_SAMPLE_ID, ENV_IS_HAZARDOUS, ENV_PRIORITY,
                                                   ENV_DESCRIPTION, ENV_COLLECTOR, ENV_COLLECTOR_PHONE,
-                                                  ENV_SAMPLING_LOCATION, ENV_ADDRESS_ID, ID,
+                                                  ENV_LOCATION, ENV_LOCATION_ADDRESS_ID, ID,
                                                   NEXT_ITEM_SEQUENCE, DOMAIN, ACCESSION_NUMBER, REVISION,
-                                                  ENTERED_DATE, RECEIVED_DATE, RECEIVED_BY_ID,
+                                                  ORDER_ID, ENTERED_DATE, RECEIVED_DATE, RECEIVED_BY_ID,
                                                   COLLECTION_DATE, COLLECTION_TIME, STATUS_ID, PACKAGE_ID, 
                                                   CLIENT_REFERENCE, RELEASED_DATE, ADDR_ID, ADDR_MULTIPLE_UNIT,
                                                   ADDR_STREET_ADDRESS, ADDR_CITY, ADDR_STATE, ADDR_ZIP_CODE, 
@@ -232,12 +233,12 @@ public class SampleMeta implements Meta, MetaMap {
         return ENV_COLLECTOR_PHONE;
     }
 
-    public static String getEnvSamplingLocation() {
-        return ENV_SAMPLING_LOCATION;
+    public static String getEnvLocation() {
+        return ENV_LOCATION;
     }
 
-    public static String getEnvAddressId() {
-        return ENV_ADDRESS_ID;
+    public static String getEnvLocationAddressId() {
+        return ENV_LOCATION_ADDRESS_ID;
     }
 
     public static String getId() {
@@ -258,6 +259,10 @@ public class SampleMeta implements Meta, MetaMap {
 
     public static String getRevision() {
         return REVISION;
+    }
+    
+    public static String getOrderId() {
+        return ORDER_ID;
     }
 
     public static String getEnteredDate() {
