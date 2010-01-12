@@ -120,10 +120,10 @@ public class Sample implements Auditable, Cloneable {
   @JoinColumn(name = "sample_id")
   private Collection<SampleEnvironmental> sampleEnvironmental;
   
-  //sample human
+  //sample private well
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "sample_id")
-  private Collection<SampleHuman> sampleHuman;
+  private Collection<SamplePrivateWell> samplePrivateWell;
   
   //sample organizations
   @OneToMany(fetch = FetchType.LAZY)
@@ -304,14 +304,6 @@ public class Sample implements Auditable, Cloneable {
       this.sampleEnvironmental = sampleEnvironmental;
   }
   
-  public Collection<SampleHuman> getSampleHuman() {
-      return sampleHuman;
-  }
-  
-  public void setSampleHuman(Collection<SampleHuman> sampleHuman) {
-      this.sampleHuman = sampleHuman;
-  }
-  
   public Collection<SampleOrganization> getSampleOrganization() {
       return sampleOrganization;
   }
@@ -376,5 +368,11 @@ public class Sample implements Auditable, Cloneable {
                  .setField("released_date", releasedDate, original.releasedDate);
 
         return audit;
-  }  
+  }
+public Collection<SamplePrivateWell> getSamplePrivateWell() {
+    return samplePrivateWell;
+}
+public void setSamplePrivateWell(Collection<SamplePrivateWell> samplePrivateWell) {
+    this.samplePrivateWell = samplePrivateWell;
+}  
 }   

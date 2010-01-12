@@ -40,42 +40,42 @@
 					<row>
 					<text style="Prompt"><xsl:value-of select='resource:getString($constants,"location")'/>:</text>
 						<widget colspan="3">
-							<textbox key="{meta:getEnvLocation()}" width="214px" max="30" tab="{meta:getAddrMultipleUnit()},{meta:getAddrCountry()}" field="String"/>
+							<textbox key="{meta:getEnvLocation()}" width="214px" max="30" tab="{meta:getLocationAddrMultipleUnit()},{meta:getLocationAddrCountry()}" field="String"/>
 						</widget>
 					</row>
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
 						<widget colspan="3">
-							<textbox case="UPPER" key="{meta:getAddrMultipleUnit()}" width="214px" max="30" tab="{meta:getAddrStreetAddress()},{meta:getEnvLocation()}" field="String"/>
+							<textbox case="UPPER" key="{meta:getLocationAddrMultipleUnit()}" width="214px" max="30" tab="{meta:getLocationAddrStreetAddress()},{meta:getEnvLocation()}" field="String"/>
 						</widget>		
 					</row>
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
 						<widget colspan="3">
-							<textbox case="UPPER" key="{meta:getAddrStreetAddress()}" width="214px" max="30" tab="{meta:getAddrCity()},{meta:getAddrMultipleUnit()}" field="String"/>
+							<textbox case="UPPER" key="{meta:getLocationAddrStreetAddress()}" width="214px" max="30" tab="{meta:getLocationAddrCity()},{meta:getLocationAddrMultipleUnit()}" field="String"/>
 						</widget>		
 					</row>
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
 						<widget colspan="3">
-							<textbox case="UPPER" key="{meta:getAddrCity()}" width="214px" max="30" tab="{meta:getAddrState()},{meta:getAddrStreetAddress()}" field="String"/>
+							<textbox case="UPPER" key="{meta:getLocationAddrCity()}" width="214px" max="30" tab="{meta:getLocationAddrState()},{meta:getLocationAddrStreetAddress()}" field="String"/>
 						</widget>		
 					</row>
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
 						<widget>
-							<dropdown case="UPPER" key="{meta:getAddrState()}" width="55px" tab="{meta:getAddrZipCode()},{meta:getAddrCity()}" field="String"/>
+							<dropdown case="UPPER" key="{meta:getLocationAddrState()}" width="55px" tab="{meta:getLocationAddrZipCode()},{meta:getLocationAddrCity()}" field="String"/>
 						</widget>
 						
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
 						<widget>
-							<textbox case="UPPER" key="{meta:getAddrZipCode()}" width="91px" max="30" tab="{meta:getAddrCountry()},{meta:getAddrState()}" field="String"/>
+							<textbox case="UPPER" key="{meta:getLocationAddrZipCode()}" width="91px" max="30" tab="{meta:getLocationAddrCountry()},{meta:getLocationAddrState()}" field="String"/>
 						</widget>
 					</row>
 					<row>
 					<text style="Prompt"><xsl:value-of select="resource:getString($constants,'country')"/>:</text>
 					<widget colspan="3">
-						<dropdown key="{meta:getAddrCountry()}" width="214px" tab="{meta:getEnvLocation()},{meta:getAddrZipCode()}" field="String"/>
+						<dropdown key="{meta:getLocationAddrCountry()}" width="214px" tab="{meta:getEnvLocation()},{meta:getLocationAddrZipCode()}" field="String"/>
 					</widget>
 					</row>
 					</TablePanel>

@@ -1,33 +1,33 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.meta;
 
 /**
-  * SampleEnvironmental META Data
-  */
+ * SampleEnvironmental META Data
+ */
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -36,8 +36,24 @@ import org.openelis.gwt.common.Meta;
 import org.openelis.gwt.common.MetaMap;
 
 public class SampleMeta implements Meta, MetaMap {
-    private static final String    
-                    ENV_ID      = "_sampleEnvironmental.id",
+    private static final String    ID = "_sample.id",
+                    NEXT_ITEM_SEQUENCE = "_sample.nextItemSequence",
+                    DOMAIN = "_sample.domain",
+                    ACCESSION_NUMBER = "_sample.accessionNumber",
+                    REVISION = "_sample.revision",
+                    ORDER_ID = "_sample.orderId",
+                    ENTERED_DATE = "_sample.enteredDate",
+                    RECEIVED_DATE = "_sample.receivedDate",
+                    RECEIVED_BY_ID = "_sample.receivedById",
+                    COLLECTION_DATE = "_sample.collectionDate",
+                    COLLECTION_TIME = "_sample.collectionTime",
+                    STATUS_ID = "_sample.statusId",
+                    PACKAGE_ID = "_sample.packageId",
+                    CLIENT_REFERENCE = "_sample.clientReference",
+                    RELEASED_DATE = "_sample.releasedDate",
+
+                    // sample environmental
+                    ENV_ID = "_sampleEnvironmental.id",
                     ENV_SAMPLE_ID = "_sampleEnvironmental.sampleId",
                     ENV_IS_HAZARDOUS = "_sampleEnvironmental.isHazardous",
                     ENV_PRIORITY = "_sampleEnvironmental.priority",
@@ -46,38 +62,44 @@ public class SampleMeta implements Meta, MetaMap {
                     ENV_COLLECTOR_PHONE = "_sampleEnvironmental.collectorPhone",
                     ENV_LOCATION = "_sampleEnvironmental.location",
                     ENV_LOCATION_ADDRESS_ID = "_sampleEnvironmental.locationAddressId",
+                    
+                    // sample private well
+                    WELL_ID = "_samplePrivateWell.id",
+                    WELL_SAMPLE_ID = "_samplePrivateWell.sampleId",
+                    WELL_ORGANIZATION_ID = "_samplePrivateWell.organizationId",
+                    WELL_REPORT_TO_NAME = "_samplePrivateWell.reportToName",
+                    WELL_REPORT_TO_ADDRESS_ID = "_samplePrivateWell.reportToAddressId",
+                    WELL_LOCATION = "_samplePrivateWell.location",
+                    WELL_LOCATION_ADDRESS_ID = "_samplePrivateWell.locationAddressId",
+                    WELL_OWNER = "_samplePrivateWell.owner",
+                    WELL_COLLECTOR = "_samplePrivateWell.collector",
+                    WELL_WELL_NUMBER = "_samplePrivateWell.wellNumber",
+                    WELL_REPORT_TO_ADDR_ID = "_reportToAddress.id", 
+                    WELL_REPORT_TO_ADDR_MULTIPLE_UNIT = "_reportToAddress.multipleUnit",
+                    WELL_REPORT_TO_ADDR_STREET_ADDRESS = "_reportToAddress.streetAddress", 
+                    WELL_REPORT_TO_ADDR_CITY = "_reportToAddress.city",
+                    WELL_REPORT_TO_ADDR_STATE = "_reportToAddress.state", 
+                    WELL_REPORT_TO_ADDR_ZIP_CODE = "_reportToAddress.zipCode",
+                    WELL_REPORT_TO_ADDR_WORK_PHONE = "_reportToAddress.workPhone", 
+                    WELL_REPORT_TO_ADDR_HOME_PHONE = "_reportToAddress.homePhone",
+                    WELL_REPORT_TO_ADDR_CELL_PHONE = "_reportToAddress.cellPhone", 
+                    WELL_REPORT_TO_ADDR_FAX_PHONE = "_reportToAddress.faxPhone",
+                    WELL_REPORT_TO_ADDR_EMAIL = "_reportToAddress.email", 
+                    WELL_REPORT_TO_ADDR_COUNTRY = "_reportToAddress.country",
 
-                    ID = "_sample.id", 
-                    NEXT_ITEM_SEQUENCE = "_sample.nextItemSequence",
-                    DOMAIN = "_sample.domain", 
-                    ACCESSION_NUMBER = "_sample.accessionNumber",
-                    REVISION = "_sample.revision", 
-                    ORDER_ID = "_sample.orderId",
-                    ENTERED_DATE = "_sample.enteredDate",
-                    RECEIVED_DATE = "_sample.receivedDate",
-                    RECEIVED_BY_ID = "_sample.receivedById",
-                    COLLECTION_DATE = "_sample.collectionDate",
-                    COLLECTION_TIME = "_sample.collectionTime", 
-                    STATUS_ID = "_sample.statusId",
-                    PACKAGE_ID = "_sample.packageId", 
-                    CLIENT_REFERENCE = "_sample.clientReference",
-                    RELEASED_DATE = "_sample.releasedDate",
-
-                    ADDR_ID = "_address.id", 
-                    ADDR_MULTIPLE_UNIT = "_address.multipleUnit",
-                    ADDR_STREET_ADDRESS = "_address.streetAddress", 
-                    ADDR_CITY = "_address.city",
-                    ADDR_STATE = "_address.state", 
-                    ADDR_ZIP_CODE = "_address.zipCode",
-                    ADDR_WORK_PHONE = "_address.workPhone", 
-                    ADDR_HOME_PHONE = "_address.homePhone",
-                    ADDR_CELL_PHONE = "_address.cellPhone", 
-                    ADDR_FAX_PHONE = "_address.faxPhone",
-                    ADDR_EMAIL = "_address.email", 
-                    ADDR_COUNTRY = "_address.country",
-
-                    ITEM_ID = "_sampleItem.id", 
-                    ITEM_SAMPLE_ID = "_sampleItem.sampleId",
+                    LOCATION_ADDR_MULTIPLE_UNIT = "_locationAddress.multipleUnit",
+                    LOCATION_ADDR_STREET_ADDRESS = "_locationAddress.streetAddress", 
+                    LOCATION_ADDR_CITY = "_locationAddress.city",
+                    LOCATION_ADDR_STATE = "_locationAddress.state", 
+                    LOCATION_ADDR_ZIP_CODE = "_locationAddress.zipCode",
+                    LOCATION_ADDR_WORK_PHONE = "_locationAddress.workPhone", 
+                    LOCATION_ADDR_HOME_PHONE = "_locationAddress.homePhone",
+                    LOCATION_ADDR_CELL_PHONE = "_locationAddress.cellPhone", 
+                    LOCATION_ADDR_FAX_PHONE = "_locationAddress.faxPhone",
+                    LOCATION_ADDR_EMAIL = "_locationAddress.email", 
+                    LOCATION_ADDR_COUNTRY = "_locationAddress.country",
+                    
+                    ITEM_ID = "_sampleItem.id", ITEM_SAMPLE_ID = "_sampleItem.sampleId",
                     ITEM_SAMPLE_ITEM_ID = "_sampleItem.sampleItemId",
                     ITEM_ITEM_SEQUENCE = "_sampleItem.itemSequence",
                     ITEM_TYPE_OF_SAMPLE_ID = "_sampleItem.typeOfSampleId",
@@ -112,8 +134,7 @@ public class SampleMeta implements Meta, MetaMap {
                     ANALYSISQA_TYPE_ID = "_analysisQaevent.typeId",
                     ANALYSISQA_IS_BILLABLE = "_analysisQaevent.isBillable",
 
-                    ANALYSISSUBQA_ID = "_aQaevent.id", 
-                    ANALYSISSUBQA_NAME = "_aQaevent.name",
+                    ANALYSISSUBQA_ID = "_aQaevent.id", ANALYSISSUBQA_NAME = "_aQaevent.name",
                     ANALYSISSUBQA_DESCRIPTION = "_aQaevent.description",
                     ANALYSISSUBQA_TEST_ID = "_aQaevent.testId",
                     ANALYSISSUBQA_TYPE_ID = "_aQaevent.typeId",
@@ -127,8 +148,7 @@ public class SampleMeta implements Meta, MetaMap {
                     SAMPLEQA_TYPE_ID = "_sampleQaevent.typeId",
                     SAMPLEQA_IS_BILLABLE = "_sampleQaevent.isBillable",
 
-                    SAMPLESUBQA_ID = "_sQaevent.id", 
-                    SAMPLESUBQA_NAME = "_sQaevent.name",
+                    SAMPLESUBQA_ID = "_sQaevent.id", SAMPLESUBQA_NAME = "_sQaevent.name",
                     SAMPLESUBQA_DESCRIPTION = "_sQaevent.description",
                     SAMPLESUBQA_TEST_ID = "_sQaevent.testId",
                     SAMPLESUBQA_TYPE_ID = "_sQaevent.typeId",
@@ -143,16 +163,29 @@ public class SampleMeta implements Meta, MetaMap {
 
                     ORG_ID = "_organization.id",
                     ORG_PARENT_ORGANIZATION_ID = "_organization.parentOrganizationId",
-                    ORG_NAME = "_organization.name", ORG_IS_ACTIVE = "_organization.isActive",
+                    ORG_NAME = "_organization.name", 
+                    ORG_IS_ACTIVE = "_organization.isActive",
                     ORG_ADDRESS_ID = "_organization.addressId",
+                    
+                    ADDR_ID = "_address.id", 
+                    ADDR_MULTIPLE_UNIT = "_address.multipleUnit",
+                    ADDR_STREET_ADDRESS = "_address.streetAddress", 
+                    ADDR_CITY = "_address.city",
+                    ADDR_STATE = "_address.state", 
+                    ADDR_ZIP_CODE = "_address.zipCode",
+                    ADDR_WORK_PHONE = "_address.workPhone", 
+                    ADDR_HOME_PHONE = "_address.homePhone",
+                    ADDR_CELL_PHONE = "_address.cellPhone", 
+                    ADDR_FAX_PHONE = "_address.faxPhone",
+                    ADDR_EMAIL = "_address.email", 
+                    ADDR_COUNTRY = "_address.country",
 
                     SAMPLE_PROJECT_ID = "_sampleProject.id",
                     SAMPLE_PROJECT_SAMPLE_ID = "_sampleProject.sampleId",
                     SAMPLE_PROJECT_PROJECT_ID = "_sampleProject.projectId",
                     SAMPLE_PROJECT_IS_PERMANENT = "_sampleProject.isPermanent",
 
-                    PROJECT_ID = "_project.id", 
-                    PROJECT_NAME = "_project.name",
+                    PROJECT_ID = "_project.id", PROJECT_NAME = "_project.name",
                     PROJECT_DESCRIPTION = "_project.description",
                     PROJECT_STARTED_DATE = "_project.startedDate",
                     PROJECT_COMPLETED_DATE = "_project.completedDate",
@@ -161,84 +194,80 @@ public class SampleMeta implements Meta, MetaMap {
                     PROJECT_OWNER_ID = "_project.ownerId",
                     PROJECT_SCRIPTLET_ID = "_project.scriptletId",
 
-                    ANALYSIS_TEST_NAME = "_test.name", 
-                    ANALYSIS_SECTION_NAME = "_section.name";
-    
+                    ANALYSIS_TEST_NAME = "_test.name", ANALYSIS_SECTION_NAME = "_section.name";
+
     private static HashSet<String> names;
-    
+
     static {
-        names = new HashSet<String>(Arrays.asList(ENV_ID, ENV_SAMPLE_ID, ENV_IS_HAZARDOUS, ENV_PRIORITY,
-                                                  ENV_DESCRIPTION, ENV_COLLECTOR, ENV_COLLECTOR_PHONE,
-                                                  ENV_LOCATION, ENV_LOCATION_ADDRESS_ID, ID,
-                                                  NEXT_ITEM_SEQUENCE, DOMAIN, ACCESSION_NUMBER, REVISION,
-                                                  ORDER_ID, ENTERED_DATE, RECEIVED_DATE, RECEIVED_BY_ID,
-                                                  COLLECTION_DATE, COLLECTION_TIME, STATUS_ID, PACKAGE_ID, 
-                                                  CLIENT_REFERENCE, RELEASED_DATE, ADDR_ID, ADDR_MULTIPLE_UNIT,
-                                                  ADDR_STREET_ADDRESS, ADDR_CITY, ADDR_STATE, ADDR_ZIP_CODE, 
-                                                  ADDR_WORK_PHONE, ADDR_HOME_PHONE, ADDR_CELL_PHONE, ADDR_FAX_PHONE,
-                                                  ADDR_EMAIL, ADDR_COUNTRY, ITEM_ID, ITEM_SAMPLE_ID, 
-                                                  ITEM_SAMPLE_ITEM_ID, ITEM_ITEM_SEQUENCE, ITEM_TYPE_OF_SAMPLE_ID,
-                                                  ITEM_SOURCE_OF_SAMPLE_ID, ITEM_SOURCE_OTHER, ITEM_CONTAINER_ID,
-                                                  ITEM_CONTAINER_REFERENCE, ITEM_QUANTITY, ITEM_UNIT_OF_MEASURE_ID,
-                                                  ANALYSIS_ID, ANALYSIS_SAMPLE_ITEM_ID, ANALYSIS_REVISION,
-                                                  ANALYSIS_TEST_ID, ANALYSIS_SECTION_ID, ANALYSIS_PRE_ANALYSIS_ID,
-                                                  ANALYSIS_PARENT_ANALYSIS_ID, ANALYSIS_PARENT_RESULT_ID,
-                                                  ANALYSIS_IS_REPORTABLE, ANALYSIS_UNIT_OF_MEASURE_ID, ANALYSIS_STATUS_ID,
-                                                  ANALYSIS_AVAILABLE_DATE, ANALYSIS_STARTED_DATE, ANALYSIS_COMPLETED_DATE,
-                                                  ANALYSIS_RELEASED_DATE, ANALYSIS_PRINTED_DATE, ANALYSISQA_ID,
-                                                  ANALYSISQA_ANALYSIS_ID, ANALYSISQA_QAEVENT_ID, ANALYSISQA_TYPE_ID,
-                                                  ANALYSISQA_IS_BILLABLE, ANALYSISSUBQA_ID, ANALYSISSUBQA_NAME, 
-                                                  ANALYSISSUBQA_DESCRIPTION, ANALYSISSUBQA_TEST_ID, ANALYSISSUBQA_TYPE_ID,
-                                                  ANALYSISSUBQA_IS_BILLABLE, ANALYSISSUBQA_REPORTING_SEQUENCE,
-                                                  ANALYSISSUBQA_REPORTING_TEXT, SAMPLEQA_ID, SAMPLEQA_SAMPLE_ID,
-                                                  SAMPLEQA_QAEVENT_ID, SAMPLEQA_TYPE_ID,SAMPLEQA_IS_BILLABLE,
-                                                  SAMPLESUBQA_ID, SAMPLESUBQA_NAME, SAMPLESUBQA_DESCRIPTION,
-                                                  SAMPLESUBQA_TEST_ID, SAMPLESUBQA_TYPE_ID, SAMPLESUBQA_IS_BILLABLE,
-                                                  SAMPLESUBQA_REPORTING_SEQUENCE, SAMPLESUBQA_REPORTING_TEXT,
-                                                  SAMPLE_ORG_ID, SAMPLE_ORG_SAMPLE_ID, SAMPLE_ORG_ORGANIZATION_ID,
-                                                  SAMPLE_ORG_TYPE_ID, ORG_ID, ORG_PARENT_ORGANIZATION_ID,
-                                                  ORG_NAME, ORG_IS_ACTIVE, ORG_ADDRESS_ID, SAMPLE_PROJECT_ID,
-                                                  SAMPLE_PROJECT_SAMPLE_ID, SAMPLE_PROJECT_PROJECT_ID,
-                                                  SAMPLE_PROJECT_IS_PERMANENT, PROJECT_ID, PROJECT_NAME, PROJECT_DESCRIPTION,
-                                                  PROJECT_STARTED_DATE, PROJECT_COMPLETED_DATE, PROJECT_IS_ACTIVE,
-                                                  PROJECT_REFERENCE_TO, PROJECT_OWNER_ID, PROJECT_SCRIPTLET_ID,
+        names = new HashSet<String>(Arrays.asList(ID, NEXT_ITEM_SEQUENCE, DOMAIN, ACCESSION_NUMBER,
+                                                  REVISION, ORDER_ID, ENTERED_DATE, RECEIVED_DATE,
+                                                  RECEIVED_BY_ID, COLLECTION_DATE, COLLECTION_TIME,
+                                                  STATUS_ID, PACKAGE_ID, CLIENT_REFERENCE,
+                                                  RELEASED_DATE,  ENV_ID, ENV_SAMPLE_ID,
+                                                  ENV_IS_HAZARDOUS, ENV_PRIORITY, ENV_DESCRIPTION,
+                                                  ENV_COLLECTOR, ENV_COLLECTOR_PHONE, ENV_LOCATION,
+                                                  ENV_LOCATION_ADDRESS_ID, ENV_LOCATION_ADDRESS_ID, 
+                                                  LOCATION_ADDR_MULTIPLE_UNIT, LOCATION_ADDR_STREET_ADDRESS, 
+                                                  LOCATION_ADDR_CITY, LOCATION_ADDR_STATE,
+                                                  LOCATION_ADDR_ZIP_CODE, LOCATION_ADDR_WORK_PHONE, 
+                                                  LOCATION_ADDR_HOME_PHONE, LOCATION_ADDR_CELL_PHONE, 
+                                                  LOCATION_ADDR_FAX_PHONE, LOCATION_ADDR_EMAIL,
+                                                  LOCATION_ADDR_COUNTRY, WELL_ID, WELL_SAMPLE_ID,
+                                                  WELL_ORGANIZATION_ID, WELL_REPORT_TO_NAME,
+                                                  WELL_REPORT_TO_ADDRESS_ID, WELL_LOCATION,
+                                                  WELL_LOCATION_ADDRESS_ID, WELL_OWNER,
+                                                  WELL_COLLECTOR, WELL_WELL_NUMBER, 
+                                                  WELL_REPORT_TO_ADDR_ID, WELL_REPORT_TO_ADDR_MULTIPLE_UNIT, 
+                                                  WELL_REPORT_TO_ADDR_STREET_ADDRESS, WELL_REPORT_TO_ADDR_CITY,
+                                                  WELL_REPORT_TO_ADDR_STATE, WELL_REPORT_TO_ADDR_ZIP_CODE,
+                                                  WELL_REPORT_TO_ADDR_WORK_PHONE, WELL_REPORT_TO_ADDR_HOME_PHONE,
+                                                  WELL_REPORT_TO_ADDR_CELL_PHONE, WELL_REPORT_TO_ADDR_FAX_PHONE,
+                                                  WELL_REPORT_TO_ADDR_EMAIL, WELL_REPORT_TO_ADDR_COUNTRY,
+                                                  ITEM_ID, ITEM_SAMPLE_ID, ITEM_SAMPLE_ITEM_ID,
+                                                  ITEM_ITEM_SEQUENCE, ITEM_TYPE_OF_SAMPLE_ID,
+                                                  ITEM_SOURCE_OF_SAMPLE_ID, ITEM_SOURCE_OTHER,
+                                                  ITEM_CONTAINER_ID, ITEM_CONTAINER_REFERENCE,
+                                                  ITEM_QUANTITY, ITEM_UNIT_OF_MEASURE_ID,
+                                                  ANALYSIS_ID, ANALYSIS_SAMPLE_ITEM_ID,
+                                                  ANALYSIS_REVISION, ANALYSIS_TEST_ID,
+                                                  ANALYSIS_SECTION_ID, ANALYSIS_PRE_ANALYSIS_ID,
+                                                  ANALYSIS_PARENT_ANALYSIS_ID,
+                                                  ANALYSIS_PARENT_RESULT_ID,
+                                                  ANALYSIS_IS_REPORTABLE,
+                                                  ANALYSIS_UNIT_OF_MEASURE_ID, ANALYSIS_STATUS_ID,
+                                                  ANALYSIS_AVAILABLE_DATE, ANALYSIS_STARTED_DATE,
+                                                  ANALYSIS_COMPLETED_DATE, ANALYSIS_RELEASED_DATE,
+                                                  ANALYSIS_PRINTED_DATE, ANALYSISQA_ID,
+                                                  ANALYSISQA_ANALYSIS_ID, ANALYSISQA_QAEVENT_ID,
+                                                  ANALYSISQA_TYPE_ID, ANALYSISQA_IS_BILLABLE,
+                                                  ANALYSISSUBQA_ID, ANALYSISSUBQA_NAME,
+                                                  ANALYSISSUBQA_DESCRIPTION, ANALYSISSUBQA_TEST_ID,
+                                                  ANALYSISSUBQA_TYPE_ID, ANALYSISSUBQA_IS_BILLABLE,
+                                                  ANALYSISSUBQA_REPORTING_SEQUENCE,
+                                                  ANALYSISSUBQA_REPORTING_TEXT, SAMPLEQA_ID,
+                                                  SAMPLEQA_SAMPLE_ID, SAMPLEQA_QAEVENT_ID,
+                                                  SAMPLEQA_TYPE_ID, SAMPLEQA_IS_BILLABLE,
+                                                  SAMPLESUBQA_ID, SAMPLESUBQA_NAME,
+                                                  SAMPLESUBQA_DESCRIPTION, SAMPLESUBQA_TEST_ID,
+                                                  SAMPLESUBQA_TYPE_ID, SAMPLESUBQA_IS_BILLABLE,
+                                                  SAMPLESUBQA_REPORTING_SEQUENCE,
+                                                  SAMPLESUBQA_REPORTING_TEXT, SAMPLE_ORG_ID,
+                                                  SAMPLE_ORG_SAMPLE_ID, SAMPLE_ORG_ORGANIZATION_ID,
+                                                  SAMPLE_ORG_TYPE_ID, ORG_ID,
+                                                  ORG_PARENT_ORGANIZATION_ID, ORG_NAME,
+                                                  ORG_IS_ACTIVE, ORG_ADDRESS_ID, 
+                                                  ADDR_ID, ADDR_MULTIPLE_UNIT, ADDR_STREET_ADDRESS,
+                                                  ADDR_CITY, ADDR_STATE, ADDR_ZIP_CODE,
+                                                  ADDR_WORK_PHONE, ADDR_HOME_PHONE, ADDR_CELL_PHONE,
+                                                  ADDR_FAX_PHONE, ADDR_EMAIL, ADDR_COUNTRY,
+                                                  SAMPLE_PROJECT_SAMPLE_ID,
+                                                  SAMPLE_PROJECT_PROJECT_ID,
+                                                  SAMPLE_PROJECT_IS_PERMANENT, PROJECT_ID,
+                                                  PROJECT_NAME, PROJECT_DESCRIPTION,
+                                                  PROJECT_STARTED_DATE, PROJECT_COMPLETED_DATE,
+                                                  PROJECT_IS_ACTIVE, PROJECT_REFERENCE_TO,
+                                                  PROJECT_OWNER_ID, PROJECT_SCRIPTLET_ID,
                                                   ANALYSIS_TEST_NAME, ANALYSIS_SECTION_NAME));
-    }
-    
-    public static String getEnvId() {
-        return ENV_ID;
-    }
-
-    public static String getEnvSampleId() {
-        return ENV_SAMPLE_ID;
-    }
-
-    public static String getEnvIsHazardous() {
-        return ENV_IS_HAZARDOUS;
-    }
-
-    public static String getEnvPriority() {
-        return ENV_PRIORITY;
-    }
-
-    public static String getEnvDescription() {
-        return ENV_DESCRIPTION;
-    }
-
-    public static String getEnvCollector() {
-        return ENV_COLLECTOR;
-    }
-
-    public static String getEnvCollectorPhone() {
-        return ENV_COLLECTOR_PHONE;
-    }
-
-    public static String getEnvLocation() {
-        return ENV_LOCATION;
-    }
-
-    public static String getEnvLocationAddressId() {
-        return ENV_LOCATION_ADDRESS_ID;
     }
 
     public static String getId() {
@@ -260,7 +289,7 @@ public class SampleMeta implements Meta, MetaMap {
     public static String getRevision() {
         return REVISION;
     }
-    
+
     public static String getOrderId() {
         return ORDER_ID;
     }
@@ -301,54 +330,174 @@ public class SampleMeta implements Meta, MetaMap {
         return RELEASED_DATE;
     }
 
-    public static String getAddrId() {
-        return ADDR_ID;
+    public static String getEnvLocationAddrId() {
+        return ENV_LOCATION_ADDRESS_ID;
     }
 
-    public static String getAddrMultipleUnit() {
-        return ADDR_MULTIPLE_UNIT;
+    public static String getLocationAddrMultipleUnit() {
+        return LOCATION_ADDR_MULTIPLE_UNIT;
     }
 
-    public static String getAddrStreetAddress() {
-        return ADDR_STREET_ADDRESS;
+    public static String getLocationAddrStreetAddress() {
+        return LOCATION_ADDR_STREET_ADDRESS;
     }
 
-    public static String getAddrCity() {
-        return ADDR_CITY;
+    public static String getLocationAddrCity() {
+        return LOCATION_ADDR_CITY;
     }
 
-    public static String getAddrState() {
-        return ADDR_STATE;
+    public static String getLocationAddrState() {
+        return LOCATION_ADDR_STATE;
     }
 
-    public static String getAddrZipCode() {
-        return ADDR_ZIP_CODE;
+    public static String getLocationAddrZipCode() {
+        return LOCATION_ADDR_ZIP_CODE;
     }
 
-    public static String getAddrWorkPhone() {
-        return ADDR_WORK_PHONE;
+    public static String getLocationAddrWorkPhone() {
+        return LOCATION_ADDR_WORK_PHONE;
     }
 
-    public static String getAddrHomePhone() {
-        return ADDR_HOME_PHONE;
+    public static String getLocationAddrHomePhone() {
+        return LOCATION_ADDR_HOME_PHONE;
     }
 
-    public static String getAddrCellPhone() {
-        return ADDR_CELL_PHONE;
+    public static String getLocationAddrCellPhone() {
+        return LOCATION_ADDR_CELL_PHONE;
     }
 
-    public static String getAddrFaxPhone() {
-        return ADDR_FAX_PHONE;
+    public static String getLocationAddrFaxPhone() {
+        return LOCATION_ADDR_FAX_PHONE;
     }
 
-    public static String getAddrEmail() {
-        return ADDR_EMAIL;
+    public static String getLocationAddrEmail() {
+        return LOCATION_ADDR_EMAIL;
     }
 
-    public static String getAddrCountry() {
-        return ADDR_COUNTRY;
+    public static String getLocationAddrCountry() {
+        return LOCATION_ADDR_COUNTRY;
     }
 
+    public static String getEnvId() {
+        return ENV_ID;
+    }
+
+    public static String getEnvSampleId() {
+        return ENV_SAMPLE_ID;
+    }
+
+    public static String getEnvIsHazardous() {
+        return ENV_IS_HAZARDOUS;
+    }
+
+    public static String getEnvPriority() {
+        return ENV_PRIORITY;
+    }
+
+    public static String getEnvDescription() {
+        return ENV_DESCRIPTION;
+    }
+
+    public static String getEnvCollector() {
+        return ENV_COLLECTOR;
+    }
+
+    public static String getEnvCollectorPhone() {
+        return ENV_COLLECTOR_PHONE;
+    }
+
+    public static String getEnvLocation() {
+        return ENV_LOCATION;
+    }
+
+    public static String getEnvLocationAddressId() {
+        return ENV_LOCATION_ADDRESS_ID;
+    }
+
+    public static String getWellId() {
+        return WELL_ID;
+    }
+
+    public static String getWellSampleId() {
+        return WELL_SAMPLE_ID;
+    }
+
+    public static String getWellOrganizationId() {
+        return WELL_ORGANIZATION_ID;
+    }
+
+    public static String getWellReportToName() {
+        return WELL_REPORT_TO_NAME;
+    }
+
+    public static String getWellReportToAddressId() {
+        return WELL_REPORT_TO_ADDRESS_ID;
+    }
+
+    public static String getWellLocation() {
+        return WELL_LOCATION;
+    }
+
+    public static String getWellLocationAddressId() {
+        return WELL_LOCATION_ADDRESS_ID;
+    }
+
+    public static String getWellOwner() {
+        return WELL_OWNER;
+    }
+
+    public static String getWellCollector() {
+        return WELL_COLLECTOR;
+    }
+
+    public static String getWellWellNumber() {
+        return WELL_WELL_NUMBER;
+    }
+    
+    public static String getWellReportToAddressMultipleUnit(){
+     return WELL_REPORT_TO_ADDR_MULTIPLE_UNIT;   
+    }
+
+    public static String getWellReportToAddressStreetAddress(){
+        return WELL_REPORT_TO_ADDR_STREET_ADDRESS;
+    }
+
+    public static String getWellReportToAddressCity(){
+        return WELL_REPORT_TO_ADDR_CITY;
+    }
+    
+    public static String getWellReportToAddressState(){
+        return WELL_REPORT_TO_ADDR_STATE;
+    }
+    
+    public static String getWellReportToAddressZipCode(){
+        return WELL_REPORT_TO_ADDR_ZIP_CODE;
+    }
+    
+    public static String getWellReportToAddressWorkPhone(){
+        return WELL_REPORT_TO_ADDR_WORK_PHONE;
+    }
+
+    public static String getWellReportToAddressHomePhone(){
+        return WELL_REPORT_TO_ADDR_HOME_PHONE;
+    }
+
+    public static String getWellReportToAddressCellPhone(){
+        return WELL_REPORT_TO_ADDR_CELL_PHONE;
+    }
+
+    public static String getWellReportToAddressFaxPhone(){
+        return WELL_REPORT_TO_ADDR_FAX_PHONE;
+    }
+    
+    public static String getWellReportToAddressEmail(){
+        return WELL_REPORT_TO_ADDR_EMAIL;
+    }
+    
+    public static String getWellReportToAddressCountry(){
+        return WELL_REPORT_TO_ADDR_COUNTRY;
+    }
+    
     public static String getItemId() {
         return ITEM_ID;
     }
@@ -456,7 +605,7 @@ public class SampleMeta implements Meta, MetaMap {
     public static String getAnalysisPrintedDate() {
         return ANALYSIS_PRINTED_DATE;
     }
-    
+
     public static String getAnalysisSamplePrep() {
         return ANALYSIS_SAMPLE_PREP;
     }
@@ -592,7 +741,7 @@ public class SampleMeta implements Meta, MetaMap {
     public static String getOrgName() {
         return ORG_NAME;
     }
-    
+
     public static String getBillTo() {
         return "billTo";
     }
@@ -604,7 +753,55 @@ public class SampleMeta implements Meta, MetaMap {
     public static String getOrgAddressId() {
         return ORG_ADDRESS_ID;
     }
+    
+    public static String getAddressId(){
+        return ADDR_ID;
+    }
+    
+    public static String getAddressMultipleUnit(){
+     return ADDR_MULTIPLE_UNIT;   
+    }
 
+    public static String getAddressStreetAddress(){
+        return ADDR_STREET_ADDRESS;
+    }
+
+    public static String getAddressCity(){
+        return ADDR_CITY;
+    }
+    
+    public static String getAddressState(){
+        return ADDR_STATE;
+    }
+    
+    public static String getAddressZipCode(){
+        return ADDR_ZIP_CODE;
+    }
+    
+    public static String getAddressWorkPhone(){
+        return ADDR_WORK_PHONE;
+    }
+
+    public static String getAddressHomePhone(){
+        return ADDR_HOME_PHONE;
+    }
+
+    public static String getAddressCellPhone(){
+        return ADDR_CELL_PHONE;
+    }
+
+    public static String getAddressFaxPhone(){
+        return ADDR_FAX_PHONE;
+    }
+    
+    public static String getAddressEmail(){
+        return ADDR_EMAIL;
+    }
+    
+    public static String getAddressCountry(){
+        return ADDR_COUNTRY;
+    }
+    
     public static String getSampleProjectId() {
         return SAMPLE_PROJECT_ID;
     }
@@ -660,7 +857,7 @@ public class SampleMeta implements Meta, MetaMap {
     public static String getAnalysisTestName() {
         return ANALYSIS_TEST_NAME;
     }
-    
+
     public static String getAnalysisMethodName() {
         return "method";
     }
@@ -674,28 +871,43 @@ public class SampleMeta implements Meta, MetaMap {
     }
 
     public String buildFrom(String where) {
-        String from = "SampleEnvironmental _sampleEnvironmental ";
+        String from = "Sample _sample ";
 
-        from += ", IN (_sampleEnvironmental.sample) _sample ";
+        if (where.indexOf("sampleEnvironmental.") > -1) {
+            from += ", IN (_sample.sampleEnvironmental) _sampleEnvironmental ";
+
+            if (where.indexOf("locationAddress.") > -1)
+                from += ", IN (_sampleEnvironmental.locationAddress) _locationAddress ";
+        }
         
-        if(where.indexOf("address.") > -1)
-            from += ", IN (_sampleEnvironmentalse.address) _address ";
-        
-        if(where.indexOf("sampleProject.") > -1)
-            from += ", IN (_sample.sampleProject) _sampleProject ";
+        if (where.indexOf("samplePrivateWell.") > -1) {
+            from += ", IN (_sample.samplePrivateWell) _samplePrivateWell ";
+
+            if (where.indexOf("locationAddress.") > -1)
+                from += ", IN (_samplePrivateWell.locationAddress) _locationAddress ";
             
-        if(where.indexOf("sampleOrganization.") > -1)
+            if (where.indexOf("organization.") > -1){
+                from += ", IN (_samplePrivateWell.organizationlocationAddress) _organization ";
+                from += ", IN (_organization.address) _address ";
+                from += ", IN (_samplePrivateWell.reportToAddress) _reportToAddress ";
+            }
+        }
+
+        if (where.indexOf("sampleProject.") > -1)
+            from += ", IN (_sample.sampleProject) _sampleProject ";
+
+        if (where.indexOf("sampleOrganization.") > -1)
             from += ", IN (_sample.sampleOrganization) _sampleOrganization ";
-        
-        if(where.indexOf("sampleItem.") > -1 || where.indexOf("analysis.") > -1)
+
+        if (where.indexOf("sampleItem.") > -1 || where.indexOf("analysis.") > -1)
             from += ", IN (_sample.sampleItem) _sampleItem";
-        
-        if(where.indexOf("analysis.") > -1)
+
+        if (where.indexOf("analysis.") > -1)
             from += ", IN (_sampleItem.analysis) _analysis ";
-        
-        if(where.indexOf("sampleQAEvent.") > -1)
+
+        if (where.indexOf("sampleQAEvent.") > -1)
             from += ", IN (_sampleItem.sampleQAEvent) sampleQAEvent ";
-        
+
         return from;
-    }  
-}   
+    }
+}

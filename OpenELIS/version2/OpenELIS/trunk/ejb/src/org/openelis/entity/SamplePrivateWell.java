@@ -88,8 +88,16 @@ public class SamplePrivateWell implements Auditable, Cloneable {
     private Integer             wellNumber;
     
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "address_id", insertable = false, updatable = false)
-    private Address             address;
+    @JoinColumn(name = "location_address_id", insertable = false, updatable = false)
+    private Address             locationAddress;
+    
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "report_to_address_id", insertable = false, updatable = false)
+    private Address             reportToAddress;
+    
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id", insertable = false, updatable = false)
+    private Organization             organization;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sample_id", insertable = false, updatable = false)
@@ -188,12 +196,12 @@ public class SamplePrivateWell implements Auditable, Cloneable {
             this.wellNumber = wellNumber;
     }
 
-    public Address getAddress() {
-        return address;
+    public Address getLocationAddress() {
+        return locationAddress;
     }
 
-    public void setAddress(Address address) {
-        this.address = address;
+    public void setLocationAddress(Address locationAddress) {
+        this.locationAddress = locationAddress;
     }
 
     public Sample getSample() {
@@ -231,5 +239,21 @@ public class SamplePrivateWell implements Auditable, Cloneable {
                  .setField("well_number", wellNumber, original.wellNumber);
 
         return audit;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+
+    public Address getReportToAddress() {
+        return reportToAddress;
+    }
+
+    public void setReportToAddress(Address reportToAddress) {
+        this.reportToAddress = reportToAddress;
     }    
 }
