@@ -110,6 +110,13 @@ public class AnalysisManager implements RPC, HasNotesInt {
         if (tmpList.analysis.getId() != null)
             deletedList.add(tmpList);
     }
+    
+    protected void removeAnalysisAtNoDelete(int index){
+        if (items == null || index >= items.size())
+            return;
+
+        items.remove(index);
+    }
 
     public int getIndex(AnalysisViewDO aDO) {
         for (int i = 0; i < count(); i++ )
@@ -117,6 +124,20 @@ public class AnalysisManager implements RPC, HasNotesInt {
                 return i;
 
         return -1;
+    }
+    
+    public void cancelAnalysisAt(int index){
+        AnalysisViewDO anDO = items.get(index).analysis;
+        Integer analysisCancelledId = null;
+        
+        try{
+            proxy().getIdFromSystemName("analysis_cancelled");
+            
+            anDO.setStatusId(analysisCancelledId);
+            anDO.setPreAnalysisId(null);
+        }catch(Exception e){
+            return;
+        }
     }
 
     // qaevents
