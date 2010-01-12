@@ -27,6 +27,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.common.NotFoundException;
@@ -173,6 +174,21 @@ public class SampleItemManager implements RPC {
             item.analysis = AnalysisManager.getInstance();
     
         return item.analysis;
+    }
+    
+    public void moveAnalysis(SampleItemViewDO fromSampleItemDO, SampleItemViewDO toSampleItemDO, AnalysisViewDO analysisDO) throws Exception {
+        int fromIndex, toIndex, anIndex;
+        AnalysisManager fromMan, toMan;
+        
+        fromIndex = getIndex(fromSampleItemDO);
+        toIndex = getIndex(toSampleItemDO);
+        
+        fromMan = getAnalysisAt(fromIndex);
+        toMan = getAnalysisAt(toIndex);
+        
+        anIndex = fromMan.getIndex(analysisDO);
+        fromMan.removeAnalysisAtNoDelete(anIndex);
+        toMan.addAnalysis(analysisDO);
     }
     
     public int getIndex(SampleItemViewDO itemDO){

@@ -61,7 +61,7 @@ import org.openelis.utils.Auditable;
                 "item.sampleItemId, item.itemSequence, item.typeOfSampleId, item.sourceOfSampleId, item.sourceOther, item.containerId, " +
                 "item.containerReference, item.quantity, item.unitOfMeasureId, typeDict.entry, sourceDict.entry, contDict.entry) from SampleItem item " + 
                 " LEFT JOIN item.sourceDict sourceDict LEFT JOIN item.typeDict typeDict LEFT JOIN " +
-                " item.containerDict contDict where item.sampleId = :id")})
+                " item.containerDict contDict where item.sampleId = :id order by item.itemSequence ")})
                 
 @Entity
 @Table(name="sample_item")

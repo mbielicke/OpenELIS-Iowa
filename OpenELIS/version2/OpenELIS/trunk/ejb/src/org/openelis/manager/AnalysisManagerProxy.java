@@ -31,10 +31,13 @@ import java.util.HashMap;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalysisLocal;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.manager.AnalysisManager.AnalysisListItem;
+import org.openelis.persistence.EJBFactory;
 
 public class AnalysisManagerProxy {
     public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
@@ -273,6 +276,13 @@ public class AnalysisManagerProxy {
         
     }
     
+    public Integer getIdFromSystemName(String systemName) throws Exception{
+        DictionaryLocal dl = getDictionaryLocal();
+        DictionaryDO dictDO = dl.fetchBySystemName(systemName);
+        
+        return dictDO.getId();
+    }
+    
     private AnalysisLocal getAnalysisLocal(){
         try{
             InitialContext ctx = new InitialContext();
@@ -281,5 +291,9 @@ public class AnalysisManagerProxy {
              System.out.println(e.getMessage());
              return null;
         }
+    }
+    
+    private static DictionaryLocal getDictionaryLocal(){
+        return (DictionaryLocal)EJBFactory.lookup("openelis/DictionaryBean/local");
     }
 }

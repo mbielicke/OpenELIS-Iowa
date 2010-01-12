@@ -748,9 +748,8 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
         // update the analysis manager
         index = bundle.analysisManager.getIndex(bundle.analysisTestDO);
         anDO = bundle.analysisManager.getAnalysisAt(index);
-        anDO.setStatusId(analysisCancelledId);
-        anDO.setPreAnalysisId(null);
-
+        bundle.analysisManager.cancelAnalysisAt(index);
+        
         // cleanup the other rows
         cleanupTestsWithPrep(anDO.getId());
 

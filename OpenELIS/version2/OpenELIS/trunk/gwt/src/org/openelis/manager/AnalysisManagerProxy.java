@@ -104,4 +104,8 @@ public class AnalysisManagerProxy {
                 man.getStorageAt(i).validate(errorsList);
         }
     }
+    
+    public Integer getIdFromSystemName(String systemName) throws Exception {
+        return DictionaryCache.getIdFromSystemName(systemName);
+    }
 }
