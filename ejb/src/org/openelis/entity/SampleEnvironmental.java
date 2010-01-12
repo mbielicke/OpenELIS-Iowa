@@ -53,7 +53,7 @@ import org.openelis.utils.Auditable;
                 query = "select new org.openelis.domain.SampleEnvironmentalDO(s.id,s.sampleId,s.isHazardous, s.priority, "+
                         "s.description,s.collector,s.collectorPhone,s.location,s.locationAddressId,a.multipleUnit," +
                         "a.streetAddress,a.city,a.state,a.zipCode,a.country)"
-                      + " from SampleEnvironmental s LEFT JOIN s.address a where s.sampleId = :id")})
+                      + " from SampleEnvironmental s LEFT JOIN s.locationAddress a where s.sampleId = :id")})
 @Entity
 @Table(name = "sample_environmental")
 @EntityListeners( {AuditUtil.class})
@@ -90,7 +90,7 @@ public class SampleEnvironmental implements Auditable, Cloneable {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "location_address_id", insertable = false, updatable = false)
-    private Address             address;
+    private Address             locationAddress;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sample_id", insertable = false, updatable = false)
@@ -180,12 +180,12 @@ public class SampleEnvironmental implements Auditable, Cloneable {
             this.locationAddressId = locationAddressId;
     }
 
-    public Address getAddress() {
-        return address;
+    public Address getLocationAddress() {
+        return locationAddress;
     }
 
-    public void setAddress(Address address) {
-        this.address = address;
+    public void setLocationAddress(Address locationAddress) {
+        this.locationAddress = locationAddress;
     }
 
     public Sample getSample() {

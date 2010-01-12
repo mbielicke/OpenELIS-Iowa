@@ -88,7 +88,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
         });
 
-        final TextBox multipleUnit = (TextBox)def.getWidget(SampleMeta.getAddrMultipleUnit());
+        final TextBox multipleUnit = (TextBox)def.getWidget(SampleMeta.getLocationAddrMultipleUnit());
         addScreenHandler(multipleUnit, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 multipleUnit.setValue(envDO.getLocationAddressDO().getMultipleUnit());
@@ -104,7 +104,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
         });
 
-        final TextBox streetAddress = (TextBox)def.getWidget(SampleMeta.getAddrStreetAddress());
+        final TextBox streetAddress = (TextBox)def.getWidget(SampleMeta.getLocationAddrStreetAddress());
         addScreenHandler(streetAddress, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 streetAddress.setValue(envDO.getLocationAddressDO().getStreetAddress());
@@ -120,7 +120,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
         });
 
-        final TextBox city = (TextBox)def.getWidget(SampleMeta.getAddrCity());
+        final TextBox city = (TextBox)def.getWidget(SampleMeta.getLocationAddrCity());
         addScreenHandler(city, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 city.setValue(envDO.getLocationAddressDO().getCity());
@@ -136,7 +136,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
         });
 
-        state = (Dropdown)def.getWidget(SampleMeta.getAddrState());
+        state = (Dropdown)def.getWidget(SampleMeta.getLocationAddrState());
         addScreenHandler(state, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 state.setSelection(envDO.getLocationAddressDO().getState());
@@ -152,7 +152,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
         });
 
-        final TextBox zipCode = (TextBox)def.getWidget(SampleMeta.getAddrZipCode());
+        final TextBox zipCode = (TextBox)def.getWidget(SampleMeta.getLocationAddrZipCode());
         addScreenHandler(zipCode, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 zipCode.setValue(envDO.getLocationAddressDO().getZipCode());
@@ -168,7 +168,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
         });
 
-        country = (Dropdown)def.getWidget(SampleMeta.getAddrCountry());
+        country = (Dropdown)def.getWidget(SampleMeta.getLocationAddrCountry());
         addScreenHandler(country, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 country.setSelection(envDO.getLocationAddressDO().getCountry());
