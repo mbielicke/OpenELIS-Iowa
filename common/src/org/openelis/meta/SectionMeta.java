@@ -54,45 +54,45 @@ public class SectionMeta implements Meta, MetaMap {
                                                   DESCRIPTION,IS_EXTERNAL,ORGANIZATION_ID,
                                                   PARENT_SECTION_NAME,ORGANIZATION_NAME));
     }
+    
+    public static String getId() {
+        return ID;
+    } 
 
+    public static String getParentSectionId() {
+        return PARENT_SECTION_ID;
+    } 
+
+    public static String getName() {
+        return NAME;
+    } 
+
+    public static String getDescription() {
+        return DESCRIPTION;
+    } 
+
+    public static String getIsExternal() {
+        return IS_EXTERNAL;
+    } 
+
+    public static String getOrganizationId() {
+        return ORGANIZATION_ID;
+    }
+    
+    public static String getParentSectionName() {
+        return PARENT_SECTION_NAME;
+    }
+    
+    public static String getOrganizationName() {
+        return ORGANIZATION_NAME;
+    }
+    
     public boolean hasColumn(String columnName) {
         return names.contains(columnName);
     }
     
     public String buildFrom(String where) {
         return "Section _section ";                 
-    }
-    
-    public String getId() {
-        return ID;
-    } 
-
-    public String getParentSectionId() {
-        return PARENT_SECTION_ID;
-    } 
-
-    public String getName() {
-        return NAME;
-    } 
-
-    public String getDescription() {
-        return DESCRIPTION;
-    } 
-
-    public String getIsExternal() {
-        return IS_EXTERNAL;
-    } 
-
-    public String getOrganizationId() {
-        return ORGANIZATION_ID;
-    }
-    
-    public String getParentSectionName() {
-        return PARENT_SECTION_NAME;
-    }
-    
-    public String getOrganizationName() {
-        return ORGANIZATION_NAME;
     }
   
 }   

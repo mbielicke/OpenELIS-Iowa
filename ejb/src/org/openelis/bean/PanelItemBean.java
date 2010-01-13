@@ -54,8 +54,6 @@ public class PanelItemBean implements PanelItemLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager              manager;
     
-    private static final PanelMeta meta = new PanelMeta();   
-    
     @SuppressWarnings("unchecked")
     public ArrayList<PanelItemDO> fetchByPanelId(Integer id) throws Exception {
         Query query;
@@ -130,7 +128,7 @@ public class PanelItemBean implements PanelItemLocal {
         match = false;
         
         if(tests.size() == 0) {            
-            list.add(new FieldErrorException("noActiveTestsException",meta.getItemTestName()));
+            list.add(new FieldErrorException("noActiveTestsException",PanelMeta.getItemTestName()));
             throw list;
         } else {
             for(int i = 0; i < tests.size(); i++) {
@@ -142,7 +140,7 @@ public class PanelItemBean implements PanelItemLocal {
             }
             
             if(!match) {
-                list.add(new FieldErrorException("noActiveTestsException",meta.getItemTestName()));
+                list.add(new FieldErrorException("noActiveTestsException",PanelMeta.getItemTestName()));
                 throw list;
             }                
         }

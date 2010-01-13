@@ -56,35 +56,35 @@ public class PanelMeta implements Meta,MetaMap {
                                                   ITEM_TEST_NAME,ITEM_METHOD_NAME));
     }
     
-    public String getId() {
+    public static String getId() {
         return ID;
     } 
 
-    public String getName() {
+    public static String getName() {
         return NAME;
     } 
 
-    public String getDescription() {
+    public static String getDescription() {
         return DESCRIPTION;
     }
     
-    public String getItemId() {
+    public static String getItemId() {
         return ITEM_ID;
     } 
 
-    public String getItemPanelId() {
+    public static String getItemPanelId() {
         return ITEM_PANEL_ID;
     } 
 
-    public String getItemSortOrderId() {
+    public static String getItemSortOrderId() {
         return ITEM_SORT_ORDER;
     } 
 
-    public String getItemTestName() {
+    public static String getItemTestName() {
         return ITEM_TEST_NAME;
     } 
 
-    public String getItemMethodName() {
+    public static String getItemMethodName() {
         return ITEM_METHOD_NAME;
     } 
     

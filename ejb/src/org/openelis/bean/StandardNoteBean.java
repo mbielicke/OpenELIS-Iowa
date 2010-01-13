@@ -121,10 +121,10 @@ public class StandardNoteBean implements StandardNoteRemote {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getId() + "," +
-                          meta.getName() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + StandardNoteMeta.getId() + "," +
+                          StandardNoteMeta.getName() + ") ");
         builder.constructWhere(fields);
-        builder.setOrderBy(meta.getName());
+        builder.setOrderBy(StandardNoteMeta.getName());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);

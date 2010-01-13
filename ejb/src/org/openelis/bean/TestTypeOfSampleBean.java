@@ -51,8 +51,6 @@ public class TestTypeOfSampleBean implements TestTypeOfSampleLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager            manager;
     
-    private static final TestMeta meta = new TestMeta();
-    
     public ArrayList<TestTypeOfSampleDO> fetchByTestId(Integer testId) throws Exception {
         Query query;
         ArrayList<TestTypeOfSampleDO> sampleTypeList;
@@ -118,7 +116,7 @@ public class TestTypeOfSampleBean implements TestTypeOfSampleLocal {
         
         if (sampleType.getTypeOfSampleId() == null) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getTypeOfSampleTypeOfSampleId()));
+                                             TestMeta.getTypeOfSampleTypeOfSampleId()));
         }
         
         if(list.size() > 0)

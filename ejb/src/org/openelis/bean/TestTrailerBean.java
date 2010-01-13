@@ -111,10 +111,10 @@ public class TestTrailerBean implements TestTrailerRemote{
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getId() + ", " +
-                          meta.getName() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + TestTrailerMeta.getId() + ", " +
+                          TestTrailerMeta.getName() + ") ");
         builder.constructWhere(fields);
-        builder.setOrderBy(meta.getName());
+        builder.setOrderBy(TestTrailerMeta.getName());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
@@ -215,20 +215,20 @@ public class TestTrailerBean implements TestTrailerRemote{
         list = new ValidationErrorsList();
 
         if (DataBaseUtil.isEmpty(data.getName())) {
-            list.add(new FieldErrorException("fieldRequiredException", meta.getName()));
+            list.add(new FieldErrorException("fieldRequiredException", TestTrailerMeta.getName()));
         } else {
             ArrayList<IdNameVO> dups;
             
             dups = fetchByName(data.getName(), 1);
             if (dups.size() > 0 && ! dups.get(0).getId().equals(data.getId()))
-                list.add(new FieldErrorException("fieldUniqueException", meta.getName()));
+                list.add(new FieldErrorException("fieldUniqueException", TestTrailerMeta.getName()));
         }
 
         if (DataBaseUtil.isEmpty(data.getDescription()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getDescription()));
+            list.add(new FieldErrorException("fieldRequiredException", TestTrailerMeta.getDescription()));
 
         if (DataBaseUtil.isEmpty(data.getText()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getText()));
+            list.add(new FieldErrorException("fieldRequiredException", TestTrailerMeta.getText()));
 
         if (list.size() > 0)
             throw list;

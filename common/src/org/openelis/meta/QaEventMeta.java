@@ -55,52 +55,52 @@ public class QaEventMeta implements Meta, MetaMap {
                                                   REPORTING_TEXT,TEST_NAME));
     }
     
-    public String buildFrom(String name) {
-        return "QaEvent _qae left join _qae.test _test left join _test.method _method ";
+    public static String getId() {
+        return ID;
     }
 
+    public static String getName() {
+        return NAME;
+    }
+
+    public static String getDescription() {
+        return DESCRIPTION;
+    }
+
+    public static String getTestId() {
+        return TEST_ID;
+    }
+
+    public static String getTypeId() {
+        return TYPE_ID;
+    }
+
+    public static String getIsBillable() {
+        return IS_BILLABLE;
+    }
+
+    public static String getReportingSequence() {
+        return REPORTING_SEQUENCE;
+    }
+
+    public static String getReportingText() {
+        return REPORTING_TEXT;
+    }
+    
+    public static String getTestName() {
+        return TEST_NAME;
+    }
+    
+    public static String getTestMethodName() {
+        return TEST_METHOD_NAME;
+    }
+    
     public boolean hasColumn(String columnName) {
         return names.contains(columnName);
     }
     
-    public String getId() {
-        return ID;
-    }
-
-    public String getName() {
-        return NAME;
-    }
-
-    public String getDescription() {
-        return DESCRIPTION;
-    }
-
-    public String getTestId() {
-        return TEST_ID;
-    }
-
-    public String getTypeId() {
-        return TYPE_ID;
-    }
-
-    public String getIsBillable() {
-        return IS_BILLABLE;
-    }
-
-    public String getReportingSequence() {
-        return REPORTING_SEQUENCE;
-    }
-
-    public String getReportingText() {
-        return REPORTING_TEXT;
-    }
-    
-    public String getTestName() {
-        return TEST_NAME;
-    }
-    
-    public String getTestMethodName() {
-        return TEST_METHOD_NAME;
+    public String buildFrom(String name) {
+        return "QaEvent _qae left join _qae.test _test left join _test.method _method ";
     }
 
 }

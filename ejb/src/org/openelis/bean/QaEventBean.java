@@ -74,7 +74,7 @@ public class QaEventBean implements QaEventRemote {
     @EJB
     private LockLocal                   lockBean;
 
-    private static final QaEventMeta meta = new QaEventMeta();
+    private static final QaEventMeta    meta = new QaEventMeta();
 
     public QaEventBean() {
     }
@@ -130,11 +130,11 @@ public class QaEventBean implements QaEventRemote {
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
         builder.setSelect("distinct new org.openelis.domain.IdNameVO(" +
-                          meta.getId() + "," +
-                          meta.getName() + "," +
-                          meta.getTestName() + ")");
+                          QaEventMeta.getId() + "," +
+                          QaEventMeta.getName() + "," +
+                          QaEventMeta.getTestName() + ")");
         builder.constructWhere(fields);
-        builder.setOrderBy(meta.getName() + "," + meta.getTestName());
+        builder.setOrderBy(QaEventMeta.getName() + "," + QaEventMeta.getTestName());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);

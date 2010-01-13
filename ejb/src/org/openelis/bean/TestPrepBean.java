@@ -53,8 +53,6 @@ public class TestPrepBean implements TestPrepLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager            manager;
     
-    private static final TestMeta meta = new TestMeta(); 
-    
     public ArrayList<TestPrepViewDO> fetchByTestId(Integer testId) throws Exception {
         Query query;
         List<TestPrepViewDO> testPrepDOList;
@@ -122,7 +120,7 @@ public class TestPrepBean implements TestPrepLocal {
         list = new ValidationErrorsList();        
         if (prepDO.getPrepTestId() == null) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getPrepPrepTestId()));                        
+                                             TestMeta.getPrepPrepTestId()));                        
         }
 
         if (list.size() > 0)

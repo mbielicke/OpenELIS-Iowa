@@ -69,67 +69,67 @@ public class StorageLocationMeta implements Meta, MetaMap {
                                                   CHILD_STORAGE_UNIT_DESCRIPTION));
     }
         
-    public String getId() {
+    public static String getId() {
         return ID;
     } 
 
-    public String getSortOrder() {
+    public static String getSortOrder() {
         return SORT_ORDER;
     } 
 
-    public String getName() {
+    public static String getName() {
         return NAME;
     } 
 
-    public String getLocation() {
+    public static String getLocation() {
         return LOCATION;
     } 
 
-    public String getParentStorageLocationId() {
+    public static String getParentStorageLocationId() {
         return PARENT_STORAGE_LOCATION_ID;
     } 
 
-    public String getStorageUnitId() {
+    public static String getStorageUnitId() {
         return STORAGE_UNIT_ID;
     } 
 
-    public String getIsAvailable() {
+    public static String getIsAvailable() {
         return IS_AVAILABLE;
     }
     
-    public String getStorageUnitDescription() {
+    public static String getStorageUnitDescription() {
         return STORAGE_UNIT_DESCRIPTION;
     } 
     
-    public String getChildId() {
+    public static String getChildId() {
         return CHILD_ID;
     } 
 
-    public String getChildSortOrder() {
+    public static String getChildSortOrder() {
         return CHILD_SORT_ORDER;
     } 
 
-    public String getChildName() {
+    public static String getChildName() {
         return CHILD_NAME;
     } 
 
-    public String getChildLocation() {
+    public static String getChildLocation() {
         return CHILD_LOCATION;
     } 
 
-    public String getChildParentStorageLocationId() {
+    public static String getChildParentStorageLocationId() {
         return CHILD_PARENT_STORAGE_LOCATION_ID;
     } 
 
-    public String getChildStorageUnitId() {
+    public static String getChildStorageUnitId() {
         return CHILD_STORAGE_UNIT_ID;
     } 
 
-    public String getChildIsAvailable() {
+    public static String getChildIsAvailable() {
         return CHILD_IS_AVAILABLE;
     }
     
-    public String getChildStorageUnitDescription() {
+    public static String getChildStorageUnitDescription() {
         return CHILD_STORAGE_UNIT_DESCRIPTION;
     } 
 

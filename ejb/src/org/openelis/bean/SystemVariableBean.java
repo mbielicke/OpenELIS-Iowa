@@ -113,10 +113,10 @@ public class SystemVariableBean implements SystemVariableRemote, SystemVariableL
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getId() + ", " +
-                          meta.getName() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + SystemVariableMeta.getId() + ", " +
+                          SystemVariableMeta.getName() + ") ");
         builder.constructWhere(fields);
-        builder.setOrderBy(meta.getName());
+        builder.setOrderBy(SystemVariableMeta.getName());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
@@ -204,17 +204,20 @@ public class SystemVariableBean implements SystemVariableRemote, SystemVariableL
         list = new ValidationErrorsList();
 
         if (DataBaseUtil.isEmpty(data.getName())) {
-            list.add(new FieldErrorException("fieldRequiredException", meta.getName()));
+            list.add(new FieldErrorException("fieldRequiredException", 
+                                             SystemVariableMeta.getName()));
         } else {
             ArrayList<SystemVariableDO> dups;
             
             dups = fetchByName(data.getName(), 1);
             if (dups.size() > 0 && ! dups.get(0).getId().equals(data.getId()))
-                list.add(new FieldErrorException("fieldUniqueException", meta.getName()));
+                list.add(new FieldErrorException("fieldUniqueException", 
+                                                 SystemVariableMeta.getName()));
         }
 
         if (DataBaseUtil.isEmpty(data.getValue()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getValue()));
+            list.add(new FieldErrorException("fieldRequiredException", 
+                                             SystemVariableMeta.getValue()));
 
         if (list.size() > 0)
             throw list;

@@ -52,11 +52,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 public class AuxFieldBean implements AuxFieldLocal {
 
     @PersistenceContext(name = "openelis")
-    private EntityManager                    manager;
-    
-    //private AuxFieldGroupMetaMap             meta = new AuxFieldGroupMetaMap();
-    
-    private AuxFieldGroupMeta             meta = new AuxFieldGroupMeta();  
+    private EntityManager                 manager;
 
     public ArrayList<AuxFieldViewDO> fetchById(Integer id) throws Exception {
         Query query;
@@ -167,7 +163,8 @@ public class AuxFieldBean implements AuxFieldLocal {
     
         list = new ValidationErrorsList();
         if(DataBaseUtil.isEmpty(data.getAnalyteId())) {
-            list.add(new FieldErrorException("fieldRequiredException",meta.getFieldAnalyteName()));
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             AuxFieldGroupMeta.getFieldAnalyteName()));
             throw list;
         }        
     }

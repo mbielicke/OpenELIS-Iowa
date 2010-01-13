@@ -53,8 +53,6 @@ public class TestWorksheetAnalyteBean implements TestWorksheetAnalyteLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager            manager;
     
-    private static final TestMeta meta = new TestMeta();
-    
     public ArrayList<TestWorksheetAnalyteViewDO> fetchByTestId(Integer testId) throws Exception {
         Query query;
         List list;
@@ -125,7 +123,7 @@ public class TestWorksheetAnalyteBean implements TestWorksheetAnalyteLocal {
         
         if (DataBaseUtil.isEmpty(repeat) || repeat < 1) {
             list.add(new FieldErrorException("repeatNullForAnalyteException",
-                                                   meta.getWorksheetAnalyteRepeat()));
+                                             TestMeta.getWorksheetAnalyteRepeat()));
         }
         
         if(list.size() > 0)

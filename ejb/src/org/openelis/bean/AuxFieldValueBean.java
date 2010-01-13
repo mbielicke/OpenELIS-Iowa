@@ -64,9 +64,7 @@ public class AuxFieldValueBean implements AuxFieldValueLocal {
 
     private static int                       typeDict, typeNumeric, typeDateTime,
                                              typeDate, typeTime, typeAlphaLower,
-                                             typeAlphaUpper, typeAlphaMixed;
-    
-    private AuxFieldGroupMeta                meta = new AuxFieldGroupMeta();      
+                                             typeAlphaUpper, typeAlphaMixed;      
     
     private static final Logger              log  = Logger.getLogger(AuxFieldValueBean.class.getName());
     
@@ -305,16 +303,19 @@ public class AuxFieldValueBean implements AuxFieldValueLocal {
         typeId = data.getTypeId();
         
         if(DataBaseUtil.isEmpty(typeId))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getFieldValueTypeId()));
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             AuxFieldGroupMeta.getFieldValueTypeId()));
         
         if(DataBaseUtil.isEmpty(value) && (DataBaseUtil.isSame(typeNumeric,typeId) ||
                         DataBaseUtil.isSame(typeDict,typeId))) {
-            list.add(new FieldErrorException("fieldRequiredException", meta.getFieldValueValue()));
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             AuxFieldGroupMeta.getFieldValueValue()));
         } else if (!DataBaseUtil.isEmpty(value) &&
                    (DataBaseUtil.isSame(typeDateTime,typeId) || DataBaseUtil.isSame(typeTime,typeId) ||
                     DataBaseUtil.isSame(typeDate,typeId) || DataBaseUtil.isSame(typeAlphaLower,typeId) || 
                     DataBaseUtil.isSame(typeAlphaUpper,typeId) || DataBaseUtil.isSame(typeAlphaMixed,typeId))) {
-            list.add(new FieldErrorException("valuePresentForTypeException", meta.getFieldValueValue()));
+            list.add(new FieldErrorException("valuePresentForTypeException",
+                                             AuxFieldGroupMeta.getFieldValueValue()));
         }
         
         if (list.size() > 0)

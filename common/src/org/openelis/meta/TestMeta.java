@@ -169,374 +169,374 @@ public class TestMeta implements Meta, MetaMap {
                                                   ANA_ANALYTE_NAME,PREP_PREP_TEST_NAME,REF_TEST_ANALYTE_NAME,
                                                   REF_TEST_RESULT_VALUE,REF_ADD_TEST_NAME));
     }
-
-    public boolean hasColumn(String columnName) {
-        return names.contains(columnName);
-    }
         
-    public String getId() {
+    public static String getId() {
         return ID;
     } 
 
-    public String getName() {
+    public static String getName() {
         return NAME;
     } 
 
-    public String getDescription() {
+    public static String getDescription() {
         return DESCRIPTION;
     } 
-
-    public String getReportingDescription() {
+ 
+    public static String getReportingDescription() {
         return REPORTING_DESCRIPTION;
     } 
 
-    public String getMethodId() {
+    public static String getMethodId() {
         return METHOD_ID;
     } 
 
-    public String getIsActive() {
+    public static String getIsActive() {
         return IS_ACTIVE;
     } 
 
-    public String getActiveBegin() {
+    public static String getActiveBegin() {
         return ACTIVE_BEGIN;
     } 
 
-    public String getActiveEnd() {
+    public static String getActiveEnd() {
         return ACTIVE_END;
     } 
 
-    public String getIsReportable() {
+    public static String getIsReportable() {
         return IS_REPORTABLE;
     } 
 
-    public String getTimeTransit() {
+    public static String getTimeTransit() {
         return TIME_TRANSIT;
     } 
 
-    public String getTimeHolding() {
+    public static String getTimeHolding() {
         return TIME_HOLDING;
     } 
 
-    public String getTimeTaAverage() {
+    public static String getTimeTaAverage() {
         return TIME_TA_AVERAGE;
     } 
 
-    public String getTimeTaWarning() {
+    public static String getTimeTaWarning() {
         return TIME_TA_WARNING;
     } 
 
-    public String getTimeTaMax() {
+    public static String getTimeTaMax() {
         return TIME_TA_MAX;
     } 
 
-    public String getLabelId() {
+    public static String getLabelId() {
         return LABEL_ID;
     } 
 
-    public String getLabelQty() {
+    public static String getLabelQty() {
         return LABEL_QTY;
     } 
 
-    public String getTestTrailerId() {
+    public static String getTestTrailerId() {
         return TEST_TRAILER_ID;
     } 
 
-    public String getScriptletId() {
+    public static String getScriptletId() {
         return SCRIPTLET_ID;
     } 
 
-    public String getTestFormatId() {
+    public static String getTestFormatId() {
         return TEST_FORMAT_ID;
     } 
 
-    public String getRevisionMethodId() {
+    public static String getRevisionMethodId() {
         return REVISION_METHOD_ID;
     }
 
-    public String getReportingMethodId() {
+    public static String getReportingMethodId() {
         return REPORTING_METHOD_ID;
     }
 
-    public String getReportingSequence() {
+    public static String getReportingSequence() {
         return REPORTING_SEQUENCE;
     }
     
-    public String getSortingMethodId(){
+    public static String getSortingMethodId(){
         return SORTING_METHOD_ID;
     }
     
-    public String getMethodName() {
+    public static String getMethodName() {
         return METHOD_NAME;
     }
     
-    public String getMethodDescription() {
+    public static String getMethodDescription() {
         return METHOD_DESCRIPTION;
     }
     
-    public String getLabelName() {
+    public static String getLabelName() {
         return LABEL_NAME;
     } 
     
-    public String getTestTrailerName() {
+    public static String getTestTrailerName() {
         return TEST_TRAILER_NAME;
     }
     
-    public String getScriptletName() {
+    public static String getScriptletName() {
         return SCRIPTLET_NAME;
     }
     
-    public String getSectionId() {
+    public static String getSectionId() {
         return SECT_ID;
     } 
 
-    public String getSectionTestId() {
+    public static String getSectionTestId() {
         return SECT_TEST_ID;
     } 
 
-    public String getSectionSectionId() {
+    public static String getSectionSectionId() {
         return SECT_SECTION_ID;
     } 
 
-    public String getSectionFlagId() {
+    public static String getSectionFlagId() {
         return SECT_FLAG_ID;
     } 
     
-    public String getTypeOfSampleId() {
+    public static String getTypeOfSampleId() {
         return TOS_ID;
     } 
 
-    public String getTypeOfSampleTestId() {
+    public static String getTypeOfSampleTestId() {
         return TOS_TEST_ID;
     } 
 
-    public String getTypeOfSampleTypeOfSampleId() {
+    public static String getTypeOfSampleTypeOfSampleId() {
         return TOS_TYPE_OF_SAMPLE_ID;
     } 
 
-    public String getTypeOfSampleUnitOfMeasureId() {
+    public static String getTypeOfSampleUnitOfMeasureId() {
         return TOS_UNIT_OF_MEASURE_ID;
     }
     
-    public String getAnalyteId() {
+    public static String getAnalyteId() {
         return ANA_ID;
     } 
 
-    public String getAnalyteTestId() {
+    public static String getAnalyteTestId() {
         return ANA_TEST_ID;
     } 
     
-    public String getAnalyteAnalyteGroup() {
+    public static String getAnalyteAnalyteGroup() {
         return ANA_ANALYTE_GROUP;
     }
 
-    public String getAnalyteResultGroup() {
+    public static String getAnalyteResultGroup() {
         return ANA_RESULT_GROUP;
     } 
 
-    public String getAnalyteSortOrder() {
+    public static String getAnalyteSortOrder() {
         return ANA_SORT_ORDER;
     } 
 
-    public String getAnalyteTypeId() {
+    public static String getAnalyteTypeId() {
         return ANA_TYPE_ID;
     } 
 
-    public String getAnalyteAnalyteId() {
+    public static String getAnalyteAnalyteId() {
         return ANA_ANALYTE_ID;
     } 
 
-    public String getAnalyteIsReportable() {
+    public static String getAnalyteIsReportable() {
         return ANA_IS_REPORTABLE;
     } 
 
-    public String getAnalyteScriptletId() {
+    public static String getAnalyteScriptletId() {
         return ANA_SCRIPTLET_ID;
     }
     
-    public String getAnalyteAnalyteName() {
+    public static String getAnalyteAnalyteName() {
         return ANA_ANALYTE_NAME;
     }
     
-    public String getAnalyteScriptletName() {
+    public static String getAnalyteScriptletName() {
         return ANA_SCRIPTLET_NAME;
     }
     
-    public String getResultId() {
+    public static String getResultId() {
         return RES_ID;
     } 
 
-    public String getResultTestId() {
+    public static String getResultTestId() {
         return RES_TEST_ID;
     } 
 
-    public String getResultResultGroup() {
+    public static String getResultResultGroup() {
         return RES_RESULT_GROUP;
     } 
     
-    public String getResultSortOrder() {
+    public static String getResultSortOrder() {
         return RES_SORT_ORDER;
     } 
 
-    public String getResultFlagsId() {
+    public static String getResultFlagsId() {
         return RES_FLAGS_ID;
     } 
 
-    public String getResultTypeId() {
+    public static String getResultTypeId() {
         return RES_TYPE_ID;
     } 
 
-    public String getResultValue() {
+    public static String getResultValue() {
         return RES_VALUE;
     } 
 
-    public String getResultSignificantDigits() {
+    public static String getResultSignificantDigits() {
         return RES_SIGNIFICANT_DIGITS;
     } 
     
-    public String getResultRoundingMethodId() {
+    public static String getResultRoundingMethodId() {
         return RES_ROUNDING_METHOD_ID;
     }
 
-    public String getResultQuantLimit() {
+    public static String getResultQuantLimit() {
         return RES_QUANT_LIMIT;
     } 
 
-    public String getResultContLevel() {
+    public static String getResultContLevel() {
         return RES_CONT_LEVEL;
     } 
     
-    public String getResultHazardLevel() {
+    public static String getResultHazardLevel() {
         return RES_HAZARD_LEVEL;
     }
     
-    public String getResultUnitOfMeasureId() {
+    public static String getResultUnitOfMeasureId() {
         return RES_UNIT_OF_MEASURE_ID;
     }
     
-    public String getPrepId() {
+    public static String getPrepId() {
         return PREP_ID;
     } 
 
-    public String getPrepTestId() {
+    public static String getPrepTestId() {
         return PREP_TEST_ID;
     } 
 
-    public String getPrepPrepTestId() {
+    public static String getPrepPrepTestId() {
         return PREP_PREP_TEST_ID;
     } 
 
-    public String getPrepIsOptional() {
+    public static String getPrepIsOptional() {
         return PREP_IS_OPTIONAL;
     } 
     
-    public String getPrepPrepTestName() {
+    public static String getPrepPrepTestName() {
         return PREP_PREP_TEST_NAME;
     }
     
-    public String getReflexId() {
+    public static String getReflexId() {
         return REF_ID;
     } 
 
-    public String getReflexTestId() {
+    public static String getReflexTestId() {
         return REF_TEST_ID;
     } 
 
-    public String getReflexTestAnalyteId() {
+    public static String getReflexTestAnalyteId() {
         return REF_TEST_ANALYTE_ID;
     } 
 
-    public String getReflexTestResultId() {
+    public static String getReflexTestResultId() {
         return REF_TEST_RESULT_ID;
     } 
 
-    public String getReflexFlagsId() {
+    public static String getReflexFlagsId() {
         return REF_FLAGS_ID;
     } 
 
-    public String getReflexAddTestId() {
+    public static String getReflexAddTestId() {
         return REF_ADD_TEST_ID;
     }
     
-    public String getReflexTestAnalyteName() {
+    public static String getReflexTestAnalyteName() {
         return REF_TEST_ANALYTE_NAME;
     } 
 
-    public String getReflexTestResultValue() {
+    public static String getReflexTestResultValue() {
         return REF_TEST_RESULT_VALUE;
     } 
     
-    public String getReflexAddTestName() {
+    public static String getReflexAddTestName() {
         return REF_ADD_TEST_NAME;
     }
     
-    public String getWorksheetId() {
+    public static String getWorksheetId() {
         return WS_ID;
     } 
 
-    public String getWorksheetTestId() {
+    public static String getWorksheetTestId() {
         return WS_TEST_ID;
     } 
 
-    public String getWorksheetBatchCapacity() {
+    public static String getWorksheetBatchCapacity() {
         return WS_BATCH_CAPACITY;
     } 
 
-    public String getWorksheetTotalCapacity() {
+    public static String getWorksheetTotalCapacity() {
         return WS_TOTAL_CAPACITY;
     } 
 
-    public String getWorksheetFormatId() {
+    public static String getWorksheetFormatId() {
         return WS_FORMAT_ID;
     } 
 
-    public String getWorksheetScriptletId() {
+    public static String getWorksheetScriptletId() {
         return WS_SCRIPTLET_ID;
     }
     
-    public String getWorksheetScriptletName() {
+    public static String getWorksheetScriptletName() {
         return WS_SCRIPTLET_NAME;
     }
     
-    public String getWorksheetItemId() {
+    public static String getWorksheetItemId() {
         return WSI_ID;
     } 
 
-    public String getWorksheetItemTestWorksheetId() {
+    public static String getWorksheetItemTestWorksheetId() {
         return WSI_TEST_WORKSHEET_ID;
     } 
 
-    public String getWorksheetItemPosition() {
+    public static String getWorksheetItemPosition() {
         return WSI_POSITION;
     } 
 
-    public String getWorksheetItemTypeId() {
+    public static String getWorksheetItemTypeId() {
         return WSI_TYPE_ID;
     } 
 
-    public String getWorksheetItemQcName() {
+    public static String getWorksheetItemQcName() {
         return WSI_QC_NAME;
     } 
     
-    public String getWorksheetAnalyteId() {
+    public static String getWorksheetAnalyteId() {
         return WSA_ID;
     } 
 
-    public String getWorksheetAnalyteTestId() {
+    public static String getWorksheetAnalyteTestId() {
         return WSA_TEST_ID;
     } 
 
-    public String getWorksheetAnalyteAnalyteId() {
+    public static String getWorksheetAnalyteAnalyteId() {
         return WSA_ANALYTE_ID;
     } 
 
-    public String getWorksheetAnalyteRepeat() {
+    public static String getWorksheetAnalyteRepeat() {
         return WSA_REPEAT;
     } 
 
-    public String getWorksheetAnalyteFlagId() {
+    public static String getWorksheetAnalyteFlagId() {
         return WSA_FLAG_ID;
     } 
+    
+    public boolean hasColumn(String columnName) {
+        return names.contains(columnName);
+    }
     
     public String buildFrom(String where) {
         String from, wsFrom, wsiFrom;

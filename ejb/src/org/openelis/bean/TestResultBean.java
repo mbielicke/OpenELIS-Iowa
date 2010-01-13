@@ -64,7 +64,6 @@ public class TestResultBean implements TestResultLocal {
 
     private static int               typeDict, typeNumeric, typeTiter, typeDate,
                                      typeDateTime, typeTime;
-    private static final TestMeta    meta = new TestMeta();
     private static final Logger      log  = Logger.getLogger(TestResultBean.class.getName());
     
     @PostConstruct
@@ -246,17 +245,17 @@ public class TestResultBean implements TestResultLocal {
         typeId = data.getTypeId();
         
         if(DataBaseUtil.isEmpty(typeId)) 
-            list.add(new FieldErrorException("fieldRequiredException", meta.getResultTypeId()));        
+            list.add(new FieldErrorException("fieldRequiredException", TestMeta.getResultTypeId()));        
         //
         // dictionary, titers, numeric require a value
         //
         if (DataBaseUtil.isEmpty(value) &&
             (DataBaseUtil.isSame(typeNumeric,typeId) || DataBaseUtil.isSame(typeTiter,typeId)
                             || DataBaseUtil.isSame(typeDict,typeId))) {
-            list.add(new FieldErrorException("fieldRequiredException", meta.getResultValue()));
+            list.add(new FieldErrorException("fieldRequiredException", TestMeta.getResultValue()));
         } else if (!DataBaseUtil.isEmpty(value) &&
                   (DataBaseUtil.isSame(typeDateTime,typeId) || DataBaseUtil.isSame(typeTime,typeId) || DataBaseUtil.isSame(typeDate,typeId))) {
-            list.add(new FieldErrorException("valuePresentForTypeException", meta.getResultValue()));
+            list.add(new FieldErrorException("valuePresentForTypeException", TestMeta.getResultValue()));
         }
 
         if (list.size() > 0)

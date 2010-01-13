@@ -41,8 +41,6 @@ import org.openelis.utilcommon.DataBaseUtil;
 
 public class TestReflexManagerProxy {
     
-    private static final TestMeta meta = new TestMeta();
-    
     public TestReflexManager fetchByTestId(Integer testId) throws Exception {
         TestReflexManager trm;        
         ArrayList<TestReflexViewDO> reflexTests;    
@@ -157,11 +155,11 @@ public class TestReflexManagerProxy {
                 if (!idsList.contains(ids)) {
                     idsList.add(ids);
                 } else {
-                    fieldName = meta.getReflexAddTestName();
+                    fieldName = TestMeta.getReflexAddTestName();
                     throw new InconsistencyException("fieldUniqueOnlyException");
                 }
                 
-                fieldName = meta.getReflexTestResultValue();
+                fieldName = TestMeta.getReflexTestResultValue();
                 validateAnalyteResultMapping(anaListValid, resListValid, anaResGrpMap,
                                              resGrpRsltMap, refDO);
             } catch (InconsistencyException ex) {

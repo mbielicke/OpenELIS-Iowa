@@ -60,7 +60,7 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager          manager;
 
-    private static CategoryMeta meta = new CategoryMeta();
+    private static CategoryMeta    meta = new CategoryMeta();
 
     public CategoryBean() {        
     }
@@ -120,11 +120,11 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getId() + ", " +
-                          meta.getName() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + CategoryMeta.getId() + ", " +
+                          CategoryMeta.getName() + ") ");
 
         builder.constructWhere(fields);
-        builder.setOrderBy(meta.getName());
+        builder.setOrderBy(CategoryMeta.getName());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
@@ -193,7 +193,7 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
         
         if (DataBaseUtil.isEmpty(sysName)) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getSystemName()));
+                                             CategoryMeta.getSystemName()));
         } else {
             query = manager.createNamedQuery("Category.FetchBySystemName");
             query.setParameter("systemName", sysName);
@@ -205,12 +205,13 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
             
             if (!DataBaseUtil.isEmpty(catId) && !catId.equals(data.getId())) {
                 list.add(new FieldErrorException("fieldUniqueException",
-                                                          meta.getSystemName()));
+                                                 CategoryMeta.getSystemName()));
             }
         }
 
         if (DataBaseUtil.isEmpty(name)) 
-            list.add(new FieldErrorException("fieldRequiredException", meta.getName()));              
+            list.add(new FieldErrorException("fieldRequiredException", 
+                                             CategoryMeta.getName()));              
         
         if(list.size() > 0)
             throw list;

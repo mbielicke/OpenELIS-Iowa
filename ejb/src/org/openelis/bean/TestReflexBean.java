@@ -55,8 +55,6 @@ public class TestReflexBean implements TestReflexLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager            manager;
     
-    private static final TestMeta meta = new TestMeta();
-    
     public ArrayList<TestReflexViewDO> fetchByTestId(Integer testId) throws Exception {
         Query query;
         List<TestReflexViewDO> list;
@@ -123,40 +121,40 @@ public class TestReflexBean implements TestReflexLocal {
         return data;
     }
 
-    public void delete(TestReflexViewDO deletedAt) throws Exception {
+    public void delete(TestReflexViewDO data) throws Exception {
         TestReflex testReflex;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        testReflex = manager.find(TestReflex.class, deletedAt.getId());
+        testReflex = manager.find(TestReflex.class, data.getId());
 
         if (testReflex != null)
             manager.remove(testReflex);
     }
 
-    public void validate(TestReflexViewDO refDO) throws Exception {
+    public void validate(TestReflexViewDO data) throws Exception {
         ValidationErrorsList list;
         
         list = new ValidationErrorsList();
                 
-        if (refDO.getAddTestId() == null) {           
+        if (data.getAddTestId() == null) {           
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getReflexAddTestName()));
+                                             TestMeta.getReflexAddTestName()));
         }
 
-        if (refDO.getTestAnalyteId() == null) {
+        if (data.getTestAnalyteId() == null) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getReflexTestAnalyteName()));
+                                             TestMeta.getReflexTestAnalyteName()));
         }
 
-        if (refDO.getTestResultId() == null) {            
+        if (data.getTestResultId() == null) {            
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getReflexTestResultValue()));
+                                             TestMeta.getReflexTestResultValue()));
         }
 
-        if (refDO.getFlagsId() == null) {
+        if (data.getFlagsId() == null) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getReflexFlagsId()));
+                                             TestMeta.getReflexFlagsId()));
         }
         
         if(list.size() > 0)

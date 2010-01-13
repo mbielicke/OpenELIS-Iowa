@@ -114,10 +114,10 @@ public class LabelBean implements LabelRemote {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getId() + ", " +
-                          meta.getName() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + LabelMeta.getId() + ", " +
+                          LabelMeta.getName() + ") ");
         builder.constructWhere(fields);
-        builder.setOrderBy(meta.getName());
+        builder.setOrderBy(LabelMeta.getName());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);

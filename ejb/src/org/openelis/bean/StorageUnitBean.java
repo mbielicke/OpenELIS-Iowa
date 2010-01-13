@@ -114,10 +114,10 @@ public class StorageUnitBean implements StorageUnitRemote {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getId() + ", " +
-                          meta.getDescription() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + StorageUnitMeta.getId() + ", " +
+                          StorageUnitMeta.getDescription() + ") ");
         builder.constructWhere(fields);
-        builder.setOrderBy(meta.getDescription());
+        builder.setOrderBy(StorageUnitMeta.getDescription());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
@@ -230,14 +230,14 @@ public class StorageUnitBean implements StorageUnitRemote {
         list = new ValidationErrorsList();
 
         if (DataBaseUtil.isEmpty(data.getCategoryId()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getCategoryId()));
+            list.add(new FieldErrorException("fieldRequiredException", StorageUnitMeta.getCategoryId()));
 
         if (DataBaseUtil.isEmpty(desc)) {
-            list.add(new FieldErrorException("fieldRequiredException", meta.getDescription()));
+            list.add(new FieldErrorException("fieldRequiredException", StorageUnitMeta.getDescription()));
         } else {
             dups = fetchByDescription(desc, 1);
             if(dups.size() > 0 && DataBaseUtil.isDifferent(dups.get(0).getId(), data.getId())) 
-                list.add(new FieldErrorException("fieldUniqueException", meta.getDescription()));            
+                list.add(new FieldErrorException("fieldUniqueException", StorageUnitMeta.getDescription()));            
         } 
             
         if (list.size() > 0)

@@ -52,8 +52,6 @@ public class TestAnalyteBean implements TestAnalyteLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager            manager;
 
-    private static final TestMeta meta = new TestMeta();
-
     public ArrayList<ArrayList<TestAnalyteViewDO>> fetchByTestId(Integer testId) throws Exception {
         Query query;
         ArrayList<ArrayList<TestAnalyteViewDO>> grid;
@@ -163,17 +161,17 @@ public class TestAnalyteBean implements TestAnalyteLocal {
         
         if (anaDO.getAnalyteId() == null) {
             exc = new FieldErrorException("fieldRequiredException",
-                                          meta.getAnalyteAnalyteId());
+                                          TestMeta.getAnalyteAnalyteId());
             list.add(exc);
         }
         if (anaDO.getTypeId() == null) {
             exc = new FieldErrorException("analyteTypeRequiredException",
-                                          meta.getAnalyteTypeId());
+                                          TestMeta.getAnalyteTypeId());
             list.add(exc);
         }
         if (anaDO.getResultGroup() == null) {
             exc = new FieldErrorException("fieldRequiredException",
-                                          meta.getAnalyteResultGroup());
+                                          TestMeta.getAnalyteResultGroup());
             list.add(exc);
         }
 

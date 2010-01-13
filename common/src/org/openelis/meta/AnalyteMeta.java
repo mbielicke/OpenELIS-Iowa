@@ -51,36 +51,36 @@ public class AnalyteMeta implements Meta , MetaMap{
         names = new HashSet<String>(Arrays.asList(ID,NAME,IS_ACTIVE,PARENT_ANALYTE_ID,
                                                   EXTERNAL_ID,PARENT_ANALYTE_NAME));
     }
+    
+    public static String getId() {
+        return ID;
+    } 
 
+    public static String getName() {
+        return NAME;
+    } 
+
+    public static String getIsActive() {
+        return IS_ACTIVE;
+    } 
+
+    public static String getParentAnalyteId() {
+        return PARENT_ANALYTE_ID;
+    } 
+
+    public static String getExternalId() {
+        return EXTERNAL_ID;
+    } 
+
+    public static String getParentAnalyteName() {
+        return PARENT_ANALYTE_NAME;
+    }
+    
     public boolean hasColumn(String columnName) {
         return names.contains(columnName);
     }
     
     public String buildFrom(String where) {        
         return "Analyte _analyte ";
-    }
-    
-    public String getId() {
-        return ID;
-    } 
-
-    public String getName() {
-        return NAME;
-    } 
-
-    public String getIsActive() {
-        return IS_ACTIVE;
-    } 
-
-    public String getParentAnalyteId() {
-        return PARENT_ANALYTE_ID;
-    } 
-
-    public String getExternalId() {
-        return EXTERNAL_ID;
-    } 
-
-    public String getParentAnalyteName() {
-        return PARENT_ANALYTE_NAME;
     }
 }   

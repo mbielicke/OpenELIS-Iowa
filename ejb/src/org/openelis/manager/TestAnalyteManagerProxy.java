@@ -45,8 +45,6 @@ import org.openelis.utilcommon.DataBaseUtil;
 
 public class TestAnalyteManagerProxy {
 
-    private static final TestMeta    meta = new TestMeta();
-
     private static int               typeSuppl;
 
     private static final Logger      log  = Logger.getLogger(TestResultManagerProxy.class.getName());
@@ -182,14 +180,14 @@ public class TestAnalyteManagerProxy {
                     
                     if (rg > results.size()) {
                         exc = new GridFieldErrorException("invalidResultGroupException", i, j,
-                                                          meta.getAnalyteResultGroup(),
+                                                          TestMeta.getAnalyteResultGroup(),
                                                           "analyteTable");
                         list.add(exc);
                     }
                     
                     if(j > 0 && DataBaseUtil.isSame(typeSuppl,data.getTypeId())) {
                         exc = new GridFieldErrorException("columnAnalyteSupplException", i, j,
-                                                          meta.getAnalyteTypeId(),
+                                                          TestMeta.getAnalyteTypeId(),
                                                           "analyteTable");                        
                         list.add(exc);
                     }

@@ -46,7 +46,19 @@ public class SystemVariableMeta implements Meta, MetaMap {
     static {
         names = new HashSet<String>(Arrays.asList(ID,NAME,VALUE));
     }
+    
+    public static String getId() {
+        return ID;
+    } 
 
+    public static String getName() {
+        return NAME;
+    } 
+
+    public static String getValue() {
+        return VALUE;
+    }
+    
     public boolean hasColumn(String columnName) {
         return names.contains(columnName);
     }
@@ -54,18 +66,6 @@ public class SystemVariableMeta implements Meta, MetaMap {
     public String buildFrom(String where) {        
         return "SystemVariable _systemVariable ";
     } 
-    
-    public String getId() {
-        return ID;
-    } 
-
-    public String getName() {
-        return NAME;
-    } 
-
-    public String getValue() {
-        return VALUE;
-    }
 
   
 }   
