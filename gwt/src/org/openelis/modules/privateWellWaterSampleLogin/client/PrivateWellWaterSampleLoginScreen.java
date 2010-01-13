@@ -122,7 +122,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                                     "controller?service=org.openelis.modules.sample.server.SampleService");
 
         //FIXME need to add a module for this
-        security = OpenELIS.security.getModule("sampleenvironmental");
+        security = OpenELIS.security.getModule("sampleprivatewell");
         if (security == null)
             throw new SecurityException("screenPermException", "Private Well Water Sample Login Screen");
 
