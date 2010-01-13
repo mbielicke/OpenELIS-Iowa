@@ -64,7 +64,7 @@ public class PanelBean implements PanelRemote, PanelLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager             manager;
 
-    private static final PanelMeta meta = new PanelMeta();
+    private static final PanelMeta    meta = new PanelMeta();
 
     public PanelDO fetchById(Integer id) throws Exception {
         Query query;
@@ -172,10 +172,10 @@ public class PanelBean implements PanelRemote, PanelLocal {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getId() + ", " +
-                          meta.getName() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + PanelMeta.getId() + ", " +
+                          PanelMeta.getName() + ") ");
         builder.constructWhere(fields);
-        builder.setOrderBy(meta.getName());
+        builder.setOrderBy(PanelMeta.getName());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);

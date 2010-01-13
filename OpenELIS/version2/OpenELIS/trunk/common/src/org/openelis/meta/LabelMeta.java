@@ -53,27 +53,27 @@ public class LabelMeta implements Meta, MetaMap {
                                                   SCRIPTLET_ID, SCRIPTLET_NAME));
     }
         
-    public String getId() {
+    public static String getId() {
         return ID;
     } 
 
-    public String getName() {
+    public static String getName() {
         return NAME;
     } 
 
-    public String getDescription() {
+    public static String getDescription() {
         return DESCRIPTION;
     } 
 
-    public String getPrinterTypeId() {
+    public static String getPrinterTypeId() {
         return PRINTER_TYPE_ID;
     } 
 
-    public String getScriptletId() {
+    public static String getScriptletId() {
         return SCRIPTLET_ID;
     }
     
-    public String getScriptletName() {
+    public static String getScriptletName() {
         return SCRIPTLET_NAME;
     }
     

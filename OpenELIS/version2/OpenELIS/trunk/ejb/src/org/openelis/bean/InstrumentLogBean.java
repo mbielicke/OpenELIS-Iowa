@@ -53,8 +53,6 @@ public class InstrumentLogBean implements InstrumentLogLocal {
     
     @PersistenceContext(name = "openelis")
     private EntityManager                    manager;
-    
-    private InstrumentMeta                meta = new InstrumentMeta();
 
     @SuppressWarnings("unchecked")
     public ArrayList<InstrumentLogDO> fetchByInstrumentId(Integer id) throws Exception {
@@ -128,23 +126,27 @@ public class InstrumentLogBean implements InstrumentLogLocal {
         list = new ValidationErrorsList();
         
         if(DataBaseUtil.isEmpty(data.getTypeId())) 
-            list.add(new FieldErrorException("fieldRequiredException", meta.getLogTypeId()));        
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             InstrumentMeta.getLogTypeId()));        
         
         wsId = data.getWorksheetId();
         if(!DataBaseUtil.isEmpty(wsId)) {
             query = manager.createNamedQuery("Worksheet.FetchById");
             query.setParameter("id",wsId );
             if(query.getResultList().size() == 0)
-                list.add(new FieldErrorException("illegalWorksheetIdException", meta.getLogWorksheetId()));           
+                list.add(new FieldErrorException("illegalWorksheetIdException",
+                                                 InstrumentMeta.getLogWorksheetId()));           
         }
          
         eb = data.getEventBegin();
         ee = data.getEventEnd();
         
         if(DataBaseUtil.isEmpty(eb)) 
-            list.add(new FieldErrorException("fieldRequiredException", meta.getLogEventBegin()));
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             InstrumentMeta.getLogEventBegin()));
         else if(!DataBaseUtil.isEmpty(ee) && DataBaseUtil.isAfter(eb,ee)) 
-            list.add(new FieldErrorException("endDateAfterBeginDateException", meta.getLogEventEnd()));
+            list.add(new FieldErrorException("endDateAfterBeginDateException",
+                                             InstrumentMeta.getLogEventEnd()));
                   
         if (list.size() > 0)
             throw list;

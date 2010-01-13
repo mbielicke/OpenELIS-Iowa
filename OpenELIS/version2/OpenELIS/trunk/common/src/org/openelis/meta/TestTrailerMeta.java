@@ -48,28 +48,28 @@ public class TestTrailerMeta implements Meta, MetaMap {
         names = new HashSet<String>(Arrays.asList(ID, NAME, DESCRIPTION, TEXT));
     }
 
+    public static String getId() {
+        return ID;
+    }
+
+    public static String getName() {
+        return NAME;
+    }
+
+    public static String getDescription() {
+        return DESCRIPTION;
+    }
+
+    public static String getText() {
+        return TEXT;
+    }
+    
     public boolean hasColumn(String columnName) {
         return names.contains(columnName);
     }
     
     public String buildFrom(String where) {
         return "TestTrailer _testTrailer ";
-    }
-
-    public String getId() {
-        return ID;
-    }
-
-    public String getName() {
-        return NAME;
-    }
-
-    public String getDescription() {
-        return DESCRIPTION;
-    }
-
-    public String getText() {
-        return TEXT;
     }
 
 }

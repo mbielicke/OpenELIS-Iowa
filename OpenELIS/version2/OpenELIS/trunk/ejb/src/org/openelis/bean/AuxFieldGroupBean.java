@@ -58,7 +58,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 public class AuxFieldGroupBean implements AuxFieldGroupRemote, AuxFieldGroupLocal {
 
     @PersistenceContext(name = "openelis")
-    private EntityManager                    manager;
+    private EntityManager                 manager;
     
     private AuxFieldGroupMeta             meta = new AuxFieldGroupMeta();
 
@@ -104,10 +104,10 @@ public class AuxFieldGroupBean implements AuxFieldGroupRemote, AuxFieldGroupLoca
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
         builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + 
-                          meta.getId() + ", " +
-                          meta.getName() + ") ");
+                          AuxFieldGroupMeta.getId() + ", " +
+                          AuxFieldGroupMeta.getName() + ") ");
         builder.constructWhere(fields);
-        builder.setOrderBy(meta.getName());
+        builder.setOrderBy(AuxFieldGroupMeta.getName());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
@@ -170,25 +170,25 @@ public class AuxFieldGroupBean implements AuxFieldGroupRemote, AuxFieldGroupLoca
         
         if (DataBaseUtil.isEmpty(data.getName())) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getName()));
+                                             AuxFieldGroupMeta.getName()));
             checkDuplicate = false;
         }
         
         if (DataBaseUtil.isEmpty(data.getDescription())) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                                          meta.getDescription()));
+                                             AuxFieldGroupMeta.getDescription()));
             checkDuplicate = false;
         }
             
         if (DataBaseUtil.isEmpty(data.getActiveBegin())) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                                          meta.getActiveBegin()));
+                                             AuxFieldGroupMeta.getActiveBegin()));
             checkDuplicate = false;
         }
 
         if (DataBaseUtil.isEmpty(data.getActiveEnd())) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                                          meta.getActiveEnd()));
+                                             AuxFieldGroupMeta.getActiveEnd()));
             checkDuplicate = false;
         }
             

@@ -71,79 +71,79 @@ public class InstrumentMeta implements Meta, MetaMap {
                                                   LOG_TEXT,SCRIPTLET_NAME));
     } 
     
-    public String getId() {
+    public static String getId() {
         return ID;
     } 
 
-    public String getName() {
+    public static String getName() {
         return NAME;
     } 
 
-    public String getDescription() {
+    public static String getDescription() {
         return DESCRIPTION;
     } 
 
-    public String getModelNumber() {
+    public static String getModelNumber() {
         return MODEL_NUMBER;
     } 
 
-    public String getSerialNumber() {
+    public static String getSerialNumber() {
         return SERIAL_NUMBER;
     } 
 
-    public String getTypeId() {
+    public static String getTypeId() {
         return TYPE_ID;
     } 
 
-    public String getLocation() {
+    public static String getLocation() {
         return LOCATION;
     } 
 
-    public String getIsActive() {
+    public static String getIsActive() {
         return IS_ACTIVE;
     } 
 
-    public String getActiveBegin() {
+    public static String getActiveBegin() {
         return ACTIVE_BEGIN;
     } 
 
-    public String getActiveEnd() {
+    public static String getActiveEnd() {
         return ACTIVE_END;
     } 
 
-    public String getScriptletId() {
+    public static String getScriptletId() {
         return SCRIPTLET_ID;
     } 
     
-    public String getScriptletName() {
+    public static String getScriptletName() {
         return SCRIPTLET_NAME;
     }
     
-    public String getLogId() {
+    public static String getLogId() {
         return LOG_ID;
     } 
 
-    public String getLogInstrumentId() {
+    public static String getLogInstrumentId() {
         return LOG_INSTRUMENT_ID;
     } 
 
-    public String getLogTypeId() {
+    public static String getLogTypeId() {
         return LOG_TYPE_ID;
     } 
 
-    public String getLogWorksheetId() {
+    public static String getLogWorksheetId() {
         return LOG_WORKSHEET_ID;
     } 
 
-    public String getLogEventBegin() {
+    public static String getLogEventBegin() {
         return LOG_EVENT_BEGIN;
     } 
 
-    public String getLogEventEnd() {
+    public static String getLogEventEnd() {
         return LOG_EVENT_END;
     } 
     
-    public String getLogText() {
+    public static String getLogText() {
         return LOG_TEXT;
     }
 

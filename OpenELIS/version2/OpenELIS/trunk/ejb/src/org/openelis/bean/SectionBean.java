@@ -73,7 +73,7 @@ public class SectionBean implements SectionRemote {
     @Resource
     private SessionContext              ctx;
 
-    private static final SectionMeta meta = new SectionMeta();
+    private static final SectionMeta    meta = new SectionMeta();
 
     @EJB
     private LockLocal                   lockBean;
@@ -123,11 +123,11 @@ public class SectionBean implements SectionRemote {
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
 
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getId() + ", " +
-                          meta.getName() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + SectionMeta.getId() + ", " +
+                          SectionMeta.getName() + ") ");
 
         builder.constructWhere(fields);
-        builder.setOrderBy(meta.getName());
+        builder.setOrderBy(SectionMeta.getName());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);

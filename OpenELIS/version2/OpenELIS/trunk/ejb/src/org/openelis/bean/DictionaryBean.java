@@ -122,11 +122,11 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
 
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getDictionaryId() + ", " +                     
-                     meta.getDictionaryEntry()+ ", " + meta.getName() +") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + CategoryMeta.getDictionaryId() + ", " +                     
+                          CategoryMeta.getDictionaryEntry()+ ", " + CategoryMeta.getName() +") ");
 
         builder.constructWhere(fields);
-        builder.setOrderBy(meta.getDictionaryEntry()+", "+meta.getName());
+        builder.setOrderBy(CategoryMeta.getDictionaryEntry()+", "+CategoryMeta.getName());
 
         query = manager.createQuery(builder.getEJBQL());
         builder.setQueryParams(query, fields);
@@ -212,7 +212,7 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
         entry = data.getEntry();
 
         if (DataBaseUtil.isEmpty(entry))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getDictionaryEntry()));
+            list.add(new FieldErrorException("fieldRequiredException", CategoryMeta.getDictionaryEntry()));
 
         if (list.size() > 0)
             throw list;

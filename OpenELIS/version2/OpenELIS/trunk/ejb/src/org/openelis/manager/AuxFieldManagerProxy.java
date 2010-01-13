@@ -50,9 +50,7 @@ import org.openelis.utilcommon.ResultRangeNumeric;
 
 public class AuxFieldManagerProxy { 
     
-    private static final AuxFieldGroupMeta    meta = new AuxFieldGroupMeta();
-    
-    private static int                        typeDict, typeNumeric;
+    private static int                        typeDict, typeNumeric, typeDefault;
     
     private static final Logger               log  = Logger.getLogger(AuxFieldManagerProxy.class.getName());
     
@@ -78,6 +76,15 @@ public class AuxFieldManagerProxy {
             typeNumeric = 0;
             log.log(Level.SEVERE,
                     "Failed to lookup dictionary entry by system name='aux_numeric'", e);
+        }
+        
+        try {
+            data = dl.fetchBySystemName("aux_default");
+            typeDefault = data.getId();
+        } catch (Throwable e) {
+            typeDefault = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='aux_default'", e);
         }
     }
     
@@ -228,13 +235,16 @@ public class AuxFieldManagerProxy {
         List<ResultRangeNumeric> nrList;
         String value, fieldName;
         ResultRangeNumeric nr;
-        Integer typeId,entryId;
-        ArrayList<Integer> dictList, typeList;
+        Integer typeId,entryId, firstTypeId;
+        ArrayList<Integer> dictList;
+        int numDefault, numOther, count;
 
         al = local();
         vl = valueLocal();
         value = null;      
         fieldName = null;
+        numDefault = 0;
+        numOther = 0;            
         
         for (int i = 0; i < man.count(); i++ ) {
             try {
@@ -246,8 +256,12 @@ public class AuxFieldManagerProxy {
             vm = man.getValuesAt(i);
             dictList = new ArrayList<Integer>();
             nrList = new ArrayList<ResultRangeNumeric>();
-            typeList = new ArrayList<Integer>();
-            for (int j = 0; j < vm.count(); j++ ) {
+            firstTypeId = 0;
+            numDefault = 0;
+            numOther = 0;
+            count = vm.count();
+            
+            for (int j = 0; j < count; j++ ) {
                 data = vm.getAuxFieldValueAt(j);
                 typeId = data.getTypeId();
                 value = data.getValue();
@@ -258,20 +272,48 @@ public class AuxFieldManagerProxy {
                 }
                 
                 try {
-                    if(typeList.size() == 0) {
-                        typeList.add(typeId);
-                    } else if(!typeList.contains(typeId)){
-                        fieldName = meta.getFieldValueTypeId();
+                    if (DataBaseUtil.isSame(typeDefault, typeId)) {                        
+                        numDefault++ ;
+                    } else if (!DataBaseUtil.isEmpty(typeId)) {
+                        numOther++ ;
+                        if (DataBaseUtil.isSame(0,firstTypeId))
+                            //
+                            // Assign the first non-null selected type to firstTypeId
+                            // if the type is not "Default".                            
+                            //
+                            firstTypeId = typeId;
+                    }
+                    
+                    if(numDefault > 1) {
+                        fieldName = AuxFieldGroupMeta.getFieldValueTypeId();
+                        throw new InconsistencyException("auxMoreThanOneDefaultException");
+                    } else if(count == 1 /*numOther == 0*/ && numDefault == 1) {
+                        //if( || j > 0) {
+                            fieldName = AuxFieldGroupMeta.getFieldValueTypeId();
+                            throw new InconsistencyException("auxDefaultWithNoOtherTypeException");
+                        //}
+                    }
+                                                              
+                    if(DataBaseUtil.isDifferent(firstTypeId,typeId) &&
+                                    DataBaseUtil.isDifferent(typeDefault, typeId)) {
+                        //
+                        // If dissimilar types have been selected for different 
+                        // aux field values for an aux field than they cannot be
+                        // of more than two kinds. Also one of the kind must be
+                        // the type "Default".    
+                        //
+                        fieldName = AuxFieldGroupMeta.getFieldValueTypeId();
                         throw new InconsistencyException("auxMoreThanOneTypeException");
                     }
+                    
                     if (DataBaseUtil.isSame(typeNumeric,typeId)) {
                         nr = new ResultRangeNumeric();
-                        fieldName = meta.getFieldValueValue();
+                        fieldName = AuxFieldGroupMeta.getFieldValueValue();
                         nr.setRange(value);
                         addNumericIfNoOverLap(nrList, nr);
                     } else if (DataBaseUtil.isSame(typeDict,typeId)) {
                         entryId = Integer.parseInt(value);   
-                        fieldName = meta.getFieldValueValue();
+                        fieldName = AuxFieldGroupMeta.getFieldValueValue();
                         if (entryId == null)
                             throw new ParseException("illegalDictEntryException");
 

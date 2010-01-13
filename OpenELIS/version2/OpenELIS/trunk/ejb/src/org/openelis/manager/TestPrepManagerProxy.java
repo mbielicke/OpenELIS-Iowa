@@ -38,8 +38,6 @@ import org.openelis.meta.TestMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 public class TestPrepManagerProxy {
-    
-    private static final TestMeta meta = new TestMeta();
 
     public TestPrepManager fetchByTestId(Integer testId) throws Exception {
         TestPrepManager tpm;
@@ -119,14 +117,14 @@ public class TestPrepManagerProxy {
                 testPrepIdList.add(prepId);
             } else {
                 exc = new TableFieldErrorException("fieldUniqueOnlyException", i,
-                                                   meta.getPrepPrepTestName(),"testPrepTable");
+                                                   TestMeta.getPrepPrepTestName(),"testPrepTable");
                 list.add(exc);
             }
             
             if ( !"Y".equals(prepDO.getIsOptional())) {
                 if (numReq >= 1) {
                     exc = new TableFieldErrorException("moreThanOnePrepTestOptionalException", i,
-                                                       meta.getPrepPrepTestName(),"testPrepTable");
+                                                       TestMeta.getPrepPrepTestName(),"testPrepTable");
                     list.add(exc);
                 }
                 numReq++ ;

@@ -111,11 +111,11 @@ public class StorageLocationBean implements StorageLocationRemote, StorageLocati
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getId() + ", " +
-                          meta.getName() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + StorageLocationMeta.getId() + ", " +
+                          StorageLocationMeta.getName() + ") ");
         builder.constructWhere(fields);
-        builder.addWhere(meta.getParentStorageLocationId() + " is null");
-        builder.setOrderBy(meta.getName());
+        builder.addWhere(StorageLocationMeta.getParentStorageLocationId() + " is null");
+        builder.setOrderBy(StorageLocationMeta.getName());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
@@ -185,13 +185,13 @@ public class StorageLocationBean implements StorageLocationRemote, StorageLocati
 
         // name required
         if (DataBaseUtil.isEmpty(data.getName())) {
-            list.add(new FieldErrorException("fieldRequiredException", meta.getName()));
+            list.add(new FieldErrorException("fieldRequiredException", StorageLocationMeta.getName()));
         } else {
             // no name duplicates
             dups = fetchByName(data.getName());
             if (dups.size() > 0 && DataBaseUtil.isDifferent(dups.get(0).getId(), data.getId()) &&
                 dups.get(0).getParentStorageLocationId() == null) {
-                list.add(new FieldErrorException("fieldUniqueException", meta.getName()));
+                list.add(new FieldErrorException("fieldUniqueException", StorageLocationMeta.getName()));
             }
 
         }
@@ -199,11 +199,11 @@ public class StorageLocationBean implements StorageLocationRemote, StorageLocati
         // storage unit required
         if (DataBaseUtil.isEmpty(data.getStorageUnitId()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getStorageUnitDescription()));
+                                             StorageLocationMeta.getStorageUnitDescription()));
 
         // location required
         if (DataBaseUtil.isEmpty(data.getLocation()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getLocation()));
+            list.add(new FieldErrorException("fieldRequiredException", StorageLocationMeta.getLocation()));
 
         if (list.size() > 0)
             throw list;
@@ -219,12 +219,12 @@ public class StorageLocationBean implements StorageLocationRemote, StorageLocati
         if (DataBaseUtil.isEmpty(storageLocationDO.getStorageUnitId()))
             list.add(new FieldErrorException(
                                              "fieldRequiredException",
-                                             meta.getChildStorageUnitDescription()));
+                                             StorageLocationMeta.getChildStorageUnitDescription()));
 
         // location required
         if (DataBaseUtil.isEmpty(storageLocationDO.getLocation()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getChildStorageUnitDescription()));
+                                             StorageLocationMeta.getChildStorageUnitDescription()));
 
         if (list.size() > 0)
             throw list;

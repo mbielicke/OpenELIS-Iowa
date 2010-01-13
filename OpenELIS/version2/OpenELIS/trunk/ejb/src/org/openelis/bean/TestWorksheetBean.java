@@ -52,8 +52,6 @@ public class TestWorksheetBean implements TestWorksheetLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager            manager;
     
-    private static final TestMeta    meta = new TestMeta();
-    
     public TestWorksheetViewDO fetchByTestId(Integer testId) throws Exception {
         Query query;
         TestWorksheetViewDO data;        
@@ -136,36 +134,36 @@ public class TestWorksheetBean implements TestWorksheetLocal {
         
         if (data.getBatchCapacity() == null) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getWorksheetBatchCapacity()));
+                                             TestMeta.getWorksheetBatchCapacity()));
             checkForMultiple = false;
         }
         if (data.getTotalCapacity() == null) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getWorksheetTotalCapacity()));
+                                             TestMeta.getWorksheetTotalCapacity()));
             checkForMultiple = false;
         }
 
         if (data.getBatchCapacity() != null && data.getBatchCapacity() <= 0) {
             list.add(new FieldErrorException("batchCapacityMoreThanZeroException",
-                                                      meta.getWorksheetBatchCapacity()));
+                                             TestMeta.getWorksheetBatchCapacity()));
             checkForMultiple = false;
         }
 
         if (data.getTotalCapacity() != null && data.getTotalCapacity() <= 0) {
             list.add(new FieldErrorException("totalCapacityMoreThanZeroException",
-                                                      meta.getWorksheetTotalCapacity()));
+                                             TestMeta.getWorksheetTotalCapacity()));
             checkForMultiple = false;
         }
 
         if (data.getFormatId() == null) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getWorksheetFormatId()));
+                                             TestMeta.getWorksheetFormatId()));
         }
 
         if (checkForMultiple) {
             if ( (data.getTotalCapacity() % data.getBatchCapacity()) != 0) {
                 list.add(new FieldErrorException("totalCapacityMultipleException",
-                                                          meta.getWorksheetTotalCapacity()));
+                                                 TestMeta.getWorksheetTotalCapacity()));
             }
         }
         

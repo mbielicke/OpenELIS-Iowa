@@ -53,7 +53,7 @@ public class HistoryBean implements HistoryRemote, HistoryLocal {
     private SystemUserUtilLocal sysUser;
 
     @SuppressWarnings("unchecked")
-    public ArrayList<HistoryVO> fetchByReferenceIdAndTable(Integer referenceId, Integer referenceTableId) {
+    public ArrayList<HistoryVO> fetchByReferenceIdAndTable(Integer referenceId, Integer referenceTableId) throws Exception{
         Query query;
         SystemUserDO user;
         List<HistoryVO> list;

@@ -53,8 +53,6 @@ public class TestSectionBean implements TestSectionLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager                    manager;
     
-    private static final TestMeta meta = new TestMeta(); 
-    
     public ArrayList<TestSectionViewDO> fetchByTestId(Integer testId) throws Exception {
         Query query;
         List<TestSectionViewDO> list;
@@ -122,7 +120,7 @@ public class TestSectionBean implements TestSectionLocal {
         list = new ValidationErrorsList();
         if (secDO.getSectionId() == null) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getSectionSectionId()));
+                                             TestMeta.getSectionSectionId()));
         } 
         
         if (list.size() > 0)

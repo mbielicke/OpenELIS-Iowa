@@ -88,10 +88,10 @@ public class InstrumentBean implements InstrumentRemote , InstrumentLocal{
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
         builder.setSelect("distinct new org.openelis.domain.IdNameVO("
-                     + meta.getId()+", "+meta.getName()
-                     +", "+meta.getSerialNumber()+ ") ");        
+                     + InstrumentMeta.getId()+", "+InstrumentMeta.getName()
+                     +", "+InstrumentMeta.getSerialNumber()+ ") ");        
         builder.constructWhere(fields);
-        builder.setOrderBy(meta.getName()+", "+meta.getSerialNumber());
+        builder.setOrderBy(InstrumentMeta.getName()+", "+InstrumentMeta.getSerialNumber());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
@@ -174,23 +174,23 @@ public class InstrumentBean implements InstrumentRemote , InstrumentLocal{
         
         if(DataBaseUtil.isEmpty(name)){
             list.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getName()));
+                                             InstrumentMeta.getName()));
             checkDuplicate = false;
         } 
         
         if(DataBaseUtil.isEmpty(serialNumber)){
             list.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getSerialNumber()));
+                                             InstrumentMeta.getSerialNumber()));
             checkDuplicate = false;
         } 
         
         if(DataBaseUtil.isEmpty(location)) 
             list.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getLocation()));        
+                                             InstrumentMeta.getLocation()));        
         
         if(DataBaseUtil.isEmpty(data.getTypeId())) 
             list.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getTypeId()));                                       
+                                             InstrumentMeta.getTypeId()));                                       
         
         if(checkDuplicate) {
             if(!DataBaseUtil.isEmpty(activeEnd) && DataBaseUtil.isAfter(activeBegin,activeEnd))

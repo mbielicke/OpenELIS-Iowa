@@ -48,19 +48,19 @@ public class StorageUnitMeta implements Meta, MetaMap {
         names = new HashSet<String>(Arrays.asList(ID,CATEGORY_ID,DESCRIPTION,IS_SINGULAR));
     }
     
-    public String getId() {
+    public static String getId() {
         return ID;
     } 
 
-    public String getCategoryId() {
+    public static String getCategoryId() {
         return CATEGORY_ID;
     } 
 
-    public String getDescription() {
+    public static String getDescription() {
         return DESCRIPTION;
     } 
 
-    public String getIsSingular() {
+    public static String getIsSingular() {
         return IS_SINGULAR;
     }
 

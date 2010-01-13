@@ -66,63 +66,63 @@ public class CategoryMeta implements Meta, MetaMap {
                                                   DICT_ENTRY,DICT_RELATED_ENTRY_ENTRY));
     }
         
-    public String getId() {
+    public static String getId() {
         return ID;
     } 
 
-    public String getSystemName() {
+    public static String getSystemName() {
         return SYSTEM_NAME;
     } 
 
-    public String getName() {
+    public static String getName() {
         return NAME;
     } 
 
-    public String getDescription() {
+    public static String getDescription() {
         return DESCRIPTION;
     } 
 
-    public String getSectionId() {
+    public static String getSectionId() {
         return SECTION_ID;
     } 
     
-    public String getIsSystem() {
+    public static String getIsSystem() {
         return IS_SYSTEM;
     }
     
-    public String getDictionaryId() {
+    public static String getDictionaryId() {
         return DICT_ID;
     } 
 
-    public String getDictionaryCategoryId() {
+    public static String getDictionaryCategoryId() {
         return DICT_CATEGORY_ID;
     } 
     
-    public String getDictionarySortOrder() {
+    public static String getDictionarySortOrder() {
         return DICT_SORT_ORDER;
     }
 
-    public String getDictionaryRelatedEntryId() {
+    public static String getDictionaryRelatedEntryId() {
         return DICT_RELATED_ENTRY_ID;
     } 
 
-    public String getDictionarySystemName() {
+    public static String getDictionarySystemName() {
         return DICT_SYSTEM_NAME;
     } 
 
-    public String getDictionaryIsActive() {
+    public static String getDictionaryIsActive() {
         return DICT_IS_ACTIVE;
     } 
 
-    public String getDictionaryLocalAbbrev() {
+    public static String getDictionaryLocalAbbrev() {
         return DICT_LOCAL_ABBREV;
     } 
 
-    public String getDictionaryEntry() {
+    public static String getDictionaryEntry() {
         return DICT_ENTRY;
     } 
     
-    public String getDictionaryRelatedEntryEntry() {
+    public static String getDictionaryRelatedEntryEntry() {
         return DICT_RELATED_ENTRY_ENTRY;
     } 
     

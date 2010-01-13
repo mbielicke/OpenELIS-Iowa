@@ -116,12 +116,12 @@ public class AnalyteBean implements AnalyteRemote {
 
         qb.setMeta(meta);
 
-        qb.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getId() + ", " +
-                     meta.getName() + ") ");
+        qb.setSelect("distinct new org.openelis.domain.IdNameVO(" + AnalyteMeta.getId() + ", " +
+                     AnalyteMeta.getName() + ") ");
 
         qb.constructWhere(fields);
 
-        qb.setOrderBy(meta.getName());
+        qb.setOrderBy(AnalyteMeta.getName());
 
         query = manager.createQuery(qb.getEJBQL());
         query.setMaxResults(first + max);

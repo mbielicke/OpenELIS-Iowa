@@ -33,5 +33,5 @@ import org.openelis.domain.HistoryVO;
 
 @Remote
 public interface HistoryRemote {
-    public ArrayList<HistoryVO> fetchByReferenceIdAndTable(Integer referenceId, Integer referenceTableId);
+    public ArrayList<HistoryVO> fetchByReferenceIdAndTable(Integer referenceId, Integer referenceTableId) throws Exception;
 }

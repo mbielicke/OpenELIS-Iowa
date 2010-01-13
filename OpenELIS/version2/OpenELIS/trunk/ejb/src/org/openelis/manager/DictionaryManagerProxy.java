@@ -44,8 +44,6 @@ import org.openelis.utilcommon.DataBaseUtil;
 
 public class DictionaryManagerProxy {
 
-    private static CategoryMeta meta = new CategoryMeta();
-
     public DictionaryManager fetchByCategoryId(Integer id) throws Exception {
         DictionaryManager man;
         ArrayList<DictionaryViewDO> entries;
@@ -207,7 +205,7 @@ public class DictionaryManagerProxy {
                     entries.add(name);
                 } else {
                     list.add(new TableFieldErrorException("fieldUniqueOnlyException", i,
-                                                          meta.getDictionaryEntry(),
+                                                          CategoryMeta.getDictionaryEntry(),
                                                           "dictEntTable"));
                 }
             } catch(Exception e) {
@@ -226,17 +224,17 @@ public class DictionaryManagerProxy {
                    }
                    if (!DataBaseUtil.isEmpty(catId) && DataBaseUtil.isDifferent(catId,categoryId)) {
                         list.add(new TableFieldErrorException("fieldUniqueException", i,
-                                                              meta.getDictionarySystemName(),
+                                                              CategoryMeta.getDictionarySystemName(),
                                                               "dictEntTable"));                        
                    }
                     systemNames.add(systemName);
                 } else if (DataBaseUtil.isEmpty(data.getId())) {
                         list.add(new TableFieldErrorException("fieldUniqueOnlyException", i,
-                                                              meta.getDictionarySystemName(),
+                                                              CategoryMeta.getDictionarySystemName(),
                                                               "dictEntTable"));                        
                 } else {
                     list.add(new TableFieldErrorException("fieldUniqueException", i,
-                                                              meta.getDictionarySystemName(),
+                                                          CategoryMeta.getDictionarySystemName(),
                                                               "dictEntTable"));                    
                 }
             }                    

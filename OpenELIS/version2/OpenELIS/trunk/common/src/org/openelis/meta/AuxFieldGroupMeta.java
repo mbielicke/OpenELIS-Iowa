@@ -74,99 +74,99 @@ public class AuxFieldGroupMeta implements Meta, MetaMap {
                                                   FIELD_METHOD_NAME, FIELD_SCRIPTLET_NAME));
     }
     
-    public String getId() {
+    public static String getId() {
         return ID;
     } 
 
-    public String getName() {
+    public static String getName() {
         return NAME;
     } 
 
-    public String getDescription() {
+    public static String getDescription() {
         return DESCRIPTION;
     } 
 
-    public String getIsActive() {
+    public static String getIsActive() {
         return IS_ACTIVE;
     } 
 
-    public String getActiveBegin() {
+    public static String getActiveBegin() {
         return ACTIVE_BEGIN;
     } 
 
-    public String getActiveEnd() {
+    public static String getActiveEnd() {
         return ACTIVE_END;
     } 
     
-    public String getFieldId() {
+    public static String getFieldId() {
         return FIELD_ID;
     } 
     
-    public String getFieldAuxFieldGroupId() {
+    public static String getFieldAuxFieldGroupId() {
         return FIELD_AUX_FIELD_GROUP_ID;
     }
 
-    public String getFieldSortOrder() {
+    public static String getFieldSortOrder() {
         return FIELD_SORT_ORDER;
     } 
 
-    public String getFieldAnalyteId() {
+    public static String getFieldAnalyteId() {
         return FIELD_ANALYTE_ID;
     } 
 
-    public String getFieldDescription() {
+    public static String getFieldDescription() {
         return FIELD_DESCRIPTION;
     } 
 
-    public String getFieldMethodId() {
+    public static String getFieldMethodId() {
         return FIELD_METHOD_ID;
     } 
 
-    public String getFieldUnitOfMeasureId() {
+    public static String getFieldUnitOfMeasureId() {
         return FIELD_UNIT_OF_MEASURE_ID;
     } 
 
-    public String getFieldIsRequired() {
+    public static String getFieldIsRequired() {
         return FIELD_IS_REQUIRED;
     } 
 
-    public String getFieldIsActive() {
+    public static String getFieldIsActive() {
         return FIELD_IS_ACTIVE;
     } 
 
-    public String getFieldIsReportable() {
+    public static String getFieldIsReportable() {
         return FIELD_IS_REPORTABLE;
     } 
 
-    public String getFieldScriptletId() {
+    public static String getFieldScriptletId() {
         return FIELD_SCRIPTLET_ID;
     } 
     
-    public String getFieldValueId() {
+    public static String getFieldValueId() {
         return FIELD_VALUE_ID;
     } 
 
-    public String getFieldValueAuxFieldId() {
+    public static String getFieldValueAuxFieldId() {
         return FIELD_VALUE_AUX_FIELD_ID;
     } 
 
-    public String getFieldValueTypeId() {
+    public static String getFieldValueTypeId() {
         return FIELD_VALUE_TYPE_ID;
     } 
 
-    public String getFieldValueValue() {
+    public static String getFieldValueValue() {
         return FIELD_VALUE_VALUE;
     } 
     
-    public String getFieldAnalyteName() {
+    public static String getFieldAnalyteName() {
         return FIELD_ANALYTE_NAME;
     }
     
-    public String getFieldMethodName() {
+    public static String getFieldMethodName() {
         return FIELD_METHOD_NAME;
     } 
     
-    public String getFieldScriptletName() {
+    public static String getFieldScriptletName() {
         return FIELD_SCRIPTLET_NAME;
     }
     

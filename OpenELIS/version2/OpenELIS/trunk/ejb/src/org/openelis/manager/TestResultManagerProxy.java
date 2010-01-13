@@ -48,8 +48,6 @@ import org.openelis.utilcommon.ResultRangeNumeric;
 import org.openelis.utilcommon.ResultRangeTiter;
 
 public class TestResultManagerProxy {
-
-    private static final TestMeta    meta = new TestMeta();
     
     private static int               typeDict, typeNumeric, typeTiter, typeDefault; 
     
@@ -216,12 +214,12 @@ public class TestResultManagerProxy {
                     unitText = dl.fetchById(unitId).getEntry();
                     
                     list.add(new GridFieldErrorException("illegalUnitOfMeasureException", i, j,
-                                                                  meta.getResultUnitOfMeasureId(),
+                                                         TestMeta.getResultUnitOfMeasureId(),
                                                                   "resultTable",unitText));    
                     continue;
                 }
 
-                fieldName = meta.getResultValue();
+                fieldName = TestMeta.getResultValue();
                 
                 try {                    
                     rl.validate(data);                    

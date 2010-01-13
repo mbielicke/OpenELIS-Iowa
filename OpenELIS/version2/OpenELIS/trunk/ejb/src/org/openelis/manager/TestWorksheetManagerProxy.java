@@ -47,8 +47,6 @@ import org.openelis.meta.TestMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 public class TestWorksheetManagerProxy {
-
-    private static final TestMeta    meta = new TestMeta();
     
     private static int               typeBatch, typeTotal, typeFixed, typeDupl; 
     
@@ -387,17 +385,17 @@ public class TestWorksheetManagerProxy {
             if (position != null) {
                 if (position <= 0) {
                     list.add(new TableFieldErrorException("posMoreThanZeroException", i,
-                                                                   meta.getWorksheetItemPosition(),
+                                                          TestMeta.getWorksheetItemPosition(),
                                                                    "worksheetTable"));
                     checkPosition = false;
                 } else if (bc != null && DataBaseUtil.isSame(typeBatch,formatId) && position > bc) {
                     list.add(new TableFieldErrorException("posExcBatchCapacityException",
-                                                                   i, meta.getWorksheetItemPosition(),
+                                                                   i, TestMeta.getWorksheetItemPosition(),
                                                                    "worksheetTable"));
                     checkPosition = false;
                 } else if (tc != null && DataBaseUtil.isSame(typeTotal,formatId) && position > tc) {
                     list.add(new TableFieldErrorException("posExcTotalCapacityException",
-                                                                   i, meta.getWorksheetItemPosition(),
+                                                                   i, TestMeta.getWorksheetItemPosition(),
                                                                    "worksheetTable"));
                     checkPosition = false;
                 } else {
@@ -406,7 +404,7 @@ public class TestWorksheetManagerProxy {
                     } else {
                         list.add(new TableFieldErrorException("duplicatePosForQCsException",
                                                                        i,
-                                                                       meta.getWorksheetItemPosition(),
+                                                                       TestMeta.getWorksheetItemPosition(),
                                                                        "worksheetTable"));
                         checkPosition = false;
                     }
@@ -416,7 +414,7 @@ public class TestWorksheetManagerProxy {
             if (checkPosition) {
                 if (duplicateAfterFixedOrDuplicate(currDO, prevDO)) {
                     list.add(new TableFieldErrorException("duplPosAfterFixedOrDuplPosException",
-                                                                   i, meta.getWorksheetItemPosition(),
+                                                                   i, TestMeta.getWorksheetItemPosition(),
                                                                    "worksheetTable"));
                 }
             }
@@ -450,7 +448,7 @@ public class TestWorksheetManagerProxy {
                 idlist.add(anaId);
             } else {
                 list.add(new TableFieldErrorException("duplicateWSAnalyteException", i,
-                                                               meta.getWorksheetAnalyteAnalyteId(),
+                                                      TestMeta.getWorksheetAnalyteAnalyteId(),
                                                                "worksheetAnalyteTable"));
             }            
         }

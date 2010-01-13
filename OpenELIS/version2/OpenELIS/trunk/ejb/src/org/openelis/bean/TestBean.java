@@ -111,13 +111,13 @@ public class TestBean implements TestRemote, TestLocal {
         builder.setMeta(meta);
 
         builder.setSelect("distinct new org.openelis.domain.TestMethodVO(" +
-                          meta.getId() +
+                          TestMeta.getId() +
                           ", " +
-                          (meta.getName() + ", " + meta.getDescription() + ", " +
-                           meta.getMethodId() + ", " + meta.getMethodName() +
-                           ", " + meta.getMethodDescription()) + ") ");
+                          (TestMeta.getName() + ", " + TestMeta.getDescription() + ", " +
+                           TestMeta.getMethodId() + ", " + TestMeta.getMethodName() +
+                           ", " + TestMeta.getMethodDescription()) + ") ");
         builder.constructWhere(fields);
-        builder.setOrderBy(meta.getName() + ", " + meta.getMethodName());
+        builder.setOrderBy(TestMeta.getName() + ", " + TestMeta.getMethodName());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
@@ -216,25 +216,25 @@ public class TestBean implements TestRemote, TestLocal {
         checkDuplicate = true;
 
         if (DataBaseUtil.isEmpty(data.getName())) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException", meta.getName()));
+            exceptionList.add(new FieldErrorException("fieldRequiredException", TestMeta.getName()));
             checkDuplicate = false;
         }
 
         if (DataBaseUtil.isEmpty(data.getMethodId())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getMethodId()));
+                                                      TestMeta.getMethodId()));
             checkDuplicate = false;
         }
 
         if (DataBaseUtil.isEmpty(data.getDescription())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getDescription()));
+                                                      TestMeta.getDescription()));
             checkDuplicate = false;
         }
 
         if (DataBaseUtil.isEmpty(data.getIsActive())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getIsActive()));
+                                                      TestMeta.getIsActive()));
             checkDuplicate = false;
         } else if ("N".equals(data.getIsActive())) {
 
@@ -257,43 +257,43 @@ public class TestBean implements TestRemote, TestLocal {
 
         if (DataBaseUtil.isEmpty(data.getIsReportable())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getIsReportable()));
+                                                      TestMeta.getIsReportable()));
         }
 
         if (DataBaseUtil.isEmpty(data.getTimeTaMax())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getTimeTaMax()));
+                                                      TestMeta.getTimeTaMax()));
         }
 
         if (DataBaseUtil.isEmpty(data.getTimeTransit())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getTimeTransit()));
+                                                      TestMeta.getTimeTransit()));
         }
 
         if (DataBaseUtil.isEmpty(data.getTimeTaAverage())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getTimeTaAverage()));
+                                                      TestMeta.getTimeTaAverage()));
         }
 
         if (DataBaseUtil.isEmpty(data.getTimeHolding())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getTimeHolding()));
+                                                      TestMeta.getTimeHolding()));
         }
 
         if (DataBaseUtil.isEmpty(data.getTimeTaWarning())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getTimeTaWarning()));
+                                                      TestMeta.getTimeTaWarning()));
         }
 
         if (DataBaseUtil.isEmpty(data.getActiveBegin())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getActiveBegin()));
+                                                      TestMeta.getActiveBegin()));
             checkDuplicate = false;
         }
 
         if (DataBaseUtil.isEmpty(data.getActiveEnd())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      meta.getActiveEnd()));
+                                                      TestMeta.getActiveEnd()));
             checkDuplicate = false;
         }
 

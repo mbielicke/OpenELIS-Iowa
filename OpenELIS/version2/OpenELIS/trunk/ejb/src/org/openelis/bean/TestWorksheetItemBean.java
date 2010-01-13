@@ -63,8 +63,6 @@ public class TestWorksheetItemBean implements TestWorksheetItemLocal {
     @EJB
     private DictionaryLocal          dictionary;
     
-    private static final TestMeta    meta = new TestMeta();
-    
     private static int               typeFixed, typeDupl; 
     
     private static final Logger      log  = Logger.getLogger(TestWorksheetItemBean.class.getName());
@@ -167,26 +165,26 @@ public class TestWorksheetItemBean implements TestWorksheetItemLocal {
         
         if (DataBaseUtil.isEmpty(name)) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getWorksheetItemQcName()));
+                                             TestMeta.getWorksheetItemQcName()));
         }
         if (DataBaseUtil.isEmpty(data.getTypeId())) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                                  meta.getWorksheetItemTypeId()));
+                                             TestMeta.getWorksheetItemTypeId()));
             
         }
         
         if (position == null) {
             if (DataBaseUtil.isSame(typeDupl, typeId) || DataBaseUtil.isSame(typeFixed, typeId)) {
                 list.add(new FieldErrorException("fixedDuplicatePosException",
-                                                 meta.getWorksheetItemPosition()));
+                                                 TestMeta.getWorksheetItemPosition()));
             }
         } else {
             if (position == 1 && DataBaseUtil.isSame(typeDupl, typeId)) {
                 list.add(new FieldErrorException("posOneDuplicateException",
-                                                 meta.getWorksheetItemTypeId()));
+                                                 TestMeta.getWorksheetItemTypeId()));
             } else if (DataBaseUtil.isDifferent(typeDupl, typeId) && DataBaseUtil.isDifferent(typeFixed, typeId)) {
                 list.add(new FieldErrorException("posSpecifiedException",
-                                                 meta.getWorksheetItemPosition()));
+                                                 TestMeta.getWorksheetItemPosition()));
             }
         }
         

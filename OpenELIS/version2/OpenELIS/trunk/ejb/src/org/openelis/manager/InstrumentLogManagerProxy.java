@@ -39,8 +39,6 @@ import org.openelis.meta.InstrumentMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 public class InstrumentLogManagerProxy {
-
-    private InstrumentMeta meta = new InstrumentMeta();
     
     public InstrumentLogManager fetchByInstrumentId(Integer id) throws Exception {
         InstrumentLogManager man;
@@ -129,7 +127,7 @@ public class InstrumentLogManagerProxy {
                 num++;                   
                 if(num > 1) {
                     exc = new TableFieldErrorException("moreThanOneEndDateAbsentException", i,
-                                                   meta.getLogEventEnd(),"logTable");                
+                                                       InstrumentMeta.getLogEventEnd(),"logTable");                
                     list.add(exc);
                 }
             }
@@ -140,10 +138,10 @@ public class InstrumentLogManagerProxy {
             
             if(dateRangeOverlapping(range,rangeList)){
                 exc = new TableFieldErrorException("intervalOverlapException", i,
-                                                   meta.getLogEventBegin(),"logTable");                
+                                                   InstrumentMeta.getLogEventBegin(),"logTable");                
                 list.add(exc);
                 exc = new TableFieldErrorException("intervalOverlapException", i,
-                                                   meta.getLogEventEnd(),"logTable");                
+                                                   InstrumentMeta.getLogEventEnd(),"logTable");                
                 list.add(exc);
             } else {
                 rangeList.add(range);
