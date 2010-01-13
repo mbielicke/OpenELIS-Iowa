@@ -714,6 +714,9 @@ public class AuxiliaryScreen extends Screen {
                         }
                         break;
                     case 1:
+                        //we need to set the new value before we can validate it
+                        data.setValue((String)val);
+                        
                         auxFieldValueTable.clearCellExceptions(r, c);
                         try {
                             validateValue(data, (String)val);
