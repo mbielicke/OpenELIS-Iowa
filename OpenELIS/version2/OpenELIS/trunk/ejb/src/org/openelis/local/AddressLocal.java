@@ -34,10 +34,10 @@ public interface AddressLocal {
 
     public AddressDO fetchById(Integer id) throws Exception;
 
-    public AddressDO add(AddressDO addressDO) throws Exception;
+    public AddressDO add(AddressDO data) throws Exception;
 
-    public AddressDO update(AddressDO addressDO) throws Exception;
+    public AddressDO update(AddressDO data) throws Exception;
 
-    public void delete(Integer id) throws Exception;
+    public void delete(AddressDO data) throws Exception;
 
 }

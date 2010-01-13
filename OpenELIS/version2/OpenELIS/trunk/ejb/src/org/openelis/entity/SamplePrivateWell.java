@@ -32,6 +32,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -42,14 +44,13 @@ import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-/*
 @NamedQueries({
-    @NamedQuery( name = "SampleEnvironmental.FetchBySampleId",
-                query = "select new org.openelis.domain.SampleEnvironmentalDO(s.id,s.sampleId,s.isHazardous, s.priority, "+
-                        "s.description,s.collector,s.collectorPhone,s.location,s.locationAddressId,a.multipleUnit," +
-                        "a.streetAddress,a.city,a.state,a.zipCode,a.country)"
-                      + " from SampleEnvironmental s LEFT JOIN s.address a where s.sampleId = :id")})
-                      */
+    @NamedQuery( name = "SamplePrivateWell.FetchBySampleId",
+                query = "select new org.openelis.domain.SamplePrivateWellViewDO(s.id,s.sampleId,s.organizationId, s.reportToName, "+
+                        "s.reportToAddressId, s.location, s.locationAddressId, a.multipleUnit," +
+                        "a.streetAddress,a.city,a.state,a.zipCode,s.owner, s.collector, s.wellNumber, o.name, o.addressId)"
+                      + " from SamplePrivateWell s LEFT JOIN s.locationAddress a LEFT JOIN s.organization o where s.sampleId = :id")})
+
 @Entity
 @Table(name = "sample_private_well")
 @EntityListeners( {AuditUtil.class})

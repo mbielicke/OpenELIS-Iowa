@@ -111,12 +111,12 @@ public class AddressBean implements AddressRemote, AddressLocal {
         return data;
     }
 
-    public void delete(Integer id) throws Exception {
+    public void delete(AddressDO data) throws Exception {
         Address entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = manager.find(Address.class, id);
+        entity = manager.find(Address.class, data.getId());
 
         manager.remove(entity);
     }
