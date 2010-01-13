@@ -88,7 +88,7 @@ public class ProviderLocationBean implements ProviderLocationLocal {
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(ProviderLocation.class, data.getId());
         if (entity != null) {
-            addressBean.delete(entity.getAddressId());
+            addressBean.delete(data.getAddressDO());
             manager.remove(entity);
         }
     }

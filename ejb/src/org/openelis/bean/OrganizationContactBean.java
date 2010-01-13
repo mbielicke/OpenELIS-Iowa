@@ -112,7 +112,7 @@ public class OrganizationContactBean implements OrganizationContactLocal {
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        addressBean.delete(data.getAddressDO().getId());
+        addressBean.delete(data.getAddressDO());
         entity = manager.find(OrganizationContact.class, data.getId());
         if (entity != null)
             manager.remove(entity);

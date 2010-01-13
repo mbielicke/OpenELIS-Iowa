@@ -45,6 +45,7 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.LockLocal;
 import org.openelis.local.SampleLocal;
+import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.remote.SampleRemote;
 import org.openelis.util.QueryBuilderV2;
@@ -74,6 +75,11 @@ public class SampleBean implements SampleLocal, SampleRemote {
         QueryBuilderV2 builder;
         List list;
 
+        //for the well screen we have to link to the org table and the adress table
+        //with the same textboxes.  So if they queried by these fields we need to add
+        //a link to the 2nd table
+        addWellWhereClause(fields);
+        
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
         builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + SampleMeta.getId() + ",'') ");
@@ -171,5 +177,97 @@ public class SampleBean implements SampleLocal, SampleRemote {
     
     private void validate() throws Exception {
         
-    }    
+    }
+    
+    private void addWellWhereClause(ArrayList<QueryData> fields){
+        String dataKey, domain, orgName, addressMult, addressStreet,
+        addressCity, addressState, addressZip, addressWorkPhone,
+        addressFaxPhone;
+        QueryData data;
+        
+        domain = null;
+        orgName = null;
+        addressMult = null;
+        addressStreet = null;
+        addressCity = null;
+        addressState = null;
+        addressZip = null;
+        addressWorkPhone = null;
+        addressFaxPhone = null;
+        for(int i=0; i<fields.size(); i++){
+            data = fields.get(i);
+            dataKey = data.key;
+            
+            if(SampleMeta.getDomain().equals(dataKey))
+                domain = data.query;
+            else if(SampleMeta.getOrgName().equals(dataKey))
+                orgName = data.query;
+            else if(SampleMeta.getAddressMultipleUnit().equals(dataKey))
+                addressMult = data.query;
+            else if(SampleMeta.getAddressStreetAddress().equals(dataKey))
+                addressStreet = data.query;
+            else if(SampleMeta.getAddressCity().equals(dataKey))
+                addressCity = data.query;
+            else if(SampleMeta.getAddressState().equals(dataKey))
+                addressState = data.query;
+            else if(SampleMeta.getAddressZipCode().equals(dataKey))
+                addressZip = data.query;
+            else if(SampleMeta.getAddressWorkPhone().equals(dataKey))
+                addressWorkPhone = data.query;
+            else if(SampleMeta.getAddressFaxPhone().equals(dataKey))
+                addressFaxPhone = data.query;
+        }
+        
+        if(SampleManager.WELL_DOMAIN_FLAG.equals(domain)){
+            if(orgName != null){
+             data = new QueryData();
+             data.key = SampleMeta.getWellReportToName();
+             data.type = QueryData.Type.STRING;
+             data.query = orgName;
+             fields.add(data);
+            }else if(addressMult != null){
+                data = new QueryData();
+                data.key = SampleMeta.getWellReportToAddressMultipleUnit();
+                data.type = QueryData.Type.STRING;
+                data.query = addressMult;
+                fields.add(data);
+            }else if(addressStreet != null){
+                data = new QueryData();
+                data.key = SampleMeta.getWellReportToAddressStreetAddress();
+                data.type = QueryData.Type.STRING;
+                data.query = addressStreet;
+                fields.add(data);
+            }else if(addressCity != null){
+                data = new QueryData();
+                data.key = SampleMeta.getWellReportToAddressCity();
+                data.type = QueryData.Type.STRING;
+                data.query = addressCity;
+                fields.add(data);
+            }else if(addressState != null){
+                data = new QueryData();
+                data.key = SampleMeta.getWellReportToAddressState();
+                data.type = QueryData.Type.STRING;
+                data.query = addressState;
+                fields.add(data);
+            }else if(addressZip != null){ 
+                data = new QueryData();
+                data.key = SampleMeta.getWellReportToAddressZipCode();
+                data.type = QueryData.Type.STRING;
+                data.query = addressZip;
+                fields.add(data);
+            }else if(addressWorkPhone != null){
+                data = new QueryData();
+                data.key = SampleMeta.getWellReportToAddressWorkPhone();
+                data.type = QueryData.Type.STRING;
+                data.query = addressWorkPhone;
+                fields.add(data);
+            }else if(addressFaxPhone != null){
+                data = new QueryData();
+                data.key = SampleMeta.getWellReportToAddressFaxPhone();
+                data.type = QueryData.Type.STRING;
+                data.query = addressFaxPhone;
+                fields.add(data);   
+            }   
+        }
+    }
 }

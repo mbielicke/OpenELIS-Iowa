@@ -34,75 +34,83 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.SampleEnvironmentalDO;
-import org.openelis.entity.SampleEnvironmental;
+import org.openelis.domain.AddressDO;
+import org.openelis.domain.SamplePrivateWellViewDO;
+import org.openelis.entity.SamplePrivateWell;
 import org.openelis.local.AddressLocal;
-import org.openelis.local.SampleEnvironmentalLocal;
+import org.openelis.local.SamplePrivateWellLocal;
 
 @Stateless
 
 @SecurityDomain("openelis")
-@RolesAllowed("sampleenvironmental-select")
-public class SampleEnvironmentalBean implements SampleEnvironmentalLocal {
+@RolesAllowed("sampleprivatewell-select")
+public class SamplePrivateWellBean implements SamplePrivateWellLocal {
+
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
     
     @EJB private AddressLocal addressBean;
-    
-    public SampleEnvironmentalDO fetchBySampleId(Integer id) throws Exception {
+
+    public SamplePrivateWellViewDO fetchBySampleId(Integer sampleId) throws Exception {
         Query query;
+        SamplePrivateWellViewDO result;
         
-        query = manager.createNamedQuery("SampleEnvironmental.FetchBySampleId");
-        query.setParameter("id", id);
+        query = manager.createNamedQuery("SamplePrivateWell.FetchBySampleId");
+        query.setParameter("id", sampleId);
 
-        return (SampleEnvironmentalDO) query.getSingleResult();
+        result = (SamplePrivateWellViewDO)query.getSingleResult();
+        
+        return result;
     }
-
-    public void add(SampleEnvironmentalDO data) throws Exception {
-        SampleEnvironmental entity;
+    
+    public void add(SamplePrivateWellViewDO data) throws Exception {
+        SamplePrivateWell entity;
+        AddressDO adDO;
         
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = new SampleEnvironmental();
+        entity = new SamplePrivateWell();
         
-        addressBean.add(data.getLocationAddressDO());
+        //add the location address and set the id
+        adDO = addressBean.add(data.getLocationAddressDO());
+        data.setLocationAddressId(adDO.getId());
         
-        entity.setLocationAddressId(data.getLocationAddressDO().getId());
         entity.setCollector(data.getCollector());
-        entity.setCollectorPhone(data.getCollectorPhone());
-        entity.setDescription(data.getDescription());
-        entity.setIsHazardous(data.getIsHazardous());
-        entity.setPriority(data.getPriority());
-        entity.setSampleId(data.getSampleId());
         entity.setLocation(data.getLocation());
+        entity.setLocationAddressId(data.getLocationAddressId());
+        entity.setOrganizationId(data.getOrganizationId());
+        entity.setOwner(data.getOwner());
+        entity.setReportToAddressId(data.getReportToAddressId());
+        entity.setReportToName(data.getReportToName());
+        entity.setSampleId(data.getSampleId());
+        entity.setWellNumber(data.getWellNumber());
         
         manager.persist(entity);
         
         data.setId(entity.getId());
+        
     }
 
-    public void update(SampleEnvironmentalDO data) throws Exception {
-        SampleEnvironmental entity;
+    public void update(SamplePrivateWellViewDO data) throws Exception {
+        SamplePrivateWell entity;
         
         if (!data.isChanged())
             return;
         
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        entity = manager.find(SampleEnvironmental.class, data.getId());
+        entity = manager.find(SamplePrivateWell.class, data.getId());
         
         addressBean.update(data.getLocationAddressDO());
         
-        entity.setLocationAddressId(data.getLocationAddressDO().getId());
         entity.setCollector(data.getCollector());
-        entity.setCollectorPhone(data.getCollectorPhone());
-        entity.setDescription(data.getDescription());
-        entity.setIsHazardous(data.getIsHazardous());
-        entity.setPriority(data.getPriority());
-        entity.setSampleId(data.getSampleId());
         entity.setLocation(data.getLocation());
-    }
-
-    public void validate() throws Exception {
+        entity.setLocationAddressId(data.getLocationAddressId());
+        entity.setOrganizationId(data.getOrganizationId());
+        entity.setOwner(data.getOwner());
+        entity.setReportToAddressId(data.getReportToAddressId());
+        entity.setReportToName(data.getReportToName());
+        entity.setSampleId(data.getSampleId());
+        entity.setWellNumber(data.getWellNumber());
     }
 }
