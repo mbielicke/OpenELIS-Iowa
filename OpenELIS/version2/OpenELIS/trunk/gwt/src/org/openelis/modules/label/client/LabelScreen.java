@@ -40,6 +40,8 @@ import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.BeforeCloseEvent;
+import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -48,12 +50,14 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.QueryFieldUtil;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -70,7 +74,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class LabelScreen extends Screen {
     private LabelViewDO           data;
-    private LabelMeta             meta = new LabelMeta();
     private SecurityModule        security;
 
     private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
@@ -224,7 +227,7 @@ public class LabelScreen extends Screen {
             }
         });
 
-        name = (TextBox)def.getWidget(meta.getName());
+        name = (TextBox)def.getWidget(LabelMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(data.getName());
@@ -241,7 +244,7 @@ public class LabelScreen extends Screen {
             }
         });
 
-        description = (TextBox)def.getWidget(meta.getDescription());
+        description = (TextBox)def.getWidget(LabelMeta.getDescription());
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 description.setValue(data.getDescription());
@@ -258,7 +261,7 @@ public class LabelScreen extends Screen {
             }
         });
 
-        printerTypeId = (Dropdown)def.getWidget(meta.getPrinterTypeId());
+        printerTypeId = (Dropdown)def.getWidget(LabelMeta.getPrinterTypeId());
         addScreenHandler(printerTypeId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 printerTypeId.setSelection(data.getPrinterTypeId());
@@ -275,7 +278,7 @@ public class LabelScreen extends Screen {
             }
         });
 
-        scriptlet = (AutoComplete)def.getWidget(meta.getScriptletName());
+        scriptlet = (AutoComplete)def.getWidget(LabelMeta.getScriptletName());
         addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 scriptlet.setSelection(data.getScriptletId(), data.getScriptletName());
@@ -378,13 +381,22 @@ public class LabelScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = meta.getName();
+                field.key = LabelMeta.getName();
                 field.query = ((AppButton)event.getSource()).getAction();
                 field.type = QueryData.Type.STRING;
 
                 query = new Query();
                 query.setFields(field);
                 nav.setQuery(query);
+            }
+        });
+        
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+                if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
+                    event.cancel();
+                    window.setError(consts.get("mustCommitOrAbort"));
+                }
             }
         });
     }

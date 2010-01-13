@@ -38,15 +38,19 @@ import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.BeforeCloseEvent;
+import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonGroup;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextArea;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
@@ -64,7 +68,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class TestTrailerScreen extends Screen {
     private TestTrailerDO      data;
-    private TestTrailerMeta meta = new TestTrailerMeta();
     private SecurityModule     security;
 
     private AppButton          queryButton, previousButton, nextButton, addButton, updateButton,
@@ -82,9 +85,6 @@ public class TestTrailerScreen extends Screen {
         if (security == null)
             throw new SecurityException("screenPermException", "Test Trailer Screen");
 
-        // Setup link between Screen and widget Handlers
-        initialize();
-
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 postConstructor();
@@ -100,6 +100,8 @@ public class TestTrailerScreen extends Screen {
     private void postConstructor() {
         data = new TestTrailerDO();
 
+        // Setup link between Screen and widget Handlers
+        initialize();
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
     }
@@ -218,7 +220,7 @@ public class TestTrailerScreen extends Screen {
         //
         // screen fields
         //
-        name = (TextBox)def.getWidget(meta.getName());
+        name = (TextBox)def.getWidget(TestTrailerMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(data.getName());
@@ -235,7 +237,7 @@ public class TestTrailerScreen extends Screen {
             }
         });
 
-        description = (TextBox)def.getWidget(meta.getDescription());
+        description = (TextBox)def.getWidget(TestTrailerMeta.getDescription());
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 description.setValue(data.getDescription());
@@ -252,7 +254,7 @@ public class TestTrailerScreen extends Screen {
             }
         });
 
-        text = (TextArea)def.getWidget(meta.getText());
+        text = (TextArea)def.getWidget(TestTrailerMeta.getText());
         addScreenHandler(text, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 text.setValue(data.getText());
@@ -330,13 +332,22 @@ public class TestTrailerScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = meta.getName();
+                field.key = TestTrailerMeta.getName();
                 field.query = ((AppButton)event.getSource()).getAction();
                 field.type = QueryData.Type.STRING;
 
                 query = new Query();
                 query.setFields(field);
                 nav.setQuery(query);
+            }
+        });
+        
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+                if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
+                    event.cancel();
+                    window.setError(consts.get("mustCommitOrAbort"));
+                }
             }
         });
     }

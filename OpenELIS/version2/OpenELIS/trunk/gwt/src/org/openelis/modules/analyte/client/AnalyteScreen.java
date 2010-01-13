@@ -38,6 +38,8 @@ import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.BeforeCloseEvent;
+import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -46,11 +48,13 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -67,7 +71,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class AnalyteScreen extends Screen {
     private AnalyteViewDO         data;
-    private AnalyteMeta        meta = new AnalyteMeta();
     private SecurityModule        security;
 
     private TextBox               name, externalId;
@@ -86,8 +89,6 @@ public class AnalyteScreen extends Screen {
         if (security == null)
             throw new SecurityException("screenPermException", "Analyte Screen");
 
-        initialize();
-
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 postConstructor();
@@ -102,6 +103,8 @@ public class AnalyteScreen extends Screen {
      */
     private void postConstructor() {
         data = new AnalyteViewDO();
+        
+        initialize();
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
     }
@@ -197,7 +200,7 @@ public class AnalyteScreen extends Screen {
             }
         });
 
-        name = (TextBox)def.getWidget(meta.getName());
+        name = (TextBox)def.getWidget(AnalyteMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(data.getName());
@@ -214,7 +217,7 @@ public class AnalyteScreen extends Screen {
             }
         });
 
-        parent = (AutoComplete<Integer>)def.getWidget(meta.getParentAnalyteName());
+        parent = (AutoComplete<Integer>)def.getWidget(AnalyteMeta.getParentAnalyteName());
         addScreenHandler(parent, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 parent.setSelection(data.getParentAnalyteId(), data.getParentAnalyteName());
@@ -252,7 +255,7 @@ public class AnalyteScreen extends Screen {
             }
         });
 
-        externalId = (TextBox)def.getWidget(meta.getExternalId());
+        externalId = (TextBox)def.getWidget(AnalyteMeta.getExternalId());
         addScreenHandler(externalId, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 externalId.setValue(data.getExternalId());
@@ -269,7 +272,7 @@ public class AnalyteScreen extends Screen {
             }
         });
 
-        isActive = (CheckBox)def.getWidget(meta.getIsActive());
+        isActive = (CheckBox)def.getWidget(AnalyteMeta.getIsActive());
         addScreenHandler(isActive, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isActive.setValue(data.getIsActive());
@@ -346,13 +349,22 @@ public class AnalyteScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = meta.getName();
+                field.key = AnalyteMeta.getName();
                 field.query = ((AppButton)event.getSource()).action;
                 field.type = QueryData.Type.STRING;
 
                 query = new Query();
                 query.setFields(field);
                 nav.setQuery(query);
+            }
+        });
+        
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+                if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
+                    event.cancel();
+                    window.setError(consts.get("mustCommitOrAbort"));
+                }
             }
         });
     }

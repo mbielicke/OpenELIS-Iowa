@@ -43,6 +43,8 @@ import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.BeforeCloseEvent;
+import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -51,6 +53,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -58,6 +61,7 @@ import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.QueryFieldUtil;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextArea;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
@@ -75,7 +79,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class QaEventScreen extends Screen {
     private QaEventViewDO         data;
-    private QaEventMeta        meta = new QaEventMeta();
     private SecurityModule        security;
 
     private TextBox               name, description, reportingSequence;
@@ -100,8 +103,6 @@ public class QaEventScreen extends Screen {
         if (security == null)
             throw new SecurityException("screenPermException", "QA Event Screen");
 
-        // Setup link between Screen and widget Handlers
-        initialize();
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -117,6 +118,8 @@ public class QaEventScreen extends Screen {
     private void postConstructor() {
         data = new QaEventViewDO();
 
+        // Setup link between Screen and widget Handlers
+        initialize();
         setState(State.DEFAULT);
         initializeDropdowns();
 
@@ -223,7 +226,7 @@ public class QaEventScreen extends Screen {
         //
         // screen fields
         //
-        name = (TextBox)def.getWidget(meta.getName());
+        name = (TextBox)def.getWidget(QaEventMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(data.getName());
@@ -239,7 +242,7 @@ public class QaEventScreen extends Screen {
             }
         });
 
-        description = (TextBox)def.getWidget(meta.getDescription());
+        description = (TextBox)def.getWidget(QaEventMeta.getDescription());
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 description.setValue(data.getDescription());
@@ -255,7 +258,7 @@ public class QaEventScreen extends Screen {
             }
         });
 
-        typeId = (Dropdown)def.getWidget(meta.getTypeId());
+        typeId = (Dropdown)def.getWidget(QaEventMeta.getTypeId());
         addScreenHandler(typeId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 typeId.setSelection(data.getTypeId());
@@ -271,7 +274,7 @@ public class QaEventScreen extends Screen {
             }
         });
 
-        testName = (AutoComplete)def.getWidget(meta.getTestName());
+        testName = (AutoComplete)def.getWidget(QaEventMeta.getTestName());
         addScreenHandler(testName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 testName.setSelection(data.getTestId(), data.getTestName());
@@ -316,7 +319,7 @@ public class QaEventScreen extends Screen {
         });
 
 
-        isBillable = (CheckBox)def.getWidget(meta.getIsBillable());
+        isBillable = (CheckBox)def.getWidget(QaEventMeta.getIsBillable());
         addScreenHandler(isBillable, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isBillable.setValue(data.getIsBillable());
@@ -332,7 +335,7 @@ public class QaEventScreen extends Screen {
             }
         });
 
-        reportingSequence = (TextBox)def.getWidget(meta.getReportingSequence());
+        reportingSequence = (TextBox)def.getWidget(QaEventMeta.getReportingSequence());
         addScreenHandler(reportingSequence, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 reportingSequence.setValue(data.getReportingSequence());
@@ -348,7 +351,7 @@ public class QaEventScreen extends Screen {
             }
         });
         
-        reportingText = (TextArea)def.getWidget(meta.getReportingText());
+        reportingText = (TextArea)def.getWidget(QaEventMeta.getReportingText());
         addScreenHandler(reportingText, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 reportingText.setValue(data.getReportingText());
@@ -426,13 +429,22 @@ public class QaEventScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = meta.getName();
+                field.key = QaEventMeta.getName();
                 field.query = ((AppButton)event.getSource()).getAction();
                 field.type = QueryData.Type.STRING;
 
                 query = new Query();
                 query.setFields(field);
                 nav.setQuery(query);
+            }
+        });
+        
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+                if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
+                    event.cancel();
+                    window.setError(consts.get("mustCommitOrAbort"));
+                }
             }
         });
     }

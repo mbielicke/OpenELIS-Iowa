@@ -43,6 +43,8 @@ import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.BeforeCloseEvent;
+import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -58,6 +60,7 @@ import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.QueryFieldUtil;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -88,7 +91,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class DictionaryScreen extends Screen {
     private CategoryManager       manager;
-    private CategoryMeta       meta = new CategoryMeta();
     private SecurityModule        security;
 
     private DictionaryScreen      screen; 
@@ -262,7 +264,7 @@ public class DictionaryScreen extends Screen {
             }
         });
 
-        name = (TextBox)def.getWidget(meta.getName());
+        name = (TextBox)def.getWidget(CategoryMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(manager.getCategory().getName());
@@ -281,7 +283,7 @@ public class DictionaryScreen extends Screen {
             }
         });
 
-        description = (TextBox)def.getWidget(meta.getDescription());
+        description = (TextBox)def.getWidget(CategoryMeta.getDescription());
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 description.setValue(manager.getCategory().getDescription());
@@ -298,7 +300,7 @@ public class DictionaryScreen extends Screen {
             }
         });
 
-        sectionId = (Dropdown)def.getWidget(meta.getSectionId());
+        sectionId = (Dropdown)def.getWidget(CategoryMeta.getSectionId());
         addScreenHandler(sectionId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 sectionId.setSelection(manager.getCategory().getSectionId());
@@ -315,7 +317,7 @@ public class DictionaryScreen extends Screen {
             }
         });
 
-        systemName = (TextBox)def.getWidget(meta.getSystemName());
+        systemName = (TextBox)def.getWidget(CategoryMeta.getSystemName());
         addScreenHandler(systemName, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 systemName.setValue(manager.getCategory().getSystemName());
@@ -332,7 +334,7 @@ public class DictionaryScreen extends Screen {
             }
         });
 
-        isSystem = (CheckBox)def.getWidget(meta.getIsSystem());
+        isSystem = (CheckBox)def.getWidget(CategoryMeta.getIsSystem());
         addScreenHandler(isSystem, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isSystem.setValue(manager.getCategory().getIsSystem());
@@ -351,7 +353,7 @@ public class DictionaryScreen extends Screen {
 
         dictTable = (TableWidget)def.getWidget("dictEntTable");
         relatedEntry = (AutoComplete<Integer>)dictTable.getColumnWidget(
-                           meta.getDictionaryRelatedEntryEntry());
+                           CategoryMeta.getDictionaryRelatedEntryEntry());
         addScreenHandler(dictTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
                 if (state != State.QUERY)
@@ -600,13 +602,22 @@ public class DictionaryScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = meta.getName();
+                field.key = CategoryMeta.getName();
                 field.query = ((AppButton)event.getSource()).action;
                 field.type = QueryData.Type.STRING;
 
                 query = new Query();
                 query.setFields(field);
                 nav.setQuery(query);
+            }
+        });
+        
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+                if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
+                    event.cancel();
+                    window.setError(consts.get("mustCommitOrAbort"));
+                }
             }
         });
     }

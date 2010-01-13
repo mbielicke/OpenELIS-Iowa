@@ -40,16 +40,20 @@ import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.BeforeCloseEvent;
+import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextArea;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
@@ -85,9 +89,6 @@ public class StandardNoteScreen extends Screen {
         if (security == null)
             throw new SecurityException("screenPermException", "Standard Note Screen");
 
-        // Setup link between Screen and widget Handlers
-        initialize();
-
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 postConstructor();
@@ -103,6 +104,8 @@ public class StandardNoteScreen extends Screen {
     private void postConstructor() {
         data = new StandardNoteDO();
 
+        // Setup link between Screen and widget Handlers
+        initialize();
         setState(State.DEFAULT);
         initializeDropdown();
 
@@ -348,6 +351,15 @@ public class StandardNoteScreen extends Screen {
                 query = new Query();
                 query.setFields(field);
                 nav.setQuery(query);
+            }
+        });
+        
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+                if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
+                    event.cancel();
+                    window.setError(consts.get("mustCommitOrAbort"));
+                }
             }
         });
     }

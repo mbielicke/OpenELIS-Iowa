@@ -66,7 +66,6 @@ public class SampleTypeTab extends Screen implements HasActionHandlers<SampleTyp
     };
 
     private TestManager   manager;
-    private TestMeta   meta = new TestMeta();
     private boolean       loaded;
 
     private SampleTypeTab screen;
@@ -194,7 +193,7 @@ public class SampleTypeTab extends Screen implements HasActionHandlers<SampleTyp
         for (DictionaryDO resultDO : list) {
             model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
         }
-        ((Dropdown)table.getColumnWidget(meta.getTypeOfSampleTypeOfSampleId())).setModel(model);
+        ((Dropdown)table.getColumnWidget(TestMeta.getTypeOfSampleTypeOfSampleId())).setModel(model);
 
         model = new ArrayList<TableDataRow>();
         list = DictionaryCache.getListByCategorySystemName("unit_of_measure");
@@ -202,7 +201,7 @@ public class SampleTypeTab extends Screen implements HasActionHandlers<SampleTyp
         for (DictionaryDO resultDO : list) {
             model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
         }
-        ((Dropdown)table.getColumnWidget(meta.getTypeOfSampleUnitOfMeasureId())).setModel(model);
+        ((Dropdown)table.getColumnWidget(TestMeta.getTypeOfSampleUnitOfMeasureId())).setModel(model);
 
     }
 
