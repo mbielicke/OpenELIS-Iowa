@@ -240,6 +240,8 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
                 sampleDomain = SampleHumanManager.getInstance();
             else if(ENVIRONMENTAL_DOMAIN_FLAG.equals(sample.getDomain()))
                 sampleDomain = SampleEnvironmentalManager.getInstance();
+            else if(WELL_DOMAIN_FLAG.equals(sample.getDomain()))
+                sampleDomain = SamplePrivateWellManager.getInstance();
         }
         
         return sampleDomain;

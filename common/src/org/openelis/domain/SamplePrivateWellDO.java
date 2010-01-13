@@ -35,19 +35,13 @@ public class SamplePrivateWellDO extends DataObject {
                      locationAddressId, wellNumber;
     protected String reportToName, location, owner, collector;
     
-    protected OrganizationDO organizationDO = new OrganizationDO();
-    protected AddressDO locationAddressDO = new AddressDO();
+    protected AddressDO locationAddressDO;
     
     public SamplePrivateWellDO(){
-        
+        locationAddressDO = new AddressDO();
     }
     
-    public SamplePrivateWellDO(Integer id, Integer sampleId, Integer organizationId, String organizationName, 
-                               String organizationMultipleUnit, String organizationStreetAddress, String organizationCity, 
-                               String organizationState, String organizationZipCode, String organizationWorkPhone, 
-                               String organizationFaxPhone, String reportToName, Integer reportToAddressId, 
-                               String reportToMultipleUnit, String reportToStreetAddress, String reportToCity, 
-                               String reportToState, String reportToZipCode, String reportToWorkPhone, String reportToFaxPhone,
+    public SamplePrivateWellDO(Integer id, Integer sampleId, Integer organizationId, String reportToName, Integer reportToAddressId, 
                                String location, Integer locationAddressId, String locationMultipleUnit, String locationStreetAddress, 
                                String locationCity, String locationState, String locationZipCode, String owner, String collector, Integer wellNumber){
         setId(id);
@@ -61,27 +55,7 @@ public class SamplePrivateWellDO extends DataObject {
         setCollector(collector);
         setWellNumber(wellNumber);
         
-        if(organizationId != null){
-            organizationDO.setName(organizationName);
-            organizationDO.getAddress().setMultipleUnit(organizationMultipleUnit);
-            organizationDO.getAddress().setStreetAddress(organizationStreetAddress);
-            organizationDO.getAddress().setCity(organizationCity);
-            organizationDO.getAddress().setState(organizationState);
-            organizationDO.getAddress().setZipCode(organizationZipCode);
-            organizationDO.getAddress().setWorkPhone(organizationWorkPhone);
-            organizationDO.getAddress().setFaxPhone(organizationFaxPhone);
-            
-        }else{
-            organizationDO.setName(reportToName);
-            organizationDO.getAddress().setMultipleUnit(reportToMultipleUnit);
-            organizationDO.getAddress().setStreetAddress(reportToStreetAddress);
-            organizationDO.getAddress().setCity(reportToCity);
-            organizationDO.getAddress().setState(reportToState);
-            organizationDO.getAddress().setZipCode(reportToZipCode);
-            organizationDO.getAddress().setWorkPhone(reportToWorkPhone);
-            organizationDO.getAddress().setFaxPhone(reportToFaxPhone);
-        }
-        
+        locationAddressDO = new AddressDO();
         locationAddressDO.setId(locationAddressId);
         locationAddressDO.setMultipleUnit(locationMultipleUnit);
         locationAddressDO.setStreetAddress(locationStreetAddress);
@@ -89,7 +63,6 @@ public class SamplePrivateWellDO extends DataObject {
         locationAddressDO.setState(locationState);
         locationAddressDO.setZipCode(locationZipCode);
         _changed = false;
-        
     }
     
     public Integer getId() {
@@ -161,9 +134,6 @@ public class SamplePrivateWellDO extends DataObject {
     public void setCollector(String collector) {
         this.collector = DataBaseUtil.trim(collector);
         _changed = true;
-    }
-    public OrganizationDO getOrganizationDO() {
-        return organizationDO;
     }
     public AddressDO getLocationAddressDO() {
         return locationAddressDO;
