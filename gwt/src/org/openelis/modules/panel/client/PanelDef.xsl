@@ -35,7 +35,6 @@ UIRF Software License are applicable instead of those above.
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
   xmlns:meta="xalan://org.openelis.meta.PanelMeta">
-  <!-- xmlns:panelItem="xalan://org.openelis.metamap.PanelItemMetaMap"> -->
 
   <xsl:import href="IMPORT/aToZTwoColumns.xsl" />
   <xalan:component prefix="resource">
@@ -45,8 +44,6 @@ UIRF Software License are applicable instead of those above.
     <xalan:script lang="javaclass" src="xalan://java.util.Locale" />
   </xalan:component>
   <xsl:template match="doc">
-    <!-- <xsl:variable name="panel" select="meta:new()" />
-    <xsl:variable name="pi" select="meta:getPanelItem($panel)" /> -->
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
@@ -136,7 +133,9 @@ UIRF Software License are applicable instead of those above.
                     </appButton>
                   </menuDisplay>
                   <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                    <xsl:call-template name="historyMenuItem" />
+                    <!-- <xsl:call-template name="historyMenuItem" /> -->
+                    <menuItem description="" icon = "historyIcon" key="panelHistory" label="{resource:getString($constants,'panelHistory')}" style="TopMenuRowContainer" />
+                    <menuItem description="" icon = "historyIcon" key="panelItemHistory" label="{resource:getString($constants,'panelItemHistory')}" style="TopMenuRowContainer" />
                   </menuPanel>
                 </menuItem>
               </menuPanel>

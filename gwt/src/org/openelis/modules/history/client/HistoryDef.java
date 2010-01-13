@@ -23,14 +23,9 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.instrument.client;
+package org.openelis.modules.history.client;
 
+import org.openelis.gwt.screen.ScreenDefInt;
 
-public class InstrumentGeneralPurposeRPC {//implements RPC {
-/*
-    private static final long serialVersionUID = 1L;
-      
-    public Integer testId;
-    public TableDataModel<TableDataRow<Integer>> analyteModel;
-    */
+public interface HistoryDef extends ScreenDefInt {
 }

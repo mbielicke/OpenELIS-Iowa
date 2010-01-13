@@ -53,6 +53,8 @@ import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.BeforeCloseEvent;
+import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.BeforeGetMatchesEvent;
 import org.openelis.gwt.event.BeforeGetMatchesHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -73,6 +75,7 @@ import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.HasField;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -104,7 +107,6 @@ import com.google.gwt.user.client.ui.TabPanel;
 public class TestScreen extends Screen {    
     
     private TestManager              manager;
-    private TestMeta                 meta = new TestMeta();
     protected Tabs                   tab;
     private SampleTypeTab            sampleTypeTab;
     private AnalyteAndResultTab      analyteAndResultTab;
@@ -113,7 +115,7 @@ public class TestScreen extends Screen {
     private SecurityModule           security;
 
     private ScreenNavigator          nav;
-    private TableWidget              table;
+    private TableWidget              sectionTable;
     private TextBox                  id, name, description, reportingDescription,
                                      reportingSequence, timeTaMax, timeTaAverage, timeTaWarning, timeTransit,
                                      timeHolding, labelQty;
@@ -279,7 +281,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        id = (TextBox)def.getWidget(meta.getId());
+        id = (TextBox)def.getWidget(TestMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 id.setValue(manager.getTest().getId());
@@ -295,7 +297,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        name = (TextBox)def.getWidget(meta.getName());
+        name = (TextBox)def.getWidget(TestMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(manager.getTest().getName());
@@ -314,7 +316,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        method = (AutoComplete)def.getWidget(meta.getMethodName());
+        method = (AutoComplete)def.getWidget(TestMeta.getMethodName());
         addScreenHandler(method, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 method.setSelection(manager.getTest().getMethodId(),
@@ -358,7 +360,7 @@ public class TestScreen extends Screen {
 
         });
 
-        description = (TextBox)def.getWidget(meta.getDescription());
+        description = (TextBox)def.getWidget(TestMeta.getDescription());
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 description.setValue(manager.getTest().getDescription());
@@ -376,7 +378,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        reportingDescription = (TextBox)def.getWidget(meta.getReportingDescription());
+        reportingDescription = (TextBox)def.getWidget(TestMeta.getReportingDescription());
         addScreenHandler(reportingDescription, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 reportingDescription.setValue(manager.getTest().getReportingDescription());
@@ -394,7 +396,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        timeTaMax = (TextBox)def.getWidget(meta.getTimeTaMax());
+        timeTaMax = (TextBox)def.getWidget(TestMeta.getTimeTaMax());
         addScreenHandler(timeTaMax, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 timeTaMax.setValue(getString(manager.getTest().getTimeTaMax()));
@@ -411,7 +413,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        timeTaAverage = (TextBox)def.getWidget(meta.getTimeTaAverage());
+        timeTaAverage = (TextBox)def.getWidget(TestMeta.getTimeTaAverage());
         addScreenHandler(timeTaAverage, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 timeTaAverage.setValue(getString(manager.getTest().getTimeTaAverage()));
@@ -428,7 +430,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        timeTaWarning = (TextBox)def.getWidget(meta.getTimeTaWarning());
+        timeTaWarning = (TextBox)def.getWidget(TestMeta.getTimeTaWarning());
         addScreenHandler(timeTaWarning, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 timeTaWarning.setValue(getString(manager.getTest().getTimeTaWarning()));
@@ -445,7 +447,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        timeTransit = (TextBox)def.getWidget(meta.getTimeTransit());
+        timeTransit = (TextBox)def.getWidget(TestMeta.getTimeTransit());
         addScreenHandler(timeTransit, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 timeTransit.setValue(getString(manager.getTest().getTimeTransit()));
@@ -462,7 +464,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        timeHolding = (TextBox)def.getWidget(meta.getTimeHolding());
+        timeHolding = (TextBox)def.getWidget(TestMeta.getTimeHolding());
         addScreenHandler(timeHolding, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 timeHolding.setValue(getString(manager.getTest().getTimeHolding()));
@@ -479,7 +481,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        isActive = (CheckBox)def.getWidget(meta.getIsActive());
+        isActive = (CheckBox)def.getWidget(TestMeta.getIsActive());
         addScreenHandler(isActive, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isActive.setValue(manager.getTest().getIsActive());
@@ -496,7 +498,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        activeBegin = (CalendarLookUp)def.getWidget(meta.getActiveBegin());
+        activeBegin = (CalendarLookUp)def.getWidget(TestMeta.getActiveBegin());
         addScreenHandler(activeBegin, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 activeBegin.setValue(manager.getTest().getActiveBegin());
@@ -514,7 +516,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        activeEnd = (CalendarLookUp)def.getWidget(meta.getActiveEnd());
+        activeEnd = (CalendarLookUp)def.getWidget(TestMeta.getActiveEnd());
         addScreenHandler(activeEnd, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 activeEnd.setValue(manager.getTest().getActiveEnd());
@@ -532,7 +534,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        label = (AutoComplete)def.getWidget(meta.getLabelName());
+        label = (AutoComplete)def.getWidget(TestMeta.getLabelName());
         addScreenHandler(label, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 label.setSelection(manager.getTest().getLabelId(),
@@ -576,7 +578,7 @@ public class TestScreen extends Screen {
 
         });
 
-        labelQty = (TextBox)def.getWidget(meta.getLabelQty());
+        labelQty = (TextBox)def.getWidget(TestMeta.getLabelQty());
         addScreenHandler(labelQty, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 labelQty.setValue(getString(manager.getTest().getLabelQty()));
@@ -593,21 +595,21 @@ public class TestScreen extends Screen {
             }
         });
 
-        table = (TableWidget)def.getWidget("sectionTable");
-        addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        sectionTable = (TableWidget)def.getWidget("sectionTable");
+        addScreenHandler(sectionTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
                 if (state != State.QUERY)
-                    table.load(getTableModel());
+                    sectionTable.load(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                table.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                sectionTable.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                            .contains(event.getState()));
-                table.setQueryMode(event.getState() == State.QUERY);
+                sectionTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        table.addCellEditedHandler(new CellEditedHandler() {
+        sectionTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c, i;
                 Integer val;
@@ -616,7 +618,7 @@ public class TestScreen extends Screen {
 
                 r = event.getRow();
                 c = event.getCol();
-                val = (Integer)table.getObject(r, c);
+                val = (Integer)sectionTable.getObject(r, c);
 
                 try {
                     data = manager.getTestSections().getSectionAt(r);
@@ -637,13 +639,13 @@ public class TestScreen extends Screen {
                                             continue;
                                         data = manager.getTestSections().getSectionAt(i);
                                         data.setFlagId(null);
-                                        table.setCell(i,c,null);
+                                        sectionTable.setCell(i,c,null);
                                     }
                                 } else {
                                     for (i = 0; i < manager.getTestSections().count(); i++ ) {
                                         data = manager.getTestSections().getSectionAt(i);
                                         data.setFlagId(val);
-                                        table.setCell(i,c,val);
+                                        sectionTable.setCell(i,c,val);
                                     }
                                 }
                             }
@@ -657,7 +659,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        table.addRowAddedHandler(new RowAddedHandler() {
+        sectionTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 try {
                     manager.getTestSections().addSection(new TestSectionViewDO());
@@ -668,7 +670,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        table.addRowDeletedHandler(new RowDeletedHandler() {
+        sectionTable.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
                 try {
                     manager.getTestSections().removeSectionAt(event.getIndex());
@@ -684,11 +686,11 @@ public class TestScreen extends Screen {
             public void onClick(ClickEvent event) {
                 int n;
 
-                table.addRow();
-                n = table.numRows() - 1;
-                table.selectRow(n);
-                table.scrollToSelection();
-                table.startEditing(n, 0);
+                sectionTable.addRow();
+                n = sectionTable.numRows() - 1;
+                sectionTable.selectRow(n);
+                sectionTable.scrollToSelection();
+                sectionTable.startEditing(n, 0);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -702,9 +704,9 @@ public class TestScreen extends Screen {
             public void onClick(ClickEvent event) {
                 int r;
                 
-                r = table.getSelectedRow();
-                if (r > -1 && table.numRows() > 0)
-                    table.deleteRow(r);
+                r = sectionTable.getSelectedRow();
+                if (r > -1 && sectionTable.numRows() > 0)
+                    sectionTable.deleteRow(r);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -714,7 +716,7 @@ public class TestScreen extends Screen {
         });
 
 
-        isReportable = (CheckBox)def.getWidget(meta.getIsReportable());
+        isReportable = (CheckBox)def.getWidget(TestMeta.getIsReportable());
         addScreenHandler(isReportable, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isReportable.setValue(manager.getTest().getIsReportable());
@@ -731,7 +733,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        revisionMethod = (Dropdown<Integer>)def.getWidget(meta.getRevisionMethodId());
+        revisionMethod = (Dropdown<Integer>)def.getWidget(TestMeta.getRevisionMethodId());
         addScreenHandler(revisionMethod, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 revisionMethod.setSelection(manager.getTest().getRevisionMethodId());
@@ -748,7 +750,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        sortingMethod = (Dropdown<Integer>)def.getWidget(meta.getSortingMethodId());
+        sortingMethod = (Dropdown<Integer>)def.getWidget(TestMeta.getSortingMethodId());
         addScreenHandler(sortingMethod, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 sortingMethod.setSelection(manager.getTest().getSortingMethodId());
@@ -765,7 +767,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        reportingMethod = (Dropdown<Integer>)def.getWidget(meta.getReportingMethodId());
+        reportingMethod = (Dropdown<Integer>)def.getWidget(TestMeta.getReportingMethodId());
         addScreenHandler(reportingMethod, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 reportingMethod.setSelection(manager.getTest().getReportingMethodId());
@@ -782,7 +784,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        reportingSequence = (TextBox)def.getWidget(meta.getReportingSequence());
+        reportingSequence = (TextBox)def.getWidget(TestMeta.getReportingSequence());
         addScreenHandler(reportingSequence, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 reportingSequence.setValue(getString(manager.getTest().getReportingSequence()));
@@ -799,7 +801,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        testTrailer = (AutoComplete)def.getWidget(meta.getTestTrailerName());
+        testTrailer = (AutoComplete)def.getWidget(TestMeta.getTestTrailerName());
         addScreenHandler(testTrailer, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 TestViewDO testDO = manager.getTest();
@@ -844,7 +846,7 @@ public class TestScreen extends Screen {
 
         });
 
-        testFormat = (Dropdown<Integer>)def.getWidget(meta.getTestFormatId());
+        testFormat = (Dropdown<Integer>)def.getWidget(TestMeta.getTestFormatId());
         addScreenHandler(testFormat, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 testFormat.setSelection(manager.getTest().getTestFormatId());
@@ -861,7 +863,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        scriptlet = (AutoComplete)def.getWidget(meta.getScriptletName());
+        scriptlet = (AutoComplete)def.getWidget(TestMeta.getScriptletName());
         addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {                
                 scriptlet.setSelection(manager.getTest().getScriptletId(),
@@ -1068,13 +1070,22 @@ public class TestScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = meta.getName();
+                field.key = TestMeta.getName();
                 field.query = ((AppButton)event.getSource()).action;
                 field.type = QueryData.Type.STRING;
 
                 query = new Query();
                 query.setFields(field);
                 nav.setQuery(query);
+            }
+        });
+        
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+                if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
+                    event.cancel();
+                    window.setError(consts.get("mustCommitOrAbort"));
+                }
             }
         });
     }
@@ -1138,7 +1149,7 @@ public class TestScreen extends Screen {
         for (DictionaryDO resultDO : list) {
             model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
         }
-        ((Dropdown<Integer>)table.getColumnWidget(meta.getSectionFlagId())).setModel(model);
+        ((Dropdown<Integer>)sectionTable.getColumnWidget(TestMeta.getSectionFlagId())).setModel(model);
 
         model = new ArrayList<TableDataRow>();
         sectList = SectionCache.getSectionList();
@@ -1146,7 +1157,7 @@ public class TestScreen extends Screen {
         for (SectionDO resultDO : sectList) {
             model.add(new TableDataRow(resultDO.getId(), resultDO.getName()));
         }
-        ((Dropdown<Integer>)table.getColumnWidget(meta.getSectionSectionId())).setModel(model);
+        ((Dropdown<Integer>)sectionTable.getColumnWidget(TestMeta.getSectionSectionId())).setModel(model);
     }
 
     /*

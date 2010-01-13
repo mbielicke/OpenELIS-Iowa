@@ -41,6 +41,8 @@ import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.BeforeCloseEvent;
+import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -49,6 +51,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -57,6 +60,7 @@ import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.QueryFieldUtil;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataCell;
@@ -83,7 +87,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class InstrumentScreen extends Screen {
     
     private InstrumentManager           manager;
-    private InstrumentMeta           meta = new InstrumentMeta();
     private SecurityModule              security;
     
     private CalendarLookUp              activeBegin, activeEnd;
@@ -220,7 +223,7 @@ public class InstrumentScreen extends Screen {
             }
         });
 
-        name = (TextBox)def.getWidget(meta.getName());
+        name = (TextBox)def.getWidget(InstrumentMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(manager.getInstrument().getName());
@@ -236,7 +239,7 @@ public class InstrumentScreen extends Screen {
             }
         });
 
-        description = (TextBox)def.getWidget(meta.getDescription());
+        description = (TextBox)def.getWidget(InstrumentMeta.getDescription());
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 description.setValue(manager.getInstrument().getDescription());
@@ -252,7 +255,7 @@ public class InstrumentScreen extends Screen {
             }
         });
 
-        modelNumber = (TextBox)def.getWidget(meta.getModelNumber());
+        modelNumber = (TextBox)def.getWidget(InstrumentMeta.getModelNumber());
         addScreenHandler(modelNumber, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 modelNumber.setValue(manager.getInstrument().getModelNumber());
@@ -268,7 +271,7 @@ public class InstrumentScreen extends Screen {
             }
         });
 
-        serialNumber = (TextBox)def.getWidget(meta.getSerialNumber());
+        serialNumber = (TextBox)def.getWidget(InstrumentMeta.getSerialNumber());
         addScreenHandler(serialNumber, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 serialNumber.setValue(manager.getInstrument().getSerialNumber());
@@ -284,7 +287,7 @@ public class InstrumentScreen extends Screen {
             }
         });
 
-        typeId = (Dropdown)def.getWidget(meta.getTypeId());
+        typeId = (Dropdown)def.getWidget(InstrumentMeta.getTypeId());
         addScreenHandler(typeId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 typeId.setSelection(manager.getInstrument().getTypeId());
@@ -300,7 +303,7 @@ public class InstrumentScreen extends Screen {
             }
         });
 
-        isActive = (CheckBox)def.getWidget(meta.getIsActive());
+        isActive = (CheckBox)def.getWidget(InstrumentMeta.getIsActive());
         addScreenHandler(isActive, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isActive.setValue(manager.getInstrument().getIsActive());
@@ -316,7 +319,7 @@ public class InstrumentScreen extends Screen {
             }
         });
 
-        location = (TextBox)def.getWidget(meta.getLocation());
+        location = (TextBox)def.getWidget(InstrumentMeta.getLocation());
         addScreenHandler(location, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 location.setValue(manager.getInstrument().getLocation());
@@ -332,7 +335,7 @@ public class InstrumentScreen extends Screen {
             }
         });
 
-        activeBegin = (CalendarLookUp)def.getWidget(meta.getActiveBegin());
+        activeBegin = (CalendarLookUp)def.getWidget(InstrumentMeta.getActiveBegin());
         addScreenHandler(activeBegin, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 activeBegin.setValue(manager.getInstrument().getActiveBegin());
@@ -348,7 +351,7 @@ public class InstrumentScreen extends Screen {
             }
         });
 
-        scriptlet = (AutoComplete)def.getWidget(meta.getScriptletName());
+        scriptlet = (AutoComplete)def.getWidget(InstrumentMeta.getScriptletName());
         addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 scriptlet.setSelection(manager.getInstrument().getScriptletId(),
@@ -389,7 +392,7 @@ public class InstrumentScreen extends Screen {
 
         });
 
-        activeEnd = (CalendarLookUp)def.getWidget(meta.getActiveEnd());
+        activeEnd = (CalendarLookUp)def.getWidget(InstrumentMeta.getActiveEnd());
         addScreenHandler(activeEnd, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 activeEnd.setValue(manager.getInstrument().getActiveEnd());
@@ -581,13 +584,22 @@ public class InstrumentScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = meta.getName();
+                field.key = InstrumentMeta.getName();
                 field.query = ((AppButton)event.getSource()).getAction();
                 field.type = QueryData.Type.STRING;
 
                 query = new Query();
                 query.setFields(field);
                 nav.setQuery(query);
+            }
+        });
+        
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+                if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
+                    event.cancel();
+                    window.setError(consts.get("mustCommitOrAbort"));
+                }
             }
         });
     }
@@ -609,7 +621,7 @@ public class InstrumentScreen extends Screen {
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("instrument_log_type"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
-        ((Dropdown<Integer>)(logTable.getColumnWidget(meta.getLogTypeId()))).setModel(model);        
+        ((Dropdown<Integer>)(logTable.getColumnWidget(InstrumentMeta.getLogTypeId()))).setModel(model);        
     }
     
     /*

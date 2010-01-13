@@ -80,8 +80,6 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
     private WorksheetLayoutTab               screen;
     private TestWorksheetAnalyteLookupScreen analyteLookup;
 
-    private TestMeta                      meta = new TestMeta();
-
     private boolean                          loaded;
 
     private Dropdown<Integer>                formatId;
@@ -109,7 +107,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
     private void initialize() {
         screen = this;
 
-        formatId = (Dropdown)def.getWidget(meta.getWorksheetFormatId());
+        formatId = (Dropdown)def.getWidget(TestMeta.getWorksheetFormatId());
         addScreenHandler(formatId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
@@ -134,7 +132,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
 
-        batchCapacity = (TextBox)def.getWidget(meta.getWorksheetBatchCapacity());
+        batchCapacity = (TextBox)def.getWidget(TestMeta.getWorksheetBatchCapacity());
         addScreenHandler(batchCapacity, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
@@ -159,7 +157,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
 
-        totalCapacity = (TextBox)def.getWidget(meta.getWorksheetTotalCapacity());
+        totalCapacity = (TextBox)def.getWidget(TestMeta.getWorksheetTotalCapacity());
         addScreenHandler(totalCapacity, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
@@ -185,7 +183,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
 
-        scriptlet = (AutoComplete)def.getWidget(meta.getWorksheetScriptletName());
+        scriptlet = (AutoComplete)def.getWidget(TestMeta.getWorksheetScriptletName());
         addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
@@ -245,7 +243,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
 
-        qcname = (AutoComplete<String>)worksheetTable.getColumnWidget(meta.getWorksheetItemQcName());
+        qcname = (AutoComplete<String>)worksheetTable.getColumnWidget(TestMeta.getWorksheetItemQcName());
         qcname.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
@@ -553,7 +551,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         for (DictionaryDO resultDO : list) {
             model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
         }
-        ((Dropdown)worksheetAnalyteTable.getColumnWidget(meta.getWorksheetAnalyteFlagId())).setModel(model);
+        ((Dropdown)worksheetAnalyteTable.getColumnWidget(TestMeta.getWorksheetAnalyteFlagId())).setModel(model);
 
         model = new ArrayList<TableDataRow>();
         list = DictionaryCache.getListByCategorySystemName("test_worksheet_item_type");
@@ -561,7 +559,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         for (DictionaryDO resultDO : list) {
             model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
         }
-        ((Dropdown)worksheetTable.getColumnWidget(meta.getWorksheetItemTypeId())).setModel(model);
+        ((Dropdown)worksheetTable.getColumnWidget(TestMeta.getWorksheetItemTypeId())).setModel(model);
 
         model = new ArrayList<TableDataRow>();
         list = DictionaryCache.getListByCategorySystemName("test_worksheet_format");

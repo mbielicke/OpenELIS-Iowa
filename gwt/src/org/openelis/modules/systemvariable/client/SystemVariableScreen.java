@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
@@ -38,6 +39,8 @@ import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.BeforeCloseEvent;
+import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -47,10 +50,13 @@ import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonGroup;
+import org.openelis.gwt.widget.MenuItem;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.SystemVariableMeta;
+import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -63,11 +69,11 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class SystemVariableScreen extends Screen {
     private SystemVariableDO      data;
-    private SystemVariableMeta meta = new SystemVariableMeta();
     private SecurityModule        security;
 
     private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
                                   deleteButton, commitButton, abortButton;
+    protected MenuItem            history;
     private TextBox               name, value;
     private ButtonGroup           atoz;
     private ScreenNavigator       nav;
@@ -79,9 +85,6 @@ public class SystemVariableScreen extends Screen {
         security = OpenELIS.security.getModule("systemvariable");
         if (security == null)
             throw new SecurityException("screenPermException", "System Variable Screen");
-
-        // Setup link between Screen and widget Handlers
-        initialize();
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -97,6 +100,8 @@ public class SystemVariableScreen extends Screen {
     private void postConstructor() {
         data = new SystemVariableDO();
 
+        // Setup link between Screen and widget Handlers
+        initialize();
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
     }
@@ -211,11 +216,22 @@ public class SystemVariableScreen extends Screen {
                                           .contains(event.getState()));
             }
         });
+        
+        history = (MenuItem)def.getWidget("history");
+        addScreenHandler(history, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                history();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                history.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
 
         //
         // screen fields
         //
-        name = (TextBox)def.getWidget(meta.getName());
+        name = (TextBox)def.getWidget(SystemVariableMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(data.getName());
@@ -232,7 +248,7 @@ public class SystemVariableScreen extends Screen {
             }
         });
 
-        value = (TextBox)def.getWidget(meta.getValue());
+        value = (TextBox)def.getWidget(SystemVariableMeta.getValue());
         addScreenHandler(value, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 value.setValue(data.getValue());
@@ -311,13 +327,22 @@ public class SystemVariableScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = meta.getName();
+                field.key = SystemVariableMeta.getName();
                 field.query = ((AppButton)event.getSource()).getAction();
                 field.type = QueryData.Type.STRING;
 
                 query = new Query();
                 query.setFields(field);
                 nav.setQuery(query);
+            }
+        });
+        
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+                if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
+                    event.cancel();
+                    window.setError(consts.get("mustCommitOrAbort"));
+                }
             }
         });
     }
@@ -473,6 +498,13 @@ public class SystemVariableScreen extends Screen {
         } else {
             window.clearStatus();
         }
+    }
+    
+    protected void history() {
+        IdNameVO hist;
+        
+        hist = new IdNameVO(data.getId(), data.getName());
+        HistoryScreen.showHistory(consts.get("systemVariable"), ReferenceTable.SYSTEM_VARIABLE, hist);
     }
 
     protected boolean fetchById(Integer id) {

@@ -46,6 +46,8 @@ import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
+import org.openelis.gwt.event.BeforeCloseEvent;
+import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -54,6 +56,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -92,7 +95,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class QcScreen extends Screen {
     private QcManager                   manager;
-    private CategoryMeta             catMeta = new CategoryMeta();
     private SecurityModule              security;
 
     private AppButton                   queryButton, previousButton, nextButton, addButton,
@@ -733,6 +735,15 @@ public class QcScreen extends Screen {
                 nav.setQuery(query);
             }
         });
+        
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+                if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
+                    event.cancel();
+                    window.setError(consts.get("mustCommitOrAbort"));
+                }
+            }
+        });
     }
 
     private void initializeDropdowns() {
@@ -957,13 +968,13 @@ public class QcScreen extends Screen {
         
         query = new Query();
         field = new QueryData();
-        field.key = catMeta.getDictionaryEntry();
+        field.key = CategoryMeta.getDictionaryEntry();
         field.type = QueryData.Type.STRING;
         field.query = entry;
         query.setFields(field);       
         
         field = new QueryData();
-        field.key = catMeta.getIsSystem();
+        field.key = CategoryMeta.getIsSystem();
         field.type = QueryData.Type.STRING;
         field.query = "N";
         query.setFields(field); 

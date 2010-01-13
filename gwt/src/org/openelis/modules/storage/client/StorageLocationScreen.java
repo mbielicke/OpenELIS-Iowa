@@ -38,6 +38,8 @@ import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.BeforeCloseEvent;
+import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -46,12 +48,14 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.QueryFieldUtil;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -77,7 +81,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class StorageLocationScreen extends Screen {
     private StorageLocationManager manager;
     private SecurityModule         security;
-    private StorageLocationMeta meta = new StorageLocationMeta();
 
     private AutoComplete<Integer>  storageUnit, childStorageUnit;
     private TextBox                name, location;
@@ -216,7 +219,7 @@ public class StorageLocationScreen extends Screen {
             }
         });
 
-        name = (TextBox)def.getWidget(meta.getName());
+        name = (TextBox)def.getWidget(StorageLocationMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(manager.getStorageLocation().getName());
@@ -233,7 +236,7 @@ public class StorageLocationScreen extends Screen {
             }
         });
 
-        location = (TextBox)def.getWidget(meta.getLocation());
+        location = (TextBox)def.getWidget(StorageLocationMeta.getLocation());
         addScreenHandler(location, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 location.setValue(manager.getStorageLocation().getLocation());
@@ -250,7 +253,7 @@ public class StorageLocationScreen extends Screen {
             }
         });
 
-        storageUnit = (AutoComplete)def.getWidget(meta.getStorageUnitDescription());
+        storageUnit = (AutoComplete)def.getWidget(StorageLocationMeta.getStorageUnitDescription());
         addScreenHandler(storageUnit, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 storageUnit.setSelection(manager.getStorageLocation().getStorageUnitId(),
@@ -297,7 +300,7 @@ public class StorageLocationScreen extends Screen {
             }
         });
 
-        isAvailable = (CheckBox)def.getWidget(meta.getIsAvailable());
+        isAvailable = (CheckBox)def.getWidget(StorageLocationMeta.getIsAvailable());
         addScreenHandler(isAvailable, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isAvailable.setValue(manager.getStorageLocation().getIsAvailable());
@@ -315,7 +318,7 @@ public class StorageLocationScreen extends Screen {
         });
 
         childStorageLocsTable = (TableWidget)def.getWidget("childStorageLocsTable");
-        childStorageUnit = (AutoComplete<Integer>)childStorageLocsTable.getColumnWidget(meta.getChildStorageUnitDescription());
+        childStorageUnit = (AutoComplete<Integer>)childStorageLocsTable.getColumnWidget(StorageLocationMeta.getChildStorageUnitDescription());
 
         addScreenHandler(childStorageLocsTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
@@ -527,7 +530,7 @@ public class StorageLocationScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = meta.getName();
+                field.key = StorageLocationMeta.getName();
                 field.query = ((AppButton)event.getSource()).getAction();
                 field.type = QueryData.Type.STRING;
 
@@ -536,7 +539,15 @@ public class StorageLocationScreen extends Screen {
                 nav.setQuery(query);
             }
         });
-
+        
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+                if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
+                    event.cancel();
+                    window.setError(consts.get("mustCommitOrAbort"));
+                }
+            }
+        });
     }
 
     /*

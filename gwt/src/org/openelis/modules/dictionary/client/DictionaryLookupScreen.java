@@ -71,8 +71,6 @@ public class DictionaryLookupScreen extends Screen
 
     private ArrayList<TableDataRow> selectionList;
 
-    private CategoryMeta         meta = new CategoryMeta();
-
     public enum Action {
         OK, CANCEL
     };
@@ -264,19 +262,19 @@ public class DictionaryLookupScreen extends Screen
         catId = category.getValue();        
         if(catId != null) {            
             field = new QueryData();
-            field.key = meta.getId();
+            field.key = CategoryMeta.getId();
             field.type = QueryData.Type.INTEGER;
             field.query = catId.toString();
             fields.add(field);
         }
         field = new QueryData();
-        field.key = meta.getDictionaryEntry();
+        field.key = CategoryMeta.getDictionaryEntry();
         field.type = QueryData.Type.STRING;
         field.query = pattern;
         fields.add(field);
         
         field = new QueryData();
-        field.key = meta.getIsSystem();
+        field.key = CategoryMeta.getIsSystem();
         field.type = QueryData.Type.STRING;
         field.query = "N";
         fields.add(field);

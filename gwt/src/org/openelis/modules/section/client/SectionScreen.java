@@ -39,6 +39,8 @@ import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.BeforeCloseEvent;
+import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -47,12 +49,14 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.QueryFieldUtil;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -70,8 +74,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class SectionScreen extends Screen {
     private SectionViewDO         data;
     private SecurityModule        security;
-    
-    private SectionMeta        meta = new SectionMeta(); 
 
     private AutoComplete<Integer> parentName, organizationName;
     private TextBox               name, description;
@@ -197,7 +199,7 @@ public class SectionScreen extends Screen {
             }
         });
 
-        name = (TextBox)def.getWidget(meta.getName());
+        name = (TextBox)def.getWidget(SectionMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(data.getName());
@@ -213,7 +215,7 @@ public class SectionScreen extends Screen {
             }
         });
 
-        description = (TextBox)def.getWidget(meta.getDescription());
+        description = (TextBox)def.getWidget(SectionMeta.getDescription());
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 description.setValue(data.getDescription());
@@ -229,7 +231,7 @@ public class SectionScreen extends Screen {
             }
         });
 
-        isExternal = (CheckBox)def.getWidget(meta.getIsExternal());
+        isExternal = (CheckBox)def.getWidget(SectionMeta.getIsExternal());
         addScreenHandler(isExternal, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isExternal.setValue(data.getIsExternal());
@@ -245,7 +247,7 @@ public class SectionScreen extends Screen {
             }
         });
 
-        organizationName = (AutoComplete)def.getWidget(meta.getOrganizationName());
+        organizationName = (AutoComplete)def.getWidget(SectionMeta.getOrganizationName());
         addScreenHandler(organizationName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 organizationName.setSelection(data.getOrganizationId(),
@@ -263,7 +265,7 @@ public class SectionScreen extends Screen {
             }
         });
 
-        parentName = (AutoComplete)def.getWidget(meta.getParentSectionName());
+        parentName = (AutoComplete)def.getWidget(SectionMeta.getParentSectionName());
         addScreenHandler(parentName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 parentName.setSelection(data.getParentSectionId(),
@@ -412,13 +414,22 @@ public class SectionScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = meta.getName();
+                field.key = SectionMeta.getName();
                 field.query = ((AppButton)event.getSource()).getAction();
                 field.type = QueryData.Type.STRING;
 
                 query = new Query();
                 query.setFields(field);
                 nav.setQuery(query);
+            }
+        });
+        
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+                if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
+                    event.cancel();
+                    window.setError(consts.get("mustCommitOrAbort"));
+                }
             }
         });
     }

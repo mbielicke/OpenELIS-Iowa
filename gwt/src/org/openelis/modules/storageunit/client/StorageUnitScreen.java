@@ -40,17 +40,21 @@ import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.BeforeCloseEvent;
+import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -67,7 +71,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class StorageUnitScreen extends Screen {
     private StorageUnitDO      data;
-    private StorageUnitMeta meta = new StorageUnitMeta();
     private SecurityModule     security;
 
     private ButtonGroup        atoz;
@@ -214,7 +217,7 @@ public class StorageUnitScreen extends Screen {
             }
         });
 
-        category = (Dropdown<Integer>)def.getWidget(meta.getCategoryId());
+        category = (Dropdown<Integer>)def.getWidget(StorageUnitMeta.getCategoryId());
         addScreenHandler(category, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 category.setSelection(data.getCategoryId());
@@ -231,7 +234,7 @@ public class StorageUnitScreen extends Screen {
             }
         });
 
-        description = (TextBox)def.getWidget(meta.getDescription());
+        description = (TextBox)def.getWidget(StorageUnitMeta.getDescription());
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 description.setValue(data.getDescription());
@@ -248,7 +251,7 @@ public class StorageUnitScreen extends Screen {
             }
         });
 
-        isSingular = (CheckBox)def.getWidget(meta.getIsSingular());
+        isSingular = (CheckBox)def.getWidget(StorageUnitMeta.getIsSingular());
         addScreenHandler(isSingular, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isSingular.setValue(data.getIsSingular());
@@ -327,13 +330,22 @@ public class StorageUnitScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = meta.getDescription();
+                field.key = StorageUnitMeta.getDescription();
                 field.query = ((AppButton)event.getSource()).getAction();
                 field.type = QueryData.Type.STRING;
 
                 query = new Query();
                 query.setFields(field);
                 nav.setQuery(query);
+            }
+        });
+        
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+                if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
+                    event.cancel();
+                    window.setError(consts.get("mustCommitOrAbort"));
+                }
             }
         });
     }
