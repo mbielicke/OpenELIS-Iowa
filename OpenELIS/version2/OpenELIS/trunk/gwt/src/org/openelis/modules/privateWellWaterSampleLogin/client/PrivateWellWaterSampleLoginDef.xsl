@@ -150,50 +150,54 @@ version="1.0"
                 <xsl:value-of select="resource:getString($constants,'clntRef')" />:
               </text>
               <widget colspan="3">
-                <textbox key="{meta:getClientReference()}" width="175px" tab="{meta:getEnvIsHazardous()},{meta:getStatusId()}" field="String" />
+                <textbox key="{meta:getClientReference()}" width="175px" tab="{meta:getOrgName()},{meta:getStatusId()}" field="String" />
               </widget>
             </row>
           </TablePanel>
           <VerticalPanel style="subform" width="99%">
-            <text style="FormTitle">
-					Private Well Info</text>
+            <text style="FormTitle"><xsl:value-of select="resource:getString($constants,'privateWellInfo')" /></text>
 					<HorizontalPanel width="100%">
 					<TablePanel style="Form">
 					<row>
-							<text style="Prompt">Report To:</text>
+							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'reportTo')" />:</text>
 							<widget colspan="3">
-								<textbox key="name" tab="??,??" width="180px"/>
+								<autoComplete key="{meta:getOrgName()}" width="180" case="UPPER" popWidth="auto" tab="{meta:getWellOrganizationId()},{meta:getClientReference()}" field="Integer">
+                  					<col width="180" header="Name" />
+                  					<col width="110" header="Street" />
+                  					<col width="100" header="City" />
+                  					<col width="20" header="St" />
+                				</autoComplete>
 							</widget>
-							<text style="Prompt">Org Id:</text>
-							<textbox key="name" tab="??,??" width="60px"/>		
+							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'orgId')" />:</text>
+							<textbox key="{meta:getWellOrganizationId()}" tab="{meta:getAddressMultipleUnit()},{meta:getOrgName()}" field="Integer" width="60px"/>		
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
 							<widget colspan="3">
-								<textbox case="UPPER" key="1" width="180px" max="30" field="String"/>
+								<textbox case="UPPER" key="{meta:getAddressMultipleUnit()}" width="180px" max="30" field="String" tab="{meta:getAddressStreetAddress()},{meta:getWellOrganizationId()}"/>
 							</widget>
 						</row>	
 						<row>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
 							<widget colspan="3">
-								<textbox case="UPPER" key="2" width="180px" max="30" field="String"/>
+								<textbox case="UPPER" key="{meta:getAddressStreetAddress()}" width="180px" max="30" field="String" tab="{meta:getAddressCity()},{meta:getAddressMultipleUnit()}"/>
 							</widget>
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
 							<widget colspan="3">
-								<textbox case="UPPER" key="3" width="180px" max="30" field="String"/>
+								<textbox case="UPPER" key="{meta:getAddressCity()}" width="180px" max="30" field="String" tab="{meta:getAddressState()},{meta:getAddressStreetAddress()}"/>
 							</widget>
-							<text style="Prompt">Phone:</text>
-							<textbox key="name" tab="??,??" width="100px"/>
+							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'phone')" />:</text>
+							<textbox key="{meta:getAddressWorkPhone()}" tab="{meta:getAddressFaxPhone()},{meta:getAddressZipCode()}" width="100px" field="String"/>
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
-							<dropdown case="UPPER" key="4" width="40px" tab="??,??" field="String"/>
+							<dropdown case="UPPER" key="{meta:getAddressState()}" width="40px" tab="{meta:getAddressZipCode()},{meta:getAddressCity()}" field="String"/>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
-							<textbox case="UPPER" key="5" width="73px" max="30" field="String"/>
-							<text style="Prompt">Fax:</text>
-							<textbox key="name" tab="??,??" width="100px"/>
+							<textbox case="UPPER" key="{meta:getAddressZipCode()}" width="73px" max="30" tab="{meta:getAddressWorkPhone()},{meta:getAddressState()}" field="String"/>
+							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'faxNumber')" />:</text>
+							<textbox key="{meta:getAddressFaxPhone()}" tab="{meta:getWellLocation()},{meta:getAddressWorkPhone()}" width="100px" field="String"/>
 						</row>
 						<row>
 
@@ -203,32 +207,32 @@ version="1.0"
 					<row>	
 						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'location')" />:</text>
 						<widget colspan="3">
-							<textbox key="{meta:getEnvLocation()}" width="180px" field="String" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" />
+							<textbox key="{meta:getWellLocation()}" width="180px" field="String" tab="{meta:getLocationAddrMultipleUnit()},{meta:getAddressFaxPhone()}" />
 						</widget>	
 					</row>
 					<row>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
 							<widget colspan="3">
-								<textbox case="UPPER" key="1" width="180px" max="30" field="String"/>
+								<textbox case="UPPER" key="{meta:getLocationAddrMultipleUnit()}" width="180px" max="30" field="String" tab="{meta:getLocationAddrStreetAddress()},{meta:getWellLocation()}"/>
 							</widget>	
 					</row>
 					<row>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
 							<widget colspan="3">
-								<textbox case="UPPER" key="2" width="180px" max="30" field="String"/>
+								<textbox case="UPPER" key="{meta:getLocationAddrStreetAddress()}" width="180px" max="30" field="String" tab="{meta:getLocationAddrCity()},{meta:getLocationAddrMultipleUnit()}"/>
 							</widget>
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
 							<widget colspan="3">
-								<textbox case="UPPER" key="3" width="180px" max="30" field="String"/>
+								<textbox case="UPPER" key="{meta:getLocationAddrCity()}" width="180px" max="30" field="String" tab="{meta:getLocationAddrState()},{meta:getLocationAddrStreetAddress()}"/>
 							</widget>		
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
-							<dropdown case="UPPER" key="4" width="40px" tab="??,??" field="String"/>
+							<dropdown case="UPPER" key="{meta:getLocationAddrState()}" width="40px" tab="{meta:getLocationAddrZipCode()},{meta:getLocationAddrCity()}" field="String"/>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
-							<textbox case="UPPER" key="5" width="73px" max="30" field="String"/>
+							<textbox case="UPPER" key="{meta:getLocationAddrZipCode()}" width="73px" max="30" tab="itemsTestsTree,{meta:getLocationAddrState()}" field="String"/>
 						</row>
 				</TablePanel>
 				</HorizontalPanel>
@@ -240,7 +244,7 @@ version="1.0"
               </text>
               <TablePanel spacing="0" padding="0">
               	<row>
-	                <tree key="itemsTestsTree" width="auto" maxRows="4" showScroll="ALWAYS" tab="{meta:getProjectName()},{meta:getEnvLocation()}">
+	                <tree key="itemsTestsTree" width="auto" maxRows="4" showScroll="ALWAYS" tab="{meta:getWellOwner()},{meta:getLocationAddrZipCode()}">
 	                  <header>
 	                    <col width="280" header="{resource:getString($constants,'itemAnalyses')}" />
 	                    <col width="130" header="{resource:getString($constants,'typeStatus')}" />
@@ -296,28 +300,26 @@ version="1.0"
               </TablePanel>
             </VerticalPanel>
 	                  	<VerticalPanel style="subform">
-	                  	<text style="FormTitle">Well/Collector Info</text>
+	                  	<text style="FormTitle"><xsl:value-of select="resource:getString($constants,'wellCollectorInfo')" /></text>
 	                  <TablePanel style="Form">
 	                  <row>
-						<text style="Prompt">Owner:</text>
-						<textbox key="owner" tab="??,??" width="200px" field="String"/>
+						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'owner')" />:</text>
+						<textbox key="{meta:getWellOwner()}" tab="{meta:getWellCollector()},itemsTestsTree" width="200px" field="String"/>
 					</row>
 					<row>
-						<text style="Prompt">
-                  			Collector:
-                		</text>
-                		<textbox key="collector" width="200px" field="String"/>
+						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'collector')" />:</text>
+                		<textbox key="{meta:getWellCollector()}" width="200px" field="String" tab="{meta:getWellWellNumber()},{meta:getWellOwner()}"/>
 					</row>
 					<row>
-						<text style="Prompt">Well Num:</text>
-						<textbox key="depth" width="80px" field="String"/>	
+						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'wellNum')" />:</text>
+						<textbox key="{meta:getWellWellNumber()}" width="80px" field="Integer" tab="{meta:getProjectName()},{meta:getWellCollector()}"/>	
 					</row>
 					<row>
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'project')" />:
                   </text>
                   <HorizontalPanel>
-                    <autoComplete key="{meta:getProjectName()}" width="182px" case="UPPER" popWidth="auto" field="Integer" tab="{meta:getOrgName()},itemsTestsTree">
+                    <autoComplete key="{meta:getProjectName()}" width="182px" case="UPPER" popWidth="auto" field="Integer" tab="sampleItemTabPanel,{meta:getWellWellNumber()}">
                       <col width="115" header="{resource:getString($constants,'name')}" />
                       <col width="190" header="{resource:getString($constants,'desc')}" />
                     </autoComplete>

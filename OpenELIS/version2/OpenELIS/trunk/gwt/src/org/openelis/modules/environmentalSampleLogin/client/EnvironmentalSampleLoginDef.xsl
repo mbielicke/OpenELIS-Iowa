@@ -176,7 +176,7 @@ version="1.0"
               </text>
               <TablePanel spacing="0" padding="0">
               	<row>
-	                <tree key="itemsTestsTree" width="auto" maxRows="4" showScroll="ALWAYS" tab="{meta:getProjectName()},{meta:getEnvLocation()}">
+	                <tree key="itemsTestsTree" width="auto" maxRows="4" showScroll="ALWAYS" tab="{meta:getProjectName()},{meta:getEnvDescription()}">
 	                  <header>
 	                    <col width="280" header="{resource:getString($constants,'itemAnalyses')}" />
 	                    <col width="130" header="{resource:getString($constants,'typeStatus')}" />
