@@ -1,0 +1,99 @@
+<!--
+Exhibit A - UIRF Open-source Based Public Software License.
+
+The contents of this file are subject to the UIRF Open-source Based
+Public Software License(the "License"); you may not use this file except
+in compliance with the License. You may obtain a copy of the License at
+openelis.uhl.uiowa.edu
+
+Software distributed under the License is distributed on an "AS IS"
+basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+License for the specific language governing rights and limitations
+under the License.
+
+The Original Code is OpenELIS code.
+
+The Initial Developer of the Original Code is The University of Iowa.
+Portions created by The University of Iowa are Copyright 2006-2008. All
+Rights Reserved.
+
+Contributor(s): ______________________________________.
+
+Alternatively, the contents of this file marked
+"Separately-Licensed" may be used under the terms of a UIRF Software
+license ("UIRF Software License"), in which case the provisions of a
+UIRF Software License are applicable instead of those above. 
+-->
+<module rename-to="openelis">
+
+	<!-- Inherit the core Web Toolkit stuff.                  -->
+	<inherits name='com.google.gwt.user.User'/>
+	<inherits name="com.google.gwt.xml.XML"/>
+    <inherits name="com.google.gwt.i18n.I18N"/> 
+    <inherits name="org.openelis.gwt.Widget"/>
+    <inherits name="org.openelis.gwt.Common"/>
+    <inherits name="org.openelis.gwt.Screen"/>
+    <!--  
+    <inherits name='com.google.gwt.widgetideas.GWTCanvas'/>
+    -->
+    <inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/> 
+    <inherits name="org.openelis.modules.main.Main"/>
+    <inherits name="org.openelis.modules.analyte.Analyte"/>
+    <inherits name="org.openelis.modules.animalSampleLogin.AnimalSampleLogin"/>
+    <inherits name="org.openelis.modules.auxiliary.Auxiliary"/>
+    <inherits name="org.openelis.modules.buildKits.BuildKits"/>
+    <inherits name="org.openelis.modules.clinicalSampleLogin.ClinicalSampleLogin"/>
+    <inherits name="org.openelis.modules.dictionary.Dictionary"/>
+    <inherits name="org.openelis.modules.environmentalSampleLogin.EnvironmentalSampleLogin"/>
+    <inherits name="org.openelis.modules.favorites.Favorites"/>
+    <inherits name="org.openelis.modules.fillOrder.FillOrder"/>
+    <inherits name="org.openelis.modules.history.History"/>
+    <inherits name="org.openelis.modules.instrument.Instrument"/>
+    <inherits name="org.openelis.modules.inventoryAdjustment.InventoryAdjustment"/>
+    <inherits name="org.openelis.modules.inventoryItem.InventoryItem"/>
+    <inherits name="org.openelis.modules.inventoryReceipt.InventoryReceipt"/>
+    <inherits name="org.openelis.modules.label.Label"/> 
+    <inherits name="org.openelis.modules.method.Method"/>
+    <inherits name="org.openelis.modules.newbornScreeningSampleLogin.NewbornScreeningSampleLogin"/>
+    <inherits name="org.openelis.modules.note.Note"/>
+    <inherits name="org.openelis.modules.order.Order"/>
+    <inherits name="org.openelis.modules.organization.Organization"/>
+    <inherits name="org.openelis.modules.privateWellWaterSampleLogin.PrivateWellWaterSampleLogin"/>
+    <inherits name="org.openelis.modules.project.Project"/>
+    <inherits name="org.openelis.modules.provider.Provider"/>
+    <inherits name="org.openelis.modules.panel.Panel"/>
+    <inherits name="org.openelis.modules.PTSampleLogin.PTSampleLogin"/>
+    <inherits name="org.openelis.modules.qaevent.QAEvent"/>
+    <inherits name="org.openelis.modules.qc.QC"/>
+    <inherits name="org.openelis.modules.sample.Sample"/>
+    <inherits name="org.openelis.modules.SDWISSampleLogin.SDWISSampleLogin"/>
+    <inherits name="org.openelis.modules.section.Section"/>
+    <inherits name="org.openelis.modules.shipping.Shipping"/>
+    <inherits name="org.openelis.modules.standardnote.StandardNote"/>
+    <inherits name="org.openelis.modules.storage.Storage"/>
+    <inherits name="org.openelis.modules.storageunit.StorageUnit"/>
+    <inherits name="org.openelis.modules.systemvariable.SystemVariable"/>        
+    <inherits name="org.openelis.modules.testTrailer.TestTrailer"/>
+    <inherits name="org.openelis.modules.test.Test"/>
+    <inherits name="org.openelis.modules.worksheetCreation.WorksheetCreation"/>
+    <inherits name="org.openelis.modules.scriptlet.Scriptlet"/>
+    <inherits name="org.openelis.ELISCommon"/>     
+    <inherits name="org.openelis.modules.sampleTracking.SampleTracking"/>
+    <source path="manager"/>
+    <source path="cache"/>
+    <source path="common"/>
+    
+	<!-- Specify the app entry point class.                   -->
+	<entry-point class='org.openelis.modules.main.client.OpenELIS'/>
+	
+	
+	<set-property name="user.agent" value="gecko1_8" />
+     
+        <!-- <extend-property name="locale" values="cn"/>
+    <extend-property name="locale" values="fa"/>
+    <extend-property name="locale" values="sp"/> -->
+    
+    <define-property name="props" values="org_openelis_modules_main_server_constants_OpenELISConstants"/>
+    <set-property name="props" value="org_openelis_modules_main_server_constants_OpenELISConstants"/>
+    
+</module>
