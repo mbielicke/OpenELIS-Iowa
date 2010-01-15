@@ -29,26 +29,16 @@ import java.util.ArrayList;
 
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.manager.WorksheetManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.WorksheetCreationRemote;
-import org.openelis.remote.WorksheetManagerRemote;
 
 public class WorksheetCreationService {
 
     public ArrayList<WorksheetCreationVO> query(Query query) throws Exception {
-        return creationRemote().query(query.getFields(), 0, 500);
+        return remote().query(query.getFields(), 0, 500);
     }
 
-    public WorksheetManager add(WorksheetManager man) throws Exception {
-        return remoteManager().add(man);
-    }
-    
-    private WorksheetCreationRemote creationRemote() {
+    private WorksheetCreationRemote remote() {
         return (WorksheetCreationRemote)EJBFactory.lookup("openelis/WorksheetCreationBean/remote");
-    }
-    
-    private WorksheetManagerRemote remoteManager() {
-        return (WorksheetManagerRemote)EJBFactory.lookup("openelis/WorksheetManagerBean/remote");
     }
 }
