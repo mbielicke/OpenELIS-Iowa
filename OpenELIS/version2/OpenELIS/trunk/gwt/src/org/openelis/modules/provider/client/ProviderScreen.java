@@ -31,6 +31,11 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdFirstLastNameVO;
+import org.openelis.domain.IdNameVO;
+import org.openelis.domain.ProjectParameterDO;
+import org.openelis.domain.ProviderDO;
+import org.openelis.domain.ProviderLocationDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
@@ -52,12 +57,16 @@ import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.manager.ProjectParameterManager;
+import org.openelis.manager.ProviderLocationManager;
 import org.openelis.manager.ProviderManager;
 import org.openelis.meta.ProviderMeta;
+import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.note.client.NotesTab;
 
@@ -82,7 +91,8 @@ public class ProviderScreen extends Screen {
 
     private TextBox           id, lastName, firstName, npi, middleName;
     private AppButton         queryButton, previousButton, nextButton, addButton, updateButton,
-                              commitButton, abortButton, standardNoteButton;
+                              commitButton, abortButton;
+    protected MenuItem        providerHistory, providerLocationHistory;
     private Dropdown<Integer> typeId;
     private TabPanel          tabPanel;
 
@@ -206,6 +216,28 @@ public class ProviderScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                           .contains(event.getState()));
+            }
+        });
+        
+        providerHistory = (MenuItem)def.getWidget("providerHistory");
+        addScreenHandler(providerHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                providerHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                providerHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        providerLocationHistory = (MenuItem)def.getWidget("providerLocationHistory");
+        addScreenHandler(providerLocationHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                providerLocationHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                providerLocationHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -561,6 +593,47 @@ public class ProviderScreen extends Screen {
         } else {
             window.clearStatus();
         }
+    }
+    
+    protected void providerHistory() {
+        IdNameVO hist;
+        String name;
+        ProviderDO data;
+        
+        data = manager.getProvider();
+        
+        if(data.getFirstName() != null)
+            name = data.getLastName()+", "+data.getFirstName();
+        else 
+            name = data.getLastName();
+        
+        hist = new IdNameVO(data.getId(), name);
+        HistoryScreen.showHistory(consts.get("providerHistory"),
+                                  ReferenceTable.PROVIDER, hist); 
+    }
+    
+    protected void providerLocationHistory() {
+        int i, count;
+        IdNameVO refVoList[];
+        ProviderLocationManager man;
+        ProviderLocationDO data;
+
+        try {
+            man = manager.getLocations();
+            count = man.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++) {
+                data = man.getLocationAt(i);                                
+                refVoList[i] = new IdNameVO(data.getId(), data.getLocation());                
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("providerLocationHistory"),
+                                  ReferenceTable.PROVIDER_LOCATION, refVoList);
     }
 
     protected boolean fetchById(Integer id) {
