@@ -440,11 +440,10 @@ public class ResultBean implements ResultLocal {
                 testResult = testResultList.get(i);
 
                 if ( !testResult.getResultGroup().equals(rg)) {
-                    if (rg != null)
-                        resultValidators.add(rv);
-
                     rv = new ResultValidator();
                     rg = testResult.getResultGroup();
+                    
+                    resultValidators.add(rv);
                 }
 
                 // need to figure this out by type id
