@@ -30,9 +30,9 @@ import java.util.EnumSet;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.SecurityException;
@@ -48,17 +48,18 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.MethodMeta;
+import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -79,6 +80,7 @@ public class MethodScreen extends Screen {
     private CheckBox        isActive;
     private AppButton       queryButton, previousButton, nextButton, addButton, updateButton,
                             commitButton, abortButton;
+    protected MenuItem      history;
     private ButtonGroup     atoz;
     private ScreenNavigator nav;
 
@@ -198,6 +200,17 @@ public class MethodScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                           .contains(event.getState()));
+            }
+        });
+        
+        history = (MenuItem)def.getWidget("methodHistory");
+        addScreenHandler(history, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                history();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                history.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -382,7 +395,7 @@ public class MethodScreen extends Screen {
         });
     }
 
-    private void query() {
+    protected void query() {
         data = new MethodDO();
         setState(State.QUERY);
         DataChangeEvent.fire(this);
@@ -391,15 +404,15 @@ public class MethodScreen extends Screen {
         window.setDone(consts.get("enterFieldsToQuery"));
     }
 
-    private void next() {
+    protected void next() {
         nav.next();
     }
 
-    private void previous() {
+    protected void previous() {
         nav.previous();
     }
 
-    private void add() {
+    protected void add() {
         data = new MethodDO();
         data.setIsActive("Y");
         setState(State.ADD);
@@ -409,7 +422,7 @@ public class MethodScreen extends Screen {
         window.setDone(consts.get("enterInformationPressCommit"));
     }
 
-    private void update() {
+    protected void update() {
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
@@ -424,7 +437,7 @@ public class MethodScreen extends Screen {
         window.clearStatus();
     }
 
-    private void commit() {
+    protected void commit() {
         setFocus(null);
 
         if ( !validate()) {
@@ -482,7 +495,7 @@ public class MethodScreen extends Screen {
         }
     }
 
-    private void abort() {
+    protected void abort() {
         setFocus(null);
         clearErrors();
         window.setBusy(consts.get("cancelChanges"));
@@ -517,8 +530,15 @@ public class MethodScreen extends Screen {
             window.clearStatus();
         }
     }
+    
+    protected void history() {
+        IdNameVO hist;
+        
+        hist = new IdNameVO(data.getId(), data.getName());
+        HistoryScreen.showHistory(consts.get("methodHistory"), ReferenceTable.METHOD, hist);
+    }
 
-    private boolean fetchById(Integer id) {
+    protected boolean fetchById(Integer id) {
         if (id == null) {
             data = new MethodDO();
             setState(State.DEFAULT);

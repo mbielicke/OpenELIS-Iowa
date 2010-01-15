@@ -1,5 +1,4 @@
 
-
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -125,12 +124,30 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="language" />
                 </xsl:with-param>
               </xsl:call-template>
+              <xsl:call-template name="buttonPanelDivider" />
+              <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
+                <menuItem>
+                  <menuDisplay>
+                    <appButton style="ButtonPanelButton" action="option">
+                      <HorizontalPanel>
+                        <text>
+                          <xsl:value-of select='resource:getString($constants,"options")' />
+                        </text>
+                        <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
+                      </HorizontalPanel>
+                    </appButton>
+                  </menuDisplay>
+                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                    <menuItem description="" icon = "historyIcon" key="testTrailerHistory" label="{resource:getString($constants,'testTrailerHistory')}" />                    
+                  </menuPanel>
+                </menuItem>
+              </menuPanel>
             </HorizontalPanel>
           </AbsolutePanel>
 
 <!--end button panel-->
 
-          <VerticalPanel width="600" padding="0" spacing="0" style="WhiteContentPanel">
+          <VerticalPanel width="650" padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
                 <text style="Prompt">

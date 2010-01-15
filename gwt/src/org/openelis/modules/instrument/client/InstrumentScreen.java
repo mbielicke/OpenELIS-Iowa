@@ -32,6 +32,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InstrumentLogDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
@@ -51,7 +52,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -59,6 +59,7 @@ import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
@@ -72,8 +73,10 @@ import org.openelis.gwt.widget.table.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
+import org.openelis.manager.InstrumentLogManager;
 import org.openelis.manager.InstrumentManager;
 import org.openelis.meta.InstrumentMeta;
+import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -94,6 +97,7 @@ public class InstrumentScreen extends Screen {
     private CheckBox                    isActive;
     private AppButton                   queryButton, previousButton, nextButton, addButton, updateButton,
                                         commitButton, abortButton, addLogButton, removeLogButton;
+    protected MenuItem                  instrumentHistory, instrumentLogHistory;
     private ButtonGroup                 atoz;
     private ScreenNavigator             nav;
     private Dropdown<Integer>           typeId;
@@ -220,6 +224,28 @@ public class InstrumentScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+            }
+        });
+        
+        instrumentHistory = (MenuItem)def.getWidget("instrumentHistory");
+        addScreenHandler(instrumentHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                instrumentHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                instrumentHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        instrumentLogHistory = (MenuItem)def.getWidget("instrumentLogHistory");
+        addScreenHandler(instrumentLogHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                instrumentLogHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                instrumentLogHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -741,6 +767,49 @@ public class InstrumentScreen extends Screen {
             window.clearStatus();
         }
     }
+    
+    protected void instrumentHistory() {
+        IdNameVO hist;
+        
+        hist = new IdNameVO(manager.getInstrument().getId(), manager.getInstrument().getName());
+        HistoryScreen.showHistory(consts.get("instrumentHistory"),
+                                  ReferenceTable.INSTRUMENT, hist); 
+    }
+    
+    protected void instrumentLogHistory() {
+        int i, count;
+        IdNameVO refVoList[];
+        InstrumentLogManager man;
+        InstrumentLogDO data;
+        DictionaryDO dict;
+        String entry;
+        Integer typeId;
+
+        try {
+            man = manager.getLogs();
+            count = man.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = man.getLogAt(i);
+                typeId = data.getTypeId();
+                dict = DictionaryCache.getEntryFromId(typeId);
+                if(dict != null)
+                    entry = dict.getEntry();
+                else
+                    entry = typeId.toString();
+                
+                refVoList[i] = new IdNameVO(data.getId(), entry);                
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("instrumentLogHistory"),
+                                  ReferenceTable.INSTRUMENT_LOG, refVoList);
+    }
+
 
     protected boolean fetchById(Integer id) {
         if (id == null) {

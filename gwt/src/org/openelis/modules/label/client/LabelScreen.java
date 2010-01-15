@@ -32,6 +32,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.LabelViewDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
@@ -50,18 +51,19 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.LabelMeta;
+import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -78,6 +80,7 @@ public class LabelScreen extends Screen {
 
     private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
                                   deleteButton, commitButton, abortButton;
+    protected MenuItem            history;
     private AutoComplete<Integer> scriptlet;
     private TextBox               name, description;
     private Dropdown<Integer>     printerTypeId;
@@ -224,6 +227,17 @@ public class LabelScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
                                           .contains(event.getState()));
+            }
+        });
+        
+        history = (MenuItem)def.getWidget("labelHistory");
+        addScreenHandler(history, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                history();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                history.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -564,6 +578,13 @@ public class LabelScreen extends Screen {
         } else {
             window.clearStatus();
         }
+    }
+    
+    protected void history() {
+        IdNameVO hist;
+        
+        hist = new IdNameVO(data.getId(), data.getName());
+        HistoryScreen.showHistory(consts.get("labelHistory"), ReferenceTable.LABEL, hist);
     }
 
     protected boolean fetchById(Integer id) {

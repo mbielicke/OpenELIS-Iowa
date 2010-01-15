@@ -26,7 +26,6 @@
 package org.openelis.modules.history.client;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashMap;
 
 import org.openelis.cache.DictionaryCache;
@@ -45,6 +44,8 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.gwt.widget.tree.event.BeforeLeafOpenEvent;
@@ -64,7 +65,7 @@ public class HistoryScreen extends Screen {
     protected AppButton                closeButton;
     protected TreeWidget               historyTree;
 
-    protected Integer                  referenceTableId;//, nextIndex;
+    protected Integer                  referenceTableId;
     protected IdNameVO                 referenceVoList[];
     protected HashMap<Integer, String> operationMap;    
     protected ScreenWindow             popup;
@@ -82,16 +83,9 @@ public class HistoryScreen extends Screen {
             }
         }
         instance.initializeWindow(title);
-        instance.setReferenceVOList(referenceId);
-        //instance.setReferenceId(referenceId[0]);
+        instance.setReferenceVoList(referenceId);
         instance.setReferenceTableId(referenceTableId);
-        //instance.setNextIndex(0);
         DataChangeEvent.fire(instance); 
-        
-        //instance.nextButton.enable(instance.referenceIdList.length > 1);             
-        //instance.previousButton.enable(false);
-        
-        //instance.popup.setStatus(instance.getStatus(), "");
     }
     
     protected HistoryScreen() throws Exception {
@@ -118,6 +112,12 @@ public class HistoryScreen extends Screen {
             }
         });
         
+        historyTree.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                event.cancel();                
+            }            
+        });
+        
         historyTree.addBeforeLeafOpenHandler(new BeforeLeafOpenHandler() {
             public void onBeforeLeafOpen(BeforeLeafOpenEvent event) {
                 TreeDataItem item;
@@ -129,29 +129,7 @@ public class HistoryScreen extends Screen {
                     addHistoryItems(index, item);
                 }                
             }            
-        });
-        
-        nextButton = (AppButton)def.getWidget("nextButton");
-        addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                //next();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                nextButton.enable(false);
-            }
-        });
-        
-        previousButton = (AppButton)def.getWidget("previousButton");
-        addScreenHandler(previousButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                //previous();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                previousButton.enable(false);
-            }
-        });
+        });                
     }
     
     private void initializeDropdowns() {
@@ -179,39 +157,13 @@ public class HistoryScreen extends Screen {
         popup.setName(title);
     }
     
-    /*protected void next() {
-        if(++nextIndex >= referenceIdList.length-1) 
-            nextButton.enable(false);                
-        
-        if(nextIndex >= 1)
-            previousButton.enable(true);
-        
-        DataChangeEvent.fire(this);
-        window.setStatus(getStatus(), "");
-    }
-    
-    private void previous() {
-        if(--nextIndex == 0) 
-            previousButton.enable(false);                
-        
-        if(nextIndex <= referenceIdList.length-2)
-            nextButton.enable(true);
-        
-        DataChangeEvent.fire(this);
-        window.setStatus(getStatus(), "");        
-    }*/
-    
-    protected void setReferenceVOList(IdNameVO[] referenceVOList) {
+    protected void setReferenceVoList(IdNameVO[] referenceVOList) {
         this.referenceVoList = referenceVOList;
     }
 
     protected void setReferenceTableId(Integer referenceTableId) {
         this.referenceTableId = referenceTableId;
     }
-    
-    /*protected void setNextIndex(Integer nextIndex) {
-        this.nextIndex = nextIndex;
-    }*/
 
     private ArrayList<TreeDataItem> getTreeModel() {
         ArrayList<TreeDataItem> model;
@@ -258,6 +210,7 @@ public class HistoryScreen extends Screen {
         Node root, node;
         Query query;
         QueryData field; 
+        Integer activityId;
 
         model = (ArrayList<TreeDataItem>)parent.data;
         if(model != null)
@@ -286,9 +239,10 @@ public class HistoryScreen extends Screen {
                 item.key = data.getId();
                 item.cells.get(0).setValue(data.getTimestamp());
                 item.cells.get(1).setValue(data.getSystemUserLoginName());
-                operation = operationMap.get(data.getActivityId());
+                activityId = data.getActivityId();
+                operation = operationMap.get(activityId);
                 if (operation == null)
-                    operation = data.getActivityId().toString();
+                    operation = activityId.toString();
 
                 item.cells.get(2).setValue(operation);
 
@@ -318,9 +272,10 @@ public class HistoryScreen extends Screen {
         
         window.setDone(consts.get("loadCompleteMessage"));
         parent.data = model;
+        if(model.size() == 0) {
+            parent.checkForChildren(false);
+            historyTree.refresh(true);
+            window.setStatus(consts.get("noRecordsFound"), "");
+        }
     }
-    
-    /*private String getStatus() {
-        return ((nextIndex+1) +" of "+ referenceIdList.length);
-    }*/
 }

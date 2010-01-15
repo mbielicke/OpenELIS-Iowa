@@ -48,7 +48,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonGroup;
@@ -298,7 +297,6 @@ public class PanelScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 panelItemTable.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                              .contains(event.getState()));
-                //panelItemTable.enable(true);
                 panelItemTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -609,7 +607,7 @@ public class PanelScreen extends Screen {
         window.clearStatus();
     }
 
-    private void delete() {
+    protected void delete() {
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
@@ -621,10 +619,9 @@ public class PanelScreen extends Screen {
             Window.alert(e.getMessage());
         }
         window.clearStatus();
-
     }
 
-    private void commit() {
+    protected void commit() {
         setFocus(null);
         allTestsTable.clearSelections();
         
@@ -683,7 +680,7 @@ public class PanelScreen extends Screen {
         }
     }
 
-    public void abort() {
+    protected void abort() {
         setFocus(null);
         allTestsTable.clearSelections();
         clearErrors();
@@ -724,43 +721,31 @@ public class PanelScreen extends Screen {
         IdNameVO hist;
         
         hist = new IdNameVO(manager.getPanel().getId(), manager.getPanel().getName());
-        HistoryScreen.showHistory(consts.get("panel"), ReferenceTable.PANEL, hist);        
+        HistoryScreen.showHistory(consts.get("panelHistory"), ReferenceTable.PANEL, hist);        
     }
     
     protected void panelItemHistory() {
         int i, count;
-        // rows[],
-        IdNameVO refVOList[];
+        IdNameVO refVoList[];
         PanelItemManager man;
         PanelItemDO data;
-                        
-        //rows = panelItemTable.getSelectedRows();               
-        
+
         try {
             man = manager.getItems();
-            /*if(rows.length > 0) {
-                refVOList = new IdNameVO[rows.length];
-                for(i = 0; i < rows.length; i++) {
-                    data = man.getItemAt(rows[i]);
-                    refVOList[i] = new IdNameVO(data.getId(), data.getTestName()+","+data.getMethodName());
-                    //refList[i] = man.getItemAt(rows[i]).getId();
-                }
-            } else {*/
-                count = man.count();
-                refVOList = new IdNameVO[count];
-                for(i = 0; i < count; i++) {
-                    data = man.getItemAt(i);
-                    refVOList[i] = new IdNameVO(data.getId(), data.getTestName()+","+data.getMethodName());
-                    //refList[i] = man.getItemAt(i).getId();
-                }
-            //} 
+            count = man.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = man.getItemAt(i);
+                refVoList[i] = new IdNameVO(data.getId(), data.getTestName() + "," +
+                                                          data.getMethodName());
+            }
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
             return;
         }
-        
-        HistoryScreen.showHistory(consts.get("panelItem"), ReferenceTable.PANEL_ITEM, refVOList);        
+
+        HistoryScreen.showHistory(consts.get("panelItemHistory"), ReferenceTable.PANEL_ITEM, refVoList);
     }
 
     protected boolean fetchById(Integer id) {

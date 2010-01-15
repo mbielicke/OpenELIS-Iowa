@@ -31,8 +31,10 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.InstrumentLogDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.QcAnalyteViewDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SecuritySystemUserDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
@@ -64,6 +66,7 @@ import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
@@ -76,10 +79,13 @@ import org.openelis.gwt.widget.table.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
+import org.openelis.manager.InstrumentLogManager;
+import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.QcManager;
-import org.openelis.meta.QcMeta;
 import org.openelis.meta.CategoryMeta;
+import org.openelis.meta.QcMeta;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
+import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utilcommon.ResultRangeNumeric;
@@ -100,6 +106,7 @@ public class QcScreen extends Screen {
     private AppButton                   queryButton, previousButton, nextButton, addButton,
                                         updateButton, commitButton, abortButton, addAnalyteButton,
                                         removeAnalyteButton, dictionaryButton;
+    protected MenuItem                  qcHistory, qcAnalyteHistory;
     private ButtonGroup                 atoz;
     private ScreenNavigator             nav;
     private CalendarLookUp              preparedDate, usableDate, expireDate;
@@ -244,6 +251,28 @@ public class QcScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
                                           .contains(event.getState()));
+            }
+        });
+        
+        qcHistory = (MenuItem)def.getWidget("qcHistory");
+        addScreenHandler(qcHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                qcHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                qcHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        qcAnalyteHistory = (MenuItem)def.getWidget("qcAnalyteHistory");
+        addScreenHandler(qcAnalyteHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                qcAnalyteHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                qcAnalyteHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -901,6 +930,38 @@ public class QcScreen extends Screen {
         } else {
             window.clearStatus();
         }
+    }
+    
+    private void qcHistory() {
+        IdNameVO hist;
+        
+        hist = new IdNameVO(manager.getQc().getId(), manager.getQc().getName());
+        HistoryScreen.showHistory(consts.get("qcHistory"),
+                                  ReferenceTable.QC, hist); 
+    }
+    
+    private void qcAnalyteHistory() {
+        int i, count;
+        IdNameVO refVoList[];
+        QcAnalyteManager man;
+        QcAnalyteViewDO data;
+
+        try {
+            man = manager.getAnalytes();
+            count = man.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = man.getAnalyteAt(i);                
+                refVoList[i] = new IdNameVO(data.getId(), data.getAnalyteName());                
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("qcAnalyteHistory"),
+                                  ReferenceTable.QC_ANALYTE, refVoList);
     }
 
     protected boolean fetchById(Integer id) {

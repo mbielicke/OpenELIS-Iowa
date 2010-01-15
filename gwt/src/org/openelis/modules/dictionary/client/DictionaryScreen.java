@@ -34,6 +34,8 @@ import org.openelis.cache.SectionCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.PanelItemDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SectionDO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
@@ -53,12 +55,14 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
@@ -77,7 +81,10 @@ import org.openelis.gwt.widget.table.event.SortEvent;
 import org.openelis.gwt.widget.table.event.SortHandler;
 import org.openelis.gwt.widget.table.event.SortEvent.SortDirection;
 import org.openelis.manager.CategoryManager;
+import org.openelis.manager.DictionaryManager;
+import org.openelis.manager.PanelItemManager;
 import org.openelis.meta.CategoryMeta;
+import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.utilcommon.DataBaseUtil;
 
@@ -98,6 +105,7 @@ public class DictionaryScreen extends Screen {
     private TextBox               name, description, systemName;
     private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
                                   commitButton, abortButton, removeEntryButton, addEntryButton;
+    protected MenuItem            dictionaryHistory, categoryHistory;
     private Dropdown<Integer>     sectionId;
     private AutoComplete<Integer> relatedEntry;
     private CheckBox              isSystem;
@@ -261,6 +269,28 @@ public class DictionaryScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                           .contains(event.getState()));
+            }
+        });
+        
+        categoryHistory = (MenuItem)def.getWidget("categoryHistory");
+        addScreenHandler(categoryHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                categoryHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                categoryHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        dictionaryHistory = (MenuItem)def.getWidget("dictionaryHistory");
+        addScreenHandler(dictionaryHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                dictionaryHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                dictionaryHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -438,7 +468,6 @@ public class DictionaryScreen extends Screen {
                     Window.alert(e.getMessage());
                 }
             }
-
         });
         
         dictTable.addSortHandler(new SortHandler(){
@@ -467,8 +496,7 @@ public class DictionaryScreen extends Screen {
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }                
-            }
-            
+            }            
         });
         
         dictTable.enableDrag(true);
@@ -748,7 +776,36 @@ public class DictionaryScreen extends Screen {
         } else {
             window.clearStatus();
         }
+    }
+    
+    protected void categoryHistory() {
+        IdNameVO hist;
+        
+        hist = new IdNameVO(manager.getCategory().getId(), manager.getCategory().getName());
+        HistoryScreen.showHistory(consts.get("categoryHistory"), ReferenceTable.CATEGORY, hist);        
+    }
+    
+    protected void dictionaryHistory() {
+        int count;
+        IdNameVO list[];
+        DictionaryManager man;
+        DictionaryViewDO data;
 
+        try {
+            man = manager.getEntries();
+            count = man.count();
+            list = new IdNameVO[count];
+            for (int i = 0; i < count; i++ ) {
+                data = man.getEntryAt(i);
+                list[i] = new IdNameVO(data.getId(), data.getEntry());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("dictionaryHistory"), ReferenceTable.DICTIONARY, list);
     }
 
     protected boolean fetchByCategoryId(Integer id) {

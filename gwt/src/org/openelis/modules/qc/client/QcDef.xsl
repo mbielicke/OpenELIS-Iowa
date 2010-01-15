@@ -1,5 +1,4 @@
 
-
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -123,6 +122,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="language" />
                 </xsl:with-param>
               </xsl:call-template>
+              <xsl:call-template name="buttonPanelDivider" />
               <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
                 <menuItem>
                   <menuDisplay>
@@ -135,8 +135,9 @@ UIRF Software License are applicable instead of those above.
                       </HorizontalPanel>
                     </appButton>
                   </menuDisplay>
-                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                    <xsl:call-template name="historyMenuItem" />
+				  <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                    <menuItem description="" icon = "historyIcon" key="qcHistory" label="{resource:getString($constants,'qcHistory')}" />
+                    <menuItem description="" icon = "historyIcon" key="qcAnalyteHistory" label="{resource:getString($constants,'qcAnalyteHistory')}" />                    
                   </menuPanel>
                 </menuItem>
               </menuPanel>

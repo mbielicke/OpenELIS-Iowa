@@ -124,8 +124,9 @@ UIRF Software License are applicable instead of those above.
                       </HorizontalPanel>
                     </appButton>
                   </menuDisplay>
-                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                    <xsl:call-template name="historyMenuItem" />
+				  <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                    <menuItem description="" icon = "historyIcon" key="storageLocationHistory" label="{resource:getString($constants,'storageLocationHistory')}" />
+                    <menuItem description="" icon = "historyIcon" key="subLocationHistory" label="{resource:getString($constants,'subLocationHistory')}" />
                   </menuPanel>
                 </menuItem>
               </menuPanel>

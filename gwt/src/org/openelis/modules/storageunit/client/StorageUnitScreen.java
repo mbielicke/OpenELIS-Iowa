@@ -31,6 +31,7 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.StorageUnitDO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
@@ -54,11 +55,13 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.StorageUnitMeta;
+import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -78,8 +81,9 @@ public class StorageUnitScreen extends Screen {
 
     private TextBox            description;
     private CheckBox           isSingular;
-    private AppButton          queryButton, previousButton, nextButton, addButton, updateButton,
-                               deleteButton, commitButton, abortButton;
+    private AppButton          queryButton, previousButton, nextButton, addButton,
+                               updateButton, deleteButton, commitButton, abortButton;
+    protected MenuItem         history;
     private Dropdown<Integer>  category;
 
     public StorageUnitScreen() throws Exception {
@@ -216,7 +220,18 @@ public class StorageUnitScreen extends Screen {
                                           .contains(event.getState()));
             }
         });
+        
+        history = (MenuItem)def.getWidget("storageUnitHistory");
+        addScreenHandler(history, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                history();
+            }
 
+            public void onStateChange(StateChangeEvent<State> event) {
+                history.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
         category = (Dropdown<Integer>)def.getWidget(StorageUnitMeta.getCategoryId());
         addScreenHandler(category, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -519,7 +534,13 @@ public class StorageUnitScreen extends Screen {
         } else {
             window.clearStatus();
         }
-
+    }
+    
+    protected void history() {
+        IdNameVO hist;
+        
+        hist = new IdNameVO(data.getId(), data.getDescription());
+        HistoryScreen.showHistory(consts.get("storageUnitHistory"), ReferenceTable.STORAGE_UNIT, hist);
     }
 
     protected boolean fetchById(Integer id) {

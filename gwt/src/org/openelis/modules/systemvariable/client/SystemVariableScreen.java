@@ -217,7 +217,7 @@ public class SystemVariableScreen extends Screen {
             }
         });
         
-        history = (MenuItem)def.getWidget("history");
+        history = (MenuItem)def.getWidget("systemVariableHistory");
         addScreenHandler(history, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 history();
@@ -504,7 +504,7 @@ public class SystemVariableScreen extends Screen {
         IdNameVO hist;
         
         hist = new IdNameVO(data.getId(), data.getName());
-        HistoryScreen.showHistory(consts.get("systemVariable"), ReferenceTable.SYSTEM_VARIABLE, hist);
+        HistoryScreen.showHistory(consts.get("systemVariableHistory"), ReferenceTable.SYSTEM_VARIABLE, hist);
     }
 
     protected boolean fetchById(Integer id) {

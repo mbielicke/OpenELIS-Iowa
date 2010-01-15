@@ -30,6 +30,7 @@ import java.util.EnumSet;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
@@ -55,12 +56,14 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.SectionMeta;
+import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -80,6 +83,7 @@ public class SectionScreen extends Screen {
     private CheckBox              isExternal;
     private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
                                   commitButton, abortButton;
+    protected MenuItem            history;
     private ButtonGroup           atoz;
     private ScreenNavigator       nav;
     private ScreenService         organizationService;     
@@ -196,6 +200,17 @@ public class SectionScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+            }
+        });
+        
+        history = (MenuItem)def.getWidget("sectionHistory");
+        addScreenHandler(history, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                history();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                history.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -549,6 +564,13 @@ public class SectionScreen extends Screen {
         }  else {
             window.clearStatus();
         }
+    }
+    
+    protected void history() {
+        IdNameVO hist;
+        
+        hist = new IdNameVO(data.getId(), data.getName());
+        HistoryScreen.showHistory(consts.get("sectionHistory"), ReferenceTable.SECTION, hist);
     }
 
     protected boolean fetchById(Integer id) {
