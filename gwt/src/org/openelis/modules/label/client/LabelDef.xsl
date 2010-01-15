@@ -126,7 +126,7 @@ UIRF Software License are applicable instead of those above.
                     </appButton>
                   </menuDisplay>
                   <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                    <menuItem description="" icon = "historyIcon" key="labelHistory" label="{resource:getString($constants,'labelHistory')}" />                    
+                    <menuItem description="" icon = "historyIcon" key="labelHistory" label="{resource:getString($constants,'labelHistory')}" enable = "false"/>                    
                   </menuPanel>
                 </menuItem>
               </menuPanel>
