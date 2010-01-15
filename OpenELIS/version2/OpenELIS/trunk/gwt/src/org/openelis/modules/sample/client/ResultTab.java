@@ -34,17 +34,16 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
+import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataCell;
@@ -72,11 +71,12 @@ import com.google.gwt.user.client.Window;
 public class ResultTab extends Screen {
     private boolean                 loaded;
 
-    protected AppButton               addResultButton, removeResultButton;
+    protected AppButton               addResultButton, removeResultButton, suggestionsButton;
     protected TableWidget             testResultsTable;
     private ArrayList<TableColumn> resultTableCols;
     
     protected TestAnalyteLookupScreen testAnalyteScreen;
+    protected ResultSuggestionsScreen suggestionsScreen;
     
     protected AnalysisResultManager manager;
     private ResultDisplayManager    displayManager;
@@ -113,14 +113,9 @@ public class ResultTab extends Screen {
         testResultsTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>(){
             public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
                 if(anDO.getUnitOfMeasureId() == null){
-                    event.cancel();
-                    window.setError(consts.get("unitOfMeasureException"));
-                    
                     addResultButton.enable(false);
                     removeResultButton.enable(false);
-                    return;
-                }else
-                    window.clearStatus();
+                }
                 
                 TableDataRow row; 
                 boolean isHeader;
@@ -147,6 +142,7 @@ public class ResultTab extends Screen {
                    removeResultButton.enable(true);
                
                addResultButton.enable(true);
+               suggestionsButton.enable(true);
            }
         });
         
@@ -168,6 +164,12 @@ public class ResultTab extends Screen {
                
                if(isHeaderRow || c == 0 || c >= (displayManager.columnCount(r)+1) || testAnalyteReadOnlyId.equals(resultDO.getTypeId()))
                    event.cancel();
+               
+               if(anDO.getUnitOfMeasureId() == null && !manager.getResultValidator(resultDO.getResultGroup()).onlyDefault()){
+                   window.setError(consts.get("unitOfMeasureException"));
+                   event.cancel();
+               }else
+                   window.clearStatus();
             } 
         });
 
@@ -185,7 +187,7 @@ public class ResultTab extends Screen {
                 
                 tableRow = testResultsTable.getRow(row);                
                 resultDO = displayManager.getResultAt(row,col-1);
-                val = (String)((TableDataRow)tableRow.cells.get(col).value).key;
+                val = (String)tableRow.cells.get(col).value;
                 
                 if(!"".equals(val)){
                     try{
@@ -254,41 +256,6 @@ public class ResultTab extends Screen {
             }
         });
         
-        resultMatchesHandler = new GetMatchesHandler(){
-            public void onGetMatches(GetMatchesEvent event) {
-                String valueEntered;
-                int row, col;
-                ResultViewDO resultDO;
-                ArrayList<String> suggestions;
-                ArrayList<TableDataRow> model;
-                
-                valueEntered= event.getMatch();
-                row= testResultsTable.getSelectedRow();
-                col = testResultsTable.getSelectedCol();
-                
-                resultDO = displayManager.getResultAt(row,col-1);
-                suggestions = manager.getResultValidator(resultDO.getResultGroup()).getRanges(anDO.getUnitOfMeasureId());
-                model = new ArrayList<TableDataRow>();
-                model.add(new TableDataRow(valueEntered, valueEntered));
-                
-                for(int i=0; i<suggestions.size(); i++)
-                    model.add(new TableDataRow(suggestions.get(i),suggestions.get(i)));
-                
-                ((AutoComplete<String>)event.getSource()).showAutoMatches(model);
-            }
-        };
-        
-        //set the same matches handler to all cols in the result table
-        ((AutoComplete<String>)testResultsTable.getColumns().get(1).colWidget).addGetMatchesHandler(resultMatchesHandler);
-        ((AutoComplete<String>)testResultsTable.getColumns().get(2).colWidget).addGetMatchesHandler(resultMatchesHandler);
-        ((AutoComplete<String>)testResultsTable.getColumns().get(3).colWidget).addGetMatchesHandler(resultMatchesHandler);
-        ((AutoComplete<String>)testResultsTable.getColumns().get(4).colWidget).addGetMatchesHandler(resultMatchesHandler);
-        ((AutoComplete<String>)testResultsTable.getColumns().get(5).colWidget).addGetMatchesHandler(resultMatchesHandler);
-        ((AutoComplete<String>)testResultsTable.getColumns().get(6).colWidget).addGetMatchesHandler(resultMatchesHandler);
-        ((AutoComplete<String>)testResultsTable.getColumns().get(7).colWidget).addGetMatchesHandler(resultMatchesHandler);
-        ((AutoComplete<String>)testResultsTable.getColumns().get(8).colWidget).addGetMatchesHandler(resultMatchesHandler);
-        ((AutoComplete<String>)testResultsTable.getColumns().get(9).colWidget).addGetMatchesHandler(resultMatchesHandler);
-
         addResultButton = (AppButton)def.getWidget("addResultButton");
         addScreenHandler(addResultButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -339,6 +306,53 @@ public class ResultTab extends Screen {
                 removeResultButton.enable(false);
             }
         });
+        
+        suggestionsButton = (AppButton)def.getWidget("suggestionsButton");
+        addScreenHandler(suggestionsButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                int row;
+                int col;
+                ResultViewDO resultDO;
+                
+                row= testResultsTable.getSelectedRow();
+                col = testResultsTable.getSelectedCol();
+                resultDO = displayManager.getResultAt(row,col-1);
+                
+                if (suggestionsScreen == null) {
+                    try {
+                        suggestionsScreen = new ResultSuggestionsScreen();
+                        suggestionsScreen.addActionHandler(new ActionHandler<ResultSuggestionsScreen.Action>() {
+                            public void onAction(ActionEvent<ResultSuggestionsScreen.Action> event) {
+                                if (event.getAction() == ResultSuggestionsScreen.Action.OK) {
+                                    int row;
+                                    int col;
+                                    row= testResultsTable.getSelectedRow();
+                                    col = testResultsTable.getSelectedCol();
+
+                                    testResultsTable.setCell(row, col, (String)event.getData());
+                                    //testResultsTable.select(row, col);
+                                }
+                            }
+                        });
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Window.alert("error: " + e.getMessage());
+                        return;
+                    }
+                }
+
+                ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+                modal.setName(consts.get("testAnalyteSelection"));
+                modal.setContent(suggestionsScreen);
+                
+                suggestionsScreen.setValidator(manager.getResultValidator(resultDO.getResultGroup()), anDO.getUnitOfMeasureId());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                suggestionsButton.enable(false);
+            }
+        });
     }
     
     private ArrayList<TableDataRow> getTableModel() {
@@ -380,15 +394,15 @@ public class ResultTab extends Screen {
                 row.key = resultDO.getId();
                 if(c == 0) {
                     row.cells.get(0).setValue(resultDO.getAnalyte());
-                    row.cells.get(1).setValue(new TableDataRow(resultDO.getValue(),resultDO.getValue()));
+                    row.cells.get(1).setValue(resultDO.getValue());
                     continue;
                 }                        
                 
                 if(!headerFilled) {
-                    hrow.cells.get(c+1).setValue(new TableDataRow(resultDO.getAnalyte(),resultDO.getAnalyte()));
+                    hrow.cells.get(c+1).setValue(resultDO.getAnalyte());
                 }
                 
-                row.cells.get(c+1).setValue(new TableDataRow(resultDO.getValue(),resultDO.getValue()));
+                row.cells.get(c+1).setValue(resultDO.getValue());
             }
             headerFilled = true;
             model.add(row);
@@ -406,7 +420,7 @@ public class ResultTab extends Screen {
         cell.setValue(consts.get("analyte"));
         
         cell = row.cells.get(1);
-        cell.setValue(new TableDataRow(consts.get("value"),consts.get("value")));
+        cell.setValue(consts.get("value"));
 
         row.style = "SubHeader";
         row.data = new Boolean(true);
@@ -501,7 +515,7 @@ public class ResultTab extends Screen {
     public void draw(){
         if (!loaded) {
             try {
-                if(analysisMan == null)
+                if(analysisMan == null || anDO.getTestId() == null)
                     manager = AnalysisResultManager.getInstance();
                 else{
                     int index = analysisMan.getIndex(anDO);

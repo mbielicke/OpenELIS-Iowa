@@ -27,7 +27,6 @@ package org.openelis.utilcommon;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.RPC;
@@ -172,21 +171,49 @@ public class ResultValidator implements RPC {
 
         list = units.get(unitId);
         dictUnit = dictionary.get(unitId);
-        if (list == null && dictUnit == null) {
+        if (list == null && dictUnit == null) 
             list = units.get(0);
-            dictUnit = dictionary.get(0);
-        }
 
         ranges = new ArrayList<String>();
         if (list != null)
             for (Item i : list)
                 ranges.add(i.resultRange.toString());
 
+        return ranges; 
+    }
+    
+    /**
+     * This method returns a list of valid result ranges suitable for tooltip.
+     */
+    public ArrayList<String> getDictionaryRanges(Integer unitId) {
+        ArrayList<Item> list;
+        ArrayList<String> ranges; 
+        HashMap<String, Integer> dictUnit;
+
+        list = units.get(unitId);
+        dictUnit = dictionary.get(unitId);
+        if (list == null && dictUnit == null) 
+            dictUnit = dictionary.get(0);
+
+
+        ranges = new ArrayList<String>();
         if (dictUnit != null)
             for (String i : dictUnit.keySet())
                 ranges.add(i);
         
         return ranges; 
+    }
+    
+    public boolean onlyDefault(){
+        int unitsSize, dictUnitsSize;
+        boolean unitsAllDefault, dictAllDefault;
+        unitsSize = units.size();
+        dictUnitsSize = dictionary.size();
+        
+        unitsAllDefault = ((unitsSize == 1 && units.containsKey(0)) || unitsSize  == 0);
+        dictAllDefault = ((dictUnitsSize == 1 && dictionary.containsKey(0)) || dictUnitsSize == 0);
+        
+        return unitsAllDefault && dictAllDefault;
     }
     
     static class Item implements RPC {

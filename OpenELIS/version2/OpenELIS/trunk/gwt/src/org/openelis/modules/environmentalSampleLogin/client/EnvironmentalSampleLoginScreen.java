@@ -126,6 +126,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
                                     "controller?service=org.openelis.modules.sample.server.SampleService");
 
         security = OpenELIS.security.getModule("sampleenvironmental");
+        
         if (security == null)
             throw new SecurityException("screenPermException", "Environmental Sample Login Screen");
 

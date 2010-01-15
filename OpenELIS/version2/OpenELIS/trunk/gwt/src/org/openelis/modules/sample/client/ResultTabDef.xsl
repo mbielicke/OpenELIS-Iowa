@@ -47,49 +47,31 @@ UIRF Software License are applicable instead of those above.
               <textbox />
             </col>
             <col width="200">
-              <autoComplete width="180" popWidth="auto" field="String">
-                  <col width="180" header="Suggested Values" />
-                </autoComplete>
+              <textbox />
             </col>
             <col width="200">
-            <autoComplete width="180" popWidth="auto" field="String">
-                  <col width="180" header="Suggested Values" />
-                </autoComplete>
+            	<textbox />
             </col>
             <col width="200">
-            <autoComplete width="180" popWidth="auto" field="String">
-                  <col width="180" header="Suggested Values" />
-                </autoComplete>
+            	<textbox />
             </col>
             <col width="200">
-            <autoComplete width="180" popWidth="auto" field="String">
-                  <col width="180" header="Suggested Values" />
-                </autoComplete>
+            	<textbox />
             </col>
             <col width="200">
-            <autoComplete width="180" popWidth="auto" field="String">
-                  <col width="180" header="Suggested Values" />
-                </autoComplete>
+            	<textbox />
             </col>
             <col width="200">
-            <autoComplete width="180" popWidth="auto" field="String">
-                  <col width="180" header="Suggested Values" />
-                </autoComplete>
+            	<textbox />
             </col>
             <col width="200">
-            <autoComplete width="180" popWidth="auto" field="String">
-                  <col width="180" header="Suggested Values" />
-                </autoComplete>
+            	<textbox />
             </col>
             <col width="200">
-            <autoComplete width="180" popWidth="auto" field="String">
-                  <col width="180" header="Suggested Values" />
-                </autoComplete>
+            	<textbox />
             </col>
            <col width="200">
-            <autoComplete width="180" popWidth="auto" field="String">
-                  <col width="180" header="Suggested Values" />
-                </autoComplete>
+            	<textbox />
             </col>
           </table>
         </row>
@@ -109,6 +91,14 @@ UIRF Software License are applicable instead of those above.
                   <AbsolutePanel style="RemoveRowButtonImage" />
                   <text>
                     <xsl:value-of select="resource:getString($constants,'removeRow')" />
+                  </text>
+                </HorizontalPanel>
+              </appButton>
+              <appButton key="suggestionsButton" style="Button">
+                <HorizontalPanel>
+                  <AbsolutePanel style="PickerButtonImage" />
+                  <text>
+                    <xsl:value-of select="resource:getString($constants,'suggestions')" />
                   </text>
                 </HorizontalPanel>
               </appButton>

@@ -226,6 +226,8 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
                         sampleDomain = SampleHumanManager.findBySampleId(sample.getId());
                     else if(ENVIRONMENTAL_DOMAIN_FLAG.equals(sample.getDomain()))
                         sampleDomain = SampleEnvironmentalManager.fetchBySampleId(sample.getId());
+                    else if(WELL_DOMAIN_FLAG.equals(sample.getDomain()))
+                        sampleDomain = SamplePrivateWellManager.fetchBySampleId(sample.getId());
                     
                 }catch(NotFoundException e){
                     //ignore
