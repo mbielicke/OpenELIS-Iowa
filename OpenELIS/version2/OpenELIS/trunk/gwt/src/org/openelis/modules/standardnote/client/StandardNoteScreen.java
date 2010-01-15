@@ -31,6 +31,7 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
@@ -53,12 +54,14 @@ import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextArea;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.StandardNoteMeta;
+import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -77,6 +80,7 @@ public class StandardNoteScreen extends Screen {
     private TextArea            text;
     private AppButton           queryButton, previousButton, nextButton, addButton, updateButton,
                                 deleteButton, commitButton, abortButton;
+    protected MenuItem          history;
     private Dropdown<Integer>   typeId;
     private ButtonGroup         atoz;
     private ScreenNavigator     nav;
@@ -214,6 +218,17 @@ public class StandardNoteScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
                                           .contains(event.getState()));
+            }
+        });
+        
+        history = (MenuItem)def.getWidget("standardNoteHistory");
+        addScreenHandler(history, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                history();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                history.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -492,6 +507,14 @@ public class StandardNoteScreen extends Screen {
         }
     }
 
+    protected void history() {
+        IdNameVO hist;
+        
+        hist = new IdNameVO(data.getId(), data.getName());
+        HistoryScreen.showHistory(consts.get("standardNoteHistory"),
+                                  ReferenceTable.STANDARD_NOTE, hist);
+    }
+    
     protected void abort() {
         setFocus(null);
         clearErrors();

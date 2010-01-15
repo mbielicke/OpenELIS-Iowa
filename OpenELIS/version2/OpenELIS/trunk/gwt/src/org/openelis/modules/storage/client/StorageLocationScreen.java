@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.PanelItemDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
@@ -54,6 +56,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
@@ -66,8 +69,11 @@ import org.openelis.gwt.widget.table.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
+import org.openelis.manager.PanelItemManager;
+import org.openelis.manager.StorageLocationChildManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.StorageLocationMeta;
+import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -87,6 +93,7 @@ public class StorageLocationScreen extends Screen {
     private CheckBox               isAvailable;
     private AppButton              queryButton, previousButton, nextButton, addButton,
                                    updateButton, commitButton, abortButton, addChildButton, removeChildButton;
+    protected MenuItem             storageLocationHistory, subLocationHistory;
     private ButtonGroup            atoz;
     private ScreenNavigator        nav;
     private TableWidget            childStorageLocsTable;
@@ -216,6 +223,28 @@ public class StorageLocationScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
                                           .contains(event.getState()));
+            }
+        });
+        
+        storageLocationHistory = (MenuItem)def.getWidget("storageLocationHistory");
+        addScreenHandler(storageLocationHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                storageLocationHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                storageLocationHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        subLocationHistory = (MenuItem)def.getWidget("subLocationHistory");
+        addScreenHandler(subLocationHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                subLocationHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                subLocationHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -677,6 +706,39 @@ public class StorageLocationScreen extends Screen {
         } else {
             window.clearStatus();
         }
+    }
+    
+    protected void storageLocationHistory() {
+        IdNameVO hist;
+        
+        hist = new IdNameVO(manager.getStorageLocation().getId(), manager.getStorageLocation().getName());
+        HistoryScreen.showHistory(consts.get("storageLocationHistory"),
+                                  ReferenceTable.STORAGE_LOCATION, hist);        
+        
+    }
+
+    protected void subLocationHistory() {
+        int i, count;
+        IdNameVO refVoList[];
+        StorageLocationChildManager man;
+        StorageLocationViewDO data;
+
+        try {
+            man = manager.getChildren();
+            count = man.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = man.getChildAt(i);
+                refVoList[i] = new IdNameVO(data.getId(), data.getStorageUnitDescription());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("subLocationHistory"),
+                                  ReferenceTable.STORAGE_LOCATION, refVoList);        
     }
 
     protected boolean fetchById(Integer id) {

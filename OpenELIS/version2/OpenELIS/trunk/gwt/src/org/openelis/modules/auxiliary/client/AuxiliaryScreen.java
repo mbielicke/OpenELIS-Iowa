@@ -34,6 +34,7 @@ import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -62,7 +63,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -71,6 +71,7 @@ import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.HasField;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
@@ -89,10 +90,12 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.gwt.widget.table.event.RowMovedEvent;
 import org.openelis.gwt.widget.table.event.RowMovedHandler;
 import org.openelis.manager.AuxFieldGroupManager;
+import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.AuxFieldValueManager;
 import org.openelis.meta.AuxFieldGroupMeta;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
+import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utilcommon.ResultRangeNumeric;
@@ -120,6 +123,7 @@ public class AuxiliaryScreen extends Screen {
     private AppButton                          queryButton, previousButton, nextButton, addButton, updateButton,
                                                commitButton, abortButton, addAuxFieldButton, removeAuxFieldButton,
                                                addAuxFieldValueButton,removeAuxFieldValueButton, dictionaryLookUpButton;
+    protected MenuItem                         auxFieldGroupHistory, auxFieldHistory, auxFieldValueHistory;
     private Dropdown<Integer>                  unitOfMeasureId, auxFieldValueTypeId;
     private AutoComplete<Integer>              analyte, scriptlet, method;
     private TableWidget                        auxFieldTable, auxFieldValueTable;
@@ -256,6 +260,39 @@ public class AuxiliaryScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
                                           .contains(event.getState()));
+            }
+        });
+        
+        auxFieldGroupHistory = (MenuItem)def.getWidget("auxFieldGroupHistory");
+        addScreenHandler(auxFieldGroupHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                auxFieldGroupHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                auxFieldGroupHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        auxFieldHistory = (MenuItem)def.getWidget("auxFieldHistory");
+        addScreenHandler(auxFieldHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                auxFieldHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                auxFieldHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        auxFieldValueHistory = (MenuItem)def.getWidget("auxFieldValueHistory");
+        addScreenHandler(auxFieldValueHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                auxFieldValueHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                auxFieldValueHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -1024,7 +1061,70 @@ public class AuxiliaryScreen extends Screen {
         } else {
             window.clearStatus();
         }
+    }
+    
 
+    protected void auxFieldGroupHistory() {
+        IdNameVO hist;
+        
+        hist = new IdNameVO(manager.getGroup().getId(), manager.getGroup().getName());
+        HistoryScreen.showHistory(consts.get("auxFieldGroupHistory"),
+                                  ReferenceTable.AUX_FIELD_GROUP, hist);                
+    }
+    
+    protected void auxFieldHistory() {
+        int i, count;
+        IdNameVO refVoList[];
+        AuxFieldManager man;
+        AuxFieldViewDO data;
+
+        try {
+            man = manager.getFields();
+            count = man.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = man.getAuxFieldAt(i);
+                refVoList[i] = new IdNameVO(data.getId(), data.getAnalyteName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("auxFieldHistory"), ReferenceTable.AUX_FIELD, refVoList);
+    }
+    
+    protected void auxFieldValueHistory() {        
+        int i, count, r;
+        IdNameVO refVoList[];
+        AuxFieldValueManager afvm;
+        AuxFieldValueViewDO data;
+        String value;
+
+        try {
+            r = auxFieldTable.getSelectedRow();
+            if(r == -1)
+                return;
+            
+            afvm = manager.getFields().getValuesAt(r);
+            count = afvm.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = afvm.getAuxFieldValueAt(i);
+                value = data.getDictionary();
+                if(value == null)
+                    value = data.getValue();
+                refVoList[i] = new IdNameVO(data.getId(), value);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("auxFieldValueHistory"), ReferenceTable.AUX_FIELD_VALUE,
+                                  refVoList);
     }
 
     protected boolean fetchById(Integer id) {

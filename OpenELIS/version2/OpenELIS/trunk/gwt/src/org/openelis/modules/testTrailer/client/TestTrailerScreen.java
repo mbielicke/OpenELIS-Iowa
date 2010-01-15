@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestTrailerDO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
@@ -50,12 +51,14 @@ import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonGroup;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextArea;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.TestTrailerMeta;
+import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -72,6 +75,7 @@ public class TestTrailerScreen extends Screen {
 
     private AppButton          queryButton, previousButton, nextButton, addButton, updateButton,
                                deleteButton, commitButton, abortButton;
+    protected MenuItem         history;
     private TextBox            name, description;
     private TextArea           text;
     private ButtonGroup        atoz;
@@ -217,6 +221,17 @@ public class TestTrailerScreen extends Screen {
             }
         });
 
+        history = (MenuItem)def.getWidget("testTrailerHistory");
+        addScreenHandler(history, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                history();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                history.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
         //
         // screen fields
         //
@@ -503,6 +518,13 @@ public class TestTrailerScreen extends Screen {
         } else {
             window.clearStatus();
         }
+    }
+    
+    protected void history() {
+        IdNameVO hist;
+        
+        hist = new IdNameVO(data.getId(), data.getName());
+        HistoryScreen.showHistory(consts.get("testTrailerHistory"), ReferenceTable.TEST_TRAILER, hist);
     }
 
     protected boolean fetchById(Integer id) {

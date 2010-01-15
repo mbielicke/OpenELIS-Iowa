@@ -31,7 +31,9 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.InstrumentLogDO;
 import org.openelis.domain.ProjectParameterDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SecuritySystemUserDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
@@ -60,6 +62,7 @@ import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
@@ -72,8 +75,11 @@ import org.openelis.gwt.widget.table.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
+import org.openelis.manager.InstrumentLogManager;
 import org.openelis.manager.ProjectManager;
+import org.openelis.manager.ProjectParameterManager;
 import org.openelis.meta.ProjectMeta;
+import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -85,16 +91,17 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class ProjectScreen extends Screen {
-    private ProjectManager   manager;
-    private SecurityModule   security;
+    private ProjectManager        manager;
+    private SecurityModule        security;
 
-    private CalendarLookUp   startedDate, completedDate;
-    private TextBox<Integer> id;
-    private TextBox          name, description, referenceTo;
-    private CheckBox         isActive;
-    private AppButton        queryButton, previousButton, nextButton, addButton, updateButton,
-                             commitButton, abortButton, addParameterButton, removeParameterButton;
-    private TableWidget      parameterTable;
+    private CalendarLookUp        startedDate, completedDate;
+    private TextBox<Integer>      id;
+    private TextBox               name, description, referenceTo;
+    private CheckBox              isActive;
+    private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
+                                  commitButton, abortButton, addParameterButton, removeParameterButton;
+    protected MenuItem            projectHistory, projectParameterHistory;
+    private TableWidget           parameterTable;
     private AutoComplete<Integer> ownerId, scriptletId;
     private ButtonGroup           atoz;
     private ScreenNavigator       nav;
@@ -222,6 +229,28 @@ public class ProjectScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
                                           .contains(event.getState()));
+            }
+        });
+        
+        projectHistory = (MenuItem)def.getWidget("projectHistory");
+        addScreenHandler(projectHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                projectHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                projectHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        projectParameterHistory = (MenuItem)def.getWidget("projectParameterHistory");
+        addScreenHandler(projectParameterHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                projectParameterHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                projectParameterHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -608,7 +637,7 @@ public class ProjectScreen extends Screen {
         ((Dropdown)parameterTable.getColumnWidget(ProjectMeta.getProjectParameterOperationId())).setModel(model);
     }
 
-    private void query() {
+    protected void query() {
         manager = ProjectManager.getInstance();
         setState(State.QUERY);
         DataChangeEvent.fire(this);
@@ -617,15 +646,15 @@ public class ProjectScreen extends Screen {
         window.setDone(consts.get("enterFieldsToQuery"));
     }
 
-    private void next() {
+    protected void next() {
         nav.next();
     }
 
-    private void previous() {
+    protected void previous() {
         nav.previous();
     }
 
-    private void add() {
+    protected void add() {
         manager = ProjectManager.getInstance();
         manager.getProject().setIsActive("Y");
 
@@ -635,7 +664,7 @@ public class ProjectScreen extends Screen {
         window.setDone(consts.get("enterInformationPressCommit"));
     }
 
-    private void update() {
+    protected void update() {
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
@@ -650,7 +679,7 @@ public class ProjectScreen extends Screen {
         window.clearStatus();
     }
 
-    private void commit() {
+    protected void commit() {
         setFocus(null);
 
         if ( !validate()) {
@@ -695,7 +724,7 @@ public class ProjectScreen extends Screen {
         }
     }
 
-    private void abort() {
+    protected void abort() {
         setFocus(null);
         clearErrors();
         window.setBusy(consts.get("cancelChanges"));
@@ -720,8 +749,40 @@ public class ProjectScreen extends Screen {
             window.clearStatus();
         }
     }
+    
+    protected void projectHistory() {
+        IdNameVO hist;
+        
+        hist = new IdNameVO(manager.getProject().getId(), manager.getProject().getName());
+        HistoryScreen.showHistory(consts.get("projectHistory"),
+                                  ReferenceTable.PROJECT, hist); 
+    }
+    
+    protected void projectParameterHistory() {
+        int i, count;
+        IdNameVO refVoList[];
+        ProjectParameterManager man;
+        ProjectParameterDO data;
 
-    private boolean fetchById(Integer id) {
+        try {
+            man = manager.getParameters();
+            count = man.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = man.getParameterAt(i);                                
+                refVoList[i] = new IdNameVO(data.getId(), data.getParameter());                
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("projectParameterHistory"),
+                                  ReferenceTable.PROJECT_PARAMETER, refVoList);
+    }
+
+    protected boolean fetchById(Integer id) {
         if (id == null) {
             manager = ProjectManager.getInstance();
             setState(State.DEFAULT);

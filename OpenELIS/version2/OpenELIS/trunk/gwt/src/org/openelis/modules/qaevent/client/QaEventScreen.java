@@ -34,6 +34,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QaEventVO;
 import org.openelis.domain.QaEventViewDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
@@ -53,13 +54,13 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextArea;
@@ -67,6 +68,7 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.QaEventMeta;
+import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -85,6 +87,7 @@ public class QaEventScreen extends Screen {
     private CheckBox              isBillable;
     private AppButton             queryButton, previousButton, nextButton, addButton, 
                                   updateButton, commitButton, abortButton;
+    protected MenuItem            history;
     private Dropdown<Integer>     typeId;
     private AutoComplete<Integer> testName;
     private TextArea              reportingText;
@@ -222,6 +225,17 @@ public class QaEventScreen extends Screen {
                                           .contains(event.getState()));
             }
         });
+        
+        history = (MenuItem)def.getWidget("qaeventHistory");
+        addScreenHandler(history, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                history();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                history.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
 
         //
         // screen fields
@@ -290,6 +304,7 @@ public class QaEventScreen extends Screen {
                 testName.setQueryMode(event.getState() == State.QUERY);
             }
         });
+        
         testName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
@@ -317,7 +332,6 @@ public class QaEventScreen extends Screen {
                 window.clearStatus();
             }
         });
-
 
         isBillable = (CheckBox)def.getWidget(QaEventMeta.getIsBillable());
         addScreenHandler(isBillable, new ScreenEventHandler<String>() {
@@ -365,7 +379,6 @@ public class QaEventScreen extends Screen {
                 reportingText.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
-
 
         //
         // left hand navigation panel
@@ -575,6 +588,13 @@ public class QaEventScreen extends Screen {
         } else {
             window.clearStatus();
         }
+    }
+    
+    protected void history() {
+        IdNameVO hist;
+        
+        hist = new IdNameVO(data.getId(), data.getName());
+        HistoryScreen.showHistory(consts.get("qaeventHistory"), ReferenceTable.QAEVENT, hist);
     }
 
     protected boolean fetchById(Integer id) {
