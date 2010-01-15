@@ -1101,6 +1101,9 @@ public class AuxiliaryScreen extends Screen {
         AuxFieldValueManager afvm;
         AuxFieldValueViewDO data;
         String value;
+        DictionaryDO dict;
+        String entry;
+        Integer typeId;
 
         try {
             r = auxFieldTable.getSelectedRow();
@@ -1112,10 +1115,21 @@ public class AuxiliaryScreen extends Screen {
             refVoList = new IdNameVO[count];
             for (i = 0; i < count; i++ ) {
                 data = afvm.getAuxFieldValueAt(i);
+                typeId = data.getTypeId();
+                dict = DictionaryCache.getEntryFromId(typeId);
+                if(dict != null)
+                    entry = dict.getEntry();
+                else
+                    entry = typeId.toString();
+                
                 value = data.getDictionary();
                 if(value == null)
                     value = data.getValue();
-                refVoList[i] = new IdNameVO(data.getId(), value);
+                
+                if(value != null)
+                    refVoList[i] = new IdNameVO(data.getId(), entry+":  "+value);
+                else
+                    refVoList[i] = new IdNameVO(data.getId(), entry);
             }
         } catch (Exception e) {
             e.printStackTrace();
