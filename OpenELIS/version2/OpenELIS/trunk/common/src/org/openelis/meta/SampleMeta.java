@@ -194,7 +194,8 @@ public class SampleMeta implements Meta, MetaMap {
                     PROJECT_OWNER_ID = "_project.ownerId",
                     PROJECT_SCRIPTLET_ID = "_project.scriptletId",
 
-                    ANALYSIS_TEST_NAME = "_test.name", ANALYSIS_SECTION_NAME = "_section.name";
+                    ANALYSIS_TEST_NAME = "_test.name", ANALYSIS_SECTION_NAME = "_section.name",
+                    ANALYSIS_METHOD_NAME = "_test.method.name";
 
     private static HashSet<String> names;
 
@@ -267,7 +268,8 @@ public class SampleMeta implements Meta, MetaMap {
                                                   PROJECT_STARTED_DATE, PROJECT_COMPLETED_DATE,
                                                   PROJECT_IS_ACTIVE, PROJECT_REFERENCE_TO,
                                                   PROJECT_OWNER_ID, PROJECT_SCRIPTLET_ID,
-                                                  ANALYSIS_TEST_NAME, ANALYSIS_SECTION_NAME));
+                                                  ANALYSIS_TEST_NAME, ANALYSIS_SECTION_NAME,
+                                                  ANALYSIS_METHOD_NAME));
     }
 
     public static String getId() {
@@ -859,7 +861,7 @@ public class SampleMeta implements Meta, MetaMap {
     }
 
     public static String getAnalysisMethodName() {
-        return "method";
+        return ANALYSIS_METHOD_NAME;
     }
 
     public static String getAnalysisSectionName() {
