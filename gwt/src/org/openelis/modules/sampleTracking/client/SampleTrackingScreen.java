@@ -1,7 +1,9 @@
 package org.openelis.modules.sampleTracking.client;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.List;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
@@ -39,6 +41,7 @@ import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.TabPanel;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataCell;
@@ -110,8 +113,8 @@ public class SampleTrackingScreen extends Screen {
 	private ScreenNavigator 		       nav;
 	private SampleManager                  manager;
 	
-	private DeckPanel                  	   sampleContent;
-	private TabBar                         sampleBar;
+	private TabPanel                  	   sampleContent;
+	//private org.openelis.gwt.widget.TabBar                         sampleBar;
 	
 	private SampleTab                      sampleTab;
 	private EnvironmentalTab               environmentalTab;
@@ -195,16 +198,15 @@ public class SampleTrackingScreen extends Screen {
     }
     
     private void initialize() {
-    	sampleContent = (DeckPanel)def.getWidget("SampleContent");
-    	sampleBar = (TabBar)def.getWidget("SampleBar");
-        sampleBar.setStyleName("None");  	
+    	sampleContent = (TabPanel)def.getWidget("SampleContent");
     
-        sampleBar.addSelectionHandler(new SelectionHandler<Integer>() {
+        sampleContent.addSelectionHandler(new SelectionHandler<Integer>() {
     		public void onSelection(SelectionEvent<Integer> event) {
-    			tab = tabIndexes.get(event.getSelectedItem());
-    			sampleContent.showWidget(tab.ordinal());
+    			tab = Tabs.values()[event.getSelectedItem()];
     		}
     	});
+        
+    	sampleContent.getTabBar().setStyleName("None");
         
         final MenuItem envMenuQuery = (MenuItem)def.getWidget("environmentalSample");
         envMenuQuery.addClickHandler(new ClickHandler() {
@@ -1253,56 +1255,14 @@ public class SampleTrackingScreen extends Screen {
     }
     
     private void showTabs(Tabs... tabs) {
-    	while(sampleBar.getTabCount() > 0)
-    		sampleBar.removeTab(0);
-    	tabIndexes.clear();
-    	
-    	for(Tabs tab : tabs) {
-    		switch(tab) {
-    			case ENVIRONMENT:
-    				sampleBar.addTab("Environment");
-    				tabIndexes.add(tab);
-    				break;
-    			case PRIVATE_WELL:
-    				sampleBar.addTab("Private Well");
-    				tabIndexes.add(tab);
-    				break;
-    			case SAMPLE_ITEM:
-    				sampleBar.addTab("Sample Item");
-    				tabIndexes.add(tab);
-    				break;
-    			case ANALYSIS:
-    				sampleBar.addTab("Analysis");
-    				tabIndexes.add(tab);
-    				break;
-    			case TEST_RESULT:
-    				sampleBar.addTab("Test Results");
-    				tabIndexes.add(tab);
-    				break;
-    			case ANALYSIS_NOTES:
-    				sampleBar.addTab("Analysis Notes");
-    				tabIndexes.add(tab);
-    				break;
-    			case SAMPLE_NOTES:
-    				sampleBar.addTab("Sample Notes");
-    				tabIndexes.add(tab);
-    				break;
-    			case STORAGE:
-    				sampleBar.addTab("Storage");
-    				tabIndexes.add(tab);
-    				break;
-    			case QA_EVENTS:
-    				sampleBar.addTab("QA Events");
-    				tabIndexes.add(tab);
-    				break;
-    			case AUX_DATA:
-    				sampleBar.addTab("Aux Data");
-    				tabIndexes.add(tab);
-    				break;
-    		}
+    	List<Tabs> tabList = Arrays.asList(tabs);
+
+    	for(Tabs tab : Tabs.values()) {
+   			sampleContent.setTabVisible(tab.ordinal(),tabList.contains(tab));
     	}
-    	sampleBar.selectTab(0);
-    	sampleBar.setStyleName("gwt-TabBar");
+    	
+    	sampleContent.selectTab(tabs[0].ordinal());
+    	sampleContent.getTabBar().setStyleName("gwt-TabBar");
     }
     
     protected void similar() {

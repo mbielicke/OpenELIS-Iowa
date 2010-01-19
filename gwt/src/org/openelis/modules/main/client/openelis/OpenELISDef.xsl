@@ -128,7 +128,7 @@ UIRF Software License are applicable instead of those above.
 				<menuItem key="worksheetCompletion" description="{resource:getString($constants,'worksheetCompletionDescription')}"	enable="false" icon="worksheetCompletionIcon" label="{resource:getString($constants,'worksheetCompletion')}"/>
 				<code>}</code>
                 <menuItem key="addOrCancel" description="{resource:getString($constants,'addOrCancelDescription')}" enable="false" icon="addOrCancelIcon" label="{resource:getString($constants,'addOrCancel')}" />
-                <menuItem key="reviewAndRelease" description="{resource:getString($constants,'reviewAndReleaseDescription')}" enable="false" icon="reviewAndReleaseIcon" label="{resource:getString($constants,'reviewAndRelease')}" />
+                <menuItem key="reviewAndRelease" description="{resource:getString($constants,'reviewAndReleaseDescription')}" enable="true" icon="reviewAndReleaseIcon" label="{resource:getString($constants,'reviewAndRelease')}" />
                 <menuItem key="toDo" description="{resource:getString($constants,'toDoDescription')}" enable="false" icon="toDoIcon" label="{resource:getString($constants,'toDo')}" />
                 <menuItem key="labelFor" description="{resource:getString($constants,'labelForDescription')}" enable="false" icon="labelForIcon" label="{resource:getString($constants,'labelFor')}" />
                 <menuItem key="storage" description="{resource:getString($constants,'storageDescription')}" enable="false" icon="storageIcon" label="{resource:getString($constants,'storage')}" />
