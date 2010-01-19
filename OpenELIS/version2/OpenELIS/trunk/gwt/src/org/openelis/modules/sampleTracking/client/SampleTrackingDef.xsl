@@ -243,14 +243,13 @@ UIRF Software License are applicable instead of those above.
                   </widget>
                 </row>
               </TablePanel>
-              <TabBar key="SampleBar" style="None" width="724"></TabBar>
-              <DeckPanel height="274" key="SampleContent" width="724">
+              <TabPanel height="266" key="SampleContent" width="724">
 <!-- Blank Default deck -->
-                <deck>
+                <tab text="" visible="false">
                   <AbsolutePanel />
-                </deck>
+                </tab>
 <!-- Environmental deck -->
-                <deck tab="{meta:getEnvIsHazardous()},{meta:getBillTo()}">
+                <tab text="Environment" visible="false" tab="{meta:getEnvIsHazardous()},{meta:getBillTo()}">
                   <VerticalPanel width="98%">
                     <TablePanel style="Form" width="100%">
                       <row>
@@ -334,9 +333,9 @@ UIRF Software License are applicable instead of those above.
                       </row>
                     </TablePanel>
                   </VerticalPanel>
-                </deck>
+                </tab>
 <!-- Private Well Deck -->
-                <deck>
+                <tab text="Private Well" visible="false">
                   <VerticalPanel width="98%">
                     <HorizontalPanel width="100%"> 
                       <TablePanel style="Form">
@@ -479,40 +478,40 @@ UIRF Software License are applicable instead of those above.
                         </row>
                       </TablePanel>
                   </VerticalPanel>
-                </deck>
+                </tab>
 <!-- Sample Item Deck -->
-                <deck tab="{meta:getItemTypeOfSampleId()},{meta:getItemUnitOfMeasureId()}">
+                <tab text="Sample Item" visible="false" tab="{meta:getItemTypeOfSampleId()},{meta:getItemUnitOfMeasureId()}">
                   <xsl:call-template name="SampleItemTab" />
-                </deck>
+                </tab>
 <!-- Analysis deck -->
-                <deck tab="{meta:getAnalysisTestName()},{meta:getAnalysisPrintedDate()}">
+                <tab text="Analysis" visible="false" tab="{meta:getAnalysisTestName()},{meta:getAnalysisPrintedDate()}">
                   <xsl:call-template name="AnalysisTab" />
-                </deck>
+                </tab>
 <!-- Results deck -->
-                <deck tab="testResultsTable,testResultsTable">
+                <tab text="Test Results" visible="false" tab="testResultsTable,testResultsTable">
                   <xsl:call-template name="ResultTab" />
-                </deck>
+                </tab>
 <!-- Analysis Notes Deck -->
-                <deck tab="anExNoteButton,anIntNoteButton">
+                <tab text="AnalysisNotes" visible="false" tab="anExNoteButton,anIntNoteButton">
                   <xsl:call-template name="AnalysisNotesTab" />
-                </deck>
+                </tab>
 <!-- Sample Notes Deck  -->
-                <deck tab="sampleExtNoteButton,sampleIntNoteButton">
+                <tab text="Sample Notes" visible="false" tab="sampleExtNoteButton,sampleIntNoteButton">
                   <xsl:call-template name="SampleNotesTab" />
-                </deck>
+                </tab>
 <!-- Storage deck -->
-                <deck tab="storageTable,storageTable">
+                <tab text="Storage" visible="false" tab="storageTable,storageTable">
                   <xsl:call-template name="StorageTab" />
-                </deck>
+                </tab>
 <!-- QA Events Deck -->
-                <deck tab="sampleQATable,analysisQATable">
+                <tab text="QA Events" visible="false" tab="sampleQATable,analysisQATable">
                   <xsl:call-template name="QAEventsTab" />
-                </deck>
+                </tab>
 <!-- Aux Data Deck -->
-                <deck tab="auxValsTable,auxValsTable">
+                <tab text="Aux Data" visible="false" tab="auxValsTable,auxValsTable">
                   <xsl:call-template name="AuxDataTab" />
-                </deck>
-              </DeckPanel>
+                </tab>
+              </TabPanel>
             </VerticalPanel>
           </VerticalPanel>
         </HorizontalPanel>
