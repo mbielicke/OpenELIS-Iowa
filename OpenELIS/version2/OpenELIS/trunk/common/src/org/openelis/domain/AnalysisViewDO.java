@@ -73,7 +73,7 @@ public class AnalysisViewDO extends AnalysisDO {
     }
 
     public void setSectionName(String sectionName) {
-        this.sectionName = sectionName;
+        this.sectionName = DataBaseUtil.trim(sectionName);
     }
 
     public String getTestName() {
@@ -81,7 +81,7 @@ public class AnalysisViewDO extends AnalysisDO {
     }
 
     public void setTestName(String testName) {
-        this.testName = testName;
+        this.testName = DataBaseUtil.trim(testName);
     }
 
     public Integer getMethodId() {
@@ -97,7 +97,7 @@ public class AnalysisViewDO extends AnalysisDO {
     }
 
     public void setMethodName(String methodName) {
-        this.methodName = methodName;
+        this.methodName = DataBaseUtil.trim(methodName);
     }
 
     public String getUnitOfMeasure() {

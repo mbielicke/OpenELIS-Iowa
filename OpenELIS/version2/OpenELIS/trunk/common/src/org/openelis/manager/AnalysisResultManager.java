@@ -225,6 +225,10 @@ public class AnalysisResultManager implements RPC {
     public ResultValidator getResultValidator(Integer resultGroup) { 
         return resultValidators.get(resultGroup.intValue()-1);
     }
+    
+    public String getDefaultValue(Integer resultGroup, Integer unitOfMeasureId) { 
+        return resultValidators.get(resultGroup.intValue()-1).getDefault(unitOfMeasureId);
+    }
 
     public void setResultValidators(ArrayList<ResultValidator> resultValidators) {
         this.resultValidators = resultValidators;
