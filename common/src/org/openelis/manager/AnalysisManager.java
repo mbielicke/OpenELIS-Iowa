@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -37,6 +38,10 @@ public class AnalysisManager implements RPC, HasNotesInt {
     private static final long                       serialVersionUID = 1L;
 
     protected Integer                               sampleItemId;
+    protected transient Integer anLoggedInId, anInitiatedId, anCompletedId, anReleasedId,
+                                anInPrepId, anOnHoldId, anRequeueId, anCancelledId, 
+                                anErrorLoggedInId, anErrorInitiatedId, anErrorInPrepId, anErrorCompletedId;
+    
     protected ArrayList<AnalysisListItem>           items, deletedList;
 
     protected transient static AnalysisManagerProxy proxy;
@@ -116,6 +121,51 @@ public class AnalysisManager implements RPC, HasNotesInt {
             return;
 
         items.remove(index);
+    }
+    
+    public void updateAnalysisStatusAt(int index, Integer sampleTypeId) throws Exception {
+        TestManager testMan;
+        boolean error = false;
+        AnalysisViewDO anDO;
+        Integer currentStatus;
+        if(anLoggedInId == null)
+            loadDictionaryEntries();
+        anDO = getItemAt(index).analysis;
+        
+        //if the analysis is cancelled stop now
+        if(anCancelledId.equals(anDO.getStatusId()))
+            return;
+        
+        testMan = getTestAt(index);
+        currentStatus = anDO.getStatusId();
+        
+        //sample item needs to match
+        if(!testMan.getSampleTypes().hasType(sampleTypeId))
+            error = true;
+        
+        //unit needs filled out
+        if(anDO.getUnitOfMeasureId() == null)
+            error = true;
+        
+        if(error){
+            if(currentStatus.equals(anLoggedInId))
+                anDO.setStatusId(anErrorLoggedInId);
+            else if(currentStatus.equals(anInitiatedId))
+                anDO.setStatusId(anErrorInitiatedId);
+            else if(currentStatus.equals(anCompletedId))
+                anDO.setStatusId(anErrorCompletedId);
+            else if(currentStatus.equals(anInPrepId))
+                anDO.setStatusId(anErrorInPrepId);
+        }else{
+            if(currentStatus.equals(anErrorLoggedInId))
+                anDO.setStatusId(anLoggedInId);
+            else if(currentStatus.equals(anErrorInitiatedId))
+                anDO.setStatusId(anInitiatedId);
+            else if(currentStatus.equals(anErrorCompletedId))
+                anDO.setStatusId(anCompletedId);
+            else if(currentStatus.equals(anErrorInPrepId))
+                anDO.setStatusId(anInPrepId);
+        }
     }
 
     public int getIndex(AnalysisViewDO aDO) {
@@ -344,7 +394,7 @@ public class AnalysisManager implements RPC, HasNotesInt {
 
         return id;
     }
-
+    
     // service methods
     public AnalysisManager add() throws Exception {
         return proxy().add(this);
@@ -366,6 +416,21 @@ public class AnalysisManager implements RPC, HasNotesInt {
     public void validate(String sampleItemSequence, Integer sampleTypeId, ValidationErrorsList errorsList)
                                                                                     throws Exception {
         proxy().validate(this, sampleItemSequence, sampleTypeId, errorsList);
+    }
+    
+    private void loadDictionaryEntries() throws Exception{
+        anLoggedInId = proxy().getIdFromSystemName("analysis_logged_in");
+        anInitiatedId = proxy().getIdFromSystemName("analysis_initiated");
+        anCompletedId = proxy().getIdFromSystemName("analysis_completed");
+        anReleasedId = proxy().getIdFromSystemName("analysis_released");
+        anInPrepId = proxy().getIdFromSystemName("analysis_inprep");
+        anOnHoldId = proxy().getIdFromSystemName("analysis_on_hold");
+        anRequeueId = proxy().getIdFromSystemName("analysis_requeue");
+        anCancelledId = proxy().getIdFromSystemName("analysis_cancelled");
+        anErrorLoggedInId = proxy().getIdFromSystemName("analysis_error_logged_in");
+        anErrorInitiatedId = proxy().getIdFromSystemName("analysis_error_initiated");
+        anErrorInPrepId = proxy().getIdFromSystemName("analysis_error_inprep");
+        anErrorCompletedId = proxy().getIdFromSystemName("analysis_error_completed");
     }
 
     private static AnalysisManagerProxy proxy() {

@@ -32,36 +32,44 @@ import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.RPC;
 
 /**
- * This class implements a validator for a result group or auxiliary data. 
+ * This class implements a validator for a result group or auxiliary data.
  */
 public class ResultValidator implements RPC {
     private static final long serialVersionUID = 1L;
 
     public enum Type {
-        DATE, DATE_TIME, TIME, DICTIONARY, NUMERIC, TITER
+        DATE, DATE_TIME, TIME, DICTIONARY, NUMERIC, TITER, DEFAULT
     };
-    
-    HashMap<Integer, ArrayList<Item>> units;
-    HashMap<Integer, HashMap<String,Integer>> dictionary; 
-    
+
+    HashMap<Integer, ArrayList<Item>>          units;
+    HashMap<Integer, HashMap<String, Integer>> dictionary;
+    HashMap<Integer, String>                   defaults;
+
     public ResultValidator() {
         units = new HashMap<Integer, ArrayList<Item>>();
-        dictionary = new HashMap<Integer, HashMap<String,Integer>>();
+        dictionary = new HashMap<Integer, HashMap<String, Integer>>();
+        defaults = new HashMap<Integer, String>();
     }
-   
+
     /**
      * This method adds a new validator for given unit and result range.
-     * @param id is a unique id for given result range
-     * @param unitId is the unit identifier that groups the result ranges
-     * @param type is the enumerated type for result range
-     * @param validRange the string representation of valid range
+     * 
+     * @param id
+     *        is a unique id for given result range
+     * @param unitId
+     *        is the unit identifier that groups the result ranges
+     * @param type
+     *        is the enumerated type for result range
+     * @param validRange
+     *        the string representation of valid range
      * @throws Exception
      */
-    public void addResult(Integer id, Integer unitId, Type type, String validRange) throws Exception {
+    public void addResult(Integer id, Integer unitId, Type type, String validRange)
+                                                                                   throws Exception {
         Item item;
         ArrayList<Item> list;
         HashMap<String, Integer> dictUnit;
-        
+
         if (unitId == null)
             unitId = 0;
         //
@@ -76,12 +84,18 @@ public class ResultValidator implements RPC {
             }
             dictUnit.put(validRange, id);
             return;
+        } else if (type == Type.DEFAULT) {
+            //
+            // default is also special, there is just one per unit id
+            //
+            defaults.put(unitId, validRange);
+            return;
         }
 
         item = new Item();
         item.id = id;
         item.type = type;
-        
+
         switch (type) {
             case NUMERIC:
                 item.resultRange = new ResultRangeNumeric();
@@ -114,11 +128,14 @@ public class ResultValidator implements RPC {
 
     /**
      * This method is used to validate an input against the list of result
-     * ranges group by unit. If the specified unit exists in the defined result range,
-     * the passed value is validated against that unit list. Otherwise the null unit
-     * is used to validate the value.
-     * @param unitId is the unit identifier 
-     * @param value to validate
+     * ranges group by unit. If the specified unit exists in the defined result
+     * range, the passed value is validated against that unit list. Otherwise
+     * the null unit is used to validate the value.
+     * 
+     * @param unitId
+     *        is the unit identifier
+     * @param value
+     *        to validate
      * @throws ParseException
      */
     public Integer validate(Integer unitId, String value) throws ParseException {
@@ -127,6 +144,10 @@ public class ResultValidator implements RPC {
         HashMap<String, Integer> dictUnit;
 
         id = null;
+
+        if (unitId == null)
+            unitId = 0;
+
         //
         // first check to see if we have unit specific validator; use
         // null units (0) for all the other units
@@ -143,8 +164,8 @@ public class ResultValidator implements RPC {
             if (id != null)
                 return id;
         }
-        
-        if(list != null){
+
+        if (list != null) {
             for (Item item : list) {
                 try {
                     item.resultRange.contains(value);
@@ -160,18 +181,21 @@ public class ResultValidator implements RPC {
 
         throw new ParseException("illegalResultValueException");
     }
-    
+
     /**
      * This method returns a list of valid result ranges suitable for tooltip.
      */
     public ArrayList<String> getRanges(Integer unitId) {
         ArrayList<Item> list;
-        ArrayList<String> ranges; 
+        ArrayList<String> ranges;
         HashMap<String, Integer> dictUnit;
+
+        if (unitId == null)
+            unitId = 0;
 
         list = units.get(unitId);
         dictUnit = dictionary.get(unitId);
-        if (list == null && dictUnit == null) 
+        if (list == null && dictUnit == null)
             list = units.get(0);
 
         ranges = new ArrayList<String>();
@@ -179,48 +203,64 @@ public class ResultValidator implements RPC {
             for (Item i : list)
                 ranges.add(i.resultRange.toString());
 
-        return ranges; 
+        return ranges;
     }
-    
+
     /**
      * This method returns a list of valid result ranges suitable for tooltip.
      */
     public ArrayList<String> getDictionaryRanges(Integer unitId) {
         ArrayList<Item> list;
-        ArrayList<String> ranges; 
+        ArrayList<String> ranges;
         HashMap<String, Integer> dictUnit;
+
+        if (unitId == null)
+            unitId = 0;
 
         list = units.get(unitId);
         dictUnit = dictionary.get(unitId);
-        if (list == null && dictUnit == null) 
+        if (list == null && dictUnit == null)
             dictUnit = dictionary.get(0);
-
 
         ranges = new ArrayList<String>();
         if (dictUnit != null)
             for (String i : dictUnit.keySet())
                 ranges.add(i);
-        
-        return ranges; 
+
+        return ranges;
     }
-    
-    public boolean onlyDefault(){
+
+    public String getDefault(Integer unitId) {
+        String returnValue;
+
+        if (unitId == null)
+            unitId = 0;
+
+        returnValue = defaults.get(unitId);
+
+        if (returnValue == null)
+            returnValue = defaults.get(0);
+
+        return returnValue;
+    }
+
+    public boolean onlyDefault() {
         int unitsSize, dictUnitsSize;
         boolean unitsAllDefault, dictAllDefault;
         unitsSize = units.size();
         dictUnitsSize = dictionary.size();
-        
-        unitsAllDefault = ((unitsSize == 1 && units.containsKey(0)) || unitsSize  == 0);
-        dictAllDefault = ((dictUnitsSize == 1 && dictionary.containsKey(0)) || dictUnitsSize == 0);
-        
+
+        unitsAllDefault = ( (unitsSize == 1 && units.containsKey(0)) || unitsSize == 0);
+        dictAllDefault = ( (dictUnitsSize == 1 && dictionary.containsKey(0)) || dictUnitsSize == 0);
+
         return unitsAllDefault && dictAllDefault;
     }
-    
+
     static class Item implements RPC {
         private static final long serialVersionUID = 1L;
 
-        Integer id;
-        Type type;
-        ResultRange resultRange;
+        Integer                   id;
+        Type                      type;
+        ResultRange               resultRange;
     }
 }

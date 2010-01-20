@@ -29,6 +29,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
+import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
@@ -50,11 +51,11 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
     
     protected Boolean hasReleasedCancelledAnalysis;
     
-    protected Integer anLoggedInId, anInitiatedId, anCompletedId,
+    protected transient Integer anLoggedInId, anInitiatedId, anCompletedId,
                       anReleasedId, anInPrepId, anOnHoldId, anRequeueId,
                       anCancelledId, anErrorLoggedInId, anErrorInitiatedId,
-                      anErrorCompletedId, samLoggedInId, samCompletedId,
-                      samReleasedId, samErrorId;
+                      anErrorInPrepId, anErrorCompletedId, samLoggedInId, 
+                      samCompletedId, samReleasedId, samErrorId;
     
     public static final String  ENVIRONMENTAL_DOMAIN_FLAG   = "E",
                                 HUMAN_DOMAIN_FLAG           = "H",
@@ -119,47 +120,51 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
         int      e = 0, l = 0, c = 0, r = 0;
         SampleItemManager itemMan;
         AnalysisManager analysisMan;
+        SampleItemViewDO sampleItemDO;
         AnalysisViewDO anDO;
         Integer   statusId = null, analysisStatusId;
         
         if(anLoggedInId == null)
             loadDictionaryEntries();
         
-        // if sample is in error do nothing
-        if (samErrorId.equals(sample.getStatusId()))
-            statusId = samErrorId;
-         else {
-             ////
-             itemMan = getSampleItems();
-             for(int s=0; s<itemMan.count(); s++){
-                 analysisMan = itemMan.getAnalysisAt(s);
-                 for(int a=0; a<analysisMan.count(); a++){
-                     anDO = analysisMan.getAnalysisAt(a);
-                     analysisStatusId = anDO.getStatusId();
-                     
-                     if(analysisStatusId.equals(anErrorLoggedInId) || analysisStatusId.equals(anErrorInitiatedId) || analysisStatusId.equals(anErrorCompletedId))
-                         e++;
-                     else if(analysisStatusId.equals(anLoggedInId) || analysisStatusId.equals(anInitiatedId) || analysisStatusId.equals(anRequeueId) || analysisStatusId.equals(anInPrepId))
-                         l++;
-                     else if(analysisStatusId.equals(anCompletedId) || analysisStatusId.equals(anOnHoldId))
-                         c++;
-                     else if(analysisStatusId.equals(anReleasedId) || analysisStatusId.equals(anCancelledId))
-                         r++;
-                 }
+         itemMan = getSampleItems();
+         for(int s=0; s<itemMan.count(); s++){
+             sampleItemDO = itemMan.getSampleItemAt(s);
+             analysisMan = itemMan.getAnalysisAt(s);
+             for(int a=0; a<analysisMan.count(); a++){
+                 //update the analysis status
+                 analysisMan.updateAnalysisStatusAt(a, sampleItemDO.getTypeOfSampleId());
+                 
+                 anDO = analysisMan.getAnalysisAt(a);
+                 analysisStatusId = anDO.getStatusId();
+                 
+                 if(analysisStatusId.equals(anErrorLoggedInId) || analysisStatusId.equals(anErrorInitiatedId) || 
+                                 analysisStatusId.equals(anErrorInPrepId) || analysisStatusId.equals(anErrorCompletedId))
+                     e++;
+                 else if(analysisStatusId.equals(anLoggedInId) || analysisStatusId.equals(anInitiatedId) || analysisStatusId.equals(anRequeueId) || analysisStatusId.equals(anInPrepId))
+                     l++;
+                 else if(analysisStatusId.equals(anCompletedId) || analysisStatusId.equals(anOnHoldId))
+                     c++;
+                 else if(analysisStatusId.equals(anReleasedId) || analysisStatusId.equals(anCancelledId))
+                     r++;
              }
+         }
 
-             if (e > 0) {
-                statusId = samErrorId;
-            } else if (l > 0) {
-                statusId = samLoggedInId;
-            } else if (c > 0) {
-                statusId = samCompletedId;
-            } else if (r > 0) {
-                if (sample.getReleasedDate() == null)
-                    sample.setReleasedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-                statusId = samReleasedId;
-            }
+         if (e > 0) {
+            statusId = samErrorId;
+        } else if (l > 0) {
+            statusId = samLoggedInId;
+        } else if (c > 0) {
+            statusId = samCompletedId;
+        } else if (r > 0) {
+            if (sample.getReleasedDate() == null)
+                sample.setReleasedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+            statusId = samReleasedId;
         }
+         
+         //if the sample is in error keep it that way
+         if (samErrorId.equals(sample.getStatusId()))
+             statusId = samErrorId;
 
         sample.setStatusId(statusId);
     }
@@ -405,7 +410,7 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
         return sampleExternalNote;
     }  
 
-  //service methods
+    //service methods
     public SampleManager add() throws Exception {
         updateSampleStatus();
         return proxy().add(this);
@@ -441,6 +446,7 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
         anCancelledId = proxy().getIdFromSystemName("analysis_cancelled");
         anErrorLoggedInId = proxy().getIdFromSystemName("analysis_error_logged_in");
         anErrorInitiatedId = proxy().getIdFromSystemName("analysis_error_initiated");
+        anErrorInPrepId = proxy().getIdFromSystemName("analysis_error_inprep");
         anErrorCompletedId = proxy().getIdFromSystemName("analysis_error_completed");
         samLoggedInId = proxy().getIdFromSystemName("sample_logged_in");
         samCompletedId = proxy().getIdFromSystemName("sample_completed");
