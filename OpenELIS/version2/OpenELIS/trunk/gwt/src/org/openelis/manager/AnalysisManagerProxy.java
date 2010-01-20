@@ -28,6 +28,7 @@ package org.openelis.manager;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.manager.AnalysisManager.AnalysisListItem;
@@ -81,14 +82,15 @@ public class AnalysisManagerProxy {
             if(analysisDO.getTestId() != null && analysisDO.getSectionId() == null)
                 errorsList.add(new FormErrorException("analysisSectionIdMissing", analysisDO.getTestName(), analysisDO.getMethodName()));
             
-            if(analysisDO.getTestId() != null && analysisDO.getUnitOfMeasureId() == null)
-                errorsList.add(new FormErrorException("analysisUnitIdMissing", analysisDO.getTestName(), analysisDO.getMethodName()));
+            //per dari clinical wont use units so the validation is being removed
+            //if(analysisDO.getTestId() != null && analysisDO.getUnitOfMeasureId() == null)
+            //    errorsList.add(new FormErrorWarning("analysisUnitIdMissing", analysisDO.getTestName(), analysisDO.getMethodName()));
             
             //ignore the sample type check if analysis is cancelled.  This is the only
             //way they can fix this error in some cases.
             if(analysisDO.getTestId() != null && !cancelledStatusId.equals(analysisDO.getStatusId()) && 
                             !testMan.getSampleTypes().hasType(sampleTypeId))
-                errorsList.add(new FormErrorException("sampleTypeInvalid", analysisDO.getTestName(), analysisDO.getMethodName()));
+                errorsList.add(new FormErrorWarning("sampleTypeInvalid", analysisDO.getTestName(), analysisDO.getMethodName()));
             
             item = man.getItemAt(i);
             //validate the children
