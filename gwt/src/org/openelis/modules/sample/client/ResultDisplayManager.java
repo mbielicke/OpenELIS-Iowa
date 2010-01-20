@@ -62,7 +62,6 @@ public class ResultDisplayManager {
             
             rdo = grid.get(index).get(c);
         } catch (IndexOutOfBoundsException ex) {
-            ex.printStackTrace();
             return null;
         }
         

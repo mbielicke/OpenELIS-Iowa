@@ -34,7 +34,6 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
-import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -231,7 +230,7 @@ public class ResultTab extends Screen {
                     
                     rowGroup = displayManager.getResultAt(prowIndex, 0).getRowGroup();
                     
-                    manager.addRowAt(displayManager.getIndexAt(index), rowGroup, addedTestAnalyteId, addedAnalyteId, addedAnalyteName);
+                    manager.addRowAt(displayManager.getIndexAt(prowIndex), rowGroup, addedTestAnalyteId, addedAnalyteId, addedAnalyteName);
                     
                     addedTestAnalyteId = null;
                     addedAnalyteId = null;
@@ -394,7 +393,12 @@ public class ResultTab extends Screen {
                 row.key = resultDO.getId();
                 if(c == 0) {
                     row.cells.get(0).setValue(resultDO.getAnalyte());
-                    row.cells.get(1).setValue(resultDO.getValue());
+                    
+                    if(resultDO.getValue() != null || resultDO.getId() != null)
+                        row.cells.get(1).setValue(resultDO.getValue());
+                    else
+                        row.cells.get(1).setValue(manager.getDefaultValue(resultDO.getResultGroup(), anDO.getUnitOfMeasureId()));
+                    
                     continue;
                 }                        
                 
@@ -402,7 +406,10 @@ public class ResultTab extends Screen {
                     hrow.cells.get(c+1).setValue(resultDO.getAnalyte());
                 }
                 
-                row.cells.get(c+1).setValue(resultDO.getValue());
+                if(resultDO.getValue() != null || resultDO.getId() != null)
+                    row.cells.get(c+1).setValue(resultDO.getValue());
+                else
+                    row.cells.get(c+1).setValue(manager.getDefaultValue(resultDO.getResultGroup(), anDO.getUnitOfMeasureId()));
             }
             headerFilled = true;
             model.add(row);
@@ -451,21 +458,27 @@ public class ResultTab extends Screen {
     }
     
     private void addResultRows(ArrayList<TestAnalyteViewDO> rows) {
-        int r, numCols;
+        int r, maxCols, numCols;
         TableDataRow row;
         TestAnalyteViewDO an;
+        Integer resultGroup;
         
         r = testResultsTable.getSelectedRow();
-        
-        numCols = displayManager.maxColumnCount();
+        resultGroup = displayManager.getResultAt(r, 0).getResultGroup();
+        numCols = displayManager.columnCount(r)+1;
+        maxCols = displayManager.maxColumnCount();
         
         for(int i=0; i<rows.size(); i++){
             an = rows.get(i);
-            row = new TableDataRow(numCols);
+            row = new TableDataRow(maxCols);
             
             row.data = new Boolean(false);
             row.cells.get(0).value = an.getAnalyteName();
             
+            //iterate through cols and load default if necessary
+            for(int k=1; k<numCols; k++)
+                row.cells.get(k).setValue(manager.getDefaultValue(resultGroup, anDO.getUnitOfMeasureId()));
+
             addedTestAnalyteId = an.getId();
             addedAnalyteId = an.getAnalyteId();
             addedAnalyteName = an.getAnalyteName();
@@ -473,10 +486,6 @@ public class ResultTab extends Screen {
             r++;
             testResultsTable.addRow(r, row);
         }
-    }
-    
-    private void duplicateRow(){
-        
     }
     
     private void initializeDropdowns() {
