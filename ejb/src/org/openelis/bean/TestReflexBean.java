@@ -27,8 +27,12 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
@@ -37,6 +41,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.TestReflexViewDO;
 import org.openelis.entity.TestReflex;
@@ -55,29 +60,53 @@ public class TestReflexBean implements TestReflexLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager            manager;
     
+    @EJB
+    private DictionaryLocal          dictionary;
+    
+    private static int               typeDict;
+    
+    private static final Logger      log  = Logger.getLogger(TestReflexBean.class.getName());
+    
+    @PostConstruct
+    public void init() {
+        DictionaryDO data;
+
+        try {
+            data = dictionary.fetchBySystemName("test_res_type_dictionary");
+            typeDict = data.getId();
+        } catch (Throwable e) {
+            typeDict = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='test_res_type_dictionary'", e);
+        }
+    }
+    
     public ArrayList<TestReflexViewDO> fetchByTestId(Integer testId) throws Exception {
         Query query;
         List<TestReflexViewDO> list;
-        Integer dictId;
-        TestReflexViewDO refDO;
-        String value;
-        DictionaryViewDO dictDO;
-        
-        dictId = (dictLocal().fetchBySystemName("test_res_type_dictionary")).getId();
+        TestReflexViewDO data;
+        DictionaryViewDO dict;        
         
         query = manager.createNamedQuery("TestReflex.FetchByTestId");
         query.setParameter("testId", testId);
         list = query.getResultList();                
         
-        for(int i = 0; i < list.size(); i++) {
-            refDO = list.get(i);            
-            if(!dictId.equals(refDO.getTestResultTypeId()))
-                continue;
-            
-            value = refDO.getTestResultValue();            
-            dictDO = dictLocal().fetchById(Integer.parseInt(value));
-            refDO.setTestResultValue(dictDO.getEntry());
-        }
+        try {
+            for (int i = 0; i < list.size(); i++ ) {
+                data = list.get(i);
+                //
+                // for entries that are dictionary, we want to fetch the
+                // dictionary text and set it for display
+                //
+                if (DataBaseUtil.isSame(typeDict, data.getTestResultTypeId())) {
+                    dict = dictionary.fetchById(Integer.parseInt(data.getTestResultValue()));
+                    data.setTestResultValue(dict.getEntry());
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }            
+        
         
         return DataBaseUtil.toArrayList(list);
     }

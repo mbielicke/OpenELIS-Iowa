@@ -338,7 +338,8 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                                 if(displayManager.isHeaderRow(i))
                                     break;
                                 data = displayManager.getTestAnalyteAt(i, c-1);
-                                data.setAnalyteId(key);                                
+                                data.setAnalyteId(key);      
+                                data.setAnalyteName(auto.getTextBoxDisplay());
                             }
                         }   
                         
@@ -1604,8 +1605,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         
         if (resultErrorList == null)
             return;
-        
-                    
+                            
         for (i = 0; i < resultErrorList.size(); i++) {
             error = resultErrorList.get(i);            
             if (error.getRowIndex() == group && error.getColumnIndex() == row && field.equals(error.getFieldName())) {

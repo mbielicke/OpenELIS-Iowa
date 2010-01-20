@@ -82,7 +82,6 @@ public class TestSectionBean implements TestSectionLocal {
         data.setId(ts.getId());
         
         return data;
-
     }
 
     public TestSectionViewDO update(TestSectionViewDO data) throws Exception {

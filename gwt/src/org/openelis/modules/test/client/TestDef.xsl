@@ -121,9 +121,18 @@ UIRF Software License are applicable instead of those above.
                       </HorizontalPanel>
                     </appButton>
                   </menuDisplay>
-                  <menuPanel layout="vertical" position="below" style="buttonMenuContainer">
+                  <menuPanel layout="vertical" width = "200" position="below" style="buttonMenuContainer">
                     <xsl:call-template name="duplicateRecordMenuItem" />
-                    <xsl:call-template name="historyMenuItem" />
+                    <menuItem description="" icon = "historyIcon" key="testHistory" label="{resource:getString($constants,'testHistory')}" enable = "false"/>
+                    <menuItem description="" icon = "historyIcon" key="testSectionHistory" label="{resource:getString($constants,'testSectionHistory')}" enable = "false"/>
+                    <menuItem description="" icon = "historyIcon" key="testSampleTypeHistory" label="{resource:getString($constants,'testSampleTypeHistory')}" enable = "false"/>                    
+                    <menuItem description="" icon = "historyIcon" key="testAnalyteHistory" label="{resource:getString($constants,'testAnalyteHistory')}" enable = "false"/>
+                    <menuItem description="" icon = "historyIcon" key="testResultHistory" label="{resource:getString($constants,'testResultHistory')}" enable = "false"/>
+                    <menuItem description="" icon = "historyIcon" key="testPrepHistory" label="{resource:getString($constants,'testPrepHistory')}" enable = "false"/>                                        
+                    <menuItem description="" icon = "historyIcon" key="testReflexHistory" label="{resource:getString($constants,'testReflexHistory')}" enable = "false"/>
+                    <menuItem description="" icon = "historyIcon" key="testWorksheetHistory" label="{resource:getString($constants,'testWorksheetHistory')}" enable = "false"/>
+                    <menuItem description="" icon = "historyIcon" key="testWorksheetItemHistory" label="{resource:getString($constants,'testWorksheetItemHistory')}" enable = "false"/>                    
+                    <menuItem description="" icon = "historyIcon" key="testWorksheetAnalyteHistory" label="{resource:getString($constants,'testWorksheetAnalyteHistory')}" enable = "false"/>
                   </menuPanel>
                 </menuItem>
               </menuPanel>

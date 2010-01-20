@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.domain.SectionDO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
@@ -37,19 +38,9 @@ import com.google.gwt.user.client.Window;
 public class SectionCache {
     protected static final String SECTION_CACHE_SERVICE_URL = "org.openelis.server.cache.SectionCacheService";
     protected ScreenService service;
-    HashMap<String, ArrayList<SectionDO>> sectionList;
+    HashMap<String, ArrayList<SectionDO>> nameList;
+    HashMap<Integer, SectionViewDO> idList;
     private static SectionCache instance;
-    
-    public SectionCache() {
-        service = new ScreenService("OpenELISServlet?service="+SECTION_CACHE_SERVICE_URL);
-        
-        sectionList = (HashMap<String, ArrayList<SectionDO>>)OpenELIS.getCacheList().get("SectionsCache");
-        
-        if(sectionList == null){
-            sectionList = new HashMap<String, ArrayList<SectionDO>>();
-            OpenELIS.getCacheList().put("SectionsCache", sectionList);
-        }
-    }
     
     public static ArrayList<SectionDO> getSectionList() {
         if(instance == null)
@@ -58,22 +49,63 @@ public class SectionCache {
         return instance.getSectionListInt();
     }
     
+    public static SectionViewDO getSectionFromId(Integer id) throws Exception {
+        if(instance == null)
+            instance = new SectionCache();
+        
+        return instance.getSectionFromIdInt(id);
+    }
+    
+    public SectionCache() {
+        service = new ScreenService("OpenELISServlet?service="+SECTION_CACHE_SERVICE_URL);
+        
+        nameList = (HashMap<String, ArrayList<SectionDO>>)OpenELIS.getCacheList().get("SectionsCache-name");
+        idList = (HashMap<Integer, SectionViewDO>)OpenELIS.getCacheList().get("SectionsCache-id");
+        
+        if(nameList == null){
+            nameList = new HashMap<String, ArrayList<SectionDO>>();
+            OpenELIS.getCacheList().put("SectionsCache-name", nameList);
+        }
+        
+        if(idList == null){
+            idList = new HashMap<Integer, SectionViewDO>();
+            OpenELIS.getCacheList().put("SectionsCache-id", idList);
+        }
+    }
+
     protected ArrayList<SectionDO> getSectionListInt() {
-        ArrayList<SectionDO> returnList = sectionList.get("sections");
+        ArrayList<SectionDO> returnList = nameList.get("sections");
         
         if(returnList == null){
             try{
-                SectionCacheRPC rpc = service.call("getSectionList", "");
+                returnList = service.callList("fetchSectionList", "");
                 
-                if(rpc.list != null){
-                    sectionList.put("sections", rpc.list);
-                    returnList = rpc.list;
-                }
-            }catch(Exception e){
+                if(returnList != null)
+                    nameList.put("sections", returnList);                
+            } catch(Exception e){
                 Window.alert("SectionCache getSectionList error: "+e.getMessage());   
             }
         }
         
         return returnList;   
+    }
+    
+    protected SectionViewDO getSectionFromIdInt(Integer id) throws Exception {
+        SectionViewDO data = idList.get(id);
+        
+        if(data == null){
+            try{
+                data = (SectionViewDO)service.call("fetchSectionById", id);
+                
+                if(data != null)
+                    idList.put(data.getId(), data);
+                
+            } catch(Exception e){
+                e.printStackTrace();
+                throw new Exception("SectionCache.getSectionFromId: id \""+id+"\" not found in system.  Please call the system administrator.");    
+            }
+        }
+        
+        return data;
     }
 }

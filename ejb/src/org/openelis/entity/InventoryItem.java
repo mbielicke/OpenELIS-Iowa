@@ -227,7 +227,7 @@ public class InventoryItem implements Auditable, Cloneable {
     private Integer                        parentRatio;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_inventory_item", insertable = false, updatable = false)
+    @JoinColumn(name = "parent_inventory_item_id", insertable = false, updatable = false)
     private InventoryItem                  parentInventoryItem;
 
     @OneToMany(fetch = FetchType.LAZY)

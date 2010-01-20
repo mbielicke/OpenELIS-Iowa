@@ -555,7 +555,7 @@ public class ProviderScreen extends Screen {
         } else if (state == State.UPDATE) {
             window.setBusy(consts.get("updating"));
             try {
-                manager.update();
+                manager = manager.update();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);

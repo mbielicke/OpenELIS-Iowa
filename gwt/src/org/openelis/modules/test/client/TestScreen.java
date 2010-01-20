@@ -31,14 +31,25 @@ import java.util.List;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
+import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SectionDO;
+import org.openelis.domain.SectionViewDO;
+import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestDO;
 import org.openelis.domain.TestMethodVO;
+import org.openelis.domain.TestPrepViewDO;
+import org.openelis.domain.TestReflexViewDO;
+import org.openelis.domain.TestResultViewDO;
 import org.openelis.domain.TestSectionViewDO;
+import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.domain.TestViewDO;
+import org.openelis.domain.TestWorksheetAnalyteViewDO;
+import org.openelis.domain.TestWorksheetItemDO;
+import org.openelis.domain.TestWorksheetViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -86,10 +97,17 @@ import org.openelis.gwt.widget.table.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
+import org.openelis.manager.AuxFieldManager;
+import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
+import org.openelis.manager.TestPrepManager;
+import org.openelis.manager.TestReflexManager;
 import org.openelis.manager.TestResultManager;
 import org.openelis.manager.TestSectionManager;
+import org.openelis.manager.TestTypeOfSampleManager;
+import org.openelis.manager.TestWorksheetManager;
 import org.openelis.meta.TestMeta;
+import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -117,14 +135,18 @@ public class TestScreen extends Screen {
     private ScreenNavigator          nav;
     private TableWidget              sectionTable;
     private TextBox                  id, name, description, reportingDescription,
-                                     reportingSequence, timeTaMax, timeTaAverage, timeTaWarning, timeTransit,
-                                     timeHolding, labelQty;
+                                     reportingSequence, timeTaMax, timeTaAverage,
+                                     timeTaWarning, timeTransit, timeHolding, labelQty;
     private AppButton                queryButton, previousButton, nextButton, addButton,
                                      updateButton, commitButton, abortButton,
                                      removeSectionButton, addSectionButton;
     private Dropdown<Integer>        sortingMethod, reportingMethod, testFormat, revisionMethod;
     private AutoComplete<Integer>    testTrailer, scriptlet, method, label;
-    private MenuItem                 duplicate, history;
+    protected MenuItem               duplicate, testHistory, testSectionHistory, 
+                                     testSampleTypeHistory, testAnalyteHistory,
+                                     testResultHistory, testPrepHistory,
+                                     testReflexHistory, testWorksheetHistory,
+                                     testWorksheetItemHistory, testWorksheetAnalyteHistory;
     private TabPanel                 testTabPanel;
     private ButtonGroup              atoz;
     private CheckBox                 isActive, isReportable;
@@ -280,6 +302,128 @@ public class TestScreen extends Screen {
                                           .contains(event.getState()));
             }
         });
+        
+        duplicate = (MenuItem)def.getWidget("duplicateRecord");
+        addScreenHandler(duplicate, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                duplicate();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+
+        testHistory = (MenuItem)def.getWidget("testHistory");
+        addScreenHandler(testHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                testHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                testHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+                
+        testSectionHistory = (MenuItem)def.getWidget("testSectionHistory");
+        addScreenHandler(testSectionHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                testSectionHistory();
+            }            
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                testSectionHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        testSampleTypeHistory = (MenuItem)def.getWidget("testSampleTypeHistory");
+        addScreenHandler(testSampleTypeHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                testSampleTypeHistory();
+            }            
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                testSampleTypeHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        testAnalyteHistory = (MenuItem)def.getWidget("testAnalyteHistory");
+        addScreenHandler(testAnalyteHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                testAnalyteHistory();
+            }                    
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                testAnalyteHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        testResultHistory = (MenuItem)def.getWidget("testResultHistory");
+        addScreenHandler(testResultHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                testResultHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                testResultHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        testPrepHistory = (MenuItem)def.getWidget("testPrepHistory");
+        addScreenHandler(testPrepHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                testPrepHistory();
+            }        
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                testPrepHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        testReflexHistory = (MenuItem)def.getWidget("testReflexHistory");
+        addScreenHandler(testReflexHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                testReflexHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                testReflexHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        testWorksheetHistory = (MenuItem)def.getWidget("testWorksheetHistory");
+        addScreenHandler(testWorksheetHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                testWorksheetHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                testWorksheetHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        testWorksheetItemHistory = (MenuItem)def.getWidget("testWorksheetItemHistory");
+        addScreenHandler(testWorksheetItemHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                testWorksheetItemHistory();
+            }
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                testWorksheetItemHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        testWorksheetAnalyteHistory = (MenuItem)def.getWidget("testWorksheetAnalyteHistory");
+        addScreenHandler(testWorksheetAnalyteHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                testWorksheetAnalyteHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                testWorksheetAnalyteHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
 
         id = (TextBox)def.getWidget(TestMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<String>() {
@@ -907,29 +1051,6 @@ public class TestScreen extends Screen {
 
         });
 
-        duplicate = (MenuItem)def.getWidget("duplicateRecord");
-        addScreenHandler(duplicate, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                duplicate();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
-            }
-        });
-
-        history = (MenuItem)def.getWidget("history");
-        addScreenHandler(history, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                // Window.alert("clicked history");
-                // history();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                history.enable(EnumSet.of(State.DISPLAY, State.UPDATE).contains(event.getState()));
-            }
-        });
-
         // Get TabPanel and set Tab Selection Handlers
         testTabPanel = (TabPanel)def.getWidget("testTabPanel");
         testTabPanel.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
@@ -1276,7 +1397,7 @@ public class TestScreen extends Screen {
             if (canCommitResultGroups() && allowAnalytesEmpty()) {
                 window.setBusy(consts.get("updating"));
                 try {
-                    manager.update();
+                    manager = manager.update();
                     
                     setState(State.DISPLAY);
                     DataChangeEvent.fire(this);
@@ -1289,7 +1410,6 @@ public class TestScreen extends Screen {
                 }
             }
         }
-
     }
 
     protected void abort() {
@@ -1317,7 +1437,308 @@ public class TestScreen extends Screen {
             window.clearStatus();
         }
     }
+    
+    protected void duplicate() {
+        try {
+            manager = TestManager.fetchById(manager.getTest().getId());
 
+            sampleTypeTab.setManager(manager);
+            analyteAndResultTab.setManager(manager);
+            prepAndReflexTab.setManager(manager);
+            worksheetLayoutTab.setManager(manager);
+
+            manager.getSampleTypes();
+            manager.getTestAnalytes();
+            manager.getTestResults();
+            manager.getPrepTests();
+            manager.getReflexTests();
+            manager.getTestWorksheet();
+
+            clearKeys();
+
+            sampleTypeTab.draw();
+            analyteAndResultTab.draw();
+            prepAndReflexTab.draw();
+            worksheetLayoutTab.draw();
+
+            setState(State.ADD);
+            DataChangeEvent.fire(this);
+
+            window.setDone(consts.get("enterInformationPressCommit"));
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+        }
+    }
+    
+    protected void testHistory() {
+        IdNameVO hist;
+        
+        hist = new IdNameVO(manager.getTest().getId(), manager.getTest().getName());
+        HistoryScreen.showHistory(consts.get("testHistory"),
+                                  ReferenceTable.TEST, hist);        
+    }
+    
+    protected void testSectionHistory() {
+        int i, count;
+        IdNameVO refVoList[];
+        TestSectionManager man;
+        TestSectionViewDO data;
+        SectionViewDO sect;
+        String section;
+
+        try {
+            man = manager.getTestSections();
+            count = man.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = man.getSectionAt(i);
+                sect = SectionCache.getSectionFromId(data.getSectionId());
+                if(sect != null)
+                    section = sect.getName();
+                else 
+                    section = data.getSectionId().toString();
+
+                refVoList[i] = new IdNameVO(data.getId(), section);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("testSectionHistory"), 
+                                  ReferenceTable.TEST_SECTION, refVoList);
+    }
+
+    protected void testSampleTypeHistory() {
+        int i, count;
+        IdNameVO refVoList[];
+        TestTypeOfSampleManager man;
+        TestTypeOfSampleDO data;
+        DictionaryDO dict;
+        String entry;
+        Integer typeId;
+
+        try {
+            man = manager.getSampleTypes();
+            count = man.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = man.getTypeAt(i);
+                typeId = data.getTypeOfSampleId();
+                dict = DictionaryCache.getEntryFromId(typeId);
+                if(dict != null)
+                    entry = dict.getEntry();
+                else
+                    entry = typeId.toString();
+                refVoList[i] = new IdNameVO(data.getId(), entry);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("testSampleTypeHistory"),
+                                  ReferenceTable.TEST_TYPE_OF_SAMPLE, refVoList);        
+    }
+
+    protected void testAnalyteHistory() {
+        int i, j;
+        IdNameVO refVoList[];
+        TestAnalyteManager man;
+        TestAnalyteViewDO data;
+        ArrayList<IdNameVO> list;
+        
+        try {
+            man = manager.getTestAnalytes();
+            list = new ArrayList<IdNameVO>();
+            for(i = 0; i < man.rowCount(); i++) {
+                for(j = 0; j < man.columnCount(i); j++) {
+                    data = man.getAnalyteAt(i, j);
+                    list.add(new IdNameVO(data.getId(), data.getAnalyteName()));
+                }
+            }
+            
+            refVoList = new IdNameVO[list.size()];
+            for(i = 0; i < list.size(); i++) {
+                refVoList[i] = list.get(i);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }       
+        
+        HistoryScreen.showHistory(consts.get("testAnalyteHistory"),
+                                  ReferenceTable.TEST_ANALYTE, refVoList);
+    }
+
+
+    protected void testResultHistory() {
+        int i, j, count, grpCount,index;
+        IdNameVO refVoList[];
+        TestResultManager man;
+        TestResultViewDO data;
+        String value;
+
+        count  = 0;
+        index = -1;
+        try {
+            man = manager.getTestResults();
+            grpCount = man.groupCount();
+            for(i = 0; i < grpCount; i++) {
+                count += man.getResultGroupSize(i+1);                
+            }            
+            
+            refVoList = new IdNameVO[count];           
+            for (i = 0; i < grpCount; i++) {             
+                for(j = 0; j < man.getResultGroupSize(i+1); j++) {                    
+                    data = man.getResultAt(i+1, j);
+                    value = data.getDictionary();
+                    if(value == null)
+                        value = data.getValue();
+                    
+                    refVoList[++index] = new IdNameVO(data.getId(), "Group "+(i+1)+" - "+ (j+1));
+                }                
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("testResultHistory"),
+                                  ReferenceTable.TEST_RESULT, refVoList);               
+    }
+
+    protected void testPrepHistory() {
+        int i, count;
+        IdNameVO refVoList[];
+        TestPrepManager man;
+        TestPrepViewDO data;
+
+        try {
+            man = manager.getPrepTests();
+            count = man.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = man.getPrepAt(i);
+                refVoList[i] = new IdNameVO(data.getId(),data.getPrepTestName()+", "+data.getMethodName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("testPrepHistory"), 
+                                  ReferenceTable.TEST_PREP, refVoList);
+        
+    }
+
+    protected void testReflexHistory() {
+        int i, count;
+        IdNameVO refVoList[];
+        TestReflexManager man;
+        TestReflexViewDO data;
+
+        try {
+            man = manager.getReflexTests();
+            count = man.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = man.getReflexAt(i);
+                refVoList[i] = new IdNameVO(data.getId(),data.getAddTestName()+", "+data.getAddMethodName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("testReflexHistory"), 
+                                  ReferenceTable.TEST_REFLEX, refVoList);
+        
+    }
+
+    protected void testWorksheetHistory() {
+        IdNameVO hist;
+        TestWorksheetManager man;
+        TestWorksheetViewDO data;
+        
+        try {
+            man = manager.getTestWorksheet();
+            data = man.getWorksheet();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+        
+        hist = new IdNameVO(data.getId(), consts.get("worksheet"));
+        HistoryScreen.showHistory(consts.get("testWorksheetHistory"),
+                                  ReferenceTable.TEST_WORKSHEET, hist);
+        
+    }
+    
+    protected void testWorksheetItemHistory() {
+        int i, count;
+        IdNameVO refVoList[];
+        TestWorksheetManager man;
+        TestWorksheetItemDO data;
+        String label;
+        Integer position;
+
+        try {
+            man = manager.getTestWorksheet();
+            count = man.itemCount();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = man.getItemAt(i);
+                position = data.getPosition();
+                if(position != null)
+                    label = position.toString();
+                else
+                    label = "";
+                refVoList[i] = new IdNameVO(data.getId(),label);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("testWorksheetItemHistory"), 
+                                  ReferenceTable.TEST_WORKSHEET_ITEM, refVoList);
+        
+    }
+
+    protected void testWorksheetAnalyteHistory() {
+        int i, count;
+        IdNameVO refVoList[];
+        TestWorksheetManager man;
+        TestWorksheetAnalyteViewDO data;
+
+        try {
+            man = manager.getTestWorksheet();
+            count = man.analyteCount();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = man.getAnalyteAt(i);
+                refVoList[i] = new IdNameVO(data.getId(),data.getAnalyteName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("testWorksheetItemHistory"), 
+                                  ReferenceTable.TEST_WORKSHEET_ITEM, refVoList);
+        
+    }
+    
     protected boolean fetchById(Integer id) {
         if (id == null) {
             manager = TestManager.getInstance();
@@ -1419,38 +1840,6 @@ public class TestScreen extends Screen {
         else {
             window.setError("(Error 1 of " + formErrors.size() + ") " + formErrors.get(0).getMessage());
             window.setMessagePopup(formErrors, "ErrorPanel");
-        }
-    }
-
-    private void duplicate() {
-        try {
-            manager = TestManager.fetchById(manager.getTest().getId());
-
-            sampleTypeTab.setManager(manager);
-            analyteAndResultTab.setManager(manager);
-            prepAndReflexTab.setManager(manager);
-            worksheetLayoutTab.setManager(manager);
-
-            manager.getSampleTypes();
-            manager.getTestAnalytes();
-            manager.getTestResults();
-            manager.getPrepTests();
-            manager.getReflexTests();
-            manager.getTestWorksheet();
-
-            clearKeys();
-
-            sampleTypeTab.draw();
-            analyteAndResultTab.draw();
-            prepAndReflexTab.draw();
-            worksheetLayoutTab.draw();
-
-            setState(State.ADD);
-            DataChangeEvent.fire(this);
-
-            window.setDone(consts.get("enterInformationPressCommit"));
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
         }
     }
 
