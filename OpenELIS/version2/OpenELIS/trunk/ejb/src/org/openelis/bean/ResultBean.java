@@ -168,7 +168,7 @@ public class ResultBean implements ResultLocal {
 
         createTestResultHash(testResults, resultValidators);
 
-        // build the grid
+        // build the gridR
         j = -1;
         ar = null;
         results.clear();
@@ -200,7 +200,7 @@ public class ResultBean implements ResultLocal {
                 
                 rg = tado.getRowGroup();
                 resultDO.setRowGroup(rg);
-
+                
                 if (j != rg) {
                     ar = new ArrayList<ResultViewDO>(1);
                     ar.add(resultDO);
@@ -469,10 +469,12 @@ public class ResultBean implements ResultLocal {
                 }else if(typeTime.equals(typeId)){                        
                     type = Type.TIME;
                     validRange = testResult.getValue();
+                }else if(typeDefault.equals(typeId)){
+                    type = Type.DEFAULT;
+                    validRange = testResult.getValue();
                 }
                 
                 rv.addResult(testResult.getId(), testResult.getUnitOfMeasureId(), type, validRange);
-                
             }
         } catch (Exception e) {
             resultValidators.clear();
