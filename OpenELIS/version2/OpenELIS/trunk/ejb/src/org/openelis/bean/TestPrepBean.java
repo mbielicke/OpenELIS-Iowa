@@ -120,7 +120,7 @@ public class TestPrepBean implements TestPrepLocal {
         list = new ValidationErrorsList();        
         if (prepDO.getPrepTestId() == null) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                             TestMeta.getPrepPrepTestId()));                        
+                                             TestMeta.getPrepPrepTestName()));                        
         }
 
         if (list.size() > 0)

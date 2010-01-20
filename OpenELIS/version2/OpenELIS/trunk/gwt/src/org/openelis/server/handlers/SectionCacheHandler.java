@@ -26,7 +26,9 @@
 package org.openelis.server.handlers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SectionDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.messages.SectionCacheMessage;
@@ -40,16 +42,24 @@ public class SectionCacheHandler implements MessageHandler<SectionCacheMessage> 
 
     public void handle(SectionCacheMessage message) {  
         ArrayList<SectionViewDO> sectList;
-        SectionViewDO msecDO,lsecDO;
+        HashMap<Integer, SectionViewDO> idHash;
+        SectionViewDO data;
         
+        idHash = (HashMap<Integer, SectionViewDO>)CachingManager.getElement("InitialData", "sectionIdValues");        
         sectList = (ArrayList<SectionViewDO>)CachingManager.getElement("InitialData", "sectionList");        
         
-        if(sectList !=null) 
+        if(sectList != null) {
+            if(idHash != null) {
+                data = idHash.get(message.getSectionDO().getId());
+                if(data != null)
+                    idHash.remove(data);
+            }
             CachingManager.remove("InitialData", "sectionList");
+        }
         
     }
     
-    public static ArrayList<SectionDO>  getSectionList() {
+    public static ArrayList<SectionDO> getSectionList() {
         SectionRemote remote;
         ArrayList<SectionDO> sectList; 
         
@@ -65,5 +75,33 @@ public class SectionCacheHandler implements MessageHandler<SectionCacheMessage> 
         }       
         return sectList;
     }
+
+    public static SectionViewDO getSectionDOFromId(Integer id) {       
+        HashMap<Integer, SectionViewDO> idHash;
+        SectionViewDO data;
+        
+        idHash = (HashMap<Integer, SectionViewDO>)CachingManager.getElement("InitialData", "sectionIdValues");
+        if(idHash == null)
+            idHash = new HashMap<Integer, SectionViewDO>();           
+        
+        data = idHash.get(id);
+        if(data == null){
+            try {
+                data = remote().fetchById(id);
+                
+                if(data != null){
+                    idHash.put(id, data);
+                    CachingManager.putElement("InitialData", "sectionIdValues", idHash);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        } 
+        
+        return data;
+    }
   
+    private static SectionRemote remote(){
+        return (SectionRemote)EJBFactory.lookup("openelis/SectionBean/remote");
+    }
 }

@@ -121,10 +121,10 @@ public class TestPrepManagerProxy {
                 list.add(exc);
             }
             
-            if ( !"Y".equals(prepDO.getIsOptional())) {
+            if (DataBaseUtil.isDifferent("Y",prepDO.getIsOptional())) {
                 if (numReq >= 1) {
                     exc = new TableFieldErrorException("moreThanOnePrepTestOptionalException", i,
-                                                       TestMeta.getPrepPrepTestName(),"testPrepTable");
+                                                       TestMeta.getPrepIsOptional(),"testPrepTable");
                     list.add(exc);
                 }
                 numReq++ ;

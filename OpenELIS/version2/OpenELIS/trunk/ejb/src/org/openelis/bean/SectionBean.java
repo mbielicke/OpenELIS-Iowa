@@ -167,6 +167,7 @@ public class SectionBean implements SectionRemote {
         // invalidate the cache
         msg = new SectionCacheMessage();
         msg.action = SectionCacheMessage.Action.UPDATED;
+        msg.setSectionDO(data);
         jmsProducer.writeMessage(msg);
         return data;
     }
@@ -198,6 +199,7 @@ public class SectionBean implements SectionRemote {
         // invalidate the cache
         msg = new SectionCacheMessage();
         msg.action = SectionCacheMessage.Action.UPDATED;
+        msg.setSectionDO(data);
         jmsProducer.writeMessage(msg);
         return data;
     }

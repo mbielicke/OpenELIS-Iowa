@@ -137,7 +137,9 @@ UIRF Software License are applicable instead of those above.
                   </menuDisplay>
                   <menuPanel layout="vertical" position="below" style="buttonMenuContainer">
                     <xsl:call-template name="duplicateRecordMenuItem" />
-                    <xsl:call-template name="historyMenuItem" />
+                    <menuItem description="" icon = "historyIcon" key="invItemHistory" label="{resource:getString($constants,'invItemHistory')}" enable = "false"/>
+                    <menuItem description="" icon = "historyIcon" key="invComponentHistory" label="{resource:getString($constants,'invComponentHistory')}" enable = "false"/>
+                    <menuItem description="" icon = "historyIcon" key="invLocationHistory" label="{resource:getString($constants,'invLocationHistory')}" enable = "false"/>
                   </menuPanel>
                 </menuItem>
               </menuPanel>

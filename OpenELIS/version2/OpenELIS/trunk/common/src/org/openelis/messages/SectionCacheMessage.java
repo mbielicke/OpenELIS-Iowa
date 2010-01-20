@@ -25,6 +25,7 @@
 */
 package org.openelis.messages;
 
+import org.openelis.domain.SectionViewDO;
 import org.openelis.persistence.Message;
 
 public class SectionCacheMessage implements Message {
@@ -34,8 +35,18 @@ public class SectionCacheMessage implements Message {
     public enum Action {UPDATED,DELETED}
     public Action action;
     
+    protected SectionViewDO sectionDO;
+    
     public String getHandler() {
         return handler;
+    }
+
+    public SectionViewDO getSectionDO() {
+        return sectionDO;
+    }
+
+    public void setSectionDO(SectionViewDO sectionDO) {
+        this.sectionDO = sectionDO;
     }
 
 }

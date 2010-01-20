@@ -29,8 +29,13 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameStoreVO;
+import org.openelis.domain.IdNameVO;
+import org.openelis.domain.InventoryComponentViewDO;
+import org.openelis.domain.InventoryLocationViewDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
@@ -54,13 +59,18 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.manager.AuxFieldManager;
+import org.openelis.manager.InventoryComponentManager;
 import org.openelis.manager.InventoryItemManager;
+import org.openelis.manager.InventoryLocationManager;
 import org.openelis.meta.InventoryItemMeta;
+import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.note.client.NotesTab;
 
@@ -91,6 +101,7 @@ public class InventoryItemScreen extends Screen {
 
     private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
                                   commitButton, abortButton;
+    protected MenuItem            invItemHistory,invComponentHistory,invLocationHistory;
     private TextBox               id, name, description, quantityMinLevel, quantityToReorder,
                                   quantityMaxLevel, productUri, parentRatio, averageLeadTime, averageCost,
                                   averageDailyUse;
@@ -226,6 +237,39 @@ public class InventoryItemScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
                                           .contains(event.getState()));
+            }
+        });
+        
+        invItemHistory = (MenuItem)def.getWidget("invItemHistory");
+        addScreenHandler(invItemHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                invItemHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                invItemHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        invComponentHistory = (MenuItem)def.getWidget("invComponentHistory");
+        addScreenHandler(invComponentHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                invComponentHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                invComponentHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        invLocationHistory = (MenuItem)def.getWidget("invLocationHistory");
+        addScreenHandler(invLocationHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                invLocationHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                invLocationHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -941,6 +985,62 @@ public class InventoryItemScreen extends Screen {
         } else {
             window.clearStatus();
         }
+    }
+    
+    protected void invItemHistory() {
+        IdNameVO hist;
+        
+        hist = new IdNameVO(manager.getInventoryItem().getId(), manager.getInventoryItem().getName());
+        HistoryScreen.showHistory(consts.get("invItemHistory"),
+                                  ReferenceTable.INVENTORY_ITEM, hist);                
+    }
+    
+    protected void invComponentHistory() {
+        int i, count;
+        IdNameVO refVoList[];
+        InventoryComponentManager man;
+        InventoryComponentViewDO data;
+
+        try {
+            man = manager.getComponents();
+            count = man.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = man.getComponentAt(i);
+                refVoList[i] = new IdNameVO(data.getId(), data.getComponentName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("invComponentHistory"),
+                                  ReferenceTable.INVENTORY_COMPONENT, refVoList);
+    }
+    
+    protected void invLocationHistory() {
+        int i, count;
+        IdNameVO refVoList[];
+        InventoryLocationManager man;
+        InventoryLocationViewDO data;
+
+        try {
+            man = manager.getLocations();
+            count = man.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = man.getLocationAt(i);
+                refVoList[i] = new IdNameVO(data.getId(), data.getStorageLocationName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("invLocationHistory"),
+                                  ReferenceTable.INVENTORY_LOCATION, refVoList);
     }
 
     protected boolean fetchById(Integer id) {
