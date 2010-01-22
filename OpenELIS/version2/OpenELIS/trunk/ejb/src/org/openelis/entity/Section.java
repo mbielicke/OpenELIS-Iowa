@@ -53,7 +53,7 @@ import org.openelis.utils.Auditable;
                             query = "select distinct new org.openelis.domain.SectionDO(s.id,s.parentSectionId,s.name,s.description,s.isExternal,s.organizationId)" +
                             		" from Section s order by s.name"),
                 @NamedQuery(name = "Section.FetchByName", 
-                            query = "select distinct new org.openelis.domain.IdNameVO(s.id, s.name) " +
+                            query = "select distinct new org.openelis.domain.SectionDO(s.id,s.parentSectionId,s.name,s.description,s.isExternal,s.organizationId) " +
                             		"from Section s where s.name like :name order by s.name"),
                 @NamedQuery(name = "Section.FetchById",
                             query = "select distinct new org.openelis.domain.SectionViewDO(s.id,s.parentSectionId,s.name,s.description,s.isExternal,s.organizationId,ps.name,o.name)" +

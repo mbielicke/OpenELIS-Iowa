@@ -37,6 +37,8 @@ import org.openelis.gwt.common.data.QueryData;
 @Remote
 public interface AnalyteRemote {
     public AnalyteViewDO fetchById(Integer id) throws Exception;
+    
+    public ArrayList<AnalyteDO> fetchByName(String name, int maxResults);
 
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
 
@@ -50,8 +52,5 @@ public interface AnalyteRemote {
     
     public ArrayList<AnalyteDO> getAlias(ArrayList<Integer> analyteIds) throws Exception;
 
-    public void delete(AnalyteViewDO data) throws Exception;
-    
-	public ArrayList<IdNameVO> fetchByName(String name, int maxResults);
-	 
+    public void delete(AnalyteViewDO data) throws Exception;	 
 }

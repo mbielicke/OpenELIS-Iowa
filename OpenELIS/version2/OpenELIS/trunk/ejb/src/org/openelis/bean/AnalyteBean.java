@@ -94,7 +94,7 @@ public class AnalyteBean implements AnalyteRemote {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<IdNameVO> fetchByName(String name, int maxResults) {
+    public ArrayList<AnalyteDO> fetchByName(String name, int maxResults) {
         Query query = null;
 
         query = manager.createNamedQuery("Analyte.FetchByName");

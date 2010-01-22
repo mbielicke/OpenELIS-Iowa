@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import javax.ejb.Remote;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.LabelDO;
 import org.openelis.domain.LabelViewDO;
 import org.openelis.gwt.common.data.QueryData;
 
@@ -38,7 +39,7 @@ public interface LabelRemote {
 
     public LabelViewDO fetchById(Integer id) throws Exception;
     
-    public ArrayList<IdNameVO> fetchByName(String match,int max) throws Exception;
+    public ArrayList<LabelDO> fetchByName(String match,int max) throws Exception;
 
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
 

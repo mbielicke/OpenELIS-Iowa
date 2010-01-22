@@ -97,7 +97,7 @@ public class SectionBean implements SectionRemote {
         return data;
     }
 
-    public ArrayList<IdNameVO> fetchByName(String name, int maxResults) throws Exception {
+    public ArrayList<SectionDO> fetchByName(String name, int maxResults) throws Exception {
         Query query = manager.createNamedQuery("Section.FetchByName");
         query.setParameter("name", name);
         query.setMaxResults(maxResults);
