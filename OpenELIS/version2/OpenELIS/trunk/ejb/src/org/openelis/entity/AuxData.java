@@ -49,8 +49,8 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({@NamedQuery(name = "AuxData.FetchById", query = "select distinct new org.openelis.domain.AuxDataViewDO(a.id, a.sortOrder, " + 
-                           " a.auxFieldId, a.referenceId, a.referenceTableId, a.isReportable, a.typeId, a.value, '') " +
-                           " from AuxData a where a.referenceId = :id and a.referenceTableId = :tableId order by a.sortOrder ")})
+                           " a.auxFieldId, a.referenceId, a.referenceTableId, a.isReportable, a.typeId, a.value, '', afg.id, an.externalId) " +
+                           " from AuxData a LEFT JOIN a.auxField af LEFT JOIN af.analyte an LEFT JOIN af.auxFieldGroup afg where a.referenceId = :id and a.referenceTableId = :tableId order by a.sortOrder ")})
                     
 @Entity
 @Table(name="aux_data")

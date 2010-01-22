@@ -36,17 +36,21 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.AuxDataViewDO;
+import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
+import org.openelis.domain.IdVO;
+import org.openelis.domain.SystemVariableDO;
 import org.openelis.entity.AuxData;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.AuxDataLocal;
+import org.openelis.remote.AuxDataRemote;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-public class AuxDataBean implements AuxDataLocal {
+public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
 
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
@@ -137,5 +141,24 @@ public class AuxDataBean implements AuxDataLocal {
         entity = manager.find(AuxData.class, data.getId());
         if (entity != null)
             manager.remove(entity);
+    }
+
+    public IdVO fetchGroupIdBySystemVariable(String sysVariableKey) throws Exception {
+        SystemVariableDO sysVariable;
+        AuxFieldGroupDO groupDO;
+        IdVO idVO;
+        Query query;
+        
+        query = manager.createNamedQuery("SystemVariable.FetchByName");
+        query.setParameter("name", sysVariableKey);
+        sysVariable = (SystemVariableDO)query.getSingleResult();
+        
+        query = manager.createNamedQuery("AuxFieldGroup.FetchActiveByName");
+        query.setParameter("name", sysVariable.getValue());
+        groupDO = (AuxFieldGroupDO)query.getSingleResult();
+        
+        idVO = new IdVO(groupDO.getId());
+        
+        return idVO;
     }
 }
