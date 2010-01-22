@@ -25,9 +25,9 @@
 */
 package org.openelis.manager;
 
+import org.openelis.domain.AuxDataDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.modules.auxiliary.client.AuxiliaryServiceParams;
 
 public class AuxDataManagerProxy {
     protected static final String AUXILIARY_SERVICE_URL = "org.openelis.modules.auxData.server.AuxDataService";
@@ -38,19 +38,19 @@ public class AuxDataManagerProxy {
     }
     
     public AuxDataManager fetchById(Integer referenceId, Integer referenceTableId) throws Exception {
-        AuxiliaryServiceParams p = new AuxiliaryServiceParams();
-        p.referenceId = referenceId;
-        p.referenceTableId = referenceTableId;
+        AuxDataDO auxData = new AuxDataDO();
+        auxData.setReferenceId(referenceId);
+        auxData.setReferenceTableId(referenceTableId);
         
-        return service.call("fetchById", p);
+        return service.call("fetchById", auxData);
     }
     
     public AuxDataManager fetchByIdForUpdate(Integer referenceId, Integer referenceTableId) throws Exception {
-        AuxiliaryServiceParams p = new AuxiliaryServiceParams();
-        p.referenceId = referenceId;
-        p.referenceTableId = referenceTableId;
+        AuxDataDO auxData = new AuxDataDO();
+        auxData.setReferenceId(referenceId);
+        auxData.setReferenceTableId(referenceTableId);
         
-        return service.call("fetchByIdForUpdate", p);
+        return service.call("fetchByIdForUpdate", auxData);
     }
     
     public AuxDataManager add(AuxDataManager man) throws Exception {

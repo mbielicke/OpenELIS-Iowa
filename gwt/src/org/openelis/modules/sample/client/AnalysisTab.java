@@ -141,12 +141,11 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                                                                   bundle.analysisManager, new AnalysisViewDO(), testMan);
                                 
                                 dataBundle.samplePrepDropdownModel = bundle.samplePrepDropdownModel;
-                                bundle.analysisManager.addAnalysis(dataBundle.analysisTestDO);
                             }
                             
                             bundles.add(dataBundle);
                             
-                            //figure out which bundle to send
+                            //setup the new databundle
                             setupBundle(dataBundle);
                         }
                         

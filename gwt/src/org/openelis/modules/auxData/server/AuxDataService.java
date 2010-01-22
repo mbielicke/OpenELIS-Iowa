@@ -25,21 +25,38 @@
 */
 package org.openelis.modules.auxData.server;
 
+import java.util.ArrayList;
+
+import org.openelis.domain.AuxDataDO;
+import org.openelis.domain.AuxDataViewDO;
+import org.openelis.domain.IdVO;
 import org.openelis.manager.AuxDataManager;
-import org.openelis.modules.auxiliary.client.AuxiliaryServiceParams;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.AuxDataManagerRemote;
+import org.openelis.remote.AuxDataRemote;
 
 public class AuxDataService {
-    public AuxDataManager fetchById(AuxiliaryServiceParams params) throws Exception {
-        return remote().fetchById(params.referenceId, params.referenceTableId);
+    public AuxDataManager fetchById(AuxDataDO auxData) throws Exception {
+        return managerRemote().fetchById(auxData.getReferenceId(), auxData.getReferenceTableId());
     }   
     
-    public AuxDataManager fetchByIdForUpdate(AuxiliaryServiceParams params) throws Exception {
-        return remote().fetchByIdForUpdate(params.referenceId, params.referenceTableId);
+    public AuxDataManager fetchByIdForUpdate(AuxDataDO auxData) throws Exception {
+        return managerRemote().fetchByIdForUpdate(auxData.getReferenceId(), auxData.getReferenceTableId());
     }
     
-    protected AuxDataManagerRemote remote(){
+    public ArrayList<AuxDataViewDO> fetchByRefId(AuxDataDO auxData) throws Exception {
+        return remote().fetchById(auxData.getReferenceId(), auxData.getReferenceTableId());
+    }
+    
+    public IdVO getAuxGroupIdFromSystemVariable(String sysVariableKey) throws Exception {
+        return remote().fetchGroupIdBySystemVariable(sysVariableKey);
+    }
+    
+    protected AuxDataRemote remote(){
+        return (AuxDataRemote)EJBFactory.lookup("openelis/AuxDataBean/remote");
+    }
+    
+    protected AuxDataManagerRemote managerRemote(){
         return (AuxDataManagerRemote)EJBFactory.lookup("openelis/AuxDataManagerBean/remote");
     }
 }

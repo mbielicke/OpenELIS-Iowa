@@ -54,6 +54,8 @@ import org.openelis.gwt.widget.table.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
+import org.openelis.gwt.widget.table.event.UnselectionEvent;
+import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.manager.AnalysisManager;
@@ -153,6 +155,12 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
 
                 ActionEvent.fire(treeTab, Action.REFRESH_TABS, data);
             }
+        });
+        
+        itemsTree.addUnselectionHandler(new UnselectionHandler<TreeDataItem>(){
+           public void onUnselection(UnselectionEvent<TreeDataItem> event) {
+               ActionEvent.fire(treeTab, Action.REFRESH_TABS, new SampleDataBundle());
+            } 
         });
 
         itemsTree.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
