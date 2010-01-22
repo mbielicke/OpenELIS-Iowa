@@ -1,5 +1,4 @@
 
-
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -26,7 +25,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -44,14 +42,10 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-
 <!-- main screen -->
-
     <screen id="Organization" name="{resource:getString($constants,'organization')}">
       <HorizontalPanel padding="0" spacing="0">
-
 <!--left table goes here -->
-
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
           <HorizontalPanel width="225">
             <buttonGroup key="atozButtons">
@@ -76,9 +70,7 @@ UIRF Software License are applicable instead of those above.
             </VerticalPanel>
           </HorizontalPanel>
         </CollapsePanel>
-
 <!--button panel code-->
-
         <VerticalPanel padding="0" spacing="0">
           <AbsolutePanel spacing="0" style="ButtonPanelContainer">
             <HorizontalPanel>
@@ -133,17 +125,15 @@ UIRF Software License are applicable instead of those above.
                     </appButton>
                   </menuDisplay>
                   <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                    <menuItem description="" icon = "historyIcon" key="orgHistory" label="{resource:getString($constants,'orgHistory')}" enable = "false"/>
-                    <menuItem description="" icon = "historyIcon" key="orgContactHistory" label="{resource:getString($constants,'orgContactHistory')}" enable = "false"/>                    
-                    <menuItem description="" icon = "historyIcon" key="orgParameterHistory" label="{resource:getString($constants,'orgParameterHistory')}" enable = "false"/>
+                    <menuItem key="orgHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'orgHistory')}" />
+                    <menuItem key="orgContactHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'orgContactHistory')}" />
+                    <menuItem key="orgParameterHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'orgParameterHistory')}" />
                   </menuPanel>
                 </menuItem>
               </menuPanel>
             </HorizontalPanel>
           </AbsolutePanel>
-
 <!--end button panel-->
-
           <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
@@ -208,14 +198,10 @@ UIRF Software License are applicable instead of those above.
                 </widget>
               </row>
             </TablePanel>
-
 <!-- TAB PANEL -->
-
             <TabPanel key="tabPanel" width="605" height="285">
-
 <!-- TAB 1 -->
-
-              <tab key="contactTab" text="{resource:getString($constants,'contact')}" tab="contactTable,contactTable">
+              <tab key="contactTab" tab="contactTable,contactTable" text="{resource:getString($constants,'contact')}">
                 <VerticalPanel padding="0" spacing="0">
                   <table key="contactTable" width="587" maxRows="10" showScroll="ALWAYS" tab="{meta:getId()},{meta:getIsActive()}">
                     <col key="{meta:getContactContactTypeId()}" width="106" header="{resource:getString($constants,'type')}">
@@ -230,7 +216,7 @@ UIRF Software License are applicable instead of those above.
                     <col key="{meta:getContactAddressStreetAddress()}" width="130" header="{resource:getString($constants,'address')}">
                       <textbox case="UPPER" max="40" field="String" />
                     </col>
-                    <col key="{meta:getContactAddressCity()}" width="130" header="{resource:getString($constants,'city')}" sort="true">
+                    <col key="{meta:getContactAddressCity()}" width="130" sort="true" header="{resource:getString($constants,'city')}">
                       <textbox case="UPPER" max="30" field="String" />
                     </col>
                     <col key="{meta:getContactAddressState()}" width="56" header="{resource:getString($constants,'state')}">
@@ -280,10 +266,8 @@ UIRF Software License are applicable instead of those above.
                   </widget>
                 </VerticalPanel>
               </tab>
-
 <!-- TAB 2 -->
-
-              <tab key="parameterTab" text="{resource:getString($constants,'parameter')}" tab="parameterTable,parameterTable">
+              <tab key="parameterTab" tab="parameterTable,parameterTable" text="{resource:getString($constants,'parameter')}">
                 <VerticalPanel padding="0" spacing="0">
                   <table key="parameterTable" width="587" maxRows="10" showScroll="ALWAYS" tab="{meta:getId()},{meta:getIsActive()}">
                     <col key="{meta:getOrganizationParameterTypeId()}" width="300" align="left" header="{resource:getString($constants,'type')}">
@@ -315,10 +299,8 @@ UIRF Software License are applicable instead of those above.
                   </widget>
                 </VerticalPanel>
               </tab>
-
 <!-- TAB 3 -->
-
-              <tab key="notesTab" text="{resource:getString($constants,'note')}" tab="standardNoteButton,standardNoteButton">
+              <tab key="notesTab" tab="standardNoteButton,standardNoteButton" text="{resource:getString($constants,'note')}">
                 <VerticalPanel padding="0" spacing="0">
                   <notes key="notesPanel" width="604" height="247" />
                   <appButton key="standardNoteButton" style="Button" tab="{meta:getId()},{meta:getIsActive()}">

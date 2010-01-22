@@ -68,9 +68,7 @@ UIRF Software License are applicable instead of those above.
             </VerticalPanel>
           </HorizontalPanel>
         </CollapsePanel>
-        
 <!--button panel code-->
-        
         <VerticalPanel padding="0" spacing="0">
           <AbsolutePanel spacing="0" style="ButtonPanelContainer">
             <HorizontalPanel>
@@ -124,9 +122,9 @@ UIRF Software License are applicable instead of those above.
                       </HorizontalPanel>
                     </appButton>
                   </menuDisplay>
-				  <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                    <menuItem description="" icon = "historyIcon" key="storageLocationHistory" label="{resource:getString($constants,'storageLocationHistory')}" enable = "false"/>
-                    <menuItem description="" icon = "historyIcon" key="subLocationHistory" label="{resource:getString($constants,'subLocationHistory')}" enable = "false"/>
+                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                    <menuItem key="storageLocationHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'storageLocationHistory')}" />
+                    <menuItem key="subLocationHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'subLocationHistory')}" />
                   </menuPanel>
                 </menuItem>
               </menuPanel>
@@ -139,19 +137,19 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"name")' />:
                 </text>
-                <textbox key="{meta:getName()}" width="150" case="LOWER" max="20" tab="{meta:getLocation()},{meta:getIsAvailable()}" required = "true"/>
+                <textbox key="{meta:getName()}" width="150" case="LOWER" max="20" tab="{meta:getLocation()},{meta:getIsAvailable()}" required="true" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"location")' />:
                 </text>
-                <textbox key="{meta:getLocation()}" width="395" max="80" tab="{meta:getStorageUnitDescription()},{meta:getName()}" required = "true"/>
+                <textbox key="{meta:getLocation()}" width="395" max="80" tab="{meta:getStorageUnitDescription()},{meta:getName()}" required="true" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"storageUnit")' />:
                 </text>
-                <autoComplete key="{meta:getStorageUnitDescription()}" width="366" tab="{meta:getIsAvailable()},{meta:getLocation()}" field="Integer" required = "true">
+                <autoComplete key="{meta:getStorageUnitDescription()}" width="366" tab="{meta:getIsAvailable()},{meta:getLocation()}" field="Integer" required="true">
                   <col width="267" header="{resource:getString($constants,'description')}" />
                   <col width="90" header="{resource:getString($constants,'category')}" />
                 </autoComplete>
@@ -165,15 +163,15 @@ UIRF Software License are applicable instead of those above.
             </TablePanel>
             <VerticalPanel spacing="3">
               <widget>
-                <table key="childStorageLocsTable" width="auto" maxRows="11" showScroll="ALWAYS" style="ScreenTableWithSides" title="" tab="{meta:getName()},{meta:getIsAvailable()}">
+                <table key="childStorageLocsTable" width="auto" maxRows="11" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getIsAvailable()}" title="">
                   <col key="{meta:getChildStorageUnitDescription()}" width="225" header="{resource:getString($constants,'storageSubUnit')}">
-                    <autoComplete field="Integer" required = "true">
+                    <autoComplete field="Integer" required="true">
                       <col width="180" header="{resource:getString($constants,'description')}" />
                       <col width="70" header="{resource:getString($constants,'category')}" />
                     </autoComplete>
                   </col>
                   <col key="{meta:getChildLocation()}" width="275" header="{resource:getString($constants,'location')}">
-                    <textbox max="80" required = "true"/>
+                    <textbox max="80" required="true" />
                   </col>
                   <col key="{meta:getChildIsAvailable()}" width="80" header="{resource:getString($constants,'isAvailable')}">
                     <check>Y</check>

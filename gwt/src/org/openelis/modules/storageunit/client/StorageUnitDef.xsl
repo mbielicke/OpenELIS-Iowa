@@ -127,7 +127,7 @@ UIRF Software License are applicable instead of those above.
                     </appButton>
                   </menuDisplay>
                   <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                    <menuItem description="" icon = "historyIcon" key="storageUnitHistory" label="{resource:getString($constants,'storageUnitHistory')}" enable = "false"/>                    
+                    <menuItem key="storageUnitHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'storageUnitHistory')}" />
                   </menuPanel>
                 </menuItem>
               </menuPanel>
@@ -140,13 +140,13 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"category")' />:
                 </text>
-                <dropdown key="{meta:getCategoryId()}" required = "true" field = "Integer" width="110" tab="{meta:getDescription()},{meta:getIsSingular()}" />
+                <dropdown key="{meta:getCategoryId()}" width="110" tab="{meta:getDescription()},{meta:getIsSingular()}" field="Integer" required="true" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"description")' />:
                 </text>
-                <textbox key="{meta:getDescription()}" required = "true" width="300" case="LOWER" max="60" tab="{meta:getIsSingular()},{meta:getCategoryId()}" />
+                <textbox key="{meta:getDescription()}" width="300" case="LOWER" max="60" tab="{meta:getIsSingular()},{meta:getCategoryId()}" required="true" />
               </row>
               <row>
                 <text style="Prompt">

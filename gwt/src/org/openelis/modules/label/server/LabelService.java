@@ -28,6 +28,7 @@ package org.openelis.modules.label.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.LabelDO;
 import org.openelis.domain.LabelViewDO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
@@ -46,7 +47,7 @@ public class LabelService  {
         }
     }
     
-    public ArrayList<IdNameVO> fetchByName(String search) throws Exception {                
+    public ArrayList<LabelDO> fetchByName(String search) throws Exception {                
         try {
             return remote().fetchByName(search+"%",10);            
         }catch(RuntimeException e) {

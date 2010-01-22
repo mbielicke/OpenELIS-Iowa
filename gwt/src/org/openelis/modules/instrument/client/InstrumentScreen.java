@@ -415,7 +415,6 @@ public class InstrumentScreen extends Screen {
                     Window.alert(e.getMessage());
                 }
             }
-
         });
 
         activeEnd = (CalendarLookUp)def.getWidget(InstrumentMeta.getActiveEnd());

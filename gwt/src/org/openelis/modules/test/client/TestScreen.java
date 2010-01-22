@@ -31,9 +31,9 @@ import java.util.List;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
-import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.LabelDO;
 import org.openelis.domain.MethodDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SectionDO;
@@ -97,7 +97,6 @@ import org.openelis.gwt.widget.table.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
-import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestPrepManager;
@@ -703,7 +702,7 @@ public class TestScreen extends Screen {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
                 ArrayList<TableDataRow> model;
-                ArrayList<IdNameVO> list;
+                ArrayList<LabelDO> list;
 
                 parser = new QueryFieldUtil();
                 parser.parse(event.getMatch());
@@ -712,7 +711,7 @@ public class TestScreen extends Screen {
                     list = labelService.callList("fetchByName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
                     
-                    for (IdNameVO data: list)                         
+                    for (LabelDO data: list)                         
                         model.add(new TableDataRow(data.getId(), data.getName()));                    
                     label.showAutoMatches(model);
                 } catch (Exception e) {

@@ -40,7 +40,7 @@ UIRF Software License are applicable instead of those above.
   <xsl:import href="IMPORT/aToZOneColumn.xsl" />
   <xsl:template match="doc">
     <xsl:variable name="language" select="locale" />
-    <xsl:variable name="props" select="props" />    
+    <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Test" name="{resource:getString($constants,'test')}">
       <HorizontalPanel padding="0" spacing="0">
@@ -121,18 +121,18 @@ UIRF Software License are applicable instead of those above.
                       </HorizontalPanel>
                     </appButton>
                   </menuDisplay>
-                  <menuPanel layout="vertical" width = "200" position="below" style="buttonMenuContainer">
+                  <menuPanel width="200" layout="vertical" position="below" style="buttonMenuContainer">
                     <xsl:call-template name="duplicateRecordMenuItem" />
-                    <menuItem description="" icon = "historyIcon" key="testHistory" label="{resource:getString($constants,'testHistory')}" enable = "false"/>
-                    <menuItem description="" icon = "historyIcon" key="testSectionHistory" label="{resource:getString($constants,'testSectionHistory')}" enable = "false"/>
-                    <menuItem description="" icon = "historyIcon" key="testSampleTypeHistory" label="{resource:getString($constants,'testSampleTypeHistory')}" enable = "false"/>                    
-                    <menuItem description="" icon = "historyIcon" key="testAnalyteHistory" label="{resource:getString($constants,'testAnalyteHistory')}" enable = "false"/>
-                    <menuItem description="" icon = "historyIcon" key="testResultHistory" label="{resource:getString($constants,'testResultHistory')}" enable = "false"/>
-                    <menuItem description="" icon = "historyIcon" key="testPrepHistory" label="{resource:getString($constants,'testPrepHistory')}" enable = "false"/>                                        
-                    <menuItem description="" icon = "historyIcon" key="testReflexHistory" label="{resource:getString($constants,'testReflexHistory')}" enable = "false"/>
-                    <menuItem description="" icon = "historyIcon" key="testWorksheetHistory" label="{resource:getString($constants,'testWorksheetHistory')}" enable = "false"/>
-                    <menuItem description="" icon = "historyIcon" key="testWorksheetItemHistory" label="{resource:getString($constants,'testWorksheetItemHistory')}" enable = "false"/>                    
-                    <menuItem description="" icon = "historyIcon" key="testWorksheetAnalyteHistory" label="{resource:getString($constants,'testWorksheetAnalyteHistory')}" enable = "false"/>
+                    <menuItem key="testHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'testHistory')}" />
+                    <menuItem key="testSectionHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'testSectionHistory')}" />
+                    <menuItem key="testSampleTypeHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'testSampleTypeHistory')}" />
+                    <menuItem key="testAnalyteHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'testAnalyteHistory')}" />
+                    <menuItem key="testResultHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'testResultHistory')}" />
+                    <menuItem key="testPrepHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'testPrepHistory')}" />
+                    <menuItem key="testReflexHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'testReflexHistory')}" />
+                    <menuItem key="testWorksheetHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'testWorksheetHistory')}" />
+                    <menuItem key="testWorksheetItemHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'testWorksheetItemHistory')}" />
+                    <menuItem key="testWorksheetAnalyteHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'testWorksheetAnalyteHistory')}" />
                   </menuPanel>
                 </menuItem>
               </menuPanel>
@@ -161,7 +161,7 @@ UIRF Software License are applicable instead of those above.
                 </row>
               </TablePanel>
               <TabPanel key="testTabPanel" width="625" height="515">
-                <tab key="detailsTab" text="{resource:getString($constants,'testDetails')}" tab="{meta:getDescription()},{meta:getDescription()}">
+                <tab key="detailsTab" tab="{meta:getDescription()},{meta:getDescription()}" text="{resource:getString($constants,'testDetails')}">
                   <VerticalPanel padding="0" spacing="0">
                     <TablePanel style="Form">
                       <row>
@@ -355,7 +355,7 @@ UIRF Software License are applicable instead of those above.
                     <VerticalPanel height="71px" />
                   </VerticalPanel>
                 </tab>
-                <tab key="sampleTypeTab" text="{resource:getString($constants,'sampleType')}" tab = "sampleTypeTable,sampleTypeTable">
+                <tab key="sampleTypeTab" tab="sampleTypeTable,sampleTypeTable" text="{resource:getString($constants,'sampleType')}">
                   <VerticalPanel>
                     <HorizontalPanel>
                       <widget valign="top">
@@ -394,7 +394,7 @@ UIRF Software License are applicable instead of those above.
                     <VerticalPanel height="10px" />
                   </VerticalPanel>
                 </tab>
-                <tab key="analyteTab" text="{resource:getString($constants,'analytesResults')}" tab = "analyteTable,analyteTable">
+                <tab key="analyteTab" tab="analyteTable,analyteTable" text="{resource:getString($constants,'analytesResults')}">
                   <VerticalPanel padding="0" spacing="0">
                     <table key="analyteTable" width="607px" maxRows="8" showScroll="ALWAYS">
                       <col key="analyteLookup" width="152" sort="false" header="1">
@@ -550,7 +550,7 @@ UIRF Software License are applicable instead of those above.
                     </TablePanel>
                   </VerticalPanel>
                 </tab>
-                <tab key="prepAndReflexTab" text="{resource:getString($constants,'prepAndReflex')}" tab = "testPrepTable,testPrepTable">
+                <tab key="prepAndReflexTab" tab="testPrepTable,testPrepTable" text="{resource:getString($constants,'prepAndReflex')}">
                   <VerticalPanel>
                     <VerticalPanel padding="0" spacing="0">
                       <VerticalPanel padding="0" spacing="0">
@@ -599,7 +599,7 @@ UIRF Software License are applicable instead of those above.
                             </appButton>
                           </widget>
                         </HorizontalPanel>
-                        <VerticalPanel height = "5"/>
+                        <VerticalPanel height="5" />
                         <HorizontalPanel>
                           <widget valign="top">
                             <table key="testReflexTable" width="auto" maxRows="9" showScroll="ALWAYS" title="">
@@ -656,10 +656,10 @@ UIRF Software License are applicable instead of those above.
                           </widget>
                         </HorizontalPanel>
                       </VerticalPanel>
-                    </VerticalPanel>                    
+                    </VerticalPanel>
                   </VerticalPanel>
                 </tab>
-                <tab key="worksheetTab" text="{resource:getString($constants,'worksheetLayout')}" tab = "{meta:getWorksheetFormatId()},{meta:getWorksheetFormatId()}">
+                <tab key="worksheetTab" tab="{meta:getWorksheetFormatId()},{meta:getWorksheetFormatId()}" text="{resource:getString($constants,'worksheetLayout')}">
                   <VerticalPanel>
                     <VerticalPanel>
                       <TablePanel style="Form">

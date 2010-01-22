@@ -27,6 +27,7 @@ package org.openelis.modules.analyte.server;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.DatabaseException;
@@ -93,11 +94,11 @@ public class AnalyteService {
         }
     }
     
-    public ArrayList<IdNameVO> fetchByName(String search) throws Exception {
+    public ArrayList<AnalyteDO> fetchByName(String search) throws Exception {
     	try {
     		return remote().fetchByName(search+"%",10);
     	}catch(RuntimeException e) {
-    		throw new DatabaseException(e);
+    		throw new DatabaseException(e);    		
     	}
     }
 

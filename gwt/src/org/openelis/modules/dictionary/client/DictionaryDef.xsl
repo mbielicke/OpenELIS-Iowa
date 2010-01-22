@@ -39,7 +39,7 @@ UIRF Software License are applicable instead of those above.
   <xsl:import href="IMPORT/aToZOneColumn.xsl" />
   <xsl:template match="doc">
     <xsl:variable name="language" select="locale" />
-    <xsl:variable name="props" select="props" />    
+    <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Dictionary" name="{resource:getString($constants,'dictionary')}">
       <HorizontalPanel padding="0" spacing="0">
@@ -121,8 +121,8 @@ UIRF Software License are applicable instead of those above.
                     </appButton>
                   </menuDisplay>
                   <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                    <menuItem description="" icon = "historyIcon" key="categoryHistory" label="{resource:getString($constants,'categoryHistory')}" enable = "false"/>
-                    <menuItem description="" icon = "historyIcon" key="dictionaryHistory" label="{resource:getString($constants,'dictionaryHistory')}" enable = "false"/>
+                    <menuItem key="categoryHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'categoryHistory')}" />
+                    <menuItem key="dictionaryHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'dictionaryHistory')}" />
                   </menuPanel>
                 </menuItem>
               </menuPanel>

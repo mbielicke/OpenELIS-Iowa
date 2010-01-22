@@ -125,9 +125,9 @@ UIRF Software License are applicable instead of those above.
                       </HorizontalPanel>
                     </appButton>
                   </menuDisplay>
-				  <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                    <menuItem description="" icon = "historyIcon" key="instrumentHistory" label="{resource:getString($constants,'instrumentHistory')}" enable = "false"/>
-                    <menuItem description="" icon = "historyIcon" key="instrumentLogHistory" label="{resource:getString($constants,'instrumentLogHistory')}" enable = "false"/>                    
+                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                    <menuItem key="instrumentHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'instrumentHistory')}" />
+                    <menuItem key="instrumentLogHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'instrumentLogHistory')}" />
                   </menuPanel>
                 </menuItem>
               </menuPanel>
@@ -204,7 +204,7 @@ UIRF Software License are applicable instead of those above.
               </row>
             </TablePanel>
             <widget valign="top">
-              <table key="logTable" width="668" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" title="" tab="{meta:getName()},{meta:getActiveEnd()}">
+              <table key="logTable" width="668" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getActiveEnd()}" title="">
                 <col key="{meta:getLogTypeId()}" width="120" align="left" header="{resource:getString($constants,'type')}">
                   <dropdown width="155" field="Integer" required="true" />
                 </col>

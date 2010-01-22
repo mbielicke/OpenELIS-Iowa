@@ -31,6 +31,7 @@ import java.util.EnumSet;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.SectionDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
@@ -301,9 +302,8 @@ public class SectionScreen extends Screen {
         parentName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
-                TableDataRow row;
-                IdNameVO data;
-                ArrayList<IdNameVO> list;
+                SectionDO data;
+                ArrayList<SectionDO> list;
                 ArrayList<TableDataRow> model;
 
                 parser = new QueryFieldUtil();
@@ -313,14 +313,9 @@ public class SectionScreen extends Screen {
                 try {
                     list = service.callList("fetchByName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
-                    for (int i = 0; i < list.size(); i++ ) {
-                        row = new TableDataRow(4);
+                    for (int i = 0; i < list.size(); i++ ) {                        
                         data = list.get(i);
-
-                        row.key = data.getId();
-                        row.cells.get(0).value = data.getName();
-
-                        model.add(row);
+                        model.add(new TableDataRow(data.getId(),data.getName()));
                     }
                     parentName.showAutoMatches(model);
                 } catch (Throwable e) {

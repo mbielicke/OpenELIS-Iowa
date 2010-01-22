@@ -1,5 +1,4 @@
 
-
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -26,7 +25,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -44,14 +42,10 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-
 <!-- main screen -->
-
     <screen id="Project" name="{resource:getString($constants,'project')}">
       <HorizontalPanel padding="0" spacing="0">
-
 <!--left table goes here -->
-
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
           <HorizontalPanel width="225">
             <buttonGroup key="atozButtons">
@@ -77,9 +71,7 @@ UIRF Software License are applicable instead of those above.
           </HorizontalPanel>
         </CollapsePanel>
         <VerticalPanel padding="0" spacing="0">
-
 <!--button panel code-->
-
           <AbsolutePanel spacing="0" style="ButtonPanelContainer">
             <HorizontalPanel>
               <xsl:call-template name="queryButton">
@@ -133,16 +125,14 @@ UIRF Software License are applicable instead of those above.
                     </appButton>
                   </menuDisplay>
                   <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                    <menuItem description="" icon = "historyIcon" key="projectHistory" label="{resource:getString($constants,'projectHistory')}" enable = "false"/>
-                    <menuItem description="" icon = "historyIcon" key="projectParameterHistory" label="{resource:getString($constants,'projectParameterHistory')}" enable = "false"/>
+                    <menuItem key="projectHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'projectHistory')}" />
+                    <menuItem key="projectParameterHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'projectParameterHistory')}" />
                   </menuPanel>
                 </menuItem>
               </menuPanel>
             </HorizontalPanel>
           </AbsolutePanel>
-
 <!--end button panel-->
-
           <VerticalPanel width="620" height="235" padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
@@ -205,9 +195,7 @@ UIRF Software License are applicable instead of those above.
               </row>
             </TablePanel>
             <VerticalPanel height="5" />
-
 <!-- parameter table -->
-
             <HorizontalPanel width="609">
               <widget valign="top">
                 <table key="parameterTable" width="590" maxRows="8" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getId()},{meta:getScriptletName()}">

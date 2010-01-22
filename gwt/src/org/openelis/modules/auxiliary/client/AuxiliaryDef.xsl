@@ -122,10 +122,10 @@ UIRF Software License are applicable instead of those above.
                       </HorizontalPanel>
                     </appButton>
                   </menuDisplay>
-				  <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                    <menuItem description="" icon = "historyIcon" key="auxFieldGroupHistory" label="{resource:getString($constants,'auxFieldGroupHistory')}" enable = "false"/>
-                    <menuItem description="" icon = "historyIcon" key="auxFieldHistory" label="{resource:getString($constants,'auxFieldHistory')}" enable = "false"/>
-                    <menuItem description="" icon = "historyIcon" key="auxFieldValueHistory" label="{resource:getString($constants,'auxFieldValueHistory')}" enable = "false"/>
+                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                    <menuItem key="auxFieldGroupHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'auxFieldGroupHistory')}" />
+                    <menuItem key="auxFieldHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'auxFieldHistory')}" />
+                    <menuItem key="auxFieldValueHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'auxFieldValueHistory')}" />
                   </menuPanel>
                 </menuItem>
               </menuPanel>
@@ -139,7 +139,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'groupName')" />:
                 </text>
                 <widget colspan="5">
-                  <textbox key="{meta:getName()}" width="145" case="LOWER" max="20" tab="{meta:getDescription()},auxFieldValueTable" required = "true"/>
+                  <textbox key="{meta:getName()}" width="145" case="LOWER" max="20" tab="{meta:getDescription()},auxFieldValueTable" required="true" />
                 </widget>
               </row>
               <row>
@@ -158,17 +158,17 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"beginDate")' />:
                 </text>
-                <calendar key="{meta:getActiveBegin()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getActiveEnd()},{meta:getIsActive()}" required = "true"/>
+                <calendar key="{meta:getActiveBegin()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getActiveEnd()},{meta:getIsActive()}" required="true" />
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"endDate")' />:
                 </text>
-                <calendar key="{meta:getActiveEnd()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="auxFieldTable,{meta:getActiveBegin()}" required = "true"/>
+                <calendar key="{meta:getActiveEnd()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="auxFieldTable,{meta:getActiveBegin()}" required="true" />
               </row>
             </TablePanel>
             <HorizontalPanel width="630">
-              <table key="auxFieldTable" width="620" maxRows="10" showScroll="ALWAYS" tab="auxFieldValueTable,{meta:getActiveEnd()}" title="" style="ScreenTableWithSides">
+              <table key="auxFieldTable" width="620" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides" tab="auxFieldValueTable,{meta:getActiveEnd()}" title="">
                 <col key="{meta:getFieldAnalyteName()}" width="250" header="{resource:getString($constants,'analyte')}">
-                  <autoComplete width="300" popWidth="auto" field="Integer" required = "true">
+                  <autoComplete width="300" popWidth="auto" field="Integer" required="true">
                     <col width="300" />
                   </autoComplete>
                 </col>
@@ -219,7 +219,7 @@ UIRF Software License are applicable instead of those above.
                 </appButton>
               </HorizontalPanel>
             </widget>
-            <table key="auxFieldValueTable" width="620" maxRows="6" showScroll="ALWAYS" tab="{meta:getName()},auxFieldTable" title="" style="ScreenTableWithSides">
+            <table key="auxFieldValueTable" width="620" maxRows="6" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},auxFieldTable" title="">
               <col key="{meta:getFieldValueTypeId()}" width="110" align="left" header="{resource:getString($constants,'type')}">
                 <dropdown width="110" field="Integer" required="true" />
               </col>
