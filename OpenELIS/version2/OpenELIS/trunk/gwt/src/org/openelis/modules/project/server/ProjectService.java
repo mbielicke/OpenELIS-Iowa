@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ProjectDO;
+import org.openelis.domain.ProjectViewDO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
@@ -53,6 +54,14 @@ public class ProjectService {
     public ProjectManager fetchById(Integer id) throws Exception {
         try {
             return remoteManager().fetchById(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+    
+    public ProjectViewDO fetchDOById(Integer id) throws Exception {
+        try {
+            return remote().fetchById(id);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }

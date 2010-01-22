@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
@@ -42,6 +43,8 @@ import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
+import org.openelis.gwt.event.BeforeCloseEvent;
+import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
@@ -49,9 +52,14 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.CalendarLookUp;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
+import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.SampleManager;
@@ -60,6 +68,8 @@ import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
 import org.openelis.modules.sample.client.AuxDataTab;
+import org.openelis.modules.sample.client.OrderImportEnvironmental;
+import org.openelis.modules.sample.client.OrderImportPrivateWell;
 import org.openelis.modules.sample.client.PrivateWellTab;
 import org.openelis.modules.sample.client.QAEventsTab;
 import org.openelis.modules.sample.client.ResultTab;
@@ -74,6 +84,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -105,6 +116,11 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
     private QAEventsTab               qaEventsTab;
     private AuxDataTab                auxDataTab;
 
+    protected TextBox                      clientReference;
+    protected TextBox<Integer>             accessionNumber, orderNumber;
+    protected TextBox<Datetime>            collectedTime;
+    protected Dropdown<Integer>            statusId;
+    protected CalendarLookUp               collectedDate, receivedDate;
     protected AppButton               queryButton, addButton, updateButton, nextButton, prevButton, commitButton,
                     abortButton;
     protected MenuItem                history;
@@ -113,6 +129,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
     ScreenNavigator                   nav;
     private SecurityModule            security;
 
+    protected OrderImportPrivateWell wellOrderImport;
     private SampleManager             manager;
 
     public PrivateWellWaterSampleLoginScreen() throws Exception {
@@ -164,6 +181,15 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
     private void initialize() {
         final PrivateWellWaterSampleLoginScreen wellScreen = this;
 
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+                if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
+                    event.cancel();
+                    window.setError(consts.get("mustCommitOrAbort"));
+                }
+            }
+        });
+        
         history = (MenuItem)def.getWidget("history");
         addScreenHandler(history, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -176,6 +202,146 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
             }
         });
 
+        accessionNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getAccessionNumber());
+        addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                accessionNumber.setValue(getString(manager.getSample().getAccessionNumber()));
+            }
+
+            public void onValueChange(final ValueChangeEvent<Integer> event) {
+                try{
+                    manager.getSample().setAccessionNumber(event.getValue());
+                    manager.validateAccessionNumber(manager.getSample());
+                    
+                }catch(ValidationErrorsList e) {
+                    showErrors(e);
+                }catch(Exception e){
+                    Window.alert(e.getMessage());
+                }
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                accessionNumber.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+                accessionNumber.setQueryMode(event.getState() == State.QUERY);
+
+                if (EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                .contains(event.getState()))
+                    accessionNumber.setFocus(true);
+            }
+        });
+        
+        orderNumber = (TextBox<Integer>)def.getWidget("orderNumber");
+        addScreenHandler(orderNumber, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                orderNumber.setValue(getString(manager.getSample().getOrderId()));
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                manager.getSample().setOrderId(event.getValue());
+                
+                if(wellOrderImport == null)
+                    wellOrderImport = new OrderImportPrivateWell();
+                
+                try{
+                    wellOrderImport.importOrderInfo(event.getValue(), manager);
+                    DataChangeEvent.fire(wellScreen);
+                }catch(Exception e){
+                    Window.alert(e.getMessage());
+                }
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                orderNumber.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                   .contains(event.getState()));
+            }
+        });
+        
+        collectedDate = (CalendarLookUp)def.getWidget(SampleMeta.getCollectionDate());
+        addScreenHandler(collectedDate, new ScreenEventHandler<Datetime>() {
+            public void onDataChange(DataChangeEvent event) {
+                collectedDate.setValue(manager.getSample().getCollectionDate());
+            }
+
+            public void onValueChange(ValueChangeEvent<Datetime> event) {
+                manager.getSample().setCollectionDate(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                collectedDate.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+                collectedDate.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        collectedTime = (TextBox<Datetime>)def.getWidget(SampleMeta.getCollectionTime());
+        addScreenHandler(collectedTime, new ScreenEventHandler<Datetime>() {
+            public void onDataChange(DataChangeEvent event) {
+                collectedTime.setValue(manager.getSample().getCollectionTime());
+            }
+
+            public void onValueChange(ValueChangeEvent<Datetime> event) {
+                manager.getSample().setCollectionTime(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                collectedTime.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+                collectedTime.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        receivedDate = (CalendarLookUp)def.getWidget(SampleMeta.getReceivedDate());
+        addScreenHandler(receivedDate, new ScreenEventHandler<Datetime>() {
+            public void onDataChange(DataChangeEvent event) {
+                receivedDate.setValue(manager.getSample().getReceivedDate());
+            }
+
+            public void onValueChange(ValueChangeEvent<Datetime> event) {
+                manager.getSample().setReceivedDate(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                receivedDate.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+                receivedDate.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        statusId = (Dropdown<Integer>)def.getWidget(SampleMeta.getStatusId());
+        addScreenHandler(statusId, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                statusId.setSelection(manager.getSample().getStatusId());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                manager.getSample().setStatusId(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                statusId.enable(EnumSet.of(State.QUERY)
+                                   .contains(event.getState()));
+                statusId.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        clientReference = (TextBox)def.getWidget(SampleMeta.getClientReference());
+        addScreenHandler(clientReference, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                clientReference.setValue(manager.getSample().getClientReference());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getSample().setClientReference(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                clientReference.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+                clientReference.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
         nav = new ScreenNavigator(def) {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
@@ -779,6 +945,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
     }
     
     private void initializeDropdowns() {
+        ArrayList<TableDataRow> model;
+        
         // preload dictionary models and single entries, close the window if an
         // error is found
         try {
@@ -789,6 +957,14 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
             DictionaryCache.getIdFromSystemName("analysis_released");
             DictionaryCache.getIdFromSystemName("analysis_inprep");
             sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
+            
+            // sample status dropdown
+            model = new ArrayList<TableDataRow>();
+            model.add(new TableDataRow(null, ""));
+            for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("sample_status"))
+                model.add(new TableDataRow(d.getId(), d.getEntry()));
+
+            statusId.setModel(model);
 
         } catch (Exception e) {
             Window.alert(e.getMessage());
