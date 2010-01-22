@@ -81,16 +81,16 @@ import com.google.gwt.user.client.Window;
 public class PrepTestAndReflexTestTab extends Screen implements
                                                     ActionHandler<AnalyteAndResultTab.Action> {
 
-    private TestManager           manager;
-    private TestAnalyteManager    testAnalyteManager;
-    private TestResultManager     testResultManager;
+    private TestManager        manager;
+    private TestAnalyteManager testAnalyteManager;
+    private TestResultManager  testResultManager;
 
-    private boolean               loaded;
-    private Integer               typeDict;
+    private boolean            loaded;
+    private Integer            typeDict;
 
-    private TableWidget           testPrepTable, testReflexTable;
-    private AppButton             addPrepTestButton, removePrepTestButton, addReflexTestButton,
-                                  removeReflexTestButton;
+    private TableWidget        testPrepTable, testReflexTable;
+    private AppButton          addPrepTestButton, removePrepTestButton, addReflexTestButton,
+                               removeReflexTestButton;
     private AutoComplete<Integer> prepTestAuto, reflexTestAuto, analyteAuto, resultAuto;
     private Label<String>         prepMethodName, reflexMethodName;
 
@@ -98,9 +98,9 @@ public class PrepTestAndReflexTestTab extends Screen implements
         setDef(def);
         setWindow(window);
         this.service = service;
-        
+
         initialize();
-        initializeDropdowns();          
+        initializeDropdowns();
     }
 
     private void initialize() {
@@ -477,7 +477,7 @@ public class PrepTestAndReflexTestTab extends Screen implements
                         value = data.getDictionary();
                     else
                         value = data.getValue();
-                    if (!DataBaseUtil.isEmpty(value)) {
+                    if ( !DataBaseUtil.isEmpty(value)) {
                         row.key = data.getId();
                         row.cells.get(0).setValue(value);
                         model.add(row);

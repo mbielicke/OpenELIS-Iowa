@@ -25,7 +25,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -39,19 +38,14 @@ UIRF Software License are applicable instead of those above.
   xmlns:meta="xalan://org.openelis.meta.QcMeta">
 
   <xsl:import href="IMPORT/aToZOneColumn.xsl" />
-
   <xsl:template match="doc">
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-
 <!-- main screen -->
-
     <screen id="Qc" name="{resource:getString($constants,'QC')}">
       <HorizontalPanel padding="0" spacing="0">
-
 <!--left table goes here -->
-
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
           <HorizontalPanel width="225">
             <buttonGroup key="atozButtons">
@@ -79,9 +73,7 @@ UIRF Software License are applicable instead of those above.
             </VerticalPanel>
           </HorizontalPanel>
         </CollapsePanel>
-
 <!--button panel code-->
-
         <VerticalPanel padding="0" spacing="0">
           <AbsolutePanel spacing="0" style="ButtonPanelContainer">
             <HorizontalPanel>
@@ -135,17 +127,15 @@ UIRF Software License are applicable instead of those above.
                       </HorizontalPanel>
                     </appButton>
                   </menuDisplay>
-				  <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                    <menuItem description="" icon = "historyIcon" key="qcHistory" label="{resource:getString($constants,'qcHistory')}" enable = "false"/>
-                    <menuItem description="" icon = "historyIcon" key="qcAnalyteHistory" label="{resource:getString($constants,'qcAnalyteHistory')}" enable = "false"/>                    
+                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                    <menuItem key="qcHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'qcHistory')}" />
+                    <menuItem key="qcAnalyteHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'qcAnalyteHistory')}" />
                   </menuPanel>
                 </menuItem>
               </menuPanel>
             </HorizontalPanel>
           </AbsolutePanel>
-
 <!--end button panel-->
-
           <VerticalPanel width="620" height="235" padding="0" spacing="0" style="WhiteContentPanel">
             <HorizontalPanel padding="0" spacing="0">
               <TablePanel style="Form">
@@ -242,9 +232,7 @@ UIRF Software License are applicable instead of those above.
                 </row>
               </TablePanel>
             </HorizontalPanel>
-
             <VerticalPanel height="10" />
-
             <VerticalPanel>
               <table key="QcAnalyteTable" width="625" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getExpireDate()}">
                 <col key="{meta:getQcAnalyteAnalyteName()}" width="270" align="left" header="{resource:getString($constants,'analyte')}">

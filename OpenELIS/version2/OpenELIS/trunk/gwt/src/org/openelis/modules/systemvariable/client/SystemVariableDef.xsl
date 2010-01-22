@@ -1,5 +1,4 @@
 
-
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -26,7 +25,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -41,7 +39,6 @@ UIRF Software License are applicable instead of those above.
 
   <xsl:import href="IMPORT/aToZTwoColumns.xsl" />
   <xsl:template match="doc">
-    <!-- <xsl:variable name="sv" select="meta:new()" /> -->
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
@@ -59,22 +56,20 @@ UIRF Software License are applicable instead of those above.
                 </col>
               </table>
               <widget halign="center">
-              <HorizontalPanel >
-                <appButton key="atozPrev" style="Button" enable="false">
-                  <AbsolutePanel style="prevNavIndex" />
-                </appButton>
-                <appButton key="atozNext" style="Button" enable="false">
-                  <AbsolutePanel style="nextNavIndex" />
-                </appButton>
-              </HorizontalPanel>
-                </widget>
+                <HorizontalPanel>
+                  <appButton key="atozPrev" style="Button" enable="false">
+                    <AbsolutePanel style="prevNavIndex" />
+                  </appButton>
+                  <appButton key="atozNext" style="Button" enable="false">
+                    <AbsolutePanel style="nextNavIndex" />
+                  </appButton>
+                </HorizontalPanel>
+              </widget>
             </VerticalPanel>
           </HorizontalPanel>
         </CollapsePanel>
         <VerticalPanel padding="0" spacing="0">
-
 <!--button panel code-->
-
           <AbsolutePanel spacing="0" style="ButtonPanelContainer">
             <HorizontalPanel>
               <xsl:call-template name="queryButton">
@@ -133,28 +128,26 @@ UIRF Software License are applicable instead of those above.
                     </appButton>
                   </menuDisplay>
                   <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                    <menuItem description="" icon = "historyIcon" key="systemVariableHistory" label="{resource:getString($constants,'systemVariableHistory')}" enable = "false"/>                    
+                    <menuItem key="systemVariableHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'systemVariableHistory')}" />
                   </menuPanel>
                 </menuItem>
               </menuPanel>
             </HorizontalPanel>
           </AbsolutePanel>
-
 <!--end button panel-->
-
           <VerticalPanel width="650" height="215" padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"name")' />:
                 </text>
-                <textbox key="{meta:getName()}" width="215" case="LOWER" max="30" required="true" tab="{meta:getValue()},{meta:getValue()}" />
+                <textbox key="{meta:getName()}" width="215" case="LOWER" max="30" tab="{meta:getValue()},{meta:getValue()}" required="true" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"value")' />:
                 </text>
-                <textbox key="{meta:getValue()}" width="425" case="MIXED" required="true" tab="{meta:getName()},{meta:getName()}" />
+                <textbox key="{meta:getValue()}" width="425" case="MIXED" tab="{meta:getName()},{meta:getName()}" required="true" />
               </row>
             </TablePanel>
           </VerticalPanel>

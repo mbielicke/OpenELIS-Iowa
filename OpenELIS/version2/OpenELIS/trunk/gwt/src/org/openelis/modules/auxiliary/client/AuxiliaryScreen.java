@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.DictionaryDO;
@@ -514,8 +515,8 @@ public class AuxiliaryScreen extends Screen {
         analyte.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
-                IdNameVO data;
-                ArrayList<IdNameVO> list;
+                AnalyteDO data;
+                ArrayList<AnalyteDO> list;
                 ArrayList<TableDataRow> model;
 
                 parser = new QueryFieldUtil();

@@ -25,7 +25,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -45,9 +44,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen id="QAEvent" name="{resource:getString($constants,'QAEvent')}">
       <HorizontalPanel padding="0" spacing="0">
-
 <!--left table goes here -->
-
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
           <HorizontalPanel width="270">
             <buttonGroup key="atozButtons">
@@ -75,51 +72,49 @@ UIRF Software License are applicable instead of those above.
             </VerticalPanel>
           </HorizontalPanel>
         </CollapsePanel>
-
 <!--button panel code-->
-
         <VerticalPanel padding="0" spacing="0">
-        <AbsolutePanel spacing="0" style="ButtonPanelContainer">
-          <HorizontalPanel>
-            <xsl:call-template name="queryButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="previousButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="nextButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="buttonPanelDivider" />
-            <xsl:call-template name="addButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="updateButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="buttonPanelDivider" />
-            <xsl:call-template name="commitButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="abortButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="buttonPanelDivider" />
-            <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
+          <AbsolutePanel spacing="0" style="ButtonPanelContainer">
+            <HorizontalPanel>
+              <xsl:call-template name="queryButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="previousButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="nextButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="buttonPanelDivider" />
+              <xsl:call-template name="addButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="updateButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="buttonPanelDivider" />
+              <xsl:call-template name="commitButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="abortButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="buttonPanelDivider" />
+              <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
                 <menuItem>
                   <menuDisplay>
                     <appButton style="ButtonPanelButton" action="option">
@@ -132,68 +127,66 @@ UIRF Software License are applicable instead of those above.
                     </appButton>
                   </menuDisplay>
                   <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                    <menuItem description="" icon = "historyIcon" key="qaeventHistory" label="{resource:getString($constants,'qaeventHistory')}" enable = "false"/>                    
+                    <menuItem key="qaeventHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'qaeventHistory')}" />
                   </menuPanel>
                 </menuItem>
               </menuPanel>
-          </HorizontalPanel>
-        </AbsolutePanel>
-
+            </HorizontalPanel>
+          </AbsolutePanel>
 <!--end button panel-->
-
-        <VerticalPanel width="590" height="235" padding="0" spacing="0" style="WhiteContentPanel">
-          <TablePanel style="Form">
-            <row>
-              <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"name")' />:
-              </text>
-              <textbox key="{meta:getName()}" width="145" case="LOWER" max="20" tab="{meta:getDescription()},{meta:getReportingText()}" required="true" field="String" />
-            </row>
-            <row>
-              <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"description")' />:
-              </text>
-              <textbox key="{meta:getDescription()}" width="425" max="60" tab="{meta:getTypeId()},{meta:getName()}" required="true" field="String" />
-            </row>
-            <row>
-              <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"type")' />:
-              </text>
-              <dropdown key="{meta:getTypeId()}" width="120" tab="{meta:getTestName()},{meta:getDescription()}" required="true" field="Integer" />
-            </row>
-            <row>
-              <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"test")' />:
-              </text>
-              <autoComplete key="{meta:getTestName()}" width="140" case="LOWER" popWidth="auto" tab="{meta:getIsBillable()},{meta:getTypeId()}" field="Integer">
-                <col width="100" header="{resource:getString($constants,'test')}" />
-                <col width="100" header="{resource:getString($constants,'method')}" />
-                <col width="250" header="{resource:getString($constants,'description')}" />
-              </autoComplete>
-            </row>
-            <row>
-              <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"billable")' />:
-              </text>
-              <check key="{meta:getIsBillable()}" tab="{meta:getReportingSequence()},{meta:getTestName()}" />
-            </row>
-            <row>
-              <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"sequence")' />:
-              </text>
-              <textbox key="{meta:getReportingSequence()}" width="40" tab="{meta:getReportingText()},{meta:getIsBillable()}" field="Integer" />
-            </row>
-            <row>
-              <widget valign="top">
+          <VerticalPanel width="590" height="235" padding="0" spacing="0" style="WhiteContentPanel">
+            <TablePanel style="Form">
+              <row>
                 <text style="Prompt">
-                  <xsl:value-of select='resource:getString($constants,"text")' />:
+                  <xsl:value-of select='resource:getString($constants,"name")' />:
                 </text>
-              </widget>
-              <textarea key="{meta:getReportingText()}" width="425" height="155" tab="{meta:getName()},{meta:getReportingSequence()}" />
-            </row>
-          </TablePanel>
+                <textbox key="{meta:getName()}" width="145" case="LOWER" max="20" tab="{meta:getDescription()},{meta:getReportingText()}" field="String" required="true" />
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"description")' />:
+                </text>
+                <textbox key="{meta:getDescription()}" width="425" max="60" tab="{meta:getTypeId()},{meta:getName()}" field="String" required="true" />
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"type")' />:
+                </text>
+                <dropdown key="{meta:getTypeId()}" width="120" tab="{meta:getTestName()},{meta:getDescription()}" field="Integer" required="true" />
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"test")' />:
+                </text>
+                <autoComplete key="{meta:getTestName()}" width="140" case="LOWER" popWidth="auto" tab="{meta:getIsBillable()},{meta:getTypeId()}" field="Integer">
+                  <col width="100" header="{resource:getString($constants,'test')}" />
+                  <col width="100" header="{resource:getString($constants,'method')}" />
+                  <col width="250" header="{resource:getString($constants,'description')}" />
+                </autoComplete>
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"billable")' />:
+                </text>
+                <check key="{meta:getIsBillable()}" tab="{meta:getReportingSequence()},{meta:getTestName()}" />
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"sequence")' />:
+                </text>
+                <textbox key="{meta:getReportingSequence()}" width="40" tab="{meta:getReportingText()},{meta:getIsBillable()}" field="Integer" />
+              </row>
+              <row>
+                <widget valign="top">
+                  <text style="Prompt">
+                    <xsl:value-of select='resource:getString($constants,"text")' />:
+                  </text>
+                </widget>
+                <textarea key="{meta:getReportingText()}" width="425" height="155" tab="{meta:getName()},{meta:getReportingSequence()}" />
+              </row>
+            </TablePanel>
+          </VerticalPanel>
         </VerticalPanel>
-      </VerticalPanel>
       </HorizontalPanel>
     </screen>
   </xsl:template>

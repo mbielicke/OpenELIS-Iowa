@@ -1,5 +1,4 @@
 
-
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -26,7 +25,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -44,14 +42,10 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-
 <!-- main screen -->
-
     <screen id="Provider" name="{resource:getString($constants,'provider')}">
       <HorizontalPanel padding="0" spacing="0">
-
 <!--left table goes here -->
-
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
           <HorizontalPanel width="225">
             <buttonGroup key="atozButtons">
@@ -79,9 +73,7 @@ UIRF Software License are applicable instead of those above.
             </VerticalPanel>
           </HorizontalPanel>
         </CollapsePanel>
-
 <!--button panel code-->
-
         <VerticalPanel padding="0" spacing="0">
           <AbsolutePanel spacing="0" style="ButtonPanelContainer">
             <HorizontalPanel>
@@ -136,16 +128,14 @@ UIRF Software License are applicable instead of those above.
                     </appButton>
                   </menuDisplay>
                   <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                    <menuItem description="" icon = "historyIcon" key="providerHistory" label="{resource:getString($constants,'providerHistory')}" enable = "false"/>
-                    <menuItem description="" icon = "historyIcon" key="providerLocationHistory" label="{resource:getString($constants,'providerLocationHistory')}" enable = "false"/>
+                    <menuItem key="providerHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'providerHistory')}" />
+                    <menuItem key="providerLocationHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'providerLocationHistory')}" />
                   </menuPanel>
                 </menuItem>
               </menuPanel>
             </HorizontalPanel>
           </AbsolutePanel>
-
 <!--end button panel-->
-
           <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
@@ -181,13 +171,9 @@ UIRF Software License are applicable instead of those above.
                 <textbox key="{meta:getMiddleName()}" width="145" case="UPPER" max="20" tab="{meta:getTypeId()},{meta:getFirstName()}" />
               </row>
             </TablePanel>
-
 <!-- TAB PANEL -->
-
             <TabPanel key="tabPanel" width="605">
-
 <!-- TAB 1 -->
-
               <tab key="locationTab" text="{resource:getString($constants,'locations')}">
                 <VerticalPanel width="605">
                   <widget valign="top">
@@ -259,9 +245,7 @@ UIRF Software License are applicable instead of those above.
                   </widget>
                 </VerticalPanel>
               </tab>
-
 <!-- TAB 2 -->
-
               <tab key="notesTab" text="{resource:getString($constants,'note')}">
                 <VerticalPanel padding="0" spacing="0">
                   <notes key="notesPanel" width="605" height="247" />

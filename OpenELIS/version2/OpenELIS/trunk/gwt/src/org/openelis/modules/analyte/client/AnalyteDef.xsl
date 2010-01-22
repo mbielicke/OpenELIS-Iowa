@@ -1,5 +1,4 @@
 
-
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -26,7 +25,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -38,7 +36,7 @@ UIRF Software License are applicable instead of those above.
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
   xmlns:meta="xalan://org.openelis.meta.AnalyteMeta">
-  
+
   <xsl:import href="IMPORT/aToZTwoColumns.xsl" />
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
@@ -46,17 +44,14 @@ UIRF Software License are applicable instead of those above.
   <xalan:component prefix="locale">
     <xalan:script lang="javaclass" src="xalan://java.util.Locale" />
   </xalan:component>
-  <xsl:template match="doc">   
-    <xsl:variable name="language"  select="locale" />
+  <xsl:template match="doc">
+    <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
 <!-- main screen -->
-
     <screen id="Analyte" name="{resource:getString($constants,'analyte')}">
       <HorizontalPanel padding="0" spacing="0">
-
 <!--left table goes here -->
-
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
           <HorizontalPanel width="225">
             <buttonGroup key="atozButtons">
@@ -81,9 +76,7 @@ UIRF Software License are applicable instead of those above.
             </VerticalPanel>
           </HorizontalPanel>
         </CollapsePanel>
-
 <!--button panel code-->
-
         <VerticalPanel spacing="0">
           <AbsolutePanel spacing="0" style="ButtonPanelContainer">
             <HorizontalPanel>
@@ -138,15 +131,13 @@ UIRF Software License are applicable instead of those above.
                     </appButton>
                   </menuDisplay>
                   <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                    <menuItem description="" icon = "historyIcon" key="analyteHistory" label="{resource:getString($constants,'analyteHistory')}" enable = "false"/>                    
+                    <menuItem key="analyteHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'analyteHistory')}" />
                   </menuPanel>
                 </menuItem>
               </menuPanel>
             </HorizontalPanel>
           </AbsolutePanel>
-
 <!--end button panel-->
-
           <VerticalPanel width="580" height="220" padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
@@ -163,9 +154,9 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select='resource:getString($constants,"parentAnalyte")' />:
                 </text>
                 <widget>
-                  <autoComplete key="{meta:getParentAnalyteName()}" width="184" tab="{meta:getExternalId()},{meta:getName()}" >
+                  <autoComplete key="{meta:getParentAnalyteName()}" width="184" tab="{meta:getExternalId()},{meta:getName()}">
                     <col width="300" />
-                  </autoComplete>  
+                  </autoComplete>
                 </widget>
               </row>
               <row>

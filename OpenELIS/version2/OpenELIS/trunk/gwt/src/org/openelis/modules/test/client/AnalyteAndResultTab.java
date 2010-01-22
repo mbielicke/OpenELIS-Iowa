@@ -30,6 +30,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.TestAnalyteViewDO;
@@ -834,7 +835,6 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         });
         
         resultTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
-
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 int r,c,group;                
 
@@ -1038,7 +1038,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         ArrayList<TableDataRow> model;
         int rg;
         String match;
-        ArrayList<IdNameVO> list;
+        ArrayList<AnalyteDO> list;
         
         parser = new QueryFieldUtil();
         parser.parse(event.getMatch());
@@ -1047,7 +1047,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             if(isAnalyteQuery()) {
                 list = analyteService.callList("fetchByName",parser.getParameter().get(0));
                 model = new ArrayList<TableDataRow>();
-                for(IdNameVO data: list) 
+                for(AnalyteDO data: list) 
                     model.add(new TableDataRow(data.getId(),data.getName()));                
             } else {
                 model = new ArrayList<TableDataRow>(); 
@@ -1771,35 +1771,30 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
 
             dictLookup.addActionHandler(new ActionHandler<DictionaryLookupScreen.Action>() {
                 public void onAction(ActionEvent<DictionaryLookupScreen.Action> event) {
-                    int selTab, numTabs, r;
+                    int selTab, r;
                     ArrayList<IdNameVO> list;
                     TestResultViewDO data;
                     IdNameVO entry;
 
-                    selTab = resultTabPanel.getTabBar().getSelectedTab();
-                    numTabs = resultTabPanel.getTabBar().getTabCount();
+                    selTab = resultTabPanel.getTabBar().getSelectedTab();                    
                     if (event.getAction() == DictionaryLookupScreen.Action.OK) {
                         list = (ArrayList<IdNameVO>)event.getData();                        
                         if (list != null) {
-                            if (list.size() > 0 && numTabs == 0) {
-                                Window.alert(consts.get("atleastOneResGrp"));
+                            r = resultTable.getSelectedRow();
+                            if (r == -1) {
+                                window.setError(consts.get("test.noSelectedRow"));
                                 return;
-                            }     
-                            resultTable.finishEditing();
-                            
-                            r = resultTable.numRows();
-                            
-                            for (int i = 0; i < list.size(); i++ ) {
-                                entry = list.get(i);
-                                testResultManager.addResultAt(selTab + 1, resultTable.numRows(),
-                                                              getNextTempId());
-                                data = testResultManager.getResultAt(selTab + 1,
-                                                                      resultTable.numRows());
-                                data.setValue(entry.getId().toString());
-                                data.setDictionary(entry.getName());
-                                data.setTypeId(typeDict);                                  
                             }
-                            DataChangeEvent.fire(screen, resultTable);
+
+                            entry = list.get(0);
+                            data = testResultManager.getResultAt(selTab + 1, r);
+                            data.setValue(entry.getId().toString());
+                            data.setDictionary(entry.getName());
+                            data.setTypeId(typeDict);
+                            resultTable.setCell(r, 1, typeDict);
+                            resultTable.setCell(r, 2, data.getDictionary());
+                            resultTable.clearCellExceptions(r, 2);
+                            clearResultCellError(selTab,r,TestMeta.getResultValue());
                         }
                     }
                 }

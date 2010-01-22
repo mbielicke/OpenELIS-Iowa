@@ -133,8 +133,8 @@ UIRF Software License are applicable instead of those above.
                     </appButton>
                   </menuDisplay>
                   <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                    <menuItem description="" icon = "historyIcon" key="panelHistory" label="{resource:getString($constants,'panelHistory')}" enable = "false"/>
-                    <menuItem description="" icon = "historyIcon" key="panelItemHistory" label="{resource:getString($constants,'panelItemHistory')}" enable = "false"/>
+                    <menuItem key="panelHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'panelHistory')}" />
+                    <menuItem key="panelItemHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'panelItemHistory')}" />
                   </menuPanel>
                 </menuItem>
               </menuPanel>
@@ -147,7 +147,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'name')" />:
                 </text>
-                <textbox key="{meta:getName()}" case = "LOWER" width="145" max="20" tab="{meta:getDescription()},{meta:getDescription()}" required="true" />
+                <textbox key="{meta:getName()}" width="145" case="LOWER" max="20" tab="{meta:getDescription()},{meta:getDescription()}" required="true" />
               </row>
               <row>
                 <text style="Prompt">
@@ -182,7 +182,7 @@ UIRF Software License are applicable instead of those above.
                       </appButton>
                       <appButton key="moveUpButton" style="Button">
                         <HorizontalPanel>
-                          <AbsolutePanel style="upButtonImage"/>
+                          <AbsolutePanel style="upButtonImage" />
                           <text>
                             <xsl:value-of select="resource:getString($constants,'moveUp')" />
                           </text>
@@ -190,7 +190,7 @@ UIRF Software License are applicable instead of those above.
                       </appButton>
                       <appButton key="moveDownButton" style="Button">
                         <HorizontalPanel>
-                          <AbsolutePanel style="downButtonImage"/>
+                          <AbsolutePanel style="downButtonImage" />
                           <text>
                             <xsl:value-of select="resource:getString($constants,'moveDown')" />
                           </text>
@@ -228,7 +228,7 @@ UIRF Software License are applicable instead of those above.
                   <HorizontalPanel>
                     <appButton key="refreshButton" style="Button">
                       <HorizontalPanel>
-                        <AbsolutePanel style="refreshButtonImage"/>
+                        <AbsolutePanel style="refreshButtonImage" />
                         <text>
                           <xsl:value-of select="resource:getString($constants,'refresh')" />
                         </text>

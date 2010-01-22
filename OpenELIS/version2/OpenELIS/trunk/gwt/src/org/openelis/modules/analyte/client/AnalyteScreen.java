@@ -28,6 +28,7 @@ package org.openelis.modules.analyte.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ReferenceTable;
@@ -55,6 +56,7 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.MenuItem;
+import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
@@ -251,21 +253,26 @@ public class AnalyteScreen extends Screen {
 
         parent.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                service.callList("fetchByName", event.getMatch() + "%",
-                                 new AsyncCallback<ArrayList<IdNameVO>>() {
-                                     public void onSuccess(ArrayList<IdNameVO> result) {
-                                         ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-                                         for (IdNameVO vo : result) {
-                                             model.add(new TableDataRow(vo.getId(), vo.getName()));
-                                         }
-                                         parent.showAutoMatches(model);
-                                     }
+                QueryFieldUtil parser;
+                AnalyteDO data;
+                ArrayList<AnalyteDO> list;
+                ArrayList<TableDataRow> model;
 
-                                     public void onFailure(Throwable caught) {
-                                         caught.printStackTrace();
-                                         Window.alert(caught.toString());
-                                     }
-                                 });
+                parser = new QueryFieldUtil();
+                parser.parse(event.getMatch());
+
+                try {
+                    list = service.callList("fetchByName", parser.getParameter().get(0));
+                    model = new ArrayList<TableDataRow>();
+
+                    for (int i = 0; i < list.size(); i++ ) {
+                        data = list.get(i);
+                        model.add(new TableDataRow(data.getId(), data.getName()));
+                    }
+                    parent.showAutoMatches(model);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
             }
         });
 
