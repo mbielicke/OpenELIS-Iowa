@@ -41,6 +41,7 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.LabelDO;
 import org.openelis.domain.LabelViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.Label;
@@ -96,7 +97,7 @@ public class LabelBean implements LabelRemote {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<IdNameVO> fetchByName(String match, int max) throws Exception {
+    public ArrayList<LabelDO> fetchByName(String match, int max) throws Exception {
         Query query;
 
         query = manager.createNamedQuery("Label.FetchByName");
@@ -224,7 +225,7 @@ public class LabelBean implements LabelRemote {
 
     public void validate(LabelViewDO data) throws Exception {
         ValidationErrorsList list;
-        List<IdNameVO> dups;
+        List<LabelDO> dups;
 
         list = new ValidationErrorsList();
 

@@ -148,7 +148,7 @@ public class TestDO extends DataObject {
     }
 
     public void setActiveEnd(Datetime activeEnd) {
-        this.activeEnd = activeEnd;
+        this.activeEnd = DataBaseUtil.toYD(activeEnd);
         _changed = true;
     }
 

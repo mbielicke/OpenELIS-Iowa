@@ -53,7 +53,7 @@ import org.openelis.utils.Auditable;
                 query = "select new org.openelis.domain.LabelViewDO(l.id,l.name,l.description,l.printerTypeId,l.scriptletId, s.name)"
                       + " from Label l left join l.scriptlet s where l.id = :id"),
     @NamedQuery( name = "Label.FetchByName", 
-                query = "select distinct new org.openelis.domain.IdNameVO(l.id, l.name)"
+                query = "select distinct new org.openelis.domain.LabelDO(l.id,l.name,l.description,l.printerTypeId,l.scriptletId)"
                       + " from Label l where l.name like :name order by l.name"),
     @NamedQuery( name = "Label.ReferenceCheck",
                 query = "select labelId from Test t where t.labelId = :id ")   

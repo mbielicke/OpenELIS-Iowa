@@ -39,7 +39,7 @@ public interface SectionRemote {
 
     public SectionViewDO fetchById(Integer id) throws Exception;
     
-    public ArrayList<IdNameVO> fetchByName(String string, int maxResults) throws Exception; 
+    public ArrayList<SectionDO> fetchByName(String match, int maxResults) throws Exception; 
     
     public ArrayList<SectionDO> fetchList() throws Exception;
 

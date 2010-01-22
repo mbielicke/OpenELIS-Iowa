@@ -61,7 +61,7 @@ import org.openelis.utils.Auditable;
 			    query = "select a.id from Analyte a where a.parentAnalyteId = :id"),
         
     @NamedQuery(name = "Analyte.FetchByName", 
-    		    query = "select new org.openelis.domain.IdNameVO(a.id, a.name) " +
+    		    query = "select new org.openelis.domain.AnalyteDO(a.id, a.name, a.isActive, a.parentAnalyteId, a.externalId) " +
                         " from Analyte a where a.name like :name and a.isActive = 'Y' order by a.name"),
                         
    @NamedQuery(name = "Analyte.FetchAliases", 
