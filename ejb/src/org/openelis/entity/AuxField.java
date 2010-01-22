@@ -116,6 +116,10 @@ public class AuxField implements Auditable, Cloneable {
     @Column(name = "scriptlet_id")
     private Integer                   scriptletId;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "aux_field_group_id", insertable = false, updatable = false)
+    private AuxFieldGroup                auxFieldGroup;
+    
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "aux_field_id", insertable = false, updatable = false)
     private Collection<AuxFieldValue> auxFieldValue;
@@ -306,6 +310,14 @@ public class AuxField implements Auditable, Cloneable {
                  .setField("scriptlet_id", scriptletId, original.scriptletId);
 
         return audit;
+    }
+
+    public AuxFieldGroup getAuxFieldGroup() {
+        return auxFieldGroup;
+    }
+
+    public void setAuxFieldGroup(AuxFieldGroup auxFieldGroup) {
+        this.auxFieldGroup = auxFieldGroup;
     }
 
 }
