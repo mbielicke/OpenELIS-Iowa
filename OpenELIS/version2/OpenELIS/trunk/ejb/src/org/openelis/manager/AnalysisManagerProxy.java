@@ -294,6 +294,12 @@ public class AnalysisManagerProxy {
     }
     
     private static DictionaryLocal getDictionaryLocal(){
-        return (DictionaryLocal)EJBFactory.lookup("openelis/DictionaryBean/local");
+        try{
+            InitialContext ctx = new InitialContext();
+            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
+        }catch(Exception e){
+             System.out.println(e.getMessage());
+             return null;
+        }
     }
 }
