@@ -64,6 +64,7 @@ import org.openelis.manager.SampleManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestPrepManager;
 import org.openelis.modules.test.client.TestPrepLookupScreen;
+import org.openelis.modules.test.client.TestPrepLookupScreen.TestPrepLookupBundle;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
@@ -83,7 +84,6 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
 
     protected TreeWidget         itemsTree;
     protected AppButton          removeRow, addItem, addAnalysis;
-    private TestPrepLookupScreen prepPickerScreen;
     private Confirm              cancelAnalysisConfirm;
 
     private HasActionHandlers<SampleTab.Action>    parentScreen;
@@ -522,36 +522,39 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
     }
 
     private void drawTestPrepScreen(TestPrepManager manager, String testMethodName) {
-        if (prepPickerScreen == null) {
-            try {
-                prepPickerScreen = new TestPrepLookupScreen();
-                prepPickerScreen.addActionHandler(new ActionHandler<TestPrepLookupScreen.Action>() {
-                    public void onAction(ActionEvent<TestPrepLookupScreen.Action> event) {
-                        if (event.getAction() == TestPrepLookupScreen.Action.SELECTED_PREP_ROW) {
+        TestPrepLookupScreen prepPickerScreen;
+        try {
+            prepPickerScreen = new TestPrepLookupScreen();
+            prepPickerScreen.addActionHandler(new ActionHandler<TestPrepLookupScreen.Action>() {
+                public void onAction(ActionEvent<TestPrepLookupScreen.Action> event) {
+                    if (event.getAction() == TestPrepLookupScreen.Action.SELECTED_PREP_ROW) {
 
-                            TableDataRow selectedRow = (TableDataRow)event.getData();
-                            Integer testId = (Integer)selectedRow.key;
-                            selectedPrepTest(testId);
-                        }
+                        TestPrepLookupBundle bundle = (TestPrepLookupBundle)event.getData();
+                        TableDataRow selectedRow = bundle.selectedPrepRow;
+                        Integer testId = (Integer)selectedRow.key;
+                        selectedPrepTest(testId, bundle.selectedTreeRow);
                     }
-                });
+                }
+            });
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                Window.alert("error: " + e.getMessage());
-                return;
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert("error: " + e.getMessage());
+            return;
         }
 
         ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-        modal.setName(consts.get("prepTestPicker"));
         modal.setContent(prepPickerScreen);
         modal.setName(consts.get("prepTestPicker") + " " + testMethodName);
         prepPickerScreen.setManager(manager);
+        prepPickerScreen.setSelectedTreeRow(itemsTree.getSelection());
     }
 
-    private void selectedPrepTest(Integer prepTestId) {
-        TreeDataItem selectedRow;
+    private void selectedPrepTest(Integer prepTestId){
+        selectedPrepTest(prepTestId, null);
+    }
+    
+    private void selectedPrepTest(Integer prepTestId, TreeDataItem selectedRow) {
         int selectedIndex;
         SampleDataBundle bundle, tmpBundle;
         ArrayList<SampleDataBundle> bundles;
@@ -560,15 +563,27 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
 
         currentPrepId = checkForPrepTest(prepTestId);
         bundle = null;
-        selectedRow = itemsTree.getSelection();
+        
+        //make sure the parent row is selected in the tree
+        if(selectedRow == null)
+            selectedRow = itemsTree.getSelection();
+        else
+            itemsTree.select(selectedRow);
+        
         selectedIndex = itemsTree.getSelectedRow();
         tmpBundle = (SampleDataBundle)selectedRow.data;
 
         if (currentPrepId != null) {
+            int r;
             bundle = (SampleDataBundle)selectedRow.data;
             AnalysisViewDO anDO = bundle.analysisTestDO;
-
+            r = itemsTree.getSelectedRow();
+            
             anDO.setPreAnalysisId(currentPrepId);
+            anDO.setStatusId(analysisInPrep);
+            anDO.setAvailableDate(null);
+            itemsTree.setCell(r, 1, analysisInPrep);
+            itemsTree.select(selectedRow);
         } else {
             testMan = null;
             try {
