@@ -51,11 +51,17 @@ public class StorageManager implements RPC {
         return sm;
     }
 
-    public int count() {
-        if (storageList == null)
-            return 0;
+    public static StorageManager fetchByRefTableRefId(Integer tableId, Integer id) throws Exception {
+        return proxy().fetch(tableId, id);
+    }
 
-        return storageList.size();
+    // service methods
+    public StorageManager add() throws Exception {
+        return proxy().add(this);
+    }
+
+    public StorageManager update() throws Exception {
+        return proxy().update(this);
     }
 
     public StorageViewDO getStorageAt(int i) {
@@ -76,33 +82,11 @@ public class StorageManager implements RPC {
         storageList.remove(i);
     }
 
-    public static StorageManager fetchByRefTableRefId(Integer tableId, Integer id) throws Exception {
-        return proxy().fetch(tableId, id);
-    }
-
-    public void setReferenceTableId(Integer referenceTableId) {
-        this.referenceTableId = referenceTableId;
-    }
-
-    public void setReferenceId(Integer referenceId) {
-        this.referenceId = referenceId;
-    }
-
-    public Integer getReferenceId() {
-        return referenceId;
-    }
-
-    public Integer getReferenceTableId() {
-        return referenceTableId;
-    }
-
-    // service methods
-    public StorageManager add() throws Exception {
-        return proxy().add(this);
-    }
-
-    public StorageManager update() throws Exception {
-        return proxy().update(this);
+    public int count() {
+        if (storageList == null)
+            return 0;
+    
+        return storageList.size();
     }
 
     public void validate() throws Exception {
@@ -118,20 +102,36 @@ public class StorageManager implements RPC {
         proxy().validate(this, errorsList);
     }
 
-    private static StorageManagerProxy proxy() {
-        if (proxy == null)
-            proxy = new StorageManagerProxy();
-
-        return proxy;
-    }
-
     // these are friendly methods so only managers and proxies can call this
     // method
+    Integer getReferenceId() {
+        return referenceId;
+    }
+
+    void setReferenceId(Integer referenceId) {
+        this.referenceId = referenceId;
+    }
+
+    Integer getReferenceTableId() {
+        return referenceTableId;
+    }
+
+    void setReferenceTableId(Integer referenceTableId) {
+        this.referenceTableId = referenceTableId;
+    }
+
     ArrayList<StorageViewDO> getStorages() {
         return storageList;
     }
 
     void setStorages(ArrayList<StorageViewDO> storages) {
         storageList = storages;
+    }
+
+    private static StorageManagerProxy proxy() {
+        if (proxy == null)
+            proxy = new StorageManagerProxy();
+    
+        return proxy;
     }
 }

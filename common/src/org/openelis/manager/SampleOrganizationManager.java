@@ -35,97 +35,13 @@ public class SampleOrganizationManager implements RPC {
         return proxy().fetchBySampleId(sampleId);
     }
 
-    public Integer getSampleId() {
-        return sampleId;
+    // service methods
+    public SampleOrganizationManager add() throws Exception {
+        return proxy().add(this);
     }
 
-    public void setSampleId(Integer sampleId) {
-        this.sampleId = sampleId;
-    }
-
-    public void setReportTo(SampleOrganizationViewDO reportToDO) {
-        setRowFor(proxy().getIdFromSystemName("org_report_to"), reportToDO);
-    }
-
-    public void setBillTo(SampleOrganizationViewDO billToDO) {
-        setRowFor(proxy().getIdFromSystemName("org_bill_to"), billToDO);
-    }
-
-    protected void setRowFor(Integer typeId, SampleOrganizationViewDO newOrg) {
-        int rowIndex;
-        rowIndex = rowIndexFor(typeId);
-
-        if (rowIndex == -1 && newOrg != null) { // insert
-            newOrg.setTypeId(typeId);
-            addOrganization(newOrg);
-        } else if (rowIndex != -1 && newOrg == null) { // delete
-            removeOrganizationAt(rowIndex);
-        } else if (rowIndex != -1 && newOrg != null) { // update
-            newOrg.setTypeId(typeId);
-            setOrganizationAt(newOrg, rowIndex);
-        }
-    }
-
-    protected int rowIndexFor(Integer typeId) {
-        int i;
-
-        for (i = 0; i < organizations.size(); i++ ) {
-            SampleOrganizationViewDO orgDO = organizations.get(i);
-
-            if (typeId.equals(orgDO.getTypeId()))
-                return i;
-        }
-
-        return -1;
-    }
-
-    public SampleOrganizationViewDO getFirstBillTo() {
-        Integer billToId = proxy().getIdFromSystemName("org_bill_to");
-        int i = 0;
-
-        while (i < organizations.size() &&
-               !billToId.equals( ((SampleOrganizationViewDO)organizations.get(i)).getTypeId()))
-            i++ ;
-
-        if (i < organizations.size())
-            return (SampleOrganizationViewDO)organizations.get(i);
-        else
-            return null;
-    }
-
-    public SampleOrganizationViewDO getFirstReportTo() {
-        Integer reportToId = proxy().getIdFromSystemName("org_report_to");
-        int i = 0;
-
-        while (i < organizations.size() &&
-               !reportToId.equals( ((SampleOrganizationViewDO)organizations.get(i)).getTypeId()))
-            i++ ;
-
-        if (i < organizations.size())
-            return (SampleOrganizationViewDO)organizations.get(i);
-        else
-            return null;
-    }
-
-    public SampleOrganizationViewDO getFirstSecondaryReportTo() {
-        Integer reportToId = proxy().getIdFromSystemName("org_second_report_to");
-        int i = 0;
-
-        while (i < organizations.size() &&
-               !reportToId.equals( ((SampleOrganizationViewDO)organizations.get(i)).getTypeId()))
-            i++ ;
-
-        if (i < organizations.size())
-            return (SampleOrganizationViewDO)organizations.get(i);
-        else
-            return null;
-    }
-
-    public int count() {
-        if (organizations == null)
-            return 0;
-
-        return organizations.size();
+    public SampleOrganizationManager update() throws Exception {
+        return proxy().update(this);
     }
 
     public SampleOrganizationViewDO getOrganizationAt(int i) {
@@ -163,13 +79,64 @@ public class SampleOrganizationManager implements RPC {
             deletedList.add(tmpDO);
     }
 
-    // service methods
-    public SampleOrganizationManager add() throws Exception {
-        return proxy().add(this);
+    //
+    // helper methods
+    //
+    public void setBillTo(SampleOrganizationViewDO billToDO) {
+        setRowFor(proxy().getIdFromSystemName("org_bill_to"), billToDO);
     }
 
-    public SampleOrganizationManager update() throws Exception {
-        return proxy().update(this);
+    public SampleOrganizationViewDO getFirstBillTo() {
+        Integer billToId = proxy().getIdFromSystemName("org_bill_to");
+        int i = 0;
+
+        while (i < organizations.size() &&
+               !billToId.equals( ((SampleOrganizationViewDO)organizations.get(i)).getTypeId()))
+            i++ ;
+
+        if (i < organizations.size())
+            return (SampleOrganizationViewDO)organizations.get(i);
+        else
+            return null;
+    }
+
+    public void setReportTo(SampleOrganizationViewDO reportToDO) {
+        setRowFor(proxy().getIdFromSystemName("org_report_to"), reportToDO);
+    }
+
+    public SampleOrganizationViewDO getFirstReportTo() {
+        Integer reportToId = proxy().getIdFromSystemName("org_report_to");
+        int i = 0;
+
+        while (i < organizations.size() &&
+               !reportToId.equals( ((SampleOrganizationViewDO)organizations.get(i)).getTypeId()))
+            i++ ;
+
+        if (i < organizations.size())
+            return (SampleOrganizationViewDO)organizations.get(i);
+        else
+            return null;
+    }
+
+    public SampleOrganizationViewDO getFirstSecondaryReportTo() {
+        Integer reportToId = proxy().getIdFromSystemName("org_second_report_to");
+        int i = 0;
+
+        while (i < organizations.size() &&
+               !reportToId.equals( ((SampleOrganizationViewDO)organizations.get(i)).getTypeId()))
+            i++ ;
+
+        if (i < organizations.size())
+            return (SampleOrganizationViewDO)organizations.get(i);
+        else
+            return null;
+    }
+
+    public int count() {
+        if (organizations == null)
+            return 0;
+
+        return organizations.size();
     }
 
     public void validate() throws Exception {
@@ -185,15 +152,16 @@ public class SampleOrganizationManager implements RPC {
         proxy().validate(this, errorsList);
     }
 
-    private static SampleOrganizationManagerProxy proxy() {
-        if (proxy == null)
-            proxy = new SampleOrganizationManagerProxy();
-
-        return proxy;
-    }
-
     // these are friendly methods so only managers and proxies can call this
     // method
+    Integer getSampleId() {
+        return sampleId;
+    }
+
+    void setSampleId(Integer sampleId) {
+        this.sampleId = sampleId;
+    }
+
     ArrayList<SampleOrganizationViewDO> getOrganizations() {
         return organizations;
     }
@@ -211,5 +179,40 @@ public class SampleOrganizationManager implements RPC {
 
     SampleOrganizationViewDO getDeletedAt(int i) {
         return deletedList.get(i);
+    }
+
+    protected void setRowFor(Integer typeId, SampleOrganizationViewDO newOrg) {
+        int rowIndex;
+        rowIndex = rowIndexFor(typeId);
+
+        if (rowIndex == -1 && newOrg != null) { // insert
+            newOrg.setTypeId(typeId);
+            addOrganization(newOrg);
+        } else if (rowIndex != -1 && newOrg == null) { // delete
+            removeOrganizationAt(rowIndex);
+        } else if (rowIndex != -1 && newOrg != null) { // update
+            newOrg.setTypeId(typeId);
+            setOrganizationAt(newOrg, rowIndex);
+        }
+    }
+
+    protected int rowIndexFor(Integer typeId) {
+        int i;
+
+        for (i = 0; i < organizations.size(); i++ ) {
+            SampleOrganizationViewDO orgDO = organizations.get(i);
+
+            if (typeId.equals(orgDO.getTypeId()))
+                return i;
+        }
+
+        return -1;
+    }
+
+    private static SampleOrganizationManagerProxy proxy() {
+        if (proxy == null)
+            proxy = new SampleOrganizationManagerProxy();
+
+        return proxy;
     }
 }

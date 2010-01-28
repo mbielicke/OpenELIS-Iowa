@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.manager;
 
 import org.openelis.cache.DictionaryCache;
@@ -37,38 +37,34 @@ import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
 public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
-    private static final long serialVersionUID = 1L;
-    
-    protected SampleDO sample;
-    protected SampleItemManager sampleItems;
-    protected SampleOrganizationManager organizations;
-    protected SampleProjectManager projects;
-    protected SampleQaEventManager qaEvents;
-    protected SampleDomainInt sampleDomain;
-    protected NoteManager sampleInternalNotes;
-    protected NoteManager sampleExternalNote;
-    protected AuxDataManager auxData;
-    
-    protected Boolean hasReleasedCancelledAnalysis;
-    
-    protected transient Integer anLoggedInId, anInitiatedId, anCompletedId,
-                      anReleasedId, anInPrepId, anOnHoldId, anRequeueId,
-                      anCancelledId, anErrorLoggedInId, anErrorInitiatedId,
-                      anErrorInPrepId, anErrorCompletedId, samLoggedInId, 
-                      samCompletedId, samReleasedId, samErrorId;
-    
-    public static final String  ENVIRONMENTAL_DOMAIN_FLAG   = "E",
-                                HUMAN_DOMAIN_FLAG           = "H",
-                                ANIMAL_DOMAIN_FLAG          = "A",
-                                NEWBORN_DOMAIN_FLAG         = "N",
-                                PT_DOMAIN_FLAG              = "P",
-                                SDWIS_DOMAIN_FLAG           = "S",
-                                WELL_DOMAIN_FLAG            = "W";
-    
+    private static final long                     serialVersionUID = 1L;
+
+    protected SampleDO                            sample;
+    protected SampleItemManager                   sampleItems;
+    protected SampleOrganizationManager           organizations;
+    protected SampleProjectManager                projects;
+    protected SampleQaEventManager                qaEvents;
+    protected SampleDomainInt                     sampleDomain;
+    protected NoteManager                         sampleInternalNotes;
+    protected NoteManager                         sampleExternalNote;
+    protected AuxDataManager                      auxData;
+
+    protected Boolean                             hasReleasedCancelledAnalysis;
+
+    protected transient Integer                   anLoggedInId, anInitiatedId, anCompletedId,
+                    anReleasedId, anInPrepId, anOnHoldId, anRequeueId, anCancelledId,
+                    anErrorLoggedInId, anErrorInitiatedId, anErrorInPrepId, anErrorCompletedId,
+                    samLoggedInId, samCompletedId, samReleasedId, samErrorId;
+
+    public static final String                    ENVIRONMENTAL_DOMAIN_FLAG = "E",
+                    HUMAN_DOMAIN_FLAG = "H", ANIMAL_DOMAIN_FLAG = "A", NEWBORN_DOMAIN_FLAG = "N",
+                    PT_DOMAIN_FLAG = "P", SDWIS_DOMAIN_FLAG = "S", WELL_DOMAIN_FLAG = "W";
+
     protected transient static SampleManagerProxy proxy;
-    
+
     /**
-     * This is a protected constructor. See the three static methods for allocation.
+     * This is a protected constructor. See the three static methods for
+     * allocation.
      */
     protected SampleManager() {
         sample = null;
@@ -79,7 +75,8 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
     }
 
     /**
-     * Creates a new instance of this object. A default Specimen object is also created.
+     * Creates a new instance of this object. A default Specimen object is also
+     * created.
      */
     public static SampleManager getInstance() {
         SampleManager sm;
@@ -90,67 +87,333 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
         return sm;
     }
 
+    // getters and setters
     /**
-     * Creates a new instance of this object with the specified Specimen. Use this function to load an instance of this object from database.
+     * Returns the managed Sample object.
+     */
+    public SampleDO getSample() {
+        return sample;
+    }
+
+    public void setSample(SampleDO sample) {
+        this.sample = sample;
+    }
+
+    /**
+     * Creates a new instance of this object with the specified Specimen. Use
+     * this function to load an instance of this object from database.
      */
     public static SampleManager fetchById(Integer id) throws Exception {
         return proxy().fetch(id);
     }
-    
+
     public static SampleManager fetchByIdWithItemsAnalyses(Integer id) throws Exception {
         return proxy().fetchWithItemsAnalyses(id);
     }
-    
+
     /**
-     * Creates a new instance of this object with the specified Specimen. Use this function to load an instance of this object from database.
+     * Creates a new instance of this object with the specified Specimen. Use
+     * this function to load an instance of this object from database.
      */
     public static SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception {
         return proxy().fetchByAccessionNumber(accessionNumber);
     }
+
+    // service methods
+    public SampleManager add() throws Exception {
+        updateSampleStatus();
+        return proxy().add(this);
     
+    }
+
+    public SampleManager update() throws Exception {
+        updateSampleStatus();
+        return proxy().update(this);
+    
+    }
+
     public SampleManager fetchForUpdate() throws Exception {
         return proxy().fetchForUpdate(sample.getId());
     }
+
+    public SampleManager abortUpdate() throws Exception {
+        return proxy().abortUpdate(sample.getId());
+    }
+
+    //
+    //other managers
+    //
+    public SampleDomainInt getDomainManager() throws Exception {
+        if (sample.getDomain() == null)
+            throw new InconsistencyException("domain is null");
     
+        if (sampleDomain == null) {
+            if (sample.getId() != null) {
+                try {
+                    if (HUMAN_DOMAIN_FLAG.equals(sample.getDomain()))
+                        sampleDomain = SampleHumanManager.findBySampleId(sample.getId());
+                    else if (ENVIRONMENTAL_DOMAIN_FLAG.equals(sample.getDomain()))
+                        sampleDomain = SampleEnvironmentalManager.fetchBySampleId(sample.getId());
+                    else if (WELL_DOMAIN_FLAG.equals(sample.getDomain()))
+                        sampleDomain = SamplePrivateWellManager.fetchBySampleId(sample.getId());
+    
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+        }
+    
+        if (sampleDomain == null) {
+            if (HUMAN_DOMAIN_FLAG.equals(sample.getDomain()))
+                sampleDomain = SampleHumanManager.getInstance();
+            else if (ENVIRONMENTAL_DOMAIN_FLAG.equals(sample.getDomain()))
+                sampleDomain = SampleEnvironmentalManager.getInstance();
+            else if (WELL_DOMAIN_FLAG.equals(sample.getDomain()))
+                sampleDomain = SamplePrivateWellManager.getInstance();
+        }
+    
+        return sampleDomain;
+    }
+
+    public SampleProjectManager getProjects() throws Exception {
+        if (projects == null) {
+            if (sample.getId() != null) {
+                try {
+                    projects = SampleProjectManager.fetchBySampleId(sample.getId());
+    
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+        }
+    
+        if (projects == null)
+            projects = SampleProjectManager.getInstance();
+    
+        return projects;
+    }
+
+    public SampleOrganizationManager getOrganizations() throws Exception {
+        if (organizations == null) {
+            if (sample.getId() != null) {
+                try {
+                    organizations = SampleOrganizationManager.fetchBySampleId(sample.getId());
+    
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+        }
+    
+        if (organizations == null)
+            organizations = SampleOrganizationManager.getInstance();
+    
+        return organizations;
+    }
+
+    public SampleItemManager getSampleItems() throws Exception {
+        if (sampleItems == null) {
+            if (sample.getId() != null) {
+                try {
+                    sampleItems = SampleItemManager.fetchBySampleId(sample.getId());
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+        }
+    
+        if (sampleItems == null)
+            sampleItems = SampleItemManager.getInstance();
+    
+        return sampleItems;
+    }
+
+    public NoteManager getInternalNotes() throws Exception {
+        if (sampleInternalNotes == null) {
+            if (sample.getId() != null) {
+                try {
+                    sampleInternalNotes = NoteManager.fetchByRefTableRefIdIsExt(
+                                                                                ReferenceTable.SAMPLE,
+                                                                                sample.getId(), "N");
+    
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+        }
+    
+        if (sampleInternalNotes == null)
+            sampleInternalNotes = NoteManager.getInstance();
+    
+        return sampleInternalNotes;
+    }
+
+    public NoteManager getExternalNote() throws Exception {
+        if (sampleExternalNote == null) {
+            if (sample.getId() != null) {
+                try {
+                    sampleExternalNote = NoteManager.fetchByRefTableRefIdIsExt(
+                                                                               ReferenceTable.SAMPLE,
+                                                                               sample.getId(), "Y");
+    
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+        }
+    
+        if (sampleExternalNote == null)
+            sampleExternalNote = NoteManager.getInstance();
+    
+        return sampleExternalNote;
+    }
+
+    public SampleQaEventManager getQaEvents() throws Exception {
+        if (qaEvents == null) {
+            if (sample.getId() != null) {
+                try {
+                    qaEvents = SampleQaEventManager.fetchBySampleId(sample.getId());
+    
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+        }
+    
+        if (qaEvents == null)
+            qaEvents = SampleQaEventManager.getInstance();
+    
+        return qaEvents;
+    }
+
+    public AuxDataManager getAuxData() throws Exception {
+        if (auxData == null) {
+            if (sample.getId() != null) {
+                try {
+                    auxData = AuxDataManager.fetchById(sample.getId(), ReferenceTable.SAMPLE);
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+        }
+    
+        if (auxData == null)
+            auxData = AuxDataManager.getInstance();
+    
+        return auxData;
+    }
+
+    public NoteManager getNotes() throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
+    //
+    //helper methods
+    //
+    public boolean hasReleasedCancelledAnalysis() throws Exception {
+        if (hasReleasedCancelledAnalysis != null)
+            return hasReleasedCancelledAnalysis.booleanValue();
+    
+        SampleItemManager itemMan;
+        AnalysisManager analysisMan;
+        AnalysisViewDO anDO;
+        boolean value = false;
+        Integer cancelledId, releasedId;
+    
+        cancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
+        releasedId = DictionaryCache.getIdFromSystemName("analysis_released");
+    
+        itemMan = getSampleItems();
+        for (int s = 0; s < itemMan.count(); s++ ) {
+            analysisMan = itemMan.getAnalysisAt(s);
+            for (int a = 0; a < analysisMan.count(); a++ ) {
+                anDO = analysisMan.getAnalysisAt(a);
+                if (cancelledId.equals(anDO.getStatusId()) || releasedId.equals(anDO.getStatusId())) {
+                    value = true;
+                    break;
+                }
+            }
+        }
+    
+        setHasReleasedCancelledAnalysis(value);
+    
+        return value;
+    }
+
+    public void setHasReleasedCancelledAnalysis(boolean value) {
+        hasReleasedCancelledAnalysis = new Boolean(value);
+    }
+
     public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
         proxy().validateAccessionNumber(sampleDO);
     }
-    
+
+    public void validate() throws Exception {
+        ValidationErrorsList errorList = new ValidationErrorsList();
+        proxy().validate(this, errorList);
+
+        if (errorList.size() > 0)
+            throw errorList;
+    }
+
     protected void updateSampleStatus() throws Exception {
-        int      e = 0, l = 0, c = 0, r = 0;
+        int e = 0, l = 0, c = 0, r = 0;
         SampleItemManager itemMan;
         AnalysisManager analysisMan;
         SampleItemViewDO sampleItemDO;
         AnalysisViewDO anDO;
-        Integer   statusId = null, analysisStatusId;
-        
-        if(anLoggedInId == null)
+        Integer statusId = null, analysisStatusId;
+    
+        if (anLoggedInId == null)
             loadDictionaryEntries();
-        
-         itemMan = getSampleItems();
-         for(int s=0; s<itemMan.count(); s++){
-             sampleItemDO = itemMan.getSampleItemAt(s);
-             analysisMan = itemMan.getAnalysisAt(s);
-             for(int a=0; a<analysisMan.count(); a++){
-                 //update the analysis status
-                 analysisMan.updateAnalysisStatusAt(a, sampleItemDO.getTypeOfSampleId());
-                 
-                 anDO = analysisMan.getAnalysisAt(a);
-                 analysisStatusId = anDO.getStatusId();
-                 
-                 if(analysisStatusId.equals(anErrorLoggedInId) || analysisStatusId.equals(anErrorInitiatedId) || 
-                                 analysisStatusId.equals(anErrorInPrepId) || analysisStatusId.equals(anErrorCompletedId))
-                     e++;
-                 else if(analysisStatusId.equals(anLoggedInId) || analysisStatusId.equals(anInitiatedId) || analysisStatusId.equals(anRequeueId) || analysisStatusId.equals(anInPrepId))
-                     l++;
-                 else if(analysisStatusId.equals(anCompletedId) || analysisStatusId.equals(anOnHoldId))
-                     c++;
-                 else if(analysisStatusId.equals(anReleasedId) || analysisStatusId.equals(anCancelledId))
-                     r++;
-             }
-         }
-
-         if (e > 0) {
+    
+        itemMan = getSampleItems();
+        for (int s = 0; s < itemMan.count(); s++ ) {
+            sampleItemDO = itemMan.getSampleItemAt(s);
+            analysisMan = itemMan.getAnalysisAt(s);
+            for (int a = 0; a < analysisMan.count(); a++ ) {
+                // update the analysis status
+                analysisMan.updateAnalysisStatusAt(a, sampleItemDO.getTypeOfSampleId());
+    
+                anDO = analysisMan.getAnalysisAt(a);
+                analysisStatusId = anDO.getStatusId();
+    
+                if (analysisStatusId.equals(anErrorLoggedInId) ||
+                    analysisStatusId.equals(anErrorInitiatedId) ||
+                    analysisStatusId.equals(anErrorInPrepId) ||
+                    analysisStatusId.equals(anErrorCompletedId))
+                    e++ ;
+                else if (analysisStatusId.equals(anLoggedInId) ||
+                         analysisStatusId.equals(anInitiatedId) ||
+                         analysisStatusId.equals(anRequeueId) ||
+                         analysisStatusId.equals(anInPrepId))
+                    l++ ;
+                else if (analysisStatusId.equals(anCompletedId) ||
+                         analysisStatusId.equals(anOnHoldId))
+                    c++ ;
+                else if (analysisStatusId.equals(anReleasedId) ||
+                         analysisStatusId.equals(anCancelledId))
+                    r++ ;
+            }
+        }
+    
+        if (e > 0) {
             statusId = samErrorId;
         } else if (l > 0) {
             statusId = samLoggedInId;
@@ -161,269 +424,15 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
                 sample.setReleasedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
             statusId = samReleasedId;
         }
-         
-         //if the sample is in error keep it that way
-         if (samErrorId.equals(sample.getStatusId()))
-             statusId = samErrorId;
-
+    
+        // if the sample is in error keep it that way
+        if (samErrorId.equals(sample.getStatusId()))
+            statusId = samErrorId;
+    
         sample.setStatusId(statusId);
     }
-    
-    public boolean hasReleasedCancelledAnalysis() throws Exception {
-        if(hasReleasedCancelledAnalysis != null)
-            return hasReleasedCancelledAnalysis.booleanValue();
-        
-        SampleItemManager itemMan;
-        AnalysisManager analysisMan;
-        AnalysisViewDO anDO;
-        boolean value = false;
-        Integer cancelledId, releasedId;
-    
-        cancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
-        releasedId = DictionaryCache.getIdFromSystemName("analysis_released");
-        
-        itemMan = getSampleItems();
-        for(int s=0; s<itemMan.count(); s++){
-            analysisMan = itemMan.getAnalysisAt(s);
-            for(int a=0; a<analysisMan.count(); a++){
-                anDO = analysisMan.getAnalysisAt(a);
-                if(cancelledId.equals(anDO.getStatusId()) || releasedId.equals(anDO.getStatusId())){
-                    value = true;
-                    break;
-                }
-            }
-        }
-        
-        setHasReleasedCancelledAnalysis(value);
 
-        return value;
-    }
-    
-    public void setHasReleasedCancelledAnalysis(boolean value){
-        hasReleasedCancelledAnalysis = new Boolean(value);
-    }
-    
-    //getters and setters
-    /**
-     * Returns the managed Sample object.
-     */
-    public SampleDO getSample() {
-        return sample;
-    }
-    
-    public void setSample(SampleDO sample) {
-        this.sample = sample;
-    }
-    
-    public NoteManager getNotes() throws Exception {
-        throw new UnsupportedOperationException();
-    }
-    
-    //get manager methods
-    public SampleDomainInt getDomainManager() throws Exception {
-        if(sample.getDomain() == null)
-            throw new InconsistencyException("domain is null");
-        
-        if(sampleDomain == null){
-            if(sample.getId() != null){
-                try{
-                    if(HUMAN_DOMAIN_FLAG.equals(sample.getDomain()))
-                        sampleDomain = SampleHumanManager.findBySampleId(sample.getId());
-                    else if(ENVIRONMENTAL_DOMAIN_FLAG.equals(sample.getDomain()))
-                        sampleDomain = SampleEnvironmentalManager.fetchBySampleId(sample.getId());
-                    else if(WELL_DOMAIN_FLAG.equals(sample.getDomain()))
-                        sampleDomain = SamplePrivateWellManager.fetchBySampleId(sample.getId());
-                    
-                }catch(NotFoundException e){
-                    //ignore
-                }catch(Exception e){
-                    throw e;
-                }
-            }
-        }
-        
-        if(sampleDomain == null){
-            if(HUMAN_DOMAIN_FLAG.equals(sample.getDomain()))
-                sampleDomain = SampleHumanManager.getInstance();
-            else if(ENVIRONMENTAL_DOMAIN_FLAG.equals(sample.getDomain()))
-                sampleDomain = SampleEnvironmentalManager.getInstance();
-            else if(WELL_DOMAIN_FLAG.equals(sample.getDomain()))
-                sampleDomain = SamplePrivateWellManager.getInstance();
-        }
-        
-        return sampleDomain;
-    }
-
-    public SampleItemManager getSampleItems() throws Exception {
-        if(sampleItems == null){
-            if(sample.getId() != null){
-                try{
-                    sampleItems = SampleItemManager.fetchBySampleId(sample.getId());
-                }
-                catch(NotFoundException e){
-                    //ignore
-                }catch(Exception e){
-                    throw e;
-                }
-            }
-        }
-            
-         if(sampleItems == null)
-             sampleItems = SampleItemManager.getInstance();
-     
-        return sampleItems;
-    }
-    
-    public SampleOrganizationManager getOrganizations() throws Exception {
-        if(organizations == null){
-            if(sample.getId() != null){
-                try{
-                    organizations = SampleOrganizationManager.fetchBySampleId(sample.getId());
-                    
-                }
-                catch(NotFoundException e){
-                    //ignore
-                }catch(Exception e){
-                    throw e;
-                }
-            }
-        }
-            
-         if(organizations == null)
-            organizations = SampleOrganizationManager.getInstance();
-     
-        return organizations;
-    }
-
-    public SampleProjectManager getProjects() throws Exception {
-        if(projects == null){
-            if(sample.getId() != null){
-                try{
-                    projects = SampleProjectManager.fetchBySampleId(sample.getId());
-                    
-                }
-                catch(NotFoundException e){
-                    //ignore
-                }catch(Exception e){
-                    throw e;
-                }
-            }
-        }
-            
-         if(projects == null)
-            projects = SampleProjectManager.getInstance();
-     
-        return projects;
-    }
-
-    
-    public SampleQaEventManager getQaEvents() throws Exception {
-        if(qaEvents == null){
-            if(sample.getId() != null){
-                try{
-                    qaEvents = SampleQaEventManager.fetchBySampleId(sample.getId());
-                    
-                }
-                catch(NotFoundException e){
-                    //ignore
-                }catch(Exception e){
-                    throw e;
-                }
-            }
-        }
-            
-         if(qaEvents == null)
-             qaEvents = SampleQaEventManager.getInstance();
-     
-        return qaEvents;
-    }
-    
-    public AuxDataManager getAuxData() throws Exception {
-        if(auxData == null){
-            if(sample.getId() != null){
-                try{
-                    auxData = AuxDataManager.fetchById(sample.getId(), ReferenceTable.SAMPLE);
-                }
-                catch(NotFoundException e){
-                    //ignore
-                }catch(Exception e){
-                    throw e;
-                }
-            }
-        }
-            
-         if(auxData == null)
-             auxData = AuxDataManager.getInstance();
-     
-        return auxData;
-    }
-    
-    public NoteManager getInternalNotes() throws Exception {
-        if(sampleInternalNotes == null){
-            if(sample.getId() != null){
-                try{
-                    sampleInternalNotes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.SAMPLE, sample.getId(), "N");
-                    
-                }catch(NotFoundException e){
-                    //ignore
-                }catch(Exception e){
-                    throw e;
-                }
-            }
-        }
-        
-        if(sampleInternalNotes == null)
-            sampleInternalNotes = NoteManager.getInstance();
-
-        return sampleInternalNotes;
-    }  
-    
-    public NoteManager getExternalNote() throws Exception {
-        if(sampleExternalNote == null){
-            if(sample.getId() != null){
-                try{
-                    sampleExternalNote = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.SAMPLE, sample.getId(), "Y");
-                    
-                }catch(NotFoundException e){
-                    //ignore
-                }catch(Exception e){
-                    throw e;
-                }
-            }
-        }
-        
-        if(sampleExternalNote == null)
-            sampleExternalNote = NoteManager.getInstance();
-
-        return sampleExternalNote;
-    }  
-
-    //service methods
-    public SampleManager add() throws Exception {
-        updateSampleStatus();
-        return proxy().add(this);
-        
-    }
-    
-    public SampleManager update() throws Exception {
-        updateSampleStatus();
-        return proxy().update(this);
-        
-    }
-    
-    public SampleManager abortUpdate() throws Exception {
-        return proxy().abortUpdate(sample.getId());
-    }
-    
-    public void validate() throws Exception {
-        ValidationErrorsList errorList = new ValidationErrorsList();
-        proxy().validate(this, errorList);
-        
-        if(errorList.size() > 0)
-            throw errorList;
-    }
-    
-    private void loadDictionaryEntries() throws Exception{
+    private void loadDictionaryEntries() throws Exception {
         anLoggedInId = proxy().getIdFromSystemName("analysis_logged_in");
         anInitiatedId = proxy().getIdFromSystemName("analysis_initiated");
         anCompletedId = proxy().getIdFromSystemName("analysis_completed");
@@ -441,11 +450,11 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
         samReleasedId = proxy().getIdFromSystemName("sample_released");
         samErrorId = proxy().getIdFromSystemName("sample_error");
     }
-    
-    private static SampleManagerProxy proxy(){
-        if(proxy == null) 
+
+    private static SampleManagerProxy proxy() {
+        if (proxy == null)
             proxy = new SampleManagerProxy();
-        
+
         return proxy;
-    }    
+    }
 }

@@ -32,27 +32,13 @@ public class AuxDataManager implements RPC {
         return proxy().fetchById(referenceId, referenceTableId);
     }
 
-    public int count() {
-        if (items == null)
-            return 0;
-
-        return items.size();
+    // service methods
+    public AuxDataManager add() throws Exception {
+        return proxy().add(this);
     }
 
-    public Integer getReferenceId() {
-        return referenceId;
-    }
-
-    public void setReferenceId(Integer referenceId) {
-        this.referenceId = referenceId;
-    }
-
-    public Integer getReferenceTableId() {
-        return referenceTableId;
-    }
-
-    public void setReferenceTableId(Integer referenceTableId) {
-        this.referenceTableId = referenceTableId;
+    public AuxDataManager update() throws Exception {
+        return proxy().update(this);
     }
 
     public AuxDataViewDO getAuxDataAt(int i) {
@@ -70,7 +56,7 @@ public class AuxDataManager implements RPC {
 
         items.add(item);
     }
-    
+
     public void addAuxDataFieldsAndValues(AuxDataViewDO auxData,
                                           AuxFieldViewDO field,
                                           ArrayList<AuxFieldValueViewDO> values) {
@@ -147,13 +133,11 @@ public class AuxDataManager implements RPC {
         items.get(i).fields = fieldManager;
     }
 
-    // service methods
-    public AuxDataManager add() throws Exception {
-        return proxy().add(this);
-    }
-
-    public AuxDataManager update() throws Exception {
-        return proxy().update(this);
+    public int count() {
+        if (items == null)
+            return 0;
+    
+        return items.size();
     }
 
     public void validate() throws Exception {
@@ -167,6 +151,24 @@ public class AuxDataManager implements RPC {
 
     public void validate(ValidationErrorsList errorsList) throws Exception {
         proxy().validate(this, errorsList);
+    }
+
+    // these are friendly methods so only managers and proxies can call this
+    // method
+    Integer getReferenceId() {
+        return referenceId;
+    }
+
+    void setReferenceId(Integer referenceId) {
+        this.referenceId = referenceId;
+    }
+
+    Integer getReferenceTableId() {
+        return referenceTableId;
+    }
+
+    void setReferenceTableId(Integer referenceTableId) {
+        this.referenceTableId = referenceTableId;
     }
 
     int deleteCount() {

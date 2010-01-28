@@ -29,7 +29,6 @@ import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
-import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -38,10 +37,10 @@ public class AnalysisManager implements RPC, HasNotesInt {
     private static final long                       serialVersionUID = 1L;
 
     protected Integer                               sampleItemId;
-    protected transient Integer anLoggedInId, anInitiatedId, anCompletedId, anReleasedId,
-                                anInPrepId, anOnHoldId, anRequeueId, anCancelledId, 
-                                anErrorLoggedInId, anErrorInitiatedId, anErrorInPrepId, anErrorCompletedId;
-    
+    protected transient Integer                     anLoggedInId, anInitiatedId, anCompletedId,
+                    anReleasedId, anInPrepId, anOnHoldId, anRequeueId, anCancelledId,
+                    anErrorLoggedInId, anErrorInitiatedId, anErrorInPrepId, anErrorCompletedId;
+
     protected ArrayList<AnalysisListItem>           items, deletedList;
 
     protected transient static AnalysisManagerProxy proxy;
@@ -63,28 +62,17 @@ public class AnalysisManager implements RPC, HasNotesInt {
         return proxy().fetchBySampleItemId(sampleItemId);
     }
 
-    public static AnalysisManager fetchBySampleItemIdForUpdate(Integer sampleItemId) throws Exception {
+    // service methods
+    public AnalysisManager add() throws Exception {
+        return proxy().add(this);
+    }
+
+    public AnalysisManager update() throws Exception {
+        return proxy().update(this);
+    }
+
+    public static AnalysisManager fetchForUpdate(Integer sampleItemId) throws Exception {
         return proxy().fetchBySampleItemIdForUpdate(sampleItemId);
-    }
-    
-    public int count() {
-        if (items == null)
-            return 0;
-
-        return items.size();
-    }
-
-    // getters/setters
-    public Integer getSampleItemId() {
-        return sampleItemId;
-    }
-
-    public void setSampleItemId(Integer sampleItemId) {
-        this.sampleItemId = sampleItemId;
-    }
-
-    public NoteManager getNotes() throws Exception {
-        throw new UnsupportedOperationException();
     }
 
     // analysis
@@ -115,81 +103,36 @@ public class AnalysisManager implements RPC, HasNotesInt {
         if (tmpList.analysis.getId() != null)
             deletedList.add(tmpList);
     }
-    
-    protected void removeAnalysisAtNoDelete(int index){
-        if (items == null || index >= items.size())
-            return;
 
-        items.remove(index);
-    }
-    
-    public void updateAnalysisStatusAt(int index, Integer sampleTypeId) throws Exception {
-        TestManager testMan;
-        boolean error = false;
-        AnalysisViewDO anDO;
-        Integer currentStatus;
-        if(anLoggedInId == null)
-            loadDictionaryEntries();
-        anDO = getItemAt(index).analysis;
-        
-        //if the analysis is cancelled stop now
-        if(anCancelledId.equals(anDO.getStatusId()))
-            return;
-        
-        testMan = getTestAt(index);
-        currentStatus = anDO.getStatusId();
-        
-        //sample item needs to match
-        if(!testMan.getSampleTypes().hasType(sampleTypeId))
-            error = true;
-        
-        //unit needs filled out
-        if(anDO.getUnitOfMeasureId() == null)
-            error = true;
-        
-        if(error){
-            if(currentStatus.equals(anLoggedInId))
-                anDO.setStatusId(anErrorLoggedInId);
-            else if(currentStatus.equals(anInitiatedId))
-                anDO.setStatusId(anErrorInitiatedId);
-            else if(currentStatus.equals(anCompletedId))
-                anDO.setStatusId(anErrorCompletedId);
-            else if(currentStatus.equals(anInPrepId))
-                anDO.setStatusId(anErrorInPrepId);
-        }else{
-            if(currentStatus.equals(anErrorLoggedInId))
-                anDO.setStatusId(anLoggedInId);
-            else if(currentStatus.equals(anErrorInitiatedId))
-                anDO.setStatusId(anInitiatedId);
-            else if(currentStatus.equals(anErrorCompletedId))
-                anDO.setStatusId(anCompletedId);
-            else if(currentStatus.equals(anErrorInPrepId))
-                anDO.setStatusId(anInPrepId);
-        }
-    }
-
-    public int getIndex(AnalysisViewDO aDO) {
-        for (int i = 0; i < count(); i++ )
-            if (items.get(i).analysis == aDO)
-                return i;
-
-        return -1;
-    }
-    
-    public void cancelAnalysisAt(int index){
+    public void cancelAnalysisAt(int index) {
         AnalysisViewDO anDO = items.get(index).analysis;
         Integer analysisCancelledId = null;
-        
-        try{
+
+        try {
             proxy().getIdFromSystemName("analysis_cancelled");
-            
+
             anDO.setStatusId(analysisCancelledId);
             anDO.setPreAnalysisId(null);
-        }catch(Exception e){
+        } catch (Exception e) {
             return;
         }
     }
 
+    public int count() {
+        if (items == null)
+            return 0;
+    
+        return items.size();
+    }
+
+    // item
+    public AnalysisListItem getItemAt(int i) {
+        return items.get(i);
+    }
+
+    //
+    //other managers
+    //
     // qaevents
     public AnalysisQaEventManager getQAEventAt(int i) throws Exception {
         AnalysisListItem item = getItemAt(i);
@@ -222,7 +165,10 @@ public class AnalysisManager implements RPC, HasNotesInt {
         if (item.analysisInternalNotes == null) {
             if (item.analysis != null && item.analysis.getId() != null) {
                 try {
-                    item.analysisInternalNotes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.ANALYSIS, item.analysis.getId(), "N");
+                    item.analysisInternalNotes = NoteManager.fetchByRefTableRefIdIsExt(
+                                                                                       ReferenceTable.ANALYSIS,
+                                                                                       item.analysis.getId(),
+                                                                                       "N");
 
                 } catch (NotFoundException e) {
                     // ignore
@@ -248,7 +194,10 @@ public class AnalysisManager implements RPC, HasNotesInt {
         if (item.analysisExternalNote == null) {
             if (item.analysis != null && item.analysis.getId() != null) {
                 try {
-                    item.analysisExternalNote = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.ANALYSIS, item.analysis.getId(), "Y");
+                    item.analysisExternalNote = NoteManager.fetchByRefTableRefIdIsExt(
+                                                                                      ReferenceTable.ANALYSIS,
+                                                                                      item.analysis.getId(),
+                                                                                      "Y");
 
                 } catch (NotFoundException e) {
                     // ignore
@@ -276,7 +225,7 @@ public class AnalysisManager implements RPC, HasNotesInt {
             if (item.analysis != null && item.analysis.getId() != null) {
                 try {
                     item.storages = StorageManager.fetchByRefTableRefId(ReferenceTable.ANALYSIS,
-                                                                      item.analysis.getId());
+                                                                        item.analysis.getId());
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
@@ -303,7 +252,9 @@ public class AnalysisManager implements RPC, HasNotesInt {
             if (item.analysis != null) {
                 if (item.analysis.getId() != null && item.analysis.getId() > -1) {
                     try {
-                        item.analysisResult = AnalysisResultManager.fetchByAnalysisId(item.analysis.getId(), item.analysis.getTestId());
+                        item.analysisResult = AnalysisResultManager.fetchForUpdate(
+                                                                                      item.analysis.getId(),
+                                                                                      item.analysis.getTestId());
                     } catch (NotFoundException e) {
                         // ignore
                     } catch (Exception e) {
@@ -311,7 +262,7 @@ public class AnalysisManager implements RPC, HasNotesInt {
                     }
                 } else if (item.analysis.getTestId() != null) {
                     try {
-                        item.analysisResult = AnalysisResultManager.fetchByTestId(item.analysis.getTestId());
+                        item.analysisResult = AnalysisResultManager.fetchForUpdate(item.analysis.getTestId());
                     } catch (NotFoundException e) {
                         // ignore
                     } catch (Exception e) {
@@ -334,7 +285,7 @@ public class AnalysisManager implements RPC, HasNotesInt {
             if (item.analysis != null) {
                 if (item.analysis.getId() != null && item.analysis.getId() > -1) {
                     try {
-                        item.analysisResult = AnalysisResultManager.fetchByAnalysisIdForDisplay(item.analysis.getId());
+                        item.analysisResult = AnalysisResultManager.fetchByAnalysisId(item.analysis.getId());
                     } catch (NotFoundException e) {
                         // ignore
                     } catch (Exception e) {
@@ -353,13 +304,13 @@ public class AnalysisManager implements RPC, HasNotesInt {
     public void setAnalysisResultAt(AnalysisResultManager analysisResult, int i) {
         getItemAt(i).analysisResult = analysisResult;
     }
-    
-    //test
-    public void setTestAt(TestManager test, int i){
+
+    // test
+    public void setTestAt(TestManager test, int i) {
         getItemAt(i).tests = test;
     }
-    
-    public TestManager getTestAt(int i) throws Exception{
+
+    public TestManager getTestAt(int i) throws Exception {
         AnalysisListItem item = getItemAt(i);
 
         if (item.tests == null) {
@@ -380,11 +331,9 @@ public class AnalysisManager implements RPC, HasNotesInt {
         return item.tests;
     }
 
-    // item
-    public AnalysisListItem getItemAt(int i) {
-        return items.get(i);
-    }
-
+    //
+    //helper methods
+    //
     public Integer getAnalysisIdByTestId(Integer testId) {
         Integer id = null;
 
@@ -394,14 +343,17 @@ public class AnalysisManager implements RPC, HasNotesInt {
 
         return id;
     }
-    
-    // service methods
-    public AnalysisManager add() throws Exception {
-        return proxy().add(this);
+
+    public NoteManager getNotes() throws Exception {
+        throw new UnsupportedOperationException();
     }
 
-    public AnalysisManager update() throws Exception {
-        return proxy().update(this);
+    public int getIndex(AnalysisViewDO aDO) {
+        for (int i = 0; i < count(); i++ )
+            if (items.get(i).analysis == aDO)
+                return i;
+    
+        return -1;
     }
 
     public void validate() throws Exception {
@@ -413,12 +365,86 @@ public class AnalysisManager implements RPC, HasNotesInt {
             throw errorsList;
     }
 
-    public void validate(String sampleItemSequence, Integer sampleTypeId, ValidationErrorsList errorsList)
-                                                                                    throws Exception {
+    public void validate(String sampleItemSequence,
+                         Integer sampleTypeId,
+                         ValidationErrorsList errorsList) throws Exception {
         proxy().validate(this, sampleItemSequence, sampleTypeId, errorsList);
     }
+
+    protected void updateAnalysisStatusAt(int index, Integer sampleTypeId) throws Exception {
+        TestManager testMan;
+        boolean error = false;
+        AnalysisViewDO anDO;
+        Integer currentStatus;
+        if (anLoggedInId == null)
+            loadDictionaryEntries();
+        anDO = getItemAt(index).analysis;
     
-    private void loadDictionaryEntries() throws Exception{
+        // if the analysis is cancelled stop now
+        if (anCancelledId.equals(anDO.getStatusId()))
+            return;
+    
+        testMan = getTestAt(index);
+        currentStatus = anDO.getStatusId();
+    
+        // sample item needs to match
+        if ( !testMan.getSampleTypes().hasType(sampleTypeId))
+            error = true;
+    
+        // unit needs filled out
+        if (anDO.getUnitOfMeasureId() == null)
+            error = true;
+    
+        if (error) {
+            if (currentStatus.equals(anLoggedInId))
+                anDO.setStatusId(anErrorLoggedInId);
+            else if (currentStatus.equals(anInitiatedId))
+                anDO.setStatusId(anErrorInitiatedId);
+            else if (currentStatus.equals(anCompletedId))
+                anDO.setStatusId(anErrorCompletedId);
+            else if (currentStatus.equals(anInPrepId))
+                anDO.setStatusId(anErrorInPrepId);
+        } else {
+            if (currentStatus.equals(anErrorLoggedInId))
+                anDO.setStatusId(anLoggedInId);
+            else if (currentStatus.equals(anErrorInitiatedId))
+                anDO.setStatusId(anInitiatedId);
+            else if (currentStatus.equals(anErrorCompletedId))
+                anDO.setStatusId(anCompletedId);
+            else if (currentStatus.equals(anErrorInPrepId))
+                anDO.setStatusId(anInPrepId);
+        }
+    }
+
+    protected void removeAnalysisAtNoDelete(int index) {
+        if (items == null || index >= items.size())
+            return;
+    
+        items.remove(index);
+    }
+
+    // these are friendly methods so only managers and proxies can call this
+    // method
+    Integer getSampleItemId() {
+        return sampleItemId;
+    }
+
+    void setSampleItemId(Integer sampleItemId) {
+        this.sampleItemId = sampleItemId;
+    }
+
+    int deleteCount() {
+        if (deletedList == null)
+            return 0;
+    
+        return deletedList.size();
+    }
+
+    AnalysisListItem getDeletedAt(int i) {
+        return deletedList.get(i);
+    }
+
+    private void loadDictionaryEntries() throws Exception {
         anLoggedInId = proxy().getIdFromSystemName("analysis_logged_in");
         anInitiatedId = proxy().getIdFromSystemName("analysis_initiated");
         anCompletedId = proxy().getIdFromSystemName("analysis_completed");
@@ -438,17 +464,6 @@ public class AnalysisManager implements RPC, HasNotesInt {
             proxy = new AnalysisManagerProxy();
 
         return proxy;
-    }
-
-    int deleteCount() {
-        if (deletedList == null)
-            return 0;
-
-        return deletedList.size();
-    }
-
-    AnalysisListItem getDeletedAt(int i) {
-        return deletedList.get(i);
     }
 
     static class AnalysisListItem implements RPC {

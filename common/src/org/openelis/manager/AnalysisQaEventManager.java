@@ -61,22 +61,16 @@ public class AnalysisQaEventManager implements RPC {
         return proxy().fetchByAnalysisId(analysisId);
     }
 
-    public int count() {
-        if (items == null)
-            return 0;
+    // service methods
+    public AnalysisQaEventManager add() throws Exception {
+        return proxy().add(this);
+    }
 
-        return items.size();
+    public AnalysisQaEventManager update() throws Exception {
+        return proxy().update(this);
     }
 
     // getters/setters
-    public Integer getAnalysisId() {
-        return analysisId;
-    }
-
-    public void setAnalysisId(Integer analysisId) {
-        this.analysisId = analysisId;
-    }
-
     public AnalysisQaEventViewDO getAnalysisQAAt(int i) {
         return items.get(i);
 
@@ -103,18 +97,11 @@ public class AnalysisQaEventManager implements RPC {
             deletedList.add(tmpQA);
     }
 
-    /*
-     * public int getIndex(AnalysisTestDO aDO){ for(int i=0; i<count(); i++)
-     * if(items.get(i).analysis == aDO) return i; return -1; }
-     */
-
-    // service methods
-    public AnalysisQaEventManager add() throws Exception {
-        return proxy().add(this);
-    }
-
-    public AnalysisQaEventManager update() throws Exception {
-        return proxy().update(this);
+    public int count() {
+        if (items == null)
+            return 0;
+    
+        return items.size();
     }
 
     public void validate() throws Exception {
@@ -130,13 +117,16 @@ public class AnalysisQaEventManager implements RPC {
         proxy().validate(this, errorsList);
     }
 
-    private static AnalysisQAEventManagerProxy proxy() {
-        if (proxy == null)
-            proxy = new AnalysisQAEventManagerProxy();
-
-        return proxy;
+    // these are friendly methods so only managers and proxies can call this
+    // method
+    Integer getAnalysisId() {
+        return analysisId;
     }
 
+    void setAnalysisId(Integer analysisId) {
+        this.analysisId = analysisId;
+    }
+    
     int deleteCount() {
         if (deletedList == null)
             return 0;
@@ -148,13 +138,18 @@ public class AnalysisQaEventManager implements RPC {
         return deletedList.get(i);
     }
 
-    // these are friendly methods so only managers and proxies can call this
-    // method
     ArrayList<AnalysisQaEventViewDO> getAnalysisQAs() {
         return items;
     }
 
     void setAnalysisQAEvents(ArrayList<AnalysisQaEventViewDO> analysisQas) {
         this.items = analysisQas;
+    }
+
+    private static AnalysisQAEventManagerProxy proxy() {
+        if (proxy == null)
+            proxy = new AnalysisQAEventManagerProxy();
+    
+        return proxy;
     }
 }

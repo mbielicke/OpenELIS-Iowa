@@ -36,38 +36,29 @@ public class AnalysisResultManager implements RPC {
         return arm;
     }
 
+    public static AnalysisResultManager fetchByAnalysisId(Integer analysisId) throws Exception {
+        return proxy().fetchByAnalysisIdForDisplay(analysisId);
+    }
+
     /**
      * Creates a new instance of this object with the specified analysis id. Use
      * this function to load an instance of this object from database.
      */
-    public static AnalysisResultManager fetchByAnalysisId(Integer analysisId, Integer testId)
-                                                                                             throws Exception {
+    public static AnalysisResultManager fetchForUpdate(Integer analysisId, Integer testId)
+                                                                                          throws Exception {
         return proxy().fetchByAnalysisId(analysisId, testId);
     }
 
-    public static AnalysisResultManager fetchByAnalysisIdForDisplay(Integer analysisId)
-                                                                                       throws Exception {
-        return proxy().fetchByAnalysisIdForDisplay(analysisId);
-    }
-
-    public static AnalysisResultManager fetchByTestId(Integer testId) throws Exception {
+    public static AnalysisResultManager fetchForUpdate(Integer testId) throws Exception {
         return proxy().fetchNewByTestId(testId);
     }
 
-    public int rowCount() {
-        if (results == null)
-            return 0;
-
-        return results.size();
+    public AnalysisResultManager add() throws Exception {
+        return proxy().add(this);
     }
 
-    // getters/setters
-    public Integer getAnalysisId() {
-        return analysisId;
-    }
-
-    public void setAnalysisId(Integer analysisId) {
-        this.analysisId = analysisId;
+    public AnalysisResultManager update() throws Exception {
+        return proxy().update(this);
     }
 
     public ArrayList<ArrayList<ResultViewDO>> getResults() {
@@ -137,6 +128,15 @@ public class AnalysisResultManager implements RPC {
         results.remove(row);
     }
 
+    // getters/setters
+    public TestManager getTestManager() {
+        return testManager;
+    }
+
+    public void setTestManager(TestManager testManager) {
+        this.testManager = testManager;
+    }
+
     public HashMap<Integer, AnalyteDO> getAnalyteList() {
         return analyteList;
     }
@@ -151,6 +151,52 @@ public class AnalysisResultManager implements RPC {
 
     public void setTestAnalyteList(HashMap<Integer, TestAnalyteListItem> testAnalyteList) {
         this.testAnalyteList = testAnalyteList;
+    }
+
+    public HashMap<Integer, TestResultDO> getTestResultList() {
+        return testResultList;
+    }
+
+    public void setTestResultList(HashMap<Integer, TestResultDO> testResultList) {
+        this.testResultList = testResultList;
+    }
+
+    public ArrayList<ResultValidator> getResultValidators() {
+        return resultValidators;
+    }
+
+    public ResultValidator getResultValidator(Integer resultGroup) {
+        return resultValidators.get(resultGroup.intValue() - 1);
+    }
+
+    public void setResultValidators(ArrayList<ResultValidator> resultValidators) {
+        this.resultValidators = resultValidators;
+    }
+
+    public void addResultValidator(ResultValidator resultValidator) {
+        resultValidators.add(resultValidator);
+    }
+
+    public Integer validateResultValue(Integer resultGroup, Integer unitId, String value)
+                                                                                         throws Exception {
+        return resultValidators.get(resultGroup.intValue() - 1).validate(unitId, value);
+    }
+
+    public void validate() throws Exception {
+        ValidationErrorsList errorsList = new ValidationErrorsList();
+
+        proxy().validate(this, errorsList);
+
+        if (errorsList.size() > 0)
+            throw errorsList;
+    }
+
+    public void validate(ValidationErrorsList errorsList) throws Exception {
+        proxy().validate(this, errorsList);
+    }
+
+    public String getDefaultValue(Integer resultGroup, Integer unitOfMeasureId) {
+        return resultValidators.get(resultGroup.intValue() - 1).getDefault(unitOfMeasureId);
     }
 
     public ArrayList<TestAnalyteViewDO> getNonColumnTestAnalytes(Integer rowGroup) {
@@ -218,29 +264,36 @@ public class AnalysisResultManager implements RPC {
         return returnList;
     }
 
-    public ArrayList<ResultValidator> getResultValidators() {
-        return resultValidators;
+    protected int rowCount() {
+        if (results == null)
+            return 0;
+
+        return results.size();
+    }
+
+    // these are friendly methods so only managers and proxies can call this
+    // method
+    Integer getAnalysisId() {
+        return analysisId;
+    }
+
+    void setAnalysisId(Integer analysisId) {
+        this.analysisId = analysisId;
     }
     
-    public ResultValidator getResultValidator(Integer resultGroup) { 
-        return resultValidators.get(resultGroup.intValue()-1);
-    }
-    
-    public String getDefaultValue(Integer resultGroup, Integer unitOfMeasureId) { 
-        return resultValidators.get(resultGroup.intValue()-1).getDefault(unitOfMeasureId);
+    void setResults(ArrayList<ArrayList<ResultViewDO>> results) {
+        this.results = results;
     }
 
-    public void setResultValidators(ArrayList<ResultValidator> resultValidators) {
-        this.resultValidators = resultValidators;
+    int deleteCount() {
+        if (deletedResults == null)
+            return 0;
+
+        return deletedResults.size();
     }
 
-    public void addResultValidator(ResultValidator resultValidator) {
-        resultValidators.add(resultValidator);
-    }
-
-    public Integer validateResultValue(Integer resultGroup, Integer unitId, String value)
-                                                                                         throws Exception {
-        return resultValidators.get(resultGroup.intValue() - 1).validate(unitId, value);
+    ResultViewDO getDeletedAt(int i) {
+        return deletedResults.get(i);
     }
 
     private ArrayList<ResultViewDO> createNewDataListAt(int row,
@@ -313,70 +366,11 @@ public class AnalysisResultManager implements RPC {
         return currDO;
     }
 
-    // service methods
-    public AnalysisResultManager add() throws Exception {
-        return proxy().add(this);
-    }
-
-    public AnalysisResultManager update() throws Exception {
-        return proxy().update(this);
-    }
-
-    public void validate() throws Exception {
-        ValidationErrorsList errorsList = new ValidationErrorsList();
-
-        proxy().validate(this, errorsList);
-
-        if (errorsList.size() > 0)
-            throw errorsList;
-    }
-
-    public void validate(ValidationErrorsList errorsList) throws Exception {
-        proxy().validate(this, errorsList);
-    }
-
     private static AnalysisResultManagerProxy proxy() {
         if (proxy == null)
             proxy = new AnalysisResultManagerProxy();
 
         return proxy;
-    }
-
-    // these are friendly methods so only managers and proxies can call this
-    // method
-    // ArrayList<SampleItemListItem> getItems() {
-    // return items;
-    // }
-
-    void setResults(ArrayList<ArrayList<ResultViewDO>> results) {
-        this.results = results;
-    }
-
-    int deleteCount() {
-        if (deletedResults == null)
-            return 0;
-
-        return deletedResults.size();
-    }
-
-    ResultViewDO getDeletedAt(int i) {
-        return deletedResults.get(i);
-    }
-
-    public TestManager getTestManager() {
-        return testManager;
-    }
-
-    public void setTestManager(TestManager testManager) {
-        this.testManager = testManager;
-    }
-
-    public HashMap<Integer, TestResultDO> getTestResultList() {
-        return testResultList;
-    }
-
-    public void setTestResultList(HashMap<Integer, TestResultDO> testResultList) {
-        this.testResultList = testResultList;
     }
 
     public static class TestAnalyteListItem implements Serializable {
