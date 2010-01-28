@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.sample.client;
 
 import org.openelis.domain.NoteViewDO;
@@ -45,27 +45,29 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
 
 public class SampleNotesTab extends NotesTab {
-    protected String internalNotesPanelKey;
-    protected String internalEditButtonKey;
-    
-    protected NoteManager internalManager;
-    
-    protected NotesPanel internalNotesPanel;
+    protected String         internalNotesPanelKey;
+    protected String         internalEditButtonKey;
+
+    protected NoteManager    internalManager;
+
+    protected NotesPanel     internalNotesPanel;
+    protected AppButton      internalEditButton;
     protected EditNoteScreen internalEditNote;
-    
-    protected NoteViewDO internalNote;
-    
-    public SampleNotesTab(ScreenDefInt def, ScreenWindow window, String externalNotesPanelKey, String externalEditButtonKey,
-                               String internalNotesPanelKey, String internalEditButtonKey) {
-        
+
+    protected NoteViewDO     internalNote;
+
+    public SampleNotesTab(ScreenDefInt def, ScreenWindow window, String externalNotesPanelKey,
+                          String externalEditButtonKey, String internalNotesPanelKey,
+                          String internalEditButtonKey) {
+
         super(def, window, externalNotesPanelKey, externalEditButtonKey, true);
-        
+
         this.internalNotesPanelKey = internalNotesPanelKey;
         this.internalEditButtonKey = internalEditButtonKey;
-        
+
         initializeTab();
     }
-    
+
     public void initializeTab() {
         internalNotesPanel = (NotesPanel)def.getWidget(internalNotesPanelKey);
         addScreenHandler(internalNotesPanel, new ScreenEventHandler<String>() {
@@ -78,7 +80,8 @@ public class SampleNotesTab extends NotesTab {
                     internalNotesPanel.clearNotes();
             }
         });
-        final AppButton internalEditButton = (AppButton)def.getWidget(internalEditButtonKey);
+
+        internalEditButton = (AppButton)def.getWidget(internalEditButtonKey);
         addScreenHandler(internalEditButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 if (internalEditNote == null) {
@@ -87,9 +90,10 @@ public class SampleNotesTab extends NotesTab {
                         internalEditNote.addActionHandler(new ActionHandler<EditNoteScreen.Action>() {
                             public void onAction(ActionEvent<EditNoteScreen.Action> event) {
                                 if (event.getAction() == EditNoteScreen.Action.OK) {
-                                    if (internalNote.getText() == null || internalNote.getText().trim().length() == 0)
+                                    if (internalNote.getText() == null ||
+                                        internalNote.getText().trim().length() == 0)
                                         internalManager.removeEditingNote();
-                                    
+
                                     loaded = false;
                                     draw();
                                 }
@@ -108,9 +112,9 @@ public class SampleNotesTab extends NotesTab {
                 modal.setContent(internalEditNote);
 
                 internalNote = null;
-                try{
+                try {
                     internalNote = internalManager.getInternalEditingNote();
-                }catch(Exception e ){
+                } catch (Exception e) {
                     e.printStackTrace();
                     Window.alert("error!");
                 }
@@ -129,29 +133,27 @@ public class SampleNotesTab extends NotesTab {
             }
         });
     }
-    
+
     protected void drawInternalNotes() {
         internalNotesPanel.clearNotes();
-        for (int i = 0; i < internalManager.count(); i++) {
+        for (int i = 0; i < internalManager.count(); i++ ) {
             NoteViewDO noteRow = internalManager.getNoteAt(i);
-            internalNotesPanel.addNote(noteRow.getSubject(),
-                               noteRow.getSystemUser(),
-                               noteRow.getText(),
-                               noteRow.getTimestamp());
+            internalNotesPanel.addNote(noteRow.getSubject(), noteRow.getSystemUser(),
+                                       noteRow.getText(), noteRow.getTimestamp());
         }
     }
 
     public void draw() {
-        if (!loaded) {
+        if ( !loaded) {
             try {
-                if (parentManager != null){
+                if (parentManager != null) {
                     manager = ((SampleManager)parentManager).getExternalNote();
                     internalManager = ((SampleManager)parentManager).getInternalNotes();
                 }
 
                 DataChangeEvent.fire(this);
                 loaded = true;
-                
+
             } catch (Exception e) {
                 Window.alert(e.getMessage());
             }

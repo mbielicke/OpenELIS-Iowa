@@ -101,7 +101,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
 
     protected Tabs                    tab;
     private Integer                   sampleLoggedInId, sampleErrorStatusId, sampleReleasedId,
-                    userId;
+                                      userId;
 
     private SampleItemAnalysisTreeTab treeTab;
     private EnvironmentalTab          environmentalTab;
@@ -113,22 +113,22 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
     private StorageTab                storageTab;
     private QAEventsTab               qaEventsTab;
     private AuxDataTab                auxDataTab;
-    
-    protected TextBox                      clientReference;
-    protected TextBox<Integer>             accessionNumber, orderNumber;
-    protected TextBox<Datetime>            collectedTime;
-    protected Dropdown<Integer>            statusId;
-    protected CalendarLookUp               collectedDate, receivedDate;
+
+    protected TextBox                 clientReference;
+    protected TextBox<Integer>        accessionNumber, orderNumber;
+    protected TextBox<Datetime>       collectedTime;
+    protected Dropdown<Integer>       statusId;
+    protected CalendarLookUp          collectedDate, receivedDate;
 
     protected AppButton               queryButton, addButton, updateButton, nextButton, prevButton,
-                    commitButton, abortButton;
+                                      commitButton, abortButton;
     protected MenuItem                history;
     protected TabPanel                tabs;
 
     ScreenNavigator                   nav;
     private SecurityModule            security;
 
-    private OrderImportEnvironmental       envOrderImport;
+    private OrderImportEnvironmental  envOrderImport;
     private SampleManager             manager;
 
     public EnvironmentalSampleLoginScreen() throws Exception {
@@ -138,7 +138,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
                                     "controller?service=org.openelis.modules.sample.server.SampleService");
 
         security = OpenELIS.security.getModule("sampleenvironmental");
-        
+
         if (security == null)
             throw new SecurityException("screenPermException", "Environmental Sample Login Screen");
 
@@ -179,14 +179,115 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
     }
 
     private void initialize() {
-        final EnvironmentalSampleLoginScreen envScreen = this;
+        //
+        // button panel buttons
+        //
+        queryButton = (AppButton)def.getWidget("query");
+        addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                query();
+            }
 
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
-                if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
-                    event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
-                }
+            public void onStateChange(StateChangeEvent<State> event) {
+                if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
+                    security.hasSelectPermission())
+                    queryButton.enable(true);
+                else if (event.getState() == State.QUERY)
+                    queryButton.setState(ButtonState.LOCK_PRESSED);
+                else
+                    queryButton.enable(false);
+            }
+        });
+        
+        nextButton = (AppButton)def.getWidget("next");
+        addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                next();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                nextButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+
+        prevButton = (AppButton)def.getWidget("previous");
+        addScreenHandler(prevButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                previous();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                prevButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+
+        addButton = (AppButton)def.getWidget("add");
+        addScreenHandler(addButton, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(state) &&
+                    security.hasAddPermission())
+                    addButton.enable(canEdit());
+            }
+
+            public void onClick(ClickEvent event) {
+                add();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
+                    security.hasAddPermission())
+                    addButton.enable(true);
+                else if (EnumSet.of(State.ADD).contains(event.getState()))
+                    addButton.setState(ButtonState.LOCK_PRESSED);
+                else
+                    addButton.enable(false);
+            }
+        });
+
+        updateButton = (AppButton)def.getWidget("update");
+        addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                update();
+            }
+
+            public void onDataChange(DataChangeEvent event) {
+                if (EnumSet.of(State.DISPLAY).contains(state) && security.hasUpdatePermission())
+                    updateButton.enable(canEdit());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                if (EnumSet.of(State.DISPLAY).contains(event.getState()) &&
+                    security.hasUpdatePermission())
+                    updateButton.enable(true);
+                else if (EnumSet.of(State.UPDATE).contains(event.getState()))
+                    updateButton.setState(ButtonState.LOCK_PRESSED);
+                else
+                    updateButton.enable(false);
+
+            }
+        });
+
+        commitButton = (AppButton)def.getWidget("commit");
+        addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                commit();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                           .contains(event.getState()));
+            }
+        });
+
+        abortButton = (AppButton)def.getWidget("abort");
+        addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                abort();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
             }
         });
         
@@ -201,6 +302,20 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
                 history.enable(EnumSet.of(State.DISPLAY, State.UPDATE).contains(event.getState()));
             }
         });
+        
+        //
+        //screen fields
+        //
+        final EnvironmentalSampleLoginScreen envScreen = this;
+
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+                if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
+                    event.cancel();
+                    window.setError(consts.get("mustCommitOrAbort"));
+                }
+            }
+        });
 
         accessionNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
@@ -209,28 +324,27 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
             }
 
             public void onValueChange(final ValueChangeEvent<Integer> event) {
-                try{
+                try {
                     manager.getSample().setAccessionNumber(event.getValue());
                     manager.validateAccessionNumber(manager.getSample());
-                    
-                }catch(ValidationErrorsList e) {
+
+                } catch (ValidationErrorsList e) {
                     showErrors(e);
-                }catch(Exception e){
+                } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 accessionNumber.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                   .contains(event.getState()));
+                                              .contains(event.getState()));
                 accessionNumber.setQueryMode(event.getState() == State.QUERY);
 
-                if (EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                .contains(event.getState()))
+                if (EnumSet.of(State.ADD, State.UPDATE, State.QUERY).contains(event.getState()))
                     accessionNumber.setFocus(true);
             }
         });
-        
+
         orderNumber = (TextBox<Integer>)def.getWidget("orderNumber");
         addScreenHandler(orderNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -239,24 +353,23 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 manager.getSample().setOrderId(event.getValue());
-                
-                if(envOrderImport == null)
+
+                if (envOrderImport == null)
                     envOrderImport = new OrderImportEnvironmental();
-                
-                try{
+
+                try {
                     envOrderImport.importOrderInfo(event.getValue(), manager);
                     DataChangeEvent.fire(envScreen);
-                }catch(Exception e){
+                } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orderNumber.enable(EnumSet.of(State.ADD, State.UPDATE)
-                                   .contains(event.getState()));
+                orderNumber.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
-        
+
         collectedDate = (CalendarLookUp)def.getWidget(SampleMeta.getCollectionDate());
         addScreenHandler(collectedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
@@ -269,15 +382,15 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
 
             public void onStateChange(StateChangeEvent<State> event) {
                 collectedDate.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                   .contains(event.getState()));
+                                            .contains(event.getState()));
                 collectedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
+
         collectedTime = (TextBox<Datetime>)def.getWidget(SampleMeta.getCollectionTime());
         addScreenHandler(collectedTime, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                
+
                 collectedTime.setValue(manager.getSample().getCollectionTime());
             }
 
@@ -287,11 +400,11 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
 
             public void onStateChange(StateChangeEvent<State> event) {
                 collectedTime.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                   .contains(event.getState()));
+                                            .contains(event.getState()));
                 collectedTime.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
+
         receivedDate = (CalendarLookUp)def.getWidget(SampleMeta.getReceivedDate());
         addScreenHandler(receivedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
@@ -304,11 +417,11 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
 
             public void onStateChange(StateChangeEvent<State> event) {
                 receivedDate.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                   .contains(event.getState()));
+                                           .contains(event.getState()));
                 receivedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
+
         statusId = (Dropdown<Integer>)def.getWidget(SampleMeta.getStatusId());
         addScreenHandler(statusId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -320,12 +433,11 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                statusId.enable(EnumSet.of(State.QUERY)
-                                   .contains(event.getState()));
+                statusId.enable(EnumSet.of(State.QUERY).contains(event.getState()));
                 statusId.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
+
         clientReference = (TextBox)def.getWidget(SampleMeta.getClientReference());
         addScreenHandler(clientReference, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -338,53 +450,11 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
 
             public void onStateChange(StateChangeEvent<State> event) {
                 clientReference.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                   .contains(event.getState()));
+                                              .contains(event.getState()));
                 clientReference.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
-        nav = new ScreenNavigator(def) {
-            public void executeQuery(final Query query) {
-                window.setBusy(consts.get("querying"));
 
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
-                    public void onSuccess(ArrayList<IdNameVO> result) {
-                        setQueryResult(result);
-                    }
-
-                    public void onFailure(Throwable error) {
-                        setQueryResult(null);
-                        if (error instanceof NotFoundException) {
-                            window.setDone(consts.get("noRecordsFound"));
-                            setState(State.DEFAULT);
-                        } else if (error instanceof LastPageException) {
-                            window.setError("No more records in this direction");
-                        } else {
-                            Window.alert("Error: envsample call query failed; " +
-                                         error.getMessage());
-                            window.setError(consts.get("queryFailed"));
-                        }
-                    }
-                });
-            }
-
-            public boolean fetch(RPC entry) {
-                return fetchById( (entry == null) ? null : ((IdNameVO)entry).getId());
-            }
-
-            public ArrayList<TableDataRow> getModel() {
-                ArrayList<IdNameVO> result;
-                ArrayList<TableDataRow> model;
-
-                result = nav.getQueryResult();
-                model = new ArrayList<TableDataRow>();
-                if (result != null) {
-                    for (IdNameVO entry : result)
-                        model.add(new TableDataRow(entry.getId(), entry.getName()));
-                }
-                return model;
-            }
-        };
         // Set up tabs to recieve State Change events from the main Screen.
         // analysis tree section of the screen
         treeTab = new SampleItemAnalysisTreeTab(def, window, envScreen);
@@ -571,114 +641,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
             }
         });
 
-        queryButton = (AppButton)def.getWidget("query");
-        addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                query();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                    security.hasSelectPermission())
-                    queryButton.enable(true);
-                else if (event.getState() == State.QUERY)
-                    queryButton.setState(ButtonState.LOCK_PRESSED);
-                else
-                    queryButton.enable(false);
-            }
-        });
-
-        addButton = (AppButton)def.getWidget("add");
-        addScreenHandler(addButton, new ScreenEventHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(state) &&
-                    security.hasAddPermission())
-                    addButton.enable(canEdit());
-            }
-
-            public void onClick(ClickEvent event) {
-                add();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                    security.hasAddPermission())
-                    addButton.enable(true);
-                else if (EnumSet.of(State.ADD).contains(event.getState()))
-                    addButton.setState(ButtonState.LOCK_PRESSED);
-                else
-                    addButton.enable(false);
-            }
-        });
-
-        updateButton = (AppButton)def.getWidget("update");
-        addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                update();
-            }
-
-            public void onDataChange(DataChangeEvent event) {
-                if (EnumSet.of(State.DISPLAY).contains(state) && security.hasUpdatePermission())
-                    updateButton.enable(canEdit());
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                if (EnumSet.of(State.DISPLAY).contains(event.getState()) &&
-                    security.hasUpdatePermission())
-                    updateButton.enable(true);
-                else if (EnumSet.of(State.UPDATE).contains(event.getState()))
-                    updateButton.setState(ButtonState.LOCK_PRESSED);
-                else
-                    updateButton.enable(false);
-
-            }
-        });
-
-        nextButton = (AppButton)def.getWidget("next");
-        addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                next();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                nextButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
-            }
-        });
-
-        prevButton = (AppButton)def.getWidget("previous");
-        addScreenHandler(prevButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                previous();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                prevButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
-            }
-        });
-
-        commitButton = (AppButton)def.getWidget("commit");
-        addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                commit();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                           .contains(event.getState()));
-            }
-        });
-
-        abortButton = (AppButton)def.getWidget("abort");
-        addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                abort();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                          .contains(event.getState()));
-            }
-        });
+        
 
         // Get TabPanel and set Tab Selection Handlers
         tabs = (TabPanel)def.getWidget("sampleItemTabPanel");
@@ -696,6 +659,49 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
                 window.clearStatus();
             }
         });
+        
+        nav = new ScreenNavigator(def) {
+            public void executeQuery(final Query query) {
+                window.setBusy(consts.get("querying"));
+
+                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                    public void onSuccess(ArrayList<IdNameVO> result) {
+                        setQueryResult(result);
+                    }
+
+                    public void onFailure(Throwable error) {
+                        setQueryResult(null);
+                        if (error instanceof NotFoundException) {
+                            window.setDone(consts.get("noRecordsFound"));
+                            setState(State.DEFAULT);
+                        } else if (error instanceof LastPageException) {
+                            window.setError("No more records in this direction");
+                        } else {
+                            Window.alert("Error: envsample call query failed; " +
+                                         error.getMessage());
+                            window.setError(consts.get("queryFailed"));
+                        }
+                    }
+                });
+            }
+
+            public boolean fetch(RPC entry) {
+                return fetchById( (entry == null) ? null : ((IdNameVO)entry).getId());
+            }
+
+            public ArrayList<TableDataRow> getModel() {
+                ArrayList<IdNameVO> result;
+                ArrayList<TableDataRow> model;
+
+                result = nav.getQueryResult();
+                model = new ArrayList<TableDataRow>();
+                if (result != null) {
+                    for (IdNameVO entry : result)
+                        model.add(new TableDataRow(entry.getId(), entry.getName()));
+                }
+                return model;
+            }
+        };
     }
 
     protected void query() {
@@ -781,18 +787,18 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
         if (state == State.QUERY) {
             Query query;
             QueryData domain;
-            
+
             ArrayList<QueryData> queryFields = getQueryFields();
             query = new Query();
             query.setFields(queryFields);
-            
-            //add the domain
+
+            // add the domain
             domain = new QueryData();
             domain.key = SampleMeta.getDomain();
             domain.query = SampleManager.ENVIRONMENTAL_DOMAIN_FLAG;
             domain.type = QueryData.Type.STRING;
             query.getFields().add(domain);
-            
+
             nav.setQuery(query);
         } else if (state == State.ADD) {
             window.setBusy(consts.get("adding"));

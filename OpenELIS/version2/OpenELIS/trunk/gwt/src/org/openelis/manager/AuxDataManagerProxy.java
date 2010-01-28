@@ -45,14 +45,6 @@ public class AuxDataManagerProxy {
         return service.call("fetchById", auxData);
     }
     
-    public AuxDataManager fetchByIdForUpdate(Integer referenceId, Integer referenceTableId) throws Exception {
-        AuxDataDO auxData = new AuxDataDO();
-        auxData.setReferenceId(referenceId);
-        auxData.setReferenceTableId(referenceTableId);
-        
-        return service.call("fetchByIdForUpdate", auxData);
-    }
-    
     public AuxDataManager add(AuxDataManager man) throws Exception {
         assert false : "not supported";
         return null;

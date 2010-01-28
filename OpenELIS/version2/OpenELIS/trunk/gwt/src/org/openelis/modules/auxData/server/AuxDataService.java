@@ -40,10 +40,6 @@ public class AuxDataService {
         return managerRemote().fetchById(auxData.getReferenceId(), auxData.getReferenceTableId());
     }   
     
-    public AuxDataManager fetchByIdForUpdate(AuxDataDO auxData) throws Exception {
-        return managerRemote().fetchByIdForUpdate(auxData.getReferenceId(), auxData.getReferenceTableId());
-    }
-    
     public ArrayList<AuxDataViewDO> fetchByRefId(AuxDataDO auxData) throws Exception {
         return remote().fetchById(auxData.getReferenceId(), auxData.getReferenceTableId());
     }

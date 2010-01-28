@@ -1,4 +1,5 @@
 
+
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -27,43 +28,43 @@ UIRF Software License are applicable instead of those above.
   -->
 
 <xsl:stylesheet
-  extension-element-prefixes="resource"
   version="1.0"
+  extension-element-prefixes="resource"
   xmlns:locale="xalan://java.util.Locale"
-  xmlns:meta="xalan://org.openelis.meta.SampleMeta"
   xmlns:resource="xalan://org.openelis.util.UTFResource"
   xmlns:xalan="http://xml.apache.org/xalan"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
-  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
+  xmlns:meta="xalan://org.openelis.meta.SampleMeta">
 
   <xsl:template name="QAEventsTab">
     <VerticalPanel padding="0" spacing="0">
       <TablePanel height="100%" padding="0" spacing="0" style="TabSubForm">
         <row>
-          <table key="sampleQATable" maxRows="8" showScroll="ALWAYS" style="ScreenTableWithSides" title="" width="auto">
-            <col header="{resource:getString($constants,'sampleQAEvent')}" key="{meta:getSampleSubQaName()}" width="172">
+          <table key="sampleQATable" width="auto" maxRows="8" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
+            <col key="{meta:getSampleSubQaName()}" width="172" header="{resource:getString($constants,'sampleQAEvent')}">
               <label />
             </col>
-            <col header="{resource:getString($constants,'type')}" key="{meta:getSampleQaTypeId()}" width="90">
-              <dropdown field="Integer" popWidth="75px" width="75px" />
+            <col key="{meta:getSampleQaTypeId()}" width="90" header="{resource:getString($constants,'type')}">
+              <dropdown width="75px" popWidth="75px" field="Integer" />
             </col>
-            <col header="{resource:getString($constants,'billable')}" key="{meta:getSampleQaIsBillable()}" width="61">
+            <col key="{meta:getSampleQaIsBillable()}" width="61" header="{resource:getString($constants,'billable')}">
               <check />
             </col>
           </table>
           <widget rowspan="3">
             <AbsolutePanel style="Divider" />
           </widget>
-          <table key="analysisQATable" maxRows="8" showScroll="ALWAYS" style="ScreenTableWithSides" title="" width="auto">
-            <col header="{resource:getString($constants,'analysisQAEvent')}" key="{meta:getAnalysisAubQaName()}" width="172">
+          <table key="analysisQATable" width="auto" maxRows="8" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
+            <col key="{meta:getAnalysisAubQaName()}" width="172" header="{resource:getString($constants,'analysisQAEvent')}">
               <label />
             </col>
-            <col header="{resource:getString($constants,'type')}" key="{meta:getAnalysisQaTypeId()}" width="90">
-              <dropdown field="Integer" popWidth="75px" width="75px" />
+            <col key="{meta:getAnalysisQaTypeId()}" width="90" header="{resource:getString($constants,'type')}">
+              <dropdown width="75px" popWidth="75px" field="Integer" />
             </col>
-            <col header="{resource:getString($constants,'billable')}" key="meta:getAnalysisQaIsBillable()" width="60">
+            <col key="meta:getAnalysisQaIsBillable()" width="60" header="{resource:getString($constants,'billable')}">
               <check />
             </col>
           </table>

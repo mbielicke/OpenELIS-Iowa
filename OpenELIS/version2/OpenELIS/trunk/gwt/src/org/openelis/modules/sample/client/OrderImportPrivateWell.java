@@ -139,7 +139,7 @@ public class OrderImportPrivateWell {
                     }
                         
                 }else{
-                    manager.getAuxDataforUpdate().addAuxData(auxData);
+                    manager.getAuxData().addAuxData(auxData);
                 }
             }catch(Exception e){
                 //problem with aux input, ignore

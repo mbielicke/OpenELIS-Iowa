@@ -1,4 +1,5 @@
 
+
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -27,20 +28,20 @@ UIRF Software License are applicable instead of those above.
   -->
 
 <xsl:stylesheet
-  extension-element-prefixes="resource"
   version="1.0"
+  extension-element-prefixes="resource"
   xmlns:locale="xalan://java.util.Locale"
-  xmlns:meta="xalan://org.openelis.meta.SampleMeta"
   xmlns:resource="xalan://org.openelis.util.UTFResource"
   xmlns:xalan="http://xml.apache.org/xalan"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
-  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
+  xmlns:meta="xalan://org.openelis.meta.SampleMeta">
 
   <xsl:template name="AnalysisNotesTab">
     <VerticalPanel padding="0" spacing="0">
-      <HorizontalPanel height="100%" padding="0" spacing="0" width="100%">
+      <HorizontalPanel width="100%" height="100%" padding="0" spacing="0">
         <TablePanel padding="0" spacing="0" style="TabSubForm">
           <row>
             <text style="Title">
@@ -48,7 +49,7 @@ UIRF Software License are applicable instead of those above.
             </text>
           </row>
           <row>
-            <notes height="190px" key="anExNotesPanel" style="ScreenTableWithSides" width="351px" />
+            <notes key="anExNotesPanel" width="351px" height="190px" style="ScreenTableWithSides" />
           </row>
           <row>
             <widget style="TableButtonFooter">
@@ -71,7 +72,7 @@ UIRF Software License are applicable instead of those above.
             </text>
           </row>
           <row>
-            <notes height="190px" key="anIntNotesPanel" style="ScreenTableWithSides" width="351px" />
+            <notes key="anIntNotesPanel" width="351px" height="190px" style="ScreenTableWithSides" />
           </row>
           <row>
             <widget style="TableButtonFooter">

@@ -74,7 +74,7 @@ public class QAEventsTab extends Screen {
     protected SampleManager          sampleManager;
     protected AnalysisManager        anMan;
     protected AnalysisViewDO         anDO;
-    protected Integer analysisCancelledId, analysisReleasedId;
+    protected Integer                analysisCancelledId, analysisReleasedId;
 
     protected QaeventLookupScreen    qaEventScreen;
 
@@ -85,7 +85,6 @@ public class QAEventsTab extends Screen {
         setWindow(window);
 
         initialize();
-
         initializeDropdowns();
     }
 
@@ -99,7 +98,8 @@ public class QAEventsTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sampleQATable.enable(canEditSampleQA() && EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                sampleQATable.enable(canEditSampleQA() &&
+                                     EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                             .contains(event.getState()));
                 sampleQATable.setQueryMode(event.getState() == State.QUERY);
             }
@@ -107,7 +107,7 @@ public class QAEventsTab extends Screen {
 
         sampleQATable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if (event.getCol() == 0 || !Window.confirm(consts.get("qaEventEditConfirm"))){
+                if (event.getCol() == 0 || !Window.confirm(consts.get("qaEventEditConfirm"))) {
                     event.cancel();
                 }
             }
@@ -120,12 +120,12 @@ public class QAEventsTab extends Screen {
 
                 r = event.getRow();
                 c = event.getCol();
-                
+
                 val = sampleQATable.getRow(r).cells.get(c).value;
-    
+
                 SampleQaEventViewDO qaDO;
                 qaDO = sampleQAManager.getSampleQAAt(r);
-    
+
                 switch (c) {
                     case 1:
                         qaDO.setTypeId((Integer)val);
@@ -153,7 +153,8 @@ public class QAEventsTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeSampleQAButton.enable(canEditSampleQA() && EnumSet.of(State.ADD, State.UPDATE)
+                removeSampleQAButton.enable(canEditSampleQA() &&
+                                            EnumSet.of(State.ADD, State.UPDATE)
                                                    .contains(event.getState()));
             }
         });
@@ -173,7 +174,8 @@ public class QAEventsTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sampleQAPicker.enable(canEditSampleQA() && EnumSet.of(State.ADD, State.UPDATE)
+                sampleQAPicker.enable(canEditSampleQA() &&
+                                      EnumSet.of(State.ADD, State.UPDATE)
                                              .contains(event.getState()));
             }
         });
@@ -185,11 +187,13 @@ public class QAEventsTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                analysisQATable.enable((State.QUERY == event.getState()) || 
-                                       (canEditAnalysisQA() && (SampleDataBundle.Type.ANALYSIS == type) &&
-                                       anDO.getTestId() != null &&
-                                       EnumSet.of(State.ADD, State.UPDATE)
-                                              .contains(event.getState())));
+                analysisQATable.enable( (State.QUERY == event.getState()) ||
+                                       (canEditAnalysisQA() &&
+                                        (SampleDataBundle.Type.ANALYSIS == type) &&
+                                        anDO.getTestId() != null && EnumSet.of(State.ADD,
+                                                                               State.UPDATE)
+                                                                           .contains(
+                                                                                     event.getState())));
                 analysisQATable.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -242,7 +246,8 @@ public class QAEventsTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeAnalysisQAButton.enable(canEditAnalysisQA() && (SampleDataBundle.Type.ANALYSIS == type) &&
+                removeAnalysisQAButton.enable(canEditAnalysisQA() &&
+                                              (SampleDataBundle.Type.ANALYSIS == type) &&
                                               anDO.getTestId() != null &&
                                               EnumSet.of(State.ADD, State.UPDATE)
                                                      .contains(event.getState()));
@@ -264,7 +269,8 @@ public class QAEventsTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                analysisQAPicker.enable(canEditAnalysisQA() && (SampleDataBundle.Type.ANALYSIS == type) &&
+                analysisQAPicker.enable(canEditAnalysisQA() &&
+                                        (SampleDataBundle.Type.ANALYSIS == type) &&
                                         anDO.getTestId() != null &&
                                         EnumSet.of(State.ADD, State.UPDATE)
                                                .contains(event.getState()));
@@ -384,19 +390,19 @@ public class QAEventsTab extends Screen {
         }
     }
 
-    private void initializeDropdowns(){
-        try{
+    private void initializeDropdowns() {
+        try {
             analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
             analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
-            
-        }catch(Exception e){
+
+        } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
         }
-        
+
         ArrayList<TableDataRow> model;
 
-        //qa event type dropdown
+        // qa event type dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("qaevent_type"))
@@ -405,16 +411,16 @@ public class QAEventsTab extends Screen {
         ((Dropdown<Integer>)sampleQATable.getColumns().get(1).getColumnWidget()).setModel(model);
         ((Dropdown<Integer>)analysisQATable.getColumns().get(1).getColumnWidget()).setModel(model);
     }
-    
-    private boolean canEditSampleQA(){
-        try{
-            return !sampleManager.hasReleasedCancelledAnalysis();    
-        }catch(Exception e){
+
+    private boolean canEditSampleQA() {
+        try {
+            return !sampleManager.hasReleasedCancelledAnalysis();
+        } catch (Exception e) {
             return false;
         }
     }
-    
-    private boolean canEditAnalysisQA(){
+
+    private boolean canEditAnalysisQA() {
         return (anDO != null && !analysisCancelledId.equals(anDO.getStatusId()) && !analysisReleasedId.equals(anDO.getStatusId()));
     }
 
@@ -454,7 +460,7 @@ public class QAEventsTab extends Screen {
                         analysisQAManager = anMan.getQAEventAt(index);
                 }
 
-                if(state != State.QUERY){
+                if (state != State.QUERY) {
                     StateChangeEvent.fire(this, state);
                     DataChangeEvent.fire(this);
                 }

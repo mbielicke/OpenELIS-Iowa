@@ -34,7 +34,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.DateField;
-import org.openelis.gwt.widget.DoubleField;
 import org.openelis.gwt.widget.IntegerField;
 import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.StringField;
@@ -111,18 +110,6 @@ public class AuxTableColumn extends TableColumn {
 
         return alphaTextBox;
     }
-/*
-    private TextBox<Double> getNumTextbox() {
-        if (numTextBox == null) {
-            numTextBox = new TextBox<Double>();
-            numTextBox.setStyleName("ScreenTextBox");
-            numTextBox.setCase(Case.MIXED);
-            numTextBox.setField(new DoubleField());
-            numTextBox.setLength(80);
-        }
-
-        return numTextBox;
-    }*/
 
     private CalendarLookUp getCalendar(byte begin, byte end) {
         if (calendar == null) {
