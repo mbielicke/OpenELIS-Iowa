@@ -42,21 +42,6 @@ public class AuxDataManagerProxy {
     
     public AuxDataManager fetchById(Integer referenceId, Integer referenceTableId) throws Exception {
         AuxDataLocal l;
-        ArrayList<AuxDataViewDO> data;
-        AuxDataManager m;
-
-        l = local();
-        data = l.fetchById(referenceId, referenceTableId);
-        m = AuxDataManager.getInstance();
-        
-        for(int i=0; i<data.size(); i++)
-            m.addAuxData(data.get(i));
-
-        return m;
-    }
-    
-    public AuxDataManager fetchByIdForUpdate(Integer referenceId, Integer referenceTableId) throws Exception {
-        AuxDataLocal l;
         AuxFieldLocal fl;
         AuxFieldValueLocal fvl;
         AuxDataViewDO dataDO;
@@ -92,10 +77,11 @@ public class AuxDataManagerProxy {
             if(fieldId == values.get(j).getAuxFieldId()){
                 tmpValue.add(values.get(j));
             }else{
-                valueHash.put(fieldId, tmpValue);
-                tmpValue = new ArrayList<AuxFieldValueViewDO>();
-                tmpValue.add(values.get(j));
                 fieldId = values.get(j).getAuxFieldId();
+                tmpValue = new ArrayList<AuxFieldValueViewDO>();
+                valueHash.put(fieldId, tmpValue);
+                
+                tmpValue.add(values.get(j));
             }
         }
         
