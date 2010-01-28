@@ -1,5 +1,6 @@
 
-	<!--
+
+<!--
 		Exhibit A - UIRF Open-source Based Public Software License. The
 		contents of this file are subject to the UIRF Open-source Based Public
 		Software License(the "License"); you may not use this file except in
@@ -16,7 +17,8 @@
 		a UIRF Software license ("UIRF Software License"), in which case the
 		provisions of a UIRF Software License are applicable instead of those
 		above.
-	-->
+  -->
+
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -27,78 +29,80 @@
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
-	<xsl:import href="IMPORT/button.xsl" />
 
-	<xalan:component prefix="resource">
-		<xalan:script lang="javaclass"
-			src="xalan://org.openelis.util.UTFResource" />
-	</xalan:component>
+  <xsl:import href="IMPORT/button.xsl" />
+  <xalan:component prefix="resource">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
+  </xalan:component>
+  <xalan:component prefix="locale">
+    <xalan:script lang="javaclass" src="xalan://java.util.Locale" />
+  </xalan:component>
+  <xsl:template match="doc">
+    <xsl:variable name="language">
+      <xsl:value-of select="locale" />
+    </xsl:variable>
+    <xsl:variable name="props">
+      <xsl:value-of select="props" />
+    </xsl:variable>
+    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
+    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="SampleProjectPicker" name="{resource:getString($constants,'sampleProject')}">
+      <VerticalPanel padding="0" spacing="0">
+        <TablePanel padding="0" spacing="0">
+          <row>
+            <table key="sampleProjectTable" width="auto" maxRows="10" showScroll="ALWAYS" tab="sampleProjectTable,sampleProjectTable" title="">
+              <col width="120" header="Name">
+                <autoComplete width="100px" case="UPPER">
+                  <col width="115" header="Name" />
+                  <col width="190" header="Desc" />
+                </autoComplete>
+              </col>
+              <col width="160" header="Description">
+                <label />
+              </col>
+              <col width="70" header="Is Perm">
+                <check />
+              </col>
+            </table>
+          </row>
+          <row>
+            <widget style="TableButtonFooter">
+              <HorizontalPanel>
+                <appButton key="projectAddButton" style="Button">
+                  <HorizontalPanel>
+                    <AbsolutePanel style="AddRowButtonImage" />
+                    <text>
+                      <xsl:value-of select="resource:getString($constants,'addRow')" />
+                    </text>
+                  </HorizontalPanel>
+                </appButton>
+                <appButton key="projectRemoveButton" style="Button">
+                  <HorizontalPanel>
+                    <AbsolutePanel style="RemoveRowButtonImage" />
+                    <text>
+                      <xsl:value-of select="resource:getString($constants,'removeRow')" />
+                    </text>
+                  </HorizontalPanel>
+                </appButton>
+              </HorizontalPanel>
+            </widget>
+          </row>
+        </TablePanel>
 
-	<xalan:component prefix="locale">
-		<xalan:script lang="javaclass" src="xalan://java.util.Locale" />
-	</xalan:component>
+<!--button panel code-->
 
-	<xsl:template match="doc">
-			<xsl:variable name="language">
-			<xsl:value-of select="locale" />
-		</xsl:variable>
-		<xsl:variable name="props">
-			<xsl:value-of select="props" />
-		</xsl:variable>
-		<xsl:variable name="constants"
-			select="resource:getBundle(string($props),locale:new(string($language)))" />
-		<screen id="SampleProjectPicker" name="{resource:getString($constants,'sampleProject')}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-				<VerticalPanel spacing="0" padding="0">
-				<TablePanel spacing="0" padding="0">
-					<row>
-						<table key="sampleProjectTable" width="auto" maxRows="10" title="" showScroll="ALWAYS" tab="sampleProjectTable,sampleProjectTable">
-							<col header="Name" width="120">
-								<autoComplete case="UPPER" width="100px">		
-									<col header="Name" width="115"/>
-									<col header="Desc" width="190"/>		
-								</autoComplete>
-							</col>
-							<col header="Description" width="160">
-								<label/>
-							</col>
-							<col header="Is Perm" width="70">
-								<check/>
-							</col>
-						</table>
-					</row>
-					<row>
-					<widget style="TableButtonFooter">
-	                <HorizontalPanel>
-	                 <appButton key="projectAddButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel style="AddRowButtonImage"/>
-                          <text><xsl:value-of select="resource:getString($constants,'addRow')"/></text>
-                        </HorizontalPanel>
-                      </appButton>
-	                  <appButton key="projectRemoveButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel style="RemoveRowButtonImage"/>
-                          <text><xsl:value-of select="resource:getString($constants,'removeRow')"/></text>
-                        </HorizontalPanel>
+        <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
+          <HorizontalPanel>
+            <xsl:call-template name="okButton">
+              <xsl:with-param name="language">
+                <xsl:value-of select="language" />
+              </xsl:with-param>
+            </xsl:call-template>
+          </HorizontalPanel>
+        </AbsolutePanel>
 
-                      </appButton>
-	                </HorizontalPanel>
-	                </widget>
-	                </row>
-	                </TablePanel>
-					<!--button panel code-->
-					<AbsolutePanel spacing="0" style="BottomButtonPanelContainer"
-						align="center">
-						<HorizontalPanel>
-							<xsl:call-template name="okButton">
-								<xsl:with-param name="language">
-									<xsl:value-of select="language" />
-								</xsl:with-param>
-							</xsl:call-template>
-						</HorizontalPanel>
-					</AbsolutePanel>
-					<!--end button panel-->
-				</VerticalPanel>
-		</screen>
-	</xsl:template>
+<!--end button panel-->
+
+      </VerticalPanel>
+    </screen>
+  </xsl:template>
 </xsl:stylesheet>

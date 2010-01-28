@@ -144,7 +144,7 @@ public class OrderImportEnvironmental {
                         }
                     }
                 }else{
-                    manager.getAuxDataforUpdate().addAuxData(auxData);
+                    manager.getAuxData().addAuxData(auxData);
                 }
             }catch(Exception e){
                 //problem with aux input, ignore

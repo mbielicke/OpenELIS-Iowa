@@ -1,4 +1,5 @@
 
+
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -27,35 +28,35 @@ UIRF Software License are applicable instead of those above.
   -->
 
 <xsl:stylesheet
-  extension-element-prefixes="resource"
   version="1.0"
+  extension-element-prefixes="resource"
   xmlns:locale="xalan://java.util.Locale"
-  xmlns:meta="xalan://org.openelis.meta.SampleMeta"
   xmlns:resource="xalan://org.openelis.util.UTFResource"
   xmlns:xalan="http://xml.apache.org/xalan"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
-  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
+  xmlns:meta="xalan://org.openelis.meta.SampleMeta">
 
   <xsl:template name="StorageTab">
     <VerticalPanel padding="0" spacing="0">
       <TablePanel padding="0" spacing="0">
         <row>
-          <table key="storageTable" maxRows="8" showScroll="ALWAYS" title="" width="auto">
-            <col header="{resource:getString($constants,'user')}" width="155">
+          <table key="storageTable" width="auto" maxRows="8" showScroll="ALWAYS" title="">
+            <col width="155" header="{resource:getString($constants,'user')}">
               <label />
             </col>
-            <col header="{resource:getString($constants,'location')}" width="259">
-              <autoComplete case="LOWER" field="Integer" key="" popWidth="auto" required="true" width="215px">
-                <col header="{resource:getString($constants,'name')}" width="240" />
+            <col width="259" header="{resource:getString($constants,'location')}">
+              <autoComplete key="" width="215px" case="LOWER" popWidth="auto" field="Integer" required="true">
+                <col width="240" header="{resource:getString($constants,'name')}" />
               </autoComplete>
             </col>
-            <col header="{resource:getString($constants,'checkIn')}" width="135">
-              <calendar begin="0" end="4" key="" pattern="{resource:getString($constants,'dateTimePattern')}" required="true" width="110" />
+            <col width="135" header="{resource:getString($constants,'checkIn')}">
+              <calendar key="" begin="0" end="4" width="110" pattern="{resource:getString($constants,'dateTimePattern')}" required="true" />
             </col>
-            <col header="{resource:getString($constants,'checkOut')}" width="136">
-              <calendar begin="0" end="4" key="" pattern="{resource:getString($constants,'dateTimePattern')}" width="110" />
+            <col width="136" header="{resource:getString($constants,'checkOut')}">
+              <calendar key="" begin="0" end="4" width="110" pattern="{resource:getString($constants,'dateTimePattern')}" />
             </col>
           </table>
         </row>

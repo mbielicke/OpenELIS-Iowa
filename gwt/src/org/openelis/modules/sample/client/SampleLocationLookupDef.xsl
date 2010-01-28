@@ -1,4 +1,5 @@
-	<!--
+
+<!--
 		Exhibit A - UIRF Open-source Based Public Software License. The
 		contents of this file are subject to the UIRF Open-source Based Public
 		Software License(the "License"); you may not use this file except in
@@ -15,7 +16,8 @@
 		a UIRF Software license ("UIRF Software License"), in which case the
 		provisions of a UIRF Software License are applicable instead of those
 		above.
-	-->
+  -->
+
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -27,61 +29,76 @@
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
   xmlns:meta="xalan://org.openelis.meta.SampleMeta">
-	<xsl:import href="IMPORT/button.xsl" />
+
+  <xsl:import href="IMPORT/button.xsl" />
   <xsl:template match="doc">
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    
-		<screen id="SampleLocationPicker" name="{resource:getString($constants,'sampleLocation')}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-				<VerticalPanel spacing="0" padding="0">
-					<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0" width="300px">
-						<TablePanel style="Form">
-					<row>
-					<text style="Prompt"><xsl:value-of select='resource:getString($constants,"location")'/>:</text>
-						<widget colspan="3">
-							<textbox key="{meta:getEnvLocation()}" width="214px" max="30" tab="{meta:getLocationAddrMultipleUnit()},{meta:getLocationAddrCountry()}" field="String"/>
-						</widget>
-					</row>
-					<row>
-						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
-						<widget colspan="3">
-							<textbox case="UPPER" key="{meta:getLocationAddrMultipleUnit()}" width="214px" max="30" tab="{meta:getLocationAddrStreetAddress()},{meta:getEnvLocation()}" field="String"/>
-						</widget>		
-					</row>
-					<row>
-						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
-						<widget colspan="3">
-							<textbox case="UPPER" key="{meta:getLocationAddrStreetAddress()}" width="214px" max="30" tab="{meta:getLocationAddrCity()},{meta:getLocationAddrMultipleUnit()}" field="String"/>
-						</widget>		
-					</row>
-					<row>
-						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
-						<widget colspan="3">
-							<textbox case="UPPER" key="{meta:getLocationAddrCity()}" width="214px" max="30" tab="{meta:getLocationAddrState()},{meta:getLocationAddrStreetAddress()}" field="String"/>
-						</widget>		
-					</row>
-					<row>
-						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
-						<widget>
-							<dropdown case="UPPER" key="{meta:getLocationAddrState()}" width="55px" tab="{meta:getLocationAddrZipCode()},{meta:getLocationAddrCity()}" field="String"/>
-						</widget>
-						
-						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
-						<widget>
-							<textbox case="UPPER" key="{meta:getLocationAddrZipCode()}" width="91px" max="30" tab="{meta:getLocationAddrCountry()},{meta:getLocationAddrState()}" field="String"/>
-						</widget>
-					</row>
-					<row>
-					<text style="Prompt"><xsl:value-of select="resource:getString($constants,'country')"/>:</text>
-					<widget colspan="3">
-						<dropdown key="{meta:getLocationAddrCountry()}" width="214px" tab="{meta:getEnvLocation()},{meta:getLocationAddrZipCode()}" field="String"/>
-					</widget>
-					</row>
-					</TablePanel>
-					</VerticalPanel>
-					<!--button panel code-->
-					<AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
+    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="SampleLocationPicker" name="{resource:getString($constants,'sampleLocation')}">
+      <VerticalPanel padding="0" spacing="0">
+        <VerticalPanel width="300px" padding="0" spacing="0" style="WhiteContentPanel">
+          <TablePanel style="Form">
+            <row>
+              <text style="Prompt">
+                <xsl:value-of select='resource:getString($constants,"location")' />:
+              </text>
+              <widget colspan="3">
+                <textbox key="{meta:getEnvLocation()}" width="214px" max="30" tab="{meta:getLocationAddrMultipleUnit()},{meta:getLocationAddrCountry()}" field="String" />
+              </widget>
+            </row>
+            <row>
+              <text style="Prompt">
+                <xsl:value-of select='resource:getString($constants,"aptSuite")' />:
+              </text>
+              <widget colspan="3">
+                <textbox key="{meta:getLocationAddrMultipleUnit()}" width="214px" case="UPPER" max="30" tab="{meta:getLocationAddrStreetAddress()},{meta:getEnvLocation()}" field="String" />
+              </widget>
+            </row>
+            <row>
+              <text style="Prompt">
+                <xsl:value-of select='resource:getString($constants,"address")' />:
+              </text>
+              <widget colspan="3">
+                <textbox key="{meta:getLocationAddrStreetAddress()}" width="214px" case="UPPER" max="30" tab="{meta:getLocationAddrCity()},{meta:getLocationAddrMultipleUnit()}" field="String" />
+              </widget>
+            </row>
+            <row>
+              <text style="Prompt">
+                <xsl:value-of select='resource:getString($constants,"city")' />:
+              </text>
+              <widget colspan="3">
+                <textbox key="{meta:getLocationAddrCity()}" width="214px" case="UPPER" max="30" tab="{meta:getLocationAddrState()},{meta:getLocationAddrStreetAddress()}" field="String" />
+              </widget>
+            </row>
+            <row>
+              <text style="Prompt">
+                <xsl:value-of select='resource:getString($constants,"state")' />:
+              </text>
+              <widget>
+                <dropdown key="{meta:getLocationAddrState()}" width="55px" case="UPPER" tab="{meta:getLocationAddrZipCode()},{meta:getLocationAddrCity()}" field="String" />
+              </widget>
+              <text style="Prompt">
+                <xsl:value-of select='resource:getString($constants,"zipcode")' />:
+              </text>
+              <widget>
+                <textbox key="{meta:getLocationAddrZipCode()}" width="91px" case="UPPER" max="30" tab="{meta:getLocationAddrCountry()},{meta:getLocationAddrState()}" field="String" />
+              </widget>
+            </row>
+            <row>
+              <text style="Prompt">
+                <xsl:value-of select="resource:getString($constants,'country')" />:
+              </text>
+              <widget colspan="3">
+                <dropdown key="{meta:getLocationAddrCountry()}" width="214px" tab="{meta:getEnvLocation()},{meta:getLocationAddrZipCode()}" field="String" />
+              </widget>
+            </row>
+          </TablePanel>
+        </VerticalPanel>
+
+<!--button panel code-->
+
+        <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
           <HorizontalPanel>
             <xsl:call-template name="okButton">
               <xsl:with-param name="language">
@@ -90,8 +107,10 @@
             </xsl:call-template>
           </HorizontalPanel>
         </AbsolutePanel>
-					<!--end button panel-->
-				</VerticalPanel>
-		</screen>
-	</xsl:template>
+
+<!--end button panel-->
+
+      </VerticalPanel>
+    </screen>
+  </xsl:template>
 </xsl:stylesheet>

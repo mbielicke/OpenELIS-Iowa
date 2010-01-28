@@ -1,4 +1,5 @@
 
+
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -27,22 +28,22 @@ UIRF Software License are applicable instead of those above.
   -->
 
 <xsl:stylesheet
-  extension-element-prefixes="resource"
   version="1.0"
+  extension-element-prefixes="resource"
   xmlns:locale="xalan://java.util.Locale"
-  xmlns:meta="xalan://org.openelis.meta.SampleMeta"
   xmlns:resource="xalan://org.openelis.util.UTFResource"
   xmlns:xalan="http://xml.apache.org/xalan"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
-  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
+  xmlns:meta="xalan://org.openelis.meta.SampleMeta">
 
   <xsl:template name="ResultTab">
     <VerticalPanel padding="0" spacing="0">
       <TablePanel padding="0" spacing="0">
         <row>
-          <table key="testResultsTable" maxRows="9" showScroll="ALWAYS" title="" width="697">
+          <table key="testResultsTable" width="697" maxRows="9" showScroll="ALWAYS" title="">
             <col width="200">
               <textbox />
             </col>
@@ -50,28 +51,28 @@ UIRF Software License are applicable instead of those above.
               <textbox />
             </col>
             <col width="200">
-            	<textbox />
+              <textbox />
             </col>
             <col width="200">
-            	<textbox />
+              <textbox />
             </col>
             <col width="200">
-            	<textbox />
+              <textbox />
             </col>
             <col width="200">
-            	<textbox />
+              <textbox />
             </col>
             <col width="200">
-            	<textbox />
+              <textbox />
             </col>
             <col width="200">
-            	<textbox />
+              <textbox />
             </col>
             <col width="200">
-            	<textbox />
+              <textbox />
             </col>
-           <col width="200">
-            	<textbox />
+            <col width="200">
+              <textbox />
             </col>
           </table>
         </row>

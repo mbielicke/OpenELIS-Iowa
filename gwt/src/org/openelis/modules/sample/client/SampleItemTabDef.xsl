@@ -1,4 +1,5 @@
 
+
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -27,16 +28,16 @@ UIRF Software License are applicable instead of those above.
   -->
 
 <xsl:stylesheet
-  extension-element-prefixes="resource"
   version="1.0"
+  extension-element-prefixes="resource"
   xmlns:locale="xalan://java.util.Locale"
-  xmlns:meta="xalan://org.openelis.meta.SampleMeta"
   xmlns:resource="xalan://org.openelis.util.UTFResource"
   xmlns:xalan="http://xml.apache.org/xalan"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
-  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
+  xmlns:meta="xalan://org.openelis.meta.SampleMeta">
 
   <xsl:template name="SampleItemTab">
     <VerticalPanel padding="0" spacing="0">
@@ -45,37 +46,37 @@ UIRF Software License are applicable instead of those above.
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'sampleType')" />:
           </text>
-          <dropdown field="Integer" key="{meta:getItemTypeOfSampleId()}" popWidth="150px" width="150px" />
+          <dropdown key="{meta:getItemTypeOfSampleId()}" width="150px" popWidth="150px" field="Integer" />
         </row>
         <row>
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'source')" />:
           </text>
-          <dropdown field="Integer" key="{meta:getItemSourceOfSampleId()}" popWidth="150px" width="150px" />
+          <dropdown key="{meta:getItemSourceOfSampleId()}" width="150px" popWidth="150px" field="Integer" />
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'sourceOther')" />:
           </text>
-          <textbox field="String" key="{meta:getItemSourceOther()}" width="215px" />
+          <textbox key="{meta:getItemSourceOther()}" width="215px" field="String" />
         </row>
         <row>
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'container')" />:
           </text>
-          <dropdown field="Integer" key="{meta:getItemContainerId()}" popWidth="225px" width="225px" />
+          <dropdown key="{meta:getItemContainerId()}" width="225px" popWidth="225px" field="Integer" />
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'containerReference')" />:
           </text>
-          <textbox field="String" key="{meta:getItemContainerReference()}" width="215px" />
+          <textbox key="{meta:getItemContainerReference()}" width="215px" field="String" />
         </row>
         <row>
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'qty')" />:
           </text>
-          <textbox field="Double" key="{meta:getItemQuantity()}" width="150px" />
+          <textbox key="{meta:getItemQuantity()}" width="150px" field="Double" />
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'unit')" />:
           </text>
-          <dropdown field="Integer" key="{meta:getItemUnitOfMeasureId()}" popWidth="150px" width="150px" />
+          <dropdown key="{meta:getItemUnitOfMeasureId()}" width="150px" popWidth="150px" field="Integer" />
         </row>
       </TablePanel>
     </VerticalPanel>
