@@ -338,23 +338,11 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
         return qaEvents;
     }
     
-    public AuxDataManager getAuxDataforUpdate() throws Exception{
-        return getAuxData(true);
-    }
-    
     public AuxDataManager getAuxData() throws Exception {
-        return getAuxData(false);
-    }
-    
-    private AuxDataManager getAuxData(boolean forUpdate) throws Exception {
         if(auxData == null){
             if(sample.getId() != null){
                 try{
-                    if(forUpdate)
-                        auxData = AuxDataManager.fetchByIdForUpdate(sample.getId(), ReferenceTable.SAMPLE);
-                    else
-                        auxData = AuxDataManager.fetchById(sample.getId(), ReferenceTable.SAMPLE
-                                                           );
+                    auxData = AuxDataManager.fetchById(sample.getId(), ReferenceTable.SAMPLE);
                 }
                 catch(NotFoundException e){
                     //ignore
