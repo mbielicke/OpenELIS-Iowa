@@ -32,11 +32,6 @@ public class AuxDataManager implements RPC {
         return proxy().fetchById(referenceId, referenceTableId);
     }
 
-    public static AuxDataManager fetchByIdForUpdate(Integer referenceId, Integer referenceTableId)
-                                                                                                  throws Exception {
-        return proxy().fetchByIdForUpdate(referenceId, referenceTableId);
-    }
-
     public int count() {
         if (items == null)
             return 0;
@@ -75,7 +70,7 @@ public class AuxDataManager implements RPC {
 
         items.add(item);
     }
-
+    
     public void addAuxDataFieldsAndValues(AuxDataViewDO auxData,
                                           AuxFieldViewDO field,
                                           ArrayList<AuxFieldValueViewDO> values) {
