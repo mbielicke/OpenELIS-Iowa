@@ -59,22 +59,33 @@ private static final long serialVersionUID = 1L;
         return proxy().fetchBySampleId(sampleId);
     }
     
-    public int count(){
-        if(items == null)
-            return 0;
+    /*
+    public int getIndex(AnalysisTestDO aDO){
+        for(int i=0; i<count(); i++)
+            if(items.get(i).analysis == aDO)
+                return i;
         
-        return items.size();
-    }
+        return -1;
+    }*/
     
-    //getters/setters
-    public Integer getSampleId() {
-        return sampleId;
+    // service methods
+    public SampleQaEventManager add() throws Exception {
+        return proxy().add(this);
     }
 
-    public void setSampleId(Integer sampleId) {
-        this.sampleId = sampleId;
-    }
+    /*
+    public int getIndex(AnalysisTestDO aDO){
+        for(int i=0; i<count(); i++)
+            if(items.get(i).analysis == aDO)
+                return i;
+        
+        return -1;
+    }*/
     
+    public SampleQaEventManager update() throws Exception {
+        return proxy().update(this);
+    }
+
     public SampleQaEventViewDO getSampleQAAt(int i) {
         return items.get(i);
 
@@ -110,15 +121,13 @@ private static final long serialVersionUID = 1L;
         return -1;
     }*/
     
-    // service methods
-    public SampleQaEventManager add() throws Exception {
-        return proxy().add(this);
+    public int count(){
+        if(items == null)
+            return 0;
+        
+        return items.size();
     }
 
-    public SampleQaEventManager update() throws Exception {
-        return proxy().update(this);
-    }
-    
     public void validate() throws Exception {
         ValidationErrorsList errorsList = new ValidationErrorsList();
         
@@ -139,6 +148,15 @@ private static final long serialVersionUID = 1L;
         return proxy;
     }
     
+    //getters/setters
+    Integer getSampleId() {
+        return sampleId;
+    }
+
+    void setSampleId(Integer sampleId) {
+        this.sampleId = sampleId;
+    }
+
     int deleteCount() {
         if (deletedList == null)
             return 0;

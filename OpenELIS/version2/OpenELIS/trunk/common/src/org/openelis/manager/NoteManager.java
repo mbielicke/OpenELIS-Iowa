@@ -58,11 +58,23 @@ public class NoteManager implements RPC {
         return nm;
     }
 
-    public int count() {
-        if (notes == null)
-            return 0;
+    // service methods
+    public static NoteManager fetchByRefTableRefId(Integer tableId, Integer id) throws Exception {
+        return proxy().fetchByRefTableRefId(tableId, id);
+    }
 
-        return notes.size();
+    public static NoteManager fetchByRefTableRefIdIsExt(Integer tableId,
+                                                        Integer id,
+                                                        String isExternal) throws Exception {
+        return proxy().fetchByRefTableRefIdIsExt(tableId, id, isExternal);
+    }
+
+    public NoteManager add() throws Exception {
+        return proxy().add(this);
+    }
+
+    public NoteManager update() throws Exception {
+        return proxy().update(this);
     }
 
     public NoteViewDO getNoteAt(int i) {
@@ -142,45 +154,35 @@ public class NoteManager implements RPC {
         notes.add(0, note);
     }
 
-    public void setReferenceTableId(Integer referenceTableId) {
-        this.referenceTableId = referenceTableId;
-    }
-
-    public void setReferenceId(Integer referenceId) {
-        this.referenceId = referenceId;
-    }
-
-    public Integer getReferenceId() {
-        return referenceId;
-    }
-
-    public Integer getReferenceTableId() {
-        return referenceTableId;
-    }
-
-    // service methods
-    public static NoteManager fetchByRefTableRefId(Integer tableId, Integer id) throws Exception {
-        return proxy().fetchByRefTableRefId(tableId, id);
-    }
+    public int count() {
+        if (notes == null)
+            return 0;
     
-    public static NoteManager fetchByRefTableRefIdIsExt(Integer tableId, Integer id, String isExternal) throws Exception {
-        return proxy().fetchByRefTableRefIdIsExt(tableId, id, isExternal);
-    }
-
-    public NoteManager add() throws Exception {
-        return proxy().add(this);
-    }
-
-    public NoteManager update() throws Exception {
-        return proxy().update(this);
+        return notes.size();
     }
 
     public void validate() throws Exception {
         proxy().validate(this);
     }
 
+    Integer getReferenceId() {
+        return referenceId;
+    }
+
     // these are friendly methods so only managers and proxies can call this
     // method
+    void setReferenceId(Integer referenceId) {
+        this.referenceId = referenceId;
+    }
+
+    Integer getReferenceTableId() {
+        return referenceTableId;
+    }
+
+    void setReferenceTableId(Integer referenceTableId) {
+        this.referenceTableId = referenceTableId;
+    }
+
     ArrayList<NoteViewDO> getNotes() {
         return notes;
     }

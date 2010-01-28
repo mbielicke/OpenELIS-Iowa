@@ -34,43 +34,13 @@ public class SampleProjectManager implements RPC {
         return proxy().fetchBySampleId(sampleId);
     }
 
-    public Integer getSampleId() {
-        return sampleId;
+    // service methods
+    public SampleProjectManager add() throws Exception {
+        return proxy().add(this);
     }
 
-    public void setSampleId(Integer sampleId) {
-        this.sampleId = sampleId;
-    }
-
-    public SampleProjectViewDO getFirstPermanentProject() {
-        int i;
-        SampleProjectViewDO project;
-
-        for (i = 0; i < projects.size(); i++ ) {
-            project = projects.get(i);
-            if ("Y".equals(project.getIsPermanent()))
-                return project;
-        }
-        return null;
-    }
-
-    public void addFirstPermanentProject(SampleProjectViewDO newProject) {
-        SampleProjectViewDO oldProject = getFirstPermanentProject();
-
-        if (oldProject == null && newProject != null) { // insert
-            addProjectAt(newProject, 0);
-        } else if (oldProject != null && newProject == null) { // delete
-            removeProjectAt(0);
-        } else if (oldProject != null && newProject != null) { // update
-            setProjectAt(newProject, 0);
-        }
-    }
-
-    public int count() {
-        if (projects == null)
-            return 0;
-
-        return projects.size();
+    public SampleProjectManager update() throws Exception {
+        return proxy().update(this);
     }
 
     public SampleProjectViewDO getProjectAt(int i) {
@@ -111,13 +81,38 @@ public class SampleProjectManager implements RPC {
             deletedList.add(tmpDO);
     }
 
-    // service methods
-    public SampleProjectManager add() throws Exception {
-        return proxy().add(this);
+    //
+    //helper methods
+    //
+    public SampleProjectViewDO getFirstPermanentProject() {
+        int i;
+        SampleProjectViewDO project;
+
+        for (i = 0; i < projects.size(); i++ ) {
+            project = projects.get(i);
+            if ("Y".equals(project.getIsPermanent()))
+                return project;
+        }
+        return null;
     }
 
-    public SampleProjectManager update() throws Exception {
-        return proxy().update(this);
+    public void addFirstPermanentProject(SampleProjectViewDO newProject) {
+        SampleProjectViewDO oldProject = getFirstPermanentProject();
+
+        if (oldProject == null && newProject != null) { // insert
+            addProjectAt(newProject, 0);
+        } else if (oldProject != null && newProject == null) { // delete
+            removeProjectAt(0);
+        } else if (oldProject != null && newProject != null) { // update
+            setProjectAt(newProject, 0);
+        }
+    }
+
+    public int count() {
+        if (projects == null)
+            return 0;
+
+        return projects.size();
     }
 
     public void validate() throws Exception {
@@ -133,15 +128,16 @@ public class SampleProjectManager implements RPC {
         proxy().validate(this, errorsList);
     }
 
-    private static SampleProjectManagerProxy proxy() {
-        if (proxy == null)
-            proxy = new SampleProjectManagerProxy();
-
-        return proxy;
-    }
-
     // these are friendly methods so only managers and proxies can call this
     // method
+    Integer getSampleId() {
+        return sampleId;
+    }
+
+    void setSampleId(Integer sampleId) {
+        this.sampleId = sampleId;
+    }
+    
     ArrayList<SampleProjectViewDO> getProjects() {
         return projects;
     }
@@ -159,5 +155,12 @@ public class SampleProjectManager implements RPC {
 
     SampleProjectViewDO getDeletedAt(int i) {
         return deletedList.get(i);
+    }
+
+    private static SampleProjectManagerProxy proxy() {
+        if (proxy == null)
+            proxy = new SampleProjectManagerProxy();
+
+        return proxy;
     }
 }

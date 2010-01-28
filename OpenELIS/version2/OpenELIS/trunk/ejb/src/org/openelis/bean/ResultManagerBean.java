@@ -36,15 +36,15 @@ import org.openelis.remote.ResultManagerRemote;
 // @RolesAllowed("sample-select")
 public class ResultManagerBean implements ResultManagerRemote {
     public AnalysisResultManager fetchByAnalysisIdForDisplay(Integer analysisId) throws Exception {
-        return AnalysisResultManager.fetchByAnalysisIdForDisplay(analysisId);
+        return AnalysisResultManager.fetchByAnalysisId(analysisId);
     }
 
     public AnalysisResultManager fetchByAnalysisId(Integer analysisId, Integer testId)
                                                                                       throws Exception {
-        return AnalysisResultManager.fetchByAnalysisId(analysisId, testId);
+        return AnalysisResultManager.fetchForUpdate(analysisId, testId);
     }
 
     public AnalysisResultManager fetchByTestId(Integer testId) throws Exception {
-        return AnalysisResultManager.fetchByTestId(testId);
+        return AnalysisResultManager.fetchForUpdate(testId);
     }
 }
