@@ -115,7 +115,7 @@ public class BuildKitsBean implements BuildKitsRemote{
         internalOrder.setRequestedBy(ctx.getCallerPrincipal().getName());
         internalOrder.setOrderedDate(Datetime.getInstance());
         internalOrder.setNeededInDays(0);
-        internalOrder.setIsExternal("N");
+//        internalOrder.setIsExternal("N");
             
         if(internalOrder.getId() == null)
             manager.persist(internalOrder);

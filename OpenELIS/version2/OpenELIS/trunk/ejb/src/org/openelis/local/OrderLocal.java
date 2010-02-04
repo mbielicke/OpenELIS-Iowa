@@ -25,22 +25,16 @@
  */
 package org.openelis.local;
 
-import java.util.ArrayList;
-
 import javax.ejb.Local;
-
-import org.openelis.domain.OrganizationDO;
-import org.openelis.domain.OrganizationViewDO;
+import org.openelis.domain.OrderViewDO;
 
 @Local
-public interface OrganizationLocal {
-    public OrganizationViewDO fetchById(Integer id) throws Exception;
+public interface OrderLocal {
+    public OrderViewDO fetchById(Integer id) throws Exception;
 
-    public ArrayList<OrganizationViewDO> fetchByIds(Integer... id) throws Exception;
+    public OrderViewDO add(OrderViewDO data) throws Exception;
 
-    public OrganizationViewDO add(OrganizationViewDO data) throws Exception;
+    public OrderViewDO update(OrderViewDO data) throws Exception;
 
-    public OrganizationViewDO update(OrganizationViewDO data) throws Exception;
-
-    public void validate(OrganizationViewDO data) throws Exception;
+    public void validate(OrderViewDO data) throws Exception;
 }

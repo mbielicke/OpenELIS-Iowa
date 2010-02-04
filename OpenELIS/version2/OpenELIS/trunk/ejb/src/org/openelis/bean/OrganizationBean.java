@@ -84,6 +84,16 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         return data;
     }
 
+    @SuppressWarnings("unchecked")
+    public ArrayList<OrganizationViewDO> fetchByIds(Integer... ids) {
+        Query query;
+        
+        query = manager.createNamedQuery("Organization.FetchByIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
     public OrganizationDO fetchActiveById(Integer id) throws Exception {
         Query query;
         

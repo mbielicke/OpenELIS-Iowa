@@ -60,6 +60,13 @@ import org.openelis.utils.Auditable;
                 		"o.address.homePhone,o.address.cellPhone,o.address.faxPhone,o.address.email," +
                 		"o.address.country, p.name)"
                 	  + " from Organization o left join o.parentOrganization p where o.id = :id"),
+    @NamedQuery( name = "Organization.FetchByIds",
+                query = "select new org.openelis.domain.OrganizationViewDO(o.id,o.parentOrganizationId," +
+                        "o.name,o.isActive,o.address.id,o.address.multipleUnit,o.address.streetAddress," +
+                        "o.address.city,o.address.state,o.address.zipCode,o.address.workPhone," +
+                        "o.address.homePhone,o.address.cellPhone,o.address.faxPhone,o.address.email," +
+                        "o.address.country, p.name)"
+                      + " from Organization o left join o.parentOrganization p where o.id in ( :ids )"),
     @NamedQuery( name = "Organization.FetchActiveById",
                 query = "select new org.openelis.domain.OrganizationDO(o.id,o.parentOrganizationId," +
                         "o.name,o.isActive,o.address.id,o.address.multipleUnit,o.address.streetAddress," +
