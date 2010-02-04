@@ -23,11 +23,32 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
+package org.openelis.manager;
 
-package org.openelis.modules.organization.client;
+import org.openelis.gwt.services.ScreenService;
 
-import org.openelis.gwt.screen.ScreenDefInt;
+public class OrderItemManagerProxy {
+    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.order.server.OrderService";
+    protected ScreenService       service;
 
-public interface OrganizationDef extends ScreenDefInt {
+    public OrderItemManagerProxy() {
+        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
+    }
 
+    public OrderItemManager fetchByOrderId(Integer orgId) throws Exception {
+        return service.call("fetchItemByOrderId", orgId);
+    }
+
+    public OrderItemManager add(OrderItemManager man) throws Exception {
+        assert false : "not supported";
+        return null;
+    }
+
+    public OrderItemManager update(OrderItemManager man) throws Exception {
+        assert false : "not supported";
+        return null;
+    }
+    
+    public void validate(OrderItemManager man) throws Exception {
+    }
 }

@@ -140,7 +140,9 @@ UIRF Software License are applicable instead of those above.
                 <label style="topMenuBarItem" text="{resource:getString($constants,'inventoryOrder')}" />
               </menuDisplay>
               <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                <menuItem key="internalOrder" description="{resource:getString($constants,'internalOrderDescription')}" enable="false" icon="internalOrderIcon" label="{resource:getString($constants,'internalOrder')}" />
+                <code>if(OpenELIS.security.hasModule("order","SELECT")){</code>
+                <menuItem key="internalOrder" description="{resource:getString($constants,'internalOrderDescription')}" enable="true" icon="internalOrderIcon" label="{resource:getString($constants,'internalOrder')}" />
+                <code>}</code>
                 <menuItem key="vendorOrder" description="{resource:getString($constants,'vendorOrderDescription')}" enable="false" icon="vendorOrderIcon" label="{resource:getString($constants,'vendorOrder')}" />
                 <menuItem key="kitOrder" description="{resource:getString($constants,'kitOrderDescription')}" enable="false" icon="kitOrderIcon" label="{resource:getString($constants,'kitOrder')}" />
                 <html>&lt;hr/&gt;</html>

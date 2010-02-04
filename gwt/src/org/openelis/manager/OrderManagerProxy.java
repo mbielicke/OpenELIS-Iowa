@@ -27,28 +27,47 @@ package org.openelis.manager;
 
 import org.openelis.gwt.services.ScreenService;
 
-public class OrganizationContactManagerProxy {
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.organization.server.OrganizationService";
+public class OrderManagerProxy {
+
+    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.order.server.OrderService";
     protected ScreenService       service;
 
-    public OrganizationContactManagerProxy() {
+    public OrderManagerProxy() {
         service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
 
-    public OrganizationContactManager fetchByOrganizationId(Integer orgId) throws Exception {
-        return service.call("fetchContactByOrganizationId", orgId);
+    public OrderManager fetchById(Integer id) throws Exception {
+        return service.call("fetchById", id);
     }
 
-    public OrganizationContactManager add(OrganizationContactManager man) throws Exception {
-        assert false : "not supported";
-        return null;
+    public OrderManager fetchWithItems(Integer id) throws Exception {
+        return service.call("fetchWithItems", id);
     }
 
-    public OrganizationContactManager update(OrganizationContactManager man) throws Exception {
-        assert false : "not supported";
-        return null;
+    public OrderManager fetchWithReceipts(Integer id) throws Exception {
+        return service.call("fetchWithReceipts", id);
     }
-    
-    public void validate(OrganizationContactManager man) throws Exception {
+
+    public OrderManager fetchWithNotes(Integer id) throws Exception {
+        return service.call("fetchWithNotes", id);
+    }
+
+    public OrderManager add(OrderManager man) throws Exception {
+        return service.call("add", man);
+    }
+
+    public OrderManager update(OrderManager man) throws Exception {
+        return service.call("update", man);
+    }
+
+    public OrderManager fetchForUpdate(Integer id) throws Exception {
+        return service.call("fetchForUpdate", id);
+    }
+
+    public OrderManager abortUpdate(Integer id) throws Exception {
+        return service.call("abortUpdate", id);
+    }
+
+    public void validate(OrderManager man) throws Exception {
     }
 }
