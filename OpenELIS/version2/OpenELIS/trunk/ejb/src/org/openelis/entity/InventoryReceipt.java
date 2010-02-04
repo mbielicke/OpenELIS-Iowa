@@ -53,7 +53,7 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-
+/*
 @NamedQueries( {
     @NamedQuery(name = "InventoryReceipt.OrderItemListWithTransByOrderNum", query = "select distinct oi.id from InventoryTransaction tr LEFT JOIN tr.toOrder oi where " + 
                                " oi.order.id = :id and tr.fromReceiptId is not null "),
@@ -81,7 +81,7 @@ import org.openelis.utils.Auditable;
                             " where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and ir.upc like :upc and i.isActive = 'Y' " +
                             " order by i.name"),
     @NamedQuery(name = "InventoryReceipt.LocationIdsByReceiptId", query = "select distinct il.id  from InventoryXPut tr LEFT JOIN tr.inventoryLocation il where tr.inventoryReceiptId = :id ")})
-                    
+*/                    
 @Entity
 @Table(name="inventory_receipt")
 @EntityListeners({AuditUtil.class})

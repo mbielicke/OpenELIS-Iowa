@@ -55,7 +55,7 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "Order.FetchById",
-                query = "select new org.openelis.domain.OrderViewDO(o.id,o.discription,o.statusId,o.orderedDate," +
+                query = "select new org.openelis.domain.OrderViewDO(o.id,o.description,o.statusId,o.orderedDate," +
                 		"o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.type,o.externalOrderNumber," +
                 		"o.reportToId,o.billToId,o.shipFromId)"
                 	  + " from Order o where o.id = :id")})
