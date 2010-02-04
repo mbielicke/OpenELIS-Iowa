@@ -25,84 +25,29 @@
 */
 package org.openelis.domain;
 
-import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class OrderItemDO implements RPC {
+/**
+ * Class represents the fields in database table order_item.
+ */
+
+public class OrderItemDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id;
-    protected Integer         order;
-    protected Integer         inventoryItemId;
-    protected Integer         quantity;
-    protected String          inventoryItem;
-    protected String          store;
-    protected Integer         locationId;
-    protected String          location;
-    protected Integer         transactionId;
+    protected Integer         id, orderId, inventoryItemId, quantity;
     protected String          catalogNumber;
     protected Double          unitCost;
-    protected Integer         quantityOnHand;
-    protected String          lotNumber;
-
-    protected Boolean         delete           = false;
 
     public OrderItemDO() {
-
     }
 
-    public OrderItemDO(Integer id,
-                       Integer order,
-                       Integer inventoryItemId,
-                       Integer quantity) {
+    public OrderItemDO(Integer id, Integer orderId, Integer inventoryItemId,
+                       Integer quantity, String catalogNumber, Double unitCost) {
         setId(id);
-        setOrder(order);
+        setOrderId(orderId);
         setInventoryItemId(inventoryItemId);
         setQuantity(quantity);
-    }
-
-    public OrderItemDO(Integer id,
-                       Integer order,
-                       Integer inventoryItemId,
-                       String inventoryItem,
-                       Integer quantity,
-                       String store,
-                       Integer locationId,
-                       String childStorageLocName,
-                       String childStorageLocLocation,
-                       String parentStorageLocName,
-                       String childStorageUnit,
-                       Integer transactionId,
-                       Integer quantityOnHand,
-                       String lotNumber) {
-        setId(id);
-        setOrder(order);
-        setInventoryItemId(inventoryItemId);
-        setInventoryItem(inventoryItem);
-        setQuantity(quantity);
-        setStore(store);
-        setLocationId(locationId);
-        setTransactionId(transactionId);
-        setQuantityOnHand(quantityOnHand);
-        setLotNumber(lotNumber);
-        setLocation(DataBaseUtil.formatStorageLocation(childStorageLocName, childStorageLocLocation, childStorageUnit, parentStorageLocName));
-    }
-
-    public OrderItemDO(Integer id,
-                       Integer order,
-                       Integer inventoryItemId,
-                       String inventoryItem,
-                       Integer quantity,
-                       String store,
-                       String catalogNumber,
-                       Double unitCost) {
-        setId(id);
-        setOrder(order);
-        setInventoryItemId(inventoryItemId);
-        setInventoryItem(inventoryItem);
-        setQuantity(quantity);
-        setStore(store);
         setCatalogNumber(catalogNumber);
         setUnitCost(unitCost);
     }
@@ -115,20 +60,20 @@ public class OrderItemDO implements RPC {
         this.id = id;
     }
 
+    public Integer getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Integer orderId) {
+        this.orderId = orderId;
+    }
+
     public Integer getInventoryItemId() {
         return inventoryItemId;
     }
 
-    public void setInventoryItemId(Integer inventoryItem) {
-        this.inventoryItemId = inventoryItem;
-    }
-
-    public Integer getOrder() {
-        return order;
-    }
-
-    public void setOrder(Integer order) {
-        this.order = order;
+    public void setInventoryItemId(Integer inventoryItemId) {
+        this.inventoryItemId = inventoryItemId;
     }
 
     public Integer getQuantity() {
@@ -137,54 +82,6 @@ public class OrderItemDO implements RPC {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
-    }
-
-    public Boolean getDelete() {
-        return delete;
-    }
-
-    public void setDelete(Boolean delete) {
-        this.delete = delete;
-    }
-
-    public String getInventoryItem() {
-        return inventoryItem;
-    }
-
-    public void setInventoryItem(String inventoryItem) {
-        this.inventoryItem = inventoryItem;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = DataBaseUtil.trim(location);
-    }
-
-    public String getStore() {
-        return store;
-    }
-
-    public void setStore(String store) {
-        this.store = DataBaseUtil.trim(store);
-    }
-
-    public Integer getLocationId() {
-        return locationId;
-    }
-
-    public void setLocationId(Integer locationId) {
-        this.locationId = locationId;
-    }
-
-    public Integer getTransactionId() {
-        return transactionId;
-    }
-
-    public void setTransactionId(Integer transactionId) {
-        this.transactionId = transactionId;
     }
 
     public String getCatalogNumber() {
@@ -201,21 +98,5 @@ public class OrderItemDO implements RPC {
 
     public void setUnitCost(Double unitCost) {
         this.unitCost = unitCost;
-    }
-
-    public Integer getQuantityOnHand() {
-        return quantityOnHand;
-    }
-
-    public void setQuantityOnHand(Integer quantityOnHand) {
-        this.quantityOnHand = quantityOnHand;
-    }
-
-    public String getLotNumber() {
-        return lotNumber;
-    }
-
-    public void setLotNumber(String lotNumber) {
-        this.lotNumber = DataBaseUtil.trim(lotNumber);
     }
 }

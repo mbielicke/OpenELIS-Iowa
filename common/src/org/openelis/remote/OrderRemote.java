@@ -25,55 +25,14 @@
 */
 package org.openelis.remote;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.BillToReportToDO;
-import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.OrderAddAutoFillDO;
-import org.openelis.domain.OrderDO;
+import org.openelis.domain.IdNameVO;
+import org.openelis.gwt.common.data.QueryData;
 
 @Remote
 public interface OrderRemote {
-    public static final String  INTERNAL          = "internal",
-                                EXTERNAL          = "external",
-                                KITS              = "kits";
-    
-    //method to return order record
-    public OrderDO getOrder(Integer orderId, String orderType);
-    
-    //method to unlock entity and return order record
-    public OrderDO getOrderAndUnlock(Integer orderId, String orderType, String session);
-    
-    //method to lock entity and return order
-    public OrderDO getOrderAndLock(Integer orderId, String orderType, String session) throws Exception;
-    
-    //commit a change to order, or insert a new order record
-    public Integer updateOrder(OrderDO orderDO, String orderType, List items, NoteViewDO customerNoteDO, NoteViewDO orderShippingNotes) throws Exception;
-    
-    //method to return customer notes
-    public NoteViewDO getCustomerNote(Integer orderId);
-    
-    //method to return order/shipping notes
-    public NoteViewDO getOrderShippingNote(Integer orderId);
-    
-    //method to return order items
-    public List getOrderItems(Integer orderId);
-    
-    //method to return receipts
-    public List getOrderReceipts(Integer orderId);
-    
-    public List getOrderLocTransactions(Integer orderId);
-    
-    //method to return report to bill to addresses
-    public BillToReportToDO getBillToReportTo(Integer orderId);
-    
-    //method to query for orders
-    // public List query(ArrayList<AbstractField> fields, int first, int max, String orderType) throws Exception;
-     
-     public OrderAddAutoFillDO getAddAutoFillValues() throws Exception;
-     
-     //auto complete order description lookup
-     public List orderDescriptionAutoCompleteLookup(String desc, int maxResults);
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
 }
