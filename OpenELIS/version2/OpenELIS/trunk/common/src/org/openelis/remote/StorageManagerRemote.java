@@ -6,5 +6,5 @@ import org.openelis.manager.StorageManager;
 
 @Remote
 public interface StorageManagerRemote {
-    public StorageManager fetch(Integer referenceTableId, Integer referenceId) throws Exception;
+    public StorageManager fetchById(Integer referenceTableId, Integer referenceId) throws Exception;
 }

@@ -34,8 +34,19 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.StorageLocal;
 
 public class StorageManagerProxy {
+    public StorageManager fetchById(Integer tableId, Integer id) throws Exception {
+        StorageLocal sl = getStorageLocal();
+        ArrayList<StorageViewDO> storages = sl.fetchByRefId(tableId, id);
+        
+        StorageManager sm = StorageManager.getInstance();
+        sm.setStorages(storages);
+        sm.setReferenceId(id);
+        sm.setReferenceTableId(tableId);
+        
+        return sm;
+    }
+
     public StorageManager add(StorageManager man) throws Exception {
-        System.out.println("*****************************storage");
         StorageViewDO storage;
         StorageLocal sl = getStorageLocal();
         
@@ -67,18 +78,6 @@ public class StorageManagerProxy {
         return man;
     }
 
-    public StorageManager fetch(Integer tableId, Integer id) throws Exception {
-        StorageLocal sl = getStorageLocal();
-        ArrayList<StorageViewDO> storages = sl.fetchByRefId(tableId, id);
-        
-        StorageManager sm = StorageManager.getInstance();
-        sm.setStorages(storages);
-        sm.setReferenceId(id);
-        sm.setReferenceTableId(tableId);
-        
-        return sm;
-    }
-    
     public void validate(StorageManager man, ValidationErrorsList errorsList) throws Exception {
         
     }

@@ -51,8 +51,33 @@ public class StorageManager implements RPC {
         return sm;
     }
 
+    public StorageViewDO getStorageAt(int i) {
+        return storageList.get(i);
+    }
+
+    public void addStorage(StorageViewDO storage) throws Exception {
+        if (storageList == null)
+            storageList = new ArrayList<StorageViewDO>();
+    
+        storageList.add(0, storage);
+    }
+
+    public void removeStorageAt(int i) {
+        if (storageList == null || i >= storageList.size())
+            return;
+    
+        storageList.remove(i);
+    }
+
+    public int count() {
+        if (storageList == null)
+            return 0;
+    
+        return storageList.size();
+    }
+
     public static StorageManager fetchByRefTableRefId(Integer tableId, Integer id) throws Exception {
-        return proxy().fetch(tableId, id);
+        return proxy().fetchById(tableId, id);
     }
 
     // service methods
@@ -62,31 +87,6 @@ public class StorageManager implements RPC {
 
     public StorageManager update() throws Exception {
         return proxy().update(this);
-    }
-
-    public StorageViewDO getStorageAt(int i) {
-        return storageList.get(i);
-    }
-
-    public void addStorage(StorageViewDO storage) throws Exception {
-        if (storageList == null)
-            storageList = new ArrayList<StorageViewDO>();
-
-        storageList.add(0, storage);
-    }
-
-    public void removeStorageAt(int i) {
-        if (storageList == null || i >= storageList.size())
-            return;
-
-        storageList.remove(i);
-    }
-
-    public int count() {
-        if (storageList == null)
-            return 0;
-    
-        return storageList.size();
     }
 
     public void validate() throws Exception {

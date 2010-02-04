@@ -25,9 +25,12 @@
 */
 package org.openelis.manager;
 
+import java.util.ArrayList;
+
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.modules.storage.client.StorageServiceParams;
 
 public class StorageManagerProxy {
     protected static final String STORAGE_SERVICE_URL = "org.openelis.modules.storage.server.StorageService";
@@ -37,22 +40,37 @@ public class StorageManagerProxy {
         service = new ScreenService("OpenELISServlet?service="+STORAGE_SERVICE_URL);
     }
     
+    public StorageManager fetchById(Integer tableId, Integer id) throws Exception {
+        Query query;
+        QueryData field;
+        ArrayList<QueryData> fields;
+
+        fields = new ArrayList<QueryData>();
+        query = new Query();
+
+        field = new QueryData();
+        field.query = tableId.toString();
+        fields.add(field);
+
+        field = new QueryData();
+        field.query = id.toString();
+        fields.add(field);
+
+        query.setFields(fields);
+
+        return service.call("fetchById", query);
+    }
+
     public StorageManager add(StorageManager man) throws Exception {
-        throw new UnsupportedOperationException();
+        assert false : "not supported";
+        return null;
     }
 
     public StorageManager update(StorageManager man) throws Exception {
-        throw new UnsupportedOperationException();
+        assert false : "not supported";
+        return null;
     }
 
-    public StorageManager fetch(Integer tableId, Integer id) throws Exception {
-        StorageServiceParams p = new StorageServiceParams();
-        p.referenceId = id;
-        p.referenceTableId = tableId;
-        
-        return service.call("fetch", p);
-    }
-    
     public void validate(StorageManager man, ValidationErrorsList errorsList) throws Exception {
         
     }
