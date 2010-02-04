@@ -28,22 +28,36 @@ package org.openelis.modules.storage.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.StorageLocationVO;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.manager.StorageManager;
-import org.openelis.modules.storage.client.StorageServiceParams;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.StorageLocationRemote;
 import org.openelis.remote.StorageManagerRemote;
+import org.openelis.gwt.common.data.Query;
 
 public class StorageService {
-    public StorageManager fetch(StorageServiceParams params) throws Exception {
-        StorageManagerRemote remote = (StorageManagerRemote)EJBFactory.lookup("openelis/StorageManagerBean/remote");
-        
-        return remote.fetch(params.referenceTableId, params.referenceId);
+    public StorageManager fetchById(Query query) throws Exception {
+        try{
+            return remote().fetchById(new Integer(query.getFields().get(0).query), 
+                                      new Integer(query.getFields().get(1).query));
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
     }
  
     public ArrayList<StorageLocationVO> fetchAvailableByName(String search) throws Exception {
-        StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
-        
-        return remote.fetchAvailableByName(search+"%", 10);
+        try{
+            return storageLocationRemote().fetchAvailableByName(search+"%", 10);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+    
+    private StorageManagerRemote remote(){
+        return (StorageManagerRemote)EJBFactory.lookup("openelis/StorageManagerBean/remote");
+    }
+    
+    private StorageLocationRemote storageLocationRemote(){
+        return (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
     }
 }
