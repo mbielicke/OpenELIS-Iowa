@@ -26,8 +26,112 @@
 */
 package org.openelis.modules.order.server;
 
+import java.util.ArrayList;
+
+import org.openelis.domain.IdNameVO;
+import org.openelis.gwt.common.DatabaseException;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.manager.OrderItemManager;
+import org.openelis.manager.OrderManager;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.OrderManagerRemote;
+import org.openelis.remote.OrderRemote;
+
 
 public class OrderService {
+    private static final int rowPP = 20;
+
+    public OrderManager fetchById(Integer id) throws Exception {
+        try {
+            return remoteManager().fetchById(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public OrderManager fetchWithItems(Integer id) throws Exception {
+        try {
+            return remoteManager().fetchWithItems(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public OrderManager fetchWithReceipts(Integer id) throws Exception {
+        try {
+            return remoteManager().fetchWithReceipts(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public OrderManager fetchWithNotes(Integer id) throws Exception {
+        try {
+            return remoteManager().fetchWithNotes(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public ArrayList<IdNameVO> query(Query query) throws Exception {
+        try {
+            return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public OrderManager add(OrderManager man) throws Exception {
+        try {
+            return remoteManager().add(man);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public OrderManager update(OrderManager man) throws Exception {
+        try {
+            return remoteManager().update(man);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+
+    }
+
+    public OrderManager fetchForUpdate(Integer id) throws Exception {
+        try {
+            return remoteManager().fetchForUpdate(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public OrderManager abortUpdate(Integer id) throws Exception {
+        try {
+            return remoteManager().abortUpdate(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    //
+    // support for OrderItemManager
+    //
+    public OrderItemManager fetchItemByOrderId(Integer id) throws Exception {
+        try {
+            return remoteManager().fetchItemByOrderId(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+    
+    private OrderRemote remote() {
+        return (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
+    }
+
+    private OrderManagerRemote remoteManager() {
+        return (OrderManagerRemote)EJBFactory.lookup("openelis/OrderManagerBean/remote");
+    }
 }
 /*
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));

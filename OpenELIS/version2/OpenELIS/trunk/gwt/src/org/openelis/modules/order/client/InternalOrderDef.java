@@ -24,10 +24,10 @@
  * of those above.
  */
 
-package org.openelis.modules.organization.client;
+package org.openelis.modules.order.client;
 
 import org.openelis.gwt.screen.ScreenDefInt;
 
-public interface OrganizationDef extends ScreenDefInt {
+public interface InternalOrderDef extends ScreenDefInt {
 
 }
