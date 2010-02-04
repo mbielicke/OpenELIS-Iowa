@@ -38,9 +38,8 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.local.LockLocal;
-import org.openelis.manager.OrderContactManager;
+import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
-import org.openelis.manager.OrderParameterManager;
 import org.openelis.remote.OrderManagerRemote;
 import org.openelis.utils.SecurityInterceptor;
 
@@ -125,12 +124,8 @@ public class OrderManagerBean implements OrderManagerRemote {
         return fetchById(id);
     }
 
-    public OrderContactManager fetchContactByOrderId(Integer id) throws Exception {
-        return OrderContactManager.fetchByOrderId(id);
-    }
-    
-    public OrderParameterManager fetchParameterByOrderId(Integer id) throws Exception {
-        return OrderParameterManager.fetchByOrderId(id);
+    public OrderItemManager fetchItemByOrderId(Integer id) throws Exception {
+        return OrderItemManager.fetchByOrderId(id);
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
