@@ -246,6 +246,8 @@ public class WorksheetCreationLookupScreen extends Screen
         addScreenHandler(searchButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 executeQuery();
+                addButton.enable(false);
+                selectAllButton.enable(true);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -305,7 +307,7 @@ public class WorksheetCreationLookupScreen extends Screen
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                selectAllButton.enable(true);
+                selectAllButton.enable(false);
             }
         });   
     }
@@ -420,8 +422,6 @@ public class WorksheetCreationLookupScreen extends Screen
         TableDataRow            row;
         WorksheetCreationVO     analysisRow;
         
-        window.setDone(consts.get("queryingComplete"));
-
         if (list == null || list.size() == 0) {
             window.setDone(consts.get("noRecordsFound"));
             
