@@ -25,13 +25,21 @@
 */
 package org.openelis.modules.worksheet.server;
 
+import java.util.ArrayList;
+
+import org.openelis.domain.WorksheetViewDO;
+import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.WorksheetManagerRemote;
+import org.openelis.remote.WorksheetRemote;
 
 public class WorksheetService {
-    //sample methods
+    public ArrayList<WorksheetViewDO> query(Query query) throws Exception {
+        return remote().query(query.getFields(), 0, 500);
+    }
+
     public WorksheetManager fetchById(Integer id) throws Exception {
         return remoteManager().fetchById(id);
     }
@@ -58,6 +66,10 @@ public class WorksheetService {
     
     public WorksheetItemManager fetchItemByWorksheetId(Integer id) throws Exception {
         return remoteManager().fetchItemByWorksheetId(id);
+    }
+
+    private WorksheetRemote remote() {
+        return (WorksheetRemote)EJBFactory.lookup("openelis/WorksheetBean/remote");
     }
 
     private WorksheetManagerRemote remoteManager() {

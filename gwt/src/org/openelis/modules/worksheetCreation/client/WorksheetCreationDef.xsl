@@ -67,7 +67,7 @@ UIRF Software License are applicable instead of those above.
 	        </appButton>
           </row>
         </TablePanel>
-        <table key="worksheetItemTable" width="800" maxRows="9" showScroll="ALWAYS" tab="insertQCButton,exitButton" title="" style="ScreenTableWithSides">
+        <table key="worksheetItemTable" width="800" maxRows="9" showScroll="ALWAYS" tab="insertQCWorksheetButton,exitButton" title="" style="ScreenTableWithSides">
           <col key="{meta:getWorksheetItemPosition()}" width="50" header="{resource:getString($constants,'position')}" sort="false">
             <label />
           </col>
@@ -104,15 +104,23 @@ UIRF Software License are applicable instead of those above.
         </table>
         <widget style="TableFooterPanel">
           <HorizontalPanel>
-            <appButton key="insertQCButton" style="Button" action="insertQC" tab="removeRowButton,worksheetItemTable">
+            <appButton key="insertQCWorksheetButton" style="Button" action="insertQCWorksheet" tab="insertQCLookupButton,worksheetItemTable">
               <HorizontalPanel>
                 <AbsolutePanel style="AddRowButtonImage" />
                 <text>
-                  <xsl:value-of select="resource:getString($constants,'insertQC')" />
+                  <xsl:value-of select="resource:getString($constants,'insertQCWorksheet')" />
                 </text>
               </HorizontalPanel>
             </appButton>
-            <appButton key="removeRowButton" style="Button" action="removeRow" tab="{meta:getWorksheetId()},insertQCButton">
+            <appButton key="insertQCLookupButton" style="Button" action="insertQCLookup" tab="removeRowButton,insertQCWorksheetButton">
+              <HorizontalPanel>
+                <AbsolutePanel style="AddRowButtonImage" />
+                <text>
+                  <xsl:value-of select="resource:getString($constants,'insertQCLookup')" />
+                </text>
+              </HorizontalPanel>
+            </appButton>
+            <appButton key="removeRowButton" style="Button" action="removeRow" tab="{meta:getWorksheetId()},insertQCLookupButton">
               <HorizontalPanel>
                 <AbsolutePanel style="RemoveRowButtonImage" />
                 <text>
