@@ -33,18 +33,20 @@ public class WorksheetAnalysisDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer id, worksheetItemId, referenceId, referenceTableId, worksheetAnalysisId;
+    protected Integer id, worksheetItemId, worksheetAnalysisId, analysisId, qcId;
+    protected String  accessionNumber;
 
     public WorksheetAnalysisDO() {
     }
 
     public WorksheetAnalysisDO(Integer id, Integer worksheetItemId,
-                               Integer referenceId, Integer referenceTableId,
-                               Integer worksheetAnalysisId) {
+                               String accessionNumber, Integer analysisId,
+                               Integer qcId, Integer worksheetAnalysisId) {
         setId(id);
         setWorksheetItemId(worksheetItemId);
-        setReferenceId(referenceId);
-        setReferenceTableId(referenceTableId);
+        setAccessionNumber(accessionNumber);
+        setAnalysisId(analysisId);
+        setQcId(qcId);
         setWorksheetAnalysisId(worksheetAnalysisId);
         _changed = false;
     }
@@ -67,21 +69,30 @@ public class WorksheetAnalysisDO extends DataObject {
         _changed = true;
     }
 
-    public Integer getReferenceId() {
-        return referenceId;
+    public String getAccessionNumber() {
+        return accessionNumber;
     }
 
-    public void setReferenceId(Integer referenceId) {
-        this.referenceId = referenceId;
+    public void setAccessionNumber(String accessionNumber) {
+        this.accessionNumber = accessionNumber;
         _changed = true;
     }
 
-    public Integer getReferenceTableId() {
-        return referenceTableId;
+    public Integer getAnalysisId() {
+        return analysisId;
     }
 
-    public void setReferenceTableId(Integer referenceTableId) {
-        this.referenceTableId = referenceTableId;
+    public void setAnalysisId(Integer analysisId) {
+        this.analysisId = analysisId;
+        _changed = true;
+    }
+
+    public Integer getQcId() {
+        return qcId;
+    }
+
+    public void setQcId(Integer qcId) {
+        this.qcId = qcId;
         _changed = true;
     }
 
