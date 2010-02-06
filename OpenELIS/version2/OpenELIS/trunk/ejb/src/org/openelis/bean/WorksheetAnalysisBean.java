@@ -75,8 +75,9 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
 
         entity = new WorksheetAnalysis();
         entity.setWorksheetItemId(data.getWorksheetItemId());
-        entity.setReferenceId(data.getReferenceId());
-        entity.setReferenceTableId(data.getReferenceTableId());
+        entity.setAccessionNumber(data.getAccessionNumber());
+        entity.setAnalysisId(data.getAnalysisId());
+        entity.setQcId(data.getQcId());
         entity.setWorksheetAnalysisId(data.getWorksheetAnalysisId());
 
         manager.persist(entity);
@@ -94,8 +95,9 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
         manager.setFlushMode(FlushModeType.COMMIT);
 
         entity = manager.find(WorksheetAnalysis.class, data.getId());
-        entity.setReferenceId(data.getReferenceId());
-        entity.setReferenceTableId(data.getReferenceTableId());
+        entity.setAccessionNumber(data.getAccessionNumber());
+        entity.setAnalysisId(data.getAnalysisId());
+        entity.setQcId(data.getQcId());
         entity.setWorksheetAnalysisId(data.getWorksheetAnalysisId());
 
         return data;
@@ -115,12 +117,16 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
-        if (DataBaseUtil.isEmpty(data.getReferenceId()))
+        if (DataBaseUtil.isEmpty(data.getAccessionNumber()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             WorksheetCompletionMeta.getWorksheetAnalysisReferenceId()));
-        if (DataBaseUtil.isEmpty(data.getReferenceTableId()))
+                                             WorksheetCompletionMeta.getWorksheetAnalysisAccessionNumber()));
+        if (DataBaseUtil.isEmpty(data.getAnalysisId()) &&
+            DataBaseUtil.isEmpty(data.getQcId())) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                             WorksheetCompletionMeta.getWorksheetAnalysisReferenceTableId()));
+                                             WorksheetCompletionMeta.getWorksheetAnalysisAnalysisId()));
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             WorksheetCompletionMeta.getWorksheetAnalysisQcId()));
+        }
         
         if (list.size() > 0)
             throw list;

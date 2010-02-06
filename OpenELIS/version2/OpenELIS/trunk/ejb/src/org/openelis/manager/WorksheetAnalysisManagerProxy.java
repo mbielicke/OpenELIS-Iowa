@@ -27,10 +27,10 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.WorksheetAnalysisLocal;
@@ -54,66 +54,154 @@ public class WorksheetAnalysisManagerProxy {
         return manager;
     }
     
-    public WorksheetAnalysisManager add(WorksheetAnalysisManager manager) throws Exception {
-        int                       i;
-        WorksheetAnalysisListItem listItem;
-        WorksheetAnalysisLocal    local;
-        WorksheetAnalysisDO       analysis;
+    public WorksheetAnalysisManager add(WorksheetAnalysisManager manager, HashMap<Integer,Integer> idHash) throws Exception {
+        int                 i;
+        Integer             oldId, qcLinkId;
+        WorksheetAnalysisDO analysis;
         
-        local = local();
+        manager.setNotDone(false);
         for (i = 0; i < manager.count(); i++) {
             analysis = manager.getWorksheetAnalysisAt(i);
-            analysis.setWorksheetItemId(manager.getWorksheetItemId());
-            local.add(analysis);
-
-            listItem = manager.getItemAt(i);
-            if (analysis.getReferenceTableId() == ReferenceTable.ANALYSIS &&
-                listItem.worksheetResult != null) {
-                manager.getWorksheetResultAt(i).setWorksheetAnalysisId(analysis.getId());
-                manager.getWorksheetResultAt(i).add();
-            } else if (analysis.getReferenceTableId() == ReferenceTable.QC &&
-                       listItem.worksheetQcResult != null) {
-                manager.getWorksheetQcResultAt(i).setWorksheetAnalysisId(analysis.getId());
-                manager.getWorksheetQcResultAt(i).add();
+            
+            if (analysis.getWorksheetAnalysisId() == null) {
+                if (!idHash.containsKey(analysis.getId())) {
+                    oldId = analysis.getId();
+                    add(manager, analysis, i);
+                    
+                    idHash.put(oldId, analysis.getId());
+                    idHash.put(analysis.getId(), null);
+                }
+            } else if (analysis.getWorksheetAnalysisId() < 0) {
+                qcLinkId = idHash.get(analysis.getWorksheetAnalysisId());
+                
+                if (qcLinkId != null) {
+                    oldId = analysis.getId();
+                    analysis.setWorksheetAnalysisId(qcLinkId);
+                    add(manager, analysis, i);
+                    
+                    idHash.put(oldId, analysis.getId());
+                    idHash.put(analysis.getId(), null);
+                } else {
+                    manager.setNotDone(true);
+                }
+            } else if (!idHash.containsKey(analysis.getId())) {
+                qcLinkId = idHash.get(analysis.getWorksheetAnalysisId());
+                
+                if (qcLinkId == null) {
+                    oldId = analysis.getId();
+                    add(manager, analysis, i);
+                    
+                    idHash.put(oldId, analysis.getId());
+                    if (!oldId.equals(analysis.getId()))
+                        idHash.put(analysis.getId(), null);
+                }
             }
         }
         
         return manager;
     }
 
-    public WorksheetAnalysisManager update(WorksheetAnalysisManager manager) throws Exception {
-        int                       i, j;
-        WorksheetAnalysisListItem listItem;
-        WorksheetAnalysisLocal    local;
-        WorksheetAnalysisDO       analysis;
+    public WorksheetAnalysisManager update(WorksheetAnalysisManager manager, HashMap<Integer,Integer> idHash) throws Exception {
+        int                 i;
+        Integer             oldId, qcLinkId;
+        WorksheetAnalysisDO analysis;
         
-        local = local();
-        for (j = 0; j < manager.deleteCount(); j++)
-            local.delete(manager.getDeletedAt(j).worksheetAnalysis);
-        
+        manager.setNotDone(false);
         for (i = 0; i < manager.count(); i++) {
             analysis = manager.getWorksheetAnalysisAt(i);
             
-            if (analysis.getId() == null) {
-                analysis.setWorksheetItemId(manager.getWorksheetItemId());
-                local.add(analysis);
-            } else {
-                local.update(analysis);
-            }
-        
-            listItem = manager.getItemAt(i);
-            if (analysis.getReferenceTableId() == ReferenceTable.ANALYSIS &&
-                listItem.worksheetResult != null) {
-                manager.getWorksheetResultAt(i).setWorksheetAnalysisId(analysis.getId());
-                manager.getWorksheetResultAt(i).update();
-            } else if (analysis.getReferenceTableId() == ReferenceTable.QC &&
-                listItem.worksheetQcResult != null) {
-                manager.getWorksheetQcResultAt(i).setWorksheetAnalysisId(analysis.getId());
-                manager.getWorksheetQcResultAt(i).update();
+            if (analysis.getWorksheetAnalysisId() == null) {
+                if (!idHash.containsKey(analysis.getId())) {
+                    oldId = analysis.getId();
+                    update(manager, analysis, i);
+                    
+                    idHash.put(oldId, analysis.getId());
+                    idHash.put(analysis.getId(), null);
+                }
+            } else if (analysis.getWorksheetAnalysisId() < 0) {
+                qcLinkId = idHash.get(analysis.getWorksheetAnalysisId());
+                
+                if (qcLinkId != null) {
+                    oldId = analysis.getId();
+                    analysis.setWorksheetAnalysisId(qcLinkId);
+                    update(manager, analysis, i);
+                    
+                    idHash.put(oldId, analysis.getId());
+                    idHash.put(analysis.getId(), null);
+                } else {
+                    manager.setNotDone(true);
+                }
+            } else if (!idHash.containsKey(analysis.getId())) {
+                qcLinkId = idHash.get(analysis.getWorksheetAnalysisId());
+                
+                if (qcLinkId == null) {
+                    oldId = analysis.getId();
+                    update(manager, analysis, i);
+                    
+                    idHash.put(oldId, analysis.getId());
+                    if (!oldId.equals(analysis.getId()))
+                        idHash.put(analysis.getId(), null);
+                }
             }
         }
-
+        
         return manager;
+    }
+
+    public void add(WorksheetAnalysisManager manager, WorksheetAnalysisDO analysis, int i) throws Exception {
+        String                    qcAccessionNumber;
+        WorksheetAnalysisListItem listItem;
+        WorksheetAnalysisLocal    local;
+        
+        local = local();
+
+        //
+        // Rewrite temporary QC accession number
+        //
+        if (analysis.getQcId() != null) {
+            qcAccessionNumber = analysis.getAccessionNumber();
+            if (qcAccessionNumber.startsWith("X.")) {
+                analysis.setAccessionNumber(qcAccessionNumber.replaceFirst("X", manager.getWorksheetId().toString()));
+            }
+        }
+            
+        analysis.setWorksheetItemId(manager.getWorksheetItemId());
+        local.add(analysis);
+
+        listItem = manager.getItemAt(i);
+        if (analysis.getAnalysisId() != null && listItem.worksheetResult != null) {
+            manager.getWorksheetResultAt(i).setWorksheetAnalysisId(analysis.getId());
+            manager.getWorksheetResultAt(i).add();
+        } else if (analysis.getQcId() != null && listItem.worksheetQcResult != null) {
+            manager.getWorksheetQcResultAt(i).setWorksheetAnalysisId(analysis.getId());
+            manager.getWorksheetQcResultAt(i).add();
+        }
+    }
+
+    public void update(WorksheetAnalysisManager manager, WorksheetAnalysisDO analysis, int i) throws Exception {
+//        int                       j;
+        WorksheetAnalysisListItem listItem;
+        WorksheetAnalysisLocal    local;
+        
+        local = local();
+//        for (j = 0; j < manager.deleteCount(); j++)
+//            local.delete(manager.getDeletedAt(j).worksheetAnalysis);
+        
+        if (analysis.getId() == null) {
+            analysis.setWorksheetItemId(manager.getWorksheetItemId());
+            local.add(analysis);
+        } else {
+            local.update(analysis);
+        }
+    
+        listItem = manager.getItemAt(i);
+        if (analysis.getAnalysisId() != null && listItem.worksheetResult != null) {
+            manager.getWorksheetResultAt(i).setWorksheetAnalysisId(analysis.getId());
+            manager.getWorksheetResultAt(i).update();
+        } else if (analysis.getQcId() != null && listItem.worksheetQcResult != null) {
+            manager.getWorksheetQcResultAt(i).setWorksheetAnalysisId(analysis.getId());
+            manager.getWorksheetQcResultAt(i).update();
+        }
     }
 
     public void validate(WorksheetAnalysisManager manager) throws Exception {
@@ -129,10 +217,10 @@ public class WorksheetAnalysisManagerProxy {
                 local.validate(manager.getWorksheetAnalysisAt(i));
                 
                 listItem = manager.getItemAt(i);
-                if (manager.getWorksheetAnalysisAt(i).getReferenceTableId() == ReferenceTable.ANALYSIS &&
+                if (manager.getWorksheetAnalysisAt(i).getAnalysisId() != null &&
                     listItem.worksheetResult != null)
                     manager.getWorksheetResultAt(i).validate();
-                else if (manager.getWorksheetAnalysisAt(i).getReferenceTableId() == ReferenceTable.QC &&
+                else if (manager.getWorksheetAnalysisAt(i).getQcId() != null &&
                          listItem.worksheetQcResult != null)
                     manager.getWorksheetQcResultAt(i).validate();
             } catch (Exception e) {

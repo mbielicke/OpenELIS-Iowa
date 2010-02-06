@@ -26,9 +26,9 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -38,6 +38,7 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.WorksheetDO;
+import org.openelis.domain.WorksheetViewDO;
 import org.openelis.entity.Worksheet;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
@@ -48,6 +49,8 @@ import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.WorksheetLocal;
 import org.openelis.meta.WorksheetCompletionMeta;
 import org.openelis.remote.WorksheetRemote;
+import org.openelis.security.domain.SystemUserDO;
+import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
 
@@ -60,6 +63,9 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
     private EntityManager manager;
 	
     private static final WorksheetCompletionMeta meta = new WorksheetCompletionMeta();
+    
+    @EJB
+    SystemUserUtilLocal sysUser;
     
 	public WorksheetDO fetchById(Integer id) throws Exception {		
 		Query       query;
@@ -78,19 +84,24 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
 	}
 
     @SuppressWarnings("unchecked")
-    public ArrayList<WorksheetDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
-        Query query;
-        QueryBuilderV2 builder;
-        List list;
+    public ArrayList<WorksheetViewDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+        int                        i;
+        Query                      query;
+        QueryBuilderV2             builder;
+        ArrayList<WorksheetViewDO> list;
+        SystemUserDO               user;
+        WorksheetViewDO            worksheet;
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.WorksheetDO("+WorksheetCompletionMeta.getId()+", "+
+        builder.setSelect("distinct new org.openelis.domain.WorksheetViewDO("+WorksheetCompletionMeta.getId()+", "+
                           WorksheetCompletionMeta.getCreatedDate()+", "+
                           WorksheetCompletionMeta.getSystemUserId()+", "+
                           WorksheetCompletionMeta.getStatusId()+", "+
                           WorksheetCompletionMeta.getFormatId()+", "+
-                          WorksheetCompletionMeta.getRelatedWorksheetId()+") ");
+                          WorksheetCompletionMeta.getRelatedWorksheetId()/*+", "+
+                          WorksheetCompletionMeta.getTestName()+", "+
+                          WorksheetCompletionMeta.getMethodName()*/+") ");
         builder.constructWhere(fields);
         builder.setOrderBy(WorksheetCompletionMeta.getId());
 
@@ -98,14 +109,25 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
         query.setMaxResults(first + max);
         builder.setQueryParams(query, fields);
 
-        list = query.getResultList();
+        list = (ArrayList<WorksheetViewDO>)query.getResultList();
         if (list.isEmpty())
             throw new NotFoundException();
-        list = (ArrayList<WorksheetDO>)DataBaseUtil.subList(list, first, max);
+        
+        for (i = 0; i < list.size(); i++) {
+            worksheet = list.get(i);
+            
+            if (worksheet.getSystemUserId() != null) {
+                user = sysUser.getSystemUser(worksheet.getSystemUserId());
+                if (user != null)
+                    worksheet.setSystemUser(user.getLoginName());
+            }
+        }
+        
+        list = DataBaseUtil.subList(list, first, max);
         if (list == null)
             throw new LastPageException();
 
-        return (ArrayList<WorksheetDO>)list;
+        return list;
     }
 
 	public WorksheetDO add(WorksheetDO data){
