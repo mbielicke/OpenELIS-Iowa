@@ -27,9 +27,11 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.naming.InitialContext;
 
+import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.WorksheetItemLocal;
@@ -54,32 +56,41 @@ public class WorksheetItemManagerProxy {
     }
     
     public WorksheetItemManager add(WorksheetItemManager manager) throws Exception {
-        int                   i;
-        WorksheetItemDO       item;
-        WorksheetItemListItem listItem;
-        WorksheetItemLocal    local;
+        boolean                  notDone;
+        int                      i;
+        HashMap<Integer,Integer> idHash;
+        WorksheetItemDO          item;
+        WorksheetItemLocal       local;
         
         local = local();
         for (i = 0; i < manager.count(); i++) {
             item = manager.getWorksheetItemAt(i);
             item.setWorksheetId(manager.getWorksheetId());
             local.add(item);
-            
-            listItem = manager.getItemAt(i);
-            if (listItem.analysis != null) {
-                manager.getWorksheetAnalysisAt(i).setWorksheetItemId(item.getId());
-                manager.getWorksheetAnalysisAt(i).add();
-            }
         }
         
+        idHash = new HashMap<Integer,Integer>();
+        do {
+            notDone = false;
+            for (i = 0; i < manager.count(); i++) {
+                item = manager.getWorksheetItemAt(i);
+                manager.getWorksheetAnalysisAt(i).setWorksheetId(manager.getWorksheetId());
+                manager.getWorksheetAnalysisAt(i).setWorksheetItemId(item.getId());
+                manager.getWorksheetAnalysisAt(i).add(idHash);
+                if (manager.getWorksheetAnalysisAt(i).getNotDone())
+                    notDone = true;
+            }
+        } while (notDone);
+
         return manager;
     }
 
     public WorksheetItemManager update(WorksheetItemManager manager) throws Exception {
-        int                   i, j;
-        WorksheetItemDO       item;
-        WorksheetItemListItem listItem;
-        WorksheetItemLocal    local;
+        boolean                  notDone;
+        int                      i, j;
+        HashMap<Integer,Integer> idHash;
+        WorksheetItemDO          item;
+        WorksheetItemLocal       local;
         
         local = local();
         for (j = 0; j < manager.deleteCount(); j++)
@@ -87,20 +98,26 @@ public class WorksheetItemManagerProxy {
         
         for (i = 0; i < manager.count(); i++) {
             item = manager.getWorksheetItemAt(i);
-            
             if (item.getId() == null) {
                 item.setWorksheetId(manager.getWorksheetId());
                 local.add(item);
             } else {
                 local.update(item);
             }
-            
-            listItem = manager.getItemAt(i);
-            if (listItem.analysis != null) {
-                manager.getWorksheetAnalysisAt(i).setWorksheetItemId(item.getId());
-                manager.getWorksheetAnalysisAt(i).update();
-            }
         }
+
+        idHash = new HashMap<Integer,Integer>();
+        do {
+            notDone = false;
+            for (i = 0; i < manager.count(); i++) {
+                item = manager.getWorksheetItemAt(i);
+                manager.getWorksheetAnalysisAt(i).setWorksheetId(manager.getWorksheetId());
+                manager.getWorksheetAnalysisAt(i).setWorksheetItemId(item.getId());
+                manager.getWorksheetAnalysisAt(i).update(idHash);
+                if (manager.getWorksheetAnalysisAt(i).getNotDone())
+                    notDone = true;
+            }
+        } while (notDone);
 
         return manager;
     }

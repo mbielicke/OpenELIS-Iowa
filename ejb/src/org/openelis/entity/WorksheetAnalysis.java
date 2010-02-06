@@ -22,7 +22,7 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "WorksheetAnalysis.FetchByWorksheetItemId",
-                query = "select new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.referenceId,wa.referenceTableId,wa.worksheetAnalysisId) "+
+                query = "select new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcId,wa.worksheetAnalysisId) "+
                         "from WorksheetAnalysis wa where wa.worksheetItemId = :id")})
 @Entity
 @Table(name = "worksheet_analysis")
@@ -37,11 +37,14 @@ public class WorksheetAnalysis implements Auditable, Cloneable {
     @Column(name = "worksheet_item_id")
     private Integer           worksheetItemId;
 
-    @Column(name = "reference_id")
-    private Integer           referenceId;
+    @Column(name = "accession_number")
+    private String            accessionNumber;
 
-    @Column(name = "reference_table_id")
-    private Integer           referenceTableId;
+    @Column(name = "analysis_id")
+    private Integer           analysisId;
+
+    @Column(name = "qc_id")
+    private Integer           qcId;
 
     @Column(name = "worksheet_analysis_id")
     private Integer           worksheetAnalysisId;
@@ -67,22 +70,30 @@ public class WorksheetAnalysis implements Auditable, Cloneable {
             this.worksheetItemId = worksheetItemId;
     }
 
-    public Integer getReferenceId() {
-        return referenceId;
+    public String getAccessionNumber() {
+        return accessionNumber;
     }
 
-    public void setReferenceId(Integer referenceId) {
-        if (DataBaseUtil.isDifferent(referenceId, this.referenceId))
-            this.referenceId = referenceId;
+    public void setAccessionNumber(String accessionNumber) {
+        this.accessionNumber = accessionNumber;
     }
 
-    public Integer getReferenceTableId() {
-        return referenceTableId;
+    public Integer getAnalysisId() {
+        return analysisId;
     }
 
-    public void setReferenceTableId(Integer referenceTableId) {
-        if (DataBaseUtil.isDifferent(referenceTableId, this.referenceTableId))
-            this.referenceTableId = referenceTableId;
+    public void setAnalysisId(Integer analysisId) {
+        if (DataBaseUtil.isDifferent(analysisId, this.analysisId))
+            this.analysisId = analysisId;
+    }
+
+    public Integer getQcId() {
+        return qcId;
+    }
+
+    public void setQcId(Integer qcId) {
+        if (DataBaseUtil.isDifferent(qcId, this.qcId))
+            this.qcId = qcId;
     }
 
     public Integer getWorksheetAnalysisId() {
@@ -110,8 +121,9 @@ public class WorksheetAnalysis implements Auditable, Cloneable {
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("worksheet_item_id", worksheetItemId, original.worksheetItemId)
-                 .setField("reference_id", referenceId, original.referenceId)
-                 .setField("reference_table_id", referenceTableId, original.referenceTableId)
+                 .setField("accession_number", accessionNumber, original.accessionNumber)
+                 .setField("analysis_id", analysisId, original.analysisId)
+                 .setField("qc_id", qcId, original.qcId)
                  .setField("worksheet_analysis_id", worksheetAnalysisId, original.worksheetAnalysisId);
 
         return audit;
