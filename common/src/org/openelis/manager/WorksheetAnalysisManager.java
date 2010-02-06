@@ -26,6 +26,7 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.gwt.common.NotFoundException;
@@ -34,7 +35,8 @@ import org.openelis.gwt.common.RPC;
 public class WorksheetAnalysisManager implements RPC {
     
     private static final long                      serialVersionUID = 1L;
-    protected Integer                              worksheetItemId;
+    boolean                                        notDone;
+    protected Integer                              worksheetId, worksheetItemId;
     protected ArrayList<WorksheetAnalysisListItem> analyses, deleted;
     
     protected transient static WorksheetAnalysisManagerProxy proxy;
@@ -146,12 +148,12 @@ public class WorksheetAnalysisManager implements RPC {
         return proxy().fetchByWorksheetItemId(id);
     }
 
-    public WorksheetAnalysisManager add() throws Exception {
-        return proxy().add(this);
+    public WorksheetAnalysisManager add(HashMap<Integer,Integer> idHash) throws Exception {
+        return proxy().add(this, idHash);
     }
     
-    public WorksheetAnalysisManager update() throws Exception {
-        return proxy().update(this);
+    public WorksheetAnalysisManager update(HashMap<Integer,Integer> idHash) throws Exception {
+        return proxy().update(this, idHash);
     }
        
     public void validate() throws Exception {
@@ -159,12 +161,28 @@ public class WorksheetAnalysisManager implements RPC {
     }
 
     // friendly methods used by managers and proxies
+    Integer getWorksheetId() {
+        return worksheetId;
+    }
+
+    void setWorksheetId(Integer id) {
+        worksheetId = id;
+    }
+    
     Integer getWorksheetItemId() {
         return worksheetItemId;
     }
 
     void setWorksheetItemId(Integer id) {
         worksheetItemId = id;
+    }
+    
+    boolean getNotDone() {
+        return notDone;
+    }
+     
+    void setNotDone(boolean nd) {
+        notDone = nd;
     }
     
     int deleteCount() {

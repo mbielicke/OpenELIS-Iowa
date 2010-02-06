@@ -49,8 +49,9 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
 
                                 ANALYSIS_ID                    = "_worksheetAnalysis.id",
                                 ANALYSIS_WORKSHEET_ITEM_ID     = "_worksheetAnalysis.worksheetItemId",
-                                ANALYSIS_REFERENCE_ID          = "_worksheetAnalysis.referenceId",
-                                ANALYSIS_REFERENCE_TABLE_ID    = "_worksheetAnalysis.referenceTableId",
+                                ANALYSIS_ACCESSION_NUMBER      = "_worksheetAnalysis.accessionNumber",
+                                ANALYSIS_ANALYSIS_ID           = "_worksheetAnalysis.analysisId",
+                                ANALYSIS_QC_ID                 = "_worksheetAnalysis.qcId",
                                 ANALYSIS_WORKSHEET_ANALYSIS_ID = "_worksheetAnalysis.worksheetAnalysisId",
 
                                 RESULT_ID                    = "_worksheetResult.id",
@@ -68,7 +69,10 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
                                 QC_RESULT_SORT_ORDER            = "_worksheetQcResult.sortOrder",
                                 QC_RESULT_QC_ANALYTE_ID         = "_worksheetQcResult.qcAnalyteId",
                                 QC_RESULT_TYPE_ID               = "_worksheetQcResult.typeId",
-                                QC_RESULT_VALUE                 = "_worksheetQcResult.value";
+                                QC_RESULT_VALUE                 = "_worksheetQcResult.value"/*,
+                                
+                                TEST_NAME                       = "_test.name",
+                                METHOD_NAME                     = "_method.name"*/;
 
     private static HashSet<String> names;
 
@@ -76,14 +80,15 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
         names = new HashSet<String>(Arrays.asList(ID, CREATED_DATE, SYSTEM_USER_ID,
                                     STATUS_ID, FORMAT_ID, ITEM_ID, RELATED_WORKSHEET_ID,
                                     ITEM_WORKSHEET_ID, ITEM_POSITION, ANALYSIS_ID,
-                                    ANALYSIS_WORKSHEET_ITEM_ID, ANALYSIS_REFERENCE_ID,
-                                    ANALYSIS_REFERENCE_TABLE_ID, ANALYSIS_WORKSHEET_ANALYSIS_ID,
+                                    ANALYSIS_WORKSHEET_ITEM_ID, ANALYSIS_ACCESSION_NUMBER,
+                                    ANALYSIS_ANALYSIS_ID, ANALYSIS_QC_ID, ANALYSIS_WORKSHEET_ANALYSIS_ID,
                                     RESULT_ID, RESULT_WORKSHEET_ANALYSIS_ID, RESULT_TEST_ANALYTE_ID,
                                     RESULT_TEST_RESULT_ID, RESULT_IS_COLUMN, RESULT_SORT_ORDER,
                                     RESULT_ANALYTE_ID, RESULT_TYPE_ID, RESULT_VALUE,
                                     QC_RESULT_ID, QC_RESULT_WORKSHEET_ANALYSIS_ID,
                                     QC_RESULT_SORT_ORDER, QC_RESULT_QC_ANALYTE_ID,
-                                    QC_RESULT_TYPE_ID, QC_RESULT_VALUE));
+                                    QC_RESULT_TYPE_ID, QC_RESULT_VALUE/*, TEST_NAME,
+                                    METHOD_NAME*/));
     }
 
     public static String getId() {
@@ -130,12 +135,16 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
         return ANALYSIS_WORKSHEET_ITEM_ID;
     }
 
-    public static String getWorksheetAnalysisReferenceId() {
-        return ANALYSIS_REFERENCE_ID;
+    public static String getWorksheetAnalysisAccessionNumber() {
+        return ANALYSIS_ACCESSION_NUMBER;
     }
 
-    public static String getWorksheetAnalysisReferenceTableId() {
-        return ANALYSIS_REFERENCE_TABLE_ID;
+    public static String getWorksheetAnalysisAnalysisId() {
+        return ANALYSIS_ANALYSIS_ID;
+    }
+
+    public static String getWorksheetAnalysisQcId() {
+        return ANALYSIS_QC_ID;
     }
 
     public static String getWorksheetAnalysisWorksheetAnalysisId() {
@@ -201,7 +210,15 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
     public static String getWorksheetQcResultValue() {
         return QC_RESULT_VALUE;
     }
+/*
+    public static String getTestName() {
+        return TEST_NAME;
+    }
 
+    public static String getMethodName() {
+        return METHOD_NAME;
+    }
+*/
     public static HashSet<String> getNames() {
         return names;
     }
@@ -213,28 +230,13 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
     public String buildFrom(String where) {
         String from;
 
-        from = "Worksheet _worksheet ";
-        if (where.indexOf("worksheetItem.") > -1)
-            from += ", IN (_worksheet.worksheetItem) _worksheetItem ";
-        if (where.indexOf("worksheetAnalysis.") > -1)
-            from += ", IN (_worksheetItem.worksheetAnalysis) _worksheetAnalysis ";
-//        if (where.indexOf("qc.") > -1)
-//            from += ", IN (_worksheetAnalysis.qc) _qc ";
-//        if (where.indexOf("analysis.") > -1)
-//            from += ", IN (_worksheetAnalysis.analysis) _analysis ";
-        if (where.indexOf("worksheetResult.") > -1)
-            from += ", IN (_worksheetAnalysis.worksheetResult) _worksheetResult ";
-//        if (where.indexOf("testAnalyte.") > -1)
-//            from += ", IN (_worksheetResult.testAnalyte) _testAnalyte ";
-//        if (where.indexOf("testResult.") > -1)
-//            from += ", IN (_worksheetResult.testResult) _testResult ";
-//        if (where.indexOf("analyte.") > -1)
-//            from += ", IN (_worksheetResult.analyte) analyte ";
-        if (where.indexOf("worksheetQcResult.") > -1)
-            from += ", IN (_worksheetAnalysis.worksheetQcResult) _worksheetQcResult ";
-//        if (where.indexOf("qcAnalyte.") > -1)
-//            from += ", IN (_worksheetQcResult.qcAnalyte) _qcAnalyte ";
-        
+        from = "Worksheet _worksheet "+
+               ", IN (_worksheet.worksheetItem) _worksheetItem "+
+               ", IN (_worksheetItem.worksheetAnalysis) _worksheetAnalysis "/*+
+               ", IN (_worksheetAnalysis.analysis) _analysis "+
+               ", IN (_analysis.test) _test "+
+               ", IN (_test.method) _method "*/;
+
         return from;
     }
 }
