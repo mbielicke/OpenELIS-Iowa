@@ -86,42 +86,42 @@ public class SamplePrivateWellImportOrder {
                 if(auxData.getGroupId().equals(envAuxGroupId)){
                     analyteId = auxData.getAnalyteExternalId();
                     
-                    if(analyteId.equals("smpl_collected_date"))
+                    if(analyteId.equals("smpl_collected_date")){
                         manager.getSample().setCollectionDate(
                                             Datetime.getInstance(Datetime.YEAR, Datetime.DAY, new Date(auxData.getValue())));
-                    else if(analyteId.equals("smpl_collected_time")){
+                    }else if(analyteId.equals("smpl_collected_time")){
                         DateField df = new DateField();
                         df.setBegin(Datetime.HOUR);
                         df.setEnd(Datetime.MINUTE);
                         df.setStringValue(auxData.getValue());
                         manager.getSample().setCollectionTime(df.getValue());
-                    }else if(analyteId.equals("smpl_client_ref"))
+                    }else if(analyteId.equals("smpl_client_ref")){
                         manager.getSample().setClientReference(auxData.getValue());
-                    else if(analyteId.equals("location"))
+                    }else if(analyteId.equals("location")){
                         ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().setLocation(auxData.getValue());
-                    else if(analyteId.equals("loc_mult_unit"))
+                    }else if(analyteId.equals("loc_mult_unit")){
                         ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().
                         getLocationAddressDO().setMultipleUnit(auxData.getValue());
-                    else if(analyteId.equals("loc_street_address"))
+                    }else if(analyteId.equals("loc_street_address")){
                         ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().
                         getLocationAddressDO().setStreetAddress(auxData.getValue());
-                    else if(analyteId.equals("loc_city"))
+                    }else if(analyteId.equals("loc_city")){
                         ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().
                         getLocationAddressDO().setCity(auxData.getValue());
-                    else if(analyteId.equals("loc_state"))
+                    }else if(analyteId.equals("loc_state")){
                         if(validateDropdownValue(auxData.getValue(), "state"))
                             ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().
                                 getLocationAddressDO().setState(auxData.getValue());
-                    else if(analyteId.equals("loc_zip_code"))
+                    }else if(analyteId.equals("loc_zip_code")){
                         ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().
                         getLocationAddressDO().setZipCode(auxData.getValue());
-                    else if(analyteId.equals("owner"))
+                    }else if(analyteId.equals("owner")){
                         ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().setOwner(auxData.getValue());
-                    else if(analyteId.equals("collector"))
+                    }else if(analyteId.equals("collector")){
                         ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().setCollector(auxData.getValue());
-                    else if(analyteId.equals("well_number"))
+                    }else if(analyteId.equals("well_number")){
                         ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().setWellNumber(new Integer(auxData.getValue()));
-                    else if(analyteId.equals("project_id")){
+                    }else if(analyteId.equals("project_id")){
                         ProjectViewDO proj;
                         SampleProjectViewDO projectDO;
                         
