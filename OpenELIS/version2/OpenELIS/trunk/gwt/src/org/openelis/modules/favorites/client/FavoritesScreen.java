@@ -80,8 +80,8 @@ public class FavoritesScreen extends Screen {
 				vp.add(ap);
 			}
 		}
-		panel.clear();
-		panel.add(sp);
+		screenpanel.clear();
+		screenpanel.add(sp);
 	}
 	
 	public void edit() {
@@ -110,8 +110,8 @@ public class FavoritesScreen extends Screen {
 				vp.add(hp);
 			}
 		}
-		panel.clear();
-		panel.add(sp);
+		screenpanel.clear();
+		screenpanel.add(sp);
 	}
 	
 	public void stopEditing() {
