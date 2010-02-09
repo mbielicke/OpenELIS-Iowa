@@ -33,55 +33,29 @@ import javax.naming.InitialContext;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalysisLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.manager.AnalysisManager.AnalysisListItem;
-import org.openelis.persistence.EJBFactory;
 
 public class AnalysisManagerProxy {
     public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
-        AnalysisLocal al = getAnalysisLocal();
         AnalysisViewDO anDO;
-        ArrayList<AnalysisViewDO> items = (ArrayList<AnalysisViewDO>)al.fetchBySampleItemId(sampleItemId);
-        AnalysisManager am = AnalysisManager.getInstance();
+        ArrayList<AnalysisViewDO> items;
+        AnalysisManager man;
+        
+        items = (ArrayList<AnalysisViewDO>)getAnalysisLocal().fetchBySampleItemId(sampleItemId);
+        man = AnalysisManager.getInstance();
         
         for(int i=0; i<items.size(); i++){
             anDO = items.get(i);
-            am.addAnalysis(anDO);
+            man.addAnalysis(anDO);
         }
         
-        am.setSampleItemId(sampleItemId);
+        man.setSampleItemId(sampleItemId);
         
-        return am;
-    }
-    
-    public AnalysisManager fetchBySampleItemIdForUpdate(Integer sampleItemId) throws Exception {
-        HashMap<Integer, TestManager> testManagerHash;
-        AnalysisLocal al = getAnalysisLocal();
-        AnalysisViewDO anDO;
-        ArrayList<AnalysisViewDO> items = (ArrayList<AnalysisViewDO>)al.fetchBySampleItemId(sampleItemId);
-        AnalysisManager am = AnalysisManager.getInstance();
-        TestManager tm;
-        
-        testManagerHash = new HashMap<Integer, TestManager>();
-        for(int i=0; i<items.size(); i++){
-            anDO = items.get(i);
-            am.addAnalysis(anDO);
-            
-            tm = testManagerHash.get(anDO.getTestId());
-            
-            if(tm == null){
-                tm = TestManager.fetchWithPrepTestsSampleTypes(anDO.getTestId());
-                testManagerHash.put(anDO.getTestId(), tm);
-            }
-         
-            am.setTestAt(tm, i);
-        }
-        
-        am.setSampleItemId(sampleItemId);
-        
-        return am;
+        return man;
     }
     
     public AnalysisManager add(AnalysisManager man) throws Exception {
@@ -183,7 +157,6 @@ public class AnalysisManagerProxy {
     }
     
     private void add(AnalysisManager man, AnalysisViewDO analysisDO, int i) throws Exception {
-        System.out.println("******************************analysis");
         Integer analysisRefId;
         AnalysisListItem item;
         AnalysisLocal al = getAnalysisLocal();
@@ -267,6 +240,9 @@ public class AnalysisManagerProxy {
         }
     }
         
+    public Datetime getCurrentDatetime(byte begin, byte end) throws Exception {
+        return Datetime.getInstance(begin, end);
+    }
     
     public void validate(AnalysisManager man, ValidationErrorsList errorsList) throws Exception {
         

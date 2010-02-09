@@ -25,7 +25,7 @@
 */
 package org.openelis.local;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import javax.ejb.Local;
 
@@ -35,7 +35,8 @@ import org.openelis.domain.AnalysisViewDO;
 @Local
 public interface AnalysisLocal {
     
-    public List fetchBySampleItemId(Integer sampleItemId) throws Exception;
+    public ArrayList<AnalysisViewDO> fetchBySampleId(Integer sampleId) throws Exception;
+    public ArrayList<AnalysisViewDO> fetchBySampleItemId(Integer sampleItemId) throws Exception;
     
     public AnalysisViewDO add(AnalysisViewDO data);
     public AnalysisViewDO update(AnalysisViewDO data);

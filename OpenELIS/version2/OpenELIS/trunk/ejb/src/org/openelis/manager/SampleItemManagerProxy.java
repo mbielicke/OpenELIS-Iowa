@@ -41,16 +41,14 @@ public class SampleItemManagerProxy {
 
         ArrayList<SampleItemViewDO> items = (ArrayList<SampleItemViewDO>)sil.fetchBySampleId(sampleId);
         SampleItemManager sim = SampleItemManager.getInstance();
-        for(int i=0; i<items.size(); i++)
-            sim.addSampleItem(items.get(i));
-        
+
+        sim.addSampleItems(items);
         sim.setSampleId(sampleId);
         
         return sim;
     }
     
     public SampleItemManager add(SampleItemManager man) throws Exception {
-        System.out.println("********************sample item");
         Integer sampleItemRefTableId;
         SampleItemLocal sil = getSampleItemLocal();
         SampleItemViewDO itemDO;
@@ -59,24 +57,17 @@ public class SampleItemManagerProxy {
         sampleItemRefTableId = ReferenceTable.SAMPLE_ITEM;
         
         for(int i=0; i<man.count(); i++){
-            System.out.println("1");
             itemDO = man.getSampleItemAt(i);
             itemDO.setSampleId(man.getSampleId());
-            System.out.println("2");
             sil.add(itemDO);
-            System.out.println("3");
             item = man.getItemAt(i);
             if(item.storage != null){
-                System.out.println("storage...");
                 man.getStorageAt(i).setReferenceId(itemDO.getId());
                 man.getStorageAt(i).setReferenceTableId(sampleItemRefTableId);
                 man.getStorageAt(i).add();
             }
-            System.out.println("4");
             if(item.analysis != null){
-                System.out.println("analysis...");
                 man.getAnalysisAt(i).setSampleItemId(itemDO.getId());
-                System.out.println("1111");
                 man.getAnalysisAt(i).add();
             }
         }

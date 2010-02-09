@@ -61,20 +61,14 @@ public class SampleManagerBean  implements SampleManagerRemote {
     
     @EJB private LockLocal lockBean;
 
-    private static int sampleRefTableId;
-    
-    public SampleManagerBean(){
-        sampleRefTableId = ReferenceTable.SAMPLE;
-    }
-    
-    public SampleManager fetch(Integer sampleId) throws Exception {
+    public SampleManager fetchById(Integer sampleId) throws Exception {
         SampleManager man = SampleManager.fetchById(sampleId);
         
         return man;
     }
 
     public SampleManager fetchWithItemsAnalysis(Integer sampleId) throws Exception {
-        SampleManager man = SampleManager.fetchByIdWithItemsAnalyses(sampleId);
+        SampleManager man = SampleManager.fetchWithItemsAnalyses(sampleId);
         
         return man;
     }
@@ -124,9 +118,14 @@ public class SampleManagerBean  implements SampleManagerRemote {
     }
 
     public SampleManager fetchForUpdate(Integer sampleId) throws Exception {
-        lockBean.getLock(sampleRefTableId, sampleId);
+        lockBean.getLock(ReferenceTable.SAMPLE, sampleId);
         
-        SampleManager man = SampleManager.getInstance();
+        SampleManager man = SampleManager.fetchById(sampleId);
+        man.getDomainManager();
+        man.getProjects();
+        man.getOrganizations();
+        man.getSampleItems().getAnalysisAt(1);
+        
         SampleDO sampleDO = new SampleDO();
         sampleDO.setId(sampleId);
         man.setSample(sampleDO);
@@ -135,7 +134,7 @@ public class SampleManagerBean  implements SampleManagerRemote {
     }
 
     public SampleManager abortUpdate(Integer sampleId) throws Exception {
-        lockBean.giveUpLock(sampleRefTableId, sampleId);
+        lockBean.giveUpLock(ReferenceTable.SAMPLE, sampleId);
         
         return fetchWithItemsAnalysis(sampleId);
     }
