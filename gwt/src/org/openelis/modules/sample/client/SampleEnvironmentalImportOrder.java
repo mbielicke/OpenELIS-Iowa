@@ -39,16 +39,17 @@ import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.DateField;
+import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleManager;
-import org.openelis.manager.SamplePrivateWellManager;
 
-public class OrderImportPrivateWell {
+public class SampleEnvironmentalImportOrder {
     protected static final String AUX_DATA_SERVICE_URL = "org.openelis.modules.auxData.server.AuxDataService";
     protected static final String PROJECT_SERVICE_URL = "org.openelis.modules.project.server.ProjectService";
+    
     protected ScreenService auxDataService, projectService;
 
-    public OrderImportPrivateWell(){
-        auxDataService = new ScreenService("OpenELISServlet?service="+AUX_DATA_SERVICE_URL);
+    public SampleEnvironmentalImportOrder(){
+        auxDataService = new ScreenService("controller?service="+AUX_DATA_SERVICE_URL);
         projectService = new ScreenService("controller?service="+PROJECT_SERVICE_URL);
     }
     
@@ -63,11 +64,9 @@ public class OrderImportPrivateWell {
         auxDataList = auxDataService.callList("fetchByRefId", auxData);
         
         // grab aux group id from sys variable ish
-        auxGroupId = ((IdVO)auxDataService.call("getAuxGroupIdFromSystemVariable", "sample_well_aux_data")).getId();
+        auxGroupId = ((IdVO)auxDataService.call("getAuxGroupIdFromSystemVariable", "sample_env_aux_data")).getId();
 
-        //grab order report to
-        
-        //grab order bill to
+        //grab order for report to/bill to
         
         //grab order tests including number of bottles
         
@@ -81,7 +80,6 @@ public class OrderImportPrivateWell {
         //aux data
         for(int i=0; i<auxDataList.size(); i++){
             auxData = auxDataList.get(i);
-            
             try{
                 if(auxData.getGroupId().equals(envAuxGroupId)){
                     analyteId = auxData.getAnalyteExternalId();
@@ -97,30 +95,38 @@ public class OrderImportPrivateWell {
                         manager.getSample().setCollectionTime(df.getValue());
                     }else if(analyteId.equals("smpl_client_ref"))
                         manager.getSample().setClientReference(auxData.getValue());
+                    else if(analyteId.equals("is_hazardous"))
+                        ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().setIsHazardous(auxData.getValue());
+                    else if(analyteId.equals("collector"))
+                        ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().setCollector(auxData.getValue());
                     else if(analyteId.equals("location"))
-                        ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().setLocation(auxData.getValue());
+                        ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().setLocation(auxData.getValue());
                     else if(analyteId.equals("loc_mult_unit"))
-                        ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().
+                        ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().
                         getLocationAddressDO().setMultipleUnit(auxData.getValue());
                     else if(analyteId.equals("loc_street_address"))
-                        ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().
+                        ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().
                         getLocationAddressDO().setStreetAddress(auxData.getValue());
                     else if(analyteId.equals("loc_city"))
-                        ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().
+                        ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().
                         getLocationAddressDO().setCity(auxData.getValue());
-                    else if(analyteId.equals("loc_state"))
+                    else if(analyteId.equals("loc_state")){
                         if(validateDropdownValue(auxData.getValue(), "state"))
-                            ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().
+                            ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().
                                 getLocationAddressDO().setState(auxData.getValue());
-                    else if(analyteId.equals("loc_zip_code"))
-                        ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().
+                    }else if(analyteId.equals("loc_zip_code"))
+                        ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().
                         getLocationAddressDO().setZipCode(auxData.getValue());
-                    else if(analyteId.equals("owner"))
-                        ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().setOwner(auxData.getValue());
-                    else if(analyteId.equals("collector"))
-                        ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().setCollector(auxData.getValue());
-                    else if(analyteId.equals("well_number"))
-                        ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().setWellNumber(new Integer(auxData.getValue()));
+                    else if(analyteId.equals("loc_country")){
+                        if(validateDropdownValue(auxData.getValue(), "country"))
+                            ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().
+                                getLocationAddressDO().setCountry(auxData.getValue());
+                    }else if(analyteId.equals("priority"))
+                        ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().setPriority(new Integer(auxData.getValue()));
+                    else if(analyteId.equals("collector_phone"))
+                        ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().setCollectorPhone(auxData.getValue());
+                    else if(analyteId.equals("description"))
+                        ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().setDescription(auxData.getValue());
                     else if(analyteId.equals("project_id")){
                         ProjectViewDO proj;
                         SampleProjectViewDO projectDO;
@@ -137,7 +143,6 @@ public class OrderImportPrivateWell {
                             manager.getProjects().addFirstPermanentProject(projectDO);
                         }
                     }
-                        
                 }else{
                     manager.getAuxData().addAuxData(auxData);
                 }

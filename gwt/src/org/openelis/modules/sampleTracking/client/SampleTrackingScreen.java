@@ -1,61 +1,21 @@
 package org.openelis.modules.sampleTracking.client;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
 
-import org.openelis.cache.DictionaryCache;
-import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.EntityLockedException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
-import org.openelis.gwt.event.BeforeDragStartEvent;
-import org.openelis.gwt.event.BeforeDragStartHandler;
-import org.openelis.gwt.event.BeforeDropEvent;
-import org.openelis.gwt.event.BeforeDropHandler;
-import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.event.DropEnterEvent;
-import org.openelis.gwt.event.DropEnterHandler;
-import org.openelis.gwt.event.DropEvent;
-import org.openelis.gwt.event.DropHandler;
-import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.event.StateChangeHandler;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
-import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.MenuItem;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TabPanel;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.TableDataCell;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.tree.TreeDataItem;
-import org.openelis.gwt.widget.tree.TreeRow;
 import org.openelis.gwt.widget.tree.TreeWidget;
-import org.openelis.gwt.widget.tree.event.BeforeLeafOpenEvent;
-import org.openelis.gwt.widget.tree.event.BeforeLeafOpenHandler;
-import org.openelis.gwt.widget.tree.event.LeafClosedEvent;
-import org.openelis.gwt.widget.tree.event.LeafClosedHandler;
-import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
-import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
@@ -64,25 +24,11 @@ import org.openelis.modules.sample.client.EnvironmentalTab;
 import org.openelis.modules.sample.client.PrivateWellTab;
 import org.openelis.modules.sample.client.QAEventsTab;
 import org.openelis.modules.sample.client.ResultTab;
-import org.openelis.modules.sample.client.SampleDataBundle;
 import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleNotesTab;
-import org.openelis.modules.sample.client.SampleTab;
 import org.openelis.modules.sample.client.StorageTab;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.DeckPanel;
-import com.google.gwt.user.client.ui.TabBar;
 
 public class SampleTrackingScreen extends Screen {
     
@@ -116,7 +62,6 @@ public class SampleTrackingScreen extends Screen {
 	private TabPanel                  	   sampleContent;
 	//private org.openelis.gwt.widget.TabBar                         sampleBar;
 	
-	private SampleTab                      sampleTab;
 	private EnvironmentalTab               environmentalTab;
 	private PrivateWellTab			       wellTab;
 	private SampleItemTab                  sampleItemTab;
@@ -170,14 +115,15 @@ public class SampleTrackingScreen extends Screen {
         security = OpenELIS.security.getModule("sample");
         if (security == null)
             throw new SecurityException("screenPermException", "Sample Tracking Screen");
-
+/*
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 postConstructor();
             }
         });
+        */
     }
-    
+    /*
     public void postConstructor() {
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
@@ -1120,7 +1066,7 @@ public class SampleTrackingScreen extends Screen {
         }else if(!id.equals(manager.getSample().getId())){
             window.setBusy(consts.get("fetching"));
             try {
-               manager = SampleManager.fetchByIdWithItemsAnalyses(id);
+               manager = SampleManager.fetchWithItemsAnalyses(id);
             } catch (Exception e) {
                 e.printStackTrace();
                 setState(State.DEFAULT);
@@ -1323,5 +1269,5 @@ public class SampleTrackingScreen extends Screen {
     
    private int getNextTempId() {
 	   return --tempId;
-   }
+   }*/
 }

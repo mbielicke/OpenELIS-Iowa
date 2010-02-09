@@ -1,44 +1,22 @@
 package org.openelis.modules.reviewRelease.client;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
 
-import org.openelis.cache.DictionaryCache;
-import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.ReviewReleaseVO;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.EntityLockedException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
-import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.TabPanel;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.TableDataCell;
-import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.tree.TreeWidget;
-import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
-import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
@@ -47,23 +25,11 @@ import org.openelis.modules.sample.client.EnvironmentalTab;
 import org.openelis.modules.sample.client.PrivateWellTab;
 import org.openelis.modules.sample.client.QAEventsTab;
 import org.openelis.modules.sample.client.ResultTab;
-import org.openelis.modules.sample.client.SampleDataBundle;
 import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleNotesTab;
-import org.openelis.modules.sample.client.SampleTab;
 import org.openelis.modules.sample.client.StorageTab;
-import org.openelis.modules.sampleTracking.client.SampleTrackingScreen.Tabs;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.DeckPanel;
-import com.google.gwt.user.client.ui.TabBar;
 
 public class ReviewReleaseScreen extends Screen {
     
@@ -94,11 +60,10 @@ public class ReviewReleaseScreen extends Screen {
 	
 	private ScreenNavigator 		       nav;
 	private SampleManager                  manager;
-	private SampleDataBundle               dataBundle = new SampleDataBundle();
+	//private SampleDataBundle               dataBundle = new SampleDataBundle();
 	
 	private TabPanel                  	   sampleContent;
 	
-	private SampleTab                      sampleTab;
 	private EnvironmentalTab               environmentalTab;
 	private PrivateWellTab			       wellTab;
 	private SampleItemTab                  sampleItemTab;
@@ -119,14 +84,14 @@ public class ReviewReleaseScreen extends Screen {
         security = OpenELIS.security.getModule("sample");
         if (security == null)
             throw new SecurityException("screenPermException", "Review and Release Screen");
-
+/*
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 postConstructor();
             }
-        });
+        });*/
     }
-    
+    /*
     public void postConstructor() {
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
@@ -643,7 +608,7 @@ public class ReviewReleaseScreen extends Screen {
         }else if(manager == null || !manager.getSample().getId().equals(vo.getSampleId())){
             window.setBusy(consts.get("fetching"));
             try {
-               manager = SampleManager.fetchByIdWithItemsAnalyses(vo.getSampleId());
+               manager = SampleManager.fetchWithItemsAnalyses(vo.getSampleId());
                dataBundle = getAnalysisBundle(vo.getAnalysisId());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -825,5 +790,5 @@ public class ReviewReleaseScreen extends Screen {
     		sampleContent.selectTab(tabs[0].ordinal());
     		sampleContent.getTabBar().setStyleName("gwt-TabBar");
     	}
-    }
+    }*/
 }

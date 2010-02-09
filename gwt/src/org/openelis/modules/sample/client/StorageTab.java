@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.StorageLocationVO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.Datetime;
@@ -53,6 +54,9 @@ import org.openelis.gwt.widget.table.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
+import org.openelis.manager.AnalysisManager;
+import org.openelis.manager.SampleDataBundle;
+import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.StorageManager;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
@@ -68,13 +72,14 @@ public class StorageTab extends Screen {
     protected Integer               userId;
     protected String                userName;
 
+    protected SampleDataBundle      bundle;
     protected StorageManager        manager;
-    protected SampleDataBundle      data;
 
     private Integer                 analysisCancelledId, analysisReleasedId;
 
     public StorageTab(ScreenDefInt def, ScreenWindow window) {
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.storage.server.StorageService");
+        service = new ScreenService(
+                                    "OpenELISServlet?service=org.openelis.modules.storage.server.StorageService");
         setDef(def);
         setWindow(window);
 
@@ -292,15 +297,23 @@ public class StorageTab extends Screen {
     }
 
     public boolean canEdit() {
-        if (data != null) {
-            if (data.type == SampleDataBundle.Type.ANALYSIS) {
-                return (data.analysisTestDO != null &&
-                        !analysisCancelledId.equals(data.analysisTestDO.getStatusId()) && !analysisReleasedId.equals(data.analysisTestDO.getStatusId()));
+        try{
+        AnalysisViewDO anDO;
+        if (bundle != null) {
+            if (SampleDataBundle.Type.ANALYSIS.equals(bundle.getType())) {
+                anDO = bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).getAnalysisAt(bundle.getAnalysisIndex());
+                
+                return (anDO != null &&
+                        !analysisCancelledId.equals(anDO.getStatusId()) && !analysisReleasedId.equals(anDO.getStatusId()));
             } else
                 return true;
         }
-
+        
         return false;
+        }catch(Exception e){
+            Window.alert("storageTab canEdit: "+e.getMessage());
+            return false;
+        }
     }
 
     private void initializeDropdowns() {
@@ -315,39 +328,42 @@ public class StorageTab extends Screen {
     }
 
     public void setData(SampleDataBundle data) {
-        this.data = data;
+        bundle= data;
         manager = null;
         loaded = false;
     }
 
     public void draw() {
-        int i;
+        SampleItemManager itemMan;
+        AnalysisManager anMan;
+        
         try {
             if ( !loaded) {
-                if (data.type == SampleDataBundle.Type.ANALYSIS) {
-                    i = data.analysisManager.getIndex(data.analysisTestDO);
-                    manager = data.analysisManager.getStorageAt(i);
-
-                    if (state == State.ADD || state == State.UPDATE)
-                        StateChangeEvent.fire(this, State.UPDATE);
-
-                } else if (data.type == SampleDataBundle.Type.SAMPLE_ITEM) {
-                    i = data.sampleItemManager.getIndex(data.sampleItemDO);
-                    manager = data.sampleItemManager.getStorageAt(i);
-
-                    if (state == State.ADD || state == State.UPDATE)
-                        StateChangeEvent.fire(this, State.UPDATE);
-
-                } else {
+                if(bundle == null){
                     manager = StorageManager.getInstance();
                     StateChangeEvent.fire(this, State.DEFAULT);
+                    
+                }else if(bundle.getType().equals(SampleDataBundle.Type.SAMPLE_ITEM)){
+                    itemMan = bundle.getSampleManager().getSampleItems();
+                    manager = itemMan.getStorageAt(bundle.getSampleItemIndex());
+
+                    if (state == State.ADD || state == State.UPDATE)
+                        StateChangeEvent.fire(this, State.UPDATE);
+                    
+                }else if(bundle.getType().equals(SampleDataBundle.Type.ANALYSIS)){
+                    anMan = bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
+                    manager = anMan.getStorageAt(bundle.getAnalysisIndex());
+
+                    if (state == State.ADD || state == State.UPDATE)
+                        StateChangeEvent.fire(this, State.UPDATE);
+                    
                 }
             }
 
             DataChangeEvent.fire(this);
 
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            Window.alert("storageTab draw: "+ e.getMessage());
         }
 
         loaded = true;
@@ -368,7 +384,8 @@ public class StorageTab extends Screen {
                 storageTable.setCellException(
                                               i,
                                               3,
-                                              new LocalizedException("checkinDateAfterCheckoutDateException"));
+                                              new LocalizedException(
+                                                                     "checkinDateAfterCheckoutDateException"));
                 returnValue = false;
             }
         }

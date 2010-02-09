@@ -43,6 +43,7 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.HasNotesInt;
 import org.openelis.manager.NoteManager;
+import org.openelis.manager.SampleDataBundle;
 import org.openelis.modules.note.client.EditNoteScreen;
 import org.openelis.modules.note.client.NotesTab;
 
@@ -53,6 +54,7 @@ public class AnalysisNotesTab extends NotesTab {
 
     protected AnalysisViewDO  analysis;
     protected AnalysisManager anMan;
+    protected SampleDataBundle bundle;
 
     protected String          internalNotesPanelKey;
     protected String          internalEditButtonKey;
@@ -67,19 +69,19 @@ public class AnalysisNotesTab extends NotesTab {
     private Integer           analysisCancelledId, analysisReleasedId;
 
     public AnalysisNotesTab(ScreenDefInt def, ScreenWindow window, String notesPanelKey,
-                            String editButtonKey, boolean isExternal) {
-        super(def, window, notesPanelKey, editButtonKey, isExternal);
+                            String editButtonKey) {
+        super(def, window, notesPanelKey, editButtonKey);
     }
 
     public AnalysisNotesTab(ScreenDefInt def, ScreenWindow window, String externalNotesPanelKey,
                             String externalEditButtonKey, String internalNotesPanelKey,
                             String internalEditButtonKey) {
 
-        super(def, window, externalNotesPanelKey, externalEditButtonKey, true);
+        super(def, window, externalNotesPanelKey, externalEditButtonKey);
 
         this.internalNotesPanelKey = internalNotesPanelKey;
         this.internalEditButtonKey = internalEditButtonKey;
-
+        
         initialize();
 
         initializeDropdowns();
@@ -159,7 +161,7 @@ public class AnalysisNotesTab extends NotesTab {
 
                 internalNote = null;
                 try {
-                    internalNote = internalManager.getInternalEditingNote();
+                    internalNote = internalManager.getEditingNote();
                 } catch (Exception e) {
                     e.printStackTrace();
                     Window.alert("error!");
@@ -190,16 +192,14 @@ public class AnalysisNotesTab extends NotesTab {
     public void draw() {
         if ( !loaded) {
             try {
-                if (anMan == null) {
+                if (anMan == null || bundle == null) {
                     internalManager = NoteManager.getInstance();
+                    internalManager.setIsExternal(false);
                     manager = NoteManager.getInstance();
+                    manager.setIsExternal(true);
                 } else {
-                    int index = anMan.getIndex(analysis);
-
-                    if (index != -1) {
-                        internalManager = anMan.getInternalNotesAt(index);
-                        manager = anMan.getExternalNoteAt(index);
-                    }
+                    internalManager = anMan.getInternalNotesAt(bundle.getAnalysisIndex());
+                    manager = anMan.getExternalNoteAt(bundle.getAnalysisIndex());
                 }
 
                 DataChangeEvent.fire(this);
@@ -230,17 +230,25 @@ public class AnalysisNotesTab extends NotesTab {
     }
 
     public void setData(SampleDataBundle data) {
-        if (data.analysisTestDO == null) {
+        if (data == null || data.getSampleManager() == null || 
+                            SampleDataBundle.Type.SAMPLE_ITEM.equals(data.getType())) {
             analysis = new AnalysisViewDO();
+            anMan = null;
             StateChangeEvent.fire(this, State.DEFAULT);
         } else {
-            analysis = data.analysisTestDO;
-
-            if (state == State.ADD || state == State.UPDATE)
-                StateChangeEvent.fire(this, State.UPDATE);
+            try{
+                anMan = data.getSampleManager().getSampleItems().getAnalysisAt(data.getSampleItemIndex());
+                analysis = anMan.getAnalysisAt(data.getAnalysisIndex());
+                this.bundle = data;
+    
+                if (state == State.ADD || state == State.UPDATE)
+                    StateChangeEvent.fire(this, State.UPDATE);
+            
+            }catch(Exception e){
+                Window.alert("AnalysisNotesTab.setData: "+e.getMessage());
+            }
         }
 
-        anMan = data.analysisManager;
         loaded = false;
     }
 

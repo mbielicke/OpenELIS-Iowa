@@ -104,7 +104,7 @@ public class RichTextTab extends Screen {
 
         note = null;
         try {
-            note = manager.getExternalEditingNote();
+            note = manager.getEditingNote();
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert("Error in RichText: " + e.getMessage());

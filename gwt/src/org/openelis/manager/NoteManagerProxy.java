@@ -38,27 +38,6 @@ public class NoteManagerProxy {
         service = new ScreenService("controller?service="+SERVICE_URL);
     }
     
-    public NoteManager fetchByRefTableRefId(Integer tableId, Integer id) throws Exception {
-        Query query;
-        QueryData field;
-        
-        query = new Query();
-
-        field = new QueryData();
-        field.key = NoteMeta.getReferenceId();
-        field.type = QueryData.Type.INTEGER;
-        field.query = id.toString();
-        query.setFields(field);
-        
-        field = new QueryData();
-        field.key = NoteMeta.getReferenceTableId();
-        field.type = QueryData.Type.INTEGER;
-        field.query = tableId.toString();
-        query.setFields(field);
-
-        return service.call("fetchByRefTableRefId", query);
-    }
-    
     public NoteManager fetchByRefTableRefIdIsExt(Integer tableId, Integer id, String isExternal) throws Exception {
         Query query;
         QueryData field;

@@ -61,6 +61,7 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
@@ -69,14 +70,12 @@ import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
 import org.openelis.modules.sample.client.AuxDataTab;
 import org.openelis.modules.sample.client.EnvironmentalTab;
-import org.openelis.modules.sample.client.OrderImportEnvironmental;
 import org.openelis.modules.sample.client.QAEventsTab;
 import org.openelis.modules.sample.client.ResultTab;
-import org.openelis.modules.sample.client.SampleDataBundle;
+import org.openelis.modules.sample.client.SampleEnvironmentalImportOrder;
 import org.openelis.modules.sample.client.SampleItemAnalysisTreeTab;
 import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleNotesTab;
-import org.openelis.modules.sample.client.SampleTab;
 import org.openelis.modules.sample.client.StorageTab;
 
 import com.google.gwt.core.client.GWT;
@@ -91,45 +90,44 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
 
-public class EnvironmentalSampleLoginScreen extends Screen implements
-                                                          HasActionHandlers<SampleTab.Action> {
+public class EnvironmentalSampleLoginScreen extends Screen implements HasActionHandlers {
 
     public enum Tabs {
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
         AUX_DATA
     };
 
-    protected Tabs                    tab;
-    private Integer                   sampleLoggedInId, sampleErrorStatusId, sampleReleasedId,
-                                      userId;
+    protected Tabs                         tab;
+    private Integer                        sampleLoggedInId, sampleErrorStatusId, sampleReleasedId,
+                    userId;
 
-    private SampleItemAnalysisTreeTab treeTab;
-    private EnvironmentalTab          environmentalTab;
-    private SampleItemTab             sampleItemTab;
-    private AnalysisTab               analysisTab;
-    private ResultTab                 testResultsTab;
-    private AnalysisNotesTab          analysisNotesTab;
-    private SampleNotesTab            sampleNotesTab;
-    private StorageTab                storageTab;
-    private QAEventsTab               qaEventsTab;
-    private AuxDataTab                auxDataTab;
+    private SampleItemAnalysisTreeTab      treeTab;
+    private EnvironmentalTab               environmentalTab;
+    private SampleItemTab                  sampleItemTab;
+    private AnalysisTab                    analysisTab;
+    private ResultTab                      testResultsTab;
+    private AnalysisNotesTab               analysisNotesTab;
+    private SampleNotesTab                 sampleNotesTab;
+    private StorageTab                     storageTab;
+    private QAEventsTab                    qaEventsTab;
+    private AuxDataTab                     auxDataTab;
 
-    protected TextBox                 clientReference;
-    protected TextBox<Integer>        accessionNumber, orderNumber;
-    protected TextBox<Datetime>       collectedTime;
-    protected Dropdown<Integer>       statusId;
-    protected CalendarLookUp          collectedDate, receivedDate;
+    protected TextBox                      clientReference;
+    protected TextBox<Integer>             accessionNumber, orderNumber;
+    protected TextBox<Datetime>            collectedTime;
+    protected Dropdown<Integer>            statusId;
+    protected CalendarLookUp               collectedDate, receivedDate;
 
-    protected AppButton               queryButton, addButton, updateButton, nextButton, prevButton,
-                                      commitButton, abortButton;
-    protected MenuItem                history;
-    protected TabPanel                tabs;
+    protected AppButton                    queryButton, addButton, updateButton, nextButton,
+                    prevButton, commitButton, abortButton;
+    protected MenuItem                     history;
+    protected TabPanel                     tabs;
 
-    ScreenNavigator                   nav;
-    private SecurityModule            security;
+    ScreenNavigator                        nav;
+    private SecurityModule                 security;
 
-    private OrderImportEnvironmental  envOrderImport;
-    private SampleManager             manager;
+    private SampleEnvironmentalImportOrder envOrderImport;
+    private SampleManager                  manager;
 
     public EnvironmentalSampleLoginScreen() throws Exception {
         // Call base to get ScreenDef and draw screen
@@ -198,7 +196,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
                     queryButton.enable(false);
             }
         });
-        
+
         nextButton = (AppButton)def.getWidget("next");
         addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -290,7 +288,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
                                           .contains(event.getState()));
             }
         });
-        
+
         history = (MenuItem)def.getWidget("history");
         addScreenHandler(history, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -302,9 +300,9 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
                 history.enable(EnumSet.of(State.DISPLAY, State.UPDATE).contains(event.getState()));
             }
         });
-        
+
         //
-        //screen fields
+        // screen fields
         //
         final EnvironmentalSampleLoginScreen envScreen = this;
 
@@ -355,7 +353,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
                 manager.getSample().setOrderId(event.getValue());
 
                 if (envOrderImport == null)
-                    envOrderImport = new OrderImportEnvironmental();
+                    envOrderImport = new SampleEnvironmentalImportOrder();
 
                 try {
                     envOrderImport.importOrderInfo(event.getValue(), manager);
@@ -488,7 +486,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
 
         addScreenHandler(sampleItemTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                sampleItemTab.setData(new SampleDataBundle());
+                sampleItemTab.setData(null);
 
                 if (tab == Tabs.SAMPLE_ITEM)
                     drawTabs();
@@ -503,7 +501,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
 
         addScreenHandler(analysisTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                analysisTab.setData(new SampleDataBundle());
+                analysisTab.setData(null);
 
                 if (tab == Tabs.ANALYSIS)
                     drawTabs();
@@ -518,7 +516,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
 
         addScreenHandler(testResultsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                testResultsTab.setData(new SampleDataBundle());
+                testResultsTab.setData(null);
 
                 if (tab == Tabs.TEST_RESULT)
                     drawTabs();
@@ -533,7 +531,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
                                                 "anIntNotesPanel", "anIntNoteButton");
         addScreenHandler(analysisNotesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                analysisNotesTab.setData(new SampleDataBundle());
+                analysisNotesTab.setData(null);
 
                 if (tab == Tabs.ANALYSIS_NOTES)
                     drawTabs();
@@ -563,7 +561,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
         storageTab = new StorageTab(def, window);
         addScreenHandler(storageTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                storageTab.setData(new SampleDataBundle());
+                storageTab.setData(null);
 
                 if (tab == Tabs.STORAGE)
                     drawTabs();
@@ -577,7 +575,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
         qaEventsTab = new QAEventsTab(def, window);
         addScreenHandler(qaEventsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                qaEventsTab.setData(new SampleDataBundle());
+                qaEventsTab.setData(null);
                 qaEventsTab.setManager(manager);
 
                 if (tab == Tabs.QA_EVENTS)
@@ -615,33 +613,23 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
                     qaEventsTab.setData(data);
 
                     drawTabs();
-                } else if (event.getAction() == SampleItemAnalysisTreeTab.Action.SETUP_BUNDLE) {
-                    analysisTab.setupBundle((SampleDataBundle)event.getData());
                 }
             }
         });
 
         sampleItemTab.addActionHandler(new ActionHandler<SampleItemTab.Action>() {
             public void onAction(ActionEvent<SampleItemTab.Action> event) {
-                if (state != State.QUERY && event.getAction() == SampleItemTab.Action.CHANGED) {
-                    ActionEvent.fire(envScreen, SampleTab.Action.SAMPLE_ITEM_CHANGED,
-                                     event.getData());
-                }
+                if (state != State.QUERY)
+                    ActionEvent.fire(envScreen, event.getAction(), event.getData());
             }
         });
 
         analysisTab.addActionHandler(new ActionHandler<AnalysisTab.Action>() {
             public void onAction(ActionEvent<AnalysisTab.Action> event) {
-                if (state != State.QUERY && event.getAction() == AnalysisTab.Action.CHANGED)
-                    ActionEvent.fire(envScreen, SampleTab.Action.ANALYSIS_CHANGED, event.getData());
-                else if (state != State.QUERY &&
-                         event.getAction() == AnalysisTab.Action.CHANGED_DONT_CHECK_PREPS)
-                    ActionEvent.fire(envScreen, SampleTab.Action.ANALYSIS_CHANGED_DONT_CHECK_PREPS,
-                                     event.getData());
+                if (state != State.QUERY) 
+                    ActionEvent.fire(envScreen, event.getAction(), event.getData());
             }
         });
-
-        
 
         // Get TabPanel and set Tab Selection Handlers
         tabs = (TabPanel)def.getWidget("sampleItemTabPanel");
@@ -659,7 +647,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
                 window.clearStatus();
             }
         });
-        
+
         nav = new ScreenNavigator(def) {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
@@ -738,14 +726,9 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
 
         // default the form
         try {
-            manager.getSample().setRevision(0);
-            manager.getSample().setStatusId(sampleLoggedInId);
-            manager.getSample()
-                   .setEnteredDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-            manager.getSample()
-                   .setReceivedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+            manager.setDefaults();
+
             manager.getSample().setReceivedById(userId);
-            manager.getSample().setNextItemSequence(0);
             ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
                                                                     .setIsHazardous("N");
 
@@ -921,7 +904,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
             window.setBusy(consts.get("fetching"));
 
             try {
-                manager = SampleManager.fetchByIdWithItemsAnalyses(id);
+                manager = SampleManager.fetchWithItemsAnalyses(id);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1001,8 +984,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements
         return super.validate() & storageTab.validate();
     }
 
-    public HandlerRegistration addActionHandler(ActionHandler<SampleTab.Action> handler) {
+    public HandlerRegistration addActionHandler(ActionHandler handler) {
         return addHandler(handler, ActionEvent.getType());
     }
-
 }

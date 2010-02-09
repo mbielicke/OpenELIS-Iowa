@@ -369,7 +369,7 @@ public class ProviderScreen extends Screen {
             }
         });
 
-        notesTab = new NotesTab(def, window, "notesPanel", "standardNoteButton", false);
+        notesTab = new NotesTab(def, window, "notesPanel", "standardNoteButton");
         addScreenHandler(notesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 notesTab.setManager(manager);

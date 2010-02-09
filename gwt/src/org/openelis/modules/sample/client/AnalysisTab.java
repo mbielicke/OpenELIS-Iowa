@@ -27,16 +27,17 @@ package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.SectionCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.IdVO;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.domain.SectionDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
-import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -60,7 +61,7 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.AnalysisManager;
-import org.openelis.manager.TestManager;
+import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.TestSectionManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.SampleMeta;
@@ -71,20 +72,24 @@ import com.google.gwt.user.client.Window;
 
 public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab.Action> {
     public enum Action {
-        CHANGED, CHANGED_DONT_CHECK_PREPS
+        ANALYSIS_ADDED, PANEL_ADDED, CHANGED_DONT_CHECK_PREPS, ITEM_CHANGED
     };
 
     private boolean loaded;
 
-    protected AutoComplete<Integer> test, method;
-    protected Dropdown<Integer>     sectionId, unitOfMeasureId, statusId, samplePrep;
+    protected AutoComplete<Integer> test, method, samplePrep;
+    protected Dropdown<Integer>     sectionId, unitOfMeasureId, statusId;
     protected CheckBox              isReportable;
     protected TextBox               revision;
     protected CalendarLookUp        startedDate, completedDate, releasedDate, printedDate;
 
+    protected ArrayList<TableDataRow> fullSectionModel, fullUnitModel;
+    protected HashMap<Integer, ArrayList<TableDataRow>> sectionModel, unitModel; 
+    
+    protected boolean               fullSectionShown, fullUnitShown;
     protected int                   analysisIndex = -1;
-    protected SampleDataBundle      bundle;
     protected AnalysisManager       manager;
+    protected SampleDataBundle      bundle;
     protected AnalysisViewDO        analysis;
     protected SampleItemViewDO      sampleItem;
 
@@ -99,7 +104,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
         setDef(def);
         setWindow(window);
-
+        
         initialize();
         initializeDropdowns();
     }
@@ -114,58 +119,25 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
+                TableDataRow selectedRow;
+
                 try {
-                    SampleDataBundle dataBundle;
-                    ArrayList<IdVO> testIds;
-                    ArrayList<SampleDataBundle> bundles;
-                    TestManager testMan = null;
-                    TableDataRow selectedRow = test.getSelection();
-
+                    selectedRow = test.getSelection();
+                    
+                    //
+                    //If method is empty, the selected row is a panel
+                    //
                     if (selectedRow != null && selectedRow.key != null) {
-                        if (selectedRow.cells.get(1).value == null) {
-                            testIds = panelService.callList("fetchTestIdsByPanelId",
-                                                            event.getValue());
-                        } else {
-                            testIds = new ArrayList<IdVO>();
-                            IdVO idVO = new IdVO();
-                            idVO.setId(event.getValue());
-                            testIds.add(idVO);
-                        }
-
-                        bundles = new ArrayList<SampleDataBundle>();
-                        for (int i = 0; i < testIds.size(); i++ ) {
-                            testMan = TestManager.fetchWithPrepTestsSampleTypes(testIds.get(i)
-                                                                                       .getId());
-                            dataBundle = null;
-
-                            if (i == 0) {
-                                bundle.analysisManager.setTestAt(testMan, analysisIndex);
-                                bundle.testManager = testMan;
-                                dataBundle = bundle;
-                            } else {
-                                dataBundle = new SampleDataBundle(bundle.sampleItemManager,
-                                                                  bundle.sampleItemDO,
-                                                                  bundle.analysisManager,
-                                                                  new AnalysisViewDO(), testMan);
-
-                                dataBundle.samplePrepDropdownModel = bundle.samplePrepDropdownModel;
-                            }
-
-                            bundles.add(dataBundle);
-
-                            // setup the new databundle
-                            setupBundle(dataBundle);
-                        }
-
-                        // fire changed before we check for prep tests
-                        ActionEvent.fire(anTab, Action.CHANGED, bundles);
-
+                        if (selectedRow.cells.get(1).value == null) 
+                            ActionEvent.fire(anTab, Action.PANEL_ADDED, event.getValue());
+                        else
+                            ActionEvent.fire(anTab, Action.ANALYSIS_ADDED, event.getValue());
                     } else
                         method.setSelections(new ArrayList());
 
-                    bundle.sampleItemManager.setChangedAt(
-                                                          true,
-                                                          bundle.sampleItemManager.getIndex(bundle.sampleItemDO));
+                    //FIXME bundle.sampleItemManager.setChangedAt(
+                    //                                      true,
+                    //                                      bundle.sampleItemManager.getIndex(bundle.sampleItemDO));
 
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
@@ -261,7 +233,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 analysis.setStatusId(event.getValue());
-                ActionEvent.fire(anTab, Action.CHANGED, null);
+                ActionEvent.fire(anTab, Action.CHANGED_DONT_CHECK_PREPS, null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -308,28 +280,36 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         addScreenHandler(sectionId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 ArrayList<TableDataRow> sections;
-                if (bundle.sectionsDropdownModel != null) {
-                    sectionId.setModel(bundle.sectionsDropdownModel);
-
-                } else if (bundle.testManager != null) {
-                    sections = getSectionsModel(bundle.testManager.getTestSections());
-                    bundle.sectionsDropdownModel = sections;
+                
+                if(EnumSet.of(State.QUERY, State.DEFAULT, State.DISPLAY).contains(state)){
+                    if(!fullSectionShown)
+                        sectionId.setModel(fullSectionModel);
+                    fullSectionShown = true;
+                }else{
+                    fullSectionShown = false;
+                    sections = null;
+                    
+                    if(analysis.getTestId() != null){
+                        sections = sectionModel.get(analysis.getTestId());
+                        
+                        if(sections == null){
+                            try{
+                                sections = getSectionsModel(manager.getTestAt(bundle.getAnalysisIndex()).getTestSections());
+                            }catch(Exception e){
+                                sections = null;
+                            }
+                            
+                            sectionModel.put(analysis.getTestId(), sections);
+                        }
+                    }
                     sectionId.setModel(sections);
-
-                } else if (analysis.getSectionId() != null) {
-                    sectionId.setModel(getDropdownModel(analysis.getSectionId(),
-                                                        analysis.getSectionName()));
-
-                } else
-                    sectionId.setModel(getSectionsModel(null));
-
+                }
+                
                 sectionId.setSelection(analysis.getSectionId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 analysis.setSectionId(event.getValue());
-                analysis.setSectionName(sectionId.getTextBoxDisplay());
-
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -343,33 +323,36 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         addScreenHandler(unitOfMeasureId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 ArrayList<TableDataRow> units;
-                if (bundle.unitsDropdownModel != null) {
-                    unitOfMeasureId.setModel(bundle.unitsDropdownModel);
-
-                } else if (bundle.testManager != null) {
-                    try {
-                        units = getUnitsModel(bundle.testManager.getSampleTypes(),
-                                              bundle.sampleItemDO.getTypeOfSampleId());
-                    } catch (Exception e) {
-                        Window.alert(e.getMessage());
-                        units = new ArrayList<TableDataRow>();
+                
+                if(EnumSet.of(State.QUERY, State.DEFAULT, State.DISPLAY).contains(state)){
+                    if(!fullUnitShown)
+                        unitOfMeasureId.setModel(fullUnitModel);
+                    fullUnitShown = true;
+                }else{
+                    fullUnitShown = false;
+                    units = null;
+                    
+                    if(analysis.getTestId() != null){
+                        units = unitModel.get(analysis.getTestId());
+                        
+                        if(units == null){
+                            try{
+                                units = getUnitsModel(manager.getTestAt(bundle.getAnalysisIndex()).getSampleTypes(), sampleItem.getTypeOfSampleId());
+                            }catch(Exception e){
+                                units = null;
+                            }
+                            
+                            unitModel.put(analysis.getTestId(), units);
+                        }
                     }
-                    bundle.unitsDropdownModel = units;
                     unitOfMeasureId.setModel(units);
-
-                } else if (analysis.getUnitOfMeasureId() != null) {
-                    unitOfMeasureId.setModel(getDropdownModel(analysis.getUnitOfMeasureId(),
-                                                              analysis.getUnitOfMeasure()));
-
-                } else
-                    unitOfMeasureId.setModel(getUnitsModel(null, null));
-
+                }
+                
                 unitOfMeasureId.setSelection(analysis.getUnitOfMeasureId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 analysis.setUnitOfMeasureId(event.getValue());
-                analysis.setUnitOfMeasure(unitOfMeasureId.getTextBoxDisplay());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -444,36 +427,29 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
         });
 
-        samplePrep = (Dropdown<Integer>)def.getWidget(SampleMeta.getAnalysisSamplePrep());
+        samplePrep = (AutoComplete<Integer>)def.getWidget(SampleMeta.getAnalysisSamplePrep());
         addScreenHandler(samplePrep, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-
-                samplePrep.setModel(getSamplePrepDropdown());
-
-                samplePrep.setSelection(analysis.getPreAnalysisId());
+                String testMethodString = null;
+                
+                if(analysis.getPreAnalysisTest() != null)
+                    testMethodString = analysis.getPreAnalysisTest() + " : " + analysis.getPreAnalysisMethod();
+                
+                samplePrep.setSelection(analysis.getPreAnalysisId(), testMethodString);
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                Integer value = null;
+                SampleDataBundle anBundle;
                 if (event.getValue() == null) {
-                    analysis.setStatusId(analysisLoggedInId);
-                    analysis.setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+                    manager.unlinkPrepTest(bundle.getAnalysisIndex());
+                    
                 } else {
-                    if (event.getValue().equals(analysis.getId())) {
-                        window.setError(consts.get("samplePrepSampleException"));
-                        samplePrep.setSelection(analysis.getPreAnalysisId());
-                        value = analysis.getPreAnalysisId();
-                    } else {
-                        analysis.setStatusId(analysisInPrepId);
-                        analysis.setAvailableDate(null);
-                        value = event.getValue();
-                    }
+                    anBundle = (SampleDataBundle)samplePrep.getSelection().data;
+                    manager.linkPrepTest(bundle.getAnalysisIndex(), anBundle.getAnalysisIndex());
                 }
 
-                analysis.setPreAnalysisId(value);
-                ArrayList<SampleDataBundle> bundles = new ArrayList<SampleDataBundle>();
-                bundles.add(bundle);
-                ActionEvent.fire(anTab, Action.CHANGED_DONT_CHECK_PREPS, bundles);
+                ActionEvent.fire(anTab, Action.CHANGED_DONT_CHECK_PREPS, null);
+                DataChangeEvent.fire(anTab, statusId);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -482,61 +458,33 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 samplePrep.setQueryMode(event.getState() == State.QUERY);
             }
         });
-    }
-
-    private ArrayList<TableDataRow> getSamplePrepDropdown() {
-        ArrayList<TableDataRow> returnList;
-        DictionaryDO dictDO;
-        AnalysisViewDO anDO;
-
-        if (bundle == null || bundle.sampleItemManager == null || bundle.analysisManager == null) {
-            returnList = new ArrayList<TableDataRow>();
-            returnList.add(new TableDataRow(null, ""));
-
-            return returnList;
-        }
-
-        if ( !bundle.sampleItemManager.hasChangedAt(bundle.sampleItemManager.getIndex(bundle.sampleItemDO)))
-            return bundle.samplePrepDropdownModel;
-        else {
-            returnList = bundle.samplePrepDropdownModel;
-            returnList.clear();
-            returnList.add(new TableDataRow(null, ""));
-
-            try {
-                for (int i = 0; i < bundle.analysisManager.count(); i++ ) {
-                    anDO = bundle.analysisManager.getAnalysisAt(i);
-                    dictDO = DictionaryCache.getEntryFromId(anDO.getStatusId());
-
-                    returnList.add(new TableDataRow(
-                                                    anDO.getId(),
-                                                    formatTreeString(anDO.getTestName()) +
-                                                                    " : " +
-                                                                    formatTreeString(anDO.getMethodName()) +
-                                                                    " : " +
-                                                                    dictDO.getEntry().trim()));
+        
+        samplePrep.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                ArrayList<TableDataRow> model;
+                TableDataRow row;
+                AnalysisViewDO anDO;
+                SampleDataBundle anBundle;
+                Integer currentId;
+                String match;
+                
+                currentId = analysis.getId();
+                match = event.getMatch();
+                model = new ArrayList<TableDataRow>();
+                
+                for(int i=0; i<manager.count(); i++){
+                    anDO = manager.getAnalysisAt(i);
+                    
+                    if(!currentId.equals(anDO.getId()) && anDO.getTestName().startsWith(match)){
+                        row = new TableDataRow(anDO.getId(), anDO.getTestName()+" : "+anDO.getMethodName());
+                        row.data = manager.getBundleAt(i);
+                        model.add(row);
+                    }
                 }
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
+                
+                samplePrep.showAutoMatches(model);
             }
-        }
-
-        return returnList;
-    }
-
-    private String formatTreeString(String val) {
-        if (val == null || "".equals(val))
-            return "<>";
-
-        return val.trim();
-    }
-
-    private ArrayList<TableDataRow> getDropdownModel(Integer id, String name) {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        model.add(new TableDataRow(id, name));
-
-        return model;
+        });
     }
 
     private ArrayList<TableDataRow> getSectionsModel(TestSectionManager sectionManager) {
@@ -582,64 +530,6 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         return model;
     }
 
-    public void setupBundle(SampleDataBundle bundle) {
-        TestManager testMan;
-        TestSectionViewDO defaultDO;
-        ArrayList<TableDataRow> sections;
-        ArrayList<TableDataRow> units;
-        TestViewDO test;
-
-        testMan = bundle.testManager;
-
-        bundle.analysisTestDO.setStatusId(analysisLoggedInId);
-        bundle.analysisTestDO.setRevision(0);
-        bundle.analysisTestDO.setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-
-        if (testMan != null) {
-            test = testMan.getTest();
-            bundle.analysisTestDO.setTestId(test.getId());
-            bundle.analysisTestDO.setTestName(test.getName());
-            bundle.analysisTestDO.setMethodId(test.getMethodId());
-            bundle.analysisTestDO.setMethodName(test.getMethodName());
-            bundle.analysisTestDO.setIsReportable(test.getIsReportable());
-            // setup analysis units
-            units = null;
-            try {
-                units = getUnitsModel(testMan.getSampleTypes(),
-                                      bundle.sampleItemDO.getTypeOfSampleId());
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                return;
-            }
-
-            if (units.size() == 2) {
-                bundle.analysisTestDO.setUnitOfMeasureId((Integer)units.get(1).key);
-                bundle.analysisTestDO.setUnitOfMeasure((String)units.get(1).cells.get(0).value);
-            }
-
-            bundle.unitsDropdownModel = units;
-
-            // setup analysis sections
-            defaultDO = null;
-            try {
-                defaultDO = testMan.getTestSections().getDefaultSection();
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                return;
-            }
-
-            if (defaultDO != null) {
-                bundle.analysisTestDO.setSectionId(defaultDO.getSectionId());
-                bundle.analysisTestDO.setSectionName(defaultDO.getSection());
-            }
-
-            if (testMan.getTestSections().count() > 0) {
-                sections = getSectionsModel(testMan.getTestSections());
-                bundle.sectionsDropdownModel = sections;
-            }
-        }
-    }
-
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         try {
@@ -661,7 +551,27 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
         statusId.setModel(model);
 
-        sectionId.setModel(getSectionsModel(null));
+        // section full dropdown model
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (SectionDO s : SectionCache.getSectionList())
+            model.add(new TableDataRow(s.getId(), s.getName()));
+
+        fullSectionModel = model;
+        sectionId.setModel(model);
+        sectionModel = new HashMap<Integer, ArrayList<TableDataRow>>();
+        fullSectionShown = true;
+        
+        // unit full dropdown model
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("unit_of_measure"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+
+        fullUnitModel = model;
+        unitOfMeasureId.setModel(model);
+        unitModel = new HashMap<Integer, ArrayList<TableDataRow>>();
+        fullUnitShown = true;
     }
 
     private boolean canEdit() {
@@ -669,25 +579,30 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     }
 
     public void setData(SampleDataBundle data) {
-        if (data.type == SampleDataBundle.Type.ANALYSIS) {
-            analysis = data.analysisTestDO;
-            manager = data.analysisManager;
-            sampleItem = data.sampleItemDO;
-            analysisIndex = manager.getIndex(analysis);
-
-            if (state == State.ADD || state == State.UPDATE) {
-                analysisIndex = manager.getIndex(analysis);
-                StateChangeEvent.fire(this, State.UPDATE);
+        try{
+            if (data != null && SampleDataBundle.Type.ANALYSIS.equals(data.getType())) {
+                
+                analysisIndex = data.getAnalysisIndex();
+                manager = data.getSampleManager().getSampleItems().getAnalysisAt(data.getSampleItemIndex());
+                analysis = manager.getAnalysisAt(analysisIndex);
+                sampleItem = data.getSampleManager().getSampleItems().getSampleItemAt(data.getSampleItemIndex());
+    
+                if (state == State.ADD || state == State.UPDATE) 
+                    StateChangeEvent.fire(this, State.UPDATE);
+    
+            } else {
+                analysis = new AnalysisViewDO();
+                sampleItem = new SampleItemViewDO();
+                manager = null;
+    
+                if (state != State.QUERY)
+                    StateChangeEvent.fire(this, State.DEFAULT);
             }
-        } else {
-            analysis = new AnalysisViewDO();
-            manager = null;
-
-            if (state != State.QUERY)
-                StateChangeEvent.fire(this, State.DEFAULT);
+            bundle = data;
+            loaded = false;
+        }catch(Exception e){
+            Window.alert("analysisTab setData: "+e.getMessage());
         }
-        bundle = data;
-        loaded = false;
     }
 
     public void draw() {

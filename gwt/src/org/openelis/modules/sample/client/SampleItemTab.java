@@ -43,10 +43,12 @@ import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.manager.SampleDataBundle;
 import org.openelis.meta.SampleMeta;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Window;
 
 public class SampleItemTab extends Screen implements HasActionHandlers<SampleItemTab.Action> {
     public enum Action {
@@ -55,6 +57,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
 
     private boolean            loaded;
 
+    protected SampleDataBundle bundle;
     protected SampleItemViewDO sampleItem;
     protected TextBox          sourceOther, containerReference, quantity;
     protected Dropdown<Integer> typeOfSampleId, sourceOfSampleId, containerId, unitOfMeasureId;
@@ -234,19 +237,24 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
     }
 
     public void setData(SampleDataBundle data) {
-        if (data.sampleItemDO == null) {
-            sampleItem = new SampleItemViewDO();
-
-            if (state != State.QUERY)
-                StateChangeEvent.fire(this, State.DEFAULT);
-        } else {
-            sampleItem = data.sampleItemDO;
-
-            if (state == State.ADD || state == State.UPDATE)
-                StateChangeEvent.fire(this, State.UPDATE);
+        try{
+            if (data == null) {
+                sampleItem = new SampleItemViewDO();
+    
+                if (state != State.QUERY)
+                    StateChangeEvent.fire(this, State.DEFAULT);
+            } else {
+                sampleItem = data.getSampleManager().getSampleItems().getSampleItemAt(data.getSampleItemIndex());
+    
+                if (state == State.ADD || state == State.UPDATE)
+                    StateChangeEvent.fire(this, State.UPDATE);
+            }
+            
+            bundle = data;
+            loaded = false;
+        }catch(Exception e){
+            Window.alert("sampleItemTab setData: "+e.getMessage());
         }
-
-        loaded = false;
     }
 
     public void draw() {

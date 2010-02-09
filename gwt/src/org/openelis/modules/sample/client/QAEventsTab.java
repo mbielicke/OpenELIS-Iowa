@@ -55,6 +55,7 @@ import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
+import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleQaEventManager;
 import org.openelis.modules.qaevent.client.QaeventLookupScreen;
@@ -64,11 +65,13 @@ import com.google.gwt.user.client.Window;
 
 public class QAEventsTab extends Screen {
     private boolean                  loaded;
-    private SampleDataBundle.Type    type;
+    protected SampleDataBundle       bundle;
+    protected SampleDataBundle.Type  type;
 
     protected TableWidget            sampleQATable, analysisQATable;
     protected AutoComplete<Integer>  sampleQaEvent, analysisQaEvent;
-
+    protected AppButton              removeAnalysisQAButton, removeSampleQAButton, sampleQAPicker,
+                    analysisQAPicker;
     protected SampleQaEventManager   sampleQAManager;
     protected AnalysisQaEventManager analysisQAManager;
     protected SampleManager          sampleManager;
@@ -89,8 +92,6 @@ public class QAEventsTab extends Screen {
     }
 
     private void initialize() {
-        final QAEventsTab tab = this;
-
         sampleQATable = (TableWidget)def.getWidget("sampleQATable");
         addScreenHandler(sampleQATable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
@@ -98,8 +99,7 @@ public class QAEventsTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sampleQATable.enable(canEditSampleQA() &&
-                                     EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                sampleQATable.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                             .contains(event.getState()));
                 sampleQATable.setQueryMode(event.getState() == State.QUERY);
             }
@@ -107,6 +107,15 @@ public class QAEventsTab extends Screen {
 
         sampleQATable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                if ( (state == State.ADD || state == State.UPDATE) && !canEditSampleQA()) {
+                    event.cancel();
+                    removeSampleQAButton.enable(false);
+                    sampleQAPicker.enable(false);
+                } else {
+                    removeSampleQAButton.enable(true);
+                    sampleQAPicker.enable(true);
+                }
+
                 if (event.getCol() == 0 || !Window.confirm(consts.get("qaEventEditConfirm"))) {
                     event.cancel();
                 }
@@ -143,7 +152,7 @@ public class QAEventsTab extends Screen {
             }
         });
 
-        final AppButton removeSampleQAButton = (AppButton)def.getWidget("removeSampleQAButton");
+        removeSampleQAButton = (AppButton)def.getWidget("removeSampleQAButton");
         addScreenHandler(removeSampleQAButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int selectedRow = sampleQATable.getSelectedRow();
@@ -153,13 +162,12 @@ public class QAEventsTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeSampleQAButton.enable(canEditSampleQA() &&
-                                            EnumSet.of(State.ADD, State.UPDATE)
+                removeSampleQAButton.enable(EnumSet.of(State.ADD, State.UPDATE)
                                                    .contains(event.getState()));
             }
         });
 
-        final AppButton sampleQAPicker = (AppButton)def.getWidget("sampleQAPicker");
+        sampleQAPicker = (AppButton)def.getWidget("sampleQAPicker");
         addScreenHandler(sampleQAPicker, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 if (qaEventScreen == null) {
@@ -174,8 +182,7 @@ public class QAEventsTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sampleQAPicker.enable(canEditSampleQA() &&
-                                      EnumSet.of(State.ADD, State.UPDATE)
+                sampleQAPicker.enable(EnumSet.of(State.ADD, State.UPDATE)
                                              .contains(event.getState()));
             }
         });
@@ -235,7 +242,7 @@ public class QAEventsTab extends Screen {
             }
         });
 
-        final AppButton removeAnalysisQAButton = (AppButton)def.getWidget("removeAnalysisQAButton");
+        removeAnalysisQAButton = (AppButton)def.getWidget("removeAnalysisQAButton");
         addScreenHandler(removeAnalysisQAButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int selectedRow = analysisQATable.getSelectedRow();
@@ -254,7 +261,7 @@ public class QAEventsTab extends Screen {
             }
         });
 
-        final AppButton analysisQAPicker = (AppButton)def.getWidget("analysisQAPicker");
+        analysisQAPicker = (AppButton)def.getWidget("analysisQAPicker");
         addScreenHandler(analysisQAPicker, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 if (qaEventScreen == null)
@@ -414,7 +421,7 @@ public class QAEventsTab extends Screen {
 
     private boolean canEditSampleQA() {
         try {
-            return !sampleManager.hasReleasedCancelledAnalysis();
+            return !sampleManager.hasReleasedAnalysis();
         } catch (Exception e) {
             return false;
         }
@@ -425,15 +432,26 @@ public class QAEventsTab extends Screen {
     }
 
     public void setData(SampleDataBundle data) {
-        if (data.analysisTestDO == null)
-            anDO = new AnalysisViewDO();
-        else
-            anDO = data.analysisTestDO;
+        try {
+            if (data == null || SampleDataBundle.Type.SAMPLE_ITEM.equals(data.getType())) {
+                anDO = new AnalysisViewDO();
+                anMan = null;
+                type = SampleDataBundle.Type.SAMPLE_ITEM;
 
-        type = data.type;
+            } else {
+                anMan = data.getSampleManager()
+                            .getSampleItems()
+                            .getAnalysisAt(data.getSampleItemIndex());
+                anDO = anMan.getAnalysisAt(data.getAnalysisIndex());
+                type = data.getType();
+            }
 
-        anMan = data.analysisManager;
-        loaded = false;
+            bundle = data;
+            loaded = false;
+
+        } catch (Exception e) {
+            Window.alert("qaEventsTab setData: " + e.getMessage());
+        }
     }
 
     public void setManager(SampleManager sampleManager) {
@@ -453,12 +471,8 @@ public class QAEventsTab extends Screen {
                 // analysis
                 if (anMan == null)
                     analysisQAManager = AnalysisQaEventManager.getInstance();
-                else {
-                    int index = anMan.getIndex(anDO);
-
-                    if (index != -1)
-                        analysisQAManager = anMan.getQAEventAt(index);
-                }
+                else
+                    analysisQAManager = anMan.getQAEventAt(bundle.getAnalysisIndex());
 
                 if (state != State.QUERY) {
                     StateChangeEvent.fire(this, state);

@@ -59,6 +59,7 @@ import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
+import org.openelis.manager.SampleDataBundle;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
@@ -82,6 +83,7 @@ public class ResultTab extends Screen {
     protected GetMatchesHandler       resultMatchesHandler;
     protected AnalysisManager         analysisMan;
     protected AnalysisViewDO          anDO;
+    protected SampleDataBundle        bundle;
 
     private Integer                   analysisCancelledId, analysisReleasedId,
                     testAnalyteReadOnlyId, testAnalyteRequiredId, addedTestAnalyteId,
@@ -524,19 +526,27 @@ public class ResultTab extends Screen {
     }
 
     public void setData(SampleDataBundle data) {
-        if (SampleDataBundle.Type.ANALYSIS == data.type) {
-            anDO = data.analysisTestDO;
+        try {
+            if (data != null && SampleDataBundle.Type.ANALYSIS.equals(data.getType())) {
+                analysisMan = data.getSampleManager()
+                                  .getSampleItems()
+                                  .getAnalysisAt(data.getSampleItemIndex());
+                anDO = analysisMan.getAnalysisAt(data.getAnalysisIndex());
 
-            if (state == State.ADD || state == State.UPDATE)
-                StateChangeEvent.fire(this, State.UPDATE);
-        } else {
-            anDO = new AnalysisViewDO();
-            StateChangeEvent.fire(this, State.DEFAULT);
+                if (state == State.ADD || state == State.UPDATE)
+                    StateChangeEvent.fire(this, State.UPDATE);
+            } else {
+                analysisMan = null;
+                anDO = new AnalysisViewDO();
+                StateChangeEvent.fire(this, State.DEFAULT);
+            }
+
+            bundle = data;
+            loaded = false;
+
+        } catch (Exception e) {
+            Window.alert("resultTab setData: " + e.getMessage());
         }
-
-        analysisMan = data.analysisManager;
-
-        loaded = false;
     }
 
     public void draw() {
@@ -545,14 +555,10 @@ public class ResultTab extends Screen {
                 if (analysisMan == null || anDO.getTestId() == null)
                     manager = AnalysisResultManager.getInstance();
                 else {
-                    int index = analysisMan.getIndex(anDO);
-
-                    if (index != -1) {
                         if (state == State.ADD || state == State.UPDATE)
-                            manager = analysisMan.getAnalysisResultAt(index);
+                            manager = analysisMan.getAnalysisResultAt(bundle.getAnalysisIndex());
                         else
-                            manager = analysisMan.getDisplayAnalysisResultAt(index);
-                    }
+                            manager = analysisMan.getDisplayAnalysisResultAt(bundle.getAnalysisIndex());
                 }
 
                 displayManager = new ResultDisplayManager();
