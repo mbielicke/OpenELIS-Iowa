@@ -36,6 +36,73 @@ public class AnalysisResultManager implements RPC {
         return arm;
     }
 
+    public ResultViewDO getResultAt(int row, int col) {
+        return results.get(row).get(col);
+    
+    }
+
+    public ArrayList<ResultViewDO> getRowAt(int row) {
+        return results.get(row);
+    
+    }
+
+    public void setResultAt(ResultViewDO result, int row, int col) {
+        results.get(row).set(col, result);
+    }
+
+    public ArrayList<ArrayList<ResultViewDO>> getResults() {
+        return results;
+    }
+
+    public void addRow(ArrayList<ResultViewDO> row) {
+        results.add(row);
+    }
+
+    public void addRowAt(int index, ArrayList<ResultViewDO> row) {
+        if (results == null)
+            results = new ArrayList<ArrayList<ResultViewDO>>();
+    
+        if (results.size() > index)
+            results.add(index, row);
+        else
+            results.add(row);
+    }
+
+    public void addRowAt(int index,
+                         Integer rowGroup,
+                         Integer firstColTestAnalyteId,
+                         Integer firstColAnalyteId,
+                         String firstColAnalyteName) {
+        ArrayList<ResultViewDO> currlist;
+        currlist = createNewDataListAt(index, rowGroup, firstColTestAnalyteId, firstColAnalyteId,
+                                       firstColAnalyteName);
+    
+        addRowAt(index, currlist);
+    }
+
+    public void removeRowAt(int row) {
+        ArrayList<ResultViewDO> list;
+        ResultViewDO resultDO;
+        Integer id;
+    
+        if (results == null || row >= results.size())
+            return;
+    
+        list = results.get(row);
+    
+        if (deletedResults == null)
+            deletedResults = new ArrayList<ResultViewDO>();
+    
+        for (int i = 0; i < list.size(); i++ ) {
+            resultDO = list.get(i);
+            id = resultDO.getId();
+            if (id != null && id > 0)
+                deletedResults.add(resultDO);
+        }
+    
+        results.remove(row);
+    }
+
     public static AnalysisResultManager fetchByAnalysisId(Integer analysisId) throws Exception {
         return proxy().fetchByAnalysisIdForDisplay(analysisId);
     }
@@ -61,71 +128,17 @@ public class AnalysisResultManager implements RPC {
         return proxy().update(this);
     }
 
-    public ArrayList<ArrayList<ResultViewDO>> getResults() {
-        return results;
+    public void validate() throws Exception {
+        ValidationErrorsList errorsList = new ValidationErrorsList();
+    
+        proxy().validate(this, errorsList);
+    
+        if (errorsList.size() > 0)
+            throw errorsList;
     }
 
-    public ResultViewDO getResultAt(int row, int col) {
-        return results.get(row).get(col);
-
-    }
-
-    public ArrayList<ResultViewDO> getRowAt(int row) {
-        return results.get(row);
-
-    }
-
-    public void setResultAt(ResultViewDO result, int row, int col) {
-        results.get(row).set(col, result);
-    }
-
-    public void addRow(ArrayList<ResultViewDO> row) {
-        results.add(row);
-    }
-
-    public void addRowAt(int index, ArrayList<ResultViewDO> row) {
-        if (results == null)
-            results = new ArrayList<ArrayList<ResultViewDO>>();
-
-        if (results.size() > index)
-            results.add(index, row);
-        else
-            results.add(row);
-    }
-
-    public void addRowAt(int index,
-                         Integer rowGroup,
-                         Integer firstColTestAnalyteId,
-                         Integer firstColAnalyteId,
-                         String firstColAnalyteName) {
-        ArrayList<ResultViewDO> currlist;
-        currlist = createNewDataListAt(index, rowGroup, firstColTestAnalyteId, firstColAnalyteId,
-                                       firstColAnalyteName);
-
-        addRowAt(index, currlist);
-    }
-
-    public void removeRowAt(int row) {
-        ArrayList<ResultViewDO> list;
-        ResultViewDO resultDO;
-        Integer id;
-
-        if (results == null || row >= results.size())
-            return;
-
-        list = results.get(row);
-
-        if (deletedResults == null)
-            deletedResults = new ArrayList<ResultViewDO>();
-
-        for (int i = 0; i < list.size(); i++ ) {
-            resultDO = list.get(i);
-            id = resultDO.getId();
-            if (id != null && id > 0)
-                deletedResults.add(resultDO);
-        }
-
-        results.remove(row);
+    public void validate(ValidationErrorsList errorsList) throws Exception {
+        proxy().validate(this, errorsList);
     }
 
     // getters/setters
@@ -180,19 +193,6 @@ public class AnalysisResultManager implements RPC {
     public Integer validateResultValue(Integer resultGroup, Integer unitId, String value)
                                                                                          throws Exception {
         return resultValidators.get(resultGroup.intValue() - 1).validate(unitId, value);
-    }
-
-    public void validate() throws Exception {
-        ValidationErrorsList errorsList = new ValidationErrorsList();
-
-        proxy().validate(this, errorsList);
-
-        if (errorsList.size() > 0)
-            throw errorsList;
-    }
-
-    public void validate(ValidationErrorsList errorsList) throws Exception {
-        proxy().validate(this, errorsList);
     }
 
     public String getDefaultValue(Integer resultGroup, Integer unitOfMeasureId) {

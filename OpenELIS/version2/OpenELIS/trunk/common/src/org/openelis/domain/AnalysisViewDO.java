@@ -44,7 +44,7 @@ public class AnalysisViewDO extends AnalysisDO {
     // additional fields for read/display purposes
     //
     protected Integer         methodId;
-    protected String          testName, methodName, sectionName, unitOfMeasure;
+    protected String          testName, methodName, preAnalysisTest, preAnalysisMethod;
 
     public AnalysisViewDO() {
     }
@@ -55,25 +55,18 @@ public class AnalysisViewDO extends AnalysisDO {
                           Integer parentResultId, String isReportable, Integer unitOfMeasureId,
                           Integer statusId, Date availableDate, Date startedDate,
                           Date completedDate, Date releasedDate, Date printedDate,
-                          String sectionName, String testName, Integer methodId, String methodName, String unitOfMeasure) {
+                          String testName, Integer methodId, String methodName, String preAnalysisTest,
+                          String preAnalysisMethod) {
 
         super(id, sampleItemId, revision, testId, sectionId, preAnalysisId, parentAnalysisId,
               parentResultId, isReportable, unitOfMeasureId, statusId, availableDate, startedDate,
               completedDate, releasedDate, printedDate);
 
-        setSectionName(sectionName);
         setTestName(testName);
         setMethodId(methodId);
         setMethodName(methodName);
-        setUnitOfMeasure(unitOfMeasure);
-    }
-
-    public String getSectionName() {
-        return sectionName;
-    }
-
-    public void setSectionName(String sectionName) {
-        this.sectionName = DataBaseUtil.trim(sectionName);
+        setPreAnalysisTest(preAnalysisTest);
+        setPreAnalysisMethod(preAnalysisMethod);
     }
 
     public String getTestName() {
@@ -100,11 +93,19 @@ public class AnalysisViewDO extends AnalysisDO {
         this.methodName = DataBaseUtil.trim(methodName);
     }
 
-    public String getUnitOfMeasure() {
-        return unitOfMeasure;
+    public String getPreAnalysisTest() {
+        return preAnalysisTest;
     }
 
-    public void setUnitOfMeasure(String unitOfMeasure) {
-        this.unitOfMeasure = DataBaseUtil.trim(unitOfMeasure);
+    public void setPreAnalysisTest(String preAnalysisTest) {
+        this.preAnalysisTest = DataBaseUtil.trim(preAnalysisTest);
+    }
+
+    public String getPreAnalysisMethod() {
+        return preAnalysisMethod;
+    }
+
+    public void setPreAnalysisMethod(String preAnalysisMethod) {
+        this.preAnalysisMethod = DataBaseUtil.trim(preAnalysisMethod);
     }
 }

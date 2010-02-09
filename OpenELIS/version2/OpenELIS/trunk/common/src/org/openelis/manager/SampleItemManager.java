@@ -35,10 +35,11 @@ import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
 public class SampleItemManager implements RPC {
-
     private static final long                         serialVersionUID = 1L;
 
     protected Integer                                 sampleId;
+    protected SampleManager                           sampleManager;
+    private int                                       tempId;
     protected ArrayList<SampleItemListItem>           items;
     protected ArrayList<SampleItemListItem>           deletedList;
 
@@ -54,6 +55,77 @@ public class SampleItemManager implements RPC {
         sim.items = new ArrayList<SampleItemListItem>();
 
         return sim;
+    }
+    
+    // sample item
+    public SampleItemViewDO getSampleItemAt(int i) {
+        return getItemAt(i).sampleItem;
+
+    }
+
+    public void setSampleItemAt(SampleItemViewDO sampleItem, int i) {
+        getItemAt(i).sampleItem = sampleItem;
+    }
+
+    public int addSampleItem() {
+        SampleItemListItem item;
+        SampleItemViewDO si;
+
+        assert sampleManager != null : "sampleManager is null";
+        
+        item = new SampleItemListItem();
+        si = new SampleItemViewDO();
+        item.sampleItem = si;
+
+        items.add(item);
+        setDefaultsAt(count()-1);
+
+        return count() - 1;
+    }
+
+    public void removeSampleItemAt(int index) {
+        SampleItemListItem tmpList;
+        SampleDataBundle bundle;
+
+        if (items == null || index >= items.size())
+            return;
+
+        tmpList = items.remove(index);
+
+        // renumber sample bundle sample item indexes
+        // when a node is removed
+        for (int i = index; i < items.size(); i++ ) {
+            bundle = items.get(i).bundle;
+
+            if (bundle != null)
+                bundle.setIndex(i);
+        }
+
+        if (deletedList == null)
+            deletedList = new ArrayList<SampleItemListItem>();
+
+        if (tmpList.sampleItem.getId() != null)
+            deletedList.add(tmpList);
+    }
+
+    public int count() {
+        if (items == null)
+            return 0;
+
+        return items.size();
+    }
+
+    public SampleDataBundle getBundleAt(int index) {
+        SampleDataBundle bundle;
+
+        bundle = getItemAt(index).bundle;
+        if (bundle == null) {
+            bundle = new SampleDataBundle(SampleDataBundle.Type.SAMPLE_ITEM, sampleManager, null,
+                                          index);
+            getItemAt(index).bundle = bundle;
+        }
+
+        return bundle;
     }
 
     /**
@@ -72,56 +144,30 @@ public class SampleItemManager implements RPC {
         return proxy().update(this);
     }
 
-    // sample item
-    public SampleItemViewDO getSampleItemAt(int i) {
-        return getItemAt(i).sampleItem;
+    public void validate() throws Exception {
+        ValidationErrorsList errorsList = new ValidationErrorsList();
 
+        proxy().validate(this, errorsList);
+
+        if (errorsList.size() > 0)
+            throw errorsList;
     }
 
-    public void setSampleItemAt(SampleItemViewDO sampleItem, int i) {
-        getItemAt(i).sampleItem = sampleItem;
+    public void validate(ValidationErrorsList errorsList) throws Exception {
+        proxy().validate(this, errorsList);
     }
 
-    public void addSampleItem(SampleItemViewDO sampleItem) {
-        SampleItemListItem item = new SampleItemListItem();
-        item.sampleItem = sampleItem;
-        items.add(item);
-    }
-
-    public void removeSampleItemAt(int i) {
-        if (items == null || i >= items.size())
-            return;
-
-        SampleItemListItem tmpList = items.remove(i);
-
-        if (deletedList == null)
-            deletedList = new ArrayList<SampleItemListItem>();
-
-        if (tmpList.sampleItem.getId() != null)
-            deletedList.add(tmpList);
-    }
-
-    public void setChangedAt(boolean changed, int i) {
-        getItemAt(i).changed = changed;
-    }
-
-    public boolean hasChangedAt(int i) {
-        return getItemAt(i).changed;
-    }
-
-    public int count() {
-        if (items == null)
-            return 0;
-    
-        return items.size();
-    }
-
-    public SampleItemListItem getItemAt(int i) {
-        return (SampleItemListItem)items.get(i);
+    public void setDefaultsAt(int index){
+        SampleItemViewDO si;
+        
+        assert sampleManager != null : "sampleManager is null";
+        
+        si = getItemAt(index).sampleItem;
+        si.setItemSequence(sampleManager.getNextSequence());
     }
 
     //
-    //other managers
+    // other managers
     //
     // storage
     public StorageManager getStorageAt(int i) throws Exception {
@@ -138,10 +184,10 @@ public class SampleItemManager implements RPC {
                     throw e;
                 }
             }
-        }
 
-        if (item.storage == null)
-            item.storage = StorageManager.getInstance();
+            if (item.storage == null)
+                item.storage = StorageManager.getInstance();
+        }
 
         return item.storage;
     }
@@ -152,53 +198,60 @@ public class SampleItemManager implements RPC {
 
     // analysis
     public AnalysisManager getAnalysisAt(int i) throws Exception {
-        return getAnalysisAt(i, false);
+        SampleItemListItem item = getItemAt(i);
+
+        if (item.analysis == null) {
+            if (item.sampleItem != null && item.sampleItem.getId() != null) {
+                try {
+                    item.analysis = AnalysisManager.fetchBySampleItemId(item.sampleItem.getId());
+
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+
+            if (item.analysis == null)
+                item.analysis = AnalysisManager.getInstance();
+
+            item.analysis.setSampleItemManager(this);
+            item.analysis.setSampleItemBundle(getBundleAt(i));
+        }
+
+        return item.analysis;
     }
 
-    public AnalysisManager getAnalysisAtForUpdate(int i) throws Exception {
-        return getAnalysisAt(i, true);
-    }
-
-    public void moveAnalysis(SampleItemViewDO fromSampleItemDO,
-                             SampleItemViewDO toSampleItemDO,
-                             AnalysisViewDO analysisDO) throws Exception {
-        int fromIndex, toIndex, anIndex;
-        AnalysisManager fromMan, toMan;
-
-        fromIndex = getIndex(fromSampleItemDO);
-        toIndex = getIndex(toSampleItemDO);
-
-        fromMan = getAnalysisAt(fromIndex);
-        toMan = getAnalysisAt(toIndex);
-
-        anIndex = fromMan.getIndex(analysisDO);
-        fromMan.removeAnalysisAtNoDelete(anIndex);
+    /**
+     * This moves an analysis from one sample item to the end of another sample item
+     * @param fromAnalysisBundle bundle of the analysis row you want to move
+     * @param toSampleItemBundle bundle of the sample item row you want to move to
+     * @throws Exception
+     */
+    public void moveAnalysis(SampleDataBundle fromAnalysisBundle,  SampleDataBundle toBundle) throws Exception {
+        int toIndex, anIndex; 
+        AnalysisManager fromMan, toMan; 
+        AnalysisViewDO analysisDO;
+        
+        assert fromAnalysisBundle.getType() != SampleDataBundle.Type.ANALYSIS : "from bundle needs to be analysis bundle";
+        
+        toIndex = toBundle.getSampleItemIndex();
+        anIndex = fromAnalysisBundle.getAnalysisIndex();
+        fromMan = getAnalysisAt(anIndex); 
+        toMan = getAnalysisAt(toIndex); 
+        
+        analysisDO = fromMan.getAnalysisAt(anIndex);
+        fromMan.removeAnalysisAtNoDelete(anIndex); 
         toMan.addAnalysis(analysisDO);
     }
+    
 
     public void setAnalysisAt(AnalysisManager analysis, int i) {
         getItemAt(i).analysis = analysis;
     }
 
-    public int getIndex(SampleItemViewDO itemDO) {
-        for (int i = 0; i < count(); i++ )
-            if (items.get(i).sampleItem == itemDO)
-                return i;
-    
-        return -1;
-    }
-
-    public void validate() throws Exception {
-        ValidationErrorsList errorsList = new ValidationErrorsList();
-
-        proxy().validate(this, errorsList);
-
-        if (errorsList.size() > 0)
-            throw errorsList;
-    }
-
-    public void validate(ValidationErrorsList errorsList) throws Exception {
-        proxy().validate(this, errorsList);
+    public SampleItemListItem getItemAt(int i) {
+        return (SampleItemListItem)items.get(i);
     }
 
     // these are friendly methods so only managers and proxies can call this
@@ -211,6 +264,18 @@ public class SampleItemManager implements RPC {
         this.sampleId = sampleId;
     }
 
+    SampleManager getSampleManager() {
+        return sampleManager;
+    }
+
+    void setSampleManager(SampleManager sampleManager) {
+        this.sampleManager = sampleManager;
+    }
+
+    int getNextTempId() {
+        return --tempId;
+    }
+
     int deleteCount() {
         if (deletedList == null)
             return 0;
@@ -221,30 +286,34 @@ public class SampleItemManager implements RPC {
     SampleItemListItem getDeletedAt(int i) {
         return deletedList.get(i);
     }
-    
-    private AnalysisManager getAnalysisAt(int i, boolean update) throws Exception {
-        SampleItemListItem item = getItemAt(i);
-    
-        if (item.analysis == null) {
-            if (item.sampleItem != null && item.sampleItem.getId() != null) {
-                try {
-                    if (update)
-                        item.analysis = AnalysisManager.fetchForUpdate(item.sampleItem.getId());
-                    else
-                        item.analysis = AnalysisManager.fetchBySampleItemId(item.sampleItem.getId());
-    
-                } catch (NotFoundException e) {
-                    // ignore
-                } catch (Exception e) {
-                    throw e;
+
+    void addSampleItems(ArrayList<SampleItemViewDO> sampleItems) {
+        SampleItemListItem item;
+        SampleItemViewDO si;
+        for (int i = 0; i < sampleItems.size(); i++ ) {
+            item = new SampleItemListItem();
+            si = sampleItems.get(i);
+            item.sampleItem = si;
+
+            items.add(item);
+        }
+    }
+
+    boolean hasReleasedAnalysis() {
+        boolean released = false;
+
+        for (int i = 0; i < count(); i++ ) {
+            try {
+                if (getAnalysisAt(i).hasReleasedAnalysis()) {
+                    released = true;
+                    break;
                 }
+            } catch (Exception e) {
+                // ignore
             }
         }
-    
-        if (item.analysis == null)
-            item.analysis = AnalysisManager.getInstance();
-    
-        return item.analysis;
+
+        return released;
     }
 
     private static SampleItemManagerProxy proxy() {
@@ -257,9 +326,11 @@ public class SampleItemManager implements RPC {
     static class SampleItemListItem implements RPC {
         private static final long serialVersionUID = 1L;
 
-        boolean                   changed          = false;
+        public SampleItemListItem(){}
+        
         SampleItemViewDO          sampleItem;
         StorageManager            storage;
         AnalysisManager           analysis;
+        SampleDataBundle          bundle;
     }
 }
