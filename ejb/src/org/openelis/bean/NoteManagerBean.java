@@ -36,9 +36,6 @@ import org.openelis.remote.NoteManagerRemote;
 public class NoteManagerBean implements NoteManagerRemote {
 
     public NoteManager fetchByRefTableRefIdIsExt(Integer refTableId, Integer refId, String isExternal) throws Exception {
-        if(isExternal != null)
-            return NoteManager.fetchByRefTableRefIdIsExt(refTableId, refId, isExternal);
-        else
-            return NoteManager.fetchByRefTableRefId(refTableId, refId);
+        return NoteManager.fetchByRefTableRefIdIsExt(refTableId, refId, "Y".equals(isExternal));
     }
 }

@@ -54,10 +54,15 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
+    @NamedQuery(name = "Analysis.FetchBySampleId", query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision, " + 
+                " a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId, " + 
+                " a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.method.id, t.method.name, pat.name, " + 
+                " pam.name) from Analysis a LEFT JOIN a.sampleItem si LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat " + 
+                " LEFT JOIN pat.method pam LEFT JOIN a.test t where si.sampleId = :id "),
     @NamedQuery(name = "Analysis.AnalysisTestBySampleItemId", query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision, " + 
                 " a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId, " + 
-                " a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, s.name, t.name, t.method.id, t.method.name,d.entry) from " +
-                " Analysis a LEFT JOIN a.section s LEFT JOIN a.unitDict d LEFT JOIN a.test t where a.sampleItemId = :id")})
+                " a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.method.id, t.method.name, pat.name, pam.name) from " +
+                " Analysis a LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam LEFT JOIN a.test t where a.sampleItemId = :id")})
                 
 @Entity
 @Table(name="analysis")
@@ -115,16 +120,16 @@ public class Analysis implements Auditable, Cloneable {
   private Date printedDate;             
 
   @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "sample_item_id", insertable = false, updatable = false)
+  private SampleItem sampleItem;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "pre_analysis_id", insertable = false, updatable = false)
+  private Analysis preAnalysis;
+  
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "test_id", insertable = false, updatable = false)
   private Test test;
-  
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "section_id", insertable = false, updatable = false)
-  private Section section;
-  
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "unit_of_measure_id", insertable = false, updatable = false)
-  private Dictionary unitDict;
   
   //analysis qa events
   @OneToMany(fetch = FetchType.LAZY)
@@ -279,12 +284,6 @@ public class Analysis implements Auditable, Cloneable {
   public void setTest(Test test) {
       this.test = test;
   }
-  public Section getSection() {
-      return section;
-  }
-  public void setSection(Section section) {
-      this.section = section;
-  }
   public Collection<AnalysisQaevent> getAnalysisQAEvent() {
       return analysisQAEvent;
   }
@@ -326,4 +325,16 @@ public class Analysis implements Auditable, Cloneable {
 
         return audit;
     }
+public SampleItem getSampleItem() {
+    return sampleItem;
+}
+public void setSampleItem(SampleItem sampleItem) {
+    this.sampleItem = sampleItem;
+}
+public Analysis getPreAnalysis() {
+    return preAnalysis;
+}
+public void setPreAnalysis(Analysis preAnalysis) {
+    this.preAnalysis = preAnalysis;
+}
 }   

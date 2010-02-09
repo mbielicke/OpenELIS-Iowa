@@ -25,10 +25,9 @@
 */
 package org.openelis.bean;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -40,6 +39,7 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.entity.Analysis;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.AnalysisLocal;
+import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 
@@ -49,18 +49,32 @@ public class AnalysisBean implements AnalysisLocal{
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
    
-    @Resource
-    private SessionContext ctx;
-    
-    public List fetchBySampleItemId(Integer sampleItemId) throws Exception{
-        Query query = manager.createNamedQuery("Analysis.AnalysisTestBySampleItemId");
-        query.setParameter("id", sampleItemId);
+    public ArrayList<AnalysisViewDO> fetchBySampleId(Integer sampleId) throws Exception {
+        List returnList;
+        Query query;
         
-        List returnList = query.getResultList();
+        query = manager.createNamedQuery("Analysis.FetchBySampleId");
+        query.setParameter("id", sampleId);
+        
+        returnList = query.getResultList();
         if(returnList.size() == 0)
             throw new NotFoundException();
         
-        return returnList;
+        return DataBaseUtil.toArrayList(returnList);
+    }
+    
+    public ArrayList<AnalysisViewDO> fetchBySampleItemId(Integer sampleItemId) throws Exception{
+        List returnList;
+        Query query;
+        
+        query = manager.createNamedQuery("Analysis.AnalysisTestBySampleItemId");
+        query.setParameter("id", sampleItemId);
+        
+        returnList = query.getResultList();
+        if(returnList.size() == 0)
+            throw new NotFoundException();
+        
+        return DataBaseUtil.toArrayList(returnList);
     }
     
     public AnalysisViewDO add(AnalysisViewDO data) {

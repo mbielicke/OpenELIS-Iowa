@@ -42,10 +42,4 @@ public class AnalysisManagerBean implements AnalysisManagerRemote {
         
         return man;
     }
-    
-    public AnalysisManager fetchBySampleItemIdForUpdate(Integer sampleItemId) throws Exception {
-        AnalysisManager man = AnalysisManager.fetchForUpdate(sampleItemId);   
-        
-        return man;
-    }
 }

@@ -55,7 +55,7 @@ public class SampleTrackingBean implements SampleTrackingRemote {
 		managers = new ArrayList<SampleManager>(max);
 		
 		for(int i = first; i < list.size(); i++) {
-			managers.add(SampleManager.fetchByIdWithItemsAnalyses((Integer)((Object[])list.get(i))[0]));
+			managers.add(SampleManager.fetchWithItemsAnalyses((Integer)((Object[])list.get(i))[0]));
 		}
 
 		return managers;

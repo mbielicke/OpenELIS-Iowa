@@ -33,20 +33,6 @@ import org.openelis.domain.NoteViewDO;
 import org.openelis.local.NoteLocal;
 
 public class NoteManagerProxy {
-    public NoteManager fetchByRefTableRefId(Integer tableId, Integer id) throws Exception {
-        NoteManager m;
-        ArrayList<NoteViewDO> notes;
-
-        notes = local().fetchByRefTableRefId(tableId, id);
-
-        m = NoteManager.getInstance();
-        m.setNotes(notes);
-        m.setReferenceId(id);
-        m.setReferenceTableId(tableId);
-
-        return m;
-    }
-    
     public NoteManager fetchByRefTableRefIdIsExt(Integer tableId, Integer id, String isExternal) throws Exception {
         NoteManager m;
         ArrayList<NoteViewDO> notes;
@@ -54,6 +40,7 @@ public class NoteManagerProxy {
         notes = local().fetchByRefTableRefIdIsExt(tableId, id, isExternal);
 
         m = NoteManager.getInstance();
+        m.setIsExternal("Y".equals(isExternal));
         m.setNotes(notes);
         m.setReferenceId(id);
         m.setReferenceTableId(tableId);
