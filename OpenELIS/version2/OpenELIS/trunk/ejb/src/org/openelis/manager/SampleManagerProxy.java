@@ -48,10 +48,12 @@ import org.openelis.meta.SampleMeta;
 
 public class SampleManagerProxy {
     public SampleManager fetchById(Integer sampleId) throws Exception {
-        SampleLocal sl = sampleLocal();
-        SampleDO sampleDO = sl.fetchById(sampleId);
+        SampleDO sampleDO;
+        SampleManager sm;
+        
+        sampleDO = sampleLocal().fetchById(sampleId);
 
-        SampleManager sm = SampleManager.getInstance();
+        sm = SampleManager.getInstance();
         sm.setSample(sampleDO);
 
         sm.getDomainManager();
@@ -63,10 +65,12 @@ public class SampleManagerProxy {
     }
 
     public SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception {
-        SampleLocal sl = sampleLocal();
-        SampleDO sampleDO = sl.fetchByAccessionNumber(accessionNumber);
+        SampleDO sampleDO;
+        SampleManager sm;
+        
+        sampleDO= sampleLocal().fetchByAccessionNumber(accessionNumber);
 
-        SampleManager sm = SampleManager.getInstance();
+        sm = SampleManager.getInstance();
         sm.setSample(sampleDO);
         sm.getDomainManager();
         sm.getOrganizations();
@@ -129,9 +133,8 @@ public class SampleManagerProxy {
 
     public SampleManager add(SampleManager man) throws Exception {
         Integer sampleId, sampleRefId;
-        SampleLocal sl = sampleLocal();
-        sl.add(man.getSample());
-
+        
+        sampleLocal().add(man.getSample());
         sampleId = man.getSample().getId();
         sampleRefId = ReferenceTable.SAMPLE;
 
@@ -179,9 +182,8 @@ public class SampleManagerProxy {
 
     public SampleManager update(SampleManager man) throws Exception {
         Integer sampleId, sampleRefId;
-        SampleLocal sl = sampleLocal();
-        sl.update(man.getSample());
-
+        
+        sampleLocal().update(man.getSample());
         sampleId = man.getSample().getId();
         sampleRefId = ReferenceTable.SAMPLE;
 
@@ -300,9 +302,9 @@ public class SampleManagerProxy {
     }
 
     public Integer getIdFromSystemName(String systemName) throws Exception {
-        DictionaryLocal dl = dictionaryLocal();
-        DictionaryDO dictDO = dl.fetchBySystemName(systemName);
-
+        DictionaryDO dictDO;
+        
+        dictDO = dictionaryLocal().fetchBySystemName(systemName);
         return dictDO.getId();
     }
     

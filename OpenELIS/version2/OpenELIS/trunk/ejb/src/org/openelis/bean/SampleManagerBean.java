@@ -120,15 +120,8 @@ public class SampleManagerBean  implements SampleManagerRemote {
     public SampleManager fetchForUpdate(Integer sampleId) throws Exception {
         lockBean.getLock(ReferenceTable.SAMPLE, sampleId);
         
-        SampleManager man = SampleManager.fetchById(sampleId);
-        man.getDomainManager();
-        man.getProjects();
-        man.getOrganizations();
-        man.getSampleItems().getAnalysisAt(1);
-        
-        SampleDO sampleDO = new SampleDO();
-        sampleDO.setId(sampleId);
-        man.setSample(sampleDO);
+        SampleManager man = SampleManager.getInstance();
+        man.getSample().setId(sampleId);
         
         return man.fetchForUpdate();
     }

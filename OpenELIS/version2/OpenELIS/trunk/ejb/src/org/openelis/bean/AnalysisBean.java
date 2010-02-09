@@ -83,21 +83,21 @@ public class AnalysisBean implements AnalysisLocal{
         manager.setFlushMode(FlushModeType.COMMIT);
         
         entity = new Analysis();
-        entity.setAvailableDate(data.getAvailableDate());
-        entity.setCompletedDate(data.getCompletedDate());
-        entity.setIsReportable(data.getIsReportable());
+        entity.setSampleItemId(data.getSampleItemId());
+        entity.setRevision(data.getRevision());
+        entity.setTestId(data.getTestId());
+        entity.setSectionId(data.getSectionId());
+        entity.setPreAnalysisId(data.getPreAnalysisId());
         entity.setParentAnalysisId(data.getParentAnalysisId());
         entity.setParentResultId(data.getParentResultId());
-        entity.setPreAnalysisId(data.getPreAnalysisId());
-        entity.setPrintedDate(data.getPrintedDate());
-        entity.setReleasedDate(data.getReleasedDate());
-        entity.setRevision(data.getRevision());
-        entity.setSampleItemId(data.getSampleItemId());
-        entity.setSectionId(data.getSectionId());
-        entity.setStartedDate(data.getStartedDate());
-        entity.setStatusId(data.getStatusId());
-        entity.setTestId(data.getTestId());
+        entity.setIsReportable(data.getIsReportable());
         entity.setUnitOfMeasureId(data.getUnitOfMeasureId());
+        entity.setStatusId(data.getStatusId());
+        entity.setAvailableDate(data.getAvailableDate());
+        entity.setStartedDate(data.getStartedDate());
+        entity.setCompletedDate(data.getCompletedDate());
+        entity.setReleasedDate(data.getReleasedDate());
+        entity.setPrintedDate(data.getPrintedDate());
         
        manager.persist(entity);
        data.setId(entity.getId());
@@ -114,21 +114,21 @@ public class AnalysisBean implements AnalysisLocal{
         manager.setFlushMode(FlushModeType.COMMIT);
         
         entity = manager.find(Analysis.class, data.getId());
-        entity.setAvailableDate(data.getAvailableDate());
-        entity.setCompletedDate(data.getCompletedDate());
-        entity.setIsReportable(data.getIsReportable());
+        entity.setSampleItemId(data.getSampleItemId());
+        entity.setRevision(data.getRevision());
+        entity.setTestId(data.getTestId());
+        entity.setSectionId(data.getSectionId());
+        entity.setPreAnalysisId(data.getPreAnalysisId());
         entity.setParentAnalysisId(data.getParentAnalysisId());
         entity.setParentResultId(data.getParentResultId());
-        entity.setPreAnalysisId(data.getPreAnalysisId());
-        entity.setPrintedDate(data.getPrintedDate());
-        entity.setReleasedDate(data.getReleasedDate());
-        entity.setRevision(data.getRevision());
-        entity.setSampleItemId(data.getSampleItemId());
-        entity.setSectionId(data.getSectionId());
-        entity.setStartedDate(data.getStartedDate());
-        entity.setStatusId(data.getStatusId());
-        entity.setTestId(data.getTestId());
+        entity.setIsReportable(data.getIsReportable());
         entity.setUnitOfMeasureId(data.getUnitOfMeasureId());
+        entity.setStatusId(data.getStatusId());
+        entity.setAvailableDate(data.getAvailableDate());
+        entity.setStartedDate(data.getStartedDate());
+        entity.setCompletedDate(data.getCompletedDate());
+        entity.setReleasedDate(data.getReleasedDate());
+        entity.setPrintedDate(data.getPrintedDate());
         
         return data;
     }

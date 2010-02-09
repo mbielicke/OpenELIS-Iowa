@@ -34,15 +34,13 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.SampleOrganizationLocal;
 
 public class SampleOrganizationManagerProxy {
-    public Integer getIdFromSystemName(String systemName){
-        throw new UnsupportedOperationException();
-    }
-    
     public SampleOrganizationManager fetchBySampleId(Integer sampleId) throws Exception {
-        SampleOrganizationLocal sol = getOrganizationLocal();
-        ArrayList<SampleOrganizationViewDO> orgs = (ArrayList<SampleOrganizationViewDO>)sol.fetchBySampleId(sampleId);
+        ArrayList<SampleOrganizationViewDO> orgs;
+        SampleOrganizationManager som;
         
-        SampleOrganizationManager som = SampleOrganizationManager.getInstance();
+        orgs = sampleOrganizationLocal().fetchBySampleId(sampleId);
+        
+        som = SampleOrganizationManager.getInstance();
         som.setOrganizations(orgs);
         som.setSampleId(sampleId);
         
@@ -50,25 +48,23 @@ public class SampleOrganizationManagerProxy {
     }
     
     public SampleOrganizationManager add(SampleOrganizationManager man) throws Exception {
-        SampleOrganizationLocal sol = getOrganizationLocal();
         SampleOrganizationViewDO orgDO;
         
         for(int i=0; i<man.count(); i++){
             orgDO = man.getOrganizationAt(i);
             orgDO.setSampleId(man.getSampleId());
             
-            sol.add(orgDO);
+            sampleOrganizationLocal().add(orgDO);
         }
         
         return man;
     }
     
     public SampleOrganizationManager update(SampleOrganizationManager man) throws Exception {
-        SampleOrganizationLocal sol = getOrganizationLocal();
         SampleOrganizationViewDO orgDO;
         
         for(int j=0; j<man.deleteCount(); j++){
-            sol.delete(man.getDeletedAt(j));
+            sampleOrganizationLocal().delete(man.getDeletedAt(j));
         }
         
         for(int i=0; i<man.count(); i++){
@@ -76,19 +72,24 @@ public class SampleOrganizationManagerProxy {
             
             if(orgDO.getId() == null){
                 orgDO.setSampleId(man.getSampleId());
-                sol.add(orgDO);
+                sampleOrganizationLocal().add(orgDO);
             }else
-                sol.update(orgDO);
+                sampleOrganizationLocal().update(orgDO);
         }
 
         return man;
+    }
+    
+    public Integer getIdFromSystemName(String systemName){
+        assert false : "not supported";
+        return null;
     }
     
     public void validate(SampleOrganizationManager man, ValidationErrorsList errorsList) throws Exception {
         
     }
     
-    private SampleOrganizationLocal getOrganizationLocal(){
+    private SampleOrganizationLocal sampleOrganizationLocal(){
         try{
             InitialContext ctx = new InitialContext();
             return (SampleOrganizationLocal)ctx.lookup("openelis/SampleOrganizationBean/local");

@@ -58,12 +58,14 @@ public class SampleOrganizationManagerProxy {
     
     
     public SampleOrganizationManager add(SampleOrganizationManager man) throws Exception {
-        throw new UnsupportedOperationException();
+        assert false : "not supported";
+        return null;
     }
     
     
     public SampleOrganizationManager update(SampleOrganizationManager man) throws Exception {
-        throw new UnsupportedOperationException();
+        assert false : "not supported";
+        return null;
     }
     
     public void validate(SampleOrganizationManager man, ValidationErrorsList errorsList) throws Exception {

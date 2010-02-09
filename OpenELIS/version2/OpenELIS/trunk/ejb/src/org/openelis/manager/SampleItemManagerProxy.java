@@ -37,10 +37,11 @@ import org.openelis.manager.SampleItemManager.SampleItemListItem;
 
 public class SampleItemManagerProxy {
     public SampleItemManager fetchBySampleId(Integer sampleId) throws Exception {
-        SampleItemLocal sil = getSampleItemLocal();
-
-        ArrayList<SampleItemViewDO> items = (ArrayList<SampleItemViewDO>)sil.fetchBySampleId(sampleId);
-        SampleItemManager sim = SampleItemManager.getInstance();
+        ArrayList<SampleItemViewDO> items;
+        SampleItemManager sim;
+        
+        items = sampleItemLocal().fetchBySampleId(sampleId);
+        sim = SampleItemManager.getInstance();
 
         sim.addSampleItems(items);
         sim.setSampleId(sampleId);
@@ -50,7 +51,6 @@ public class SampleItemManagerProxy {
     
     public SampleItemManager add(SampleItemManager man) throws Exception {
         Integer sampleItemRefTableId;
-        SampleItemLocal sil = getSampleItemLocal();
         SampleItemViewDO itemDO;
         SampleItemListItem item;
         
@@ -59,7 +59,7 @@ public class SampleItemManagerProxy {
         for(int i=0; i<man.count(); i++){
             itemDO = man.getSampleItemAt(i);
             itemDO.setSampleId(man.getSampleId());
-            sil.add(itemDO);
+            sampleItemLocal().add(itemDO);
             item = man.getItemAt(i);
             if(item.storage != null){
                 man.getStorageAt(i).setReferenceId(itemDO.getId());
@@ -77,10 +77,11 @@ public class SampleItemManagerProxy {
 
     public SampleItemManager update(SampleItemManager man) throws Exception {
         Integer sampleItemRefTableId;
-        SampleItemLocal sil = getSampleItemLocal();
+        SampleItemLocal sil;
         SampleItemViewDO itemDO;
         SampleItemListItem item;
         
+        sil = sampleItemLocal();
         sampleItemRefTableId = ReferenceTable.SAMPLE_ITEM;
         
         for(int j=0; j<man.deleteCount(); j++)
@@ -115,7 +116,7 @@ public class SampleItemManagerProxy {
         
     }
     
-    private SampleItemLocal getSampleItemLocal(){
+    private SampleItemLocal sampleItemLocal(){
         try{
             InitialContext ctx = new InitialContext();
             return (SampleItemLocal)ctx.lookup("openelis/SampleItemBean/local");

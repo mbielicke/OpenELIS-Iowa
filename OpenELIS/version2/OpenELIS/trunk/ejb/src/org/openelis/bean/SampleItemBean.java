@@ -25,6 +25,7 @@
 */
 package org.openelis.bean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -41,6 +42,7 @@ import org.openelis.entity.SampleItem;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.LockLocal;
 import org.openelis.local.SampleItemLocal;
+import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @EJBs({
@@ -52,16 +54,19 @@ public class SampleItemBean implements SampleItemLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
    
-    public List<SampleItemViewDO> fetchBySampleId(Integer sampleId) throws Exception {
-        Query query = manager.createNamedQuery("SampleItem.SampleItemBySampleId");
+    public ArrayList<SampleItemViewDO> fetchBySampleId(Integer sampleId) throws Exception {
+        List<SampleItemViewDO> returnList;
+        Query query;
+        
+        query = manager.createNamedQuery("SampleItem.SampleItemBySampleId");
         query.setParameter("id", sampleId);
  
-        List<SampleItemViewDO> returnList = query.getResultList();
+        returnList = query.getResultList();
         
         if(returnList.size() == 0)
             throw new NotFoundException();
         
-        return returnList;
+        return DataBaseUtil.toArrayList(returnList);
     }
 
     public SampleItemViewDO add(SampleItemViewDO data){
@@ -70,15 +75,15 @@ public class SampleItemBean implements SampleItemLocal {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         entity = new SampleItem();
-        entity.setContainerId(data.getContainerId());
-        entity.setContainerReference(data.getContainerReference());
-        entity.setItemSequence(data.getItemSequence());
-        entity.setQuantity(data.getQuantity());
         entity.setSampleId(data.getSampleId());
         entity.setSampleItemId(data.getSampleItemId());
+        entity.setItemSequence(data.getItemSequence());
+        entity.setTypeOfSampleId(data.getTypeOfSampleId());
         entity.setSourceOfSampleId(data.getSourceOfSampleId());
         entity.setSourceOther(data.getSourceOther());
-        entity.setTypeOfSampleId(data.getTypeOfSampleId());
+        entity.setContainerId(data.getContainerId());
+        entity.setContainerReference(data.getContainerReference());
+        entity.setQuantity(data.getQuantity());
         entity.setUnitOfMeasureId(data.getUnitOfMeasureId());
         
        manager.persist(entity);
@@ -96,16 +101,15 @@ public class SampleItemBean implements SampleItemLocal {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         entity = manager.find(SampleItem.class, data.getId());
-        
-        entity.setContainerId(data.getContainerId());
-        entity.setContainerReference(data.getContainerReference());
-        entity.setItemSequence(data.getItemSequence());
-        entity.setQuantity(data.getQuantity());
         entity.setSampleId(data.getSampleId());
         entity.setSampleItemId(data.getSampleItemId());
+        entity.setItemSequence(data.getItemSequence());
+        entity.setTypeOfSampleId(data.getTypeOfSampleId());
         entity.setSourceOfSampleId(data.getSourceOfSampleId());
         entity.setSourceOther(data.getSourceOther());
-        entity.setTypeOfSampleId(data.getTypeOfSampleId());
+        entity.setContainerId(data.getContainerId());
+        entity.setContainerReference(data.getContainerReference());
+        entity.setQuantity(data.getQuantity());
         entity.setUnitOfMeasureId(data.getUnitOfMeasureId());
         
         return data;

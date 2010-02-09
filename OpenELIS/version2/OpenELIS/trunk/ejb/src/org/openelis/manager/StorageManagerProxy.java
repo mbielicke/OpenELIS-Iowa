@@ -35,10 +35,12 @@ import org.openelis.local.StorageLocal;
 
 public class StorageManagerProxy {
     public StorageManager fetchById(Integer tableId, Integer id) throws Exception {
-        StorageLocal sl = getStorageLocal();
-        ArrayList<StorageViewDO> storages = sl.fetchByRefId(tableId, id);
+        ArrayList<StorageViewDO> storages;
+        StorageManager sm;
         
-        StorageManager sm = StorageManager.getInstance();
+        storages = storageLocal().fetchByRefId(tableId, id);
+        
+        sm = StorageManager.getInstance();
         sm.setStorages(storages);
         sm.setReferenceId(id);
         sm.setReferenceTableId(tableId);
@@ -48,14 +50,13 @@ public class StorageManagerProxy {
 
     public StorageManager add(StorageManager man) throws Exception {
         StorageViewDO storage;
-        StorageLocal sl = getStorageLocal();
         
         for(int i=0; i<man.count(); i++){
             storage = man.getStorageAt(i);
             
             storage.setReferenceId(man.getReferenceId());
             storage.setReferenceTableId(man.getReferenceTableId());
-            sl.add(storage);
+            storageLocal().add(storage);
         }
         
         return man;
@@ -63,16 +64,15 @@ public class StorageManagerProxy {
 
     public StorageManager update(StorageManager man) throws Exception {
         StorageViewDO storage;
-        StorageLocal sl = getStorageLocal();
         
         for(int i=0; i<man.count(); i++){
             storage = man.getStorageAt(i);
             if(storage.getId() == null){
                 storage.setReferenceId(man.getReferenceId());
                 storage.setReferenceTableId(man.getReferenceTableId());
-                sl.add(storage);
+                storageLocal().add(storage);
             }else
-                sl.update(storage);
+                storageLocal().update(storage);
         }
         
         return man;
@@ -82,7 +82,7 @@ public class StorageManagerProxy {
         
     }
     
-    private StorageLocal getStorageLocal(){
+    private StorageLocal storageLocal(){
         try{
             InitialContext ctx = new InitialContext();
             return (StorageLocal)ctx.lookup("openelis/StorageBean/local");

@@ -25,6 +25,7 @@
 */
 package org.openelis.bean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -38,6 +39,7 @@ import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.entity.SampleProject;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.SampleProjectLocal;
+import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 
@@ -46,15 +48,18 @@ public class SampleProjectBean implements SampleProjectLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
    
-    public List<SampleProjectViewDO> fetchBySampleId(Integer sampleId) throws Exception {
-        Query query = manager.createNamedQuery("SampleProject.SampleProjectBySampleId");
+    public ArrayList<SampleProjectViewDO> fetchBySampleId(Integer sampleId) throws Exception {
+        Query query;
+        List<SampleProjectViewDO> returnList;
+        
+        query = manager.createNamedQuery("SampleProject.SampleProjectBySampleId");
         query.setParameter("id", sampleId);
-        List<SampleProjectViewDO> returnList = query.getResultList();
+        returnList = query.getResultList();
         
         if(returnList.size() == 0)
             throw new NotFoundException();
         
-        return returnList;
+        return DataBaseUtil.toArrayList(returnList);
     }
 
     public SampleProjectViewDO add(SampleProjectViewDO data) {
@@ -63,9 +68,9 @@ public class SampleProjectBean implements SampleProjectLocal {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         entity = new SampleProject();
-        entity.setIsPermanent(data.getIsPermanent());
-        entity.setProjectId(data.getProjectId());
         entity.setSampleId(data.getSampleId());
+        entity.setProjectId(data.getProjectId());
+        entity.setIsPermanent(data.getIsPermanent());
         
         manager.persist(entity);
         data.setId(entity.getId());
@@ -82,9 +87,9 @@ public class SampleProjectBean implements SampleProjectLocal {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         entity = manager.find(SampleProject.class, data.getId());
-        entity.setIsPermanent(data.getIsPermanent());
-        entity.setProjectId(data.getProjectId());
         entity.setSampleId(data.getSampleId());
+        entity.setProjectId(data.getProjectId());
+        entity.setIsPermanent(data.getIsPermanent());
         
         return data;
     }

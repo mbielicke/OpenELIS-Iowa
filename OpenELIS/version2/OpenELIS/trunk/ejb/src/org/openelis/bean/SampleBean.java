@@ -121,21 +121,20 @@ public class SampleBean implements SampleLocal, SampleRemote {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         entity = new Sample();
-        
+        entity.setNextItemSequence(data.getNextItemSequence());
+        entity.setDomain(data.getDomain());
         entity.setAccessionNumber(data.getAccessionNumber());
-        entity.setClientReference(data.getClientReference());
+        entity.setRevision(data.getRevision());
+        entity.setOrderId(data.getOrderId());
+        entity.setEnteredDate(data.getEnteredDate());
+        entity.setReceivedDate(data.getReceivedDate());
+        entity.setReceivedById(data.getReceivedById());
         entity.setCollectionDate(data.getCollectionDate());
         entity.setCollectionTime(data.getCollectionTime());
-        entity.setDomain(data.getDomain());
-        entity.setEnteredDate(data.getEnteredDate());
-        entity.setNextItemSequence(data.getNextItemSequence());
-        entity.setOrderId(data.getOrderId());
-        entity.setPackageId(data.getPackageId());
-        entity.setReceivedById(data.getReceivedById());
-        entity.setReceivedDate(data.getReceivedDate());
-        entity.setReleasedDate(data.getReleasedDate());
-        entity.setRevision(data.getRevision());
         entity.setStatusId(data.getStatusId());
+        entity.setPackageId(data.getPackageId());
+        entity.setClientReference(data.getClientReference());
+        entity.setReleasedDate(data.getReleasedDate());
         
         manager.persist(entity);
         data.setId(entity.getId());
@@ -154,21 +153,20 @@ public class SampleBean implements SampleLocal, SampleRemote {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         entity = manager.find(Sample.class, data.getId());
-
+        entity.setNextItemSequence(data.getNextItemSequence());
+        entity.setDomain(data.getDomain());
         entity.setAccessionNumber(data.getAccessionNumber());
-        entity.setClientReference(data.getClientReference());
+        entity.setRevision(data.getRevision());
+        entity.setOrderId(data.getOrderId());
+        entity.setEnteredDate(data.getEnteredDate());
+        entity.setReceivedDate(data.getReceivedDate());
+        entity.setReceivedById(data.getReceivedById());
         entity.setCollectionDate(data.getCollectionDate());
         entity.setCollectionTime(data.getCollectionTime());
-        entity.setDomain(data.getDomain());
-        entity.setEnteredDate(data.getEnteredDate());
-        entity.setNextItemSequence(data.getNextItemSequence());
-        entity.setOrderId(data.getOrderId());
-        entity.setPackageId(data.getPackageId());
-        entity.setReceivedById(data.getReceivedById());
-        entity.setReceivedDate(data.getReceivedDate());
-        entity.setReleasedDate(data.getReleasedDate());
-        entity.setRevision(data.getRevision());
         entity.setStatusId(data.getStatusId());
+        entity.setPackageId(data.getPackageId());
+        entity.setClientReference(data.getClientReference());
+        entity.setReleasedDate(data.getReleasedDate());
         
         lockBean.giveUpLock(sampleRefTableId, data.getId());
         
