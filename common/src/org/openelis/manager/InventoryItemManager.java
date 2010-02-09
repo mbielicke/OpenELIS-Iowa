@@ -156,16 +156,18 @@ public class InventoryItemManager implements RPC, HasNotesInt {
         if (manufacturing == null) {
             if (inventoryItem.getId() != null) {
                 try {
-                    manufacturing = NoteManager.fetchByRefTableRefId(ReferenceTable.INVENTORY_ITEM_MANUFACTURING,
-                                                                    inventoryItem.getId());
+                    manufacturing = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.INVENTORY_ITEM_MANUFACTURING,
+                                                                    inventoryItem.getId(), true);
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
                     throw e;
                 }
             }
-            if (manufacturing == null)
+            if (manufacturing == null){
                 manufacturing = NoteManager.getInstance();
+                manufacturing.setIsExternal(true);
+            }
         }
         return manufacturing;
     }
@@ -174,16 +176,19 @@ public class InventoryItemManager implements RPC, HasNotesInt {
         if (notes == null) {
             if (inventoryItem.getId() != null) {
                 try {
-                    notes = NoteManager.fetchByRefTableRefId(ReferenceTable.INVENTORY_ITEM,
-                                                            inventoryItem.getId());
+                    notes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.INVENTORY_ITEM,
+                                                            inventoryItem.getId(), false);
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
                     throw e;
                 }
             }
-            if (notes == null)
+            
+            if (notes == null){
                 notes = NoteManager.getInstance();
+                notes.setIsExternal(false);
+            }
         }
         return notes;
     }

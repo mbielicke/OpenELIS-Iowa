@@ -49,13 +49,6 @@ public class OrganizationContactManager implements RPC {
         return new OrganizationContactManager();
     }
 
-    public int count() {
-        if (contacts == null)
-            return 0;
-
-        return contacts.size();
-    }
-
     public OrganizationContactDO getContactAt(int i) {
         return contacts.get(i);
     }
@@ -90,6 +83,13 @@ public class OrganizationContactManager implements RPC {
                 deleted = new ArrayList<OrganizationContactDO>();
             deleted.add(tmp);
         }
+    }
+
+    public int count() {
+        if (contacts == null)
+            return 0;
+    
+        return contacts.size();
     }
 
     // service methods

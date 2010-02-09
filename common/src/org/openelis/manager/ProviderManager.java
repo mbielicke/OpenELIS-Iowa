@@ -103,16 +103,18 @@ public class ProviderManager implements RPC, HasNotesInt {
         if (notes == null) {
             if (provider.getId() != null) {
                 try {
-                    notes = NoteManager.fetchByRefTableRefId(ReferenceTable.PROVIDER,
-                                                            provider.getId());
+                    notes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.PROVIDER,
+                                                                  provider.getId(), false);
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
                     throw e;
                 }
             }
-            if (notes == null)
+            if (notes == null){
                 notes = NoteManager.getInstance();
+                notes.setIsExternal(false);
+            }
         }
         return notes;
     }

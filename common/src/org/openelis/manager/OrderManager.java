@@ -132,16 +132,17 @@ public class OrderManager implements RPC, HasNotesInt {
         if (notes == null) {
             if (order.getId() != null) {
                 try {
-                    notes = NoteManager.fetchByRefTableRefId(ReferenceTable.ORDER,
-                                                             order.getId());
+                    notes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.ORDER,order.getId(), false);
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
                     throw e;
                 }
             }
-            if (notes == null)
+            if (notes == null){
                 notes = NoteManager.getInstance();
+                notes.setIsExternal(false);
+            }
         }
         return notes;
     }

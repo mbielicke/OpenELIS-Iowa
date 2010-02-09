@@ -25,18 +25,16 @@
  */
 package org.openelis.manager;
 
-import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
-public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
+public class SampleManager implements RPC, HasAuxDataInt {
     private static final long                     serialVersionUID = 1L;
 
     protected SampleDO                            sample;
@@ -49,16 +47,18 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
     protected NoteManager                         sampleExternalNote;
     protected AuxDataManager                      auxData;
 
-    protected Boolean                             hasReleasedCancelledAnalysis;
-
     protected transient Integer                   anLoggedInId, anInitiatedId, anCompletedId,
                     anReleasedId, anInPrepId, anOnHoldId, anRequeueId, anCancelledId,
                     anErrorLoggedInId, anErrorInitiatedId, anErrorInPrepId, anErrorCompletedId,
                     samLoggedInId, samCompletedId, samReleasedId, samErrorId;
 
     public static final String                    ENVIRONMENTAL_DOMAIN_FLAG = "E",
-                    HUMAN_DOMAIN_FLAG = "H", ANIMAL_DOMAIN_FLAG = "A", NEWBORN_DOMAIN_FLAG = "N",
-                    PT_DOMAIN_FLAG = "P", SDWIS_DOMAIN_FLAG = "S", WELL_DOMAIN_FLAG = "W";
+                                                  HUMAN_DOMAIN_FLAG = "H", 
+                                                  ANIMAL_DOMAIN_FLAG = "A", 
+                                                  NEWBORN_DOMAIN_FLAG = "N",
+                                                  PT_DOMAIN_FLAG = "P", 
+                                                  SDWIS_DOMAIN_FLAG = "S", 
+                                                  WELL_DOMAIN_FLAG = "W";
 
     protected transient static SampleManagerProxy proxy;
 
@@ -75,22 +75,17 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
     }
 
     /**
-     * Creates a new instance of this object. A default Specimen object is also
+     * Creates a new instance of this object. A default sample object is also
      * created.
      */
     public static SampleManager getInstance() {
         SampleManager sm;
-
         sm = new SampleManager();
         sm.sample = new SampleDO();
-
+                              
         return sm;
     }
-
-    // getters and setters
-    /**
-     * Returns the managed Sample object.
-     */
+    
     public SampleDO getSample() {
         return sample;
     }
@@ -100,26 +95,25 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
     }
 
     /**
-     * Creates a new instance of this object with the specified Specimen. Use
+     * Creates a new instance of this object with the specified Sample. Use
      * this function to load an instance of this object from database.
      */
     public static SampleManager fetchById(Integer id) throws Exception {
-        return proxy().fetch(id);
-    }
-
-    public static SampleManager fetchByIdWithItemsAnalyses(Integer id) throws Exception {
-        return proxy().fetchWithItemsAnalyses(id);
+        return proxy().fetchById(id);
     }
 
     /**
-     * Creates a new instance of this object with the specified Specimen. Use
+     * Creates a new instance of this object with the specified Sample. Use
      * this function to load an instance of this object from database.
      */
     public static SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception {
         return proxy().fetchByAccessionNumber(accessionNumber);
     }
 
-    // service methods
+    public static SampleManager fetchWithItemsAnalyses(Integer id) throws Exception {
+        return proxy().fetchWithItemsAnalyses(id);
+    }
+
     public SampleManager add() throws Exception {
         updateSampleStatus();
         return proxy().add(this);
@@ -140,21 +134,51 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
         return proxy().abortUpdate(sample.getId());
     }
 
+    public void validate() throws Exception {
+        ValidationErrorsList errorList = new ValidationErrorsList();
+        proxy().validate(this, errorList);
+    
+        if (errorList.size() > 0)
+            throw errorList;
+    }
+
+    public void setDefaults() {
+        Datetime yToM;
+        
+        try{
+            yToM = proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE);
+            
+            sample.setNextItemSequence(0);
+            sample.setRevision(0);
+            sample.setEnteredDate(yToM);
+            sample.setReceivedDate(yToM);
+            
+            loadDictionaryEntries();
+            sample.setStatusId(samLoggedInId);
+            
+        }catch(Exception e){
+            //ignore, we catch this on the validation
+        }
+    }
+
     //
     //other managers
     //
     public SampleDomainInt getDomainManager() throws Exception {
-        if (sample.getDomain() == null)
-            throw new InconsistencyException("domain is null");
-    
+        String domain;
+        
+        domain = sample.getDomain();
+        
+        assert domain != null : "domain is null";
+        
         if (sampleDomain == null) {
             if (sample.getId() != null) {
                 try {
-                    if (HUMAN_DOMAIN_FLAG.equals(sample.getDomain()))
+                    if (domain.equals(HUMAN_DOMAIN_FLAG))
                         sampleDomain = SampleHumanManager.findBySampleId(sample.getId());
-                    else if (ENVIRONMENTAL_DOMAIN_FLAG.equals(sample.getDomain()))
+                    else if (domain.equals(ENVIRONMENTAL_DOMAIN_FLAG))
                         sampleDomain = SampleEnvironmentalManager.fetchBySampleId(sample.getId());
-                    else if (WELL_DOMAIN_FLAG.equals(sample.getDomain()))
+                    else if (domain.equals(WELL_DOMAIN_FLAG))
                         sampleDomain = SamplePrivateWellManager.fetchBySampleId(sample.getId());
     
                 } catch (NotFoundException e) {
@@ -163,15 +187,15 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
                     throw e;
                 }
             }
-        }
     
-        if (sampleDomain == null) {
-            if (HUMAN_DOMAIN_FLAG.equals(sample.getDomain()))
-                sampleDomain = SampleHumanManager.getInstance();
-            else if (ENVIRONMENTAL_DOMAIN_FLAG.equals(sample.getDomain()))
-                sampleDomain = SampleEnvironmentalManager.getInstance();
-            else if (WELL_DOMAIN_FLAG.equals(sample.getDomain()))
-                sampleDomain = SamplePrivateWellManager.getInstance();
+            if (sampleDomain == null) {
+                if (domain.equals(HUMAN_DOMAIN_FLAG))
+                    sampleDomain = SampleHumanManager.getInstance();
+                else if (domain.equals(ENVIRONMENTAL_DOMAIN_FLAG))
+                    sampleDomain = SampleEnvironmentalManager.getInstance();
+                else if (domain.equals(WELL_DOMAIN_FLAG))
+                    sampleDomain = SamplePrivateWellManager.getInstance();
+            }
         }
     
         return sampleDomain;
@@ -182,18 +206,17 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
             if (sample.getId() != null) {
                 try {
                     projects = SampleProjectManager.fetchBySampleId(sample.getId());
-    
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
                     throw e;
                 }
             }
+        
+            if (projects == null)
+                projects = SampleProjectManager.getInstance();
         }
-    
-        if (projects == null)
-            projects = SampleProjectManager.getInstance();
-    
+        
         return projects;
     }
 
@@ -202,17 +225,16 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
             if (sample.getId() != null) {
                 try {
                     organizations = SampleOrganizationManager.fetchBySampleId(sample.getId());
-    
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
                     throw e;
                 }
             }
+        
+            if (organizations == null)
+                organizations = SampleOrganizationManager.getInstance();
         }
-    
-        if (organizations == null)
-            organizations = SampleOrganizationManager.getInstance();
     
         return organizations;
     }
@@ -228,10 +250,12 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
                     throw e;
                 }
             }
-        }
     
-        if (sampleItems == null)
-            sampleItems = SampleItemManager.getInstance();
+            if (sampleItems == null)
+                sampleItems = SampleItemManager.getInstance();
+            
+            sampleItems.setSampleManager(this);
+        }
     
         return sampleItems;
     }
@@ -240,21 +264,21 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
         if (sampleInternalNotes == null) {
             if (sample.getId() != null) {
                 try {
-                    sampleInternalNotes = NoteManager.fetchByRefTableRefIdIsExt(
-                                                                                ReferenceTable.SAMPLE,
-                                                                                sample.getId(), "N");
-    
+                    sampleInternalNotes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.SAMPLE,
+                                                                                sample.getId(), false);
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
                     throw e;
                 }
             }
+    
+            if (sampleInternalNotes == null){
+                sampleInternalNotes = NoteManager.getInstance();
+                sampleInternalNotes.setIsExternal(false);
+            }
         }
-    
-        if (sampleInternalNotes == null)
-            sampleInternalNotes = NoteManager.getInstance();
-    
+        
         return sampleInternalNotes;
     }
 
@@ -262,20 +286,20 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
         if (sampleExternalNote == null) {
             if (sample.getId() != null) {
                 try {
-                    sampleExternalNote = NoteManager.fetchByRefTableRefIdIsExt(
-                                                                               ReferenceTable.SAMPLE,
-                                                                               sample.getId(), "Y");
-    
+                    sampleExternalNote = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.SAMPLE,
+                                                                               sample.getId(), true);
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
                     throw e;
                 }
             }
-        }
     
-        if (sampleExternalNote == null)
-            sampleExternalNote = NoteManager.getInstance();
+            if (sampleExternalNote == null){
+                sampleExternalNote = NoteManager.getInstance();
+                sampleExternalNote.setIsExternal(true);
+            }
+        }
     
         return sampleExternalNote;
     }
@@ -285,17 +309,16 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
             if (sample.getId() != null) {
                 try {
                     qaEvents = SampleQaEventManager.fetchBySampleId(sample.getId());
-    
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
                     throw e;
                 }
             }
-        }
     
-        if (qaEvents == null)
-            qaEvents = SampleQaEventManager.getInstance();
+            if (qaEvents == null)
+                qaEvents = SampleQaEventManager.getInstance();
+        }
     
         return qaEvents;
     }
@@ -311,67 +334,26 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
                     throw e;
                 }
             }
+    
+            if (auxData == null)
+                auxData = AuxDataManager.getInstance();
         }
     
-        if (auxData == null)
-            auxData = AuxDataManager.getInstance();
-    
         return auxData;
-    }
-
-    public NoteManager getNotes() throws Exception {
-        throw new UnsupportedOperationException();
     }
 
     //
     //helper methods
     //
-    public boolean hasReleasedCancelledAnalysis() throws Exception {
-        if (hasReleasedCancelledAnalysis != null)
-            return hasReleasedCancelledAnalysis.booleanValue();
-    
-        SampleItemManager itemMan;
-        AnalysisManager analysisMan;
-        AnalysisViewDO anDO;
-        boolean value = false;
-        Integer cancelledId, releasedId;
-    
-        cancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
-        releasedId = DictionaryCache.getIdFromSystemName("analysis_released");
-    
-        itemMan = getSampleItems();
-        for (int s = 0; s < itemMan.count(); s++ ) {
-            analysisMan = itemMan.getAnalysisAt(s);
-            for (int a = 0; a < analysisMan.count(); a++ ) {
-                anDO = analysisMan.getAnalysisAt(a);
-                if (cancelledId.equals(anDO.getStatusId()) || releasedId.equals(anDO.getStatusId())) {
-                    value = true;
-                    break;
-                }
-            }
-        }
-    
-        setHasReleasedCancelledAnalysis(value);
-    
-        return value;
+    public boolean hasReleasedAnalysis() throws Exception {
+        return getSampleItems().hasReleasedAnalysis();
     }
 
-    public void setHasReleasedCancelledAnalysis(boolean value) {
-        hasReleasedCancelledAnalysis = new Boolean(value);
-    }
-
+    //FIXME put in a screen class for login screens
     public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
         proxy().validateAccessionNumber(sampleDO);
     }
-
-    public void validate() throws Exception {
-        ValidationErrorsList errorList = new ValidationErrorsList();
-        proxy().validate(this, errorList);
-
-        if (errorList.size() > 0)
-            throw errorList;
-    }
-
+    
     protected void updateSampleStatus() throws Exception {
         int e = 0, l = 0, c = 0, r = 0;
         SampleItemManager itemMan;
@@ -380,8 +362,7 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
         AnalysisViewDO anDO;
         Integer statusId = null, analysisStatusId;
     
-        if (anLoggedInId == null)
-            loadDictionaryEntries();
+        loadDictionaryEntries();
     
         itemMan = getSampleItems();
         for (int s = 0; s < itemMan.count(); s++ ) {
@@ -431,24 +412,34 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
     
         sample.setStatusId(statusId);
     }
-
+    
+    Integer getNextSequence(){
+        Integer s;
+        
+        s = sample.getNextItemSequence();
+        sample.setNextItemSequence(s+1);
+        
+        return s;
+    }
     private void loadDictionaryEntries() throws Exception {
-        anLoggedInId = proxy().getIdFromSystemName("analysis_logged_in");
-        anInitiatedId = proxy().getIdFromSystemName("analysis_initiated");
-        anCompletedId = proxy().getIdFromSystemName("analysis_completed");
-        anReleasedId = proxy().getIdFromSystemName("analysis_released");
-        anInPrepId = proxy().getIdFromSystemName("analysis_inprep");
-        anOnHoldId = proxy().getIdFromSystemName("analysis_on_hold");
-        anRequeueId = proxy().getIdFromSystemName("analysis_requeue");
-        anCancelledId = proxy().getIdFromSystemName("analysis_cancelled");
-        anErrorLoggedInId = proxy().getIdFromSystemName("analysis_error_logged_in");
-        anErrorInitiatedId = proxy().getIdFromSystemName("analysis_error_initiated");
-        anErrorInPrepId = proxy().getIdFromSystemName("analysis_error_inprep");
-        anErrorCompletedId = proxy().getIdFromSystemName("analysis_error_completed");
-        samLoggedInId = proxy().getIdFromSystemName("sample_logged_in");
-        samCompletedId = proxy().getIdFromSystemName("sample_completed");
-        samReleasedId = proxy().getIdFromSystemName("sample_released");
-        samErrorId = proxy().getIdFromSystemName("sample_error");
+        if(anLoggedInId == null){
+            anLoggedInId = proxy().getIdFromSystemName("analysis_logged_in");
+            anInitiatedId = proxy().getIdFromSystemName("analysis_initiated");
+            anCompletedId = proxy().getIdFromSystemName("analysis_completed");
+            anReleasedId = proxy().getIdFromSystemName("analysis_released");
+            anInPrepId = proxy().getIdFromSystemName("analysis_inprep");
+            anOnHoldId = proxy().getIdFromSystemName("analysis_on_hold");
+            anRequeueId = proxy().getIdFromSystemName("analysis_requeue");
+            anCancelledId = proxy().getIdFromSystemName("analysis_cancelled");
+            anErrorLoggedInId = proxy().getIdFromSystemName("analysis_error_logged_in");
+            anErrorInitiatedId = proxy().getIdFromSystemName("analysis_error_initiated");
+            anErrorInPrepId = proxy().getIdFromSystemName("analysis_error_inprep");
+            anErrorCompletedId = proxy().getIdFromSystemName("analysis_error_completed");
+            samLoggedInId = proxy().getIdFromSystemName("sample_logged_in");
+            samCompletedId = proxy().getIdFromSystemName("sample_completed");
+            samReleasedId = proxy().getIdFromSystemName("sample_released");
+            samErrorId = proxy().getIdFromSystemName("sample_error");
+        }
     }
 
     private static SampleManagerProxy proxy() {

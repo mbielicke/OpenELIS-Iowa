@@ -65,7 +65,7 @@ public class TestTypeOfSampleManager implements RPC {
     public TestTypeOfSampleDO getTypeAt(int i) {
         return types.get(i);
     }
-
+    
     public void setTypeAt(TestTypeOfSampleDO sampleType, int i) {
         if (types == null)
             types = new ArrayList<TestTypeOfSampleDO>();
@@ -98,6 +98,23 @@ public class TestTypeOfSampleManager implements RPC {
         }
     }
     
+    public ArrayList<TestTypeOfSampleDO> getTypesBySampleType(Integer type){
+        ArrayList<TestTypeOfSampleDO> returnList;
+        TestTypeOfSampleDO typeDO;
+        
+        returnList = new ArrayList<TestTypeOfSampleDO>();
+        
+        for(int i=0; i<count(); i++){
+            typeDO = types.get(i); 
+    
+            if (type.equals(typeDO.getTypeOfSampleId()))
+                returnList.add(typeDO);
+        }
+        
+        return returnList;
+        
+    }
+
     public boolean hasType(Integer type){
         TestTypeOfSampleDO typeDO;
         for(int i=0; i<count(); i++){
@@ -109,7 +126,7 @@ public class TestTypeOfSampleManager implements RPC {
         
         return false;
     }
-
+    
     public static TestTypeOfSampleManager fetchByTestId(Integer testId) throws Exception {
         return proxy().fetchByTestId(testId);
     }
