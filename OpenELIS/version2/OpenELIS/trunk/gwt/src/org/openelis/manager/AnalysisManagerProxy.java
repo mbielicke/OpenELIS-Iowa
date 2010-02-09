@@ -27,9 +27,11 @@ package org.openelis.manager;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.manager.AnalysisManager.AnalysisListItem;
 
@@ -44,17 +46,17 @@ public class AnalysisManagerProxy {
     public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
         return service.call("fetchBySampleItemId", sampleItemId);
     }
-    
-    public AnalysisManager fetchBySampleItemIdForUpdate(Integer sampleItemId) throws Exception {
-        return service.call("fetchBySampleItemIdForUpdate", sampleItemId);
-    }
-    
+   
     public AnalysisManager add(AnalysisManager man) throws Exception {
         throw new UnsupportedOperationException();
     }
     
     public AnalysisManager update(AnalysisManager man) throws Exception{
         throw new UnsupportedOperationException();
+    }
+    
+    public Datetime getCurrentDatetime(byte begin, byte end) throws Exception {
+        return Calendar.getCurrentDatetime(begin, end);
     }
     
     public void validate(AnalysisManager man, ValidationErrorsList errorsList) throws Exception {

@@ -48,6 +48,7 @@ public class SampleNotesTab extends NotesTab {
     protected String         internalNotesPanelKey;
     protected String         internalEditButtonKey;
 
+    protected SampleManager  sampleManager;
     protected NoteManager    internalManager;
 
     protected NotesPanel     internalNotesPanel;
@@ -60,7 +61,7 @@ public class SampleNotesTab extends NotesTab {
                           String externalEditButtonKey, String internalNotesPanelKey,
                           String internalEditButtonKey) {
 
-        super(def, window, externalNotesPanelKey, externalEditButtonKey, true);
+        super(def, window, externalNotesPanelKey, externalEditButtonKey);
 
         this.internalNotesPanelKey = internalNotesPanelKey;
         this.internalEditButtonKey = internalEditButtonKey;
@@ -113,7 +114,7 @@ public class SampleNotesTab extends NotesTab {
 
                 internalNote = null;
                 try {
-                    internalNote = internalManager.getInternalEditingNote();
+                    internalNote = internalManager.getEditingNote();
                 } catch (Exception e) {
                     e.printStackTrace();
                     Window.alert("error!");
@@ -143,13 +144,23 @@ public class SampleNotesTab extends NotesTab {
         }
     }
 
+    public void setManager(SampleManager sampleManager) {
+        this.sampleManager = sampleManager;
+        loaded = false;
+    }
+
     public void draw() {
         if ( !loaded) {
             try {
-                if (parentManager != null) {
-                    manager = ((SampleManager)parentManager).getExternalNote();
-                    internalManager = ((SampleManager)parentManager).getInternalNotes();
-                }
+                if (sampleManager == null ) {
+                    internalManager = NoteManager.getInstance();
+                    internalManager.setIsExternal(false);
+                    manager = NoteManager.getInstance();
+                    manager.setIsExternal(true);
+                } else {
+                    manager = sampleManager.getExternalNote();
+                    internalManager = sampleManager.getInternalNotes();
+                }   
 
                 DataChangeEvent.fire(this);
                 loaded = true;

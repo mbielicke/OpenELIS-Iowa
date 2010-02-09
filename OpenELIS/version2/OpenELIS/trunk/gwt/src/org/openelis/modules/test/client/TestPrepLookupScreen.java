@@ -41,7 +41,6 @@ import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.manager.TestPrepManager;
 
 import com.google.gwt.core.client.GWT;
@@ -51,12 +50,10 @@ import com.google.gwt.event.shared.HandlerRegistration;
 public class TestPrepLookupScreen extends Screen implements
                                                 HasActionHandlers<TestPrepLookupScreen.Action> {
     public enum Action {
-        SELECTED_PREP_ROW
+        SELECTED_PREP_ROW, CANCEL
     };
 
     protected TableWidget   prepTestTable;
-    private TreeDataItem    selectedParentRow;
-
     private TestPrepManager manager;
 
     public TestPrepLookupScreen() throws Exception {
@@ -118,13 +115,17 @@ public class TestPrepLookupScreen extends Screen implements
             window.close();
 
             if (selectedRow != null)
-                ActionEvent.fire(this, Action.SELECTED_PREP_ROW, new TestPrepLookupBundle(selectedRow, selectedParentRow));
+                ActionEvent.fire(this, Action.SELECTED_PREP_ROW, selectedRow);
         }
     }
 
     private void cancel() {
-        if (validate())
+        if (validate()){
             window.close();
+            ActionEvent.fire(this, Action.CANCEL, null);
+        }
+        
+        
     }
 
     public boolean validate() {
@@ -163,23 +164,7 @@ public class TestPrepLookupScreen extends Screen implements
         DataChangeEvent.fire(this);
     }
     
-    public void setSelectedTreeRow(TreeDataItem selectedTreeRow) {
-        selectedParentRow = selectedTreeRow;
-    }
-
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
         return addHandler(handler, ActionEvent.getType());
-    }
-    
-    public class TestPrepLookupBundle {
-        public TableDataRow selectedPrepRow;
-        public TreeDataItem selectedTreeRow;
-        
-        public TestPrepLookupBundle(){}
-        
-        public TestPrepLookupBundle(TableDataRow selectedPrepRow, TreeDataItem selectedTreeRow){
-            this.selectedPrepRow = selectedPrepRow;
-            this.selectedTreeRow = selectedTreeRow;
-        }
     }
 }

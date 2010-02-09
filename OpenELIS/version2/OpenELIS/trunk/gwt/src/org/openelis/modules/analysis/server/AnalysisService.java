@@ -46,14 +46,6 @@ public class AnalysisService {
         }
     }
     
-    public AnalysisManager fetchBySampleItemIdForUpdate(Integer sampleItemId) throws Exception {
-        try{
-            return remote().fetchBySampleItemIdForUpdate(sampleItemId);
-        }catch(RuntimeException e){
-            throw new DatabaseException(e);
-        }
-    }
-    
     //qa method
     public AnalysisQaEventManager fetchByAnalysisId(Integer analysisId) throws Exception {
         return qaRemote().fetchByAnalysisId(analysisId);

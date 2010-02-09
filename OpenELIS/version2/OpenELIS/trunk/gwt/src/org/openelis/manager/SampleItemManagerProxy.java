@@ -42,6 +42,16 @@ public class SampleItemManagerProxy {
         return service.call("fetchSampleItemsBySampleId", sampleId);
     }
     
+    public SampleItemManager add(SampleItemManager man) throws Exception {
+        assert false : "not supported";
+        return null;
+    }
+
+    public SampleItemManager update(SampleItemManager man) throws Exception {
+        assert false : "not supported";
+        return null;
+    }
+
     public void validate(SampleItemManager man, ValidationErrorsList errorsList) throws Exception {
         String sequenceNum;
         SampleItemListItem item;
@@ -63,13 +73,5 @@ public class SampleItemManagerProxy {
             if(item.analysis != null)
                 man.getAnalysisAt(i).validate(sequenceNum, man.getSampleItemAt(i).getTypeOfSampleId(), errorsList);
         }
-    }
-    
-    public SampleItemManager add(SampleItemManager man) throws Exception {
-        throw new UnsupportedOperationException();
-    }
-
-    public SampleItemManager update(SampleItemManager man) throws Exception {
-        throw new UnsupportedOperationException();
     }
 }

@@ -61,21 +61,20 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
 import org.openelis.modules.sample.client.AuxDataTab;
-import org.openelis.modules.sample.client.OrderImportPrivateWell;
 import org.openelis.modules.sample.client.PrivateWellTab;
 import org.openelis.modules.sample.client.QAEventsTab;
 import org.openelis.modules.sample.client.ResultTab;
-import org.openelis.modules.sample.client.SampleDataBundle;
 import org.openelis.modules.sample.client.SampleItemAnalysisTreeTab;
 import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleNotesTab;
-import org.openelis.modules.sample.client.SampleTab;
+import org.openelis.modules.sample.client.SamplePrivateWellImportOrder;
 import org.openelis.modules.sample.client.StorageTab;
 
 import com.google.gwt.core.client.GWT;
@@ -91,7 +90,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
 
 public class PrivateWellWaterSampleLoginScreen extends Screen implements
-                                                             HasActionHandlers<SampleTab.Action> {
+                                                             HasActionHandlers {
 
     public enum Tabs {
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
@@ -102,7 +101,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
     private Integer                   sampleLoggedInId, sampleErrorStatusId, sampleReleasedId,
                                       userId;
 
-    private SampleTab                 sampleTab;
     private SampleItemAnalysisTreeTab treeTab;
     private PrivateWellTab            privateWellTab;
     private SampleItemTab             sampleItemTab;
@@ -127,7 +125,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
     ScreenNavigator                   nav;
     private SecurityModule            security;
 
-    protected OrderImportPrivateWell  wellOrderImport;
+    protected SamplePrivateWellImportOrder  wellOrderImport;
     private SampleManager             manager;
 
     public PrivateWellWaterSampleLoginScreen() throws Exception {
@@ -351,7 +349,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                 manager.getSample().setOrderId(event.getValue());
 
                 if (wellOrderImport == null)
-                    wellOrderImport = new OrderImportPrivateWell();
+                    wellOrderImport = new SamplePrivateWellImportOrder();
 
                 try {
                     wellOrderImport.importOrderInfo(event.getValue(), manager);
@@ -468,20 +466,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
         });
         
         // Set up tabs to recieve State Change events from the main Screen.
-        // sample section of the screen
-        sampleTab = new SampleTab(def, window);
-
-        addScreenHandler(sampleTab, new ScreenEventHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                sampleTab.setData(manager);
-                sampleTab.draw();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                sampleTab.setState(event.getState());
-            }
-        });
-
         // analysis tree section of the screen
         treeTab = new SampleItemAnalysisTreeTab(def, window, wellScreen);
 
@@ -514,7 +498,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
 
         addScreenHandler(sampleItemTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                sampleItemTab.setData(new SampleDataBundle());
+                sampleItemTab.setData(null);
 
                 if (tab == Tabs.SAMPLE_ITEM)
                     drawTabs();
@@ -529,7 +513,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
 
         addScreenHandler(analysisTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                analysisTab.setData(new SampleDataBundle());
+                analysisTab.setData(null);
 
                 if (tab == Tabs.ANALYSIS)
                     drawTabs();
@@ -544,7 +528,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
 
         addScreenHandler(testResultsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                testResultsTab.setData(new SampleDataBundle());
+                testResultsTab.setData(null);
 
                 if (tab == Tabs.TEST_RESULT)
                     drawTabs();
@@ -559,7 +543,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                                                 "anIntNotesPanel", "anIntNoteButton");
         addScreenHandler(analysisNotesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                analysisNotesTab.setData(new SampleDataBundle());
+                analysisNotesTab.setData(null);
 
                 if (tab == Tabs.ANALYSIS_NOTES)
                     drawTabs();
@@ -589,7 +573,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
         storageTab = new StorageTab(def, window);
         addScreenHandler(storageTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                storageTab.setData(new SampleDataBundle());
+                storageTab.setData(null);
 
                 if (tab == Tabs.STORAGE)
                     drawTabs();
@@ -603,7 +587,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
         qaEventsTab = new QAEventsTab(def, window);
         addScreenHandler(qaEventsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                qaEventsTab.setData(new SampleDataBundle());
+                qaEventsTab.setData(null);
                 qaEventsTab.setManager(manager);
 
                 if (tab == Tabs.QA_EVENTS)
@@ -641,30 +625,21 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                     qaEventsTab.setData(data);
 
                     drawTabs();
-                } else if (event.getAction() == SampleItemAnalysisTreeTab.Action.SETUP_BUNDLE) {
-                    analysisTab.setupBundle((SampleDataBundle)event.getData());
                 }
             }
         });
 
         sampleItemTab.addActionHandler(new ActionHandler<SampleItemTab.Action>() {
             public void onAction(ActionEvent<SampleItemTab.Action> event) {
-                if (state != State.QUERY && event.getAction() == SampleItemTab.Action.CHANGED) {
-                    ActionEvent.fire(wellScreen, SampleTab.Action.SAMPLE_ITEM_CHANGED,
-                                     event.getData());
-                }
+                if (state != State.QUERY)
+                    ActionEvent.fire(wellScreen, event.getAction(), event.getData());
             }
         });
 
         analysisTab.addActionHandler(new ActionHandler<AnalysisTab.Action>() {
             public void onAction(ActionEvent<AnalysisTab.Action> event) {
-                if (state != State.QUERY && event.getAction() == AnalysisTab.Action.CHANGED)
-                    ActionEvent.fire(wellScreen, SampleTab.Action.ANALYSIS_CHANGED, event.getData());
-                else if (state != State.QUERY &&
-                         event.getAction() == AnalysisTab.Action.CHANGED_DONT_CHECK_PREPS)
-                    ActionEvent.fire(wellScreen,
-                                     SampleTab.Action.ANALYSIS_CHANGED_DONT_CHECK_PREPS,
-                                     event.getData());
+                if (state != State.QUERY)
+                    ActionEvent.fire(wellScreen, event.getAction(), event.getData());
             }
         });
         
@@ -928,7 +903,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
             window.setBusy(consts.get("fetching"));
 
             try {
-                manager = SampleManager.fetchByIdWithItemsAnalyses(id);
+                manager = SampleManager.fetchWithItemsAnalyses(id);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1010,7 +985,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
         return super.validate() & storageTab.validate();
     }
 
-    public HandlerRegistration addActionHandler(ActionHandler<SampleTab.Action> handler) {
+    public HandlerRegistration addActionHandler(ActionHandler handler) {
         return addHandler(handler, ActionEvent.getType());
     }
 }

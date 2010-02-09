@@ -31,10 +31,10 @@ public class NotesTab extends Screen {
     protected String         userName;
     protected Integer        userId;
     protected String         notesPanelKey, editButtonKey;
-    protected boolean        loaded, isExternal;
+    protected boolean        loaded;
 
     public NotesTab(ScreenDefInt def, ScreenWindow window, String notesPanelKey,
-                    String editButtonKey, boolean isExternal) {
+                    String editButtonKey) {
         setDef(def);
         setWindow(window);
 
@@ -42,7 +42,6 @@ public class NotesTab extends Screen {
         userId = OpenELIS.security.getSystemUserId();
         this.notesPanelKey = notesPanelKey;
         this.editButtonKey = editButtonKey;
-        this.isExternal = isExternal;
 
         initialize();
     }
@@ -100,10 +99,7 @@ public class NotesTab extends Screen {
 
         note = null;
         try {
-            if (isExternal)
-                note = manager.getExternalEditingNote();
-            else
-                note = manager.getInternalEditingNote();
+            note = manager.getEditingNote();
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert("Error in EditNote:" + e.getMessage());

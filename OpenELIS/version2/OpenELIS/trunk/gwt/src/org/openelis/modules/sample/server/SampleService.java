@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleDO;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
@@ -43,63 +44,115 @@ import org.openelis.remote.SampleRemote;
 public class SampleService {
     private static final int rowPP = 12;
     
-    //sample methods
-    public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
-    }
-    
-    public SampleManager fetch(Integer sampleId) throws Exception {
-        return managerRemote().fetch(sampleId);
+    public SampleManager fetchById(Integer sampleId) throws Exception {
+        try{
+            return managerRemote().fetchById(sampleId);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
     }
     
     public SampleManager fetchWithItemsAnalyses(Integer sampleId) throws Exception {
-        return managerRemote().fetchWithItemsAnalysis(sampleId);
+        try{
+            return managerRemote().fetchWithItemsAnalysis(sampleId);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     public SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception {
-        return managerRemote().fetchByAccessionNumber(accessionNumber);
+        try{
+            return managerRemote().fetchByAccessionNumber(accessionNumber);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    //sample methods
+    public ArrayList<IdNameVO> query(Query query) throws Exception {
+        try{
+            return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     public SampleManager add(SampleManager man) throws Exception {
-        return managerRemote().add(man);
+        try{
+            return managerRemote().add(man);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     public SampleManager update(SampleManager man) throws Exception {
-        return managerRemote().update(man);
+        try{
+            return managerRemote().update(man);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
     }
     
     public SampleManager fetchForUpdate(Integer sampleId) throws Exception {
-        return managerRemote().fetchForUpdate(sampleId);
+        try{
+            return managerRemote().fetchForUpdate(sampleId);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
     }
     
     public SampleManager abortUpdate(Integer sampleId) throws Exception {
-        return managerRemote().abortUpdate(sampleId);
-    }
-    
-    public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
-        managerRemote().validateAccessionNumber(sampleDO);
+        try{
+            return managerRemote().abortUpdate(sampleId);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
     }
     
     //sample org methods
     public SampleOrganizationManager fetchSampleOrganizationsBySampleId(Integer sampleId) throws Exception {
-        return managerRemote().fetchSampleOrgsBySampleId(sampleId);
+        try{
+            return managerRemote().fetchSampleOrgsBySampleId(sampleId);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
     }
     
     //sample project methods
     public SampleProjectManager fetchSampleprojectsBySampleId(Integer sampleId) throws Exception {
-        return managerRemote().fetchSampleProjectsBySampleId(sampleId);
+        try{
+            return managerRemote().fetchSampleProjectsBySampleId(sampleId);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
     }
     
     //sample item methods
     public SampleItemManager fetchSampleItemsBySampleId(Integer sampleId) throws Exception {
-        return managerRemote().fetchSampleItemsBySampleId(sampleId);
+        try{
+            return managerRemote().fetchSampleItemsBySampleId(sampleId);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
     }
     
     //sample qa method
     public SampleQaEventManager fetchBySampleId(Integer sampleId) throws Exception {
-        return qaRemote().fetchBySampleId(sampleId);
+        try{
+            return qaRemote().fetchBySampleId(sampleId);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
     }
     
+    public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
+        try{
+            managerRemote().validateAccessionNumber(sampleDO);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
     private SampleRemote remote(){
         return (SampleRemote)EJBFactory.lookup("openelis/SampleBean/remote");
     }

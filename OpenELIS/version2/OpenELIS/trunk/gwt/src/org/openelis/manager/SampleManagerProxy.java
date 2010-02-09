@@ -29,9 +29,11 @@ import java.util.ArrayList;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.SampleDO;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FieldErrorWarning;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.meta.SampleMeta;
 
@@ -43,24 +45,29 @@ public class SampleManagerProxy {
         service = new ScreenService("OpenELISServlet?service="+SAMPLE_SERVICE_URL);
     }
     
+    public SampleManager fetchById(Integer sampleId) throws Exception {
+        return service.call("fetchById", sampleId);
+    }
+
+    public SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception {
+        return service.call("fetchByAccessionNumber", accessionNumber);
+    }
+
+    public SampleManager fetchWithItemsAnalyses(Integer sampleId) throws Exception {
+        try{
+     return service.call("fetchWithItemsAnalyses", sampleId);
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+            throw e;
+        }
+    }
+
     public SampleManager add(SampleManager man) throws Exception {
         return service.call("add", man);
     }
 
     public SampleManager update(SampleManager man) throws Exception {
         return service.call("update", man);
-    }
-    
-    public SampleManager fetch(Integer sampleId) throws Exception {
-        return service.call("fetch", sampleId);
-    }
-    
-    public SampleManager fetchWithItemsAnalyses(Integer sampleId) throws Exception {
-     return service.call("fetchWithItemsAnalyses", sampleId);   
-    }
-    
-    public SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception {
-        return service.call("fetchByAccessionNumber", accessionNumber);
     }
     
     public SampleManager fetchForUpdate(Integer sampleId) throws Exception {
@@ -71,20 +78,16 @@ public class SampleManagerProxy {
         return service.call("abortUpdate", sampleId);
     }
     
-    public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
-        service.call("validateAccessionNumber", sampleDO);
+    public Integer getIdFromSystemName(String systemName) throws Exception {
+        return DictionaryCache.getIdFromSystemName(systemName);
     }
     
-    private void validateAccessionNumber(SampleDO sampleDO, ValidationErrorsList errorsList) throws Exception {
-        try{
-            service.call("validateAccessionNumber", sampleDO);
+    public Datetime getCurrentDatetime(byte begin, byte end) throws Exception {
+        return Calendar.getCurrentDatetime(begin, end);
+    }
 
-        }catch(ValidationErrorsList e){
-            ArrayList<Exception> errors = e.getErrorList();
-            
-            for(int i=0; i<errors.size(); i++)
-                errorsList.add(errors.get(i));
-        }
+    public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
+        service.call("validateAccessionNumber", sampleDO);
     }
     
     public void validate(SampleManager man, ValidationErrorsList errorsList) throws Exception {
@@ -132,7 +135,15 @@ public class SampleManagerProxy {
            man.getAuxData().validate(errorsList);
     }
     
-    public Integer getIdFromSystemName(String systemName) throws Exception {
-        return DictionaryCache.getIdFromSystemName(systemName);
+    private void validateAccessionNumber(SampleDO sampleDO, ValidationErrorsList errorsList) throws Exception {
+        try{
+            service.call("validateAccessionNumber", sampleDO);
+    
+        }catch(ValidationErrorsList e){
+            ArrayList<Exception> errors = e.getErrorList();
+            
+            for(int i=0; i<errors.size(); i++)
+                errorsList.add(errors.get(i));
+        }
     }
 }

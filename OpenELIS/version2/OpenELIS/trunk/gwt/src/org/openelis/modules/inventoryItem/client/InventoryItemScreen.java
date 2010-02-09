@@ -728,7 +728,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        noteTab = new NotesTab(def, window, "notesPanel", "standardNoteButton", false);
+        noteTab = new NotesTab(def, window, "notesPanel", "standardNoteButton");
         addScreenHandler(noteTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 noteTab.setManager(manager);
