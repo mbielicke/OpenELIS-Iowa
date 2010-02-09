@@ -41,11 +41,13 @@ public class SampleProjectManagerProxy {
     }
 
     public SampleProjectManager add(SampleProjectManager man) throws Exception {
-        throw new UnsupportedOperationException();
+        assert false : "not supported";
+        return null;
     }
 
     public SampleProjectManager update(SampleProjectManager man) throws Exception {
-        throw new UnsupportedOperationException();
+        assert false : "not supported";
+        return null;
     }
     
     public void validate(SampleProjectManager man, ValidationErrorsList errorsList) throws Exception {

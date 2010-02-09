@@ -58,12 +58,13 @@ public class StorageBean implements StorageLocal{
         SystemUserDO user;
         StorageViewDO storage;
         Query query;
+        ArrayList<StorageViewDO> list;
         
         query = manager.createNamedQuery("Storage.StorageById");
         query.setParameter("referenceTable", refTableId);
         query.setParameter("id", refId);
         
-        ArrayList<StorageViewDO> list = DataBaseUtil.toArrayList(query.getResultList());
+        list = DataBaseUtil.toArrayList(query.getResultList());
         
         for(int i=0; i<list.size(); i++){
             storage = list.get(i);
@@ -87,11 +88,11 @@ public class StorageBean implements StorageLocal{
         manager.setFlushMode(FlushModeType.COMMIT);
         
         entity = new Storage();
-        entity.setCheckin(data.getCheckin());
-        entity.setCheckout(data.getCheckout());
         entity.setReferenceId(data.getReferenceId());
         entity.setReferenceTableId(data.getReferenceTableId());
         entity.setStorageLocationId(data.getStorageLocationId());
+        entity.setCheckin(data.getCheckin());
+        entity.setCheckout(data.getCheckout());
         entity.setSystemUserId(login.getSystemUserId());
         
         manager.persist(entity);
@@ -109,13 +110,12 @@ public class StorageBean implements StorageLocal{
         manager.setFlushMode(FlushModeType.COMMIT);
         
         entity = manager.find(Storage.class, data.getId());
-
-        entity.setCheckin(data.getCheckin());
-        entity.setCheckout(data.getCheckout());
         entity.setReferenceId(data.getReferenceId());
         entity.setReferenceTableId(data.getReferenceTableId());
         entity.setStorageLocationId(data.getStorageLocationId());
-        entity.setSystemUserId(data.getSystemUserId());
+        entity.setCheckin(data.getCheckin());
+        entity.setCheckout(data.getCheckout());
+        entity.setSystemUserId(login.getSystemUserId());
         
         return data;
     }

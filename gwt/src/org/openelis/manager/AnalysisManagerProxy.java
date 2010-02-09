@@ -48,11 +48,13 @@ public class AnalysisManagerProxy {
     }
    
     public AnalysisManager add(AnalysisManager man) throws Exception {
-        throw new UnsupportedOperationException();
+        assert false : "not supported";
+        return null;
     }
     
     public AnalysisManager update(AnalysisManager man) throws Exception{
-        throw new UnsupportedOperationException();
+        assert false : "not supported";
+        return null;
     }
     
     public Datetime getCurrentDatetime(byte begin, byte end) throws Exception {

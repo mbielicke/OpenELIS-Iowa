@@ -25,6 +25,7 @@
 */
 package org.openelis.bean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -38,6 +39,7 @@ import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.entity.SampleOrganization;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.SampleOrganizationLocal;
+import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 
@@ -46,16 +48,18 @@ public class SampleOrganizationBean implements SampleOrganizationLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
    
-    public List<SampleOrganizationViewDO> fetchBySampleId(Integer sampleId) throws Exception {
-        Query query = manager.createNamedQuery("SampleOrg.SampleOrgBySampleId");
+    public ArrayList<SampleOrganizationViewDO> fetchBySampleId(Integer sampleId) throws Exception {
+        List<SampleOrganizationViewDO> returnList;
+        Query query;
+        
+        query = manager.createNamedQuery("SampleOrg.SampleOrgBySampleId");
         query.setParameter("id", sampleId);
- 
-        List<SampleOrganizationViewDO> returnList = query.getResultList();
+        returnList = query.getResultList();
         
         if(returnList.size() == 0)
             throw new NotFoundException();
         
-        return returnList;
+        return DataBaseUtil.toArrayList(returnList);
     }
     
     public SampleOrganizationViewDO add(SampleOrganizationViewDO data) {
@@ -64,8 +68,8 @@ public class SampleOrganizationBean implements SampleOrganizationLocal {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         entity = new SampleOrganization();
-        entity.setOrganizationId(data.getOrganizationId());
         entity.setSampleId(data.getSampleId());
+        entity.setOrganizationId(data.getOrganizationId());
         entity.setTypeId(data.getTypeId());
         
         manager.persist(entity);
@@ -83,8 +87,8 @@ public class SampleOrganizationBean implements SampleOrganizationLocal {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         entity = manager.find(SampleOrganization.class, data.getId());
-        entity.setOrganizationId(data.getOrganizationId());
         entity.setSampleId(data.getSampleId());
+        entity.setOrganizationId(data.getOrganizationId());
         entity.setTypeId(data.getTypeId());
         
         return data;

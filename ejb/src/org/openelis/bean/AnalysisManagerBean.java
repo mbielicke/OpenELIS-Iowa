@@ -34,7 +34,6 @@ import org.openelis.remote.AnalysisManagerRemote;
 @Stateless
 
 @SecurityDomain("openelis")
-//@RolesAllowed("inventory-select")
 public class AnalysisManagerBean implements AnalysisManagerRemote {
     
     public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {

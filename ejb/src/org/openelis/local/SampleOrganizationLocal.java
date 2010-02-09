@@ -25,7 +25,7 @@
 */
 package org.openelis.local;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import javax.ejb.Local;
 
@@ -33,7 +33,7 @@ import org.openelis.domain.SampleOrganizationViewDO;
 
 @Local
 public interface SampleOrganizationLocal {
-    public List<SampleOrganizationViewDO> fetchBySampleId(Integer sampleId) throws Exception;   
+    public ArrayList<SampleOrganizationViewDO> fetchBySampleId(Integer sampleId) throws Exception;   
     
     public SampleOrganizationViewDO add(SampleOrganizationViewDO sampleOrgDO);
     public SampleOrganizationViewDO update(SampleOrganizationViewDO sampleOrgDO); 

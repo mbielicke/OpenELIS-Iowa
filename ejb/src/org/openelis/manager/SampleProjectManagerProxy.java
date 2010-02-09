@@ -35,11 +35,12 @@ import org.openelis.local.SampleProjectLocal;
 
 public class SampleProjectManagerProxy {
     public SampleProjectManager fetchBySampleId(Integer sampleId) throws Exception {
-        SampleProjectLocal spl = getProjectLocal();
+        ArrayList<SampleProjectViewDO> projects;
+        SampleProjectManager spm;
         
-        ArrayList<SampleProjectViewDO> projects = (ArrayList<SampleProjectViewDO>)spl.fetchBySampleId(sampleId);
+        projects = sampleProjectLocal().fetchBySampleId(sampleId);
         
-        SampleProjectManager spm = SampleProjectManager.getInstance();
+        spm = SampleProjectManager.getInstance();
         spm.setProjects(projects);
         spm.setSampleId(sampleId);
         
@@ -47,25 +48,23 @@ public class SampleProjectManagerProxy {
     }
     
     public SampleProjectManager add(SampleProjectManager man) throws Exception {
-        SampleProjectLocal spl = getProjectLocal();
         SampleProjectViewDO projectDO;
         
         for(int i=0; i<man.count(); i++){
             projectDO = man.getProjectAt(i);
             projectDO.setSampleId(man.getSampleId());
             
-            spl.add(projectDO);
+            sampleProjectLocal().add(projectDO);
         }
         
         return man;
     }
     
     public SampleProjectManager update(SampleProjectManager man) throws Exception {
-        SampleProjectLocal spl = getProjectLocal();
         SampleProjectViewDO projectDO;
         
         for(int j=0; j<man.deleteCount(); j++){
-            spl.delete(man.getDeletedAt(j));
+            sampleProjectLocal().delete(man.getDeletedAt(j));
         }
         
         for(int i=0; i<man.count(); i++){
@@ -73,9 +72,9 @@ public class SampleProjectManagerProxy {
             
             if(projectDO.getId() == null){
                 projectDO.setSampleId(man.getSampleId());
-                spl.add(projectDO);
+                sampleProjectLocal().add(projectDO);
             }else
-                spl.update(projectDO);
+                sampleProjectLocal().update(projectDO);
         }
 
         return man;
@@ -85,7 +84,7 @@ public class SampleProjectManagerProxy {
         
     }
     
-    private SampleProjectLocal getProjectLocal(){
+    private SampleProjectLocal sampleProjectLocal(){
         try{
             InitialContext ctx = new InitialContext();
             return (SampleProjectLocal)ctx.lookup("openelis/SampleProjectBean/local");

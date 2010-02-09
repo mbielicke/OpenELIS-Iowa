@@ -45,7 +45,7 @@ public class AnalysisManagerProxy {
         ArrayList<AnalysisViewDO> items;
         AnalysisManager man;
         
-        items = (ArrayList<AnalysisViewDO>)getAnalysisLocal().fetchBySampleItemId(sampleItemId);
+        items = analysisLocal().fetchBySampleItemId(sampleItemId);
         man = AnalysisManager.getInstance();
         
         for(int i=0; i<items.size(); i++){
@@ -159,12 +159,11 @@ public class AnalysisManagerProxy {
     private void add(AnalysisManager man, AnalysisViewDO analysisDO, int i) throws Exception {
         Integer analysisRefId;
         AnalysisListItem item;
-        AnalysisLocal al = getAnalysisLocal();
         
         analysisRefId = ReferenceTable.ANALYSIS;
         
         analysisDO.setSampleItemId(man.getSampleItemId());
-        al.add(analysisDO);
+        analysisLocal().add(analysisDO);
         
         item = man.getItemAt(i);
         
@@ -200,15 +199,14 @@ public class AnalysisManagerProxy {
     private void update(AnalysisManager man, AnalysisViewDO analysisDO, int i) throws Exception {
         Integer analysisRefId;
         AnalysisListItem item;
-        AnalysisLocal al = getAnalysisLocal();
         
         analysisRefId = ReferenceTable.ANALYSIS;
 
         if(analysisDO.getId() == null){
             analysisDO.setSampleItemId(man.getSampleItemId());
-            al.add(analysisDO);
+            analysisLocal().add(analysisDO);
         }else
-            al.update(analysisDO);
+            analysisLocal().update(analysisDO);
         
         item = man.getItemAt(i);
         if(item.analysisResult != null){
@@ -253,13 +251,13 @@ public class AnalysisManagerProxy {
     }
     
     public Integer getIdFromSystemName(String systemName) throws Exception{
-        DictionaryLocal dl = getDictionaryLocal();
+        DictionaryLocal dl = dictionaryLocal();
         DictionaryDO dictDO = dl.fetchBySystemName(systemName);
         
         return dictDO.getId();
     }
     
-    private AnalysisLocal getAnalysisLocal(){
+    private AnalysisLocal analysisLocal(){
         try{
             InitialContext ctx = new InitialContext();
             return (AnalysisLocal)ctx.lookup("openelis/AnalysisBean/local");
@@ -269,7 +267,7 @@ public class AnalysisManagerProxy {
         }
     }
     
-    private static DictionaryLocal getDictionaryLocal(){
+    private static DictionaryLocal dictionaryLocal(){
         try{
             InitialContext ctx = new InitialContext();
             return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
