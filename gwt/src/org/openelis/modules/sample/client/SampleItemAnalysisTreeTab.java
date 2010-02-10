@@ -364,18 +364,9 @@ public class SampleItemAnalysisTreeTab extends Screen
                                                             "No", "Yes");
                         cancelAnalysisConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
                             public void onSelection(SelectionEvent<Integer> event) {
-                                // SampleDataBundle bundle =
-                                // (SampleDataBundle)selectedTreeRow.data;
-                                // sampleItemIndex = -1;
-                                // FIXME sampleItemIndex =
-                                // bundle.sampleItemManager.getIndex(bundle.sampleItemDO);
-
                                 switch (event.getSelectedItem().intValue()) {
                                     case 1:
                                         cancelAnalysisRow(itemsTree.getSelectedRow());
-                                        // FIXME
-                                        // bundle.sampleItemManager.setChangedAt(true,
-                                        // sampleItemIndex);
                                         break;
                                 }
                             }
@@ -389,14 +380,9 @@ public class SampleItemAnalysisTreeTab extends Screen
                     anDO = manager.getSampleItems()
                                   .getAnalysisAt(bundle.getSampleItemIndex())
                                   .getAnalysisAt(bundle.getAnalysisIndex());
-                    // sampleItemIndex =
-                    // bundle.sampleItemManager.getIndex(bundle.sampleItemDO);
-
+                    
                     cleanupTestsWithPrep(anDO.getId());
-
                     itemsTree.deleteRow(selectedTreeRow);
-                    // FIXME bundle.sampleItemManager.setChangedAt(true,
-                    // sampleItemIndex);
                 }
             } else {
                 itemsTree.deleteRow(selectedTreeRow);
@@ -566,11 +552,10 @@ public class SampleItemAnalysisTreeTab extends Screen
             bundle = (SampleDataBundle)treeRow.data;
             anMan = manager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
 
-            // update the tree row
-            itemsTree.setCell(selectedIndex, 1, analysisCancelledId);
-
             // update the analysis manager
             anMan.cancelAnalysisAt(bundle.getAnalysisIndex());
+            updateAnalysisRow(treeRow);
+            itemsTree.refreshRow(treeRow);
 
             // cleanup the other rows
             cleanupTestsWithPrep(anMan.getAnalysisAt(bundle.getAnalysisIndex()).getId());

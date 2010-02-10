@@ -170,13 +170,12 @@ public class AnalysisManager implements RPC {
 
     public void cancelAnalysisAt(int index) {
         AnalysisViewDO anDO = items.get(index).analysis;
-        Integer analysisCancelledId = null;
 
         try {
-            proxy().getIdFromSystemName("analysis_cancelled");
-
-            anDO.setStatusId(analysisCancelledId);
+            loadDictionaryEntries();
+            anDO.setStatusId(anCancelledId);
             anDO.setPreAnalysisId(null);
+            
         } catch (Exception e) {
             return;
         }
