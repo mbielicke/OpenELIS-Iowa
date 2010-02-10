@@ -249,7 +249,7 @@ UIRF Software License are applicable instead of those above.
                   <AbsolutePanel />
                 </tab>
 <!-- Environmental deck -->
-                <tab text="Environment" visible="false" tab="{meta:getEnvIsHazardous()},{meta:getBillTo()}">
+                <tab text="{resource:getString($constants,'envInfo')}" visible="false" tab="{meta:getEnvIsHazardous()},{meta:getBillTo()}">
                   <VerticalPanel width="98%">
                     <TablePanel style="Form" width="100%">
                       <row>
@@ -480,35 +480,35 @@ UIRF Software License are applicable instead of those above.
                   </VerticalPanel>
                 </tab>
 <!-- Sample Item Deck -->
-                <tab text="Sample Item" visible="false" tab="{meta:getItemTypeOfSampleId()},{meta:getItemUnitOfMeasureId()}">
+                <tab text="{resource:getString($constants,'sampleItem')}" visible="false" tab="{meta:getItemTypeOfSampleId()},{meta:getItemUnitOfMeasureId()}">
                   <xsl:call-template name="SampleItemTab" />
                 </tab>
 <!-- Analysis deck -->
-                <tab text="Analysis" visible="false" tab="{meta:getAnalysisTestName()},{meta:getAnalysisPrintedDate()}">
+                <tab text="{resource:getString($constants,'analysis')}" visible="false" tab="{meta:getAnalysisTestName()},{meta:getAnalysisPrintedDate()}">
                   <xsl:call-template name="AnalysisTab" />
                 </tab>
 <!-- Results deck -->
-                <tab text="Test Results" visible="false" tab="testResultsTable,testResultsTable">
+                <tab text="{resource:getString($constants,'testResults')}" visible="false" tab="testResultsTable,testResultsTable">
                   <xsl:call-template name="ResultTab" />
                 </tab>
 <!-- Analysis Notes Deck -->
-                <tab text="AnalysisNotes" visible="false" tab="anExNoteButton,anIntNoteButton">
+                <tab text="{resource:getString($constants,'analysisNotes')}" visible="false" tab="anExNoteButton,anIntNoteButton">
                   <xsl:call-template name="AnalysisNotesTab" />
                 </tab>
 <!-- Sample Notes Deck  -->
-                <tab text="Sample Notes" visible="false" tab="sampleExtNoteButton,sampleIntNoteButton">
+                <tab text="{resource:getString($constants,'sampleNotes')}" visible="false" tab="sampleExtNoteButton,sampleIntNoteButton">
                   <xsl:call-template name="SampleNotesTab" />
                 </tab>
 <!-- Storage deck -->
-                <tab text="Storage" visible="false" tab="storageTable,storageTable">
+                <tab text="{resource:getString($constants,'storage')}" visible="false" tab="storageTable,storageTable">
                   <xsl:call-template name="StorageTab" />
                 </tab>
 <!-- QA Events Deck -->
-                <tab text="QA Events" visible="false" tab="sampleQATable,analysisQATable">
+                <tab text="{resource:getString($constants,'qaEvents')}" visible="false" tab="sampleQATable,analysisQATable">
                   <xsl:call-template name="QAEventsTab" />
                 </tab>
 <!-- Aux Data Deck -->
-                <tab text="Aux Data" visible="false" tab="auxValsTable,auxValsTable">
+                <tab text="{resource:getString($constants,'auxData')}" visible="false" tab="auxValsTable,auxValsTable">
                   <xsl:call-template name="AuxDataTab" />
                 </tab>
               </TabPanel>

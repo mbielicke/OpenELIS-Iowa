@@ -1,21 +1,63 @@
 package org.openelis.modules.sampleTracking.client;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
 
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.EntityLockedException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.BeforeCloseEvent;
+import org.openelis.gwt.event.BeforeCloseHandler;
+import org.openelis.gwt.event.BeforeDragStartEvent;
+import org.openelis.gwt.event.BeforeDragStartHandler;
+import org.openelis.gwt.event.BeforeDropEvent;
+import org.openelis.gwt.event.BeforeDropHandler;
+import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.DropEnterEvent;
+import org.openelis.gwt.event.DropEnterHandler;
+import org.openelis.gwt.event.DropEvent;
+import org.openelis.gwt.event.DropHandler;
+import org.openelis.gwt.event.StateChangeEvent;
+import org.openelis.gwt.event.StateChangeHandler;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
+import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.MenuItem;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TabPanel;
 import org.openelis.gwt.widget.TextBox;
+import org.openelis.gwt.widget.AppButton.ButtonState;
+import org.openelis.gwt.widget.table.TableDataCell;
+import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.tree.TreeDataItem;
+import org.openelis.gwt.widget.tree.TreeRow;
 import org.openelis.gwt.widget.tree.TreeWidget;
+import org.openelis.gwt.widget.tree.event.BeforeLeafOpenEvent;
+import org.openelis.gwt.widget.tree.event.BeforeLeafOpenHandler;
+import org.openelis.gwt.widget.tree.event.LeafClosedEvent;
+import org.openelis.gwt.widget.tree.event.LeafClosedHandler;
+import org.openelis.manager.SampleDataBundle;
+import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
+import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
@@ -24,11 +66,23 @@ import org.openelis.modules.sample.client.EnvironmentalTab;
 import org.openelis.modules.sample.client.PrivateWellTab;
 import org.openelis.modules.sample.client.QAEventsTab;
 import org.openelis.modules.sample.client.ResultTab;
+import org.openelis.modules.sample.client.SampleEnvironmentalImportOrder;
 import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleNotesTab;
 import org.openelis.modules.sample.client.StorageTab;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class SampleTrackingScreen extends Screen {
     
@@ -115,15 +169,15 @@ public class SampleTrackingScreen extends Screen {
         security = OpenELIS.security.getModule("sample");
         if (security == null)
             throw new SecurityException("screenPermException", "Sample Tracking Screen");
-/*
+
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 postConstructor();
             }
         });
-        */
+        
     }
-    /*
+    
     public void postConstructor() {
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
@@ -460,12 +514,10 @@ public class SampleTrackingScreen extends Screen {
 			public void onBeforeDrop(BeforeDropEvent<TreeRow> event) {
 				TreeDataItem dragItem = event.getDragObject().item;
 				TreeDataItem dropTarget = (TreeDataItem)event.getDropTarget();
-				TreeKey dragKey = (TreeKey)dragItem.key;
-				TreeKey dropKey = (TreeKey)dropTarget.key;
+				SampleDataBundle dragKey = (SampleDataBundle)dragItem.data;
+				SampleDataBundle dropKey = (SampleDataBundle)dropTarget.data;
 				try {
-					manager.getSampleItems().moveAnalysis(manager.getSampleItems().getSampleItemAt(dragKey.sampleItemIndex),
-							                              manager.getSampleItems().getSampleItemAt(dropKey.sampleItemIndex), 
-							                              manager.getSampleItems().getAnalysisAt(dragKey.sampleItemIndex).getAnalysisAt(dragKey.analysisIndex));
+					manager.getSampleItems().moveAnalysis(dragKey,dropKey);
 					//atozTree.deleteRow(dragItem);
 					//atozTree.addChildItem(dropTarget, dragItem, dropTarget.getItems().size()-2);
 					TreeDataItem sample = atozTree.getData().get(nav.getSelection());
@@ -521,10 +573,12 @@ public class SampleTrackingScreen extends Screen {
         			return;
         		if(event.getSelectedItem().leafType.equals("item")){
         			try {
-        				TreeKey key = (TreeKey)event.getSelectedItem().key;
-        				if(!(key.sampleId.equals(manager.getSample().getId())))
-        					fetchById(key.sampleId);
-        				sampleItemTab.setData(getSampleItemBundle(manager,key.sampleItemIndex));
+        				SampleDataBundle key = (SampleDataBundle)event.getSelectedItem().data;
+        				if(!key.getSampleManager().getSample().getId().equals(manager.getSample().getId())) {
+        					fetchById(key.getSampleManager().getSample().getId());
+        					sampleItemTab.setData(manager.getSampleItems().getBundleAt(key.getSampleItemIndex()));
+        				}else
+        					sampleItemTab.setData(key);
         				sampleItemTab.draw();
         				showTabs(Tabs.SAMPLE_ITEM);
         				addTestButton.enable(state == State.UPDATE);
@@ -536,10 +590,12 @@ public class SampleTrackingScreen extends Screen {
         		}
         		if(event.getSelectedItem().leafType.equals("analysis")){
         			try {
-        				TreeKey key = (TreeKey)event.getSelectedItem().key;
-        				if(!(key.sampleId.equals(manager.getSample().getId())))
-        					fetchById(key.sampleId);
-        				analysisTab.setData(getAnalysisBundle(manager,key.sampleItemIndex,key.analysisIndex));
+        				SampleDataBundle key = (SampleDataBundle)event.getSelectedItem().data;
+        				if(!key.getSampleManager().getSample().getId().equals(manager.getSample().getId())) {
+        					fetchById(key.getSampleManager().getSample().getId());
+        					analysisTab.setData(manager.getSampleItems().getBundleAt(key.getSampleItemIndex()));
+        				}else
+        					analysisTab.setData(key);
         				analysisTab.draw();
         				showTabs(Tabs.ANALYSIS);
         				addTestButton.enable(false);
@@ -550,23 +606,19 @@ public class SampleTrackingScreen extends Screen {
         			}
         		}
         		if(event.getSelectedItem().leafType.equals("qaevent")) {
-    				TreeKey key = (TreeKey)event.getSelectedItem().key;
-    				if(!(key.sampleId.equals(manager.getSample().getId())))
-    					fetchById(key.sampleId);
-        			if(event.getSelectedItem().parent.leafType.equals("item")) {
-        				try {
-        					qaEventsTab.setData(getSampleItemBundle(manager,key.sampleItemIndex));
-        				}catch(Exception e){
-        					
-        				}
-        			}else{
-        				try {
-        					qaEventsTab.setData(getAnalysisBundle(manager,key.sampleItemIndex,key.analysisIndex));
-        				}catch(Exception e) {
-        					Window.alert(e.getMessage());
-        					e.printStackTrace();
-        				}
-        			}
+    				SampleDataBundle key = (SampleDataBundle)event.getSelectedItem().data;
+    				if(!key.getSampleManager().getSample().getId().equals(manager.getSample().getId())) {     					
+    					fetchById(key.getSampleManager().getSample().getId());
+    					try {
+    						if(event.getSelectedItem().parent.leafType.equals("item"))
+    							key = manager.getSampleItems().getBundleAt(key.getSampleItemIndex());
+    						else
+    							key = manager.getSampleItems().getAnalysisAt(key.getSampleItemIndex()).getBundleAt(key.getAnalysisIndex());
+    					}catch(Exception e) {
+    						
+    					}
+    				}
+        			qaEventsTab.setData(key);
         			qaEventsTab.setManager(manager);
         			qaEventsTab.draw();
         			showTabs(Tabs.QA_EVENTS);
@@ -575,10 +627,12 @@ public class SampleTrackingScreen extends Screen {
         		}
         		if(event.getSelectedItem().leafType.equals("storage")) {
         			try {
-        				TreeKey key = (TreeKey)event.getSelectedItem().key;
-        				if(!(key.sampleId.equals(manager.getSample().getId())))
-        					fetchById(key.sampleId);
-        				storageTab.setData(getSampleItemBundle(manager,key.sampleItemIndex));
+        				SampleDataBundle key = (SampleDataBundle)event.getSelectedItem().data;
+        				if(!key.getSampleManager().getSample().getId().equals(manager.getSample().getId())) {
+        					fetchById(key.getSampleManager().getSample().getId());
+        					storageTab.setData(manager.getSampleItems().getBundleAt(key.getSampleItemIndex()));
+        				}else
+        					storageTab.setData(key);
         				storageTab.draw();
         				showTabs(Tabs.STORAGE);
         				addTestButton.enable(false);
@@ -589,11 +643,12 @@ public class SampleTrackingScreen extends Screen {
         			}
         		}
         		if(event.getSelectedItem().leafType.equals("note")) {
-        			TreeKey key = (TreeKey)event.getSelectedItem().key;
+        			SampleDataBundle key = (SampleDataBundle)event.getSelectedItem().data;
         			if(event.getSelectedItem().parent.leafType.equals("sample")) {
         				try {
-        					if(!(key.sampleId.equals(manager.getSample().getId())))
-        						fetchById(key.sampleId);
+        					if(!key.getSampleManager().getSample().getId().equals(manager.getSample().getId())) {
+        						fetchById(key.getSampleManager().getSample().getId());
+        					}
         					sampleNotesTab.setManager(manager);
         					sampleNotesTab.draw();
         					showTabs(Tabs.SAMPLE_NOTES);
@@ -605,9 +660,11 @@ public class SampleTrackingScreen extends Screen {
         				}
         			}else{
         				try {
-            				if(!(key.sampleId.equals(manager.getSample().getId())))
-            					fetchById(key.sampleId);
-        					analysisNotesTab.setData(getSampleItemBundle(manager,key.sampleItemIndex));
+            				if(!key.getSampleManager().getSample().getId().equals(manager.getSample().getId())){
+            					fetchById(key.getSampleManager().getSample().getId());
+            					analysisNotesTab.setData(manager.getSampleItems().getBundleAt(key.getSampleItemIndex()));
+            				}else
+            					analysisNotesTab.setData(key);
         					analysisNotesTab.draw();
         					showTabs(Tabs.ANALYSIS_NOTES);
         					addTestButton.enable(false);
@@ -620,9 +677,10 @@ public class SampleTrackingScreen extends Screen {
         		}
         		if(event.getSelectedItem().leafType.equals("auxdata")){
         			try {
-        				TreeKey key = (TreeKey)event.getSelectedItem().key;
-        				if(!(key.sampleId.equals(manager.getSample().getId())))
-    						fetchById(key.sampleId);
+        				SampleDataBundle key = (SampleDataBundle)event.getSelectedItem().data;
+        				if(!key.getSampleManager().getSample().getId().equals(manager.getSample().getId())){
+    						fetchById(key.getSampleManager().getSample().getId());
+        				}
         				auxDataTab.setManager(manager);
         				auxDataTab.draw();
         				showTabs(Tabs.AUX_DATA);
@@ -635,10 +693,12 @@ public class SampleTrackingScreen extends Screen {
         		}
         		if(event.getSelectedItem().leafType.equals("result")) {
         			try {
-        				TreeKey key = (TreeKey)event.getSelectedItem().key;
-        				if(!(key.sampleId.equals(manager.getSample().getId())))
-        					fetchById(key.sampleId);
-        				testResultsTab.setData(getAnalysisBundle(manager,key.sampleItemIndex,key.analysisIndex));
+        				SampleDataBundle key = (SampleDataBundle)event.getSelectedItem().data;
+        				if(!key.getSampleManager().getSample().getId().equals(manager.getSample().getId())) {
+        					fetchById(key.getSampleManager().getSample().getId());
+        					testResultsTab.setData(manager.getSampleItems().getBundleAt(key.getSampleItemIndex()));
+        				}else
+        					testResultsTab.setData(key);
         				testResultsTab.draw();
         				showTabs(Tabs.TEST_RESULT);
     					addTestButton.enable(false);
@@ -651,19 +711,144 @@ public class SampleTrackingScreen extends Screen {
         	}
         });
         
-        
-        sampleTab = new SampleTab(def,window);
-        
-        addScreenHandler(sampleTab,new ScreenEventHandler<Object>() {
-        	public void onDataChange(DataChangeEvent event) {
-        		sampleTab.setData(manager);
-        		sampleTab.draw();
-        	}
-        	public void onStateChange(StateChangeEvent<State> event) {
-        		sampleTab.setState(event.getState());
-        	}
+        accessionNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getAccessionNumber());
+        addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                accessionNumber.setValue(getString(manager.getSample().getAccessionNumber()));
+            }
+
+            public void onValueChange(final ValueChangeEvent<Integer> event) {
+                try {
+                    manager.getSample().setAccessionNumber(event.getValue());
+                    manager.validateAccessionNumber(manager.getSample());
+
+                } catch (ValidationErrorsList e) {
+                    showErrors(e);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                accessionNumber.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                              .contains(event.getState()));
+                accessionNumber.setQueryMode(event.getState() == State.QUERY);
+
+                if (EnumSet.of(State.ADD, State.UPDATE, State.QUERY).contains(event.getState()))
+                    accessionNumber.setFocus(true);
+            }
         });
-        
+
+        orderNumber = (TextBox<Integer>)def.getWidget("orderNumber");
+        addScreenHandler(orderNumber, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                orderNumber.setValue(getString(manager.getSample().getOrderId()));
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                manager.getSample().setOrderId(event.getValue());
+                /*
+                if (envOrderImport == null)
+                    envOrderImport = new SampleEnvironmentalImportOrder();
+
+                try {
+                    envOrderImport.importOrderInfo(event.getValue(), manager);
+                    DataChangeEvent.fire(envScreen);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+                */
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                orderNumber.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+            }
+        });
+
+        collectedDate = (CalendarLookUp)def.getWidget(SampleMeta.getCollectionDate());
+        addScreenHandler(collectedDate, new ScreenEventHandler<Datetime>() {
+            public void onDataChange(DataChangeEvent event) {
+                collectedDate.setValue(manager.getSample().getCollectionDate());
+            }
+
+            public void onValueChange(ValueChangeEvent<Datetime> event) {
+                manager.getSample().setCollectionDate(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                collectedDate.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                            .contains(event.getState()));
+                collectedDate.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        collectedTime = (TextBox<Datetime>)def.getWidget(SampleMeta.getCollectionTime());
+        addScreenHandler(collectedTime, new ScreenEventHandler<Datetime>() {
+            public void onDataChange(DataChangeEvent event) {
+
+                collectedTime.setValue(manager.getSample().getCollectionTime());
+            }
+
+            public void onValueChange(ValueChangeEvent<Datetime> event) {
+                manager.getSample().setCollectionTime(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                collectedTime.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                            .contains(event.getState()));
+                collectedTime.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        receivedDate = (CalendarLookUp)def.getWidget(SampleMeta.getReceivedDate());
+        addScreenHandler(receivedDate, new ScreenEventHandler<Datetime>() {
+            public void onDataChange(DataChangeEvent event) {
+                receivedDate.setValue(manager.getSample().getReceivedDate());
+            }
+
+            public void onValueChange(ValueChangeEvent<Datetime> event) {
+                manager.getSample().setReceivedDate(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                receivedDate.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                           .contains(event.getState()));
+                receivedDate.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        statusId = (Dropdown<Integer>)def.getWidget(SampleMeta.getStatusId());
+        addScreenHandler(statusId, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                statusId.setSelection(manager.getSample().getStatusId());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                manager.getSample().setStatusId(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                statusId.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                statusId.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        clientReference = (TextBox)def.getWidget(SampleMeta.getClientReference());
+        addScreenHandler(clientReference, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                clientReference.setValue(manager.getSample().getClientReference());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getSample().setClientReference(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                clientReference.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                              .contains(event.getState()));
+                clientReference.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
         environmentalTab = new EnvironmentalTab(def,window);
         
         addScreenHandler(environmentalTab, new ScreenEventHandler<Object>() {
@@ -708,7 +893,7 @@ public class SampleTrackingScreen extends Screen {
 
         addScreenHandler(sampleItemTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                sampleItemTab.setData(new SampleDataBundle());
+                sampleItemTab.setData(null);
 
                 if (tab == Tabs.SAMPLE_ITEM)
                     sampleItemTab.draw();
@@ -723,7 +908,7 @@ public class SampleTrackingScreen extends Screen {
 
         addScreenHandler(analysisTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                analysisTab.setData(new SampleDataBundle());
+                analysisTab.setData(null);
                 if (tab == Tabs.ANALYSIS){
                     analysisTab.draw();
                 }
@@ -738,7 +923,7 @@ public class SampleTrackingScreen extends Screen {
 
         addScreenHandler(testResultsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                    testResultsTab.setData(new SampleDataBundle());
+                    testResultsTab.setData(null);
 
                     if (tab == Tabs.TEST_RESULT)
                         testResultsTab.draw();
@@ -752,7 +937,7 @@ public class SampleTrackingScreen extends Screen {
         analysisNotesTab = new AnalysisNotesTab(def, window, "anExNotesPanel", "anExNoteButton", "anIntNotesPanel", "anIntNoteButton");
         addScreenHandler(analysisNotesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                analysisNotesTab.setData(new SampleDataBundle());
+                analysisNotesTab.setData(null);
                 if (tab == Tabs.ANALYSIS_NOTES){
                     analysisNotesTab.draw();
                 }
@@ -779,7 +964,7 @@ public class SampleTrackingScreen extends Screen {
         storageTab = new StorageTab(def, window);
         addScreenHandler(storageTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                    storageTab.setData(new SampleDataBundle());
+                    storageTab.setData(null);
 
                    if (tab == Tabs.STORAGE)
                         storageTab.draw();
@@ -793,7 +978,7 @@ public class SampleTrackingScreen extends Screen {
         qaEventsTab = new QAEventsTab(def, window);
         addScreenHandler(qaEventsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                    qaEventsTab.setData(new SampleDataBundle());
+                    qaEventsTab.setData(null);
                     qaEventsTab.setManager(manager);
 
                     if (tab == Tabs.QA_EVENTS)
@@ -834,14 +1019,14 @@ public class SampleTrackingScreen extends Screen {
     		for(int i= 0; i < sm.getSampleItems().count(); i++ ) {
     			TreeDataItem item = new TreeDataItem();
     			item.leafType = "item";
-    			item.key = new TreeKey(sm.getSample().getId(),sm.getSampleItems().getSampleItemAt(i).getId(),-1,i,-1);
+    			item.data = sm.getSampleItems().getBundleAt(i);
     			item.cells.add(new TableDataCell(sm.getSampleItems().getSampleItemAt(i).getItemSequence()+"-"+sm.getSampleItems().getSampleItemAt(i).getContainer()));
     			item.cells.add(new TableDataCell(sm.getSampleItems().getSampleItemAt(i).getTypeOfSample()));
     			if(sm.getSampleItems().getAnalysisAt(i) != null){
     				for(int j = 0; j < sm.getSampleItems().getAnalysisAt(i).count(); j++) {
     					TreeDataItem analysis = new TreeDataItem();
     					analysis.leafType = "analysis";
-    					analysis.key = new TreeKey(sm.getSample().getId(),sm.getSampleItems().getSampleItemAt(i).getId(),sm.getSampleItems().getAnalysisAt(i).getAnalysisAt(j).getId(),i,j);
+    					analysis.data = sm.getSampleItems().getAnalysisAt(i).getBundleAt(j);
     					analysis.cells.add(new TableDataCell(sm.getSampleItems().getAnalysisAt(i).getAnalysisAt(j).getTestName()+" : "+sm.getSampleItems().getAnalysisAt(i).getAnalysisAt(j).getMethodName()));
     					try {
     						analysis.cells.add(new TableDataCell(DictionaryCache.getEntryFromId(sm.getSampleItems().getAnalysisAt(i).getAnalysisAt(j).getStatusId()).getEntry()));
@@ -850,17 +1035,17 @@ public class SampleTrackingScreen extends Screen {
     					}
     					TreeDataItem results = new TreeDataItem();
     					results.leafType = "result";
-    					results.key = new TreeKey(sm.getSample().getId(),sm.getSampleItems().getSampleItemAt(i).getId(),sm.getSampleItems().getAnalysisAt(i).getAnalysisAt(j).getId(),i,j);
+    					results.data = sm.getSampleItems().getAnalysisAt(i).getBundleAt(j);
     					results.cells.add(new TableDataCell("Results"));
     					analysis.addItem(results);
     					TreeDataItem qaevent = new TreeDataItem();
     					qaevent.leafType = "qaevent";
-    					qaevent.key = new TreeKey(sm.getSample().getId(),sm.getSampleItems().getSampleItemAt(i).getId(),sm.getSampleItems().getAnalysisAt(i).getAnalysisAt(j).getId(),i,j);
+    					qaevent.data = sm.getSampleItems().getAnalysisAt(i).getBundleAt(j);
     					qaevent.cells.add(new TableDataCell("QA Events"));
     					analysis.addItem(qaevent);
     					TreeDataItem note = new TreeDataItem();
     					note.leafType = "note";
-    					note.key = new TreeKey(sm.getSample().getId(),sm.getSampleItems().getSampleItemAt(i).getId(),sm.getSampleItems().getAnalysisAt(i).getAnalysisAt(j).getId(),i,j);
+    					note.data = sm.getSampleItems().getAnalysisAt(i).getBundleAt(j);
     					note.cells.add(new TableDataCell("Notes"));
     					analysis.addItem(note);																			
     					item.addItem(analysis);
@@ -868,24 +1053,24 @@ public class SampleTrackingScreen extends Screen {
     			}
     			TreeDataItem storage = new TreeDataItem();
     			storage.leafType = "storage";
-    			storage.key = new TreeKey(sm.getSample().getId(),sm.getSampleItems().getSampleItemAt(i).getId(),-1,i,-1);
+    			storage.data = sm.getSampleItems().getBundleAt(i);
     			storage.cells.add(new TableDataCell("Storage"));
     			item.addItem(storage);
     			TreeDataItem qaevent = new TreeDataItem();
     			qaevent.leafType = "qaevent";
-    			qaevent.key = new TreeKey(sm.getSample().getId(),sm.getSampleItems().getSampleItemAt(i).getId(),-1,i,-1);
+    			qaevent.data = sm.getSampleItems().getBundleAt(i);
     			qaevent.cells.add(new TableDataCell("QA Events"));
     			item.addItem(qaevent);	
     			sample.addItem(item);
     		}
     		TreeDataItem note = new TreeDataItem();
     		note.leafType = "note";
-    		note.key = new TreeKey(sm.getSample().getId(),-1,-1,-1,-1);
+    		note.data = sm.getSample();
     		note.cells.add(new TableDataCell("Notes"));
     		sample.addItem(note);
     		TreeDataItem aux = new TreeDataItem();
     		aux.leafType = "auxdata";
-    		aux.key = new TreeKey(sm.getSample().getId(),-1,-1,-1,-1);
+    		aux.data = sm.getSample();
     		aux.cells.add(new TableDataCell("Aux Data"));
     		sample.addItem(aux);
     	}
@@ -897,13 +1082,13 @@ public class SampleTrackingScreen extends Screen {
     		item.checkForChildren(true);
     		return;
     	}
-    	ArrayList<TreeKey> openItems = new ArrayList<TreeKey>();
+    	ArrayList<SampleDataBundle> openItems = new ArrayList<SampleDataBundle>();
     	checkChildOpen(item,openItems);
     	item.getItems().clear();    	
     	try {
     		loadSampleItem(manager,item);
     		while(openItems.size() > 0) {
-    			TreeKey openKey = openItems.remove(0);
+    			SampleDataBundle openKey = openItems.remove(0);
     			searchForKey(openKey,item);
     		}
     		atozTree.refreshRow(item);
@@ -912,22 +1097,22 @@ public class SampleTrackingScreen extends Screen {
     	}
     }
     
-    private boolean searchForKey(TreeKey key, TreeDataItem item) {
-    	if(key.equals(item.key)){
+    private boolean searchForKey(SampleDataBundle bundle, TreeDataItem item) {
+    	if(bundle == item.data){
     		if(!item.open)
     			item.toggle();
     		return true;
     	}
     	for(TreeDataItem child : item.getItems()) {
-    		if(searchForKey(key,child))
+    		if(searchForKey(bundle,child))
     			break;
     	}
     	return false;
     }
     
-    private void checkChildOpen(TreeDataItem item, ArrayList<TreeKey> openItems) {
+    private void checkChildOpen(TreeDataItem item, ArrayList<SampleDataBundle> openItems) {
     	if(item.open) {
-    		openItems.add((TreeKey)((TreeKey)item.key).clone());
+    		openItems.add((SampleDataBundle)item.data);
     		for(TreeDataItem child : item.getItems()) {
     			checkChildOpen(child,openItems);
     		}
@@ -1002,6 +1187,11 @@ public class SampleTrackingScreen extends Screen {
             Query query;
             query = new Query();
             query.setFields(getQueryFields());
+            QueryData domain = new QueryData();
+            domain.key = SampleMeta.getDomain();
+            domain.query = SampleManager.ENVIRONMENTAL_DOMAIN_FLAG;
+            domain.type = QueryData.Type.STRING;
+            query.getFields().add(domain);
             nav.setQuery(query);
         } else if (state == State.UPDATE) {
             window.setBusy(consts.get("updating"));
@@ -1094,7 +1284,7 @@ public class SampleTrackingScreen extends Screen {
         window.clearStatus();
     }
     
-    
+    /*
     private SampleDataBundle getSampleItemBundle(SampleManager sm, int index) throws Exception{
     	SampleItemManager siManager = sm.getSampleItems();
     	if(index < 0)
@@ -1129,7 +1319,7 @@ public class SampleTrackingScreen extends Screen {
     	
     	
     }
-    
+    */
     private String formatTreeString(String val) {
         if (val == null || "".equals(val))
             return "<>";
@@ -1221,12 +1411,10 @@ public class SampleTrackingScreen extends Screen {
     	TreeDataItem sampleItem = atozTree.getSelection();
        
         try {
-            AnalysisViewDO newAnalysis = new AnalysisViewDO();
-            newAnalysis.setId(getNextTempId());
 
             manager.getSampleItems()
             .getAnalysisAt(key.sampleItemIndex)
-            .addAnalysis(newAnalysis);
+            .addAnalysis();
             
             int analysisIndex = manager.getSampleItems().getAnalysisAt(key.sampleItemIndex).count()-1;
             
@@ -1269,5 +1457,5 @@ public class SampleTrackingScreen extends Screen {
     
    private int getNextTempId() {
 	   return --tempId;
-   }*/
+   }
 }
