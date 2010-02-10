@@ -66,6 +66,7 @@ import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.modules.sample.client.AccessionNumberUtility;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
 import org.openelis.modules.sample.client.AuxDataTab;
@@ -112,6 +113,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
     private QAEventsTab                    qaEventsTab;
     private AuxDataTab                     auxDataTab;
 
+    protected AccessionNumberUtility       accessionNumUtil;
     protected TextBox                      clientReference;
     protected TextBox<Integer>             accessionNumber, orderNumber;
     protected TextBox<Datetime>            collectedTime;
@@ -322,9 +324,19 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             }
 
             public void onValueChange(final ValueChangeEvent<Integer> event) {
+                SampleManager tmpMan;
                 try {
                     manager.getSample().setAccessionNumber(event.getValue());
-                    manager.validateAccessionNumber(manager.getSample());
+                    
+                    if(accessionNumUtil == null)
+                        accessionNumUtil = new AccessionNumberUtility();
+                    
+                    tmpMan = accessionNumUtil.accessionNumberEntered(manager);
+                    
+                    if(tmpMan != manager){
+                        manager = tmpMan;
+                        DataChangeEvent.fire(envScreen);
+                    }
 
                 } catch (ValidationErrorsList e) {
                     showErrors(e);
