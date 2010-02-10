@@ -733,21 +733,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
 
         // default the form
-        try {
-            manager.getSample().setRevision(0);
-            manager.getSample().setStatusId(sampleLoggedInId);
-            manager.getSample()
-                   .setEnteredDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-            manager.getSample()
-                   .setReceivedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-            manager.getSample().setReceivedById(userId);
-            manager.getSample().setNextItemSequence(0);
-            // FIXME may need to default well values here
-
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            return;
-        }
+        manager.setDefaults();
+        manager.getSample().setReceivedById(userId);
 
         setState(Screen.State.ADD);
         DataChangeEvent.fire(this);
