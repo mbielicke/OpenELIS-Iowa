@@ -34,7 +34,6 @@ import org.openelis.remote.AnalysisQAEventManagerRemote;
 @Stateless
 
 @SecurityDomain("openelis")
-//@RolesAllowed("inventory-select")
 public class AnalysisQAEventManagerBean implements AnalysisQAEventManagerRemote {
     
     public AnalysisQaEventManager fetchByAnalysisId(Integer analysisId) throws Exception {

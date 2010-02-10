@@ -30,9 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import javax.ejb.EJB;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -60,9 +58,6 @@ public class ResultBean implements ResultLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager   manager;
-
-    @Resource
-    private SessionContext  ctx;
 
     @EJB
     private DictionaryLocal dictionaryBean;
@@ -109,16 +104,16 @@ public class ResultBean implements ResultLocal {
                                        HashMap<Integer, AnalyteDO> analyteList,
                                        HashMap<Integer, TestAnalyteListItem> testAnalyteList,
                                        ArrayList<ResultValidator> resultValidators) throws Exception {
-        List<AnalyteDO> analytes = null;
-        List<TestResultDO> testResults = null;
-        List<TestAnalyteViewDO> testAnalytes = null;
+        List<AnalyteDO> analytes;
+        List<TestResultDO> testResults;
+        List<TestAnalyteViewDO> testAnalytes;
         int i, j, rg;
         Integer rowGroup;
         TestAnalyteViewDO tado;
         TestAnalyteListItem taLI;
         ArrayList<ResultViewDO> ar;
         ArrayList<TestAnalyteViewDO> tmpList;
-        boolean suppRow = false;
+        boolean suppRow;
 
         // get test_analytes by test id
         Query query = manager.createNamedQuery("TestAnalyte.FetchByTestId");
@@ -176,6 +171,7 @@ public class ResultBean implements ResultLocal {
         if (testAnalyteList == null || testAnalyteList.size() == 0)
             throw new NotFoundException();
 
+        suppRow = false;
         for (i = 0; i < testAnalytes.size(); i++ ) {
             tado = testAnalytes.get(i);
 
@@ -270,10 +266,10 @@ public class ResultBean implements ResultLocal {
                                   HashMap<Integer, AnalyteDO> analyteList,
                                   HashMap<Integer, TestAnalyteListItem> testAnalyteList,
                                   ArrayList<ResultValidator> resultValidators) throws Exception {
-        List<AnalyteDO> analytes = null;
-        List<TestResultDO> testResults = null;
-        List<ResultViewDO> rslts = null;
-        List<TestAnalyteViewDO> testAnalytes = null;
+        List<AnalyteDO> analytes;
+        List<TestResultDO> testResults;
+        List<ResultViewDO> rslts;
+        List<TestAnalyteViewDO> testAnalytes;
         Integer rowGroup;
         TestAnalyteViewDO tado;
         TestAnalyteListItem taLI;
@@ -373,12 +369,12 @@ public class ResultBean implements ResultLocal {
 
         entity = new Result();
         entity.setAnalysisId(data.getAnalysisId());
-        entity.setAnalyteId(data.getAnalyteId());
-        entity.setIsColumn(data.getIsColumn());
-        entity.setIsReportable(data.getIsReportable());
-        entity.setSortOrder(data.getSortOrder());
         entity.setTestAnalyteId(data.getTestAnalyteId());
         entity.setTestResultId(data.getTestResultId());
+        entity.setIsColumn(data.getIsColumn());
+        entity.setSortOrder(data.getSortOrder());
+        entity.setIsReportable(data.getIsReportable());
+        entity.setAnalyteId(data.getAnalyteId());
         entity.setTypeId(data.getTypeId());
         entity.setValue(data.getValue());
 
@@ -398,12 +394,12 @@ public class ResultBean implements ResultLocal {
 
         entity = manager.find(Result.class, data.getId());
         entity.setAnalysisId(data.getAnalysisId());
-        entity.setAnalyteId(data.getAnalyteId());
-        entity.setIsColumn(data.getIsColumn());
-        entity.setIsReportable(data.getIsReportable());
-        entity.setSortOrder(data.getSortOrder());
         entity.setTestAnalyteId(data.getTestAnalyteId());
         entity.setTestResultId(data.getTestResultId());
+        entity.setIsColumn(data.getIsColumn());
+        entity.setSortOrder(data.getSortOrder());
+        entity.setIsReportable(data.getIsReportable());
+        entity.setAnalyteId(data.getAnalyteId());
         entity.setTypeId(data.getTypeId());
         entity.setValue(data.getValue());
 

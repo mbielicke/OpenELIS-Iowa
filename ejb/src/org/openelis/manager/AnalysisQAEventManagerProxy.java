@@ -35,9 +35,11 @@ import org.openelis.local.AnalysisQAEventLocal;
 
 public class AnalysisQAEventManagerProxy {
     public AnalysisQaEventManager fetchByAnalysisId(Integer analysisId) throws Exception {
-        AnalysisQAEventLocal aqel = getAnalysisQAEventLocal();
-        ArrayList<AnalysisQaEventViewDO> items = (ArrayList<AnalysisQaEventViewDO>)aqel.fetchByAnalysisId(analysisId);
-        AnalysisQaEventManager aqm = AnalysisQaEventManager.getInstance();
+        ArrayList<AnalysisQaEventViewDO> items;
+        AnalysisQaEventManager aqm;
+        
+        items = local().fetchByAnalysisId(analysisId);
+        aqm = AnalysisQaEventManager.getInstance();
         aqm.setAnalysisQAEvents(items);
         aqm.setAnalysisId(analysisId);
         
@@ -45,35 +47,36 @@ public class AnalysisQAEventManagerProxy {
     }
     
     public AnalysisQaEventManager add(AnalysisQaEventManager man) throws Exception {
-        System.out.println("inside analysis qa event add");
-        AnalysisQAEventLocal aqel = getAnalysisQAEventLocal();
         AnalysisQaEventViewDO analysisQADO;
+        AnalysisQAEventLocal l;
         
+        l = local();
         for(int i=0; i<man.count(); i++){
             analysisQADO = man.getAnalysisQAAt(i);
             analysisQADO.setAnalysisId(man.getAnalysisId());
             
-            aqel.add(analysisQADO);
+            l.add(analysisQADO);
         }
         
         return man;
     }
     
     public AnalysisQaEventManager update(AnalysisQaEventManager man) throws Exception {
-        AnalysisQAEventLocal aqel = getAnalysisQAEventLocal();
         AnalysisQaEventViewDO analysisQADO;
+        AnalysisQAEventLocal l;
         
+        l = local();
         for(int j=0; j<man.deleteCount(); j++)
-            aqel.delete(man.getDeletedAt(j));
+            l.delete(man.getDeletedAt(j));
         
         for(int i=0; i<man.count(); i++){
             analysisQADO = man.getAnalysisQAAt(i);
             
             if(analysisQADO.getId() == null){
                 analysisQADO.setAnalysisId(man.getAnalysisId());
-                aqel.add(analysisQADO);
+                l.add(analysisQADO);
             }else
-                aqel.update(analysisQADO);
+                l.update(analysisQADO);
         }
 
         return man;
@@ -83,7 +86,7 @@ public class AnalysisQAEventManagerProxy {
         
     }
     
-    private AnalysisQAEventLocal getAnalysisQAEventLocal(){
+    private AnalysisQAEventLocal local(){
         try{
             InitialContext ctx = new InitialContext();
             return (AnalysisQAEventLocal)ctx.lookup("openelis/AnalysisQAEventBean/local");

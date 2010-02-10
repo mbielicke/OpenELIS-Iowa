@@ -38,7 +38,9 @@ public class AuxDataManagerProxy {
     }
     
     public AuxDataManager fetchById(Integer referenceId, Integer referenceTableId) throws Exception {
-        AuxDataDO auxData = new AuxDataDO();
+        AuxDataDO auxData;
+        
+        auxData = new AuxDataDO();
         auxData.setReferenceId(referenceId);
         auxData.setReferenceTableId(referenceTableId);
         

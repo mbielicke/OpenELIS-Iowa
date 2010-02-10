@@ -25,7 +25,7 @@
 */
 package org.openelis.local;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import javax.ejb.Local;
 
@@ -33,7 +33,7 @@ import org.openelis.domain.AnalysisQaEventViewDO;
 
 @Local
 public interface AnalysisQAEventLocal {
-    public List fetchByAnalysisId(Integer analysisId) throws Exception;
+    public ArrayList<AnalysisQaEventViewDO> fetchByAnalysisId(Integer analysisId) throws Exception;
     
     public AnalysisQaEventViewDO add(AnalysisQaEventViewDO data);
     public AnalysisQaEventViewDO update(AnalysisQaEventViewDO data);

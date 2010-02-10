@@ -99,11 +99,11 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         entity = new AuxData();
+        entity.setSortOrder(data.getSortOrder());
         entity.setAuxFieldId(data.getAuxFieldId());
-        entity.setIsReportable(data.getIsReportable());
         entity.setReferenceId(data.getReferenceId());
         entity.setReferenceTableId(data.getReferenceTableId());
-        entity.setSortOrder(data.getSortOrder());
+        entity.setIsReportable(data.getIsReportable());
         entity.setTypeId(data.getTypeId());
         entity.setValue(data.getValue());
         
@@ -123,13 +123,14 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
         entity = manager.find(AuxData.class, data.getId());
         
         entity.setAuxFieldId(data.getAuxFieldId());
-        entity.setIsReportable(data.getIsReportable());
+        entity.setSortOrder(data.getSortOrder());
+        entity.setAuxFieldId(data.getAuxFieldId());
         entity.setReferenceId(data.getReferenceId());
         entity.setReferenceTableId(data.getReferenceTableId());
-        entity.setSortOrder(data.getSortOrder());
+        entity.setIsReportable(data.getIsReportable());
         entity.setTypeId(data.getTypeId());
         entity.setValue(data.getValue());
-
+        
         return data;
     }
 

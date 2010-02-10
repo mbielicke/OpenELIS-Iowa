@@ -35,10 +35,12 @@ import org.openelis.local.SampleQAEventLocal;
 
 public class SampleQAEventManagerProxy {
     public SampleQaEventManager fetchBySampleId(Integer sampleId) throws Exception {
-        SampleQAEventLocal sqel = getSampleQAEventLocal();
-        ArrayList<SampleQaEventViewDO> items = (ArrayList<SampleQaEventViewDO>)sqel.fetchBySampleId(sampleId);
+        ArrayList<SampleQaEventViewDO> items;
+        SampleQaEventManager sqm;
         
-        SampleQaEventManager sqm = SampleQaEventManager.getInstance();
+        items = local().fetchBySampleId(sampleId);
+        
+        sqm = SampleQaEventManager.getInstance();
         sqm.setSampleQAEvents(items);
         sqm.setSampleId(sampleId);
         
@@ -46,34 +48,36 @@ public class SampleQAEventManagerProxy {
     }
     
     public SampleQaEventManager add(SampleQaEventManager man) throws Exception {
-        SampleQAEventLocal sqel = getSampleQAEventLocal();
         SampleQaEventViewDO sampleQADO;
+        SampleQAEventLocal l;
         
+        l = local();
         for(int i=0; i<man.count(); i++){
             sampleQADO = man.getSampleQAAt(i);
             sampleQADO.setSampleId(man.getSampleId());
             
-            sqel.add(sampleQADO);
+            l.add(sampleQADO);
         }
         
         return man;
     }
     
     public SampleQaEventManager update(SampleQaEventManager man) throws Exception {
-        SampleQAEventLocal sqel = getSampleQAEventLocal();
         SampleQaEventViewDO sampleQADO;
+        SampleQAEventLocal l;
         
+        l = local();
         for(int j=0; j<man.deleteCount(); j++)
-            sqel.delete(man.getDeletedAt(j));
+            l.delete(man.getDeletedAt(j));
         
         for(int i=0; i<man.count(); i++){
             sampleQADO = man.getSampleQAAt(i);
             
             if(sampleQADO.getId() == null){
                 sampleQADO.setSampleId(man.getSampleId());
-                sqel.add(sampleQADO);
+                l.add(sampleQADO);
             }else
-                sqel.update(sampleQADO);
+                l.update(sampleQADO);
         }
 
         return man;
@@ -83,7 +87,7 @@ public class SampleQAEventManagerProxy {
         
     }
     
-    private SampleQAEventLocal getSampleQAEventLocal(){
+    private SampleQAEventLocal local(){
         try{
             InitialContext ctx = new InitialContext();
             return (SampleQAEventLocal)ctx.lookup("openelis/SampleQaEventBean/local");

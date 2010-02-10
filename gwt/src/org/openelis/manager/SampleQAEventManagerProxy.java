@@ -41,11 +41,13 @@ public class SampleQAEventManagerProxy {
     }
     
     public SampleQaEventManager add(SampleQaEventManager man) throws Exception {
-        throw new UnsupportedOperationException();
+        assert false : "not supported";
+        return null;
     }
     
     public SampleQaEventManager update(SampleQaEventManager man) throws Exception {
-        throw new UnsupportedOperationException();
+        assert false : "not supported";
+        return null;
     }
     
     public void validate(SampleQaEventManager man, ValidationErrorsList errorsList) throws Exception {

@@ -32,7 +32,6 @@ import javax.naming.InitialContext;
 
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.ResultViewDO;
-import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.ResultLocal;
@@ -42,24 +41,33 @@ import org.openelis.utilcommon.ResultValidator;
 public class AnalysisResultManagerProxy {
     
     public AnalysisResultManager fetchByAnalysisIdForDisplay(Integer analysisId) throws Exception {
-        ArrayList<ArrayList<ResultViewDO>> results = new ArrayList<ArrayList<ResultViewDO>>();
+        ArrayList<ArrayList<ResultViewDO>> results;
+        AnalysisResultManager man;
         
+        results = new ArrayList<ArrayList<ResultViewDO>>();
         local().fetchByAnalysisIdForDisplay(analysisId, results);
-        AnalysisResultManager man = AnalysisResultManager.getInstance();
+        man = AnalysisResultManager.getInstance();
         man.setResults(results);
         
         return man;
     }
     
     public AnalysisResultManager fetchByAnalysisId(Integer analysisId, Integer testId) throws Exception {
-        ArrayList<ArrayList<ResultViewDO>> results = new ArrayList<ArrayList<ResultViewDO>>();
-        HashMap<Integer, TestResultDO> testResultList = new HashMap<Integer, TestResultDO>();
-        HashMap<Integer, AnalyteDO> analyteList = new HashMap<Integer, AnalyteDO>();
-        HashMap<Integer, TestAnalyteListItem> testAnalyteList = new HashMap<Integer, TestAnalyteListItem>();
-        ArrayList<ResultValidator> resultValidators = new ArrayList<ResultValidator>();
+        ArrayList<ArrayList<ResultViewDO>> results;
+        HashMap<Integer, TestResultDO> testResultList;
+        HashMap<Integer, AnalyteDO> analyteList;
+        HashMap<Integer, TestAnalyteListItem> testAnalyteList;
+        ArrayList<ResultValidator> resultValidators;
+        AnalysisResultManager man;
+        
+        results = new ArrayList<ArrayList<ResultViewDO>>();
+        testResultList = new HashMap<Integer, TestResultDO>();
+        analyteList = new HashMap<Integer, AnalyteDO>();
+        testAnalyteList = new HashMap<Integer, TestAnalyteListItem>();
+        resultValidators = new ArrayList<ResultValidator>();
         
         local().fetchByAnalysisId(analysisId, results, testResultList, analyteList, testAnalyteList, resultValidators);
-        AnalysisResultManager man = AnalysisResultManager.getInstance();
+        man = AnalysisResultManager.getInstance();
         man.setResults(results);
         man.setTestResultList(testResultList);
         man.setAnalyteList(analyteList);
@@ -70,15 +78,22 @@ public class AnalysisResultManagerProxy {
         return man;
     }
     
-    public AnalysisResultManager fetchNewByTestId(Integer testId) throws Exception {
-        ArrayList<ArrayList<ResultViewDO>> results = new ArrayList<ArrayList<ResultViewDO>>();
-        HashMap<Integer, TestResultDO> testResultList = new HashMap<Integer, TestResultDO>();
-        HashMap<Integer, AnalyteDO> analyteList = new HashMap<Integer, AnalyteDO>();
-        HashMap<Integer, TestAnalyteListItem> testAnalyteList = new HashMap<Integer, TestAnalyteListItem>();
-        ArrayList<ResultValidator> resultValidators = new ArrayList<ResultValidator>();
+    public AnalysisResultManager fetchByTestId(Integer testId) throws Exception {
+        ArrayList<ArrayList<ResultViewDO>> results;
+        HashMap<Integer, TestResultDO> testResultList;
+        HashMap<Integer, AnalyteDO> analyteList;
+        HashMap<Integer, TestAnalyteListItem> testAnalyteList;
+        ArrayList<ResultValidator> resultValidators;
+        AnalysisResultManager man;
+        
+        results = new ArrayList<ArrayList<ResultViewDO>>();
+        testResultList = new HashMap<Integer, TestResultDO>();
+        analyteList = new HashMap<Integer, AnalyteDO>();
+        testAnalyteList = new HashMap<Integer, TestAnalyteListItem>();
+        resultValidators = new ArrayList<ResultValidator>();
         
         local().fetchByTestIdNoResults(testId, results, testResultList, analyteList, testAnalyteList, resultValidators);
-        AnalysisResultManager man = AnalysisResultManager.getInstance();
+        man = AnalysisResultManager.getInstance();
         man.setResults(results);
         man.setTestResultList(testResultList);
         man.setAnalyteList(analyteList);
@@ -90,15 +105,15 @@ public class AnalysisResultManagerProxy {
     }
     
     public AnalysisResultManager add(AnalysisResultManager man) throws Exception {
-        ResultLocal rl;
         ArrayList<ResultViewDO> list;
         ArrayList<ArrayList<ResultViewDO>> grid;
         ResultViewDO data;
         int i, j, so;
+        ResultLocal l;
 
-        rl = local();
         grid = man.getResults();
         so = 0;
+        l = local();
         for (i = 0; i < man.rowCount(); i++ ) {
             list = grid.get(i);
             for (j = 0; j < list.size(); j++ ) {
@@ -107,18 +122,7 @@ public class AnalysisResultManagerProxy {
                 data.setAnalysisId(man.getAnalysisId());
                 data.setSortOrder( ++so);
                 
-                System.out.println("["+data.getId()+"]");
-                System.out.println("["+data.getAnalysisId()+"]");
-                System.out.println("["+data.getTestAnalyteId()+"]");
-                System.out.println("["+data.getTestResultId()+"]");
-                System.out.println("["+data.getIsColumn()+"]");
-                System.out.println("["+data.getSortOrder()+"]");
-                System.out.println("["+data.getIsReportable()+"]");
-                System.out.println("["+data.getAnalyteId()+"]");
-                System.out.println("["+data.getTypeId()+"]");
-                System.out.println("["+data.getValue()+"]");
-                
-                rl.add(data);
+                l.add(data);
             }
         }
 
@@ -126,18 +130,17 @@ public class AnalysisResultManagerProxy {
     }
     
     public AnalysisResultManager update(AnalysisResultManager man) throws Exception {
-        ResultLocal rl;
         ArrayList<ResultViewDO> list;
         ArrayList<ArrayList<ResultViewDO>> grid;
         ResultViewDO data;
         int i, j, so;
+        ResultLocal l;
 
-        rl = local();
         grid = man.getResults();
         so = 0;
-        
+        l = local();
         for (i = 0; i < man.deleteCount(); i++ ) {
-            rl.delete(man.getDeletedAt(i));
+            l.delete(man.getDeletedAt(i));
         }
 
         for (i = 0; i < man.rowCount(); i++ ) {
@@ -146,12 +149,10 @@ public class AnalysisResultManagerProxy {
                 data = list.get(j);
                 data.setSortOrder( ++so);
                 if (data.getId() == null) {
-                    System.out.println("88888888888888888888888add");
                     data.setAnalysisId(man.getAnalysisId());
-                    rl.add(data);
+                    l.add(data);
                 } else {
-                    System.out.println("7777777777777777update");
-                    rl.update(data);
+                    l.update(data);
                 }
             }
         }
@@ -159,8 +160,9 @@ public class AnalysisResultManagerProxy {
         return man;
     }
     
-    public ArrayList<AnalyteDO> getAlias(Integer analyteId) throws Exception {
-        throw new UnsupportedOperationException();
+    public ArrayList<AnalyteDO> getAliasList(Integer analyteId) throws Exception {
+        assert false : "not supported";
+        return null;
     }
     
     public void validate(AnalysisResultManager man, ValidationErrorsList errorsList) throws Exception {

@@ -38,7 +38,7 @@ public class StorageManagerProxy {
         ArrayList<StorageViewDO> storages;
         StorageManager sm;
         
-        storages = storageLocal().fetchByRefId(tableId, id);
+        storages = local().fetchByRefId(tableId, id);
         
         sm = StorageManager.getInstance();
         sm.setStorages(storages);
@@ -50,13 +50,15 @@ public class StorageManagerProxy {
 
     public StorageManager add(StorageManager man) throws Exception {
         StorageViewDO storage;
+        StorageLocal l;
         
+        l = local();
         for(int i=0; i<man.count(); i++){
             storage = man.getStorageAt(i);
             
             storage.setReferenceId(man.getReferenceId());
             storage.setReferenceTableId(man.getReferenceTableId());
-            storageLocal().add(storage);
+            l.add(storage);
         }
         
         return man;
@@ -64,15 +66,17 @@ public class StorageManagerProxy {
 
     public StorageManager update(StorageManager man) throws Exception {
         StorageViewDO storage;
+        StorageLocal l;
         
+        l = local();
         for(int i=0; i<man.count(); i++){
             storage = man.getStorageAt(i);
             if(storage.getId() == null){
                 storage.setReferenceId(man.getReferenceId());
                 storage.setReferenceTableId(man.getReferenceTableId());
-                storageLocal().add(storage);
+                l.add(storage);
             }else
-                storageLocal().update(storage);
+                l.update(storage);
         }
         
         return man;
@@ -82,7 +86,7 @@ public class StorageManagerProxy {
         
     }
     
-    private StorageLocal storageLocal(){
+    private StorageLocal local(){
         try{
             InitialContext ctx = new InitialContext();
             return (StorageLocal)ctx.lookup("openelis/StorageBean/local");

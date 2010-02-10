@@ -46,7 +46,7 @@ public class ResultService {
         return remote().fetchByAnalysisId(anDO.getId(), anDO.getTestId());
     }
 
-    public AnalysisResultManager fetchNewByTestId(Integer testId) throws Exception {
+    public AnalysisResultManager fetchByTestId(Integer testId) throws Exception {
         try {
             return remote().fetchByTestId(testId);
         } catch (RuntimeException e) {
@@ -54,7 +54,7 @@ public class ResultService {
         }
     }
     
-    public ArrayList<AnalyteDO> getAlias(Query query) throws Exception {
+    public ArrayList<AnalyteDO> getAliasList(Query query) throws Exception {
         ArrayList<Integer> ids = new ArrayList<Integer>();
         ArrayList<QueryData> fields = query.getFields();
         

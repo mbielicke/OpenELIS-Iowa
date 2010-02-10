@@ -40,7 +40,7 @@ public class SampleItemManagerProxy {
         ArrayList<SampleItemViewDO> items;
         SampleItemManager sim;
         
-        items = sampleItemLocal().fetchBySampleId(sampleId);
+        items = local().fetchBySampleId(sampleId);
         sim = SampleItemManager.getInstance();
 
         sim.addSampleItems(items);
@@ -53,13 +53,15 @@ public class SampleItemManagerProxy {
         Integer sampleItemRefTableId;
         SampleItemViewDO itemDO;
         SampleItemListItem item;
+        SampleItemLocal l;
         
         sampleItemRefTableId = ReferenceTable.SAMPLE_ITEM;
         
+        l = local();
         for(int i=0; i<man.count(); i++){
             itemDO = man.getSampleItemAt(i);
             itemDO.setSampleId(man.getSampleId());
-            sampleItemLocal().add(itemDO);
+            l.add(itemDO);
             item = man.getItemAt(i);
             if(item.storage != null){
                 man.getStorageAt(i).setReferenceId(itemDO.getId());
@@ -77,24 +79,24 @@ public class SampleItemManagerProxy {
 
     public SampleItemManager update(SampleItemManager man) throws Exception {
         Integer sampleItemRefTableId;
-        SampleItemLocal sil;
+        SampleItemLocal l;
         SampleItemViewDO itemDO;
         SampleItemListItem item;
         
-        sil = sampleItemLocal();
+        l = local();
         sampleItemRefTableId = ReferenceTable.SAMPLE_ITEM;
         
         for(int j=0; j<man.deleteCount(); j++)
-            sil.delete(man.getDeletedAt(j).sampleItem);
+            l.delete(man.getDeletedAt(j).sampleItem);
         
         for(int i=0; i<man.count(); i++){
             itemDO = man.getSampleItemAt(i);
             
             if(itemDO.getId() == null){
                 itemDO.setSampleId(man.getSampleId());
-                sil.add(itemDO);
+                l.add(itemDO);
             }else
-                sil.update(itemDO);
+                l.update(itemDO);
 
             item = man.getItemAt(i);
             if(item.storage != null){
@@ -116,7 +118,7 @@ public class SampleItemManagerProxy {
         
     }
     
-    private SampleItemLocal sampleItemLocal(){
+    private SampleItemLocal local(){
         try{
             InitialContext ctx = new InitialContext();
             return (SampleItemLocal)ctx.lookup("openelis/SampleItemBean/local");

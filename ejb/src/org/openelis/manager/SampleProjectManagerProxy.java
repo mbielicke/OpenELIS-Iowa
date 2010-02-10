@@ -38,7 +38,7 @@ public class SampleProjectManagerProxy {
         ArrayList<SampleProjectViewDO> projects;
         SampleProjectManager spm;
         
-        projects = sampleProjectLocal().fetchBySampleId(sampleId);
+        projects = local().fetchBySampleId(sampleId);
         
         spm = SampleProjectManager.getInstance();
         spm.setProjects(projects);
@@ -49,12 +49,14 @@ public class SampleProjectManagerProxy {
     
     public SampleProjectManager add(SampleProjectManager man) throws Exception {
         SampleProjectViewDO projectDO;
+        SampleProjectLocal l;
         
+        l = local();
         for(int i=0; i<man.count(); i++){
             projectDO = man.getProjectAt(i);
             projectDO.setSampleId(man.getSampleId());
             
-            sampleProjectLocal().add(projectDO);
+            l.add(projectDO);
         }
         
         return man;
@@ -62,9 +64,11 @@ public class SampleProjectManagerProxy {
     
     public SampleProjectManager update(SampleProjectManager man) throws Exception {
         SampleProjectViewDO projectDO;
+        SampleProjectLocal l;
         
+        l = local();
         for(int j=0; j<man.deleteCount(); j++){
-            sampleProjectLocal().delete(man.getDeletedAt(j));
+            l.delete(man.getDeletedAt(j));
         }
         
         for(int i=0; i<man.count(); i++){
@@ -72,9 +76,9 @@ public class SampleProjectManagerProxy {
             
             if(projectDO.getId() == null){
                 projectDO.setSampleId(man.getSampleId());
-                sampleProjectLocal().add(projectDO);
+                l.add(projectDO);
             }else
-                sampleProjectLocal().update(projectDO);
+                l.update(projectDO);
         }
 
         return man;
@@ -84,7 +88,7 @@ public class SampleProjectManagerProxy {
         
     }
     
-    private SampleProjectLocal sampleProjectLocal(){
+    private SampleProjectLocal local(){
         try{
             InitialContext ctx = new InitialContext();
             return (SampleProjectLocal)ctx.lookup("openelis/SampleProjectBean/local");
