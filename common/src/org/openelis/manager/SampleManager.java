@@ -349,11 +349,6 @@ public class SampleManager implements RPC, HasAuxDataInt {
         return getSampleItems().hasReleasedAnalysis();
     }
 
-    //FIXME put in a screen class for login screens
-    public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
-        proxy().validateAccessionNumber(sampleDO);
-    }
-    
     protected void updateSampleStatus() throws Exception {
         int e = 0, l = 0, c = 0, r = 0;
         SampleItemManager itemMan;

@@ -25,6 +25,8 @@
 */
 package org.openelis.bean;
 
+import java.util.ArrayList;
+
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
@@ -32,18 +34,25 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
+import org.openelis.domain.SystemVariableDO;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.local.LockLocal;
+import org.openelis.local.SampleLocal;
+import org.openelis.local.SystemVariableLocal;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SampleProjectManager;
+import org.openelis.meta.SampleMeta;
 import org.openelis.remote.SampleManagerRemote;
 import org.openelis.utils.SecurityInterceptor;
 
@@ -60,6 +69,8 @@ public class SampleManagerBean  implements SampleManagerRemote {
     private SessionContext ctx;
     
     @EJB private LockLocal lockBean;
+    @EJB private SystemVariableLocal sysVariable;
+    @EJB private SampleLocal sampleLocal;
 
     public SampleManager fetchById(Integer sampleId) throws Exception {
         SampleManager man = SampleManager.fetchById(sampleId);
@@ -150,9 +161,40 @@ public class SampleManagerBean  implements SampleManagerRemote {
         return man;
     }
     
-    public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
-        SampleManager man = SampleManager.getInstance();
-        man.validateAccessionNumber(sampleDO);
+    public SampleManager validateAccessionNumber(SampleDO sampleDO) throws Exception {
+        ValidationErrorsList errorsList;
+        ArrayList<SystemVariableDO> sysVarList;
+        SystemVariableDO sysVarDO;
+        SampleDO checkSample;
+
+        errorsList = new ValidationErrorsList();
+
+        //FIXME check to see if sample is fast login
+        //RETURN THE SAMPLEMANAGER WHEN IT IS FAST LOGIN
+        
+        // get system variable
+        sysVarList = sysVariable.fetchByName("last_accession_number", 1);
+        sysVarDO = sysVarList.get(0);
+
+        // we need to set the error
+        if (sampleDO.getAccessionNumber().compareTo(new Integer(sysVarDO.getValue())) > 0)
+            errorsList.add(new FieldErrorException("accessionNumberNotInUse", SampleMeta.getAccessionNumber()));
+
+        // check for dups
+        try {
+            checkSample = sampleLocal.fetchByAccessionNumber(sampleDO.getAccessionNumber());
+
+            if (checkSample != null && !checkSample.getId().equals(sampleDO.getId()))
+                errorsList.add(new FieldErrorException("accessionNumberDuplicate", SampleMeta.getAccessionNumber()));
+
+        } catch (Exception e) {
+            //noresultexception exception good in this case, no error
+        }
+
+        if (errorsList.size() > 0)
+            throw errorsList;
+        
+        return null;
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
