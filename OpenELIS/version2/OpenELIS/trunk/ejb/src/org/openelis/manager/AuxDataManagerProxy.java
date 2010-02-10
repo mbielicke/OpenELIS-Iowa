@@ -41,9 +41,6 @@ import org.openelis.local.AuxFieldValueLocal;
 public class AuxDataManagerProxy {
     
     public AuxDataManager fetchById(Integer referenceId, Integer referenceTableId) throws Exception {
-        AuxDataLocal l;
-        AuxFieldLocal fl;
-        AuxFieldValueLocal fvl;
         AuxDataViewDO dataDO;
         ArrayList<AuxDataViewDO> data;
         ArrayList<AuxFieldViewDO> fields;
@@ -55,19 +52,15 @@ public class AuxDataManagerProxy {
         
         AuxDataManager m;
         
-        l = local();
-        data = l.fetchById(referenceId, referenceTableId);
-        
-        fl = fieldLocal();
-        fields = fl.fetchByAuxDataRefIdRefTableId(referenceId, referenceTableId); //ordered by groupid
+        data = auxDataLocal().fetchById(referenceId, referenceTableId);
+        fields = auxFieldLocal().fetchByAuxDataRefIdRefTableId(referenceId, referenceTableId); //ordered by groupid
         
         //put the fields in the hash to guarantee they match up with data entries
         fieldHash = new HashMap<Integer, AuxFieldViewDO>();
         for(int i=0; i<fields.size(); i++)
             fieldHash.put(fields.get(i).getId(), fields.get(i));
         
-        fvl = valueLocal();
-        values = fvl.fetchByAuxDataRefIdRefTableId(referenceId, referenceTableId);
+        values = auxValueLocal().fetchByAuxDataRefIdRefTableId(referenceId, referenceTableId);
         
         //split the values up by field id
         valueHash = new HashMap<Integer, ArrayList<AuxFieldValueViewDO>>();
@@ -98,7 +91,7 @@ public class AuxDataManagerProxy {
         AuxDataLocal l;
         AuxDataViewDO data;
 
-        l = local();
+        l = auxDataLocal();
         for (int i = 0; i < man.count(); i++ ) {
             data = man.getAuxDataAt(i);
             data.setReferenceTableId(man.getReferenceTableId());
@@ -115,7 +108,7 @@ public class AuxDataManagerProxy {
         AuxDataLocal l;
         AuxDataViewDO data;
 
-        l = local();
+        l = auxDataLocal();
         for (int j = 0; j < man.deleteCount(); j++ )
             l.delete(man.getDeletedAuxDataAt(j));
 
@@ -139,7 +132,7 @@ public class AuxDataManagerProxy {
         
     }
     
-    private AuxDataLocal local() {
+    private AuxDataLocal auxDataLocal() {
         try {
             InitialContext ctx = new InitialContext();
             return (AuxDataLocal)ctx.lookup("openelis/AuxDataBean/local");
@@ -149,7 +142,7 @@ public class AuxDataManagerProxy {
         }
     }
     
-    private AuxFieldLocal fieldLocal() {
+    private AuxFieldLocal auxFieldLocal() {
         try {
             InitialContext ctx = new InitialContext();
             return (AuxFieldLocal)ctx.lookup("openelis/AuxFieldBean/local");
@@ -159,7 +152,7 @@ public class AuxDataManagerProxy {
         }
     }
     
-    private AuxFieldValueLocal valueLocal() {
+    private AuxFieldValueLocal auxValueLocal() {
         try {
             InitialContext ctx = new InitialContext();
             return (AuxFieldValueLocal)ctx.lookup("openelis/AuxFieldValueBean/local");

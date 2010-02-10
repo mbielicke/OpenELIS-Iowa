@@ -25,6 +25,7 @@
 */
 package org.openelis.bean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -38,6 +39,7 @@ import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.entity.AnalysisQaevent;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.AnalysisQAEventLocal;
+import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 
@@ -47,15 +49,18 @@ public class AnalysisQAEventBean implements AnalysisQAEventLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
     
-    public List fetchByAnalysisId(Integer analysisId) throws Exception {
-        Query query = manager.createNamedQuery("AnalysisQaevent.AnalysisQaeventByAnalysisId");
-        query.setParameter("id", analysisId);
+    public ArrayList<AnalysisQaEventViewDO> fetchByAnalysisId(Integer analysisId) throws Exception {
+        Query query;
+        List returnList;
         
-        List returnList = query.getResultList();
+        query = manager.createNamedQuery("AnalysisQaevent.AnalysisQaeventByAnalysisId");
+        query.setParameter("id", analysisId);
+        returnList = query.getResultList();
+        
         if(returnList.size() == 0)
             throw new NotFoundException();
         
-        return returnList;
+        return DataBaseUtil.toArrayList(returnList);
     }
     
     public AnalysisQaEventViewDO add(AnalysisQaEventViewDO data) {
@@ -64,10 +69,10 @@ public class AnalysisQAEventBean implements AnalysisQAEventLocal {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         entity = new AnalysisQaevent();
-        entity.setIsBillable(data.getIsBillable());
-        entity.setQaeventId(data.getQaEventId());
         entity.setAnalysisId(data.getAnalysisId());
+        entity.setQaeventId(data.getQaEventId());
         entity.setTypeId(data.getTypeId());
+        entity.setIsBillable(data.getIsBillable());
         
        manager.persist(entity);
        data.setId(entity.getId());
@@ -85,10 +90,10 @@ public class AnalysisQAEventBean implements AnalysisQAEventLocal {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         entity = manager.find(AnalysisQaevent.class, data.getId());
-        entity.setIsBillable(data.getIsBillable());
-        entity.setQaeventId(data.getQaEventId());
         entity.setAnalysisId(data.getAnalysisId());
+        entity.setQaeventId(data.getQaEventId());
         entity.setTypeId(data.getTypeId());
+        entity.setIsBillable(data.getIsBillable());
         
         return data;
     }

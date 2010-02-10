@@ -41,11 +41,13 @@ public class AnalysisQAEventManagerProxy {
     }
     
     public AnalysisQaEventManager add(AnalysisQaEventManager man) throws Exception {
-        throw new UnsupportedOperationException();
+        assert false : "not supported";
+        return null;
     }
     
     public AnalysisQaEventManager update(AnalysisQaEventManager man) throws Exception {
-        throw new UnsupportedOperationException();
+        assert false : "not supported";
+        return null;
     }
     
     public void validate(AnalysisQaEventManager man, ValidationErrorsList errorsList) throws Exception {

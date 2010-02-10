@@ -38,7 +38,7 @@ public class SampleOrganizationManagerProxy {
         ArrayList<SampleOrganizationViewDO> orgs;
         SampleOrganizationManager som;
         
-        orgs = sampleOrganizationLocal().fetchBySampleId(sampleId);
+        orgs = local().fetchBySampleId(sampleId);
         
         som = SampleOrganizationManager.getInstance();
         som.setOrganizations(orgs);
@@ -49,12 +49,14 @@ public class SampleOrganizationManagerProxy {
     
     public SampleOrganizationManager add(SampleOrganizationManager man) throws Exception {
         SampleOrganizationViewDO orgDO;
+        SampleOrganizationLocal l;
         
+        l = local();
         for(int i=0; i<man.count(); i++){
             orgDO = man.getOrganizationAt(i);
             orgDO.setSampleId(man.getSampleId());
             
-            sampleOrganizationLocal().add(orgDO);
+            l.add(orgDO);
         }
         
         return man;
@@ -62,9 +64,11 @@ public class SampleOrganizationManagerProxy {
     
     public SampleOrganizationManager update(SampleOrganizationManager man) throws Exception {
         SampleOrganizationViewDO orgDO;
+        SampleOrganizationLocal l;
         
+        l = local();
         for(int j=0; j<man.deleteCount(); j++){
-            sampleOrganizationLocal().delete(man.getDeletedAt(j));
+            l.delete(man.getDeletedAt(j));
         }
         
         for(int i=0; i<man.count(); i++){
@@ -72,9 +76,9 @@ public class SampleOrganizationManagerProxy {
             
             if(orgDO.getId() == null){
                 orgDO.setSampleId(man.getSampleId());
-                sampleOrganizationLocal().add(orgDO);
+                l.add(orgDO);
             }else
-                sampleOrganizationLocal().update(orgDO);
+                l.update(orgDO);
         }
 
         return man;
@@ -89,7 +93,7 @@ public class SampleOrganizationManagerProxy {
         
     }
     
-    private SampleOrganizationLocal sampleOrganizationLocal(){
+    private SampleOrganizationLocal local(){
         try{
             InitialContext ctx = new InitialContext();
             return (SampleOrganizationLocal)ctx.lookup("openelis/SampleOrganizationBean/local");

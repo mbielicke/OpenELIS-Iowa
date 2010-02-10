@@ -25,6 +25,7 @@
 */
 package org.openelis.bean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -38,6 +39,7 @@ import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.entity.SampleQaevent;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.SampleQAEventLocal;
+import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 
@@ -47,15 +49,18 @@ public class SampleQaEventBean implements SampleQAEventLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
     
-    public List fetchBySampleId(Integer sampleId) throws Exception {
-        Query query = manager.createNamedQuery("SampleQaevent.SampleQaeventBySampleId");
-        query.setParameter("id", sampleId);
+    public ArrayList<SampleQaEventViewDO> fetchBySampleId(Integer sampleId) throws Exception {
+        Query query;
+        List returnList;
         
-        List returnList = query.getResultList();
+        query = manager.createNamedQuery("SampleQaevent.SampleQaeventBySampleId");
+        query.setParameter("id", sampleId);
+        returnList = query.getResultList();
+        
         if(returnList.size() == 0)
             throw new NotFoundException();
         
-        return returnList;
+        return DataBaseUtil.toArrayList(returnList);
     }
     
     public void add(SampleQaEventViewDO data) {
@@ -64,10 +69,10 @@ public class SampleQaEventBean implements SampleQAEventLocal {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         entity = new SampleQaevent();
-        entity.setIsBillable(data.getIsBillable());
-        entity.setQaeventId(data.getQaEventId());
         entity.setSampleId(data.getSampleId());
+        entity.setQaeventId(data.getQaEventId());
         entity.setTypeId(data.getTypeId());
+        entity.setIsBillable(data.getIsBillable());
         
        manager.persist(entity);
        data.setId(entity.getId());
@@ -82,10 +87,10 @@ public class SampleQaEventBean implements SampleQAEventLocal {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         entity = manager.find(SampleQaevent.class, data.getId());
-        entity.setIsBillable(data.getIsBillable());
-        entity.setQaeventId(data.getQaEventId());
         entity.setSampleId(data.getSampleId());
+        entity.setQaeventId(data.getQaEventId());
         entity.setTypeId(data.getTypeId());
+        entity.setIsBillable(data.getIsBillable());
     }
     
     public void delete(SampleQaEventViewDO data) {
