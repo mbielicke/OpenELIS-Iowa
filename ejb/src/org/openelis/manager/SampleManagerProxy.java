@@ -38,6 +38,7 @@ import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalysisLocal;
 import org.openelis.local.DictionaryLocal;
@@ -120,12 +121,16 @@ public class SampleManagerProxy {
             anaMap.put(siDO.getId(), am);
         }
 
-        // fetch analyses for update
-        analyses = (ArrayList<AnalysisViewDO>)analysisLocal().fetchBySampleId(sampleId);
-        for (int i = 0; i < analyses.size(); i++ ) {
-            anDO = analyses.get(i);
-            am = anaMap.get(anDO.getSampleItemId());
-            am.addAnalysis(anDO);
+        // fetch analyses
+        try{
+            analyses = (ArrayList<AnalysisViewDO>)analysisLocal().fetchBySampleId(sampleId);
+            for (int i = 0; i < analyses.size(); i++ ) {
+                anDO = analyses.get(i);
+                am = anaMap.get(anDO.getSampleItemId());
+                am.addAnalysis(anDO);
+            }
+        }catch(NotFoundException e){
+            //ignore
         }
 
         return sm;
@@ -277,20 +282,24 @@ public class SampleManagerProxy {
         }
 
         // fetch analyses for update
-        analyses = (ArrayList<AnalysisViewDO>)analysisLocal().fetchBySampleId(sampleId);
-        testCache = new HashMap<Integer, TestManager>();
-        for (int i = 0; i < analyses.size(); i++ ) {
-            anDO = analyses.get(i);
-
-            am = anaMap.get(anDO.getSampleItemId());
-            addedIndex = am.addAnalysis(anDO);
-
-            tm = testCache.get(anDO.getTestId());
-            if (tm == null) {
-                tm = TestManager.fetchWithPrepTestsSampleTypes(anDO.getTestId());
-                testCache.put(anDO.getTestId(), tm);
+        try{
+            analyses = (ArrayList<AnalysisViewDO>)analysisLocal().fetchBySampleId(sampleId);
+            testCache = new HashMap<Integer, TestManager>();
+            for (int i = 0; i < analyses.size(); i++ ) {
+                anDO = analyses.get(i);
+    
+                am = anaMap.get(anDO.getSampleItemId());
+                addedIndex = am.addAnalysis(anDO);
+    
+                tm = testCache.get(anDO.getTestId());
+                if (tm == null) {
+                    tm = TestManager.fetchWithPrepTestsSampleTypes(anDO.getTestId());
+                    testCache.put(anDO.getTestId(), tm);
+                }
+                am.setTestAt(tm, addedIndex);
             }
-            am.setTestAt(tm, addedIndex);
+        }catch(NotFoundException e){
+            //ignore
         }
 
         return sm;

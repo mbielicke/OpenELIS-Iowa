@@ -74,7 +74,7 @@ public class AnalysisManagerProxy {
         cancelledStatusId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
         
         if(man.count() == 0)
-            errorsList.add(new FormErrorException("minOneAnalysisException", sampleItemSequence));
+            errorsList.add(new FormErrorWarning("minOneAnalysisException", sampleItemSequence));
         
         for(int i=0; i<man.count(); i++){
             analysisDO = man.getAnalysisAt(i);
