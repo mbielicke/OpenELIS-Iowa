@@ -35,9 +35,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
-import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalysisLocal;
@@ -45,7 +43,6 @@ import org.openelis.local.DictionaryLocal;
 import org.openelis.local.SampleItemLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SystemVariableLocal;
-import org.openelis.meta.SampleMeta;
 
 public class SampleManagerProxy {
     public SampleManager fetchById(Integer sampleId) throws Exception {
@@ -319,41 +316,6 @@ public class SampleManagerProxy {
     
     public Datetime getCurrentDatetime(byte begin, byte end) throws Exception {
         return Datetime.getInstance(begin,end);    
-    }
-
-    public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
-        ValidationErrorsList errorsList;
-
-        SystemVariableLocal svl = sysVariableLocal();
-        ArrayList<SystemVariableDO> sysVarList;
-        SystemVariableDO sysVarDO;
-        SampleDO checkSample;
-
-        errorsList = new ValidationErrorsList();
-
-        // get system variable
-        sysVarList = svl.fetchByName("last_accession_number", 1);
-        sysVarDO = sysVarList.get(0);
-
-        // we need to set the error
-        if (sampleDO.getAccessionNumber().compareTo(new Integer(sysVarDO.getValue())) > 0)
-            errorsList.add(new FieldErrorException("accessionNumberNotInUse",
-                                                   SampleMeta.getAccessionNumber()));
-
-        // check for dups
-        try {
-            checkSample = sampleLocal().fetchByAccessionNumber(sampleDO.getAccessionNumber());
-
-            if (checkSample != null && !checkSample.getId().equals(sampleDO.getId()))
-                errorsList.add(new FieldErrorException("accessionNumberDuplicate",
-                                                       SampleMeta.getAccessionNumber()));
-
-        } catch (Exception e) {
-            // resultnotfound exception good in this case, no error
-        }
-
-        if (errorsList.size() > 0)
-            throw errorsList;
     }
 
     public void validate(SampleManager man, ValidationErrorsList errorsList) throws Exception {
