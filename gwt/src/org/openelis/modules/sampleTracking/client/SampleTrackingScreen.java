@@ -720,10 +720,10 @@ public class SampleTrackingScreen extends Screen {
             public void onValueChange(final ValueChangeEvent<Integer> event) {
                 try {
                     manager.getSample().setAccessionNumber(event.getValue());
-                    manager.validateAccessionNumber(manager.getSample());
+                    //FIXME not sure if this screen needs to validate this manager.validateAccessionNumber(manager.getSample());
 
-                } catch (ValidationErrorsList e) {
-                    showErrors(e);
+                //} catch (ValidationErrorsList e) {
+               //     showErrors(e);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }

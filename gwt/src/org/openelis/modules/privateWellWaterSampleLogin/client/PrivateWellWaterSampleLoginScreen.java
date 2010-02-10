@@ -65,6 +65,7 @@ import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.modules.sample.client.AccessionNumberUtility;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
 import org.openelis.modules.sample.client.AuxDataTab;
@@ -89,53 +90,55 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
 
-public class PrivateWellWaterSampleLoginScreen extends Screen implements
-                                                             HasActionHandlers {
+public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActionHandlers {
 
     public enum Tabs {
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
         AUX_DATA
     };
 
-    protected Tabs                    tab;
-    private Integer                   sampleLoggedInId, sampleErrorStatusId, sampleReleasedId,
-                                      userId;
+    protected Tabs                         tab;
+    private Integer                        sampleLoggedInId, sampleErrorStatusId, sampleReleasedId,
+                    userId;
 
-    private SampleItemAnalysisTreeTab treeTab;
-    private PrivateWellTab            privateWellTab;
-    private SampleItemTab             sampleItemTab;
-    private AnalysisTab               analysisTab;
-    private ResultTab                 testResultsTab;
-    private AnalysisNotesTab          analysisNotesTab;
-    private SampleNotesTab            sampleNotesTab;
-    private StorageTab                storageTab;
-    private QAEventsTab               qaEventsTab;
-    private AuxDataTab                auxDataTab;
+    private SampleItemAnalysisTreeTab      treeTab;
+    private PrivateWellTab                 privateWellTab;
+    private SampleItemTab                  sampleItemTab;
+    private AnalysisTab                    analysisTab;
+    private ResultTab                      testResultsTab;
+    private AnalysisNotesTab               analysisNotesTab;
+    private SampleNotesTab                 sampleNotesTab;
+    private StorageTab                     storageTab;
+    private QAEventsTab                    qaEventsTab;
+    private AuxDataTab                     auxDataTab;
 
-    protected TextBox                 clientReference;
-    protected TextBox<Integer>        accessionNumber, orderNumber;
-    protected TextBox<Datetime>       collectedTime;
-    protected Dropdown<Integer>       statusId;
-    protected CalendarLookUp          collectedDate, receivedDate;
-    protected AppButton               queryButton, addButton, updateButton, nextButton, prevButton,
-                                      commitButton, abortButton;
-    protected MenuItem                history;
-    protected TabPanel                tabs;
+    protected AccessionNumberUtility       accessionNumUtil;
+    protected TextBox                      clientReference;
+    protected TextBox<Integer>             accessionNumber, orderNumber;
+    protected TextBox<Datetime>            collectedTime;
+    protected Dropdown<Integer>            statusId;
+    protected CalendarLookUp               collectedDate, receivedDate;
+    protected AppButton                    queryButton, addButton, updateButton, nextButton,
+                    prevButton, commitButton, abortButton;
+    protected MenuItem                     history;
+    protected TabPanel                     tabs;
 
-    ScreenNavigator                   nav;
-    private SecurityModule            security;
+    ScreenNavigator                        nav;
+    private SecurityModule                 security;
 
-    protected SamplePrivateWellImportOrder  wellOrderImport;
-    private SampleManager             manager;
+    protected SamplePrivateWellImportOrder wellOrderImport;
+    private SampleManager                  manager;
 
     public PrivateWellWaterSampleLoginScreen() throws Exception {
         // Call base to get ScreenDef and draw screen
         super((ScreenDefInt)GWT.create(PrivateWellWaterSampleLoginDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.sample.server.SampleService");
+        service = new ScreenService(
+                                    "controller?service=org.openelis.modules.sample.server.SampleService");
 
         security = OpenELIS.security.getModule("sampleprivatewell");
         if (security == null)
-            throw new SecurityException("screenPermException", "Private Well Water Sample Login Screen");
+            throw new SecurityException("screenPermException",
+                                        "Private Well Water Sample Login Screen");
 
         userId = OpenELIS.security.getSystemUserId();
 
@@ -192,7 +195,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                     queryButton.enable(false);
             }
         });
-        
+
         prevButton = (AppButton)def.getWidget("previous");
         addScreenHandler(prevButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -203,7 +206,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                 prevButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
-        
+
         nextButton = (AppButton)def.getWidget("next");
         addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -259,7 +262,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                     updateButton.enable(false);
 
             }
-        });        
+        });
 
         commitButton = (AppButton)def.getWidget("commit");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
@@ -284,7 +287,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                                           .contains(event.getState()));
             }
         });
-        
+
         history = (MenuItem)def.getWidget("history");
         addScreenHandler(history, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -296,9 +299,9 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                 history.enable(EnumSet.of(State.DISPLAY, State.UPDATE).contains(event.getState()));
             }
         });
-        
+
         //
-        //screen fields
+        // screen fields
         //
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
             public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
@@ -308,9 +311,9 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                 }
             }
         });
-        
+
         final PrivateWellWaterSampleLoginScreen wellScreen = this;
-        
+
         accessionNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -318,9 +321,19 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
             }
 
             public void onValueChange(final ValueChangeEvent<Integer> event) {
+                SampleManager tmpMan;
                 try {
                     manager.getSample().setAccessionNumber(event.getValue());
-                    manager.validateAccessionNumber(manager.getSample());
+
+                    if (accessionNumUtil == null)
+                        accessionNumUtil = new AccessionNumberUtility();
+
+                    tmpMan = accessionNumUtil.accessionNumberEntered(manager);
+
+                    if (tmpMan != manager) {
+                        manager = tmpMan;
+                        DataChangeEvent.fire(wellScreen);
+                    }
 
                 } catch (ValidationErrorsList e) {
                     showErrors(e);
@@ -464,7 +477,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                 window.clearStatus();
             }
         });
-        
+
         // Set up tabs to recieve State Change events from the main Screen.
         // analysis tree section of the screen
         treeTab = new SampleItemAnalysisTreeTab(def, window, wellScreen);
@@ -642,7 +655,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                     ActionEvent.fire(wellScreen, event.getAction(), event.getData());
             }
         });
-        
+
         nav = new ScreenNavigator(def) {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
@@ -684,7 +697,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                 }
                 return model;
             }
-        };        
+        };
     }
 
     protected void query() {

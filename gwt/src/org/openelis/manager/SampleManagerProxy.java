@@ -86,10 +86,6 @@ public class SampleManagerProxy {
         return Calendar.getCurrentDatetime(begin, end);
     }
 
-    public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
-        service.call("validateAccessionNumber", sampleDO);
-    }
-    
     public void validate(SampleManager man, ValidationErrorsList errorsList) throws Exception {
         //revalidate accession number
         validateAccessionNumber(man.getSample(), errorsList);
