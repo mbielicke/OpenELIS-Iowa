@@ -135,10 +135,6 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                     } else
                         method.setSelections(new ArrayList());
 
-                    //FIXME bundle.sampleItemManager.setChangedAt(
-                    //                                      true,
-                    //                                      bundle.sampleItemManager.getIndex(bundle.sampleItemDO));
-
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
