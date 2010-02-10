@@ -117,7 +117,7 @@ public class AnalysisResultManager implements RPC {
     }
 
     public static AnalysisResultManager fetchForUpdate(Integer testId) throws Exception {
-        return proxy().fetchNewByTestId(testId);
+        return proxy().fetchByTestId(testId);
     }
 
     public AnalysisResultManager add() throws Exception {
@@ -225,7 +225,7 @@ public class AnalysisResultManager implements RPC {
             }
 
             try {
-                aliasList = proxy().getAlias(list);
+                aliasList = proxy().getAliasList(list);
             } catch (Exception e) {
                 aliasList = new ArrayList<AnalyteDO>();
             }
