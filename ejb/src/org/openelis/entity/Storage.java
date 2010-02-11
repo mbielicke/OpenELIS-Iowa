@@ -60,7 +60,21 @@ import org.openelis.utils.Auditable;
                         "parentLoc.name, childLoc.storageUnit.description)"
                       + " from Storage s left join s.storageLocation childLoc "
                       + " left join childLoc.parentStorageLocation parentLoc where s.referenceTableId = :referenceTable and "
-                      + " s.referenceId = :id ORDER BY s.checkout DESC")
+                      + " s.referenceId = :id ORDER BY s.checkout DESC"),
+     @NamedQuery(name = "Storage.FetchCurrentByLocationId",
+                query = "select new org.openelis.domain.StorageViewDO(s.id, s.referenceId, s.referenceTableId," +
+                        "s.storageLocationId, s.checkin, s.checkout, s.systemUserId, childLoc.name, childLoc.location," +
+                        "'', childLoc.storageUnit.description)"
+                      + " from Storage s left join s.storageLocation childLoc"
+                      +	" where childLoc.id IN (select sl.id from StorageLocation sl where sl.id = :id or sl.parentStorageLocationId = :id) "
+                      + " and s.checkout is null ORDER BY s.checkin DESC"),
+     @NamedQuery(name = "Storage.FetchHistoryByLocationId",
+                query = "select new org.openelis.domain.StorageViewDO(s.id, s.referenceId, s.referenceTableId," +
+                        "s.storageLocationId, s.checkin, s.checkout, s.systemUserId, childLoc.name, childLoc.location," +
+                        "'', childLoc.storageUnit.description)"
+                      + " from Storage s left join s.storageLocation childLoc"
+                      + " where childLoc.id IN (select sl.id from StorageLocation sl where sl.id = :id or sl.parentStorageLocationId = :id) "
+                      + " and s.checkout is not null ORDER BY s.checkout DESC")                 
 })
 
 @Entity

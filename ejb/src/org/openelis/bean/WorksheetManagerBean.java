@@ -85,6 +85,7 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
+            throw e;
         }
 
         return man;
@@ -106,6 +107,7 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
+            throw e;
         }
 
         return man;

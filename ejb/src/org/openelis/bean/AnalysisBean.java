@@ -31,12 +31,14 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.entity.Analysis;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.AnalysisLocal;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -75,6 +77,22 @@ public class AnalysisBean implements AnalysisLocal{
             throw new NotFoundException();
         
         return DataBaseUtil.toArrayList(returnList);
+    }
+    
+    public AnalysisViewDO fetchById(Integer id) throws Exception {
+        Query query;
+        AnalysisViewDO data;
+        
+        query = manager.createNamedQuery("Analysis.FetchById");
+        query.setParameter("id", id);
+        try {
+            data = (AnalysisViewDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
     }
     
     public AnalysisViewDO add(AnalysisViewDO data) {

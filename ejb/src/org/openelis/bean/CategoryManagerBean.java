@@ -82,6 +82,7 @@ public class CategoryManagerBean implements CategoryManagerRemote {
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
+            throw e;
         }
 
         return man;
@@ -103,6 +104,7 @@ public class CategoryManagerBean implements CategoryManagerRemote {
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
+            throw e;
         }
 
         return man;

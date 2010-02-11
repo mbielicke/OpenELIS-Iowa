@@ -32,8 +32,9 @@ import org.openelis.gwt.common.RPC;
 public class StorageLocationManager implements RPC {
 
     private static final long serialVersionUID = 1L;
-
-    protected StorageLocationViewDO storageLocation;
+    
+    protected Integer                     storageLocationId;
+    protected StorageLocationViewDO       storageLocation;
     protected StorageLocationChildManager children;
     
     protected transient static StorageLocationManagerProxy proxy; 
@@ -58,6 +59,14 @@ public class StorageLocationManager implements RPC {
         
         return manager;
     }
+    
+    public Integer getStorageLocationId() {
+        return storageLocationId;
+    }
+
+    public void setStorageLocationId(Integer storageLocationId) {
+        this.storageLocationId = storageLocationId;
+    }
 
     public StorageLocationViewDO getStorageLocation() {
         return storageLocation;
@@ -68,7 +77,7 @@ public class StorageLocationManager implements RPC {
     }
     
     // service methods
-    public static StorageLocationManager fetchById(Integer id) throws Exception {
+    public static StorageLocationManager fetchById(Integer id) throws Exception {        
         return proxy().fetchById(id);
     }
     
@@ -85,11 +94,11 @@ public class StorageLocationManager implements RPC {
     }
     
     public StorageLocationManager fetchForUpdate() throws Exception {
-        return proxy().fetchForUpdate(storageLocation.getId());
+        return proxy().fetchForUpdate(storageLocationId);
     }
     
     public StorageLocationManager abortUpdate() throws Exception {
-        return proxy().abortUpdate(storageLocation.getId());
+        return proxy().abortUpdate(storageLocationId);
     }
     
     public void validate() throws Exception {

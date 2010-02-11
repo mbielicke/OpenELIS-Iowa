@@ -78,6 +78,7 @@ public class QcManagerBean implements QcManagerRemote {
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
+            throw e;
         }
 
         return man;
@@ -85,7 +86,7 @@ public class QcManagerBean implements QcManagerRemote {
 
     public QcManager update(QcManager man) throws Exception {
         UserTransaction ut;
-        
+
         checkSecurity(ModuleFlags.UPDATE);
 
         man.validate();
@@ -93,12 +94,13 @@ public class QcManagerBean implements QcManagerRemote {
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.validateLock(ReferenceTable.QC, man.getQc().getId());        
+            lockBean.validateLock(ReferenceTable.QC, man.getQc().getId());
             man.update();
             lockBean.giveUpLock(ReferenceTable.QC, man.getQc().getId());
-        ut.commit();
+            ut.commit();
         } catch (Exception e) {
             ut.rollback();
+            throw e;
         }
 
         return man;

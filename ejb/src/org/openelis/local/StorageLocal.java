@@ -30,10 +30,13 @@ import java.util.ArrayList;
 import javax.ejb.Local;
 
 import org.openelis.domain.StorageViewDO;
+import org.openelis.gwt.common.data.QueryData;
 
 @Local
 public interface StorageLocal {
     public ArrayList<StorageViewDO> fetchByRefId(Integer refTableId, Integer refId) throws Exception;
+    public ArrayList<StorageViewDO> fetchCurrentByLocationId(Integer id) throws Exception;
+    public ArrayList<StorageViewDO> fetchHistoryByLocationId(ArrayList<QueryData> fields, int first, int max) throws Exception;
     public StorageViewDO update(StorageViewDO data) throws Exception;
     public StorageViewDO add(StorageViewDO data) throws Exception;
     public void delete(StorageViewDO data) throws Exception;

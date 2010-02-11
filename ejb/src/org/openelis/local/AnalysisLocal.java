@@ -34,7 +34,7 @@ import org.openelis.domain.AnalysisViewDO;
 
 @Local
 public interface AnalysisLocal {
-    
+    public AnalysisViewDO fetchById(Integer id) throws Exception;
     public ArrayList<AnalysisViewDO> fetchBySampleId(Integer sampleId) throws Exception;
     public ArrayList<AnalysisViewDO> fetchBySampleItemId(Integer sampleItemId) throws Exception;
     

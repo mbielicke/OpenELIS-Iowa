@@ -25,12 +25,18 @@
 */
 package org.openelis.bean;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.persistence.PersistenceContext;
+import javax.transaction.UserTransaction;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.SecurityModule.ModuleFlags;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.manager.StorageManager;
 import org.openelis.remote.StorageManagerRemote;
 
@@ -38,11 +44,39 @@ import org.openelis.remote.StorageManagerRemote;
 @TransactionManagement(TransactionManagementType.BEAN)
 
 @SecurityDomain("openelis")
+@RolesAllowed("storage-select")
 public class StorageManagerBean implements StorageManagerRemote{
     
     @PersistenceContext(name = "openelis")
     
     public StorageManager fetchById(Integer referenceTableId, Integer referenceId) throws Exception {
         return StorageManager.fetchByRefTableRefId(referenceTableId, referenceId);
+    }
+    
+    public StorageManager fetchCurrentByLocationId(Integer id) throws Exception {        
+        return StorageManager.fetchCurrentByLocationId(id);
+    }
+
+    public StorageManager fetchHistoryByLocationId(Query query, Integer max) throws Exception { 
+        QueryData field;
+        
+        field = new QueryData();
+        field.key = "max";
+        field.query = Integer.toString(max);
+        field.type = QueryData.Type.INTEGER;
+        
+        query.setFields(field);
+        return StorageManager.fetchHistoryByLocationId(query);
+    }
+
+    public StorageManager update(StorageManager man) throws Exception {
+        man.validate();
+        try {     
+            man.update();
+        } catch (Exception e) {
+            throw e;
+        }
+
+        return man;
     }
 }

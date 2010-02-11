@@ -7,7 +7,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 public class StorageViewDO extends StorageDO {
     private static final long serialVersionUID = 1L;
     
-    protected String storageLocation, userName;
+    protected String storageLocation, userName, itemDescription;
 
     public StorageViewDO(){
         
@@ -19,8 +19,7 @@ public class StorageViewDO extends StorageDO {
       
         super(id, referenceId, referenceTableId, storageLocationId, checkin, checkout, systemUserId);
       
-        setStorageLocation(DataBaseUtil.formatStorageLocation(storageLocName, StorageLocLocation, unitDesc, parentLocName));
-        
+        setStorageLocation(DataBaseUtil.formatStorageLocation(storageLocName, StorageLocLocation, unitDesc, parentLocName));        
     }
     
     public String getStorageLocation() {
@@ -37,5 +36,13 @@ public class StorageViewDO extends StorageDO {
 
     public void setUserName(String userName) {
         this.userName = DataBaseUtil.trim(userName);
+    }
+
+    public String getItemDescription() {
+        return itemDescription;
+    }
+
+    public void setItemDescription(String itemDescription) {
+        this.itemDescription = itemDescription;
     }
 }

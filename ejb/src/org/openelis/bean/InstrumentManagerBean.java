@@ -78,6 +78,7 @@ public class InstrumentManagerBean implements InstrumentManagerRemote {
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
+            throw e;
         }
 
         return man;
@@ -99,6 +100,7 @@ public class InstrumentManagerBean implements InstrumentManagerRemote {
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
+            throw e;
         }
 
         return man;

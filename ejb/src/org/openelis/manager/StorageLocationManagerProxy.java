@@ -44,6 +44,7 @@ public class StorageLocationManagerProxy {
         m = StorageLocationManager.getInstance();
         
         m.setStorageLocation(data);
+        m.setStorageLocationId(data.getId());
         
         return m;
     }
@@ -65,6 +66,7 @@ public class StorageLocationManagerProxy {
         sl = local();
         sl.add(man.getStorageLocation());
         id = man.getStorageLocation().getId();
+        man.setStorageLocationId(id);        
         name = man.getStorageLocation().getName();
         
         if(man.children != null) {
