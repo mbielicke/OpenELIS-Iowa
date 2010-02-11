@@ -57,19 +57,19 @@ import org.openelis.utils.Auditable;
 @NamedQueries({
     @NamedQuery( name = "StorageLocation.FetchById",
                 query = "select new org.openelis.domain.StorageLocationViewDO(s.id,s.sortOrder,s.name," +
-                        "s.location,s.parentStorageLocationId,s.storageUnitId,s.isAvailable,s.storageUnit.description)"
+                        "s.location,s.parentStorageLocationId,s.storageUnitId,s.isAvailable,'',s.storageUnit.description)"
                       + " from StorageLocation s where s.id = :id"),
     @NamedQuery( name = "StorageLocation.FetchByParentStorageLocationId",
                 query = "select new org.openelis.domain.StorageLocationViewDO(s.id,s.sortOrder,s.name, " +
-                        "s.location,s.parentStorageLocationId,s.storageUnitId,s.isAvailable, s.storageUnit.description)"
+                        "s.location,s.parentStorageLocationId,s.storageUnitId,s.isAvailable,'',s.storageUnit.description)"
                       + " from StorageLocation s where s.parentStorageLocationId = :id order by s.sortOrder"),
     @NamedQuery( name = "StorageLocation.FetchByName",
                 query = "select new org.openelis.domain.StorageLocationViewDO(s.id,s.sortOrder,s.name, " +
-                        "s.location,s.parentStorageLocationId,s.storageUnitId,s.isAvailable,s.storageUnit.description)"
+                        "s.location,s.parentStorageLocationId,s.storageUnitId,s.isAvailable,'',s.storageUnit.description)"
                       + " from StorageLocation s where s.name = :name"),
     @NamedQuery( name = "StorageLocation.FetchAvailableByName",
-                query = "select new org.openelis.domain.StorageLocationVO(childLoc.id, childLoc.name, childLoc.location," +
-                        "parentLoc.name, childLoc.storageUnit.description) " 
+                query = "select new org.openelis.domain.StorageLocationViewDO(childLoc.id, childLoc.sortOrder, childLoc.name, childLoc.location," +
+                        "childLoc.parentStorageLocationId, childLoc.storageUnitId, childLoc.isAvailable, parentLoc.name, childLoc.storageUnit.description) " 
                       + " from StorageLocation childLoc left join childLoc.parentStorageLocation parentLoc where"
                       + " (childLoc.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId=childLoc.id))"
                       + " and (childLoc.name like :name OR childLoc.location like :loc OR childLoc.storageUnit.description like :desc) and childLoc.isAvailable = 'Y'"
@@ -123,7 +123,11 @@ public class StorageLocation implements Auditable, Cloneable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "storage_unit_id", insertable = false, updatable = false)
     private StorageUnit                 storageUnit;
-
+    
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "storage_location_id", insertable = false, updatable = false)
+    private Collection<Storage>         storage;
+    
     @Transient
     private StorageLocation             original;
 
@@ -212,6 +216,14 @@ public class StorageLocation implements Auditable, Cloneable {
 
     public void setParentStorageLocation(StorageLocation parentStorageLocation) {
         this.parentStorageLocation = parentStorageLocation;
+    }
+    
+    public void setStorage(Collection<Storage> storage) {
+        this.storage = storage;
+    }
+
+    public Collection<Storage> getStorage() {
+        return storage;
     }
 
     public void setClone() {

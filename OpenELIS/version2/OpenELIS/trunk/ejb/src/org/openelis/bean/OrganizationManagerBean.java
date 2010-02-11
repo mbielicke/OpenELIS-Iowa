@@ -87,6 +87,7 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
+            throw e;
         }
 
         return man;
@@ -108,6 +109,7 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
+            throw e;
         }
 
         return man;

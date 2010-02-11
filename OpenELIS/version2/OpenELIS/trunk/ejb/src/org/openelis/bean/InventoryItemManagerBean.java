@@ -91,6 +91,7 @@ public class InventoryItemManagerBean implements InventoryItemManagerRemote {
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
+            throw e;
         }
 
 
@@ -113,6 +114,7 @@ public class InventoryItemManagerBean implements InventoryItemManagerRemote {
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
+            throw e;
         }
 
         return man;

@@ -211,7 +211,7 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
         list = new ValidationErrorsList();
         entry = data.getEntry();
 
-        if (DataBaseUtil.isEmpty(entry))
+        if (entry == null)
             list.add(new FieldErrorException("fieldRequiredException", CategoryMeta.getDictionaryEntry()));
 
         if (list.size() > 0)

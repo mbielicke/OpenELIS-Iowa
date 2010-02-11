@@ -40,9 +40,6 @@ public class StorageLocationChildManager implements RPC {
 
     protected transient static StorageLocationChildManagerProxy proxy;
 
-    protected StorageLocationChildManager() {
-    }
-
     public static StorageLocationChildManager getInstance() {
         return new StorageLocationChildManager();
     }

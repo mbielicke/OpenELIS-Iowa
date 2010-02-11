@@ -8,6 +8,7 @@ import org.openelis.domain.SampleItemViewDO;
 
 @Local
 public interface SampleItemLocal {
+    public SampleItemViewDO fetchById(Integer id) throws Exception;    
     public ArrayList<SampleItemViewDO> fetchBySampleId(Integer sampleId) throws Exception;
     
     public SampleItemViewDO add(SampleItemViewDO data);

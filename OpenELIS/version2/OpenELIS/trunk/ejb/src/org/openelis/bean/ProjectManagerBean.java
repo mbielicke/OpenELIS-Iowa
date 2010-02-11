@@ -55,6 +55,7 @@ public class ProjectManagerBean implements ProjectManagerRemote {
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
+            throw e;
         }
 
         return man;
@@ -67,14 +68,16 @@ public class ProjectManagerBean implements ProjectManagerRemote {
 
         man.validate();
 
-        ut = ctx.getUserTransaction(); 
+        ut = ctx.getUserTransaction();
         try {
             ut.begin();
             lockBean.validateLock(ReferenceTable.PROJECT, man.getProject().getId());
             man.update();
             lockBean.giveUpLock(ReferenceTable.PROJECT, man.getProject().getId());
-        ut.commit();} catch (Exception e) {
+            ut.commit();
+        } catch (Exception e) {
             ut.rollback();
+            throw e;
         }
 
         return man;

@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import javax.ejb.Remote;
 
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.StorageLocationVO;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.gwt.common.data.QueryData;
 
@@ -38,7 +37,7 @@ import org.openelis.gwt.common.data.QueryData;
 public interface StorageLocationRemote {
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int i, int rowPP) throws Exception;
     
-    public ArrayList<StorageLocationVO> fetchAvailableByName(String name, int max) throws Exception;
+    public ArrayList<StorageLocationViewDO> fetchAvailableByName(String name, int max) throws Exception;
 
     public void validateForDelete(StorageLocationViewDO data) throws Exception;
 }

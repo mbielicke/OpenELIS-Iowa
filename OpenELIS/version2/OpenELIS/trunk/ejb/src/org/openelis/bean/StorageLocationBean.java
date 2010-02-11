@@ -38,7 +38,6 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.StorageLocationVO;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.entity.StorageLocation;
 import org.openelis.gwt.common.DatabaseException;
@@ -246,7 +245,7 @@ public class StorageLocationBean implements StorageLocationRemote, StorageLocati
         }
     }
     
-    public ArrayList<StorageLocationVO> fetchAvailableByName(String name, int max) throws Exception{
+    public ArrayList<StorageLocationViewDO> fetchAvailableByName(String name, int max) throws Exception{
         Query query = null;
         query = manager.createNamedQuery("StorageLocation.FetchAvailableByName");
         query.setParameter("name",name);

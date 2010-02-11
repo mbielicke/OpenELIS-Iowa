@@ -79,6 +79,7 @@ public class AuxFieldGroupManagerBean implements AuxFieldGroupManagerRemote {
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
+            throw e;
         }
 
         return man;
@@ -100,6 +101,7 @@ public class AuxFieldGroupManagerBean implements AuxFieldGroupManagerRemote {
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
+            throw e;
         }
 
         return man;

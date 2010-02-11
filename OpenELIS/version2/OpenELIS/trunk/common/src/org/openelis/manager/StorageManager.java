@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.Query;
 
 public class StorageManager implements RPC {
 
@@ -74,6 +75,14 @@ public class StorageManager implements RPC {
             return 0;
     
         return storageList.size();
+    }   
+    
+    public static StorageManager fetchHistoryByLocationId(Query query) throws Exception {
+        return proxy().fetchHistoryByLocationId(query);
+    }
+    
+    public static StorageManager fetchCurrentByLocationId(Integer id) throws Exception {
+        return proxy().fetchCurrentByLocationId(id);
     }
 
     public static StorageManager fetchByRefTableRefId(Integer tableId, Integer id) throws Exception {

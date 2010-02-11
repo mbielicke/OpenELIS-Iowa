@@ -29,84 +29,92 @@ package org.openelis.meta;
   * Storage META Data
   */
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 import org.openelis.gwt.common.Meta;
+import org.openelis.gwt.common.MetaMap;
 
-public class StorageMeta implements Meta {
-  	protected String path = "";
-	private static final String entityName = "Storage";
+public class StorageMeta implements Meta, MetaMap {
 	
-	private static final String
-              ID					="id",
-              REFERENCE_ID					="referenceId",
-              REFERENCE_TABLE_ID					="referenceTableId",
-              STORAGE_LOCATION_ID					="storageLocationId",
-              CHECKIN					="checkin",
-              CHECKOUT					="checkout",
-              SYSTEM_USER_ID            ="systemUserId";
+	private static final String ID ="_storage.id",
+                                REFERENCE_ID ="_storage.referenceId",
+                                REFERENCE_TABLE_ID ="_storage.referenceTableId",
+                                STORAGE_LOCATION_ID ="_storage.storageLocationId",
+                                CHECKIN ="_storage.checkin",
+                                CHECKOUT ="_storage.checkout",
+                                SYSTEM_USER_ID ="_storage.systemUserId",
+                                
+                                STRG_LOC_NAME = "_storageLocation.name",
+                                STRG_LOC_LOCATION = "_storageLocation.location",
+                                STRG_LOC_IS_AVAILABLE = "_storageLocation.isAvailable",
+	                            STRG_LOC_STRG_UNIT_DESCRIPTION = "_storageLocation.storageUnit.description";
+	
 
-  	private static final String[] columnNames = {
-  	  ID,REFERENCE_ID,REFERENCE_TABLE_ID,STORAGE_LOCATION_ID,CHECKIN,CHECKOUT,SYSTEM_USER_ID};
-  	  
-	private HashSet<String> columnHashList;
+	private static HashSet<String> names;
     
-    private void init() {
-        columnHashList = new HashSet<String>(columnNames.length);
-        for(int i = 0; i < columnNames.length; i++){
-            columnHashList.add(path+columnNames[i]);
-        }
+    static {
+        names = new HashSet<String>(Arrays.asList(ID,REFERENCE_ID,REFERENCE_TABLE_ID,
+                                                  STORAGE_LOCATION_ID,CHECKIN,CHECKOUT,
+                                                  SYSTEM_USER_ID,STRG_LOC_NAME,
+                                                  STRG_LOC_LOCATION,STRG_LOC_IS_AVAILABLE,
+                                                  STRG_LOC_STRG_UNIT_DESCRIPTION));
     }
     
-    public StorageMeta() {
-		init();        
+    public static String getId() {
+        return ID;
+    } 
+
+    public static String getReferenceId() {
+        return REFERENCE_ID;
+    } 
+
+    public static String getReferenceTableId() {
+        return REFERENCE_TABLE_ID;
+    } 
+
+    public static String getStorageLocationId() {
+        return STORAGE_LOCATION_ID;
+    } 
+    
+    public static String getCheckin() {
+        return CHECKIN;
+    } 
+
+    public static String getCheckout() {
+        return CHECKOUT;
+    } 
+    
+    public static String getSystemUserId() {
+        return SYSTEM_USER_ID;
+    } 
+    
+    public static String getStorageLocationName() {
+        return STRG_LOC_NAME;
     }
     
-    public StorageMeta(String path) {
-        this.path = path;
-		init();        
+    public static String getStorageLocationLocation() {
+        return STRG_LOC_LOCATION;
     }
-
-    public String[] getColumnList() {
-        return columnNames;
+    
+    public static String getStorageLocationIsAvailable() {
+        return STRG_LOC_IS_AVAILABLE;
     }
-
-    public String getEntity() {
-        return entityName;
+    
+    public static String getStorageLocationStorageUnitDescription() {
+        return STRG_LOC_STRG_UNIT_DESCRIPTION;
     }
-
+    
     public boolean hasColumn(String columnName) {
-        return columnHashList.contains(columnName);
+        return names.contains(columnName);
     }
     
-    
-    public String getId() {
-        return path + ID;
-    } 
+    public String buildFrom(String where) {        
+        String from = "StorageLocation _storageLocation ";
+        if(where.indexOf("storage.") > -1)
+            from += ", IN (_storageLocation.storage) _storage ";
 
-    public String getReferenceId() {
-        return path + REFERENCE_ID;
-    } 
-
-    public String getReferenceTableId() {
-        return path + REFERENCE_TABLE_ID;
-    } 
-
-    public String getStorageLocationId() {
-        return path + STORAGE_LOCATION_ID;
-    } 
-
-    public String getCheckin() {
-        return path + CHECKIN;
-    } 
-
-    public String getCheckout() {
-        return path + CHECKOUT;
+        return from;
     } 
     
-    public String getSystemUserId() {
-        return path + SYSTEM_USER_ID;
-    } 
-
-  
 }   

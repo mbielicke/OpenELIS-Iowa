@@ -78,6 +78,7 @@ public class PanelManagerBean implements PanelManagerRemote {
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
+            throw e;
         }
 
         return man;
@@ -99,6 +100,7 @@ public class PanelManagerBean implements PanelManagerRemote {
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
+            throw e;
         }
 
         return man;
@@ -128,6 +130,7 @@ public class PanelManagerBean implements PanelManagerRemote {
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
+            throw e;
         }
     
         return man;

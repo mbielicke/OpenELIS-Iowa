@@ -56,6 +56,7 @@ public class ProviderManagerBean implements ProviderManagerRemote {
     		ut.commit();
 		} catch (Exception e) {
             ut.rollback();
+            throw e;
         }
 		
 		return man;
@@ -83,6 +84,7 @@ public class ProviderManagerBean implements ProviderManagerRemote {
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
+            throw e;
         }
 
         return man;
