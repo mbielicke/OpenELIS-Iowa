@@ -1,38 +1,35 @@
-/**
- * Exhibit A - UIRF Open-source Based Public Software License.
- * 
- * The contents of this file are subject to the UIRF Open-source Based Public
- * Software License(the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * openelis.uhl.uiowa.edu
- * 
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
- * the specific language governing rights and limitations under the License.
- * 
- * The Original Code is OpenELIS code.
- * 
- * The Initial Developer of the Original Code is The University of Iowa.
- * Portions created by The University of Iowa are Copyright 2006-2008. All
- * Rights Reserved.
- * 
- * Contributor(s): ______________________________________.
- * 
- * Alternatively, the contents of this file marked "Separately-Licensed" may be
- * used under the terms of a UIRF Software license ("UIRF Software License"), in
- * which case the provisions of a UIRF Software License are applicable instead
- * of those above.
- */
-package org.openelis.modules.label.client;
+/** Exhibit A - UIRF Open-source Based Public Software License.
+* 
+* The contents of this file are subject to the UIRF Open-source Based
+* Public Software License(the "License"); you may not use this file except
+* in compliance with the License. You may obtain a copy of the License at
+* openelis.uhl.uiowa.edu
+* 
+* Software distributed under the License is distributed on an "AS IS"
+* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+* License for the specific language governing rights and limitations
+* under the License.
+* 
+* The Original Code is OpenELIS code.
+* 
+* The Initial Developer of the Original Code is The University of Iowa.
+* Portions created by The University of Iowa are Copyright 2006-2008. All
+* Rights Reserved.
+* 
+* Contributor(s): ______________________________________.
+* 
+* Alternatively, the contents of this file marked
+* "Separately-Licensed" may be used under the terms of a UIRF Software
+* license ("UIRF Software License"), in which case the provisions of a
+* UIRF Software License are applicable instead of those above. 
+*/
+package org.openelis.modules.storage.client;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
 
-import org.openelis.cache.DictionaryCache;
-import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.LabelViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
@@ -44,8 +41,6 @@ import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.BeforeCloseEvent;
 import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.event.GetMatchesEvent;
-import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
@@ -53,50 +48,59 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
-import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.MenuItem;
-import org.openelis.gwt.widget.QueryFieldUtil;
+import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.meta.LabelMeta;
-import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.manager.StorageLocationManager;
+import org.openelis.manager.StorageManager;
+import org.openelis.manager.StorageViewManager;
+import org.openelis.meta.StorageMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.TabPanel;
 
-public class LabelScreen extends Screen {
-    private LabelViewDO           data;
-    private SecurityModule        security;
-
-    private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
-                                  deleteButton, commitButton, abortButton;
-    protected MenuItem            history;
-    private AutoComplete<Integer> scriptlet;
-    private TextBox               name, description;
-    private Dropdown<Integer>     printerTypeId;
-    private ButtonGroup           atoz;
-    private ScreenNavigator       nav;
+public class StorageScreen extends Screen {
+    private StorageViewManager     manager;
+    private SecurityModule         security;
     
-    private ScreenService         scriptletService;
+    private TextBox                name, location, storageUnitDescription;
+    private CheckBox               isAvailable;
+    private AppButton              queryButton, previousButton, nextButton,
+                                   updateButton, commitButton, abortButton;
+    private ButtonGroup            atoz;
+    private ScreenNavigator        nav;
+    
+    private CurrentTab             currentTab;
+    private HistoryTab             historyTab;
+    private Tabs                   tab;
+    private TabPanel               tabPanel;
+    
+    private ScreenService          storageLocationService;             
 
-    public LabelScreen() throws Exception {
-        super((ScreenDefInt)GWT.create(LabelDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.label.server.LabelService");
-        scriptletService = new ScreenService("controller?service=org.openelis.modules.scriptlet.server.ScriptletService");
-        
-        security = OpenELIS.security.getModule("label");
+    private enum Tabs {
+        CURRENT, HISTORY
+    };    
+    
+    public StorageScreen() throws Exception {
+        super((ScreenDefInt)GWT.create(StorageDef.class));
+        service = new ScreenService("controller?service=org.openelis.modules.storage.server.StorageService");
+        storageLocationService = new ScreenService("controller?service=org.openelis.modules.storageLocation.server.StorageLocationService");
+    
+        security = OpenELIS.security.getModule("storage");
         if (security == null)
-            throw new SecurityException("screenPermException", "Label Screen");       
+            throw new SecurityException("screenPermException", "Storage Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -104,21 +108,21 @@ public class LabelScreen extends Screen {
             }
         });
     }
-
+    
     /**
      * This method is called to set the initial state of widgets after the
      * screen is attached to the browser. It is usually called in deferred
      * command.
      */
     private void postConstructor() {
-        data = new LabelViewDO();
-
+        tab = Tabs.CURRENT;
+        manager = StorageViewManager.getInstance();        
+        
         initialize();
         setState(State.DEFAULT);
-        initializeDropdowns();
         DataChangeEvent.fire(this);
     }
-
+    
     /**
      * Setup state and data change handles for every widget on the screen
      */
@@ -163,21 +167,6 @@ public class LabelScreen extends Screen {
             }
         });
 
-        addButton = (AppButton)def.getWidget("add");
-        addScreenHandler(addButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                add();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
-                                        .contains(event.getState()) &&
-                                 security.hasAddPermission());
-                if (event.getState() == State.ADD)
-                    addButton.setState(ButtonState.LOCK_PRESSED);
-            }
-        });
-
         updateButton = (AppButton)def.getWidget("update");
         addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -191,20 +180,6 @@ public class LabelScreen extends Screen {
                     updateButton.setState(ButtonState.LOCK_PRESSED);
             }
         });
-        
-        deleteButton = (AppButton)def.getWidget("delete");
-        addScreenHandler(deleteButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                delete();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                deleteButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
-                                    security.hasDeletePermission());
-                if (event.getState() == State.DELETE)
-                    deleteButton.setState(ButtonState.LOCK_PRESSED);
-            }
-        });
 
         commitButton = (AppButton)def.getWidget("commit");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
@@ -213,7 +188,7 @@ public class LabelScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                commitButton.enable(EnumSet.of(State.QUERY, State.UPDATE)
                                            .contains(event.getState()));
             }
         });
@@ -225,112 +200,130 @@ public class LabelScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                abortButton.enable(EnumSet.of(State.QUERY,State.UPDATE)
                                           .contains(event.getState()));
             }
         });
         
-        history = (MenuItem)def.getWidget("labelHistory");
-        addScreenHandler(history, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                history();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                history.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
-            }
-        });
-
-        name = (TextBox)def.getWidget(LabelMeta.getName());
+        name = (TextBox)def.getWidget(StorageMeta.getStorageLocationName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                name.setValue(data.getName());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setName(event.getValue());
+                StorageLocationManager slm;
+                
+                slm = manager.getStorageLocation();
+                if(slm != null)
+                    name.setValue(slm.getStorageLocation().getName());
+                else 
+                    name.setValue(null);
+                
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                name.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                   .contains(event.getState()));
+                name.enable(EnumSet.of(State.QUERY).contains(event.getState()));
                 name.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        description = (TextBox)def.getWidget(LabelMeta.getDescription());
-        addScreenHandler(description, new ScreenEventHandler<String>() {
+        location = (TextBox)def.getWidget(StorageMeta.getStorageLocationLocation());
+        addScreenHandler(location, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                description.setValue(data.getDescription());
+                StorageLocationManager slm;
+                
+                slm = manager.getStorageLocation();
+                if(slm != null)
+                    location.setValue(slm.getStorageLocation().getLocation());
+                else
+                    location.setValue(null);
+                
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                data.setDescription(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                description.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                          .contains(event.getState()));
-                description.setQueryMode(event.getState() == State.QUERY);
+                location.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                location.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        printerTypeId = (Dropdown)def.getWidget(LabelMeta.getPrinterTypeId());
-        addScreenHandler(printerTypeId, new ScreenEventHandler<Integer>() {
+        storageUnitDescription = (TextBox)def.getWidget(StorageMeta.getStorageLocationStorageUnitDescription());
+        addScreenHandler(storageUnitDescription, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                printerTypeId.setSelection(data.getPrinterTypeId());
-            }
-
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                data.setPrinterTypeId(event.getValue());
+                StorageLocationManager slm;
+                
+                slm = manager.getStorageLocation();
+                if(slm != null) 
+                    storageUnitDescription.setValue(slm.getStorageLocation().getStorageUnitDescription());
+                else 
+                    storageUnitDescription.setValue(null);
+                
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                printerTypeId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                          .contains(event.getState()));
-                printerTypeId.setQueryMode(event.getState() == State.QUERY);
+                storageUnitDescription.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                storageUnitDescription.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        scriptlet = (AutoComplete)def.getWidget(LabelMeta.getScriptletName());
-        addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
+        isAvailable = (CheckBox)def.getWidget(StorageMeta.getStorageLocationIsAvailable());
+        addScreenHandler(isAvailable, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                scriptlet.setSelection(data.getScriptletId(), data.getScriptletName());
-            }
+                StorageLocationManager slm;
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                data.setScriptletId(event.getValue());
-                data.setScriptletName(scriptlet.getTextBoxDisplay());
+                slm = manager.getStorageLocation();
+                if (slm != null) 
+                    isAvailable.setValue(slm.getStorageLocation().getIsAvailable());
+                else 
+                    isAvailable.setValue(null);
+                
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                scriptlet.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                        .contains(event.getState()));
-                scriptlet.setQueryMode(event.getState() == State.QUERY);
+                isAvailable.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                isAvailable.setQueryMode(event.getState() == State.QUERY);
             }
         });
         
-        scriptlet.addGetMatchesHandler(new GetMatchesHandler() {
-            public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
-                ArrayList<TableDataRow> model;
-                ArrayList<IdNameVO> list;
+        tabPanel = (TabPanel)def.getWidget("tabPanel");
+        tabPanel.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+            public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
+                int i;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-                
-                try {
-                    list = scriptletService.callList("fetchByName", parser.getParameter().get(0));
-                    model = new ArrayList<TableDataRow>();
-                    for (IdNameVO data : list) {                       
-                        model.add(new TableDataRow(data.getId(),data.getName()));
-                    }
-                    scriptlet.showAutoMatches(model);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                }
+                // tab screen order should be the same as enum or this will
+                // not work
+                i = event.getItem().intValue();
+                tab = Tabs.values()[i];
+
+                window.setBusy();
+                drawTabs();
+                window.clearStatus();
+            }
+        });
+
+        currentTab = new CurrentTab(def, window);
+        addScreenHandler(currentTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                currentTab.setManager(manager);
+                if (tab == Tabs.CURRENT)
+                    drawTabs();
             }
 
+            public void onStateChange(StateChangeEvent<State> event) {
+                currentTab.setState(event.getState());
+            }
+        });
+
+        historyTab = new HistoryTab(def, window);
+        addScreenHandler(historyTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                historyTab.setManager(manager);
+                if (tab == Tabs.HISTORY)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historyTab.setState(event.getState());
+            }
         });
         
         //
@@ -340,7 +333,7 @@ public class LabelScreen extends Screen {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                storageLocationService.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
                     }
@@ -353,7 +346,7 @@ public class LabelScreen extends Screen {
                         } else if (error instanceof LastPageException) {
                             window.setError(consts.get("noMoreRecordInDir"));
                         } else {
-                            Window.alert("Error: Label call query failed; " +
+                            Window.alert("Error: Storage call query failed; " +
                                          error.getMessage());
                             window.setError(consts.get("queryFailed"));
                         }
@@ -361,7 +354,7 @@ public class LabelScreen extends Screen {
                 });
             }
 
-            public boolean fetch(RPC entry) {
+            public boolean fetch(RPC entry) {                
                 return fetchById( (entry == null) ? null : ((IdNameVO)entry).getId());
             }
 
@@ -395,7 +388,7 @@ public class LabelScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = LabelMeta.getName();
+                field.key = StorageMeta.getStorageLocationName();
                 field.query = ((AppButton)event.getSource()).getAction();
                 field.type = QueryData.Type.STRING;
 
@@ -415,30 +408,23 @@ public class LabelScreen extends Screen {
         });
     }
     
-    private void initializeDropdowns() {
-        ArrayList<TableDataRow> model;
-
-        // printer type dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("printer_type"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
-
-        printerTypeId.setModel(model);        
-    }
-
     /*
      * basic button methods
      */
     protected void query() {
-        data = new LabelViewDO();
+        manager = StorageViewManager.getInstance();
+        
         setState(State.QUERY);
         DataChangeEvent.fire(this);
-
+        
+        // clear all the tabs
+        currentTab.draw();
+        historyTab.draw();
+        
         setFocus(name);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
-
+    
     protected void previous() {
         nav.previous();
     }
@@ -446,47 +432,28 @@ public class LabelScreen extends Screen {
     protected void next() {
         nav.next();
     }
-
-    protected void add() {
-        data = new LabelViewDO();
-
-        setState(State.ADD);
-        DataChangeEvent.fire(this);
-
-        setFocus(name);
-        window.setDone(consts.get("enterInformationPressCommit"));
-    }
-
+    
     protected void update() {
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
-            data = service.call("fetchForUpdate", data.getId());
+            manager = manager.fetchForUpdate();
 
             setState(State.UPDATE);
-            DataChangeEvent.fire(this);
-            setFocus(name);
+            DataChangeEvent.fire(this);                                                                                                                                                                                                                                                                                                                                                                                                                    
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
         window.clearStatus();
     }
-
-    protected void delete() {
-        window.setBusy(consts.get("lockForUpdate"));
-
-        try {
-            data = service.call("fetchForUpdate", data.getId());
-
-            setState(State.DELETE);
-            DataChangeEvent.fire(this);
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-        }
-        window.clearStatus();
-    }
-
-    protected void commit() {
+    
+    public void commit() {                
+        Collection<StorageManager> strgList;
+        Collection<StorageLocationManager> locList;
+        ArrayList<Integer> locIdList;
+        Integer id;
+        StorageLocationManager man;
+        
         setFocus(null);
 
         if ( !validate()) {
@@ -500,25 +467,45 @@ public class LabelScreen extends Screen {
             query = new Query();
             query.setFields(getQueryFields());
             nav.setQuery(query);
-        } else if (state == State.ADD) {
-            window.setBusy(consts.get("adding"));
-            try {
-                data = service.call("add", data);
-
-                setState(State.DISPLAY);
-                DataChangeEvent.fire(this);
-                window.setDone(consts.get("addingComplete"));
-            } catch (ValidationErrorsList e) {
-                showErrors(e);
-            } catch (Exception e) {
-                Window.alert("commitAdd(): " + e.getMessage());
-                window.clearStatus();
-            }
         } else if (state == State.UPDATE) {
             window.setBusy(consts.get("updating"));
-            try {
-                data = service.call("update", data);
-
+            try {                              
+                //
+                // we first update the managers that represents the new locations
+                // to which the items from this location are to be moved
+                //
+                strgList = currentTab.getStorageList();
+                for(StorageManager sm: strgList) {
+                    sm.update();
+                }                
+                
+                //
+                // we then call update on the managers that represent the parent
+                // storage locations of the new locations that were locked
+                //
+                locList = currentTab.getLocationList();
+                locIdList = new ArrayList<Integer>();                
+                for(StorageLocationManager slm: locList) {
+                    id = slm.getStorageLocationId();
+                    if(!locIdList.contains(id)) {
+                        locIdList.add(id);
+                        slm.update();
+                    }
+                }
+                
+                //
+                // this will release the lock on the parent storage location of 
+                // the storage locations holding items currently showing on the screen
+                //
+                man = manager.getStorageLocation();
+                if(!locIdList.contains(man.getStorageLocationId())) 
+                    man.update();
+                
+                //
+                // we then update the manager representing the current items
+                //
+                manager = manager.update();                
+                
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.setDone(consts.get("updatingComplete"));
@@ -528,23 +515,12 @@ public class LabelScreen extends Screen {
                 Window.alert("commitUpdate(): " + e.getMessage());
                 window.clearStatus();
             }
-        } else if (state == State.DELETE) {
-            window.setBusy(consts.get("deleting"));
-            try {
-                service.call("delete", data);
-
-                fetchById(null);
-                window.setDone(consts.get("deleteComplete"));
-            } catch (ValidationErrorsList e) {
-                showErrors(e);
-            } catch (Exception e) {
-                Window.alert("commitDelete(): " + e.getMessage());
-                window.clearStatus();
-            }
         }
     }
-
+    
     protected void abort() {
+        Collection<StorageLocationManager> locList;
+        
         setFocus(null);
         clearErrors();
         window.setBusy(consts.get("cancelChanges"));
@@ -552,54 +528,46 @@ public class LabelScreen extends Screen {
         if (state == State.QUERY) {
             fetchById(null);
             window.setDone(consts.get("queryAborted"));
-        } else if (state == State.ADD) {
-            fetchById(null);
-            window.setDone(consts.get("addAborted"));
         } else if (state == State.UPDATE) {
-            try {
-                data = service.call("abortUpdate", data.getId());
+            try {                
+                locList = currentTab.getLocationList();
+                for(StorageLocationManager slm: locList) {
+                    slm.abortUpdate();
+                }
+                
+                manager = manager.abortUpdate();
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
             } catch (Exception e) {
-                Window.alert(e.getMessage());
+                Window.alert(e.getMessage());                
                 fetchById(null);
             }
             window.setDone(consts.get("updateAborted"));
-        } else if (state == State.DELETE) {
-            try {
-                data = service.call("abortUpdate", data.getId());
-                setState(State.DISPLAY);
-                DataChangeEvent.fire(this);
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                fetchById(null);
-            }
-            window.setDone(consts.get("deleteAborted"));
         } else {
             window.clearStatus();
         }
     }
     
-    protected void history() {
-        IdNameVO hist;
-        
-        hist = new IdNameVO(data.getId(), data.getName());
-        HistoryScreen.showHistory(consts.get("labelHistory"), ReferenceTable.LABEL, hist);
-    }
-
-    protected boolean fetchById(Integer id) {
+    protected boolean fetchById(Integer id) {        
         if (id == null) {
-            data = new LabelViewDO();
+            manager = StorageViewManager.getInstance();
             setState(State.DEFAULT);
         } else {
             window.setBusy(consts.get("fetching"));
-            try {
-                data = service.call("fetchById", id);
+            try {                
+                switch (tab) {
+                    case CURRENT:                                      
+                        manager = StorageViewManager.fetchById(id);
+                        break;
+                    case HISTORY:
+                        manager = StorageViewManager.fetchById(id);
+                        break;
+                }
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
                 fetchById(null);
                 window.setDone(consts.get("noRecordsFound"));
-                return false;
+                return false; 
             } catch (Exception e) {
                 fetchById(null);
                 e.printStackTrace();
@@ -612,4 +580,15 @@ public class LabelScreen extends Screen {
 
         return true;
     }
+    
+    private void drawTabs() {
+        switch (tab) {
+            case CURRENT:
+                currentTab.draw();
+                break;
+            case HISTORY:
+                historyTab.draw();
+                break;
+        }
+    }        
 }

@@ -23,7 +23,7 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.storage.client;
+package org.openelis.modules.storageLocation.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -99,7 +99,7 @@ public class StorageLocationScreen extends Screen {
 
     public StorageLocationScreen() throws Exception {
         super((ScreenDefInt)GWT.create(StorageLocationDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.storage.server.StorageLocationService");
+        service = new ScreenService("controller?service=org.openelis.modules.storageLocation.server.StorageLocationService");
         storageUnitService = new ScreenService("controller?service=org.openelis.modules.storageunit.server.StorageUnitService");
 
         security = OpenELIS.security.getModule("storagelocation");
@@ -512,7 +512,7 @@ public class StorageLocationScreen extends Screen {
                             window.setDone(consts.get("noRecordsFound"));
                             setState(State.DEFAULT);
                         } else if (error instanceof LastPageException) {
-                            window.setError("No more records in this direction");
+                            window.setError(consts.get("noMoreRecordInDir"));
                         } else {
                             Window.alert("Error: Storage Location call query failed; " +
                                          error.getMessage());
@@ -619,6 +619,7 @@ public class StorageLocationScreen extends Screen {
             DataChangeEvent.fire(this);
             setFocus(name);
         } catch (Exception e) {
+            e.printStackTrace();
             Window.alert(e.getMessage());
         }
         window.clearStatus();
@@ -779,8 +780,7 @@ public class StorageLocationScreen extends Screen {
                 data = manager.getChildren().getChildAt(i);
                 row = new TableDataRow(3);
                 row.key = data.getId();
-                row.cells.get(0).setValue(
-                                          new TableDataRow(data.getStorageUnitId(),
+                row.cells.get(0).setValue(new TableDataRow(data.getStorageUnitId(),
                                                            data.getStorageUnitDescription()));
                 row.cells.get(1).setValue(data.getLocation());
                 row.cells.get(2).setValue(data.getIsAvailable());

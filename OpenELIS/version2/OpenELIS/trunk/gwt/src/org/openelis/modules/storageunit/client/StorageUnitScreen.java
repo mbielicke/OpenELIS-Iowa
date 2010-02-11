@@ -301,9 +301,9 @@ public class StorageUnitScreen extends Screen {
                             window.setDone(consts.get("noRecordsFound"));
                             setState(State.DEFAULT);
                         } else if (error instanceof LastPageException) {
-                            window.setError("No more records in this direction");
+                            window.setError(consts.get("noMoreRecordInDir"));
                         } else {
-                            Window.alert("Error: Storage call query failed; " +
+                            Window.alert("Error: Storage Unit call query failed; " +
                                          error.getMessage());
                             window.setError(consts.get("queryFailed"));
                         }

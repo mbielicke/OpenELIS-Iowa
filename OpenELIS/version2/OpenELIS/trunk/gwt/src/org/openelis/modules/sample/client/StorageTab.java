@@ -30,7 +30,7 @@ import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.StorageLocationVO;
+import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LocalizedException;
@@ -59,6 +59,7 @@ import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.StorageManager;
 import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.utilcommon.DataBaseUtil;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
@@ -192,8 +193,8 @@ public class StorageTab extends Screen {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
                 TableDataRow row;
-                StorageLocationVO data;
-                ArrayList<StorageLocationVO> list;
+                StorageLocationViewDO data;
+                ArrayList<StorageLocationViewDO> list;
                 ArrayList<TableDataRow> model;
 
                 parser = new QueryFieldUtil();
@@ -209,7 +210,10 @@ public class StorageTab extends Screen {
                         data = list.get(i);
 
                         row.key = data.getId();
-                        row.cells.get(0).value = data.getLocation();
+                        row.cells.get(0).value = 
+                            DataBaseUtil.formatStorageLocation(data.getName(), data.getLocation(), 
+                                                               data.getStorageUnitDescription(), 
+                                                               data.getParentStorageLocationName());
 
                         model.add(row);
                     }

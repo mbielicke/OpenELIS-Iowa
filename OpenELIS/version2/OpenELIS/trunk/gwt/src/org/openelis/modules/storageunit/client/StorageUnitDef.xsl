@@ -150,7 +150,7 @@ UIRF Software License are applicable instead of those above.
               </row>
               <row>
                 <text style="Prompt">
-                  <xsl:value-of select='resource:getString($constants,"isSingular")' />:
+                  <xsl:value-of select='resource:getString($constants,"singular")' />:
                 </text>
                 <check key="{meta:getIsSingular()}" tab="{meta:getCategoryId()},{meta:getDescription()}" />
               </row>

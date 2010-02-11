@@ -156,7 +156,7 @@ UIRF Software License are applicable instead of those above.
               </row>
               <row>
                 <text style="Prompt">
-                  <xsl:value-of select='resource:getString($constants,"isAvailable")' />:
+                  <xsl:value-of select='resource:getString($constants,"available")' />:
                 </text>
                 <check key="{meta:getIsAvailable()}" tab="childStorageLocsTable,{meta:getStorageUnitDescription()}" />
               </row>
@@ -173,7 +173,7 @@ UIRF Software License are applicable instead of those above.
                   <col key="{meta:getChildLocation()}" width="275" header="{resource:getString($constants,'location')}">
                     <textbox max="80" required="true" />
                   </col>
-                  <col key="{meta:getChildIsAvailable()}" width="80" header="{resource:getString($constants,'isAvailable')}">
+                  <col key="{meta:getChildIsAvailable()}" width="80" header="{resource:getString($constants,'available')}">
                     <check>Y</check>
                   </col>
                 </table>
