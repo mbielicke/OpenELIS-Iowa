@@ -1,22 +1,45 @@
 package org.openelis.modules.reviewRelease.client;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
 
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.ReviewReleaseVO;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.EntityLockedException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
+import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.TabPanel;
 import org.openelis.gwt.widget.TextBox;
+import org.openelis.gwt.widget.AppButton.ButtonState;
+import org.openelis.gwt.widget.table.TableDataCell;
+import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.tree.TreeWidget;
+import org.openelis.manager.SampleDataBundle;
+import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
+import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
@@ -30,6 +53,13 @@ import org.openelis.modules.sample.client.SampleNotesTab;
 import org.openelis.modules.sample.client.StorageTab;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class ReviewReleaseScreen extends Screen {
     
@@ -60,10 +90,9 @@ public class ReviewReleaseScreen extends Screen {
 	
 	private ScreenNavigator 		       nav;
 	private SampleManager                  manager;
-	//private SampleDataBundle               dataBundle = new SampleDataBundle();
-	
+	private SampleDataBundle               dataBundle;
 	private TabPanel                  	   sampleContent;
-	
+	private SampleTab                      sampleTab;
 	private EnvironmentalTab               environmentalTab;
 	private PrivateWellTab			       wellTab;
 	private SampleItemTab                  sampleItemTab;
@@ -84,14 +113,14 @@ public class ReviewReleaseScreen extends Screen {
         security = OpenELIS.security.getModule("sample");
         if (security == null)
             throw new SecurityException("screenPermException", "Review and Release Screen");
-/*
+
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 postConstructor();
             }
-        });*/
+        });
     }
-    /*
+    
     public void postConstructor() {
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
@@ -466,7 +495,7 @@ public class ReviewReleaseScreen extends Screen {
     		setState(Screen.State.QUERY);
     		manager = SampleManager.getInstance();
     		manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
-    		dataBundle = new SampleDataBundle();
+    		dataBundle = null;
     		DataChangeEvent.fire(this);
             //we need to make sure the tabs are cleared
     		sampleTab.draw();
@@ -661,8 +690,8 @@ public class ReviewReleaseScreen extends Screen {
     		}
     	}
     	if(index < -1)
-    		return new SampleDataBundle();
-    	return new SampleDataBundle(siManager,siManager.getSampleItemAt(index));
+    		return null;
+    	return siManager.getBundleAt(index);
     }
     
     private SampleDataBundle getAnalysisBundle(Integer id) throws Exception {
@@ -679,28 +708,8 @@ public class ReviewReleaseScreen extends Screen {
     		}
     	}
     	if(sindex < -1)
-    		return new SampleDataBundle();
-    	SampleDataBundle bundle = new SampleDataBundle(siManager,siManager.getSampleItemAt(sindex),siManager.getAnalysisAt(sindex),siManager.getAnalysisAt(sindex).getAnalysisAt(aindex),
-                siManager.getAnalysisAt(sindex).getTestAt(aindex));
-    	
-    	ArrayList<TableDataRow> prepRows = new ArrayList<TableDataRow>();
-    	prepRows.add(new TableDataRow(null, ""));
-    	for(int i = 0; i < manager.getSampleItems().getAnalysisAt(sindex).count(); i++) {
-    		AnalysisViewDO aDO = manager.getSampleItems().getAnalysisAt(sindex).getAnalysisAt(i);
-    		if(aDO.getId() > 0) {
-    			DictionaryDO dictDO = DictionaryCache.getEntryFromId(aDO.getStatusId());
-    			prepRows.add(new TableDataRow(
-    					aDO.getId(),
-    					formatTreeString(aDO.getTestName()) +
-    					" : " +
-    					formatTreeString(aDO.getMethodName() +
-    							" : " +
-    							dictDO.getEntry()
-    							.trim())));
-    		}
-    	}
-    	bundle.samplePrepDropdownModel = prepRows;
-    	return bundle;
+    		return null;
+    	return siManager.getAnalysisAt(sindex).getBundleAt(aindex);
     }
     
     private String formatTreeString(String val) {
@@ -790,5 +799,5 @@ public class ReviewReleaseScreen extends Screen {
     		sampleContent.selectTab(tabs[0].ordinal());
     		sampleContent.getTabBar().setStyleName("gwt-TabBar");
     	}
-    }*/
+    }
 }
