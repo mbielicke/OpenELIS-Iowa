@@ -55,14 +55,14 @@ UIRF Software License are applicable instead of those above.
     <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="testAnalyteLookup" name="{resource:getString($constants,'testAnalyteSelection')}">
       <VerticalPanel padding="0" spacing="0">
         <table key="testAnalyteTable" width="auto" maxRows="10" multiSelect="true" showScroll="ALWAYS" title="">
-          <col width="50" header="{resource:getString($constants,'alias')}">
-            <check />
-          </col>
           <col width="400" header="{resource:getString($constants,'analyte')}">
             <label />
           </col>
           <col width="120" header="{resource:getString($constants,'type')}">
             <dropdown width="100" />
+          </col>
+          <col width="50" header="{resource:getString($constants,'alias')}">
+            <check />
           </col>
         </table>
         <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">

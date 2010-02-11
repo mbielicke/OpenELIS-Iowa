@@ -51,8 +51,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
 public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers<TestAnalyteLookupScreen.Action>{
@@ -173,9 +171,9 @@ public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers
 
                 row = new TableDataRow(3);
                 row.key = data.getId();
-                row.cells.get(0).value = data.getIsAlias();
-                row.cells.get(1).value = data.getAnalyteName();
-                row.cells.get(2).value = data.getTypeId();
+                row.cells.get(0).value = data.getAnalyteName();
+                row.cells.get(1).value = data.getTypeId();
+                row.cells.get(2).value = data.getIsAlias();
                 row.data = data;
                 model.add(row);
             }
@@ -195,7 +193,7 @@ public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("test_analyte_type"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
-        ((Dropdown<Integer>)testAnalyteTable.getColumns().get(2).colWidget).setModel(model);
+        ((Dropdown<Integer>)testAnalyteTable.getColumns().get(1).colWidget).setModel(model);
     }
     
     public void setData(ArrayList<TestAnalyteViewDO> analytes){

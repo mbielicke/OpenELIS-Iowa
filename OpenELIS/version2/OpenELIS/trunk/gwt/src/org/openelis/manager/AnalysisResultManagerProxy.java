@@ -90,8 +90,31 @@ public class AnalysisResultManagerProxy {
         return service.callList("getAliasList", query);
     }
     
-    public void validate(AnalysisResultManager man, ValidationErrorsList errorsList)
-                                                                                    throws Exception {
-
+    public void validate(AnalysisResultManager man, ValidationErrorsList errorsList) throws Exception {
+        //FIXME commenting this out for the demo for now
+        /*ArrayList<ResultViewDO> results;
+        ResultViewDO result;
+        TestResultDO testResultDO;
+        
+        //go through the results and put a form error if one is found to be invalid
+        try{
+            for(int i=0; i<man.rowCount(); i++){
+                results = man.getRowAt(i);
+                
+                for(int j=0; j<results.size(); j++){
+                    result = results.get(j);
+                    
+                    if(result.getTestResultId() != null){
+                        testResultDO = man.getTestResultList().get(result.getTestResultId());
+                        man.validateResultValue(result.getResultGroup(), testResultDO.getUnitOfMeasureId(), result.getValue());
+                    }
+                }
+            }
+            
+        } catch (ParseException e) {
+            errorsList.add(new FormErrorException("oneOrMoreResultValuesInvalid", "aa", "bb"));
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+        }*/
     }
 }
