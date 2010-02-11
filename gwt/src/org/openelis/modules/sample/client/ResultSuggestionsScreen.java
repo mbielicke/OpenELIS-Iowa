@@ -138,11 +138,11 @@ public class ResultSuggestionsScreen extends Screen implements HasActionHandlers
          window.close();
      }
      
-     public void setValidator(ResultValidator resultValidator, Integer unitId){
+     public void setValidator(ResultValidator resultValidator, Integer unitId, String currentValue){
          this.resultValidator = resultValidator;
          this.unitId = unitId;
          
-         suggestion.setSelection(null, "");
+         suggestion.setSelection(currentValue, currentValue);
          setFocus(suggestion);
      }
 
