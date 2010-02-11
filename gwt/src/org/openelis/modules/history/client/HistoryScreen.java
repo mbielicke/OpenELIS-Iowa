@@ -53,7 +53,6 @@ import org.openelis.gwt.widget.tree.event.BeforeLeafOpenHandler;
 import org.openelis.utilcommon.DataBaseUtil;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Node;

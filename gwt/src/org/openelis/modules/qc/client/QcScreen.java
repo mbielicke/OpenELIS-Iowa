@@ -712,7 +712,7 @@ public class QcScreen extends Screen {
                             window.setDone(consts.get("noRecordsFound"));
                             setState(State.DEFAULT);
                         } else if (error instanceof LastPageException) {
-                            window.setError("No more records in this direction");
+                            window.setError(consts.get("noMoreRecordInDir"));
                         } else {
                             Window.alert("Error: QC call query failed; " + error.getMessage());
                             window.setError(consts.get("queryFailed"));

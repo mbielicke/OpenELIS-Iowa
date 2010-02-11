@@ -56,7 +56,8 @@ import org.openelis.modules.reviewRelease.client.ReviewReleaseScreen;
 import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
 import org.openelis.modules.section.client.SectionScreen;
 import org.openelis.modules.standardnote.client.StandardNoteScreen;
-import org.openelis.modules.storage.client.StorageLocationScreen;
+import org.openelis.modules.storageLocation.client.StorageLocationScreen;
+import org.openelis.modules.storage.client.StorageScreen;
 import org.openelis.modules.storageunit.client.StorageUnitScreen;
 import org.openelis.modules.systemvariable.client.SystemVariableScreen;
 import org.openelis.modules.test.client.TestScreen;
@@ -400,6 +401,28 @@ public class OpenELIS extends Screen {
                 });
             }
         });
+        
+        addClickHandler("storage", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new StorageScreen());
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+        
         addClickHandler("toDo", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 // browser.addScreen(new )

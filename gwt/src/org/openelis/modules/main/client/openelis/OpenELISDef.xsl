@@ -131,7 +131,9 @@ UIRF Software License are applicable instead of those above.
                 <menuItem key="reviewAndRelease" description="{resource:getString($constants,'reviewAndReleaseDescription')}" enable="true" icon="reviewAndReleaseIcon" label="{resource:getString($constants,'reviewAndRelease')}" />
                 <menuItem key="toDo" description="{resource:getString($constants,'toDoDescription')}" enable="false" icon="toDoIcon" label="{resource:getString($constants,'toDo')}" />
                 <menuItem key="labelFor" description="{resource:getString($constants,'labelForDescription')}" enable="false" icon="labelForIcon" label="{resource:getString($constants,'labelFor')}" />
-                <menuItem key="storage" description="{resource:getString($constants,'storageDescription')}" enable="false" icon="storageIcon" label="{resource:getString($constants,'storage')}" />
+                <code>if(OpenELIS.security.hasModule("storage","SELECT")){</code>
+                <menuItem key="storage" description="{resource:getString($constants,'storageDescription')}" enable="true" icon="storageIcon" label="{resource:getString($constants,'storage')}" />
+                <code>}</code>
                 <menuItem key="QC" description="{resource:getString($constants,'QCDescription')}" icon="QCIcon" label="{resource:getString($constants,'QC')}" />
               </menuPanel>
             </menuItem>

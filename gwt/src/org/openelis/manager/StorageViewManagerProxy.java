@@ -23,9 +23,17 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.storage.client;
+package org.openelis.manager;
 
-import org.openelis.gwt.screen.ScreenDefInt;
+public class StorageViewManagerProxy {
+    
+    public StorageViewManagerProxy() {
+        
+    }
+    
+    public StorageViewManager fetchWithCurrent(Integer id) throws Exception {
+return null;
+    }
+    
 
-public interface StorageLocationDef extends ScreenDefInt {
 }

@@ -29,7 +29,7 @@ import org.openelis.gwt.services.ScreenService;
 
 public class StorageLocationManagerProxy {
 
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.storage.server.StorageLocationService";
+    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.storageLocation.server.StorageLocationService";
     protected ScreenService       service;
 
     public StorageLocationManagerProxy() {

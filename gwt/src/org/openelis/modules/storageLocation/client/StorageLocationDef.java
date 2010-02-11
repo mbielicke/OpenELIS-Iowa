@@ -23,34 +23,9 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.modules.storageLocation.client;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.screen.ScreenDefInt;
 
-public class StorageLocationChildManagerProxy {
-
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.storageLocation.server.StorageLocationService";
-    protected ScreenService       service;
-    
-    public StorageLocationChildManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);   
-    }
-    
-    public StorageLocationChildManager fetchByParentStorageLocationId(Integer id) throws Exception {
-        return service.call("fetchChildByParentStorageLocationId", id);
-    }
-    
-    public StorageLocationChildManager add(StorageLocationChildManager man) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
-    
-    public StorageLocationChildManager update(StorageLocationChildManager man) throws Exception {
-        assert false : "not supported";
-        return null;
-    }    
-    
-    public void validate(StorageLocationChildManager man) throws Exception {       
-    } 
-    
+public interface StorageLocationDef extends ScreenDefInt {
 }

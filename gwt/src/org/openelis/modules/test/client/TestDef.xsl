@@ -154,7 +154,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'method')" />:
                   </text>
                   <widget>
-                    <autoComplete key="{meta:getMethodName()}" width="145" tab="testTabPanel, {meta:getName()}" field="Integer" required="true">
+                    <autoComplete key="{meta:getMethodName()}" case = "LOWER" width="145" tab="testTabPanel, {meta:getName()}" field="Integer" required="true">
                       <col width="145" />
                     </autoComplete>
                   </widget>

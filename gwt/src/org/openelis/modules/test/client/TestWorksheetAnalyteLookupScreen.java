@@ -178,8 +178,10 @@ public class TestWorksheetAnalyteLookupScreen extends Screen
         return addHandler(handler, ActionEvent.getType());
     }
 
-    public void refresh() {
-        testAnalyteTable.load(getTestAnalyteTable());
+    public void refresh(TestAnalyteManager manager) {
+        this.manager = manager;
+        DataChangeEvent.fire(this);
+        //testAnalyteTable.load(getTestAnalyteTable());
     }
 
     private ArrayList<TableDataRow> getTestAnalyteTable() {

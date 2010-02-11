@@ -60,15 +60,22 @@ public class StorageManagerProxy {
 
         return service.call("fetchById", query);
     }
-
+    
+    public StorageManager fetchCurrentByLocationId(Integer id) throws Exception {         
+        return service.call("fetchCurrentByLocationId", id);
+    }
+    
+    public StorageManager fetchHistoryByLocationId(Query query) throws Exception {
+        return service.call("fetchHistoryByLocationId", query);
+    }
+    
     public StorageManager add(StorageManager man) throws Exception {
         assert false : "not supported";
         return null;
     }
 
     public StorageManager update(StorageManager man) throws Exception {
-        assert false : "not supported";
-        return null;
+        return service.call("update", man);
     }
 
     public void validate(StorageManager man, ValidationErrorsList errorsList) throws Exception {

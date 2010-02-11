@@ -1014,12 +1014,14 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     public void draw(){
         if(!loaded) {
             try {            
-                testAnalyteManager = manager.getTestAnalytes();
-                testResultManager = manager.getTestResults();
-                resultErrorList = null;
-                if(state == State.UPDATE || state == State.ADD) 
-                    sampleTypeManager = manager.getSampleTypes();                    
+                if(manager != null) {
+                    testAnalyteManager = manager.getTestAnalytes();
+                    testResultManager = manager.getTestResults();                    
+                    if(state == State.UPDATE || state == State.ADD) 
+                        sampleTypeManager = manager.getSampleTypes();                    
+                }
                 
+                resultErrorList = null;
                 if(testAnalyteManager != null)
                     displayManager.setDataGrid(testAnalyteManager.getAnalytes());
                 
@@ -1114,10 +1116,14 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         }
     }
     
-    public void showTestResultError(GridFieldErrorException error) {        
-        if(resultErrorList == null)
-            resultErrorList = new ArrayList<GridFieldErrorException>();
-        resultErrorList.add(error);
+    public void showTestResultError(GridFieldErrorException error) {
+        //Window.alert("x");
+        if(!errorExistsInList(error.getRowIndex(),error.getColumnIndex(),error.getFieldName(),error.getKey())) {
+            //Window.alert("y");
+            if(resultErrorList == null)
+                resultErrorList = new ArrayList<GridFieldErrorException>();
+            resultErrorList.add(error);
+        }
         showErrorsForResultGroup(resultTabPanel.getTabBar().getSelectedTab());
     }
     
@@ -1381,22 +1387,26 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         TestTypeOfSampleDO data;
         String entry;
         Integer unitId;
+        ArrayList<Integer> unitList;
         
         model = new ArrayList<TableDataRow>();
         
-        model.add(new TableDataRow(null, ""));
+        model.add(new TableDataRow(null, ""));        
         
         if(sampleTypeManager != null && (state == State.ADD || state == State.UPDATE)) {
+            unitList = new ArrayList<Integer>();
             for(int i=0; i < sampleTypeManager.count(); i++) {
                 data = sampleTypeManager.getTypeAt(i);
                 unitId = data.getUnitOfMeasureId();
                 try {
-                    if(unitId != null) {
+                    if(unitId != null && !unitList.contains(unitId)) {
                         entry = DictionaryCache.getEntryFromId(unitId).getEntry();
                         model.add(new TableDataRow(unitId, entry));
+                        unitList.add(unitId);
                     } 
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
+                    e.printStackTrace();
                 }
             }
         } else {
@@ -1582,7 +1592,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         GridFieldErrorException error;
         int i;                
         
-        if (resultErrorList == null || resultErrorList.size() == 0)
+        if (resultErrorList == null)
             return;                       
         
         for (i = 0; i < resultErrorList.size(); i++) {
@@ -1614,16 +1624,15 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         }
     }
     
-    private GridFieldErrorException addToResultErrorList(int group,int row,String field,String message) {
+    private void addToResultErrorList(int group,int row,String field,String message) {
         GridFieldErrorException error;
         
-        error = new GridFieldErrorException(message,group, row,field,"resultTable");
-        if(resultErrorList == null)
-            resultErrorList = new ArrayList<GridFieldErrorException>();
-        resultErrorList.add(error);
-        
-        return error;
-        
+        if(!errorExistsInList(group,row,field,message)) {
+            error = new GridFieldErrorException(message,group, row,field,"resultTable");
+            if(resultErrorList == null)
+                resultErrorList = new ArrayList<GridFieldErrorException>();
+            resultErrorList.add(error);
+        }        
     }   
     
     private void addAnalyte() {
@@ -1655,7 +1664,6 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             row = analyteTable.getRow(r);
             if(!(Boolean)row.data) {                        
                 analyteTable.deleteRow(r);
-                analyteTable.refresh();
             }
         }
         
@@ -1815,5 +1823,20 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         }
     }
     
+    private boolean errorExistsInList(int group,int row,String field,String message) {
+        GridFieldErrorException ex;
+        if(resultErrorList == null)
+            return false;
+        
+        for(int i = 0; i < resultErrorList.size(); i++) {
+            ex = resultErrorList.get(i);
+            if((ex.getRowIndex() == group) && (ex.getColumnIndex() == row)  &&
+               (ex.getFieldName().equals(field)) && (ex.getKey().equals(message))) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
 }
  

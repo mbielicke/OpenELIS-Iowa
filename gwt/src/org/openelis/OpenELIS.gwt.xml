@@ -72,6 +72,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.shipping.Shipping"/>
     <inherits name="org.openelis.modules.standardnote.StandardNote"/>
     <inherits name="org.openelis.modules.storage.Storage"/>
+    <inherits name="org.openelis.modules.storageLocation.StorageLocation"/>
     <inherits name="org.openelis.modules.storageunit.StorageUnit"/>
     <inherits name="org.openelis.modules.systemvariable.SystemVariable"/>        
     <inherits name="org.openelis.modules.testTrailer.TestTrailer"/>

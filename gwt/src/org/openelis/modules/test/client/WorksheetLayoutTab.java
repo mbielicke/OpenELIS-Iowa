@@ -443,8 +443,8 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
                         }
 
                     });
-                } else {
-                    analyteLookup.refresh();
+                } else {                    
+                    analyteLookup.refresh(analyteManager);
                 } 
                 
                 modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
