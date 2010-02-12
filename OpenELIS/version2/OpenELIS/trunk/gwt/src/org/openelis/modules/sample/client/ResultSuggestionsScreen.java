@@ -45,6 +45,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 
 public class ResultSuggestionsScreen extends Screen implements HasActionHandlers<ResultSuggestionsScreen.Action>{
     public enum Action {OK};
@@ -143,7 +145,11 @@ public class ResultSuggestionsScreen extends Screen implements HasActionHandlers
          this.unitId = unitId;
          
          suggestion.setSelection(currentValue, currentValue);
-         setFocus(suggestion);
+         DeferredCommand.addCommand(new Command() {
+             public void execute() {
+                 setFocus(suggestion);
+             }
+         });
      }
 
      public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {

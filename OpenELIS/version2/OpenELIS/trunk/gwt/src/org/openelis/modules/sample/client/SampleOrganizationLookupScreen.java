@@ -63,6 +63,8 @@ import org.openelis.manager.SampleOrganizationManager;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
 public class SampleOrganizationLookupScreen  extends Screen implements HasActionHandlers<SampleOrganizationLookupScreen.Action> {
@@ -303,6 +305,13 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
         manager = man;
         
         DataChangeEvent.fire(this);
+        
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                if(sampleOrganizationTable.numRows() > 0)
+                    sampleOrganizationTable.select(0, 0);
+            }
+        });
     }
     
     public SampleOrganizationManager getManager(){

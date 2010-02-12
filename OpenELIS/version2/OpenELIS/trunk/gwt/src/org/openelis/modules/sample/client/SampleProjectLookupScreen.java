@@ -57,6 +57,8 @@ import org.openelis.manager.SampleProjectManager;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
 public class SampleProjectLookupScreen extends Screen implements HasActionHandlers<SampleProjectLookupScreen.Action> {
@@ -259,6 +261,13 @@ public class SampleProjectLookupScreen extends Screen implements HasActionHandle
     public void setManager(SampleProjectManager man){
         manager = man;
         DataChangeEvent.fire(this);
+        
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                if(sampleProjectTable.numRows() > 0)
+                    sampleProjectTable.select(0, 0);
+            }
+        });
     }
     
     public SampleProjectManager getManager(){

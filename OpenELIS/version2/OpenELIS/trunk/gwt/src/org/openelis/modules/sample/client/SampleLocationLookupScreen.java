@@ -49,10 +49,16 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 
 public class SampleLocationLookupScreen extends Screen implements HasActionHandlers<SampleLocationLookupScreen.Action> {
 
     protected Dropdown<String> state, country;
+    protected TextBox samplingLocation, multipleUnit, streetAddress,
+                      city, zipCode;
+    protected AppButton okButton;
+    
     private boolean dropdownsInited;
     private SampleEnvironmentalDO        envDO;
 
@@ -72,7 +78,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
     }
     
     private void initialize() {
-        final TextBox samplingLocation = (TextBox)def.getWidget(SampleMeta.getEnvLocation());
+        samplingLocation = (TextBox)def.getWidget(SampleMeta.getEnvLocation());
         addScreenHandler(samplingLocation, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 samplingLocation.setValue(envDO.getLocation());
@@ -88,7 +94,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
         });
 
-        final TextBox multipleUnit = (TextBox)def.getWidget(SampleMeta.getLocationAddrMultipleUnit());
+        multipleUnit = (TextBox)def.getWidget(SampleMeta.getLocationAddrMultipleUnit());
         addScreenHandler(multipleUnit, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 multipleUnit.setValue(envDO.getLocationAddressDO().getMultipleUnit());
@@ -104,7 +110,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
         });
 
-        final TextBox streetAddress = (TextBox)def.getWidget(SampleMeta.getLocationAddrStreetAddress());
+        streetAddress = (TextBox)def.getWidget(SampleMeta.getLocationAddrStreetAddress());
         addScreenHandler(streetAddress, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 streetAddress.setValue(envDO.getLocationAddressDO().getStreetAddress());
@@ -120,7 +126,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
         });
 
-        final TextBox city = (TextBox)def.getWidget(SampleMeta.getLocationAddrCity());
+        city = (TextBox)def.getWidget(SampleMeta.getLocationAddrCity());
         addScreenHandler(city, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 city.setValue(envDO.getLocationAddressDO().getCity());
@@ -152,7 +158,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
         });
 
-        final TextBox zipCode = (TextBox)def.getWidget(SampleMeta.getLocationAddrZipCode());
+        zipCode = (TextBox)def.getWidget(SampleMeta.getLocationAddrZipCode());
         addScreenHandler(zipCode, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 zipCode.setValue(envDO.getLocationAddressDO().getZipCode());
@@ -184,7 +190,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
         });
         
-        final AppButton okButton = (AppButton)def.getWidget("ok");
+        okButton = (AppButton)def.getWidget("ok");
         addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 ok();
@@ -230,6 +236,12 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
         }
         
         DataChangeEvent.fire(this);
+        
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                setFocus(samplingLocation);
+            }
+        });
     }
     
     public void setScreenState(State state){

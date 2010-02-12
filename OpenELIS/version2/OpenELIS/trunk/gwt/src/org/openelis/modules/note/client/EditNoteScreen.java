@@ -425,11 +425,6 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
 
         tree.load(treeList);
     }
-    
-    @Deprecated
-    public void setScreenState(State state) {
-        //setState(state);
-    }
 
     public void setNote(NoteViewDO aNote) {
         note = aNote;
