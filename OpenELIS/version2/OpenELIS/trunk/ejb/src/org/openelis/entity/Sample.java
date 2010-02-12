@@ -55,13 +55,12 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-    @NamedQuery(name = "Sample.SampleById", query = "select new org.openelis.domain.SampleDO(smpl.id, smpl.nextItemSequence, smpl.domain, "+
+    @NamedQuery(name = "Sample.FetchById", query = "select new org.openelis.domain.SampleDO(smpl.id, smpl.nextItemSequence, smpl.domain, "+
                 " smpl.accessionNumber, smpl.revision, smpl.orderId, smpl.enteredDate, smpl.receivedDate, smpl.receivedById, smpl.collectionDate, smpl.collectionTime, "+
                 "smpl.statusId, smpl.packageId, smpl.clientReference, smpl.releasedDate) from Sample smpl where smpl.id = :id"),
-    @NamedQuery(name = "Sample.SampleByAccessionNumber", query = "select new org.openelis.domain.SampleDO(smpl.id, smpl.nextItemSequence, smpl.domain, "+
+    @NamedQuery(name = "Sample.FetchByAccessionNumber", query = "select new org.openelis.domain.SampleDO(smpl.id, smpl.nextItemSequence, smpl.domain, "+
                 " smpl.accessionNumber, smpl.revision, smpl.orderId, smpl.enteredDate, smpl.receivedDate, smpl.receivedById, smpl.collectionDate, smpl.collectionTime, "+
-                "smpl.statusId, smpl.packageId, smpl.clientReference, smpl.releasedDate) from Sample smpl where smpl.accessionNumber = :id"),
-    @NamedQuery(name = "Sample.AccessionNumberCheck", query = "select smpl.accessionNumber from Sample smpl where smpl.accessionNumber = :id")})
+                "smpl.statusId, smpl.packageId, smpl.clientReference, smpl.releasedDate) from Sample smpl where smpl.accessionNumber = :id")})
 
 @Entity
 @Table(name="sample")

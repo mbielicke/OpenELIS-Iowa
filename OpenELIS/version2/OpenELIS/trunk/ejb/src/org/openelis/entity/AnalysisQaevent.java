@@ -25,7 +25,7 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-    @NamedQuery(name = "AnalysisQaevent.AnalysisQaeventByAnalysisId", query = "select new org.openelis.domain.AnalysisQaEventViewDO(q.id, q.analysisId, q.qaeventId, " + 
+    @NamedQuery(name = "AnalysisQaevent.FetchByAnalysisId", query = "select new org.openelis.domain.AnalysisQaEventViewDO(q.id, q.analysisId, q.qaeventId, " + 
                 " q.typeId, q.isBillable, q.qaEvent.name) from AnalysisQaevent q where q.analysisId = :id order by q.id")})
                 
 @Entity

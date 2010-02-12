@@ -69,7 +69,7 @@ public class AnalysisBean implements AnalysisLocal{
         List returnList;
         Query query;
         
-        query = manager.createNamedQuery("Analysis.AnalysisTestBySampleItemId");
+        query = manager.createNamedQuery("Analysis.FetchBySampleItemId");
         query.setParameter("id", sampleItemId);
         
         returnList = query.getResultList();

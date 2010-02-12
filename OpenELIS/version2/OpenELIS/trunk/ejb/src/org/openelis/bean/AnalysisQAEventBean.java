@@ -53,7 +53,7 @@ public class AnalysisQAEventBean implements AnalysisQAEventLocal {
         Query query;
         List returnList;
         
-        query = manager.createNamedQuery("AnalysisQaevent.AnalysisQaeventByAnalysisId");
+        query = manager.createNamedQuery("AnalysisQaevent.FetchByAnalysisId");
         query.setParameter("id", analysisId);
         returnList = query.getResultList();
         

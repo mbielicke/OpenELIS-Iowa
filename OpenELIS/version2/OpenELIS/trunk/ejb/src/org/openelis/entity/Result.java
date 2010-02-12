@@ -28,8 +28,7 @@ import org.openelis.utils.Auditable;
                         " r.isColumn, r.sortOrder, r.isReportable, r.analyteId, r.typeId, r.value, a.name, ta.rowGroup, ta.resultGroup) "+
                         " from Result r LEFT JOIN r.analysis an LEFT JOIN an.test t LEFT JOIN r.analyte a LEFT JOIN r.testAnalyte ta " + 
                         " where r.analysisId = :id order by r.sortOrder"),
-               @NamedQuery(name = "Result.ResultByAnalyteId", query = "select r.id from Result r where r.analyteId = :id"),
-               @NamedQuery(name = "Result.AnalyteByAnalysisId", query = "select new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId) "+
+               @NamedQuery(name = "Result.FetchAnalyteByAnalysisId", query = "select new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId) "+
                         " from Result r LEFT JOIN r.analyte a where r.analysisId = :id order by r.sortOrder")})
 
 @Entity

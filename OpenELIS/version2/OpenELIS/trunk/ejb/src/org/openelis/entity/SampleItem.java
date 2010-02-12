@@ -52,12 +52,12 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-    @NamedQuery(name = "SampleItem.SampleItemById", query = "select new org.openelis.domain.SampleItemViewDO(item.id, item.sampleId, " + 
+    @NamedQuery(name = "SampleItem.FetchById", query = "select new org.openelis.domain.SampleItemViewDO(item.id, item.sampleId, " + 
                 "item.sampleItemId, item.itemSequence, item.typeOfSampleId, item.sourceOfSampleId, item.sourceOther, item.containerId, " +
                 " item.containerReference, item.quantity, item.unitOfMeasureId, typeDict.entry, sourceDict.entry, contDict.entry) from SampleItem item " + 
                 " LEFT JOIN item.sourceDict sourceDict LEFT JOIN item.typeDict typeDict LEFT JOIN " +
                 " item.containerDict contDict where item.id = :id"),
-   @NamedQuery(name = "SampleItem.SampleItemBySampleId", query = "select new org.openelis.domain.SampleItemViewDO(item.id, item.sampleId, " + 
+   @NamedQuery(name = "SampleItem.FetchBySampleId", query = "select new org.openelis.domain.SampleItemViewDO(item.id, item.sampleId, " + 
                 "item.sampleItemId, item.itemSequence, item.typeOfSampleId, item.sourceOfSampleId, item.sourceOther, item.containerId, " +
                 "item.containerReference, item.quantity, item.unitOfMeasureId, typeDict.entry, sourceDict.entry, contDict.entry) from SampleItem item " + 
                 " LEFT JOIN item.sourceDict sourceDict LEFT JOIN item.typeDict typeDict LEFT JOIN " +

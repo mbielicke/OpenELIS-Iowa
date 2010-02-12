@@ -102,14 +102,14 @@ public class SampleBean implements SampleLocal, SampleRemote {
     }
     
     public SampleDO fetchById(Integer sampleId) throws Exception {
-        Query query = manager.createNamedQuery("Sample.SampleById");
+        Query query = manager.createNamedQuery("Sample.FetchById");
         query.setParameter("id", sampleId);
         
         return (SampleDO)query.getSingleResult();
     }
     
     public SampleDO fetchByAccessionNumber(Integer accessionNumber) throws Exception {
-        Query query = manager.createNamedQuery("Sample.SampleByAccessionNumber");
+        Query query = manager.createNamedQuery("Sample.FetchByAccessionNumber");
         query.setParameter("id", accessionNumber);
         
         return (SampleDO)query.getSingleResult();

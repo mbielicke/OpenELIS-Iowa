@@ -54,7 +54,7 @@ import org.openelis.utils.Auditable;
 @NamedQueries({
     @NamedQuery(name = "Storage.IdByStorageLocation",
                query = "select s.id from Storage s where s.storageLocationId = :id"),
-    @NamedQuery(name = "Storage.StorageById",
+    @NamedQuery(name = "Storage.FetchById",
                 query = "select new org.openelis.domain.StorageViewDO(s.id, s.referenceId, s.referenceTableId, " +
                         "s.storageLocationId, s.checkin, s.checkout, s.systemUserId, childLoc.name, childLoc.location, " +
                         "parentLoc.name, childLoc.storageUnit.description)"

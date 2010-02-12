@@ -60,7 +60,7 @@ public class SampleItemBean implements SampleItemLocal {
         Query query;
         SampleItemViewDO data;
         
-        query = manager.createNamedQuery("SampleItem.SampleItemById");
+        query = manager.createNamedQuery("SampleItem.FetchById");
         query.setParameter("id", id);
         try {
             data = (SampleItemViewDO)query.getSingleResult();
@@ -76,7 +76,7 @@ public class SampleItemBean implements SampleItemLocal {
         List<SampleItemViewDO> returnList;
         Query query;
         
-        query = manager.createNamedQuery("SampleItem.SampleItemBySampleId");
+        query = manager.createNamedQuery("SampleItem.FetchBySampleId");
         query.setParameter("id", sampleId);
  
         returnList = query.getResultList();

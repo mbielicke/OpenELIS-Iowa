@@ -277,7 +277,7 @@ public class ResultBean implements ResultLocal {
         ArrayList<TestAnalyteViewDO> tmpList;
 
         // get analytes by analysis id
-        Query query = manager.createNamedQuery("Result.AnalyteByAnalysisId");
+        Query query = manager.createNamedQuery("Result.FetchAnalyteByAnalysisId");
         query.setParameter("id", analysisId);
         analytes = query.getResultList();
 

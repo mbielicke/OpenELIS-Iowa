@@ -52,7 +52,7 @@ public class SampleOrganizationBean implements SampleOrganizationLocal {
         List<SampleOrganizationViewDO> returnList;
         Query query;
         
-        query = manager.createNamedQuery("SampleOrg.SampleOrgBySampleId");
+        query = manager.createNamedQuery("SampleOrganization.FetchBySampleId");
         query.setParameter("id", sampleId);
         returnList = query.getResultList();
         

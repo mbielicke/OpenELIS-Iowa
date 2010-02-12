@@ -49,7 +49,7 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-    @NamedQuery(name = "SampleOrg.SampleOrgBySampleId", query = "select new org.openelis.domain.SampleOrganizationViewDO(so.id, so.sampleId, " + 
+    @NamedQuery(name = "SampleOrganization.FetchBySampleId", query = "select new org.openelis.domain.SampleOrganizationViewDO(so.id, so.sampleId, " + 
                 " so.organizationId, so.typeId, o.name, o.address.city, o.address.state) from SampleOrganization so LEFT JOIN so.organization o where so.sampleId = :id")})
                 
 @Entity
