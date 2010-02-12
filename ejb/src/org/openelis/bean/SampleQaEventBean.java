@@ -53,7 +53,7 @@ public class SampleQaEventBean implements SampleQAEventLocal {
         Query query;
         List returnList;
         
-        query = manager.createNamedQuery("SampleQaevent.SampleQaeventBySampleId");
+        query = manager.createNamedQuery("SampleQaevent.FetchBySampleId");
         query.setParameter("id", sampleId);
         returnList = query.getResultList();
         

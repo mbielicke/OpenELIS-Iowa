@@ -83,7 +83,7 @@ public class StorageBean implements StorageLocal {
         Query query;
         ArrayList<StorageViewDO> list;
 
-        query = manager.createNamedQuery("Storage.StorageById");
+        query = manager.createNamedQuery("Storage.FetchById");
         query.setParameter("referenceTable", refTableId);
         query.setParameter("id", refId);
 

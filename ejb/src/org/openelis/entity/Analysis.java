@@ -54,20 +54,20 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
+    @NamedQuery(name = "Analysis.FetchById", query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision," + 
+                " a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId," + 
+                " a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.method.id, t.method.name,pat.name, pam.name) " +
+                " from Analysis a LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam LEFT JOIN a.test t where a.id = :id"),
     @NamedQuery(name = "Analysis.FetchBySampleId", query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision, " + 
                 " a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId, " + 
                 " a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.method.id, t.method.name, pat.name, " + 
                 " pam.name) from Analysis a LEFT JOIN a.sampleItem si LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat " + 
                 " LEFT JOIN pat.method pam LEFT JOIN a.test t where si.sampleId = :id "),
-    @NamedQuery(name = "Analysis.AnalysisTestBySampleItemId", query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision, " + 
+    @NamedQuery(name = "Analysis.FetchBySampleItemId", query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision, " + 
                 " a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId, " + 
                 " a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.method.id, t.method.name, pat.name, pam.name) from " +
                 " Analysis a LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam LEFT JOIN a.test t where a.sampleItemId = :id"),
-    @NamedQuery(name = "Analysis.FetchById",
-               query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision," + 
-                       "a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId," + 
-                       "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.method.id, t.method.name,pat.name, pam.name)"
-                     + " from Analysis a LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam LEFT JOIN a.test t where a.id = :id")})
+    })
                 
 @Entity
 @Table(name="analysis")

@@ -52,7 +52,7 @@ public class SampleProjectBean implements SampleProjectLocal {
         Query query;
         List<SampleProjectViewDO> returnList;
         
-        query = manager.createNamedQuery("SampleProject.SampleProjectBySampleId");
+        query = manager.createNamedQuery("SampleProject.FetchBySampleId");
         query.setParameter("id", sampleId);
         returnList = query.getResultList();
         
