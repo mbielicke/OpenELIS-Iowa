@@ -33,6 +33,7 @@ import javax.naming.InitialContext;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalysisLocal;
@@ -251,8 +252,7 @@ public class AnalysisManagerProxy {
     }
     
     public Integer getIdFromSystemName(String systemName) throws Exception{
-        DictionaryLocal dl = dictionaryLocal();
-        DictionaryDO dictDO = dl.fetchBySystemName(systemName);
+        DictionaryDO dictDO = dictionaryLocal().fetchBySystemName(systemName);
         
         return dictDO.getId();
     }
@@ -275,5 +275,10 @@ public class AnalysisManagerProxy {
              System.out.println(e.getMessage());
              return null;
         }
+    }
+    
+    public SectionViewDO getSectionFromId(Integer sectionId) throws Exception {
+        assert false : "not supported";
+        return null;
     }
 }

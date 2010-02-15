@@ -30,6 +30,7 @@ import java.util.List;
 
 import javax.naming.InitialContext;
 
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.TableFieldErrorException;
@@ -99,7 +100,7 @@ public class TestSectionManagerProxy {
             throw list;
         }
 
-        dl = dictLocal();
+        dl = dictionaryLocal();
         defId = dl.fetchBySystemName("test_section_default").getId();
         matchId = dl.fetchBySystemName("test_section_match").getId();
 
@@ -178,7 +179,12 @@ public class TestSectionManagerProxy {
         if (list.size() > 0)
             throw list;
     }
-
+    public Integer getIdFromSystemName(String systemName) throws Exception{
+        DictionaryDO dictDO = dictionaryLocal().fetchBySystemName(systemName);
+        
+        return dictDO.getId();
+    }
+    
     private TestSectionLocal local() {
         try {
             InitialContext ctx = new InitialContext();
@@ -189,7 +195,7 @@ public class TestSectionManagerProxy {
         }
     }
     
-    private DictionaryLocal dictLocal() {
+    private DictionaryLocal dictionaryLocal() {
         try {
             InitialContext ctx = new InitialContext();
             return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");

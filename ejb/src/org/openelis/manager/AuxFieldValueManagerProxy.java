@@ -30,8 +30,10 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.AuxFieldValueViewDO;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AuxFieldValueLocal;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.utilcommon.DataBaseUtil;
 
 public class AuxFieldValueManagerProxy {
@@ -86,6 +88,12 @@ public class AuxFieldValueManagerProxy {
         return man;
     }
     
+    public Integer getIdFromSystemName(String systemName) throws Exception{
+        DictionaryDO dictDO = dictionaryLocal().fetchBySystemName(systemName);
+        
+        return dictDO.getId();
+    }
+    
     public void validate(AuxFieldValueManager man, ValidationErrorsList list) throws Exception {
        
     }
@@ -97,6 +105,16 @@ public class AuxFieldValueManagerProxy {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
+        }
+    }
+    
+    private static DictionaryLocal dictionaryLocal(){
+        try{
+            InitialContext ctx = new InitialContext();
+            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
+        }catch(Exception e){
+             System.out.println(e.getMessage());
+             return null;
         }
     }
 }
