@@ -138,7 +138,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                                     "controller?service=org.openelis.modules.sample.server.SampleService");
 
         security = OpenELIS.security.getModule("sampleenvironmental");
-
+        
         if (security == null)
             throw new SecurityException("screenPermException", "Environmental Sample Login Screen");
 
@@ -764,12 +764,11 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             DataChangeEvent.fire(this);
             window.clearStatus();
 
-        } catch (EntityLockedException e) {
-            window.clearStatus();
-            Window.alert(e.getMessage());
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
+        
+        window.clearStatus();
     }
 
     protected void commit() {

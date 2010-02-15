@@ -25,6 +25,7 @@
 */
 package org.openelis.manager;
 
+import org.openelis.cache.DictionaryCache;
 import org.openelis.gwt.services.ScreenService;
 
 
@@ -48,5 +49,9 @@ public class TestSectionManagerProxy {
     }
     
     public void validate(TestSectionManager man) throws Exception {        
+    }
+    
+    public Integer getIdFromSystemName(String systemName) throws Exception {
+        return DictionaryCache.getIdFromSystemName(systemName);
     }
 }

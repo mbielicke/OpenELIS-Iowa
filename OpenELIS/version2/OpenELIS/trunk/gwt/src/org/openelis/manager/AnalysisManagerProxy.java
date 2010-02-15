@@ -26,7 +26,9 @@
 package org.openelis.manager;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.SectionCache;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormErrorWarning;
@@ -113,5 +115,9 @@ public class AnalysisManagerProxy {
     
     public Integer getIdFromSystemName(String systemName) throws Exception {
         return DictionaryCache.getIdFromSystemName(systemName);
+    }
+    
+    public SectionViewDO getSectionFromId(Integer sectionId) throws Exception {
+        return SectionCache.getSectionFromId(sectionId);
     }
 }

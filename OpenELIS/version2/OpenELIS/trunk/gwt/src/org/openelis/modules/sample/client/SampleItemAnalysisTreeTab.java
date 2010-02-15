@@ -33,6 +33,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -60,6 +61,7 @@ import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
+import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
@@ -85,8 +87,7 @@ public class SampleItemAnalysisTreeTab extends Screen
     private SampleManager     manager;
     protected boolean         loaded = false;
 
-    public SampleItemAnalysisTreeTab(ScreenDefInt def, ScreenWindow window,
-                                     HasActionHandlers parentScreen) {
+    public SampleItemAnalysisTreeTab(ScreenDefInt def, ScreenWindow window, HasActionHandlers parentScreen) {
         setDef(def);
         setWindow(window);
 
@@ -157,7 +158,7 @@ public class SampleItemAnalysisTreeTab extends Screen
                 }
 
                 removeRow.enable(enable);
-
+                window.clearStatus();
                 ActionEvent.fire(treeTab, Action.REFRESH_TABS, data);
             }
         });
@@ -479,7 +480,7 @@ public class SampleItemAnalysisTreeTab extends Screen
             itemsTree.select(newRow);
         window.clearStatus();
     }
-
+    
     private void cleanupTestsWithPrep(Integer analysisId) {
         TreeDataItem treeItem;
         SampleDataBundle bundle;
@@ -518,7 +519,8 @@ public class SampleItemAnalysisTreeTab extends Screen
 
         if (testLookup == null) {
             testLookup = new TestPrepUtility();
-
+            testLookup.setScreen((Screen)parentScreen);
+            
             testLookup.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {
                 public void onAction(ActionEvent<org.openelis.modules.sample.client.TestPrepUtility.Action> event) {
                     testLookupFinished((ArrayList<SampleDataBundle>)event.getData());
@@ -553,7 +555,7 @@ public class SampleItemAnalysisTreeTab extends Screen
             anMan = manager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
 
             // update the analysis manager
-            anMan.cancelAnalysisAt(bundle.getAnalysisIndex());
+            anMan.cancelAnalysisAt(bundle.getAnalysisIndex(), OpenELIS.security);
             updateAnalysisRow(treeRow);
             itemsTree.refreshRow(treeRow);
 
@@ -561,6 +563,9 @@ public class SampleItemAnalysisTreeTab extends Screen
             cleanupTestsWithPrep(anMan.getAnalysisAt(bundle.getAnalysisIndex()).getId());
 
             ActionEvent.fire(this, Action.REFRESH_TABS, bundle);
+            
+        }catch(ValidationErrorsList e){
+            showErrors(e);
         } catch (Exception e) {
             Window.alert("cancelAnalysisRow: " + e.getMessage());
         }

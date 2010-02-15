@@ -128,12 +128,13 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                     //If method is empty, the selected row is a panel
                     //
                     if (selectedRow != null && selectedRow.key != null) {
-                        if (selectedRow.cells.get(1).value == null) 
+                        if (selectedRow.cells.get(1).value == null)
                             ActionEvent.fire(anTab, Action.PANEL_ADDED, event.getValue());
-                        else
+                        else{
                             ActionEvent.fire(anTab, Action.ANALYSIS_ADDED, event.getValue());
+                        }
                     } else
-                        method.setSelections(new ArrayList());
+                        ActionEvent.fire(anTab, Action.ANALYSIS_ADDED, null);
 
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
