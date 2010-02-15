@@ -27,7 +27,6 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.gwt.common.RPC;
 
@@ -121,7 +120,7 @@ public class TestSectionManager implements RPC {
         Integer defaultId;
         TestSectionViewDO data;
         
-        defaultId = DictionaryCache.getIdFromSystemName("test_section_default");
+        defaultId = proxy().getIdFromSystemName("test_section_default");
         data = null;
         for (int i = 0; i < sections.size(); i++ ) {
             if (defaultId.equals(sections.get(i).getFlagId())) {

@@ -25,9 +25,11 @@
  */
 package org.openelis.manager;
 
+import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.SecurityUtil;
 
 public class TestManager implements RPC {
 
@@ -239,7 +241,21 @@ public class TestManager implements RPC {
     public TestSectionManager getTestSections() {
         return testSections;
     }
-
+    
+    public boolean canAssign(SecurityUtil security){
+        TestSectionViewDO section;
+        
+        for(int i=0; i<testSections.count(); i++){
+            section = testSections.getSectionAt(i);
+            
+            if(security.getSection(section.getSection()) != null && 
+                            security.getSection(section.getSection()).hasAssignPermission())
+                return true;
+        }
+        
+        return false;
+    }
+    
     private static TestManagerProxy proxy() {
         if (proxy == null)
             proxy = new TestManagerProxy();

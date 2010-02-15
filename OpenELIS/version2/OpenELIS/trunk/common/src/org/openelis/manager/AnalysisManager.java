@@ -27,12 +27,21 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.cache.SectionCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.SectionViewDO;
+import org.openelis.domain.TestSectionViewDO;
+import org.openelis.domain.TestTypeOfSampleDO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.SecurityUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
+
+import com.google.gwt.user.client.Window;
 
 public class AnalysisManager implements RPC {
     private static final long                       serialVersionUID = 1L;
@@ -168,12 +177,24 @@ public class AnalysisManager implements RPC {
             deletedList.add(tmpList);
     }
 
-    public void cancelAnalysisAt(int index) {
-        AnalysisViewDO anDO = items.get(index).analysis;
-
+    public void cancelAnalysisAt(int index, SecurityUtil security) throws Exception {
+        AnalysisViewDO anDO;
+        SectionViewDO section;
+        ValidationErrorsList errorsList;
+        
+        anDO  = items.get(index).analysis;
+        section = proxy().getSectionFromId(anDO.getSectionId());
+        
+        if(security.getSection(section.getName()) == null || !security.getSection(section.getName()).hasCancelPermission()){
+            errorsList = new ValidationErrorsList();
+            errorsList.add(new FormErrorException("insufficientPrivilegesCancelTest", anDO.getTestName(), anDO.getMethodName()));
+            throw errorsList;
+        }
+        
         try {
             loadDictionaryEntries();
             anDO.setStatusId(anCancelledId);
+            SectionCache.getSectionFromId(anDO.getSectionId());
             anDO.setPreAnalysisId(null);
             
         } catch (Exception e) {
@@ -433,8 +454,82 @@ public class AnalysisManager implements RPC {
     }
 
     // test
-    public void setTestAt(TestManager test, int i) {
-        getItemAt(i).tests = test;
+    public void setTestAt(TestManager testMan, int index) {
+        TestViewDO test;
+        AnalysisViewDO anDO, preAnDO;
+        ArrayList<TestTypeOfSampleDO> units;
+        TestSectionViewDO defaultDO;
+        Integer typeOfSample;
+        ArrayList<AnalysisViewDO> preAnalysisList;
+        
+        getItemAt(index).tests = testMan;
+        anDO = getItemAt(index).analysis;
+        test = testMan.getTest();
+        
+        anDO.setTestId(test.getId());
+        anDO.setTestName(test.getName());
+        anDO.setMethodId(test.getMethodId());
+        anDO.setMethodName(test.getMethodName());
+        anDO.setIsReportable(test.getIsReportable());
+
+        // if there is only 1 unit then set it
+        units = null;
+        try {
+            typeOfSample = sampleItemManager.getSampleItemAt(getBundleAt(index).getSampleItemIndex()).getTypeOfSampleId();
+            units = testMan.getSampleTypes().getTypesBySampleType(typeOfSample);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        if (units.size() == 1)
+            anDO.setUnitOfMeasureId(units.get(0).getUnitOfMeasureId());
+
+        // if there is a default section then set it
+        defaultDO = null;
+        try {
+            defaultDO = testMan.getTestSections().getDefaultSection();
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        if (defaultDO != null)
+            anDO.setSectionId(defaultDO.getSectionId());
+        
+        //set preanalyses data
+        preAnalysisList = getPreAnalysisList(anDO.getId());
+        
+        for(int i=0; i<preAnalysisList.size(); i++){
+            preAnDO = preAnalysisList.get(i);
+            preAnDO.setPreAnalysisTest(test.getName());
+            preAnDO.setPreAnalysisMethod(test.getMethodName());
+        }
+    }
+    
+    public void removeTestAt(int index){
+        AnalysisViewDO anDO, preAnDO;
+        ArrayList<AnalysisViewDO> preAnalysisList;
+        
+        getItemAt(index).tests = null;
+        anDO = getItemAt(index).analysis;
+        
+        anDO.setTestId(null);
+        anDO.setTestName(null);
+        anDO.setMethodId(null);
+        anDO.setMethodName(null);
+        anDO.setIsReportable(null);
+        anDO.setUnitOfMeasureId(null);
+        anDO.setSectionId(null);
+        
+      //set preanalyses data
+        preAnalysisList = getPreAnalysisList(anDO.getId());
+        
+        for(int i=0; i<preAnalysisList.size(); i++){
+            preAnDO = preAnalysisList.get(i);
+            preAnDO.setPreAnalysisTest(null);
+            preAnDO.setPreAnalysisMethod(null);
+        }
     }
 
     public TestManager getTestAt(int i) throws Exception {
@@ -585,6 +680,21 @@ public class AnalysisManager implements RPC {
         items.add(item);
 
         return items.size() - 1;
+    }
+    
+    private ArrayList<AnalysisViewDO> getPreAnalysisList(Integer preAnalysisId){
+        ArrayList<AnalysisViewDO> returnList;
+        AnalysisViewDO anDO;
+        
+        returnList = new ArrayList<AnalysisViewDO>();
+        for(int i=0; i<count(); i++){
+            anDO = getItemAt(i).analysis;
+            
+            if(preAnalysisId.equals(anDO.getPreAnalysisId()))
+                returnList.add(anDO);
+        }
+        
+        return returnList;
     }
 
     private void loadDictionaryEntries() throws Exception {

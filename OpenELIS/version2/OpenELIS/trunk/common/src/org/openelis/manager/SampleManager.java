@@ -58,7 +58,8 @@ public class SampleManager implements RPC, HasAuxDataInt {
                                                   NEWBORN_DOMAIN_FLAG = "N",
                                                   PT_DOMAIN_FLAG = "P", 
                                                   SDWIS_DOMAIN_FLAG = "S", 
-                                                  WELL_DOMAIN_FLAG = "W";
+                                                  WELL_DOMAIN_FLAG = "W",
+                                                  FAST_LOGIN_DOMAIN_FLAG = "F";
 
     protected transient static SampleManagerProxy proxy;
 
