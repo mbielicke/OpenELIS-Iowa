@@ -32,10 +32,12 @@ import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormErrorWarning;
+import org.openelis.gwt.common.SecurityUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.manager.AnalysisManager.AnalysisListItem;
+import org.openelis.modules.main.client.openelis.OpenELIS;
 
 public class AnalysisManagerProxy {
     protected static final String ANALYSIS_SERVICE_URL = "org.openelis.modules.analysis.server.AnalysisService";
@@ -111,6 +113,10 @@ public class AnalysisManagerProxy {
             if(item.storages != null)
                 man.getStorageAt(i).validate(errorsList);
         }
+    }
+    
+    public SecurityUtil getSecurityUtil() {
+        return OpenELIS.security;
     }
     
     public Integer getIdFromSystemName(String systemName) throws Exception {

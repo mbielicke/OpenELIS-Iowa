@@ -141,7 +141,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
             if (idVO != null) {
                 testMan = TestManager.fetchWithPrepTestsSampleTypes(idVO.getId());
 
-                if (testMan.canAssign(security)) {
+                if (testMan.canAssign()) {
                     if (i == 0) // the first test id row will be in the analysis
                                 // manager already
                         addedIndex = analysisDataBundle.getAnalysisIndex();
@@ -221,7 +221,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
                 Window.alert(e.getMessage());
             }
             
-            if (testMan.canAssign(security)) {
+            if (testMan.canAssign()) {
                 addedIndex = anMan.addPreAnalysis(parentBundle.getAnalysisIndex());
                 anDO = anMan.getAnalysisAt(addedIndex);
                 anMan.setTestAt(testMan, addedIndex);
