@@ -228,7 +228,7 @@ public class SampleItemAnalysisTreeTab extends Screen
                     else if ("analysis".equals(row.leafType))
                         manager.getSampleItems()
                                .getAnalysisAt(bundle.getSampleItemIndex())
-                               .removeAnalysisAt(bundle.getSampleItemIndex());
+                               .removeAnalysisAt(bundle.getAnalysisIndex());
 
                 } catch (Exception e) {
                     Window.alert("rowDeletedHandler: " + e.getMessage());
