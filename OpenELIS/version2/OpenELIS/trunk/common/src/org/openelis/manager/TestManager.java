@@ -242,8 +242,11 @@ public class TestManager implements RPC {
         return testSections;
     }
     
-    public boolean canAssign(SecurityUtil security){
+    public boolean canAssign(){
         TestSectionViewDO section;
+        SecurityUtil security;
+        
+        security = proxy().getSecurityUtil();
         
         for(int i=0; i<testSections.count(); i++){
             section = testSections.getSectionAt(i);

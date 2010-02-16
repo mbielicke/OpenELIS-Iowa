@@ -35,9 +35,11 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.SecurityUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalysisLocal;
 import org.openelis.local.DictionaryLocal;
+import org.openelis.local.LoginLocal;
 import org.openelis.manager.AnalysisManager.AnalysisListItem;
 
 public class AnalysisManagerProxy {
@@ -251,6 +253,10 @@ public class AnalysisManagerProxy {
         
     }
     
+    public SecurityUtil getSecurityUtil() {
+        return loginLocal().getSecurityUtil();
+    }
+    
     public Integer getIdFromSystemName(String systemName) throws Exception{
         DictionaryDO dictDO = dictionaryLocal().fetchBySystemName(systemName);
         
@@ -271,6 +277,16 @@ public class AnalysisManagerProxy {
         try{
             InitialContext ctx = new InitialContext();
             return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
+        }catch(Exception e){
+             System.out.println(e.getMessage());
+             return null;
+        }
+    }
+    
+    private static LoginLocal loginLocal(){
+        try{
+            InitialContext ctx = new InitialContext();
+            return (LoginLocal)ctx.lookup("openelis/LoginBean/local");
         }catch(Exception e){
              System.out.println(e.getMessage());
              return null;
