@@ -33,9 +33,11 @@ import javax.naming.InitialContext;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.SecurityUtil;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
+import org.openelis.local.LoginLocal;
 import org.openelis.local.TestSectionLocal;
 import org.openelis.meta.TestMeta;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -179,6 +181,11 @@ public class TestSectionManagerProxy {
         if (list.size() > 0)
             throw list;
     }
+    
+    public SecurityUtil getSecurityUtil(){
+        return loginLocal().getSecurityUtil();
+    }
+    
     public Integer getIdFromSystemName(String systemName) throws Exception{
         DictionaryDO dictDO = dictionaryLocal().fetchBySystemName(systemName);
         
@@ -189,6 +196,16 @@ public class TestSectionManagerProxy {
         try {
             InitialContext ctx = new InitialContext();
             return (TestSectionLocal)ctx.lookup("openelis/TestSectionBean/local");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+    
+    private LoginLocal loginLocal() {
+        try {
+            InitialContext ctx = new InitialContext();
+            return (LoginLocal)ctx.lookup("openelis/LoginBean/local");
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;

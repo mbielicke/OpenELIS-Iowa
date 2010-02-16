@@ -177,11 +177,13 @@ public class AnalysisManager implements RPC {
             deletedList.add(tmpList);
     }
 
-    public void cancelAnalysisAt(int index, SecurityUtil security) throws Exception {
+    public void cancelAnalysisAt(int index) throws Exception {
         AnalysisViewDO anDO;
         SectionViewDO section;
         ValidationErrorsList errorsList;
+        SecurityUtil security;
         
+        security = proxy().getSecurityUtil();
         anDO  = items.get(index).analysis;
         section = proxy().getSectionFromId(anDO.getSectionId());
         
