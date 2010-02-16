@@ -25,7 +25,9 @@
 */
 package org.openelis.manager;
 
+import org.openelis.gwt.common.SecurityUtil;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.main.client.openelis.OpenELIS;
 
 public class TestManagerProxy {
 
@@ -74,6 +76,10 @@ public class TestManagerProxy {
     
     public TestManager abortUpdate(Integer testId) throws Exception {
         return service.call("abortUpdate", testId);
+    }
+    
+    public SecurityUtil getSecurityUtil(){
+        return OpenELIS.security;
     }
     
     public void validate(TestManager man) throws Exception {        

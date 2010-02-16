@@ -505,8 +505,10 @@ public class SampleItemAnalysisTreeTab extends Screen
                 anDO = anMan.getAnalysisAt(bundle.getAnalysisIndex());
 
                 // this test points to the prep, we need to clean it up
-                if (analysisId.equals(anDO.getPreAnalysisId()))
+                if (analysisId.equals(anDO.getPreAnalysisId())){
                     anMan.unlinkPrepTest(bundle.getAnalysisIndex());
+                    updateAnalysisRow(treeItem);
+                }
             }
         } catch (Exception e) {
             Window.alert("cleanupTestsWithPrep: " + e.getMessage());
@@ -555,7 +557,7 @@ public class SampleItemAnalysisTreeTab extends Screen
             anMan = manager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
 
             // update the analysis manager
-            anMan.cancelAnalysisAt(bundle.getAnalysisIndex(), OpenELIS.security);
+            anMan.cancelAnalysisAt(bundle.getAnalysisIndex());
             updateAnalysisRow(treeRow);
             itemsTree.refreshRow(treeRow);
 
