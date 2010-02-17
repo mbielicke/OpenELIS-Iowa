@@ -56,7 +56,7 @@ UIRF Software License are applicable instead of those above.
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'sourceOther')" />:
           </text>
-          <textbox key="{meta:getItemSourceOther()}" width="215px" field="String" />
+          <textbox key="{meta:getItemSourceOther()}" width="215px" max="40" field="String" />
         </row>
         <row>
           <text style="Prompt">
@@ -66,7 +66,7 @@ UIRF Software License are applicable instead of those above.
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'containerReference')" />:
           </text>
-          <textbox key="{meta:getItemContainerReference()}" width="215px" field="String" />
+          <textbox key="{meta:getItemContainerReference()}" width="215px" max="10" field="String" />
         </row>
         <row>
           <text style="Prompt">

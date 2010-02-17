@@ -52,7 +52,7 @@
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'value')" />:
               </text>
-              <autoComplete key="suggestion" width="180" popWidth="auto" field="String">
+              <autoComplete key="suggestion" width="180" max="80" popWidth="auto" field="String">
                 <col width="180" header="Suggested Values" />
               </autoComplete>
             </row>

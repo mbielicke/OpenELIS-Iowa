@@ -77,6 +77,7 @@ public class AuxTableColumn extends TableColumn {
             autoComplete.setWidth("270");
             autoComplete.setTableWidth("auto");
             autoComplete.setField(new IntegerField());
+            autoComplete.textbox.setLength(80);
 
             ArrayList<TableColumn> cols = new ArrayList<TableColumn>();
             TableColumn col = new TableColumn();
