@@ -104,7 +104,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'collected')" />:
               </text>
-              <calendar key="{meta:getCollectionDate()}" begin="0" end="2" width="80px" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getCollectionTime()},orderNumber" />
+              <calendar key="{meta:getCollectionDate()}" begin="0" end="2" max="0" width="90px" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getCollectionTime()},orderNumber" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'time')" />:
               </text>
@@ -114,7 +114,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'received')" />:
               </text>
-              <calendar key="{meta:getReceivedDate()}" begin="0" end="4" width="110px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getStatusId()},{meta:getCollectionTime()}" />
+              <calendar key="{meta:getReceivedDate()}" begin="0" end="4" max="0" width="120px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getStatusId()},{meta:getCollectionTime()}" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'status')" />:
               </text>
@@ -123,7 +123,7 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select="resource:getString($constants,'clntRef')" />:
               </text>
               <widget colspan="3">
-                <textbox key="{meta:getClientReference()}" width="175px" tab="{meta:getEnvIsHazardous()},{meta:getStatusId()}" field="String" />
+                <textbox key="{meta:getClientReference()}" width="175px" max="20" tab="{meta:getEnvIsHazardous()},{meta:getStatusId()}" field="String" />
               </widget>
             </row>
           </TablePanel>
@@ -146,18 +146,18 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'collector')" />:
                 </text>
-                <textbox key="{meta:getEnvCollector()}" width="235px" tab="{meta:getEnvCollectorPhone()},{meta:getEnvPriority()}" field="String" />
+                <textbox key="{meta:getEnvCollector()}" width="235px" max="40" tab="{meta:getEnvCollectorPhone()},{meta:getEnvPriority()}" field="String" />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'phone')" />:
                 </text>
-                <textbox key="{meta:getEnvCollectorPhone()}" width="120px" tab="{meta:getEnvLocation()},{meta:getEnvCollector()}" field="String" />
+                <textbox key="{meta:getEnvCollectorPhone()}" width="120px" max="21" tab="{meta:getEnvLocation()},{meta:getEnvCollector()}" field="String" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'location')" />:
                 </text>
                 <HorizontalPanel>
-                  <textbox key="{meta:getEnvLocation()}" width="175px" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" field="String" />
+                  <textbox key="{meta:getEnvLocation()}" width="175px" max="40" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" field="String" />
                   <appButton key="locButton" style="LookupButton">
                     <AbsolutePanel style="LookupButtonImage" />
                   </appButton>
@@ -165,7 +165,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'desc')" />:
                 </text>
-                <textbox key="{meta:getEnvDescription()}" width="315px" tab="itemsTestsTree,{meta:getEnvLocation()}" field="String" />
+                <textbox key="{meta:getEnvDescription()}" width="315px" max="40" tab="itemsTestsTree,{meta:getEnvLocation()}" field="String" />
               </row>
             </TablePanel>
           </VerticalPanel>

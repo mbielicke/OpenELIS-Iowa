@@ -45,34 +45,34 @@ UIRF Software License are applicable instead of those above.
         <row>
           <table key="testResultsTable" width="697" maxRows="9" showScroll="ALWAYS" title="">
             <col width="200">
-              <textbox />
+              <textbox max="80"/>
             </col>
             <col width="200">
-              <textbox />
+              <textbox max="80"/>
             </col>
             <col width="200">
-              <textbox />
+              <textbox max="80"/>
             </col>
             <col width="200">
-              <textbox />
+              <textbox max="80"/>
             </col>
             <col width="200">
-              <textbox />
+              <textbox max="80"/>
             </col>
             <col width="200">
-              <textbox />
+              <textbox max="80"/>
             </col>
             <col width="200">
-              <textbox />
+              <textbox max="80"/>
             </col>
             <col width="200">
-              <textbox />
+              <textbox max="80"/>
             </col>
             <col width="200">
-              <textbox />
+              <textbox max="80"/>
             </col>
             <col width="200">
-              <textbox />
+              <textbox max="80"/>
             </col>
           </table>
         </row>
