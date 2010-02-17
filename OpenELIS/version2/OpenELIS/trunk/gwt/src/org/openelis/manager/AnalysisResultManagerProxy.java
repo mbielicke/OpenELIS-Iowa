@@ -70,6 +70,10 @@ public class AnalysisResultManagerProxy {
         assert false : "not supported";
         return null;
     }
+    
+    public AnalysisResultManager merge(AnalysisResultManager oldMan) throws Exception {
+        return service.call("merge", oldMan);
+    }
 
     public ArrayList<AnalyteDO> getAliasList(ArrayList<TestAnalyteViewDO> analytes) throws Exception {
         Query query;

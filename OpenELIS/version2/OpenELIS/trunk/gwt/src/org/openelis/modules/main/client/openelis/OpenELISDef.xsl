@@ -84,7 +84,7 @@ UIRF Software License are applicable instead of those above.
 <menuItem key="fullLogin" icon="fullLoginIcon" label="{resource:getString($constants,'fullLogin')}" description="{resource:getString($constants,'fullLoginDescription')}"/>
   -->
 
-                <menuItem key="quickEntry" description="{resource:getString($constants,'quickEntryDescription')}" enable="false" icon="quickEntryIcon" label="{resource:getString($constants,'quickEntry')}" />
+                <menuItem key="quickEntry" description="{resource:getString($constants,'quickEntryDescription')}" enable="true" icon="quickEntryIcon" label="{resource:getString($constants,'quickEntry')}" />
 
 <!--				
 <menuItem key="secondEntry" icon="secondEntryIcon" label="{resource:getString($constants,'secondEntry')}" description="{resource:getString($constants,'secondEntryDescription')}"/>

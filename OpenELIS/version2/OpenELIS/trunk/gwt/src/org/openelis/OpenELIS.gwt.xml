@@ -65,6 +65,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.PTSampleLogin.PTSampleLogin"/>
     <inherits name="org.openelis.modules.qaevent.QAEvent"/>
     <inherits name="org.openelis.modules.qc.QC"/>
+    <inherits name="org.openelis.modules.quickEntry.QuickEntry"/>
     <inherits name="org.openelis.modules.reviewRelease.ReviewRelease"/>
     <inherits name="org.openelis.modules.sample.Sample"/>
     <inherits name="org.openelis.modules.SDWISSampleLogin.SDWISSampleLogin"/>

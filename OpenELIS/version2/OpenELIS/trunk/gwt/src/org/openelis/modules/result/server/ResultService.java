@@ -39,16 +39,32 @@ import org.openelis.remote.ResultManagerRemote;
 
 public class ResultService {
     public AnalysisResultManager fetchByAnalysisIdForDisplay(Integer analysisId) throws Exception {
-        return remote().fetchByAnalysisIdForDisplay(analysisId);
+        try{
+            return remote().fetchByAnalysisIdForDisplay(analysisId);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     public AnalysisResultManager fetchByAnalysisId(AnalysisDO anDO) throws Exception {
-        return remote().fetchByAnalysisId(anDO.getId(), anDO.getTestId());
+        try{
+            return remote().fetchByAnalysisId(anDO.getId(), anDO.getTestId());
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     public AnalysisResultManager fetchByTestId(Integer testId) throws Exception {
         try {
             return remote().fetchByTestId(testId);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+    
+    public AnalysisResultManager merge(AnalysisResultManager manager) throws Exception {
+        try {
+            return remote().merge(manager);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }

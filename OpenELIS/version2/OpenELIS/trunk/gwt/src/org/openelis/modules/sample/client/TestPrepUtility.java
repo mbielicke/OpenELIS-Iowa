@@ -138,7 +138,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         for (int i = 0; i < testIds.size(); i++ ) {
             idVO = testIds.get(i);
 
-            if (idVO != null) {
+            if (idVO.getId() != null) {
                 testMan = TestManager.fetchWithPrepTestsSampleTypes(idVO.getId());
 
                 if (testMan.canAssign()) {
@@ -155,8 +155,10 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
                                                           testMan.getTest().getName(),
                                                           testMan.getTest().getMethodName()));
                 }
-            } else
+            } else{
                 anMan.removeTestAt(analysisDataBundle.getAnalysisIndex());
+                bundles.add(analysisDataBundle);
+            }
         }
 
         fireFinished();

@@ -55,6 +55,7 @@ import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
+import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
@@ -66,6 +67,8 @@ import org.openelis.manager.TestSectionManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.SampleMeta;
 
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
@@ -84,27 +87,31 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     protected CalendarLookUp        startedDate, completedDate, releasedDate, printedDate;
 
     protected ArrayList<TableDataRow> fullSectionModel, fullUnitModel;
-    protected HashMap<Integer, ArrayList<TableDataRow>> sectionModel, unitModel; 
-    
-    protected boolean               fullSectionShown, fullUnitShown;
-    protected int                   analysisIndex = -1;
-    protected AnalysisManager       manager;
-    protected SampleDataBundle      bundle;
-    protected AnalysisViewDO        analysis;
-    protected SampleItemViewDO      sampleItem;
+    protected HashMap<Integer, ArrayList<TableDataRow>> sectionModel, unitModel;
 
-    protected Integer               analysisLoggedInId, analysisCancelledId, analysisReleasedId,
-                    analysisInPrepId;
+    protected boolean                                   fullSectionShown, fullUnitShown;
+    protected int                                       analysisIndex = -1;
+    protected AnalysisManager                           manager;
+    protected SampleDataBundle                          bundle;
+    protected AnalysisViewDO                            analysis;
+    protected SampleItemViewDO                          sampleItem;
 
-    protected ScreenService         panelService;
+    protected Integer                                   analysisLoggedInId, analysisCancelledId,
+                                                        analysisReleasedId, analysisInPrepId,
+                                                        changedTestId;
+
+    private Confirm                                     changeTestConfirm;
+    protected ScreenService                             panelService;
 
     public AnalysisTab(ScreenDefInt def, ScreenWindow window) {
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.analysis.server.AnalysisService");
-        panelService = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
+        service = new ScreenService(
+                                    "OpenELISServlet?service=org.openelis.modules.analysis.server.AnalysisService");
+        panelService = new ScreenService(
+                                         "controller?service=org.openelis.modules.panel.server.PanelService");
 
         setDef(def);
         setWindow(window);
-        
+
         initialize();
         initializeDropdowns();
     }
@@ -119,26 +126,33 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                TableDataRow selectedRow;
+                changedTestId = event.getValue();
+               
+                if (manager.hasAnalysisResultsAt(analysisIndex)) {
+                    if (changeTestConfirm == null) {
+                        changeTestConfirm = new Confirm(Confirm.Type.QUESTION,
+                                                            consts.get("loseResultsWarning"),
+                                                            "No", "Yes");
+                        changeTestConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
+                            public void onSelection(SelectionEvent<Integer> event) {
+                                switch (event.getSelectedItem().intValue()) {
+                                    case 0:
+                                        test.setSelection(analysis.getTestId(), analysis.getTestName());
+                                        break;
+                                    case 1:
+                                        testChanged(changedTestId);
+                                        break;
+                                }
+                            }
+                        });
+                    }
 
-                try {
-                    selectedRow = test.getSelection();
-                    
-                    //
-                    //If method is empty, the selected row is a panel
-                    //
-                    if (selectedRow != null && selectedRow.key != null) {
-                        if (selectedRow.cells.get(1).value == null)
-                            ActionEvent.fire(anTab, Action.PANEL_ADDED, event.getValue());
-                        else{
-                            ActionEvent.fire(anTab, Action.ANALYSIS_ADDED, event.getValue());
-                        }
-                    } else
-                        ActionEvent.fire(anTab, Action.ANALYSIS_ADDED, null);
-
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    changeTestConfirm.show();
+                } else {
+                    testChanged(changedTestId);
                 }
+
+                
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -277,31 +291,33 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         addScreenHandler(sectionId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 ArrayList<TableDataRow> sections;
-                
-                if(EnumSet.of(State.QUERY, State.DEFAULT, State.DISPLAY).contains(state)){
-                    if(!fullSectionShown)
+
+                if (EnumSet.of(State.QUERY, State.DEFAULT, State.DISPLAY).contains(state)) {
+                    if ( !fullSectionShown)
                         sectionId.setModel(fullSectionModel);
                     fullSectionShown = true;
-                }else{
+                } else {
                     fullSectionShown = false;
                     sections = null;
-                    
-                    if(analysis.getTestId() != null){
+
+                    if (analysis.getTestId() != null) {
                         sections = sectionModel.get(analysis.getTestId());
-                        
-                        if(sections == null){
-                            try{
-                                sections = getSectionsModel(manager.getTestAt(bundle.getAnalysisIndex()).getTestSections());
-                            }catch(Exception e){
+
+                        if (sections == null) {
+                            try {
+                                sections = getSectionsModel(manager.getTestAt(
+                                                                              bundle.getAnalysisIndex())
+                                                                   .getTestSections());
+                            } catch (Exception e) {
                                 sections = null;
                             }
-                            
+
                             sectionModel.put(analysis.getTestId(), sections);
                         }
                     }
                     sectionId.setModel(sections);
                 }
-                
+
                 sectionId.setSelection(analysis.getSectionId());
             }
 
@@ -320,31 +336,33 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         addScreenHandler(unitOfMeasureId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 ArrayList<TableDataRow> units;
-                
-                if(EnumSet.of(State.QUERY, State.DEFAULT, State.DISPLAY).contains(state)){
-                    if(!fullUnitShown)
+
+                if (EnumSet.of(State.QUERY, State.DEFAULT, State.DISPLAY).contains(state)) {
+                    if ( !fullUnitShown)
                         unitOfMeasureId.setModel(fullUnitModel);
                     fullUnitShown = true;
-                }else{
+                } else {
                     fullUnitShown = false;
                     units = null;
-                    
-                    if(analysis.getTestId() != null){
+
+                    if (analysis.getTestId() != null) {
                         units = unitModel.get(analysis.getTestId());
-                        
-                        if(units == null){
-                            try{
-                                units = getUnitsModel(manager.getTestAt(bundle.getAnalysisIndex()).getSampleTypes(), sampleItem.getTypeOfSampleId());
-                            }catch(Exception e){
+
+                        if (units == null) {
+                            try {
+                                units = getUnitsModel(manager.getTestAt(bundle.getAnalysisIndex())
+                                                             .getSampleTypes(),
+                                                      sampleItem.getTypeOfSampleId());
+                            } catch (Exception e) {
                                 units = null;
                             }
-                            
+
                             unitModel.put(analysis.getTestId(), units);
                         }
                     }
                     unitOfMeasureId.setModel(units);
                 }
-                
+
                 unitOfMeasureId.setSelection(analysis.getUnitOfMeasureId());
             }
 
@@ -428,10 +446,11 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         addScreenHandler(samplePrep, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 String testMethodString = null;
-                
-                if(analysis.getPreAnalysisTest() != null)
-                    testMethodString = analysis.getPreAnalysisTest() + " : " + analysis.getPreAnalysisMethod();
-                
+
+                if (analysis.getPreAnalysisTest() != null)
+                    testMethodString = analysis.getPreAnalysisTest() + " : " +
+                                       analysis.getPreAnalysisMethod();
+
                 samplePrep.setSelection(analysis.getPreAnalysisId(), testMethodString);
             }
 
@@ -439,7 +458,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 SampleDataBundle anBundle;
                 if (event.getValue() == null) {
                     manager.unlinkPrepTest(bundle.getAnalysisIndex());
-                    
+
                 } else {
                     anBundle = (SampleDataBundle)samplePrep.getSelection().data;
                     manager.linkPrepTest(bundle.getAnalysisIndex(), anBundle.getAnalysisIndex());
@@ -455,7 +474,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 samplePrep.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
+
         samplePrep.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 ArrayList<TableDataRow> model;
@@ -464,21 +483,22 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 SampleDataBundle anBundle;
                 Integer currentId;
                 String match;
-                
+
                 currentId = analysis.getId();
                 match = event.getMatch();
                 model = new ArrayList<TableDataRow>();
-                
-                for(int i=0; i<manager.count(); i++){
+
+                for (int i = 0; i < manager.count(); i++ ) {
                     anDO = manager.getAnalysisAt(i);
-                    
-                    if(!currentId.equals(anDO.getId()) && anDO.getTestName().startsWith(match)){
-                        row = new TableDataRow(anDO.getId(), anDO.getTestName()+" : "+anDO.getMethodName());
+
+                    if ( !currentId.equals(anDO.getId()) && anDO.getTestName().startsWith(match)) {
+                        row = new TableDataRow(anDO.getId(), anDO.getTestName() + " : " +
+                                                             anDO.getMethodName());
                         row.data = manager.getBundleAt(i);
                         model.add(row);
                     }
                 }
-                
+
                 samplePrep.showAutoMatches(model);
             }
         });
@@ -558,7 +578,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         sectionId.setModel(model);
         sectionModel = new HashMap<Integer, ArrayList<TableDataRow>>();
         fullSectionShown = true;
-        
+
         // unit full dropdown model
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
@@ -570,35 +590,62 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         unitModel = new HashMap<Integer, ArrayList<TableDataRow>>();
         fullUnitShown = true;
     }
+    
+    private void testChanged(Integer id){
+        TableDataRow selectedRow;
+        
+        try {
+            selectedRow = test.getSelection();
+
+            //
+            // If method is empty, the selected row is a panel
+            //
+            if (selectedRow != null && selectedRow.key != null) {
+                if (selectedRow.cells.get(1).value == null)
+                    ActionEvent.fire(this, Action.PANEL_ADDED, id);
+                else {
+                    ActionEvent.fire(this, Action.ANALYSIS_ADDED, id);
+                }
+            } else
+                ActionEvent.fire(this, Action.ANALYSIS_ADDED, null);
+
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+        }
+    }
 
     private boolean canEdit() {
         return (analysis != null && !analysisCancelledId.equals(analysis.getStatusId()) && !analysisReleasedId.equals(analysis.getStatusId()));
     }
 
     public void setData(SampleDataBundle data) {
-        try{
+        try {
             if (data != null && SampleDataBundle.Type.ANALYSIS.equals(data.getType())) {
-                
+
                 analysisIndex = data.getAnalysisIndex();
-                manager = data.getSampleManager().getSampleItems().getAnalysisAt(data.getSampleItemIndex());
+                manager = data.getSampleManager()
+                              .getSampleItems()
+                              .getAnalysisAt(data.getSampleItemIndex());
                 analysis = manager.getAnalysisAt(analysisIndex);
-                sampleItem = data.getSampleManager().getSampleItems().getSampleItemAt(data.getSampleItemIndex());
-    
-                if (state == State.ADD || state == State.UPDATE) 
+                sampleItem = data.getSampleManager()
+                                 .getSampleItems()
+                                 .getSampleItemAt(data.getSampleItemIndex());
+
+                if (state == State.ADD || state == State.UPDATE)
                     StateChangeEvent.fire(this, State.UPDATE);
-    
+
             } else {
                 analysis = new AnalysisViewDO();
                 sampleItem = new SampleItemViewDO();
                 manager = null;
-    
+
                 if (state != State.QUERY)
                     StateChangeEvent.fire(this, State.DEFAULT);
             }
             bundle = data;
             loaded = false;
-        }catch(Exception e){
-            Window.alert("analysisTab setData: "+e.getMessage());
+        } catch (Exception e) {
+            Window.alert("analysisTab setData: " + e.getMessage());
         }
     }
 
