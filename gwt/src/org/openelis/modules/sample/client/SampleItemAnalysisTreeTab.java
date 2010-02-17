@@ -478,6 +478,9 @@ public class SampleItemAnalysisTreeTab extends Screen
         itemsTree.fireEvents(true);
         if (newRow != null)
             itemsTree.select(newRow);
+        else if(bundles.size() == 0)
+            ActionEvent.fire(this, Action.REFRESH_TABS, itemsTree.getSelection().data);
+        
         window.clearStatus();
     }
     
