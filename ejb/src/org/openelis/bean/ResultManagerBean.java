@@ -45,4 +45,8 @@ public class ResultManagerBean implements ResultManagerRemote {
     public AnalysisResultManager fetchByTestId(Integer testId) throws Exception {
         return AnalysisResultManager.fetchForUpdate(testId);
     }
+    
+    public AnalysisResultManager merge(AnalysisResultManager man) throws Exception {
+        return AnalysisResultManager.merge(man);
+    }
 }
