@@ -15,7 +15,7 @@ import org.openelis.utilcommon.ResultValidator;
 public class AnalysisResultManager implements RPC {
     private static final long                             serialVersionUID = 1L;
 
-    protected Integer                                     analysisId;
+    protected Integer                                     analysisId, mergeTestId;
     protected ArrayList<ArrayList<ResultViewDO>>          results;
     protected ArrayList<ResultViewDO>                     deletedResults;
 
@@ -106,7 +106,11 @@ public class AnalysisResultManager implements RPC {
     public static AnalysisResultManager fetchByAnalysisId(Integer analysisId) throws Exception {
         return proxy().fetchByAnalysisIdForDisplay(analysisId);
     }
-
+    
+    public static AnalysisResultManager merge(AnalysisResultManager manager) throws Exception {
+        return proxy().merge(manager);
+    }
+    
     /**
      * Creates a new instance of this object with the specified analysis id. Use
      * this function to load an instance of this object from database.
@@ -281,6 +285,14 @@ public class AnalysisResultManager implements RPC {
         this.analysisId = analysisId;
     }
     
+    Integer getMergeTestId() {
+        return mergeTestId;
+    }
+
+    void setMergeTestId(Integer mergeTestId) {
+        this.mergeTestId = mergeTestId;
+    }
+
     void setResults(ArrayList<ArrayList<ResultViewDO>> results) {
         this.results = results;
     }
@@ -294,6 +306,14 @@ public class AnalysisResultManager implements RPC {
 
     ResultViewDO getDeletedAt(int i) {
         return deletedResults.get(i);
+    }
+    
+    ArrayList<ResultViewDO> getDeleted() {
+        return deletedResults;
+    }
+    
+    void setDeleted(ArrayList<ResultViewDO> deletedResults) {
+        this.deletedResults = deletedResults;
     }
 
     private ArrayList<ResultViewDO> createNewDataListAt(int row,
