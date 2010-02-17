@@ -450,7 +450,11 @@ public class AnalysisManager implements RPC {
 
         return item.analysisResult;
     }
-
+    
+    public boolean hasAnalysisResultsAt(int index){ 
+        return getItemAt(index).analysisResult != null;
+    }
+    
     public void setAnalysisResultAt(AnalysisResultManager analysisResult, int i) {
         getItemAt(i).analysisResult = analysisResult;
     }
@@ -463,10 +467,14 @@ public class AnalysisManager implements RPC {
         TestSectionViewDO defaultDO;
         Integer typeOfSample;
         ArrayList<AnalysisViewDO> preAnalysisList;
+        String oldTestName, oldMethodName;
         
         getItemAt(index).tests = testMan;
         anDO = getItemAt(index).analysis;
         test = testMan.getTest();
+        
+        oldTestName = anDO.getTestName();
+        oldMethodName = anDO.getMethodName();
         
         anDO.setTestId(test.getId());
         anDO.setTestName(test.getName());
@@ -507,14 +515,29 @@ public class AnalysisManager implements RPC {
             preAnDO.setPreAnalysisTest(test.getName());
             preAnDO.setPreAnalysisMethod(test.getMethodName());
         }
+        
+        //merge results if needed
+        if(getItemAt(index).analysisResult != null && 
+                        anDO.getTestName().equals(oldTestName) && 
+                        !anDO.getMethodName().equals(oldMethodName)){
+            try{
+                mergeAt(index, anDO.getTestId());
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
     }
     
     public void removeTestAt(int index){
+        AnalysisListItem item;
         AnalysisViewDO anDO, preAnDO;
         ArrayList<AnalysisViewDO> preAnalysisList;
         
-        getItemAt(index).tests = null;
-        anDO = getItemAt(index).analysis;
+        item = getItemAt(index);
+        
+        item.tests = null;
+        item.analysisResult = null;
+        anDO = item.analysis;
         
         anDO.setTestId(null);
         anDO.setTestName(null);
@@ -684,6 +707,23 @@ public class AnalysisManager implements RPC {
         return items.size() - 1;
     }
     
+    private void mergeAt(int index, Integer testId) throws Exception {
+        AnalysisListItem item;
+        AnalysisResultManager resultMan;
+        
+        item = getItemAt(index);
+        resultMan = getAnalysisResultAt(index);
+        resultMan.setMergeTestId(testId);
+        
+        try {
+            item.analysisResult = AnalysisResultManager.merge(resultMan);
+        } catch (NotFoundException e) {
+            // ignore
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
     private ArrayList<AnalysisViewDO> getPreAnalysisList(Integer preAnalysisId){
         ArrayList<AnalysisViewDO> returnList;
         AnalysisViewDO anDO;
