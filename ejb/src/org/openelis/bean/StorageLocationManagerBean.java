@@ -121,8 +121,7 @@ public class StorageLocationManagerBean implements StorageLocationManagerRemote 
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
-                                          "storagelocation", flag);
+        SecurityInterceptor.applySecurity("storagelocation", flag);
     }
 
 }

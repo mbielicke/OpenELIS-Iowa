@@ -100,7 +100,6 @@ public class ProviderManagerBean implements ProviderManagerRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
-                                          "provider", flag);
+        SecurityInterceptor.applySecurity("provider", flag);
     }
 }

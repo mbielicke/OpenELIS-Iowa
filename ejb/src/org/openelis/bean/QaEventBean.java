@@ -247,7 +247,6 @@ public class QaEventBean implements QaEventRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(),
-                                          "qaevent", flag);
+        SecurityInterceptor.applySecurity("qaevent", flag);
     }
 }

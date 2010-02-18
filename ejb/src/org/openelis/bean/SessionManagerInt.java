@@ -1,6 +1,8 @@
 package org.openelis.bean;
 
+import javax.ejb.Local;
 
+@Local
 public interface SessionManagerInt {
 	
 	public void destroySession();

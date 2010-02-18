@@ -128,7 +128,6 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
-                                          "worksheet", flag);
+        SecurityInterceptor.applySecurity("worksheet", flag);
     }
 }

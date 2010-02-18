@@ -98,6 +98,6 @@ public class ProjectManagerBean implements ProjectManagerRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "project", flag);
+        SecurityInterceptor.applySecurity("project", flag);
     }
 }

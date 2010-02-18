@@ -129,7 +129,6 @@ public class OrderManagerBean implements OrderManagerRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
-                                          "order", flag);
+        SecurityInterceptor.applySecurity("order", flag);
     }
 }

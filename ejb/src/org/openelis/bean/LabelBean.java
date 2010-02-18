@@ -245,8 +245,7 @@ public class LabelBean implements LabelRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(),
-                                          "label", flag);
+        SecurityInterceptor.applySecurity("label", flag);
     }
 
 }

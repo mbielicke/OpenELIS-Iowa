@@ -200,7 +200,6 @@ public class SampleManagerBean  implements SampleManagerRemote {
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
-                                          "sample", flag);
+        SecurityInterceptor.applySecurity("sample", flag);
     }
 }

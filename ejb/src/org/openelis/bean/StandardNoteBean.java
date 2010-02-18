@@ -227,6 +227,6 @@ public class StandardNoteBean implements StandardNoteRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "standardnote", flag);
+        SecurityInterceptor.applySecurity("standardnote", flag);
     }
 }

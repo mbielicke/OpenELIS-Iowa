@@ -134,7 +134,6 @@ public class AuxFieldGroupManagerBean implements AuxFieldGroupManagerRemote {
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
-                                          "auxiliary", flag);
+        SecurityInterceptor.applySecurity("auxiliary", flag);
     }    
 }

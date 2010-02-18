@@ -125,7 +125,6 @@ public class CategoryManagerBean implements CategoryManagerRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(),
-                                          "dictionary", flag);
+        SecurityInterceptor.applySecurity("dictionary", flag);
     }
 }

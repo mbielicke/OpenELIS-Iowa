@@ -121,7 +121,6 @@ public class QcManagerBean implements QcManagerRemote {
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
-                                          "qc", flag);
+        SecurityInterceptor.applySecurity("qc", flag);
     }
 }

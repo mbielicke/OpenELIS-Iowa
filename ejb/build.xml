@@ -8,11 +8,6 @@
 	<property name="src.resources" value="${basedir}/src/resources" />
 
 	<target name="ejbjar">
-		<jar jarfile="lib/lib.jar">
-			<fileset dir="../OpenELIS-Lib/bin">
-				<include name="org/openelis/persistence/CachingManager.class" />
-			</fileset>
-		</jar>
 		<jar jarfile="build/openelis.jar">
 			<fileset dir="bin">
 				<include name="org/openelis/bean/*.class" />
@@ -43,7 +38,6 @@
 			<fileset dir="${src.resources}/">
 				<include name="META-INF/application.xml" />
 				<include name="META-INF/jboss-app.xml" />
-				<include name="META-INF/ehcache.xml" />
 			</fileset>
 			<fileset dir="build">
 				<include name="openelis.jar" />
