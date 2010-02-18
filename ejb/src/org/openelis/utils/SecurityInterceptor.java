@@ -50,7 +50,7 @@ public class SecurityInterceptor {
     private static SecurityUtil getSecurity() throws Exception {
     	if(session == null){
     		InitialContext ctx = new InitialContext();
-    		session = (SessionManagerInt)ctx.lookup("openelis/SessionManagerInt/local");
+    		session = (SessionManagerInt)ctx.lookup("openelis/SessionManager/local");
     	}
    		return (SecurityUtil)session.getAttribute("security");
     }

@@ -1,6 +1,7 @@
 package org.openelis.bean;
 
 import javax.ejb.Local;
+import javax.ejb.Remote;
 
 @Local
 public interface SessionManagerInt {

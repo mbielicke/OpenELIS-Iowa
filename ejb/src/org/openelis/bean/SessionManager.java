@@ -9,7 +9,7 @@ import javax.ejb.SessionContext;
 
 import org.jboss.annotation.ejb.Service;
 
-@Service
+@Service(objectName="jboss:custom=SessionManager")
 public class SessionManager implements SessionManagerInt {
 	
 	HashMap<String,HashMap<String,Object>> sessions = new HashMap<String,HashMap<String,Object>>();
@@ -31,7 +31,7 @@ public class SessionManager implements SessionManagerInt {
 		HashMap<String,Object> session = sessions.get(ctx.getCallerPrincipal().getName());
 		if(session == null)
 			return createSession();
-		return createSession();
+		return session;
 	}
 
 	public Object getAttribute(String key) {
