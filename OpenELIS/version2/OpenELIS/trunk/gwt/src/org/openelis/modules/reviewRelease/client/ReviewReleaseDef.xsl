@@ -73,6 +73,14 @@ UIRF Software License are applicable instead of those above.
                 </text>
               </HorizontalPanel>
             </appButton>
+            <appButton action="report" key="report" style="ButtonPanelButton">
+              <HorizontalPanel>
+                <AbsolutePanel height="20" style="finalReportButton" width="20" />
+                <text>
+                  <xsl:value-of select='resource:getString($constants,"finalReport")' />
+                </text>
+              </HorizontalPanel>
+            </appButton>
             <xsl:call-template name="buttonPanelDivider" />
             <xsl:call-template name="commitButton" />
             <xsl:call-template name="abortButton" />

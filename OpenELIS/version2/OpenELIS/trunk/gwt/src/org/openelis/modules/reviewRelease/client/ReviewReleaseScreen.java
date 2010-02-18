@@ -11,6 +11,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ReviewReleaseVO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
+import org.openelis.gwt.common.ReportProgress;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
@@ -56,8 +57,10 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.http.client.Request;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -80,7 +83,7 @@ public class ReviewReleaseScreen extends Screen {
    
     protected Dropdown<Integer>            statusId;
     protected TreeWidget                   itemsTree;
-    protected AppButton                    removeRow, releaseButton,
+    protected AppButton                    removeRow, releaseButton, reportButton,
     									   addItem, addAnalysis, queryButton, updateButton,
     									   nextButton, prevButton, commitButton, abortButton;
     
@@ -245,6 +248,17 @@ public class ReviewReleaseScreen extends Screen {
         	
         	public void onStateChange(StateChangeEvent<State> event) {
         		releaseButton.enable(event.getState() == State.DISPLAY);
+        	}
+        });
+        
+        reportButton = (AppButton)def.getWidget("report");
+        addScreenHandler(reportButton, new ScreenEventHandler<Object>() {
+        	public void onClick(ClickEvent event) {
+        		doReport();
+        	}
+        	
+        	public void onStateChange(StateChangeEvent<State> event) {
+        		reportButton.enable(event.getState() == State.DISPLAY);
         	}
         });
               
@@ -800,4 +814,49 @@ public class ReviewReleaseScreen extends Screen {
     		sampleContent.getTabBar().setStyleName("gwt-TabBar");
     	}
     }
+    
+    private void doReport() {
+		Request req = service.call("doFinalReport", new AsyncCallback<ReportProgress>() {
+			public void onSuccess(final ReportProgress rp) {
+				window.setDone("Done");
+				window.setProgress(0);
+				DeferredCommand.addCommand(new Command() {
+					public void execute() {
+						Window.addWindow("Report.html?id="+rp.name, "Report", "toolbar=no,location=no,menubar=no,status=no,titlebar=no");
+					}
+				});
+			    
+			}
+			
+			public void onFailure(Throwable caught) {
+				Window.alert(caught.getMessage());
+			}
+		});
+		getProgress(req);
+
+	}
+    
+	public void getProgress(final Request req) {
+		if(!req.isPending()){
+			window.setDone("Done");
+			window.setProgress(0);
+			return;
+		}
+		service.call("getProgress", new AsyncCallback<ReportProgress>() {
+			public void onSuccess(ReportProgress fp) {
+				window.setBusy("Generating Report...");
+				window.setProgress(fp.generated);
+				Timer timer = new Timer() {
+					public void run() {
+						getProgress(req);
+					}
+				};
+				timer.schedule(500);
+			}	
+			
+			public void onFailure(Throwable caught) {
+				Window.alert(caught.getMessage());
+			}
+		});
+	}
 }
