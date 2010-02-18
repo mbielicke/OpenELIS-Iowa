@@ -1,5 +1,6 @@
 package org.openelis.remote;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 import javax.ejb.Remote;
@@ -12,5 +13,6 @@ import org.openelis.gwt.common.data.QueryData;
 public interface ReviewReleaseRemote {
 	
 	public ArrayList<ReviewReleaseVO> query(ArrayList<QueryData> fields, int page, int maxRows) throws Exception;
+	
 
 }
