@@ -276,6 +276,6 @@ public class AnalyteBean implements AnalyteRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "analyte", flag);
+        SecurityInterceptor.applySecurity("analyte", flag);
     }
 }

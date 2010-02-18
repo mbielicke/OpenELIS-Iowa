@@ -141,8 +141,7 @@ public class PanelManagerBean implements PanelManagerRemote {
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
-                                          "panel", flag);
+        SecurityInterceptor.applySecurity("panel", flag);
     }
 
 }

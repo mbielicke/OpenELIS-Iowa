@@ -166,7 +166,7 @@ public class TestManagerBean implements TestManagerRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "test", flag);
+        SecurityInterceptor.applySecurity("test", flag);
     }
 
 }

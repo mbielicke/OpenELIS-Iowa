@@ -134,7 +134,6 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
-                                          "organization", flag);
+        SecurityInterceptor.applySecurity("organization", flag);
     }
 }

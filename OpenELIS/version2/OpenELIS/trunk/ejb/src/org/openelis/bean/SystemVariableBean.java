@@ -224,7 +224,6 @@ public class SystemVariableBean implements SystemVariableRemote, SystemVariableL
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
-                                          "systemvariable", flag);
+        SecurityInterceptor.applySecurity("systemvariable", flag);
     }
 }

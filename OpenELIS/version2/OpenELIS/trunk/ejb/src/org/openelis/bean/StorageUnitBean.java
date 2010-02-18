@@ -245,7 +245,7 @@ public class StorageUnitBean implements StorageUnitRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "storageunit", flag);
+        SecurityInterceptor.applySecurity("storageunit", flag);
     }
 
 }

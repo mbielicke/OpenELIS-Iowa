@@ -10,7 +10,6 @@ import javax.ejb.SessionContext;
 import org.jboss.annotation.ejb.Service;
 
 @Service
-@Local(SessionManagerInt.class)
 public class SessionManager implements SessionManagerInt {
 	
 	HashMap<String,HashMap<String,Object>> sessions = new HashMap<String,HashMap<String,Object>>();
@@ -29,9 +28,9 @@ public class SessionManager implements SessionManagerInt {
 	}
 
 	private HashMap<String,Object> getSession() {
-		if(sessions.containsKey(ctx.getCallerPrincipal().getName())){
-			return sessions.get(ctx.getCallerPrincipal().getName());
-		}
+		HashMap<String,Object> session = sessions.get(ctx.getCallerPrincipal().getName());
+		if(session == null)
+			return createSession();
 		return createSession();
 	}
 

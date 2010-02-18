@@ -235,7 +235,6 @@ public class TestTrailerBean implements TestTrailerRemote{
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
-                                          "testtrailer", flag);
+        SecurityInterceptor.applySecurity("testtrailer", flag);
     }
 }

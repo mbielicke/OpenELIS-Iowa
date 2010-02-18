@@ -247,7 +247,6 @@ public class MethodBean implements MethodRemote {
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
-                                          "method", flag);
+        SecurityInterceptor.applySecurity("method", flag);
     }
 }

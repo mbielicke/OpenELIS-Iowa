@@ -139,7 +139,6 @@ public class InventoryItemManagerBean implements InventoryItemManagerRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
-                                          "inventoryitem", flag);
+        SecurityInterceptor.applySecurity("inventoryitem", flag);
     }
 }

@@ -121,8 +121,7 @@ public class InstrumentManagerBean implements InstrumentManagerRemote {
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
-                                          "instrument", flag);
+        SecurityInterceptor.applySecurity("instrument", flag);
     }
 
 }

@@ -1,5 +1,8 @@
 package org.openelis.bean;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +14,7 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.ReviewReleaseVO;
+import org.openelis.gwt.common.ReportProgress;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.QueryData;
@@ -18,6 +22,7 @@ import org.openelis.meta.ReviewReleaseMeta;
 import org.openelis.meta.SampleMeta;
 import org.openelis.remote.ReviewReleaseRemote;
 import org.openelis.util.QueryBuilderV2;
+import org.openelis.util.SessionManager;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless

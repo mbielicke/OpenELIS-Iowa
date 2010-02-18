@@ -255,7 +255,7 @@ public class SectionBean implements SectionRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "section", flag);
+        SecurityInterceptor.applySecurity("section", flag);
     }
 
 }
