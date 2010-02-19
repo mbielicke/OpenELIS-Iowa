@@ -29,8 +29,10 @@ import java.util.ArrayList;
 
 import javax.naming.InitialContext;
 
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.local.SampleQAEventLocal;
 
 public class SampleQAEventManagerProxy {
@@ -87,10 +89,26 @@ public class SampleQAEventManagerProxy {
         
     }
     
+    public Integer getIdFromSystemName(String systemName) throws Exception{
+        DictionaryDO dictDO = dictionaryLocal().fetchBySystemName(systemName);
+        
+        return dictDO.getId();
+    }
+    
     private SampleQAEventLocal local(){
         try{
             InitialContext ctx = new InitialContext();
             return (SampleQAEventLocal)ctx.lookup("openelis/SampleQaEventBean/local");
+        }catch(Exception e){
+             System.out.println(e.getMessage());
+             return null;
+        }
+    }
+    
+    private static DictionaryLocal dictionaryLocal(){
+        try{
+            InitialContext ctx = new InitialContext();
+            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
         }catch(Exception e){
              System.out.println(e.getMessage());
              return null;

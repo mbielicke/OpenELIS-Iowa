@@ -30,8 +30,10 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.AnalysisQaEventViewDO;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalysisQAEventLocal;
+import org.openelis.local.DictionaryLocal;
 
 public class AnalysisQAEventManagerProxy {
     public AnalysisQaEventManager fetchByAnalysisId(Integer analysisId) throws Exception {
@@ -86,10 +88,26 @@ public class AnalysisQAEventManagerProxy {
         
     }
     
+    public Integer getIdFromSystemName(String systemName) throws Exception{
+        DictionaryDO dictDO = dictionaryLocal().fetchBySystemName(systemName);
+        
+        return dictDO.getId();
+    }
+    
     private AnalysisQAEventLocal local(){
         try{
             InitialContext ctx = new InitialContext();
             return (AnalysisQAEventLocal)ctx.lookup("openelis/AnalysisQAEventBean/local");
+        }catch(Exception e){
+             System.out.println(e.getMessage());
+             return null;
+        }
+    }
+    
+    private static DictionaryLocal dictionaryLocal(){
+        try{
+            InitialContext ctx = new InitialContext();
+            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
         }catch(Exception e){
              System.out.println(e.getMessage());
              return null;

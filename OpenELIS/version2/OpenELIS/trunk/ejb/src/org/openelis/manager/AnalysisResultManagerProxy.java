@@ -30,10 +30,13 @@ import java.util.HashMap;
 
 import javax.naming.InitialContext;
 
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteDO;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.local.ResultLocal;
 import org.openelis.manager.AnalysisResultManager.TestAnalyteListItem;
 import org.openelis.utilcommon.ResultValidator;
@@ -52,8 +55,7 @@ public class AnalysisResultManagerProxy {
         return man;
     }
 
-    public AnalysisResultManager fetchByAnalysisId(Integer analysisId, Integer testId)
-                                                                                      throws Exception {
+    public AnalysisResultManager fetchByAnalysisId(Integer analysisId, Integer testId) throws Exception {
         ArrayList<ArrayList<ResultViewDO>> results;
         HashMap<Integer, TestResultDO> testResultList;
         HashMap<Integer, AnalyteDO> analyteList;
@@ -184,9 +186,19 @@ public class AnalysisResultManagerProxy {
         return null;
     }
 
-    public void validate(AnalysisResultManager man, ValidationErrorsList errorsList)
+    public void validate(AnalysisResultManager man, AnalysisViewDO anDO, ValidationErrorsList errorsList)
                                                                                     throws Exception {
 
+    }
+    
+    public void validateForComplete(AnalysisResultManager man, AnalysisViewDO anDO, ValidationErrorsList errorsList) throws Exception {
+        
+    }
+    
+    public Integer getIdFromSystemName(String systemName) throws Exception{
+        DictionaryDO dictDO = dictionaryLocal().fetchBySystemName(systemName);
+        
+        return dictDO.getId();
     }
 
     private void mergeResultGrid(ArrayList<ArrayList<ResultViewDO>> oldGrid,
@@ -221,6 +233,16 @@ public class AnalysisResultManagerProxy {
         }
     }
 
+    private static DictionaryLocal dictionaryLocal(){
+        try{
+            InitialContext ctx = new InitialContext();
+            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
+        }catch(Exception e){
+             System.out.println(e.getMessage());
+             return null;
+        }
+    }
+    
     private ResultLocal local() {
         try {
             InitialContext ctx = new InitialContext();

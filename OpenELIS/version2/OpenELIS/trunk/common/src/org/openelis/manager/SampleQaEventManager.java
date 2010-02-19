@@ -35,7 +35,7 @@ public class SampleQaEventManager implements RPC {
     
 private static final long serialVersionUID = 1L;
     
-    protected Integer                           sampleId;
+    protected Integer                           sampleId, qaResultOverrideId;
     protected ArrayList<SampleQaEventViewDO>       items, deletedList;
     
     protected transient static SampleQAEventManagerProxy proxy;
@@ -59,29 +59,11 @@ private static final long serialVersionUID = 1L;
         return proxy().fetchBySampleId(sampleId);
     }
     
-    /*
-    public int getIndex(AnalysisTestDO aDO){
-        for(int i=0; i<count(); i++)
-            if(items.get(i).analysis == aDO)
-                return i;
-        
-        return -1;
-    }*/
-    
     // service methods
     public SampleQaEventManager add() throws Exception {
         return proxy().add(this);
     }
 
-    /*
-    public int getIndex(AnalysisTestDO aDO){
-        for(int i=0; i<count(); i++)
-            if(items.get(i).analysis == aDO)
-                return i;
-        
-        return -1;
-    }*/
-    
     public SampleQaEventManager update() throws Exception {
         return proxy().update(this);
     }
@@ -112,14 +94,20 @@ private static final long serialVersionUID = 1L;
             deletedList.add(tmpQA);
     }
     
-    /*
-    public int getIndex(AnalysisTestDO aDO){
-        for(int i=0; i<count(); i++)
-            if(items.get(i).analysis == aDO)
-                return i;
+    public boolean hasResultOverrideQA() throws Exception {
+        SampleQaEventViewDO eventDO;
         
-        return -1;
-    }*/
+        loadDictionaryEntries();
+        
+        for(int i=0; i<count(); i++){
+            eventDO = items.get(i);
+            
+            if(qaResultOverrideId.equals(eventDO.getTypeId()))
+                return true;
+        }
+        
+        return false;
+    }
     
     public int count(){
         if(items == null)
@@ -139,13 +127,6 @@ private static final long serialVersionUID = 1L;
     
     public void validate(ValidationErrorsList errorsList) throws Exception {
         proxy().validate(this, errorsList);
-    }
-    
-    private static SampleQAEventManagerProxy proxy() {
-        if (proxy == null)
-            proxy = new SampleQAEventManagerProxy();
-
-        return proxy;
     }
     
     //getters/setters
@@ -177,4 +158,16 @@ private static final long serialVersionUID = 1L;
         this.items = sampleQas;
     }
 
+    private void loadDictionaryEntries() throws Exception {
+        if (qaResultOverrideId == null) {
+            qaResultOverrideId = proxy().getIdFromSystemName("qaevent_override");
+        }
+    }
+    
+    private static SampleQAEventManagerProxy proxy() {
+        if (proxy == null)
+            proxy = new SampleQAEventManagerProxy();
+    
+        return proxy;
+    }
 }
