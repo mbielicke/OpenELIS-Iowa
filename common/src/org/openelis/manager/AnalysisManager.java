@@ -189,7 +189,7 @@ public class AnalysisManager implements RPC {
         
         if(security.getSection(section.getName()) == null || !security.getSection(section.getName()).hasCancelPermission()){
             errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("insufficientPrivilegesCancelTest", anDO.getTestName(), anDO.getMethodName()));
+            errorsList.add(new FormErrorException("insufficientPrivilegesCancelAnalysis", anDO.getTestName(), anDO.getMethodName()));
             throw errorsList;
         }
         
@@ -202,6 +202,66 @@ public class AnalysisManager implements RPC {
         } catch (Exception e) {
             return;
         }
+    }
+    
+    public void completeAnalysisAt(int index) throws Exception {
+        AnalysisViewDO anDO;
+        SecurityUtil security;
+        SectionViewDO section;
+        ValidationErrorsList errorsList;
+        
+        anDO  = items.get(index).analysis;
+        assert anDO.getSectionId() != null : "section id is null";
+        
+        //make sure the user has complete permission for the section
+        section = proxy().getSectionFromId(anDO.getSectionId());
+        security = proxy().getSecurityUtil();
+        if(security.getSection(section.getName()) == null || !security.getSection(section.getName()).hasCompletePermission()){
+            errorsList = new ValidationErrorsList();
+            errorsList.add(new FormErrorException("insufficientPrivilegesCompleteAnalysis", anDO.getTestName(), anDO.getMethodName()));
+            throw errorsList;
+        }
+        
+        //if the sample/analysis has an overriding QA event go ahead and complete the analysis
+        if(getQAEventAt(index).hasResultOverrideQA() || getSampleItemManager().getSampleManager().getQaEvents().hasResultOverrideQA()){
+            anDO.setStatusId(anCompletedId);
+            return;
+        }
+        
+        //make sure all required results are filled, and all results are valid
+        //this method will throw an exception if it finds and error
+        getAnalysisResultAt(index).validateForComplete(anDO);
+        
+        anDO.setStatusId(anCompletedId);
+    }
+    
+    public void releaseAnalyssisAt(int index) throws Exception {
+        AnalysisViewDO anDO;
+        SecurityUtil security;
+        SectionViewDO section;
+        ValidationErrorsList errorsList;
+        
+        anDO  = items.get(index).analysis;
+        assert anDO.getSectionId() != null : "section id is null";
+        loadDictionaryEntries();
+        
+        //make sure the status is completed
+        if(!anCompletedId.equals(anDO.getStatusId())){
+            errorsList = new ValidationErrorsList();
+            errorsList.add(new FormErrorException("completeStatusRequiredToRelease", anDO.getTestName(), anDO.getMethodName()));
+            throw errorsList;
+        }
+        
+        //make sure the user has release permission for the section
+        security = proxy().getSecurityUtil();
+        section = proxy().getSectionFromId(anDO.getSectionId());
+        if(security.getSection(section.getName()) == null || !security.getSection(section.getName()).hasReleasePermission()){
+            errorsList = new ValidationErrorsList();
+            errorsList.add(new FormErrorException("insufficientPrivilegesReleaseAnalysis", anDO.getTestName(), anDO.getMethodName()));
+            throw errorsList;
+        }
+        
+        anDO.setStatusId(anReleasedId);
     }
 
     public int count() {
@@ -443,10 +503,10 @@ public class AnalysisManager implements RPC {
                     }
                 }
             }
-        }
 
-        if (item.analysisResult == null)
-            item.analysisResult = AnalysisResultManager.getInstance();
+            if (item.analysisResult == null)
+                item.analysisResult = AnalysisResultManager.getInstance();
+        }
 
         return item.analysisResult;
     }

@@ -105,7 +105,7 @@ public class AnalysisManagerProxy {
             
             //we want to always run thorugh validate so it loads the data
             //if the user didnt click on the tab
-            man.getAnalysisResultAt(i).validate(errorsList);
+            man.getAnalysisResultAt(i).validate(analysisDO, errorsList);
             
             if(item.qaEvents != null)
                 man.getQAEventAt(i).validate(errorsList);

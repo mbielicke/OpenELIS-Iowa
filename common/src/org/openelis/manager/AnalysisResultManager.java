@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
@@ -18,12 +19,12 @@ public class AnalysisResultManager implements RPC {
     protected Integer                                     analysisId, mergeTestId;
     protected ArrayList<ArrayList<ResultViewDO>>          results;
     protected ArrayList<ResultViewDO>                     deletedResults;
-
     protected HashMap<Integer, AnalyteDO>                 analyteList;
     protected HashMap<Integer, TestAnalyteListItem>       testAnalyteList;
     protected HashMap<Integer, TestResultDO>              testResultList;
     protected ArrayList<ResultValidator>                  resultValidators;
-
+    protected boolean                                     defaultsLoaded;
+    
     protected transient TestManager                       testManager;
     protected transient static AnalysisResultManagerProxy proxy;
 
@@ -32,18 +33,19 @@ public class AnalysisResultManager implements RPC {
 
         arm = new AnalysisResultManager();
         arm.results = new ArrayList<ArrayList<ResultViewDO>>();
+        arm.setDefaultsLoaded(false);
 
         return arm;
     }
 
     public ResultViewDO getResultAt(int row, int col) {
         return results.get(row).get(col);
-    
+
     }
 
     public ArrayList<ResultViewDO> getRowAt(int row) {
         return results.get(row);
-    
+
     }
 
     public void setResultAt(ResultViewDO result, int row, int col) {
@@ -61,7 +63,7 @@ public class AnalysisResultManager implements RPC {
     public void addRowAt(int index, ArrayList<ResultViewDO> row) {
         if (results == null)
             results = new ArrayList<ArrayList<ResultViewDO>>();
-    
+
         if (results.size() > index)
             results.add(index, row);
         else
@@ -76,7 +78,7 @@ public class AnalysisResultManager implements RPC {
         ArrayList<ResultViewDO> currlist;
         currlist = createNewDataListAt(index, rowGroup, firstColTestAnalyteId, firstColAnalyteId,
                                        firstColAnalyteName);
-    
+
         addRowAt(index, currlist);
     }
 
@@ -84,33 +86,33 @@ public class AnalysisResultManager implements RPC {
         ArrayList<ResultViewDO> list;
         ResultViewDO resultDO;
         Integer id;
-    
+
         if (results == null || row >= results.size())
             return;
-    
+
         list = results.get(row);
-    
+
         if (deletedResults == null)
             deletedResults = new ArrayList<ResultViewDO>();
-    
+
         for (int i = 0; i < list.size(); i++ ) {
             resultDO = list.get(i);
             id = resultDO.getId();
             if (id != null && id > 0)
                 deletedResults.add(resultDO);
         }
-    
+
         results.remove(row);
     }
 
     public static AnalysisResultManager fetchByAnalysisId(Integer analysisId) throws Exception {
         return proxy().fetchByAnalysisIdForDisplay(analysisId);
     }
-    
+
     public static AnalysisResultManager merge(AnalysisResultManager manager) throws Exception {
         return proxy().merge(manager);
     }
-    
+
     /**
      * Creates a new instance of this object with the specified analysis id. Use
      * this function to load an instance of this object from database.
@@ -132,17 +134,26 @@ public class AnalysisResultManager implements RPC {
         return proxy().update(this);
     }
 
-    public void validate() throws Exception {
+    public void validate(AnalysisViewDO anDO) throws Exception {
         ValidationErrorsList errorsList = new ValidationErrorsList();
-    
-        proxy().validate(this, errorsList);
-    
+
+        proxy().validate(this, anDO, errorsList);
+
         if (errorsList.size() > 0)
             throw errorsList;
     }
 
-    public void validate(ValidationErrorsList errorsList) throws Exception {
-        proxy().validate(this, errorsList);
+    public void validate(AnalysisViewDO anDO, ValidationErrorsList errorsList) throws Exception {
+        proxy().validate(this, anDO, errorsList);
+    }
+
+    public void validateForComplete(AnalysisViewDO anDO) throws Exception {
+        ValidationErrorsList errorsList = new ValidationErrorsList();
+
+        proxy().validateForComplete(this, anDO, errorsList);
+
+        if (errorsList.size() > 0)
+            throw errorsList;
     }
 
     // getters/setters
@@ -200,7 +211,10 @@ public class AnalysisResultManager implements RPC {
     }
 
     public String getDefaultValue(Integer resultGroup, Integer unitOfMeasureId) {
-        return resultValidators.get(resultGroup.intValue() - 1).getDefault(unitOfMeasureId);
+        if(isDefaultsLoaded())
+            return null;
+        else
+            return resultValidators.get(resultGroup.intValue() - 1).getDefault(unitOfMeasureId);
     }
 
     public ArrayList<TestAnalyteViewDO> getNonColumnTestAnalytes(Integer rowGroup) {
@@ -268,6 +282,10 @@ public class AnalysisResultManager implements RPC {
         return returnList;
     }
 
+    public void setDefaultsLoaded(boolean defaultsLoaded) {
+        this.defaultsLoaded = defaultsLoaded;
+    }
+
     protected int rowCount() {
         if (results == null)
             return 0;
@@ -284,13 +302,17 @@ public class AnalysisResultManager implements RPC {
     void setAnalysisId(Integer analysisId) {
         this.analysisId = analysisId;
     }
-    
+
     Integer getMergeTestId() {
         return mergeTestId;
     }
 
     void setMergeTestId(Integer mergeTestId) {
         this.mergeTestId = mergeTestId;
+    }
+    
+    boolean isDefaultsLoaded() {
+        return defaultsLoaded;
     }
 
     void setResults(ArrayList<ArrayList<ResultViewDO>> results) {
@@ -307,11 +329,11 @@ public class AnalysisResultManager implements RPC {
     ResultViewDO getDeletedAt(int i) {
         return deletedResults.get(i);
     }
-    
+
     ArrayList<ResultViewDO> getDeleted() {
         return deletedResults;
     }
-    
+
     void setDeleted(ArrayList<ResultViewDO> deletedResults) {
         this.deletedResults = deletedResults;
     }

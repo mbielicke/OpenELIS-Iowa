@@ -29,6 +29,7 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisQaEventViewDO;
+import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
@@ -36,7 +37,7 @@ public class AnalysisQaEventManager implements RPC {
 
     private static final long                              serialVersionUID = 1L;
 
-    protected Integer                                      analysisId;
+    protected Integer                                      analysisId, qaResultOverrideId;
     protected ArrayList<AnalysisQaEventViewDO>             items, deletedList;
 
     protected transient static AnalysisQAEventManagerProxy proxy;
@@ -96,6 +97,21 @@ public class AnalysisQaEventManager implements RPC {
         if (tmpQA.getId() != null)
             deletedList.add(tmpQA);
     }
+    
+    public boolean hasResultOverrideQA() throws Exception {
+        AnalysisQaEventViewDO eventDO;
+        
+        loadDictionaryEntries();
+        
+        for(int i=0; i<count(); i++){
+            eventDO = items.get(i);
+            
+            if(qaResultOverrideId.equals(eventDO.getTypeId()))
+                return true;
+        }
+        
+        return false;
+    }
 
     public int count() {
         if (items == null)
@@ -146,6 +162,12 @@ public class AnalysisQaEventManager implements RPC {
         this.items = analysisQas;
     }
 
+    private void loadDictionaryEntries() throws Exception {
+        if (qaResultOverrideId == null) {
+            qaResultOverrideId = proxy().getIdFromSystemName("qaevent_override");
+        }
+    }
+    
     private static AnalysisQAEventManagerProxy proxy() {
         if (proxy == null)
             proxy = new AnalysisQAEventManagerProxy();

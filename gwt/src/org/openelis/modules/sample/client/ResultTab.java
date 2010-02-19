@@ -34,6 +34,7 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -152,6 +153,7 @@ public class ResultTab extends Screen {
 
         testResultsTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                /*
                 int r, c;
                 TableDataRow row;
                 boolean isHeaderRow = false, enableButton = true;
@@ -181,6 +183,14 @@ public class ResultTab extends Screen {
                     window.clearStatus();
                 
                 suggestionsButton.enable(enableButton);
+                */
+                try{
+                analysisMan.completeAnalysisAt(bundle.getAnalysisIndex());
+                }catch(ValidationErrorsList e){
+                    showErrors(e);
+                }catch(Exception e){
+                    Window.alert(e.getMessage());
+                }
             }
         });
 
@@ -201,7 +211,7 @@ public class ResultTab extends Screen {
                 val = (String)tableRow.cells.get(col).value;
                 resultDO.setValue(val);
                 
-                if ( !"".equals(val)) {
+                if (!"".equals(val)) {
                     try {
                         testResultId = manager.validateResultValue(resultDO.getResultGroup(), anDO.getUnitOfMeasureId(), val);
                         testResultDo = manager.getTestResultList().get(testResultId);
@@ -220,6 +230,8 @@ public class ResultTab extends Screen {
                     }
                 } else {
                     testResultsTable.clearCellExceptions(row, col);
+                    resultDO.setTypeId(null);
+                    resultDO.setTestResultId(null);
                 }
             }
         });
@@ -502,6 +514,8 @@ public class ResultTab extends Screen {
             headerFilled = true;
             model.add(row);
         }
+        manager.setDefaultsLoaded(true);
+        
         return model;
     }
 
