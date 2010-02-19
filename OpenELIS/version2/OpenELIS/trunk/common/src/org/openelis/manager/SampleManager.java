@@ -46,6 +46,7 @@ public class SampleManager implements RPC, HasAuxDataInt {
     protected NoteManager                         sampleInternalNotes;
     protected NoteManager                         sampleExternalNote;
     protected AuxDataManager                      auxData;
+    protected SampleDataBundle                    bundle;
 
     protected transient Integer                   anLoggedInId, anInitiatedId, anCompletedId,
                     anReleasedId, anInPrepId, anOnHoldId, anRequeueId, anCancelledId,
@@ -143,6 +144,13 @@ public class SampleManager implements RPC, HasAuxDataInt {
             throw errorList;
     }
 
+    public SampleDataBundle getBundle() {
+        if(bundle == null)
+            bundle = new SampleDataBundle(SampleDataBundle.Type.SAMPLE, this, null, -1);
+
+        return bundle;
+    }
+    
     public void setDefaults() {
         Datetime yToM;
         

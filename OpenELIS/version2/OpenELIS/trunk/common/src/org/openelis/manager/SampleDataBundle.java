@@ -31,7 +31,7 @@ public class SampleDataBundle implements RPC {
     private static final long serialVersionUID = 1L;
 
     public enum Type {
-        SAMPLE_ITEM, ANALYSIS
+        SAMPLE, SAMPLE_ITEM, ANALYSIS
     };
 
     protected Type             type;
