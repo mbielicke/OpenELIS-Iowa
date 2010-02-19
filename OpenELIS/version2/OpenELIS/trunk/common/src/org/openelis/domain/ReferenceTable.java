@@ -121,5 +121,9 @@ public class ReferenceTable {
                             WORKSHEET_ITEM =                 94,
                             WORKSHEET_QC_RESULT =            96,
                             WORKSHEET_RESULT =               97,
-                            INVENTORY_TRANSACTION =          98;
+                            INVENTORY_TRANSACTION =          98,
+                            PWS =                            99,
+                            PWS_FACILITY =                  100,
+                            PWS_ADDRESS =                   101,
+                            PWS_MONITOR =                   102;
 }
