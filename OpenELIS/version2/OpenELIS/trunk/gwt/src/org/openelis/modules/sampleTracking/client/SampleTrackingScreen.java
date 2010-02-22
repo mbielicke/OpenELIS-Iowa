@@ -695,15 +695,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             }
 
             public void onValueChange(final ValueChangeEvent<Integer> event) {
-                try {
                     manager.getSample().setAccessionNumber(event.getValue());
-                    //FIXME not sure if this screen needs to validate this manager.validateAccessionNumber(manager.getSample());
-
-                //} catch (ValidationErrorsList e) {
-               //     showErrors(e);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -896,7 +888,40 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             }
         });
         
-        treeUtil = new SampleTreeUtil(window,atozTree,this);
+        treeUtil = new SampleTreeUtil(window,atozTree,this){
+            public TreeDataItem addNewTreeRowFromBundle(TreeDataItem parentRow, SampleDataBundle bundle) {
+                TreeDataItem row;
+                
+                row = new TreeDataItem(2);
+                row.leafType = "analysis";
+                row.data = bundle;
+                TreeDataItem results = new TreeDataItem();
+                results.leafType = "result";
+                results.data = bundle;
+                results.cells.add(new TableDataCell("Results"));
+                row.addItem(results);
+                TreeDataItem qaevent = new TreeDataItem();
+                qaevent.leafType = "qaevent";
+                qaevent.data = bundle;
+                qaevent.cells.add(new TableDataCell("QA Events"));
+                row.addItem(qaevent);
+                TreeDataItem note = new TreeDataItem();
+                note.leafType = "note";
+                note.data = bundle;
+                note.cells.add(new TableDataCell("Notes"));
+                row.addItem(note);
+                itemsTree.addChildItem(parentRow, row, parentRow.getItems().size() - 2);
+                
+                return row;
+            }
+        };
+        
+        //FIXME couldnt find refresh tabs so this may not be needed
+        treeUtil.addActionHandler(new ActionHandler(){
+            public void onAction(ActionEvent event) {
+                ActionEvent.fire(null, event.getAction(), event.getData());
+            }
+        });
         
         analysisTab.addActionHandler(new ActionHandler<AnalysisTab.Action>() {
             public void onAction(ActionEvent event) {

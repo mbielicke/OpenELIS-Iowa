@@ -164,16 +164,28 @@ public class AnalysisManager implements RPC {
         anDO.setAvailableDate(null);
     }
 
-    public void removeAnalysisAt(int i) {
-        if (items == null || i >= items.size())
+    public void removeAnalysisAt(int index) {
+        AnalysisListItem tmpList;
+        SampleDataBundle bundle;
+        
+        if (items == null || index >= items.size())
             return;
 
-        AnalysisListItem tmpList = items.remove(i);
+        tmpList = items.remove(index);
+        
+        // renumber sample bundle analyses indexes
+        // when a node is removed
+        for (int i = index; i < items.size(); i++ ) {
+            bundle = items.get(i).bundle;
+
+            if (bundle != null)
+                bundle.setIndex(i);
+        }
 
         if (deletedList == null)
             deletedList = new ArrayList<AnalysisListItem>();
 
-        if (tmpList.analysis.getId() != null)
+        if (tmpList.analysis.getId() != null && tmpList.analysis.getId() >= 0)
             deletedList.add(tmpList);
     }
 
