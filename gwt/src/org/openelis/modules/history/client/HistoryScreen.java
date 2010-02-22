@@ -50,6 +50,7 @@ import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.gwt.widget.tree.event.BeforeLeafOpenEvent;
 import org.openelis.gwt.widget.tree.event.BeforeLeafOpenHandler;
+import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.utilcommon.DataBaseUtil;
 
 import com.google.gwt.core.client.GWT;
@@ -144,8 +145,11 @@ public class HistoryScreen extends Screen {
     }
 
     private void initializeWindow(String title) {
+    	OpenELIS.browser.addScreen(this);
+    	/*
         if (popup == null) {
             popup = new ScreenWindow(ScreenWindow.Mode.SCREEN);
+            
             popup.setContent(instance);                    
             popup.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
                 public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
@@ -154,6 +158,7 @@ public class HistoryScreen extends Screen {
             });
         }
         popup.setName(title);
+        */
     }
     
     protected void setReferenceVoList(IdNameVO[] referenceVOList) {
