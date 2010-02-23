@@ -72,6 +72,7 @@ import org.openelis.modules.sample.client.AuxDataTab;
 import org.openelis.modules.sample.client.PrivateWellTab;
 import org.openelis.modules.sample.client.QAEventsTab;
 import org.openelis.modules.sample.client.ResultTab;
+import org.openelis.modules.sample.client.SampleHistoryUtility;
 import org.openelis.modules.sample.client.SampleItemAnalysisTreeTab;
 import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleNotesTab;
@@ -113,6 +114,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
     private AuxDataTab                     auxDataTab;
 
     protected AccessionNumberUtility       accessionNumUtil;
+    protected SampleHistoryUtility         historyUtility;
+    
     protected TextBox                      clientReference;
     protected TextBox<Integer>             accessionNumber, orderNumber;
     protected TextBox<Datetime>            collectedTime;
@@ -120,7 +123,9 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
     protected CalendarLookUp               collectedDate, receivedDate;
     protected AppButton                    queryButton, addButton, updateButton, nextButton,
                     prevButton, commitButton, abortButton;
-    protected MenuItem                     history;
+    protected MenuItem                     historySample, historySamplePrivateWell,
+    historySampleProject, historySampleItem, historyAnalysis, historyCurrentResult, 
+    historyStorage, historySampleQA, historyAnalysisQA, historyAuxData;
     protected TabPanel                     tabs;
 
     ScreenNavigator                        nav;
@@ -176,6 +181,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
     }
 
     private void initialize() {
+        final PrivateWellWaterSampleLoginScreen wellScreen = this;
+        
         //
         // button panel buttons
         //
@@ -287,19 +294,124 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                                           .contains(event.getState()));
             }
         });
+        
+        historyUtility = new SampleHistoryUtility(window){
+            public void historyCurrentResult() {
+              ActionEvent.fire(wellScreen, ResultTab.Action.RESULT_HISTORY, null);
+            }  
+        };
 
-        history = (MenuItem)def.getWidget("history");
-        addScreenHandler(history, new ScreenEventHandler<Object>() {
+        historySample = (MenuItem)def.getWidget("historySample");
+        addScreenHandler(historySample, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                Window.alert("clicked history");
-                // history();
+                historyUtility.historySample();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                history.enable(EnumSet.of(State.DISPLAY, State.UPDATE).contains(event.getState()));
+                historySample.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        historySamplePrivateWell = (MenuItem)def.getWidget("historySamplePrivateWell");
+        addScreenHandler(historySamplePrivateWell, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySamplePrivateWell();
+            }
 
+            public void onStateChange(StateChangeEvent<State> event) {
+                historySamplePrivateWell.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historySampleProject = (MenuItem)def.getWidget("historySampleProject");
+        addScreenHandler(historySampleProject, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySampleProject();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historySampleProject.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historySampleItem = (MenuItem)def.getWidget("historySampleItem");
+        addScreenHandler(historySampleItem, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySampleItem();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historySampleItem.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historyAnalysis = (MenuItem)def.getWidget("historyAnalysis");
+        addScreenHandler(historyAnalysis, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historyAnalysis();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historyAnalysis.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historyCurrentResult = (MenuItem)def.getWidget("historyCurrentResult");
+        addScreenHandler(historyCurrentResult, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historyCurrentResult();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historyCurrentResult.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historyStorage = (MenuItem)def.getWidget("historyStorage");
+        addScreenHandler(historyStorage, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historyStorage();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historyStorage.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historySampleQA = (MenuItem)def.getWidget("historySampleQA");
+        addScreenHandler(historySampleQA, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySampleQA();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historySampleQA.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historyAnalysisQA = (MenuItem)def.getWidget("historyAnalysisQA");
+        addScreenHandler(historyAnalysisQA, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historyAnalysisQA();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historyAnalysisQA.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        
+        historyAuxData = (MenuItem)def.getWidget("historyAuxData");
+        addScreenHandler(historyAuxData, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historyAuxData();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historyAuxData.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
         //
         // screen fields
         //
@@ -311,8 +423,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 }
             }
         });
-
-        final PrivateWellWaterSampleLoginScreen wellScreen = this;
 
         accessionNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
@@ -788,7 +898,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 manager.validate();
                 manager.getSample().setStatusId(sampleLoggedInId);
                 manager = manager.add();
-
+                historyUtility.setManager(manager);
+                
                 setState(Screen.State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
@@ -807,7 +918,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 manager.validate();
                 manager.getSample().setStatusId(sampleLoggedInId);
                 manager = manager.update();
-
+                historyUtility.setManager(manager);
+                
                 setState(Screen.State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
@@ -830,7 +942,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             window.setBusy(consts.get("adding"));
             try {
                 manager = manager.add();
-
+                historyUtility.setManager(manager);
+                
                 setState(Screen.State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
@@ -844,7 +957,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             window.setBusy(consts.get("updating"));
             try {
                 manager = manager.update();
-
+                historyUtility.setManager(manager);
+                
                 setState(Screen.State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
@@ -878,7 +992,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
 
             try {
                 manager = manager.abortUpdate();
-
+                historyUtility.setManager(manager);                
+                
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
@@ -904,7 +1019,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
 
             try {
                 manager = SampleManager.fetchWithItemsAnalyses(id);
-
+                
             } catch (Exception e) {
                 e.printStackTrace();
                 setState(State.DEFAULT);
@@ -912,6 +1027,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 window.clearStatus();
                 return false;
             }
+            historyUtility.setManager(manager);
             setState(Screen.State.DISPLAY);
         }
         DataChangeEvent.fire(this);
