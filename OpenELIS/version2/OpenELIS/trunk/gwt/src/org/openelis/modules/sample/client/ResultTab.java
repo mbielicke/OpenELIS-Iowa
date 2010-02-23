@@ -34,7 +34,6 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -157,7 +156,6 @@ public class ResultTab extends Screen {
 
         testResultsTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                /*
                 int r, c;
                 TableDataRow row;
                 boolean isHeaderRow = false, enableButton = true;
@@ -187,14 +185,6 @@ public class ResultTab extends Screen {
                     window.clearStatus();
                 
                 suggestionsButton.enable(enableButton);
-                */
-                try{
-                analysisMan.completeAnalysisAt(bundle.getAnalysisIndex());
-                }catch(ValidationErrorsList e){
-                    showErrors(e);
-                }catch(Exception e){
-                    Window.alert(e.getMessage());
-                }
             }
         });
 
@@ -420,13 +410,13 @@ public class ResultTab extends Screen {
         String val;
         Integer testResultId;
         TestResultDO testResultDo;
+        boolean validateResults;
 
         //
         // we are assuming there will be at least 1 non supplemental
         // if there are only supplementals in a row group it will not
         // show a header so the user wont be able to add any analytes
         //
-
         model = new ArrayList<TableDataRow>();
         if (manager == null || displayManager == null)
             return model;
@@ -448,6 +438,8 @@ public class ResultTab extends Screen {
             len = displayManager.columnCount(m);
             row = new TableDataRow(numberOfCols);
             row.data = new Boolean(false);
+            validateResults = (state == State.ADD || state == State.UPDATE);
+            
             for (c = 0; c < len; c++ ) {
                 resultDO = displayManager.getResultAt(m, c);
                 row.key = resultDO.getId();
@@ -462,7 +454,7 @@ public class ResultTab extends Screen {
                         
                         row.cells.get(1).setValue(val);
                         
-                        if(val != null && !"".equals(val)){
+                        if(validateResults && val != null && !"".equals(val)){
                             resultDO.setValue(val);
                             
                             testResultId = manager.validateResultValue(resultDO.getResultGroup(), anDO.getUnitOfMeasureId(), val);
@@ -497,7 +489,7 @@ public class ResultTab extends Screen {
                     
                     row.cells.get(c + 1).setValue(val);
                     
-                    if(val != null && !"".equals(val)){
+                    if(validateResults && val != null && !"".equals(val)){
                         resultDO.setValue(val);
                         testResultId = manager.validateResultValue(resultDO.getResultGroup(), anDO.getUnitOfMeasureId(), val);
                         testResultDo = manager.getTestResultList().get(testResultId);
