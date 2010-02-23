@@ -286,7 +286,7 @@ public class AnalysisResultManager implements RPC {
         this.defaultsLoaded = defaultsLoaded;
     }
 
-    protected int rowCount() {
+    public int rowCount() {
         if (results == null)
             return 0;
 

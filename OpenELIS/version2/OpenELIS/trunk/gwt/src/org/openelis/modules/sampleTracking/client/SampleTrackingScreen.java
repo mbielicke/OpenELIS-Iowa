@@ -71,7 +71,7 @@ import org.openelis.modules.sample.client.ResultTab;
 import org.openelis.modules.sample.client.SampleItemAnalysisTreeTab;
 import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleNotesTab;
-import org.openelis.modules.sample.client.SampleTreeUtil;
+import org.openelis.modules.sample.client.SampleTreeUtility;
 import org.openelis.modules.sample.client.StorageTab;
 import org.openelis.modules.sample.client.SampleItemAnalysisTreeTab.Action;
 
@@ -133,7 +133,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 	private ResultTab      				   testResultsTab;
 	private TreeWidget                     atozTree;
 	private int                            tempId;
-	private SampleTreeUtil				   treeUtil;	
+	private SampleTreeUtility				   treeUtil;	
 	
     public SampleTrackingScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SampleTrackingDef.class));
@@ -888,7 +888,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             }
         });
         
-        treeUtil = new SampleTreeUtil(window,atozTree,this){
+        treeUtil = new SampleTreeUtility(window,atozTree,this){
             public TreeDataItem addNewTreeRowFromBundle(TreeDataItem parentRow, SampleDataBundle bundle) {
                 TreeDataItem row;
                 

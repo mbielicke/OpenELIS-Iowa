@@ -130,7 +130,8 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                
                 if (manager.hasAnalysisResultsAt(analysisIndex)) {
                     if (changeTestConfirm == null) {
-                        changeTestConfirm = new Confirm(Confirm.Type.QUESTION,
+                        changeTestConfirm = new Confirm(Confirm.Type.WARN,
+                                                            consts.get("loseResultsCaption"),
                                                             consts.get("loseResultsWarning"),
                                                             "No", "Yes");
                         changeTestConfirm.addSelectionHandler(new SelectionHandler<Integer>() {

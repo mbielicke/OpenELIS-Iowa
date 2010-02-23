@@ -32,6 +32,9 @@ import java.util.HashMap;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.IdNameVO;
+import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -56,9 +59,12 @@ import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.manager.AnalysisManager;
+import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
+import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
@@ -81,7 +87,7 @@ public class SampleItemAnalysisTreeTab extends Screen
     protected TestPrepUtility testLookup;
     private HasActionHandlers parentScreen;
     private SampleManager     manager;
-    protected SampleTreeUtil  treeUtil;
+    protected SampleTreeUtility  treeUtil;
     protected boolean         loaded = false;
 
     public SampleItemAnalysisTreeTab(ScreenDefInt def, ScreenWindow window, HasActionHandlers parentScreen) {
@@ -98,7 +104,7 @@ public class SampleItemAnalysisTreeTab extends Screen
         final SampleItemAnalysisTreeTab treeTab = this;
         
         itemsTree = (TreeWidget)def.getWidget("itemsTestsTree");
-        treeUtil = new SampleTreeUtil(window, itemsTree, parentScreen){
+        treeUtil = new SampleTreeUtility(window, itemsTree, parentScreen){
             public TreeDataItem addNewTreeRowFromBundle(TreeDataItem parentRow, SampleDataBundle bundle) {
                 TreeDataItem row;
                 
@@ -307,6 +313,8 @@ public class SampleItemAnalysisTreeTab extends Screen
                     selected = itemsTree.getSelection();
                     treeUtil.updateAnalysisRow(selected);
                     itemsTree.refreshRow(selected);
+                } else if(event.getAction() == ResultTab.Action.RESULT_HISTORY){
+                    historyCurrentResult();
                 }
             }
         });
@@ -395,6 +403,51 @@ public class SampleItemAnalysisTreeTab extends Screen
         }
 
         return model;
+    }
+    protected void historyCurrentResult(){
+        TreeDataItem item;
+        SampleDataBundle bundle;
+        AnalysisResultManager man;
+        int i, j, rowCount, count;
+        ArrayList<ResultViewDO> row;
+        ResultViewDO data;
+        ArrayList<IdNameVO> refVoArrayList;
+        IdNameVO[] refVoList;
+        
+        item = itemsTree.getSelection();
+        
+        if(item == null || !"analysis".equals(item.leafType)){
+            window.setError(consts.get("resultHistoryException"));
+            return;
+        }
+        
+        try{
+            bundle = (SampleDataBundle)item.data;
+            man = manager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).getAnalysisResultAt(bundle.getAnalysisIndex());
+            rowCount = man.rowCount();
+            refVoArrayList = new ArrayList<IdNameVO>();
+            for(i=0; i<rowCount; i++){
+                row = man.getRowAt(i);
+                count = row.size();
+                
+                for(j=0; j<count; j++){
+                    data = row.get(j);
+                    refVoArrayList.add(new IdNameVO(data.getId(), data.getAnalyte()));
+                }
+            }
+    
+            refVoList = new IdNameVO[refVoArrayList.size()];
+            for(i=0; i<refVoArrayList.size(); i++)
+                refVoList[i] = refVoArrayList.get(i);
+    
+            HistoryScreen.showHistory(OpenELIS.consts.get("historyCurrentResult"),
+                          ReferenceTable.RESULT, refVoList);
+            window.clearStatus();
+            
+        } catch (Exception e) {
+            window.clearStatus();
+            Window.alert("historyCurrentResult: "+e.getMessage());
+        }        
     }
     
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {

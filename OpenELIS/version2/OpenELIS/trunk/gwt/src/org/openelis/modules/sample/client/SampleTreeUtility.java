@@ -23,7 +23,7 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
-public abstract class SampleTreeUtil extends Screen implements HasActionHandlers {
+public abstract class SampleTreeUtility extends Screen implements HasActionHandlers {
 
     protected TestPrepUtility testLookup;
     private HasActionHandlers parentScreen;
@@ -32,7 +32,7 @@ public abstract class SampleTreeUtil extends Screen implements HasActionHandlers
     private TreeWidget        itemsTree;
     private Confirm           cancelAnalysisConfirm;
 
-    public SampleTreeUtil(ScreenWindow window, TreeWidget itemsTree, HasActionHandlers parentScreen) {
+    public SampleTreeUtility(ScreenWindow window, TreeWidget itemsTree, HasActionHandlers parentScreen) {
         this.window = window;
         this.itemsTree = itemsTree;
         this.parentScreen = parentScreen;
@@ -82,6 +82,7 @@ public abstract class SampleTreeUtil extends Screen implements HasActionHandlers
                 if (selectedTreeRow.key != null) {
                     if (cancelAnalysisConfirm == null) {
                         cancelAnalysisConfirm = new Confirm(Confirm.Type.QUESTION,
+                                                            ((Screen)parentScreen).consts.get("cancelAnalysisCaption"),
                                                             ((Screen)parentScreen).consts.get("cancelAnalysisMessage"),
                                                             "No", "Yes");
                         cancelAnalysisConfirm.addSelectionHandler(new SelectionHandler<Integer>() {

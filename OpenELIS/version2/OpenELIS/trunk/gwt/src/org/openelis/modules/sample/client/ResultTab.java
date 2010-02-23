@@ -70,6 +70,10 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Window;
 
 public class ResultTab extends Screen {
+    public enum Action {
+        RESULT_HISTORY
+    };
+    
     private boolean                   loaded;
 
     protected AppButton               addResultButton, removeResultButton, suggestionsButton;

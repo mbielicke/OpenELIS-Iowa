@@ -29,10 +29,19 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.AnalysisQaEventViewDO;
+import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AuxDataViewDO;
+import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.SampleItemViewDO;
+import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.domain.SampleProjectViewDO;
+import org.openelis.domain.SampleQaEventViewDO;
+import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
@@ -61,10 +70,19 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.manager.AnalysisManager;
+import org.openelis.manager.AnalysisQaEventManager;
+import org.openelis.manager.AuxDataManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleEnvironmentalManager;
+import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
+import org.openelis.manager.SampleOrganizationManager;
+import org.openelis.manager.SampleProjectManager;
+import org.openelis.manager.SampleQaEventManager;
+import org.openelis.manager.StorageManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
@@ -74,6 +92,7 @@ import org.openelis.modules.sample.client.EnvironmentalTab;
 import org.openelis.modules.sample.client.QAEventsTab;
 import org.openelis.modules.sample.client.ResultTab;
 import org.openelis.modules.sample.client.SampleEnvironmentalImportOrder;
+import org.openelis.modules.sample.client.SampleHistoryUtility;
 import org.openelis.modules.sample.client.SampleItemAnalysisTreeTab;
 import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleNotesTab;
@@ -114,15 +133,20 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
     private AuxDataTab                     auxDataTab;
 
     protected AccessionNumberUtility       accessionNumUtil;
+    protected SampleHistoryUtility         historyUtility;
+    
     protected TextBox                      clientReference;
     protected TextBox<Integer>             accessionNumber, orderNumber;
     protected TextBox<Datetime>            collectedTime;
     protected Dropdown<Integer>            statusId;
     protected CalendarLookUp               collectedDate, receivedDate;
+    protected MenuItem                     historySample, historySampleEnvironmental,
+                    historySampleProject, historySampleOrganization, historySampleItem,
+                    historyAnalysis, historyCurrentResult, historyStorage, historySampleQA,
+                    historyAnalysisQA, historyAuxData;
 
     protected AppButton                    queryButton, addButton, updateButton, nextButton,
                     prevButton, commitButton, abortButton;
-    protected MenuItem                     history;
     protected TabPanel                     tabs;
 
     ScreenNavigator                        nav;
@@ -138,7 +162,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                                     "controller?service=org.openelis.modules.sample.server.SampleService");
 
         security = OpenELIS.security.getModule("sampleenvironmental");
-        
+
         if (security == null)
             throw new SecurityException("screenPermException", "Environmental Sample Login Screen");
 
@@ -179,6 +203,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
     }
 
     private void initialize() {
+        final EnvironmentalSampleLoginScreen envScreen = this;
         //
         // button panel buttons
         //
@@ -290,24 +315,138 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                                           .contains(event.getState()));
             }
         });
+        
+        historyUtility = new SampleHistoryUtility(window){
+            public void historyCurrentResult() {
+              ActionEvent.fire(envScreen, ResultTab.Action.RESULT_HISTORY, null);
+            }  
+        };
 
-        history = (MenuItem)def.getWidget("history");
-        addScreenHandler(history, new ScreenEventHandler<Object>() {
+        historySample = (MenuItem)def.getWidget("historySample");
+        addScreenHandler(historySample, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                Window.alert("clicked history");
-                // history();
+                historyUtility.historySample();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                history.enable(EnumSet.of(State.DISPLAY, State.UPDATE).contains(event.getState()));
+                historySample.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historySampleEnvironmental = (MenuItem)def.getWidget("historySampleEnvironmental");
+        addScreenHandler(historySampleEnvironmental, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySampleEnvironmental();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historySampleEnvironmental.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historySampleProject = (MenuItem)def.getWidget("historySampleProject");
+        addScreenHandler(historySampleProject, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySampleProject();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historySampleProject.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historySampleOrganization = (MenuItem)def.getWidget("historySampleOrganization");
+        addScreenHandler(historySampleOrganization, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySampleOrganization();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historySampleOrganization.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historySampleItem = (MenuItem)def.getWidget("historySampleItem");
+        addScreenHandler(historySampleItem, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySampleItem();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historySampleItem.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historyAnalysis = (MenuItem)def.getWidget("historyAnalysis");
+        addScreenHandler(historyAnalysis, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historyAnalysis();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historyAnalysis.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historyCurrentResult = (MenuItem)def.getWidget("historyCurrentResult");
+        addScreenHandler(historyCurrentResult, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historyCurrentResult();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historyCurrentResult.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historyStorage = (MenuItem)def.getWidget("historyStorage");
+        addScreenHandler(historyStorage, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historyStorage();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historyStorage.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historySampleQA = (MenuItem)def.getWidget("historySampleQA");
+        addScreenHandler(historySampleQA, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySampleQA();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historySampleQA.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historyAnalysisQA = (MenuItem)def.getWidget("historyAnalysisQA");
+        addScreenHandler(historyAnalysisQA, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historyAnalysisQA();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historyAnalysisQA.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        
+        historyAuxData = (MenuItem)def.getWidget("historyAuxData");
+        addScreenHandler(historyAuxData, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historyAuxData();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historyAuxData.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
         //
         // screen fields
         //
-        final EnvironmentalSampleLoginScreen envScreen = this;
-
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
             public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
@@ -327,13 +466,13 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 SampleManager tmpMan;
                 try {
                     manager.getSample().setAccessionNumber(event.getValue());
-                    
-                    if(accessionNumUtil == null)
+
+                    if (accessionNumUtil == null)
                         accessionNumUtil = new AccessionNumberUtility();
-                    
+
                     tmpMan = accessionNumUtil.accessionNumberEntered(manager);
-                    
-                    if(tmpMan != manager){
+
+                    if (tmpMan != manager) {
                         manager = tmpMan;
                         DataChangeEvent.fire(envScreen);
                     }
@@ -638,7 +777,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
         analysisTab.addActionHandler(new ActionHandler<AnalysisTab.Action>() {
             public void onAction(ActionEvent<AnalysisTab.Action> event) {
-                if (state != State.QUERY) 
+                if (state != State.QUERY)
                     ActionEvent.fire(envScreen, event.getAction(), event.getData());
             }
         });
@@ -767,7 +906,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
-        
+
         window.clearStatus();
     }
 
@@ -800,7 +939,8 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 manager.validate();
                 manager.getSample().setStatusId(sampleLoggedInId);
                 manager = manager.add();
-
+                historyUtility.setManager(manager);
+                
                 setState(Screen.State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
@@ -819,7 +959,8 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 manager.validate();
                 manager.getSample().setStatusId(sampleLoggedInId);
                 manager = manager.update();
-
+                historyUtility.setManager(manager);
+                
                 setState(Screen.State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
@@ -842,7 +983,8 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             window.setBusy(consts.get("adding"));
             try {
                 manager = manager.add();
-
+                historyUtility.setManager(manager);
+                
                 setState(Screen.State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
@@ -856,7 +998,8 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             window.setBusy(consts.get("updating"));
             try {
                 manager = manager.update();
-
+                historyUtility.setManager(manager);
+                
                 setState(Screen.State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
@@ -890,6 +1033,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
             try {
                 manager = manager.abortUpdate();
+                historyUtility.setManager(manager);
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
@@ -909,7 +1053,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         if (id == null) {
             manager = SampleManager.getInstance();
             manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
-
+            
             setState(State.DEFAULT);
         } else {
             window.setBusy(consts.get("fetching"));
@@ -924,6 +1068,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 window.clearStatus();
                 return false;
             }
+            historyUtility.setManager(manager);
             setState(Screen.State.DISPLAY);
         }
         DataChangeEvent.fire(this);
