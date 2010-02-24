@@ -60,10 +60,10 @@ public class AuxTableColumn extends TableColumn {
         setColumnWidget(getCellWidget(row));
         return super.getDisplayWidget(row);
     }
-
-    public void loadWidget(Widget widget, TableDataRow row) {
+    
+    public void loadWidget(Widget widget, TableDataRow row, int modelIndex) {
         setColumnWidget(getCellWidget(row));
-        super.loadWidget(widget, row);
+        super.loadWidget(widget, row, modelIndex);
     }
 
     public Widget getWidgetEditor(TableDataRow row) {
