@@ -32,6 +32,7 @@ import org.openelis.gwt.widget.StringField;
 import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataRow;
 
+import com.google.gwt.user.client.ui.HasAlignment;
 import com.google.gwt.user.client.ui.Widget;
 
 public class SampleResultTableColumn extends TableColumn {
@@ -46,6 +47,7 @@ public class SampleResultTableColumn extends TableColumn {
     public void loadWidget(Widget widget, TableDataRow row, int modelIndex) {
         controller.renderer.setCellDisplay(modelIndex, columnIndex);
         super.loadWidget(controller.view.table.getWidget(controller.tableIndex(modelIndex), columnIndex), row, modelIndex);
+        controller.view.table.getFlexCellFormatter().setHorizontalAlignment(controller.tableIndex(modelIndex), columnIndex, getAlign());
     }
 
     public Widget getWidgetEditor(TableDataRow row) {
@@ -62,7 +64,7 @@ public class SampleResultTableColumn extends TableColumn {
             field.required = false;
             check.setField(field);
         }
-        
+        setAlign(HasAlignment.ALIGN_CENTER);
         return check;
     }
     
@@ -72,7 +74,7 @@ public class SampleResultTableColumn extends TableColumn {
             label.setStyleName("ScreenLabel");
             label.setField(new StringField());
         }
-
+        setAlign(HasAlignment.ALIGN_LEFT);
         return label;
     }
 
