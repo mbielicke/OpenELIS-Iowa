@@ -244,16 +244,18 @@ public class ResultValidator implements RPC {
         return returnValue;
     }
 
-    public boolean onlyDefault() {
-        int unitsSize, dictUnitsSize;
-        boolean unitsAllDefault, dictAllDefault;
+    public boolean noUnitsSpecified() {
+        int unitsSize, dictUnitsSize, defaultsSize;
+        boolean unitsNoUnits, dictNoUnits, defaultsNoUnits;
         unitsSize = units.size();
         dictUnitsSize = dictionary.size();
+        defaultsSize = defaults.size();
 
-        unitsAllDefault = ( (unitsSize == 1 && units.containsKey(0)) || unitsSize == 0);
-        dictAllDefault = ( (dictUnitsSize == 1 && dictionary.containsKey(0)) || dictUnitsSize == 0);
+        unitsNoUnits = ((unitsSize == 1 && units.containsKey(0)) || unitsSize == 0);
+        dictNoUnits = ((dictUnitsSize == 1 && dictionary.containsKey(0)) || dictUnitsSize == 0);
+        defaultsNoUnits = ((defaultsSize == 1 && defaults.containsKey(0)) || defaultsSize == 0);
 
-        return unitsAllDefault && dictAllDefault;
+        return unitsNoUnits && dictNoUnits && defaultsNoUnits;
     }
 
     static class Item implements RPC {

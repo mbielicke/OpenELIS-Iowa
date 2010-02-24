@@ -44,6 +44,9 @@ UIRF Software License are applicable instead of those above.
       <TablePanel padding="0" spacing="0">
         <row>
           <table key="testResultsTable" width="697" maxRows="9" showScroll="ALWAYS" title="">
+          <col width="65" class="org.openelis.modules.sample.client.SampleResultTableColumn">
+                <label />
+              </col>
             <col width="200">
               <textbox max="80"/>
             </col>
