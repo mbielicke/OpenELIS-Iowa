@@ -28,23 +28,32 @@ package org.openelis.modules.test.client;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 
 
-public class TestAnalyteDisplayManager {
-  
-    private ArrayList<Integer> indexes;     
-    private ArrayList<ArrayList<TestAnalyteViewDO>> grid;
-    private boolean isValid;
-    private int nextGroup;
+public class TestAnalyteDisplayManager<T> {
+    protected enum Type {
+        TEST, SAMPLE
+    }
     
-    public TestAnalyteDisplayManager() {       
-        indexes = new ArrayList<Integer>();                    
+    protected ArrayList<Integer> indexes;     
+    protected ArrayList<ArrayList<T>> grid;
+    protected boolean isValid;
+    protected int nextGroup;
+    protected Type type;
+    
+    public TestAnalyteDisplayManager() {
+        indexes = new ArrayList<Integer>();
     }           
     
-    public void setDataGrid(ArrayList<ArrayList<TestAnalyteViewDO>> grid) {
+    public void setDataGrid(ArrayList<ArrayList<T>> grid) {
         this.grid = grid;
         isValid = false;        
+    }
+    
+    public void setType(Type type){
+        this.type = type;
     }
     
     public boolean isHeaderRow(int r) {
@@ -52,9 +61,9 @@ public class TestAnalyteDisplayManager {
         return indexes.get(r) == -1;        
     }
     
-    public TestAnalyteViewDO getTestAnalyteAt(int r, int c) {
+    public T getObjectAt(int r, int c) {
         int index;
-        TestAnalyteViewDO ado;
+        T aDo;
         
         refreshIndexes();               
         try {
@@ -62,13 +71,12 @@ public class TestAnalyteDisplayManager {
             if(index == -1) 
                 index = indexes.get(++r);               
             
-            ado = grid.get(index).get(c);
+            aDo = (T)grid.get(index).get(c);
         } catch (IndexOutOfBoundsException ex) {
-            ex.printStackTrace();
             return null;
         }
         
-        return ado;   
+        return aDo;   
     }
     
     public int columnCount(int row) {         
@@ -83,9 +91,23 @@ public class TestAnalyteDisplayManager {
             
             return grid.get(index).size();
         } catch (IndexOutOfBoundsException ex) {
-            ex.printStackTrace();
             return 0;
         }
+    }
+    
+    public int maxColumnCount(){
+        int count, tmpCount;
+        refreshIndexes();               
+        count = 0;
+        
+        for(int i=0; i<indexes.size(); i++){
+            tmpCount=columnCount(i)+1;
+            
+            if(tmpCount > count)
+                count = tmpCount;
+        }
+        
+        return count;
     }
     
     public int getDataRowIndex(int row) {
@@ -96,7 +118,6 @@ public class TestAnalyteDisplayManager {
         try {
             index = indexes.get(row);
         } catch (IndexOutOfBoundsException ex) {
-            //ex.printStackTrace();
             return -1;
         }
         
@@ -113,7 +134,6 @@ public class TestAnalyteDisplayManager {
         try {
             return indexes.get(index);
         } catch (IndexOutOfBoundsException ex) {
-            //ex.printStackTrace();
             return -1;
         }
     }
@@ -126,7 +146,9 @@ public class TestAnalyteDisplayManager {
     private void refreshIndexes() {
         int i;
         Integer j,rg;
-        TestAnalyteViewDO ado;                
+        String isColumn;
+        TestAnalyteViewDO ado;
+        ResultViewDO rdo;
         
         if(isValid)
             return;                                                       
@@ -137,16 +159,23 @@ public class TestAnalyteDisplayManager {
         indexes.clear();                  
                 
         for(i = 0 ; i < grid.size(); i++) {
-            ado = (TestAnalyteViewDO)grid.get(i).get(0);
-            rg = ado.getRowGroup();
-            
+            if(type == Type.TEST){
+                ado = (TestAnalyteViewDO)grid.get(i).get(0);
+                rg = ado.getRowGroup();
+                isColumn = ado.getIsColumn();
+            }else{
+                rdo = (ResultViewDO)grid.get(i).get(0);
+                rg = rdo.getRowGroup();
+                isColumn = rdo.getIsColumn();
+            }
+                
             if(j != rg) {                 
                 indexes.add(-1);                
                 indexes.add(i);
                 j = rg;
                 continue;
             }            
-            if("N".equals(ado.getIsColumn())) {                
+            if("N".equals(isColumn)) {                
                 indexes.add(i);
                 continue;
             }                      

@@ -76,7 +76,72 @@ UIRF Software License are applicable instead of those above.
 <!--end button panel code-->
 
         <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
-          
+        <HorizontalPanel width="100%">
+          <TablePanel style="Form">
+          	<row>
+              <text style="Prompt">
+                <xsl:value-of select="resource:getString($constants,'entry')" />:
+              </text>
+              <textbox key="entry" width="135px" field="Integer"/>
+              </row>
+          </TablePanel>
+          <widget halign="right">
+          <TablePanel style="Form">
+          <row>
+              <text style="Prompt">
+                <xsl:value-of select="resource:getString($constants,'accessionNum')" />:
+              </text>
+              <textbox key="accessionNumber" width="75px" field="Integer" style="ScreenTextboxDisplayOnly"/>
+              <text style="Prompt">
+                <xsl:value-of select="resource:getString($constants,'received')" />:
+              </text>
+              <calendar key="receivedDate" begin="0" end="4" max="0" width="120px" style="ScreenTextboxDisplayOnly" pattern="{resource:getString($constants,'dateTimePattern')}"/>
+              <text style="Prompt">
+                <xsl:value-of select="resource:getString($constants,'tubeNum')" />:
+              </text>
+              <textbox key="tubeNumber" width="75px" style="ScreenTextboxDisplayOnly" field="Integer"/>
+              </row>
+              <row>
+              <text style="Prompt">
+                <xsl:value-of select="resource:getString($constants,'testMethodSampleType')" />:
+              </text>
+              <widget colspan="5">
+              	<dropdown key="testMethodSampleType" width="400" popWidth="400" style="ScreenTextboxDisplayOnly" field="Integer" />
+              </widget>
+              </row>
+          </TablePanel>
+          </widget>
+          </HorizontalPanel>
+          <table key="quickEntryTable" width="auto" maxRows="15" showScroll="ALWAYS" title="">
+            <col width="90" header="{resource:getString($constants,'accessionNum')}">
+              <label />
+            </col>
+            <col width="130" header="{resource:getString($constants,'received')}">
+              <label />
+            </col>
+            <col width="80" header="{resource:getString($constants,'tubeNum')}">
+              <label />
+            </col>
+            <col width="150" header="{resource:getString($constants,'test')}">
+              <label />
+            </col>
+            <col width="150" header="{resource:getString($constants,'method')}">
+              <label />
+            </col>
+            <col width="150" header="{resource:getString($constants,'sampleType')}">
+              <label />
+            </col>
+            </table>
+             <widget style="TableButtonFooter">
+                      <appButton key="removeRowButton" style="Button">
+                        <HorizontalPanel>
+                          <AbsolutePanel style="RemoveRowButtonImage" />
+                          <text>
+                            <xsl:value-of select="resource:getString($constants,'removeRow')" />
+                          </text>
+                        </HorizontalPanel>
+                      </appButton>
+                  </widget>
       </VerticalPanel>
       </VerticalPanel>
     </screen>
