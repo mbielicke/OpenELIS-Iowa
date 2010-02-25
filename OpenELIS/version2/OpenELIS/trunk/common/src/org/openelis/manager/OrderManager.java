@@ -38,6 +38,10 @@ public class OrderManager implements RPC, HasNotesInt {
     protected OrderItemManager                   items;
     protected NoteManager                        notes;
 
+    public static final String   TYPE_INTERNAL = "I",
+                                 TYPE_VENDOR   = "V",
+                                 TYPE_KIT      = "K";
+
     protected transient static OrderManagerProxy proxy;
 
     /**
@@ -122,7 +126,7 @@ public class OrderManager implements RPC, HasNotesInt {
                     throw e;
                 }
             }
-            if (order == null)
+            if (items == null)
                 items = OrderItemManager.getInstance();
         }
         return items;
@@ -132,7 +136,7 @@ public class OrderManager implements RPC, HasNotesInt {
         if (notes == null) {
             if (order.getId() != null) {
                 try {
-                    notes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.ORDER,order.getId(), false);
+                    notes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.ORDER, order.getId(), false);
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
