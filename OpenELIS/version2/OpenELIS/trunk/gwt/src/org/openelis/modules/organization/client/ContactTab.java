@@ -62,9 +62,6 @@ public class ContactTab extends Screen {
                 Object val;
                 OrganizationContactDO data;
 
-                if (state == State.QUERY)
-                    return;
-
                 r = event.getRow();
                 c = event.getCol();
                 val = table.getObject(r,c);
