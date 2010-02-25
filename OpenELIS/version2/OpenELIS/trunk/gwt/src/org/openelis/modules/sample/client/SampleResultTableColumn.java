@@ -45,9 +45,9 @@ public class SampleResultTableColumn extends TableColumn {
     }
 
     public void loadWidget(Widget widget, TableDataRow row, int modelIndex) {
-        controller.renderer.setCellDisplay(modelIndex, columnIndex);
-        super.loadWidget(controller.view.table.getWidget(controller.tableIndex(modelIndex), columnIndex), row, modelIndex);
-        controller.view.table.getFlexCellFormatter().setHorizontalAlignment(controller.tableIndex(modelIndex), columnIndex, getAlign());
+        Widget wid = setCellDisplay(modelIndex);
+        super.loadWidget(wid,row,modelIndex);
+        resetAlign(modelIndex);
     }
 
     public Widget getWidgetEditor(TableDataRow row) {
