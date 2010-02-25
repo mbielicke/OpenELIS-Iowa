@@ -173,11 +173,11 @@ public class Order implements Auditable, Cloneable {
     }
 
     public Datetime getOrderedDate() {
-        return DataBaseUtil.toYM(orderedDate);
+        return DataBaseUtil.toYD(orderedDate);
     }
 
     public void setOrderedDate(Datetime orderedDate) {
-        if (DataBaseUtil.isDifferentYM(orderedDate, this.orderedDate))
+        if (DataBaseUtil.isDifferentYD(orderedDate, this.orderedDate))
             this.orderedDate = DataBaseUtil.toDate(orderedDate);
     }
 
