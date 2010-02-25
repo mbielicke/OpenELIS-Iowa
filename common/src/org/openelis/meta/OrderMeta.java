@@ -44,7 +44,7 @@ public class OrderMeta implements Meta, MetaMap {
 	                               REQUESTED_BY = "_order.requestedBy",
 	                               COST_CENTER_ID = "_order.costCenterId",
 	                               ORGANIZATION_ID = "_order.organizationId",
-	                               IS_EXTERNAL = "_order.isExternal",
+	                               TYPE = "_order.type",
 	                               EXTERNAL_ORDER_NUMBER = "_order.externalOrderNumber",
 	                               REPORT_TO_ID = "_order.reportToId",
 	                               BILL_TO_ID = "_order.billToId",
@@ -76,7 +76,7 @@ public class OrderMeta implements Meta, MetaMap {
     static {
         names = new HashSet<String>(Arrays.asList(ID, DESCRIPTION, STATUS_ID, ORDERED_DATE,
                                                   NEEDED_IN_DAYS, REQUESTED_BY, COST_CENTER_ID,
-                                                  ORGANIZATION_ID, IS_EXTERNAL, EXTERNAL_ORDER_NUMBER,
+                                                  ORGANIZATION_ID, TYPE, EXTERNAL_ORDER_NUMBER,
                                                   REPORT_TO_ID, BILL_TO_ID, SHIP_FROM_ID,
                                                   
                                                   ITEM_ID, ITEM_ORDER_ID, ITEM_INVENTORY_ITEM_ID,
@@ -122,8 +122,8 @@ public class OrderMeta implements Meta, MetaMap {
         return ORGANIZATION_ID;
     }
 
-    public static String getIsExternal() {
-        return IS_EXTERNAL;
+    public static String getType() {
+        return TYPE;
     }
 
     public static String getExternalOrderNumber() {

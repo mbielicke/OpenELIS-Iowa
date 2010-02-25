@@ -53,7 +53,7 @@ public class OrderDO extends DataObject {
         setId(id);
         setDescription(description);
         setStatusId(statusId);
-        setOrderedDate(DataBaseUtil.toYM(orderedDate));
+        setOrderedDate(DataBaseUtil.toYD(orderedDate));
         setNeededInDays(neededInDays);
         setRequestedBy(requestedBy);
         setCostCenterId(costCenterId);
@@ -98,7 +98,7 @@ public class OrderDO extends DataObject {
     }
 
     public void setOrderedDate(Datetime orderedDate) {
-        this.orderedDate = DataBaseUtil.toYM(orderedDate);
+        this.orderedDate = DataBaseUtil.toYD(orderedDate);
         _changed = true;
     }
 

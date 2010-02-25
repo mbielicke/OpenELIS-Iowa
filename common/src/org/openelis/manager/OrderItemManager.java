@@ -49,13 +49,6 @@ public class OrderItemManager implements RPC {
         return new OrderItemManager();
     }
 
-    public int count() {
-        if (items == null)
-            return 0;
-
-        return items.size();
-    }
-
     public OrderItemViewDO getItemAt(int i) {
         return items.get(i);
     }
@@ -66,19 +59,23 @@ public class OrderItemManager implements RPC {
         items.set(i, item);
     }
 
-    public void addItem(OrderItemViewDO item) {
+    public int addItem() {
         if (items == null)
             items = new ArrayList<OrderItemViewDO>();
-        items.add(item);
+        items.add(new OrderItemViewDO());
+
+        return count() - 1;
     }
 
-    public void addItemAt(OrderItemViewDO item, int i) {
+    public int addItemAt(int i) {
         if (items == null)
             items = new ArrayList<OrderItemViewDO>();
-        items.add(i, item);
+        items.add(i, new OrderItemViewDO());
+
+        return i;
     }
 
-    public void removeContactAt(int i) {
+    public void removeItemAt(int i) {
         OrderItemViewDO tmp;
 
         if (items == null || i >= items.size())
@@ -90,6 +87,13 @@ public class OrderItemManager implements RPC {
                 deleted = new ArrayList<OrderItemViewDO>();
             deleted.add(tmp);
         }
+    }
+
+    public int count() {
+        if (items == null)
+            return 0;
+
+        return items.size();
     }
 
     // service methods
