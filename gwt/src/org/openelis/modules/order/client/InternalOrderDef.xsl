@@ -48,186 +48,237 @@ UIRF Software License are applicable instead of those above.
 <!-- main screen -->
 
     <screen id="InternalOrder" name="{resource:getString($constants,'internalOrder')}">
+      <HorizontalPanel padding="0" spacing="0">
+
+<!--left table goes here -->
+
+        <CollapsePanel key="collapsePanel" style="LeftSidePanel">
+          <HorizontalPanel width="225">
+            <buttonGroup key="atozButtons">
+              <VerticalPanel spacing="0" padding="0" height="100%" style="AtoZ">
+                <xsl:call-template name="aToZButton">
+                  <xsl:with-param name="keyParam">#</xsl:with-param>
+                  <xsl:with-param name="queryParam">&gt;0 </xsl:with-param>
+                </xsl:call-template>
+              </VerticalPanel>
+            </buttonGroup>
+            <VerticalPanel>
+              <table key="atozTable" width="auto" maxRows="19" style="atozTable">
+                <col width="75" header="{resource:getString($constants,'orderNum')}">
+                  <label />
+                </col>
+                <col width="150" header="{resource:getString($constants,'requestedBy')}">
+                  <label />
+                </col>
+              </table>
+              <widget halign="center">
+                <HorizontalPanel>
+                  <appButton key="atozPrev" style="Button" enable="false">
+                    <AbsolutePanel style="prevNavIndex" />
+                  </appButton>
+                  <appButton key="atozNext" style="Button" enable="false">
+                    <AbsolutePanel style="nextNavIndex" />
+                  </appButton>
+                </HorizontalPanel>
+              </widget>
+            </VerticalPanel>
+          </HorizontalPanel>
+        </CollapsePanel>
 
 <!--button panel code-->
 
-      <VerticalPanel padding="0" spacing="0">
-        <AbsolutePanel spacing="0" style="ButtonPanelContainer">
-          <HorizontalPanel>
-            <xsl:call-template name="queryButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="previousButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="nextButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="buttonPanelDivider" />
-            <xsl:call-template name="addButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="updateButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="buttonPanelDivider" />
-            <xsl:call-template name="commitButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="abortButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="buttonPanelDivider" />
-            <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
-              <menuItem>
-                <menuDisplay>
-                  <appButton style="ButtonPanelButton" action="option">
-                    <HorizontalPanel>
-                      <text>
-                        <xsl:value-of select='resource:getString($constants,"options")' />
-                      </text>
-                      <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
-                    </HorizontalPanel>
-                  </appButton>
-                </menuDisplay>
-                <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                  <xsl:call-template name="historyMenuItem" />
-                </menuPanel>
-              </menuItem>
-            </menuPanel>
-          </HorizontalPanel>
-        </AbsolutePanel>
+        <VerticalPanel padding="0" spacing="0">
+          <AbsolutePanel spacing="0" style="ButtonPanelContainer">
+            <HorizontalPanel>
+              <xsl:call-template name="queryButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="previousButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="nextButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="buttonPanelDivider" />
+              <xsl:call-template name="addButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="updateButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="buttonPanelDivider" />
+              <xsl:call-template name="commitButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="abortButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="buttonPanelDivider" />
+              <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
+                <menuItem>
+                  <menuDisplay>
+                    <appButton style="ButtonPanelButton" action="option">
+                      <HorizontalPanel>
+                        <text>
+                          <xsl:value-of select='resource:getString($constants,"options")' />
+                        </text>
+                        <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
+                      </HorizontalPanel>
+                    </appButton>
+                  </menuDisplay>
+                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                    <xsl:call-template name="historyMenuItem" />
+                  </menuPanel>
+                </menuItem>
+              </menuPanel>
+            </HorizontalPanel>
+          </AbsolutePanel>
 
 <!--end button panel-->
 
-        <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
-          <TablePanel style="Form">
-            <row>
-              <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"orderNum")' />:
-              </text>
-              <textbox key="{meta:getId()}" width="75" case="LOWER" max="20" tab="{meta:getNeededInDays()},{meta:getCostCenterId()}" field="Integer" />
-              <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"neededDays")' />:
-              </text>
-              <widget colspan="3">
-                <textbox key="{meta:getNeededInDays()}" width="75" tab="{meta:getStatusId()},{meta:getId()}" field="Integer" required="true" />
-              </widget>
-            </row>
-            <row>
-              <text style="Prompt">
-                <xsl:value-of select="resource:getString($constants,'status')" />:
-              </text>
-              <dropdown key="{meta:getStatusId()}" width="90" popWidth="auto" tab="{meta:getRequestedBy()},{meta:getNeededInDays()}" field="Integer" required="true" />
-              <text style="Prompt">
-                <xsl:value-of select="resource:getString($constants,'requestedBy')" />:
-              </text>
-              <textbox key="{meta:getRequestedBy()}" width="175" tab="{meta:getOrderedDate()},{meta:getStatusId()}" field="String" required="true" />
-            </row>
-            <row>
-              <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"orderDate")' />:
-              </text>
-              <calendar key="{meta:getOrderedDate()}" begin="0" end="2" width="75" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getCostCenterId()},{meta:getRequestedBy()}" required="true" />
-            </row>
-            <row>
-              <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"costCenter")' />:
-              </text>
-              <dropdown key="{meta:getCostCenterId()}" width="187" popWidth="auto" tab="{meta:getId()},{meta:getRequestedBy()}" field="Integer" />
-            </row>
-          </TablePanel>
+          <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
+            <TablePanel style="Form">
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"orderNum")' />:
+                </text>
+                <textbox key="{meta:getId()}" width="50" tab="{meta:getNeededInDays()},{meta:getCostCenterId()}" field="Integer" />
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"neededDays")' />:
+                </text>
+                <widget colspan="3">
+                  <textbox key="{meta:getNeededInDays()}" width="50" tab="{meta:getStatusId()},{meta:getId()}" field="Integer" required="true" />
+                </widget>
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select="resource:getString($constants,'status')" />:
+                </text>
+                <dropdown key="{meta:getStatusId()}" width="90" popWidth="auto" tab="{meta:getRequestedBy()},{meta:getNeededInDays()}" field="Integer" required="true" />
+                <text style="Prompt">
+                  <xsl:value-of select="resource:getString($constants,'requestedBy')" />:
+                </text>
+                <textbox key="{meta:getRequestedBy()}" width="175" tab="{meta:getOrderedDate()},{meta:getStatusId()}" field="String" required="true" />
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"orderDate")' />:
+                </text>
+                <calendar key="{meta:getOrderedDate()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getCostCenterId()},{meta:getRequestedBy()}" required="true" />
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"costCenter")' />:
+                </text>
+                <dropdown key="{meta:getCostCenterId()}" width="187" popWidth="auto" tab="{meta:getId()},{meta:getOrderedDate()}" field="Integer" />
+              </row>
+            </TablePanel>
 
 <!-- TAB PANEL -->
 
-          <TabPanel key="tabPanel" width="605" height="285">
+            <TabPanel key="tabPanel" width="605" height="285">
 
 <!-- TAB 1 (Items) -->
 
-            <tab key="itemTab" text="{resource:getString($constants,'items')}">
-              <VerticalPanel padding="0" spacing="0">
-                <table key="itemTable" width="auto" maxRows="10" showScroll="ALWAYS">
-                  <col key="{meta:getOrderItemQuantity()}" width="65" header="{resource:getString($constants,'quantity')}">
-                    <textbox field="Integer" required="true" />
-                  </col>
-                  <col key="{meta:getOrderItemInventoryItemName()}" width="275" header="{resource:getString($constants,'inventoryItem')}">
-                    <autoComplete case="LOWER" field="Integer" required="true">
-                      <col width="135" header="{resource:getString($constants,'name')}" />
-                      <col width="110" header="{resource:getString($constants,'store')}" />
-                      <col width="110" header="{resource:getString($constants,'dispensedUnits')}" />
-                    </autoComplete>
-                  </col>
-                  <col key="{meta:getOrderItemInventoryItemStoreId()}" width="238" header="{resource:getString($constants,'store')}">
-                    <dropdown width="235" field="Integer" />
-                  </col>
-                </table>
-                <appButton key="removeItemButton" style="Button">
+              <tab key="itemTab" text="{resource:getString($constants,'items')}">
+                <VerticalPanel padding="0" spacing="0">
+                  <table key="itemTable" width="auto" maxRows="10" showScroll="ALWAYS">
+                    <col key="{meta:getOrderItemQuantity()}" width="65" header="{resource:getString($constants,'quantity')}">
+                      <textbox field="Integer" required="true" />
+                    </col>
+                    <col key="{meta:getOrderItemInventoryItemName()}" width="275" header="{resource:getString($constants,'inventoryItem')}">
+                      <autoComplete case="LOWER" field="Integer" required="true">
+                        <col width="135" header="{resource:getString($constants,'name')}" />
+                        <col width="110" header="{resource:getString($constants,'store')}" >
+                          <dropdown width="110" popWidth="auto" field="Integer"/>
+                        </col>
+                        <col width="110" header="{resource:getString($constants,'dispensedUnits')}" >
+                          <dropdown width="110" popWidth="auto" field="Integer"/>
+                        </col>
+                      </autoComplete>
+                    </col>
+                    <col key="{meta:getOrderItemInventoryItemStoreId()}" width="238" header="{resource:getString($constants,'store')}">
+                      <dropdown width="235" field="Integer" />
+                    </col>
+                  </table>
                   <HorizontalPanel>
-                    <AbsolutePanel style="RemoveRowButtonImage" />
-                    <text>
-                      <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                    </text>
+                    <appButton key="addItemButton" style="Button">
+                      <HorizontalPanel>
+                        <AbsolutePanel style="AddRowButtonImage" />
+                        <text>
+                          <xsl:value-of select="resource:getString($constants,'addRow')" />
+                        </text>
+                      </HorizontalPanel>
+                    </appButton>
+                    <appButton key="removeItemButton" style="Button">
+                      <HorizontalPanel>
+                        <AbsolutePanel style="RemoveRowButtonImage" />
+                        <text>
+                          <xsl:value-of select="resource:getString($constants,'removeRow')" />
+                        </text>
+                      </HorizontalPanel>
+                    </appButton>
                   </HorizontalPanel>
-                </appButton>
-              </VerticalPanel>
-            </tab>
+                </VerticalPanel>
+              </tab>
 
 <!-- TAB 2 (receipts) -->
 
-            <tab key="receiptTab" text="{resource:getString($constants,'filled')}">
-              <VerticalPanel padding="0" spacing="0">
-                <table key="receiptTable" width="auto" maxRows="10" showScroll="ALWAYS">
-                  <col key="" width="150" header="{resource:getString($constants,'inventoryItem')}">
-                    <label />
-                  </col>
-                  <col key="" width="180" header="{resource:getString($constants,'location')}">
-                    <label />
-                  </col>
-                  <col key="" width="65" header="{resource:getString($constants,'quantity')}">
-                    <label />
-                  </col>
-                  <col key="" width="85" header="{resource:getString($constants,'lotNum')}">
-                    <label />
-                  </col>
-                  <col key="" width="92" header="{resource:getString($constants,'expDate')}">
-                    <label />
-                  </col>
-                </table>
-              </VerticalPanel>
-            </tab>
+              <tab key="receiptTab" text="{resource:getString($constants,'filled')}">
+                <VerticalPanel padding="0" spacing="0">
+                  <table key="receiptTable" width="auto" maxRows="10" showScroll="ALWAYS">
+                    <col key="" width="150" header="{resource:getString($constants,'inventoryItem')}">
+                      <label />
+                    </col>
+                    <col key="" width="180" header="{resource:getString($constants,'location')}">
+                      <label />
+                    </col>
+                    <col key="" width="65" header="{resource:getString($constants,'quantity')}">
+                      <label />
+                    </col>
+                    <col key="" width="85" header="{resource:getString($constants,'lotNum')}">
+                      <label />
+                    </col>
+                    <col key="" width="92" header="{resource:getString($constants,'expDate')}">
+                      <label />
+                    </col>
+                  </table>
+                </VerticalPanel>
+              </tab>
 
 <!-- TAB 3 (order notes) -->
 
-            <tab key="noteTab" text="{resource:getString($constants,'orderShippingNotes')}">
-              <VerticalPanel padding="0" spacing="0">
-                <notes key="notesPanel" width="604" height="247" />
-                <appButton key="standardNoteButton" style="Button">
-                  <HorizontalPanel>
-                    <AbsolutePanel style="StandardNoteButtonImage" />
-                    <text>
-                      <xsl:value-of select="resource:getString($constants,'addNote')" />
-                    </text>
-                  </HorizontalPanel>
-                </appButton>
-              </VerticalPanel>
-            </tab>
-          </TabPanel>
+              <tab key="noteTab" text="{resource:getString($constants,'orderShippingNotes')}">
+                <VerticalPanel padding="0" spacing="0">
+                  <notes key="notesPanel" width="604" height="247" />
+                  <appButton key="standardNoteButton" style="Button">
+                    <HorizontalPanel>
+                      <AbsolutePanel style="StandardNoteButtonImage" />
+                      <text>
+                        <xsl:value-of select="resource:getString($constants,'addNote')" />
+                      </text>
+                    </HorizontalPanel>
+                  </appButton>
+                </VerticalPanel>
+              </tab>
+            </TabPanel>
+          </VerticalPanel>
         </VerticalPanel>
-      </VerticalPanel>
+      </HorizontalPanel>
     </screen>
   </xsl:template>
 </xsl:stylesheet>
