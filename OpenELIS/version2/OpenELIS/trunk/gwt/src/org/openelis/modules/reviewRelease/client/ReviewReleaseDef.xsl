@@ -87,13 +87,13 @@ UIRF Software License are applicable instead of those above.
           </HorizontalPanel>
         </AbsolutePanel>
         <table key="atozTable" maxRows="10" showScroll="ALWAYS" width="auto">
-          <col header="Accession #" key="{meta:getAccessionNumber()}" width="200">
+          <col header="Accession #" key="{meta:getAccessionNumber()}" width="115">
             <textbox field="Integer" />
           </col>
-          <col header="Test" key="{meta:getAnalysisTestName()}" width="200">
+          <col header="Test" key="{meta:getAnalysisTestName()}" width="185">
             <textbox field="String" />
           </col>
-          <col header="Method" key="{meta:getAnalysisMethodName()}" width="200">
+          <col header="Method" key="{meta:getAnalysisMethodName()}" width="192">
             <textbox field="String" />
           </col>
           <col header="Analysis Status" width="100">
@@ -103,7 +103,7 @@ UIRF Software License are applicable instead of those above.
             <label />
           </col>
         </table>
-        <TabPanel height="274" key="SampleContent" width="800">
+        <TabPanel height="274" key="SampleContent" width="715">
 <!-- Blank default deck -->
           <tab text="" visible="false">
             <AbsolutePanel />
