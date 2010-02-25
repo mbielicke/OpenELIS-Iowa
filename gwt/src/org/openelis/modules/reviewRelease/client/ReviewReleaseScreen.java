@@ -822,7 +822,7 @@ public class ReviewReleaseScreen extends Screen {
 				window.setProgress(0);
 				DeferredCommand.addCommand(new Command() {
 					public void execute() {
-						Window.addWindow("Report.html?id="+rp.name, "Report", "toolbar=no,location=no,menubar=no,status=no,titlebar=no");
+						Window.open("Report.html?id="+rp.name, "Report", "toolbar=no,location=no,menubar=no,status=no,titlebar=no");
 					}
 				});
 			    
