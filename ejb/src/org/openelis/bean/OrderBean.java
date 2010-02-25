@@ -69,11 +69,11 @@ public class OrderBean implements OrderRemote, OrderLocal {
     private static final OrderMeta meta = new OrderMeta();
 
     public OrderViewDO fetchById(Integer id) throws Exception {
+        int i;
+        Integer ids[];
         Query query;
         OrderViewDO data;
-        List list;
-        Integer ids[];
-        int i;
+        List<OrganizationViewDO> list;
         OrganizationViewDO organization;
         
         query = manager.createNamedQuery("Order.FetchById");
@@ -91,7 +91,7 @@ public class OrderBean implements OrderRemote, OrderLocal {
             if (i != 0) {
                 list = organizationBean.fetchByIds(ids);
                 for (i = 0; i < list.size(); i++) {
-                    organization = (OrganizationViewDO) list.get(i);
+                    organization = list.get(i);
                     if (organization.getId().equals(data.getOrganizationId()))
                         data.setOrganization(organization);
                     else if (organization.getId().equals(data.getReportToId()))
@@ -100,14 +100,6 @@ public class OrderBean implements OrderRemote, OrderLocal {
                         data.setBillTo(organization);
                 }
             }
-/*
-            if (data.getOrganizationId() != null)
-                data.setOrganization(organizationBean.fetchById(data.getOrganizationId()));
-            if (data.getReportToId() != null) 
-                data.setReportTo(organizationBean.fetchById(data.getReportToId()));
-            if (data.getBillToId() != null) 
-                data.setBillTo(organizationBean.fetchById(data.getBillToId()));
-*/
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {

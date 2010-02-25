@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
@@ -89,7 +90,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         Query query;
         
         query = manager.createNamedQuery("Organization.FetchByIds");
-        query.setParameter("ids", ids);
+        query.setParameter("ids", Arrays.asList(ids));
 
         return DataBaseUtil.toArrayList(query.getResultList());
     }

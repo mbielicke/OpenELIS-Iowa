@@ -36,12 +36,10 @@ import org.openelis.utilcommon.DataBaseUtil;
 public class OrganizationManagerProxy {
 
     public OrganizationManager fetchById(Integer id) throws Exception {
-        OrganizationLocal ol;
         OrganizationViewDO data;
         OrganizationManager m;
 
-        ol = local();
-        data = ol.fetchById(id);
+        data = local().fetchById(id);
         m = OrganizationManager.getInstance();
 
         m.setOrganization(data);
@@ -78,10 +76,8 @@ public class OrganizationManagerProxy {
 
     public OrganizationManager add(OrganizationManager man) throws Exception {
         Integer id;
-        OrganizationLocal ol;
 
-        ol = local();
-        ol.add(man.getOrganization());
+        local().add(man.getOrganization());
         id = man.getOrganization().getId();
 
         if (man.contacts != null) {
@@ -103,10 +99,8 @@ public class OrganizationManagerProxy {
 
     public OrganizationManager update(OrganizationManager man) throws Exception {
         Integer id;
-        OrganizationLocal ol;
 
-        ol = local();
-        ol.update(man.getOrganization());
+        local().update(man.getOrganization());
         id = man.getOrganization().getId();
 
         if (man.contacts != null) {

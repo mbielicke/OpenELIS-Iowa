@@ -36,12 +36,10 @@ import org.openelis.utilcommon.DataBaseUtil;
 public class OrderManagerProxy {
 
     public OrderManager fetchById(Integer id) throws Exception {
-        OrderLocal ol;
         OrderViewDO data;
         OrderManager m;
 
-        ol = local();
-        data = ol.fetchById(id);
+        data = local().fetchById(id);
         m = OrderManager.getInstance();
 
         m.setOrder(data);
@@ -79,10 +77,8 @@ public class OrderManagerProxy {
 
     public OrderManager add(OrderManager man) throws Exception {
         Integer id;
-        OrderLocal ol;
 
-        ol = local();
-        ol.add(man.getOrder());
+        local().add(man.getOrder());
         id = man.getOrder().getId();
 
         if (man.items != null) {
@@ -100,10 +96,8 @@ public class OrderManagerProxy {
 
     public OrderManager update(OrderManager man) throws Exception {
         Integer id;
-        OrderLocal ol;
 
-        ol = local();
-        ol.update(man.getOrder());
+        local().update(man.getOrder());
         id = man.getOrder().getId();
 
         if (man.items != null) {
