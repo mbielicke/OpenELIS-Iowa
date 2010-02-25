@@ -236,7 +236,7 @@ public class AnalysisResultManager implements RPC {
         if ( !loaded) {
             aliasList = new ArrayList<AnalyteDO>();
             // clean the list of column anaytes
-            for (int i = 0; i < list.size(); i++ ) {
+            for (int i = list.size()-1; i >= 0; i--) {
                 taDO = list.get(i);
                 if ("Y".equals(taDO.getIsColumn()))
                     list.remove(i);
