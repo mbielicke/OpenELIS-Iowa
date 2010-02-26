@@ -203,28 +203,29 @@ public class ResultTab extends Screen {
 
                 row = event.getRow();
                 col = event.getCol();
-
+                resultDO = null;
+                
                 tableRow = testResultsTable.getRow(row);
+                val = (String)tableRow.cells.get(col).value;
+                
                 if (col == 0)
                     resultDO = displayManager.getObjectAt(row, 0);
                 else
                     resultDO = displayManager.getObjectAt(row, col - 2);
-                val = (String)tableRow.cells.get(col).value;
-                resultDO.setValue(val);
-
+                 
                 if (col == 0) {
                     resultDO.setIsReportable(val);
 
                 } else if ( !"".equals(val)) {
                     try {
+                        resultDO.setValue(val);
                         testResultId = manager.validateResultValue(resultDO.getResultGroup(),
                                                                    anDO.getUnitOfMeasureId(), val);
                         testResultDo = manager.getTestResultList().get(testResultId);
 
                         resultDO.setTypeId(testResultDo.getTypeId());
                         resultDO.setTestResultId(testResultDo.getId());
-                        resultDO.setValue(val);
-
+                   
                     } catch (ParseException e) {
                         testResultsTable.clearCellExceptions(row, col);
                         testResultsTable.setCellException(row, col, e);
@@ -235,6 +236,7 @@ public class ResultTab extends Screen {
                     }
                 } else {
                     testResultsTable.clearCellExceptions(row, col);
+                    resultDO.setValue(val);
                     resultDO.setTypeId(null);
                     resultDO.setTestResultId(null);
                 }
@@ -255,15 +257,6 @@ public class ResultTab extends Screen {
                 row = event.getRow();
                 prow = testResultsTable.getRow(index - 1);
                 prowIndex = index - 1;
-
-                //FIXME doesnt seem to be needed
-                // if the row is a header try the row after
-                // this assumes there was at least 1 analyte row before the
-                // current row was added
-                //if ( ((Boolean)prow.data).booleanValue()) {
-                //    prow = testResultsTable.getRow(index + 1);
-                //    prowIndex = index + 1;
-               //}
 
                 rowGroup = displayManager.getObjectAt(prowIndex, 0).getRowGroup();
 
@@ -359,8 +352,12 @@ public class ResultTab extends Screen {
                 int r;
 
                 r = testResultsTable.getSelectedRow();
-                if (r > -1 && testResultsTable.numRows() > 0)
-                    testResultsTable.deleteRow(r);
+                if (r > -1 && testResultsTable.numRows() > 0){
+                    if(!onlyRowUnderHeading(r))
+                        testResultsTable.deleteRow(r);
+                    else
+                        window.setError(consts.get("atLeastOneResultUnderHeading"));
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -615,6 +612,15 @@ public class ResultTab extends Screen {
         }
     }
 
+    private boolean onlyRowUnderHeading(int index){
+        boolean prevHeader, postHeader;
+        
+        prevHeader = (Boolean)testResultsTable.getRow(index-1).data;
+        postHeader = (Boolean)testResultsTable.getRow(index+1).data;
+        
+        return prevHeader && postHeader;
+    }
+    
     private boolean canEdit() {
         return (anDO != null && !analysisCancelledId.equals(anDO.getStatusId()) && !analysisReleasedId.equals(anDO.getStatusId()));
     }
