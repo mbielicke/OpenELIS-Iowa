@@ -174,7 +174,7 @@ public class ResultTab extends Screen {
                 else if (c != 1)
                     resultDO = displayManager.getObjectAt(r, c - 2);
 
-                if (isHeaderRow || c == 1 || c >= (displayManager.columnCount(r) + 2) ||
+                if (isHeaderRow || c == 1 || c >= displayManager.columnCount(r) ||
                     testAnalyteReadOnlyId.equals(resultDO.getTypeId())) {
                     event.cancel();
                     enableButton = false;
@@ -208,7 +208,7 @@ public class ResultTab extends Screen {
                 if (col == 0)
                     resultDO = displayManager.getObjectAt(row, 0);
                 else
-                    resultDO = displayManager.getObjectAt(row, col - 1);
+                    resultDO = displayManager.getObjectAt(row, col - 2);
                 val = (String)tableRow.cells.get(col).value;
                 resultDO.setValue(val);
 
@@ -256,13 +256,14 @@ public class ResultTab extends Screen {
                 prow = testResultsTable.getRow(index - 1);
                 prowIndex = index - 1;
 
+                //FIXME doesnt seem to be needed
                 // if the row is a header try the row after
                 // this assumes there was at least 1 analyte row before the
                 // current row was added
-                if ( ((Boolean)prow.data).booleanValue()) {
-                    prow = testResultsTable.getRow(index + 1);
-                    prowIndex = index + 1;
-                }
+                //if ( ((Boolean)prow.data).booleanValue()) {
+                //    prow = testResultsTable.getRow(index + 1);
+                //    prowIndex = index + 1;
+               //}
 
                 rowGroup = displayManager.getObjectAt(prowIndex, 0).getRowGroup();
 
@@ -276,26 +277,19 @@ public class ResultTab extends Screen {
                 displayManager.setDataGrid(manager.getResults());
 
                 resultDO = null;
-                numCols = displayManager.columnCount(index) + 2;
+                numCols = displayManager.columnCount(index);
+                manager.setDefaultsLoaded(false);
                 for (int i = 2; i < numCols; i++ ) {
+                    resultDO = displayManager.getObjectAt(index, i-2);
+                    row.key = resultDO.getId();
                     try {
-                        resultDO = displayManager.getObjectAt(index, i - 2);
-                        val = manager.getDefaultValue(resultDO.getResultGroup(),
-                                                      anDO.getUnitOfMeasureId());
+                        val = getResultValue(resultDO, anDO.getUnitOfMeasureId());
+                        testResultsTable.setCell(index, i, val);
 
                         if (val != null && !"".equals(val)) {
-                            testResultsTable.setCell(index, i, val);
                             resultDO.setValue(val);
-
-                            testResultId = manager.validateResultValue(resultDO.getResultGroup(),
-                                                                       anDO.getUnitOfMeasureId(),
-                                                                       val);
-                            testResultDo = manager.getTestResultList().get(testResultId);
-
-                            resultDO.setTypeId(testResultDo.getTypeId());
-                            resultDO.setTestResultId(testResultDo.getId());
+                            displayManager.validateResultValue(manager, resultDO, anDO.getUnitOfMeasureId());
                         }
-
                     } catch (ParseException e) {
                         testResultsTable.clearCellExceptions(index, i);
                         testResultsTable.setCellException(index, i, e);
@@ -306,6 +300,7 @@ public class ResultTab extends Screen {
                         Window.alert(e.getMessage());
                     }
                 }
+                manager.setDefaultsLoaded(true);
             }
         });
 
@@ -315,6 +310,7 @@ public class ResultTab extends Screen {
                 try {
                     index = displayManager.getIndexAt(event.getIndex());
                     manager.removeRowAt(index);
+                    displayManager.setDataGrid(manager.getResults());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -381,7 +377,7 @@ public class ResultTab extends Screen {
 
                 row = testResultsTable.getSelectedRow();
                 col = testResultsTable.getSelectedCol();
-                resultDO = displayManager.getObjectAt(row, col - 1);
+                resultDO = displayManager.getObjectAt(row, col - 2);
 
                 if (suggestionsScreen == null) {
                     try {
@@ -400,7 +396,7 @@ public class ResultTab extends Screen {
                                     col = testResultsTable.getSelectedCol();
                                     val = (String)event.getData();
                                     testResultsTable.setCell(row, col, val);
-                                    resultDO = displayManager.getObjectAt(row, col - 1);
+                                    resultDO = displayManager.getObjectAt(row, col - 2);
                                     testResultsTable.clearCellExceptions(row, col);
 
                                     try {
@@ -455,8 +451,6 @@ public class ResultTab extends Screen {
         ResultViewDO resultDO;
         boolean headerFilled;
         String val;
-        Integer testResultId;
-        TestResultDO testResultDo;
         boolean validateResults;
 
         //
@@ -468,7 +462,7 @@ public class ResultTab extends Screen {
         if (manager == null || displayManager == null)
             return model;
 
-        numberOfCols = displayManager.maxColumnCount() + 1;
+        numberOfCols = displayManager.maxColumnCount();
         resizeResultTable(numberOfCols);
 
         hrow = null;
@@ -482,7 +476,7 @@ public class ResultTab extends Screen {
                 headerFilled = false;
             }
 
-            len = displayManager.columnCount(m);
+            len = displayManager.columnCount(m)-2;
             row = new TableDataRow(numberOfCols);
             row.data = new Boolean(false);
             validateResults = (state == State.ADD || state == State.UPDATE);
@@ -490,65 +484,18 @@ public class ResultTab extends Screen {
             for (c = 0; c < len; c++ ) {
                 resultDO = displayManager.getObjectAt(m, c);
                 row.key = resultDO.getId();
-                if (c == 0) {
-                    try {
+                try {
+                    if(c == 0){
                         row.cells.get(0).setValue(resultDO.getIsReportable());
                         row.cells.get(1).setValue(resultDO.getAnalyte());
-
-                        if (resultDO.getValue() != null || resultDO.getId() != null)
-                            val = resultDO.getValue();
-                        else
-                            val = manager.getDefaultValue(resultDO.getResultGroup(),
-                                                          anDO.getUnitOfMeasureId());
-
-                        row.cells.get(2).setValue(val);
-
-                        if (validateResults && val != null && !"".equals(val)) {
-                            resultDO.setValue(val);
-
-                            testResultId = manager.validateResultValue(resultDO.getResultGroup(),
-                                                                       anDO.getUnitOfMeasureId(),
-                                                                       val);
-                            testResultDo = manager.getTestResultList().get(testResultId);
-
-                            resultDO.setTypeId(testResultDo.getTypeId());
-                            resultDO.setTestResultId(testResultDo.getId());
-                        }
-                    } catch (ParseException e) {
-                        row.cells.get(2).clearExceptions();
-                        row.cells.get(2).addException(e);
-                        resultDO.setTypeId(null);
-                        resultDO.setTestResultId(null);
-
-                    } catch (Exception e) {
-                        Window.alert(e.getMessage());
                     }
-
-                    continue;
-                }
-
-                if ( !headerFilled) {
-                    hrow.cells.get(c + 2).setValue(resultDO.getAnalyte());
-                }
-
-                try {
-                    if (resultDO.getValue() != null || resultDO.getId() != null)
-                        val = resultDO.getValue();
-
-                    else
-                        val = manager.getDefaultValue(resultDO.getResultGroup(),
-                                                      anDO.getUnitOfMeasureId());
-
+                    
+                    val = getResultValue(resultDO, anDO.getUnitOfMeasureId());
                     row.cells.get(c + 2).setValue(val);
 
                     if (validateResults && val != null && !"".equals(val)) {
                         resultDO.setValue(val);
-                        testResultId = manager.validateResultValue(resultDO.getResultGroup(),
-                                                                   anDO.getUnitOfMeasureId(), val);
-                        testResultDo = manager.getTestResultList().get(testResultId);
-
-                        resultDO.setTypeId(testResultDo.getTypeId());
-                        resultDO.setTestResultId(testResultDo.getId());
+                        displayManager.validateResultValue(manager, resultDO, anDO.getUnitOfMeasureId());
                     }
                 } catch (ParseException e) {
                     row.cells.get(c + 2).clearExceptions();
@@ -559,6 +506,9 @@ public class ResultTab extends Screen {
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
+
+                if ( !headerFilled) 
+                    hrow.cells.get(c + 2).setValue(resultDO.getAnalyte());
             }
             headerFilled = true;
             model.add(row);
@@ -566,6 +516,18 @@ public class ResultTab extends Screen {
         manager.setDefaultsLoaded(true);
 
         return model;
+    }
+    
+    private String getResultValue(ResultViewDO resultDO, Integer unitOfMeasureId){
+        String val;
+        if (resultDO.getValue() != null || resultDO.getId() != null)
+            val = resultDO.getValue();
+
+        else
+            val = manager.getDefaultValue(resultDO.getResultGroup(),
+                                          anDO.getUnitOfMeasureId());
+        
+        return val;
     }
 
     private TableDataRow createHeaderRow(int numOfColumns) {
@@ -616,14 +578,11 @@ public class ResultTab extends Screen {
     }
 
     private void addResultRows(ArrayList<TestAnalyteViewDO> rows) {
-        int r, maxCols, numCols;
+        int r, maxCols;
         TableDataRow row;
         TestAnalyteViewDO an;
-        Integer resultGroup;
-
+        
         r = testResultsTable.getSelectedRow();
-        resultGroup = displayManager.getObjectAt(r, 0).getResultGroup();
-        numCols = displayManager.columnCount(r) + 1;
         maxCols = displayManager.maxColumnCount();
 
         for (int i = 0; i < rows.size(); i++ ) {
@@ -633,12 +592,6 @@ public class ResultTab extends Screen {
             row.data = new Boolean(false);
             row.cells.get(0).value = an.getIsReportable();
             row.cells.get(1).value = an.getAnalyteName();
-
-            // iterate through cols and load default if necessary
-            // for (int k = 1; k < numCols; k++ )
-            // row.cells.get(k).setValue(
-            // manager.getDefaultValue(resultGroup,
-            // anDO.getUnitOfMeasureId()));
 
             addedTestAnalyteId = an.getId();
             addedAnalyteId = an.getAnalyteId();

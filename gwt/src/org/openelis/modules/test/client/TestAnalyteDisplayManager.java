@@ -30,6 +30,8 @@ import java.util.ArrayList;
 
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
+import org.openelis.domain.TestResultDO;
+import org.openelis.manager.AnalysisResultManager;
 
 
 public class TestAnalyteDisplayManager<T> {
@@ -65,7 +67,7 @@ public class TestAnalyteDisplayManager<T> {
         int index;
         T aDo;
         
-        refreshIndexes();               
+        refreshIndexes();
         try {
             index = indexes.get(r);
             if(index == -1) 
@@ -89,7 +91,10 @@ public class TestAnalyteDisplayManager<T> {
             if(index == -1)
                 index = indexes.get(++row);
             
-            return grid.get(index).size();
+            if(type == Type.TEST)
+                return grid.get(index).size();
+            else
+                return grid.get(index).size()+2;
         } catch (IndexOutOfBoundsException ex) {
             return 0;
         }
@@ -101,7 +106,7 @@ public class TestAnalyteDisplayManager<T> {
         count = 0;
         
         for(int i=0; i<indexes.size(); i++){
-            tmpCount=columnCount(i)+1;
+            tmpCount=columnCount(i);
             
             if(tmpCount > count)
                 count = tmpCount;
@@ -141,6 +146,21 @@ public class TestAnalyteDisplayManager<T> {
     public int rowCount() {
         refreshIndexes();
         return indexes.size();
+    }
+    
+    public void validateResultValue(AnalysisResultManager man, ResultViewDO resultDO, 
+                                    Integer unitOfMeasureId) throws Exception {
+        Integer testResultId;
+        TestResultDO testResultDo;
+        
+        
+        testResultId = man.validateResultValue(resultDO.getResultGroup(),
+                                                   unitOfMeasureId,
+                                                   resultDO.getValue());
+        
+        testResultDo = man.getTestResultList().get(testResultId);
+        resultDO.setTypeId(testResultDo.getTypeId());
+        resultDO.setTestResultId(testResultDo.getId());
     }
     
     private void refreshIndexes() {
