@@ -79,8 +79,8 @@ import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestResultManager;
 import org.openelis.manager.TestTypeOfSampleManager;
-import org.openelis.meta.TestMeta;
 import org.openelis.meta.CategoryMeta;
+import org.openelis.meta.TestMeta;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utilcommon.ResultRangeNumeric;
@@ -113,7 +113,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
     private TestAnalyteDisplayManager<TestAnalyteViewDO> displayManager;
 
     private Integer                                      typeDict, typeNumeric, typeTiter,
-                    typeDefault, typeDate, typeDateTime, typeTime;
+                                                         typeDefault, typeDate, typeDateTime, typeTime;
 
     private DictionaryLookupScreen                       dictLookup;
 
@@ -124,8 +124,8 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
     private CheckBox                                     isReportable;
     private AutoComplete<Integer>                        scriptlet;
     private AppButton                                    addButton, removeButton,
-                    addResultTabButton, dictionaryLookUpButton, addTestResultButton,
-                    removeTestResultButton;
+                                                         addResultTabButton, dictionaryLookUpButton, addTestResultButton,
+                                                         removeTestResultButton;
 
     private ArrayList<GridFieldErrorException>           resultErrorList;
 
@@ -510,7 +510,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                             testAnalyteManager.addRowAt(dindex + 1, true, false, getNextTempId());
                         } else {
                             //
-                            // if prow is an analyte row and then the newly
+                            // if prow is an analyte row then the newly
                             // added row has
                             // not been added to a new group and it will have to
                             // look at
@@ -1086,17 +1086,21 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
         int rg;
         String match;
         ArrayList<AnalyteDO> list;
+        AutoComplete auto;
 
         parser = new QueryFieldUtil();
         parser.parse(event.getMatch());
 
         try {
+            auto = ((AutoComplete)event.getSource());
+            
             if (isAnalyteQuery()) {
                 list = analyteService.callList("fetchByName", parser.getParameter().get(0));
                 model = new ArrayList<TableDataRow>();
                 for (AnalyteDO data : list)
                     model.add(new TableDataRow(data.getId(), data.getName()));
             } else {
+                auto.setDelay(1);
                 model = new ArrayList<TableDataRow>();
                 match = event.getMatch();
                 try {
@@ -1108,9 +1112,9 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                     }
                 } catch (NumberFormatException e) {
                     model.add(new TableDataRow(null, ""));
-                }
+                }                
             }
-            ((AutoComplete)event.getSource()).showAutoMatches(model);
+            auto.showAutoMatches(model);
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
@@ -1161,15 +1165,15 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
     }
 
     public void showTestResultError(GridFieldErrorException error) {
-        // Window.alert("x");
-        if ( !errorExistsInList(error.getRowIndex(), error.getColumnIndex(), error.getFieldName(),
-                                error.getKey())) {
-            // Window.alert("y");
-            if (resultErrorList == null)
+        int tab;
+        tab = resultTabPanel.getTabBar().getSelectedTab();
+        if(!errorExistsInList(error.getRowIndex(),error.getColumnIndex(),error.getFieldName(),error.getKey())) {
+            if(resultErrorList == null)
                 resultErrorList = new ArrayList<GridFieldErrorException>();
             resultErrorList.add(error);
         }
-        showErrorsForResultGroup(resultTabPanel.getTabBar().getSelectedTab());
+        if(error.getRowIndex() == tab)
+            showErrorsForResultGroup(tab);
     }
 
     public HandlerRegistration addActionHandler(ActionHandler<AnalyteAndResultTab.Action> handler) {
@@ -1638,15 +1642,27 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
 
     private void showErrorsForResultGroup(int group) {
         GridFieldErrorException error;
-        int i;
-
+        int i,col;
+        ArrayList<GridFieldErrorException> list;
+        TableDataRow row;
+        
         if (resultErrorList == null)
-            return;
-
-        for (i = 0; i < resultErrorList.size(); i++ ) {
-            error = resultErrorList.get(i);
-            if (error.getRowIndex() == group) {
-                resultTable.setCellException(error.getColumnIndex(), error.getFieldName(), error);
+            return;                       
+        
+        for (i = 0; i < resultErrorList.size(); i++) {
+            error = resultErrorList.get(i);            
+            col = error.getColumnIndex();
+            row = resultTable.getRow(col);
+            if (error.getRowIndex() == group) {             
+                if(row.data == null) 
+                    row.data = new ArrayList<GridFieldErrorException> ();                                    
+                
+                list = (ArrayList<GridFieldErrorException>)row.data;
+                
+                if(!list.contains(error)) {
+                    resultTable.setCellException(col, error.getFieldName(), error);
+                    list.add(error);
+                }
             }
         }
     }
@@ -1674,9 +1690,9 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
     private void addToResultErrorList(int group, int row, String field, String message) {
         GridFieldErrorException error;
 
-        if ( !errorExistsInList(group, row, field, message)) {
-            error = new GridFieldErrorException(message, group, row, field, "resultTable");
-            if (resultErrorList == null)
+        if(!errorExistsInList(group,row,field,message)) {
+            error = new GridFieldErrorException(message,group, row,field,"resultTable");
+            if(resultErrorList == null)
                 resultErrorList = new ArrayList<GridFieldErrorException>();
             resultErrorList.add(error);
         }
@@ -1704,13 +1720,45 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
 
     private void removeAnalyte() {
         int r;
-        TableDataRow row;
-
+        TableDataRow row, nrow, prow;
+        
         r = analyteTable.getSelectedRow();
         if (r != -1) {
             row = analyteTable.getRow(r);
-            if ( !(Boolean)row.data) {
-                analyteTable.deleteRow(r);
+            if(!(Boolean)row.data) {  
+                //
+                // we want to make sure that there are at least 2 analyte rows 
+                // in the row group that this row belongs to, if that's not the
+                // case we don't allow this row to be deleted
+                //                 
+                prow = analyteTable.getRow(r-1);                
+                if((Boolean)prow.data) {
+                    //
+                    // if the row above the current one is a header row then the
+                    // row next to the current one should be an analyte row in 
+                    // order to be able to delete the current row; the current 
+                    // row can also not be deleted in the case that it is the 
+                    // last row in the table 
+                    //
+                    if (r+1 < analyteTable.numRows()) {
+                        nrow = analyteTable.getRow(r+1);
+                        if(!(Boolean)nrow.data) {
+                            analyteTable.deleteRow(r);
+                        } else {
+                            Window.alert(consts.get("atleastTwoRowsInRowGroup"));
+                        }
+                    } else {
+                        Window.alert(consts.get("atleastTwoRowsInRowGroup"));
+                    }
+                } else {
+                    //
+                    // if the row above the current one is an analyte row then 
+                    // the current row can be deleted because certainly it's not
+                    // the only row in its row group 
+                    //
+                    analyteTable.deleteRow(r);
+                }
+                    
             }
         }
 
@@ -1872,10 +1920,11 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
 
     private boolean errorExistsInList(int group, int row, String field, String message) {
         GridFieldErrorException ex;
-        if (resultErrorList == null)
+        
+        if(resultErrorList == null)
             return false;
-
-        for (int i = 0; i < resultErrorList.size(); i++ ) {
+               
+        for(int i = 0; i < resultErrorList.size(); i++) {
             ex = resultErrorList.get(i);
             if ( (ex.getRowIndex() == group) && (ex.getColumnIndex() == row) &&
                 (ex.getFieldName().equals(field)) && (ex.getKey().equals(message))) {

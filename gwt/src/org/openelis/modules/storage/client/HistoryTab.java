@@ -76,7 +76,7 @@ public class HistoryTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                storageHistoryTable.enable(EnumSet.of(State.UPDATE).contains(event.getState()));                
+                storageHistoryTable.enable(true);                
             }
         });
         
