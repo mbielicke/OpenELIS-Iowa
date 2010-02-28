@@ -12,7 +12,7 @@ import org.openelis.manager.TestWorksheetManager;
 
 @Remote
 public interface TestManagerRemote {
-    public TestManager fetchById(Integer orgId) throws Exception;
+    public TestManager fetchById(Integer testId) throws Exception;
 
     public TestManager fetchWithSampleTypes(Integer testId) throws Exception;
 
@@ -28,9 +28,9 @@ public interface TestManagerRemote {
 
     public TestManager add(TestManager man) throws Exception;
 
-    public TestManager fetchForUpdate(Integer orgId) throws Exception;
+    public TestManager fetchForUpdate(Integer testId) throws Exception;
 
-    public TestManager abortUpdate(Integer orgId) throws Exception;
+    public TestManager abortUpdate(Integer testId) throws Exception;
 
     public TestTypeOfSampleManager fetchSampleTypeByTestId(Integer testId) throws Exception;
 

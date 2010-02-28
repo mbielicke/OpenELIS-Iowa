@@ -137,7 +137,7 @@ public class StorageBean implements StorageLocal {
             if (sampleItemId.equals(refTableId)) {
                 itemDO = sampleItem.fetchById(data.getReferenceId()); 
                 sampleDO = sample.fetchById(itemDO.getSampleId());
-                description = sampleDO.getAccessionNumber()+","+itemDO.getItemSequence();
+                description = sampleDO.getAccessionNumber()+" - "+itemDO.getItemSequence();
                 container = itemDO.getContainer();
                 if(container != null)
                     data.setItemDescription(description+","+container);       
@@ -147,8 +147,8 @@ public class StorageBean implements StorageLocal {
                 anaDO = analysis.fetchById(data.getReferenceId());
                 itemDO = sampleItem.fetchById(anaDO.getSampleItemId()); 
                 sampleDO = sample.fetchById(itemDO.getSampleId());
-                data.setItemDescription(sampleDO.getAccessionNumber()+","+
-                                        anaDO.getTestName()+" : "+anaDO.getMethodName());
+                data.setItemDescription(sampleDO.getAccessionNumber()+" - "+ itemDO.getItemSequence()
+                                        +","+ anaDO.getTestName()+" : "+anaDO.getMethodName());
             }
 
         }

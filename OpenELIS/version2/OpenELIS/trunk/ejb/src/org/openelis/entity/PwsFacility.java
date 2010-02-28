@@ -9,19 +9,22 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
-import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
-import org.openelis.utils.Auditable;
+
+@NamedQuery(name = "PwsFacility.FetchByTinwsysIsNumber",
+           query = "select new org.openelis.domain.PwsFacilityDO(p.id, p.tinwsysIsNumber, p.name," +
+                   "p.typeCode, p.stAsgnIdentCd, p.activityStatusCd, p.waterTypeCode, p.availabilityCode," +
+            	   "p.identificationCd, p.descriptionText, p.sourceTypeCode)"
+                 + " from PwsFacility p where p.tinwsysIsNumber = :tinwsysIsNumber")
 
 @Entity
 @Table(name = "pws_facility")
 @EntityListeners( {AuditUtil.class})
-public class PwsFacility implements Auditable, Cloneable {
+public class PwsFacility implements Cloneable {
 
     @Id
     @GeneratedValue
@@ -56,10 +59,7 @@ public class PwsFacility implements Auditable, Cloneable {
     private String      descriptionText;
 
     @Column(name = "source_type_code")
-    private String      sourceTypeCode;
-
-    @Transient
-    private PwsFacility original;
+    private String      sourceTypeCode;    
 
     public Integer getId() {
         return id;
@@ -159,35 +159,4 @@ public class PwsFacility implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(sourceTypeCode, this.sourceTypeCode))
             this.sourceTypeCode = sourceTypeCode;
     }
-
-    public void setClone() {
-        try {
-            original = (PwsFacility)this.clone();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public Audit getAudit() {
-        Audit audit;
-
-        audit = new Audit();
-        audit.setReferenceTableId(ReferenceTable.PWS_FACILITY);
-        audit.setReferenceId(getId());
-        if (original != null)
-            audit.setField("id", id, original.id)
-                 .setField("tinwsys_is_number", tinwsysIsNumber, original.tinwsysIsNumber)
-                 .setField("name", name, original.name)
-                 .setField("type_code", typeCode, original.typeCode)
-                 .setField("st_asgn_ident_cd", stAsgnIdentCd, original.stAsgnIdentCd)
-                 .setField("activity_status_cd", activityStatusCd, original.activityStatusCd)
-                 .setField("water_type_code", waterTypeCode, original.waterTypeCode)
-                 .setField("availability_code", availabilityCode, original.availabilityCode)
-                 .setField("identification_cd", identificationCd, original.identificationCd)
-                 .setField("description_text", descriptionText, original.descriptionText)
-                 .setField("source_type_code", sourceTypeCode, original.sourceTypeCode);
-
-        return audit;
-    }
-
 }

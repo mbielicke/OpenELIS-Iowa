@@ -184,6 +184,7 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
         Query query;
         Integer catId;
         String sysName, name;
+        CategoryDO category;
 
         list = new ValidationErrorsList();
         
@@ -198,7 +199,8 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
             query = manager.createNamedQuery("Category.FetchBySystemName");
             query.setParameter("systemName", sysName);
             try {
-               catId = ((CategoryDO)query.getSingleResult()).getId();
+                category = (CategoryDO)query.getSingleResult();
+                catId = category.getId();
             } catch (Exception e) {
                e.printStackTrace();
             }            

@@ -197,13 +197,18 @@ public class DictionaryManagerProxy {
         for (i = 0; i < man.count(); i++ ) {
             data = man.getEntryAt(i);
             name = data.getEntry();
-            systemName = data.getSystemName();
+            systemName = data.getSystemName();           
+            if(!data.isChanged()) {
+                entries.add(name);                                
+                systemNames.add(systemName);                
+                continue;
+            }
             
             try {
                 dl.validate(data);
                 if (!entries.contains(name)) {
                     entries.add(name);
-                } else {
+                } else {                    
                     list.add(new TableFieldErrorException("fieldUniqueOnlyException", i,
                                                           CategoryMeta.getDictionaryEntry(),
                                                           "dictEntTable"));
@@ -215,20 +220,20 @@ public class DictionaryManagerProxy {
             if (!DataBaseUtil.isEmpty(systemName)) {
                 if (!systemNames.contains(systemName)) {
                    try {
-                    dictDO = dl.fetchBySystemName(systemName);
-                    catId = dictDO.getCategoryId();
+                       dictDO = dl.fetchBySystemName(systemName);
+                       catId = dictDO.getCategoryId();
                    } catch (NotFoundException e) {
                        //do nothing
                    } catch(Exception e){
                        e.printStackTrace();
                    }
-                   if (!DataBaseUtil.isEmpty(catId) && DataBaseUtil.isDifferent(catId,categoryId)) {
+                   if ( catId != null && !catId.equals(categoryId)) {
                         list.add(new TableFieldErrorException("fieldUniqueException", i,
                                                               CategoryMeta.getDictionarySystemName(),
                                                               "dictEntTable"));                        
                    }
-                    systemNames.add(systemName);
-                } else if (DataBaseUtil.isEmpty(data.getId())) {
+                   systemNames.add(systemName);
+                } else if (data.getId() == null) {
                         list.add(new TableFieldErrorException("fieldUniqueOnlyException", i,
                                                               CategoryMeta.getDictionarySystemName(),
                                                               "dictEntTable"));                        

@@ -11,20 +11,22 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.utilcommon.DataBaseUtil;
-import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
-import org.openelis.utils.Auditable;
+
+@NamedQuery(name = "PwsMonitor.FetchByTinwsysIsNumber",
+           query = "select new org.openelis.domain.PwsMonitorDO(p.id, p.tinwsysIsNumber, p.stAsgnIdentCd, p.name," +
+                   "p.tiaanlgpTiaanlytName, p.numberSamples, p.compBeginDate, p.compEndDate, p.frequencyName, p.periodName)"
+                 + " from PwsMonitor p where p.tinwsysIsNumber = :tinwsysIsNumber")
 
 @Entity
 @Table(name = "pws_monitor")
 @EntityListeners( {AuditUtil.class})
-public class PwsMonitor implements Auditable, Cloneable {
+public class PwsMonitor {
 
     @Id
     @GeneratedValue
@@ -57,9 +59,6 @@ public class PwsMonitor implements Auditable, Cloneable {
 
     @Column(name = "period_name")
     private String     periodName;
-
-    @Transient
-    private PwsMonitor original;
 
     public Integer getId() {
         return id;
@@ -120,7 +119,7 @@ public class PwsMonitor implements Auditable, Cloneable {
     }
 
     public void setCompBeginDate(Datetime comp_begin_date) {
-        if (DataBaseUtil.isDifferentYD(compBeginDate, comp_begin_date))
+        if (DataBaseUtil.isDifferentYD(comp_begin_date, this.compBeginDate))
             this.compBeginDate = DataBaseUtil.toDate(comp_begin_date);
     }
 
@@ -129,7 +128,7 @@ public class PwsMonitor implements Auditable, Cloneable {
     }
 
     public void setCompEndDate(Datetime comp_end_date) {
-        if (DataBaseUtil.isDifferentYD(compEndDate, comp_end_date))
+        if (DataBaseUtil.isDifferentYD(comp_end_date, this.compEndDate))
             this.compEndDate = DataBaseUtil.toDate(comp_end_date);
     }
 
@@ -150,34 +149,4 @@ public class PwsMonitor implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(periodName, this.periodName))
             this.periodName = periodName;
     }
-
-    public void setClone() {
-        try {
-            original = (PwsMonitor)this.clone();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public Audit getAudit() {
-        Audit audit;
-
-        audit = new Audit();
-        audit.setReferenceTableId(ReferenceTable.PWS_MONITOR);
-        audit.setReferenceId(getId());
-        if (original != null)
-            audit.setField("id", id, original.id)
-                 .setField("tinwsys_is_number", tinwsysIsNumber, original.tinwsysIsNumber)
-                 .setField("st_asgn_ident_cd", stAsgnIdentCd, original.stAsgnIdentCd)
-                 .setField("name", name, original.name)
-                 .setField("tiaanlgp_tiaanlyt_name", tiaanlgpTiaanlytName, original.tiaanlgpTiaanlytName)
-                 .setField("number_samples", numberSamples, original.numberSamples)
-                 .setField("comp_begin_date", compBeginDate, original.compBeginDate)
-                 .setField("comp_end_date", compEndDate, original.compEndDate)
-                 .setField("frequency_name", frequencyName, original.frequencyName)
-                 .setField("period_name", periodName, original.periodName);
-
-        return audit;
-    }
-
 }

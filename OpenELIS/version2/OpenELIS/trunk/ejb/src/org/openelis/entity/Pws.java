@@ -11,20 +11,23 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.utilcommon.DataBaseUtil;
-import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
-import org.openelis.utils.Auditable;
+
+@NamedQuery(name = "Pws.FetchByTinwsysIsNumber",
+           query = "select new org.openelis.domain.PwsDO(p.id, p.tinwsysIsNumber, p.number0, p.alternateStNum, p.name," +
+            	   "p.activityStatusCd, p.dPrinCitySvdNm, p.dPrinCntySvdNm,p.dPopulationCount, p.dPwsStTypeCd," +
+             	   "p.activityRsnTxt, p.startDay, p.startMonth, p.endDay, p.endMonth, p.effBeginDt, p.effEndDt)"
+                 + " from Pws p where p.tinwsysIsNumber = :tinwsysIsNumber")
 
 @Entity
 @Table(name = "pws")
 @EntityListeners( {AuditUtil.class})
-public class Pws implements Auditable, Cloneable {
+public class Pws {
 
     @Id
     @GeneratedValue
@@ -79,9 +82,6 @@ public class Pws implements Auditable, Cloneable {
     @Column(name = "eff_end_dt")
     private Date    effEndDt;
 
-    @Transient
-    private Pws     original;
-
     public Integer getId() {
         return id;
     }
@@ -132,7 +132,7 @@ public class Pws implements Auditable, Cloneable {
     }
 
     public void setActivityStatusCd(String activityStatusCd) {
-        if (DataBaseUtil.isDifferent(number0, this.number0))
+        if (DataBaseUtil.isDifferent(activityStatusCd, this.number0))
             this.activityStatusCd = activityStatusCd;
     }
 
@@ -222,7 +222,7 @@ public class Pws implements Auditable, Cloneable {
     }
 
     public void setEffBeginDt(Datetime eff_begin_dt) {
-        if (DataBaseUtil.isDifferentYD(effBeginDt, eff_begin_dt))
+        if (DataBaseUtil.isDifferentYD(eff_begin_dt,this.effBeginDt))
             this.effBeginDt = DataBaseUtil.toDate(eff_begin_dt);
     }
 
@@ -231,44 +231,7 @@ public class Pws implements Auditable, Cloneable {
     }
 
     public void setEffEndDt(Datetime eff_end_dt) {
-        if (DataBaseUtil.isDifferentYD(effEndDt, eff_end_dt))
+        if (DataBaseUtil.isDifferentYD(eff_end_dt,this.effEndDt))
             this.effBeginDt = DataBaseUtil.toDate(eff_end_dt);
-    }
-
-    public void setClone() {
-        try {
-            original = (Pws)this.clone();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public Audit getAudit() {
-        Audit audit;
-
-        audit = new Audit();
-        audit.setReferenceTableId(ReferenceTable.PWS);
-        audit.setReferenceId(getId());
-        if (original != null)
-            audit.setField("id", id, original.id)
-                 .setField("tinwsys_is_number", tinwsysIsNumber, original.tinwsysIsNumber)
-                 .setField("number0", number0, original.number0)
-                 .setField("alternate_st_num", alternateStNum, original.alternateStNum)
-                 .setField("name", name, original.name)
-                 .setField("activity_status_cd", activityStatusCd, original.activityStatusCd)
-                 .setField("d_prin_city_svd_nm", dPrinCitySvdNm, original.dPrinCitySvdNm)
-                 .setField("d_prin_cnty_svd_nm", dPrinCntySvdNm, original.dPrinCntySvdNm)
-                 .setField("d_population_count", dPopulationCount, original.dPopulationCount)
-                 .setField("d_pws_st_type_cd", dPwsStTypeCd, original.dPwsStTypeCd)
-                 .setField("activity_rsn_txt", activityRsnTxt, original.activityRsnTxt)
-                 .setField("start_day", startDay, original.startDay)
-                 .setField("start_month", startMonth, original.startMonth)
-                 .setField("end_day", endDay, original.endDay)
-                 .setField("end_month", endMonth, original.endMonth)
-                 .setField("eff_begin_dt", effBeginDt, original.effBeginDt)
-                 .setField("eff_end_dt", effEndDt, original.effEndDt);
-
-        return audit;
-    }
-
+    }   
 }
