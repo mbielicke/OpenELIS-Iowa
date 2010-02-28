@@ -34,7 +34,6 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AuxFieldValueLocal;
 import org.openelis.local.DictionaryLocal;
-import org.openelis.utilcommon.DataBaseUtil;
 
 public class AuxFieldValueManagerProxy {
     public AuxFieldValueManager fetchByAuxFieldId(Integer auxFieldId) throws Exception {

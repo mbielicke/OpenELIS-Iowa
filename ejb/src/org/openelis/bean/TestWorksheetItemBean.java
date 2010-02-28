@@ -44,12 +44,10 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestWorksheetItemDO;
 import org.openelis.entity.TestWorksheetItem;
 import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestWorksheetItemLocal;
 import org.openelis.meta.TestMeta;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless

@@ -9,22 +9,22 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
-import org.openelis.util.XMLUtil;
 import org.openelis.utilcommon.DataBaseUtil;
-import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
-import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+
+@NamedQuery(name = "PwsAddress.FetchByTinwsysIsNumber",
+           query = "select new org.openelis.domain.PwsAddressDO(p.id, p.tinwsysIsNumber," +
+                   "p.typeCode, p.activeIndCd,p.name, p.addrLineOneTxt, p.addrLineTwoTxt," +
+            	   "p.addressCityName, p.addressStateCode, p.addressZipCode,p.stateFipsCode, p.phoneNumber)"
+                 + " from PwsAddress p where p.tinwsysIsNumber = :tinwsysIsNumber")
 
 @Entity
 @Table(name = "pws_address")
 @EntityListeners( {AuditUtil.class})
-public class PwsAddress implements Auditable, Cloneable {
+public class PwsAddress {
 
     @Id
     @GeneratedValue
@@ -43,11 +43,11 @@ public class PwsAddress implements Auditable, Cloneable {
     @Column(name = "name")
     private String     name;
 
-    @Column(name = "address_line_one_text")
-    private String     addressLineOneText;
+    @Column(name = "addr_line_one_txt")
+    private String     addrLineOneTxt;
 
-    @Column(name = "address_line_two_text")
-    private String     addressLineTwoText;
+    @Column(name = "addr_line_two_txt")
+    private String     addrLineTwoTxt;
 
     @Column(name = "address_city_name")
     private String     addressCityName;
@@ -63,9 +63,6 @@ public class PwsAddress implements Auditable, Cloneable {
 
     @Column(name = "phone_number")
     private String     phoneNumber;
-
-    @Transient
-    private PwsAddress original;
 
     public Integer getId() {
         return id;
@@ -112,22 +109,22 @@ public class PwsAddress implements Auditable, Cloneable {
             this.name = name;
     }
 
-    public String getAddressLineOneText() {
-        return addressLineOneText;
+    public String getAddrLineOneTxt() {
+        return addrLineOneTxt;
     }
 
-    public void setAddressLineOneText(String addressLineOneText) {
-        if (DataBaseUtil.isDifferent(addressLineOneText, this.addressLineOneText))
-            this.addressLineOneText = addressLineOneText;
+    public void setAddrLineOneTxt(String addrLineOneTxt) {
+        if (DataBaseUtil.isDifferent(addrLineOneTxt, this.addrLineOneTxt))
+            this.addrLineOneTxt = addrLineOneTxt;
     }
 
-    public String getAddressLineTwoText() {
-        return addressLineTwoText;
+    public String getAddrLineTwoTxt() {
+        return addrLineTwoTxt;
     }
 
-    public void setAddressLineTwoText(String addressLineTwoText) {
-        if (DataBaseUtil.isDifferent(addressLineTwoText, this.addressLineTwoText))
-            this.addressLineTwoText = addressLineTwoText;
+    public void setAddrLineTwoTxt(String addrLineTwoTxt) {
+        if (DataBaseUtil.isDifferent(addrLineTwoTxt, this.addrLineTwoTxt))
+            this.addrLineTwoTxt = addrLineTwoTxt;
     }
 
     public String getAddressCityName() {
@@ -174,36 +171,4 @@ public class PwsAddress implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(phoneNumber, this.phoneNumber))
             this.phoneNumber = phoneNumber;
     }
-
-    public void setClone() {
-        try {
-            original = (PwsAddress)this.clone();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public Audit getAudit() {
-        Audit audit;
-
-        audit = new Audit();
-        audit.setReferenceTableId(ReferenceTable.PWS_ADDRESS);
-        audit.setReferenceId(getId());
-        if (original != null)
-            audit.setField("id", id, original.id)
-                 .setField("tinwsys_is_number", tinwsysIsNumber, original.tinwsysIsNumber)
-                 .setField("type_code", typeCode, original.typeCode)
-                 .setField("active_ind_cd", activeIndCd, original.activeIndCd)
-                 .setField("name", name, original.name)
-                 .setField("address_line_one_text", addressLineOneText, original.addressLineOneText)
-                 .setField("address_line_two_text", addressLineTwoText, original.addressLineTwoText)
-                 .setField("address_city_name", addressCityName, original.addressCityName)
-                 .setField("address_state_code", addressStateCode, original.addressStateCode)
-                 .setField("address_zip_code", addressZipCode, original.addressZipCode)
-                 .setField("state_fips_code", stateFipsCode, original.stateFipsCode)
-                 .setField("phone_number", phoneNumber, original.phoneNumber);
-
-        return audit;
-    }
-
 }

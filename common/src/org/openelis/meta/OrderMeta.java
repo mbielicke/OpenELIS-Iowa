@@ -50,6 +50,12 @@ public class OrderMeta implements Meta, MetaMap {
 	                               BILL_TO_ID = "_order.billToId",
 	                               SHIP_FROM_ID = "_order.shipFromId",
 	                               
+                                   ORGANIZATION_ADDRESS_MULTIPLE_UNIT = "_organization.address.multipleUnit",
+                                   ORGANIZATION_ADDRESS_STREET_ADDRESS = "_organization.address.streetAddress",
+                                   ORGANIZATION_ADDRESS_CITY = "_organization.address.city",
+                                   ORGANIZATION_ADDRESS_STATE = "_organization.address.state",
+                                   ORGANIZATION_ADDRESS_ZIP_CODE = "_organization.address.zipCode",
+                                   
 	                               ITEM_ID = "_orderItem.id",
 	                               ITEM_ORDER_ID = "_orderItem.orderId",
 	                               ITEM_INVENTORY_ITEM_ID = "_orderItem.inventoryItemId",
@@ -66,8 +72,23 @@ public class OrderMeta implements Meta, MetaMap {
 	                               RCPT_UNIT_COST = "_inventoryRecept.unitCost",
 	                               RCPT_QC_REFERENCE = "_inventoryRecept.qcReference",
 	                               RCPT_EXTERNAL_REFERENCE = "_inventoryRecept.externalReference",
-	                               RCPT_UPC = "_inventoryRecept.upc",
+	                               RCPT_UPC = "_inventoryRecept.upc",	                              
 	                               
+	                               REPORT_TO_ADDRESS_MULTIPLE_UNIT = "_reportTo.address.multipleUnit",
+	                               REPORT_TO_ADDRESS_STREET_ADDRESS = "_reportTo.address.streetAddress",
+	                               REPORT_TO_ADDRESS_CITY = "_reportTo.address.city",
+	                               REPORT_TO_ADDRESS_STATE = "_reportTo.address.state",
+	                               REPORT_TO_ADDRESS_ZIP_CODE = "_reportTo.address.zipCode",     
+	                               
+	                               BILL_TO_ADDRESS_MULTIPLE_UNIT = "_billTo.address.multipleUnit",
+	                               BILL_TO_ADDRESS_STREET_ADDRESS = "_billTo.address.streetAddress",
+	                               BILL_TO_ADDRESS_CITY = "_billTo.address.city",
+	                               BILL_TO_ADDRESS_STATE = "_billTo.address.state",
+	                               BILL_TO_ADDRESS_ZIP_CODE = "_billTo.address.zipCode",
+	                               
+	                               ORGANIZATION_NAME = "_order.organization.name",
+	                               REPORT_TO_NAME = "_reportTo.name",
+                                   BILL_TO_NAME = "_billTo.name",
                                    ITEM_INVENTORY_ITEM_NAME = "_orderItem.inventoryItem.name",
 	                               ITEM_INVENTORY_ITEM_STORE_ID = "_orderItem.inventoryItem.storeId";
 
@@ -79,6 +100,11 @@ public class OrderMeta implements Meta, MetaMap {
                                                   ORGANIZATION_ID, TYPE, EXTERNAL_ORDER_NUMBER,
                                                   REPORT_TO_ID, BILL_TO_ID, SHIP_FROM_ID,
                                                   
+                                                  ORGANIZATION_ADDRESS_MULTIPLE_UNIT,
+                                                  ORGANIZATION_ADDRESS_STREET_ADDRESS,
+                                                  ORGANIZATION_ADDRESS_CITY, ORGANIZATION_ADDRESS_STATE,
+                                                  ORGANIZATION_ADDRESS_ZIP_CODE,
+                                                  
                                                   ITEM_ID, ITEM_ORDER_ID, ITEM_INVENTORY_ITEM_ID,
                                                   ITEM_QUANTITY, ITEM_CATALOG_NUMBER, ITEM_UNIT_COST,
 
@@ -87,6 +113,15 @@ public class OrderMeta implements Meta, MetaMap {
                                                   RCPT_UNIT_COST, RCPT_QC_REFERENCE, RCPT_EXTERNAL_REFERENCE,
                                                   RCPT_UPC,
                                                   
+                                                  REPORT_TO_ADDRESS_MULTIPLE_UNIT, REPORT_TO_ADDRESS_STREET_ADDRESS,
+                                                  REPORT_TO_ADDRESS_CITY, REPORT_TO_ADDRESS_STATE,
+                                                  REPORT_TO_ADDRESS_ZIP_CODE,     
+                                                  
+                                                  BILL_TO_ADDRESS_MULTIPLE_UNIT, BILL_TO_ADDRESS_STREET_ADDRESS,
+                                                  BILL_TO_ADDRESS_CITY, BILL_TO_ADDRESS_STATE,
+                                                  BILL_TO_ADDRESS_ZIP_CODE,
+                                                  
+                                                  ORGANIZATION_NAME, REPORT_TO_NAME, BILL_TO_NAME,
                                                   ITEM_INVENTORY_ITEM_NAME, ITEM_INVENTORY_ITEM_STORE_ID));
     }
 
@@ -140,6 +175,26 @@ public class OrderMeta implements Meta, MetaMap {
 
     public static String getShipFromId() {
         return SHIP_FROM_ID;
+    }
+    
+    public static String getOrganizationAddressMultipleUnit() {
+        return ORGANIZATION_ADDRESS_MULTIPLE_UNIT;
+    }
+
+    public static String getOrganizationAddressStreetAddress() {
+        return ORGANIZATION_ADDRESS_STREET_ADDRESS;
+    }
+
+    public static String getOrganizationAddressCity() {
+        return ORGANIZATION_ADDRESS_CITY;
+    }
+
+    public static String getOrganizationAddressState() {
+        return ORGANIZATION_ADDRESS_STATE;
+    }
+
+    public static String getOrganizationAddressZipCode() {
+        return ORGANIZATION_ADDRESS_ZIP_CODE;
     }
 
     public static String getOrderItemId() {
@@ -205,6 +260,58 @@ public class OrderMeta implements Meta, MetaMap {
     public static String getInventoryReceiptUpc() {
         return RCPT_UPC;
     }
+    
+    public static String getReportToAddressMultipleUnit() {
+        return REPORT_TO_ADDRESS_MULTIPLE_UNIT;
+    }
+
+    public static String getReportToAddressStreetAddress() {
+        return REPORT_TO_ADDRESS_STREET_ADDRESS;
+    }
+
+    public static String getReportToAddressCity() {
+        return REPORT_TO_ADDRESS_CITY;
+    }
+
+    public static String getReportToAddressState() {
+        return REPORT_TO_ADDRESS_STATE;
+    }
+
+    public static String getReportToAddressZipCode() {
+        return REPORT_TO_ADDRESS_ZIP_CODE;
+    }
+
+    public static String getBillToAddressMultipleUnit() {
+        return BILL_TO_ADDRESS_MULTIPLE_UNIT;
+    }
+
+    public static String getBillToAddressStreetAddress() {
+        return BILL_TO_ADDRESS_STREET_ADDRESS;
+    }
+
+    public static String getBillToAddressCity() {
+        return BILL_TO_ADDRESS_CITY;
+    }
+
+    public static String getBillToAddressState() {
+        return BILL_TO_ADDRESS_STATE;
+    }
+
+    public static String getBillToAddressZipCode() {
+        return BILL_TO_ADDRESS_ZIP_CODE;
+    }
+    
+    public static String getOrganizationName() {
+        return ORGANIZATION_NAME;
+    }
+    
+    public static String getReportToName() {
+        return REPORT_TO_NAME;
+    }
+    
+    public static String getBillToName() {
+        return BILL_TO_NAME;
+    }
 
     public static String getOrderItemInventoryItemName() {
         return ITEM_INVENTORY_ITEM_NAME;
@@ -224,6 +331,12 @@ public class OrderMeta implements Meta, MetaMap {
         from = "Order _order ";
         if (where.indexOf("orderItem.") > -1)
             from += ",IN (_order.orderItem) _orderItem ";
+        if (where.indexOf("organization.") > -1)
+            from += ",IN (_order.organization) _organization ";
+        if (where.indexOf("reportTo.") > -1)
+            from += ", (_order.reportTo) _reportTo ";
+        if (where.indexOf("billTo.") > -1)
+            from += ", (_order.billTo) _billTo ";
 
         return from;
     }

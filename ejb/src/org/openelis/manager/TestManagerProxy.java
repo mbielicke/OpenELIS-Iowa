@@ -246,23 +246,23 @@ public class TestManagerProxy {
         } catch(Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
-        
+                
         try {
             if(man.testAnalytes != null)
                 man.getTestAnalytes().validate(man.getTestResults(), anaResGrpMap);
         } catch(Exception e) {
             DataBaseUtil.mergeException(list, e);
             anaListValid = false;
-        }
+        }                
         
         try {
-            if(man.testAnalytes != null)
+            if(man.testResults != null)
                 man.getTestResults().validate(man.getSampleTypes(), resGrpRsltMap);
         } catch(Exception e) {
             DataBaseUtil.mergeException(list, e);
             resListValid = false;
         }
-        
+                
         try {
             if(man.prepTests != null)
                 man.getPrepTests().validate();
@@ -271,12 +271,12 @@ public class TestManagerProxy {
         }
         
         try {
-            if(man.prepTests != null)
+            if(man.reflexTests != null)
                 man.getReflexTests().validate(anaListValid, resListValid, anaResGrpMap, resGrpRsltMap);
         } catch(Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
-        
+
         try {
             if(man.worksheet != null)
                 man.getTestWorksheet().validate();
@@ -284,8 +284,8 @@ public class TestManagerProxy {
             DataBaseUtil.mergeException(list, e);
         }
         
-        if (list.size() > 0)
-            throw list;
+        if (list.size() > 0)             
+            throw list;        
     }
 
     private TestLocal local() {
