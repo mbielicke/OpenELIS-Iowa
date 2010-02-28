@@ -88,7 +88,7 @@ public class CurrentTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                storageCurrentTree.enable(true);                
+                storageCurrentTree.enable(true);
             }
         });
 
@@ -101,29 +101,29 @@ public class CurrentTab extends Screen {
         storageCurrentTree.addBeforeSelectionHandler(new BeforeSelectionHandler<TreeDataItem>() {
             public void onBeforeSelection(BeforeSelectionEvent<TreeDataItem> event) {
                 TreeDataItem item;
-                boolean isStorage;                
+                boolean isStorage;
                 StorageViewDO data;
 
                 item = event.getItem();
                 isStorage = "storage".equals(item.leafType);
 
-                if(state == State.UPDATE) {
+                if (state == State.UPDATE) {
                     moveItemsButton.enable(isStorage);
                     discardItemsButton.enable(isStorage);
-                    
-                    if(isStorage) {
+
+                    if (isStorage) {
                         data = (StorageViewDO)item.data;
-                        if(data.getCheckout() != null) {
+                        if (data.getCheckout() != null) {
                             window.setError(consts.get("cantSelectItem"));
                             event.cancel();
                         } else {
                             window.clearStatus();
-                        }                       
+                        }
                     }
-                }                                               
+                }
             }
         });
-        
+
         storageCurrentTree.multiSelect(true);
 
         moveItemsButton = (AppButton)def.getWidget("moveItemsButton");
@@ -183,7 +183,6 @@ public class CurrentTab extends Screen {
                 id = data.getId();
                 item.key = id;
                 item.cells.get(0).setValue(data.getName());
-                //item.checkForChildren(true);
                 item.checkForChildren(false);
                 idItemMap.put(id, item);
                 model.add(item);
@@ -196,9 +195,9 @@ public class CurrentTab extends Screen {
                 item.close();
                 id = data.getId();
                 item.key = data.getId();
-                item.cells.get(0).setValue(data.getStorageUnitDescription() + "," +
+                item.cells.get(0).setValue(
+                                           data.getStorageUnitDescription() + "," +
                                                            data.getLocation());
-                //item.checkForChildren(true);
                 item.checkForChildren(false);
                 idItemMap.put(id, item);
                 model.add(item);
@@ -236,15 +235,15 @@ public class CurrentTab extends Screen {
                 row.cells.get(3).setValue(data.getCheckout());
                 row.data = data;
 
-                item.addItem(row);                         
+                item.addItem(row);
             }
-            
+
             treeFetched = true;
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
         }
-        
+
         window.clearStatus();
     }
 
@@ -263,7 +262,7 @@ public class CurrentTab extends Screen {
 
         loaded = true;
     }
-    
+
     public Collection<StorageManager> getStorageList() {
         return storageCache.values();
     }
@@ -303,11 +302,16 @@ public class CurrentTab extends Screen {
                                 parentId = data.getId();
                             try {
                                 //
-                                // we need to get a lock on the parent storage location
-                                // of the storage location that was selected through the
-                                // pop up screen; thus we call fetchForUpdate for
-                                // the id of the parent storage location and put it in the
-                                // hashmap so that we won't try to lock the same id more
+                                // we need to get a lock on the parent storage
+                                // location
+                                // of the storage location that was selected
+                                // through the
+                                // pop up screen; thus we call fetchForUpdate
+                                // for
+                                // the id of the parent storage location and put
+                                // it in the
+                                // hashmap so that we won't try to lock the same
+                                // id more
                                 // than once
                                 //
                                 locMan = storageLocationCache.get(parentId);
@@ -330,35 +334,28 @@ public class CurrentTab extends Screen {
                                                                       Datetime.MINUTE);
                                 userId = OpenELIS.security.getSystemUserId();
                                 for (int i = 0; i < list.size(); i++ ) {
-                                    item = list.get(i);                                    
+                                    item = list.get(i);
                                     oldstorage = (StorageViewDO)item.data;
-                                    
-                                    if(oldstorage.getStorageLocationId().equals(data.getId())) {
+
+                                    if (oldstorage.getStorageLocationId().equals(data.getId())) {
                                         window.setError(consts.get("itemsCantBeMoved"));
-                                        continue;                                    
+                                        continue;
                                     }
 
-                                    /*
-                                    // if checkout date is not null then we
-                                    // know that this item has already been
-                                    // moved to some other location
-                                    //
-                                    if (oldstorage.getCheckout() == null) { */
-                                        oldstorage.setCheckout(current);
+                                    oldstorage.setCheckout(current);
 
-                                        tmpstorage = new StorageViewDO();
-                                        tmpstorage.setCheckin(current);
-                                        tmpstorage.setCheckout(null);
-                                        tmpstorage.setItemDescription(oldstorage.getItemDescription());
-                                        tmpstorage.setReferenceId(oldstorage.getReferenceId());
-                                        tmpstorage.setReferenceTableId(oldstorage.getReferenceTableId());
-                                        tmpstorage.setStorageLocationId(locId);
-                                        tmpstorage.setSystemUserId(userId);
-                                        man.addStorage(tmpstorage);
+                                    tmpstorage = new StorageViewDO();
+                                    tmpstorage.setCheckin(current);
+                                    tmpstorage.setCheckout(null);
+                                    tmpstorage.setItemDescription(oldstorage.getItemDescription());
+                                    tmpstorage.setReferenceId(oldstorage.getReferenceId());
+                                    tmpstorage.setReferenceTableId(oldstorage.getReferenceTableId());
+                                    tmpstorage.setStorageLocationId(locId);
+                                    tmpstorage.setSystemUserId(userId);
+                                    man.addStorage(tmpstorage);
 
-                                        item.cells.get(3).setValue(current);
-                                        storageCurrentTree.refreshRow(item);
-                                    //}
+                                    item.cells.get(3).setValue(current);
+                                    storageCurrentTree.refreshRow(item);
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -375,7 +372,7 @@ public class CurrentTab extends Screen {
         storageLocationLookup.setScreenState(State.DEFAULT);
         storageLocationLookup.clearFields();
     }
-    
+
     private void discardStorageItems() {
         StorageViewDO oldstorage;
         TreeDataItem item;
@@ -394,11 +391,11 @@ public class CurrentTab extends Screen {
                 // know that this item has already been
                 // moved to some other location
                 //
-                if (oldstorage.getCheckout() == null) {                    
+                if (oldstorage.getCheckout() == null) {
                     oldstorage.setCheckout(current);
-                    
+
                     item.cells.get(3).setValue(current);
-                    
+
                     storageCurrentTree.refreshRow(item);
                 }
             }

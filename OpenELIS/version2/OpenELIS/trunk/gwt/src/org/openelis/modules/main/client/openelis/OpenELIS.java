@@ -50,6 +50,7 @@ import org.openelis.modules.panel.client.PanelScreen;
 import org.openelis.modules.privateWellWaterSampleLogin.client.PrivateWellWaterSampleLoginScreen;
 import org.openelis.modules.project.client.ProjectScreen;
 import org.openelis.modules.provider.client.ProviderScreen;
+import org.openelis.modules.pws.client.PwsScreen;
 import org.openelis.modules.qaevent.client.QaEventScreen;
 import org.openelis.modules.qc.client.QcScreen;
 import org.openelis.modules.quickEntry.client.QuickEntryScreen;
@@ -963,6 +964,27 @@ public class OpenELIS extends Screen {
                 });
             }
         });
+        
+        addClickHandler("pws", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new PwsScreen());
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+                
         addClickHandler("finalReport", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 // browser.addScreen(new )

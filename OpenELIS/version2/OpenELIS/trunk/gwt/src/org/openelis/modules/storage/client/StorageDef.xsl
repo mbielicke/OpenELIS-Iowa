@@ -103,7 +103,7 @@ UIRF Software License are applicable instead of those above.
                 <xsl:with-param name="language">
                   <xsl:value-of select="language" />
                 </xsl:with-param>
-              </xsl:call-template>       
+              </xsl:call-template>
             </HorizontalPanel>
           </AbsolutePanel>
 <!--end button panel-->
@@ -113,60 +113,60 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"storageLocationName")' />:
                 </text>
-                <textbox key="{meta:getStorageLocationName()}" width="150" case="LOWER" tab="{meta:getStorageLocationLocation()},{meta:getStorageLocationIsAvailable()}"/>
+                <textbox key="{meta:getStorageLocationName()}" width="150" case="LOWER" tab="{meta:getStorageLocationLocation()},{meta:getStorageLocationIsAvailable()}" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"location")' />:
                 </text>
-                <textbox key="{meta:getStorageLocationLocation()}" width="395" tab="{meta:getStorageLocationStorageUnitDescription()},{meta:getStorageLocationName()}"/>
+                <textbox key="{meta:getStorageLocationLocation()}" width="395" tab="{meta:getStorageLocationStorageUnitDescription()},{meta:getStorageLocationName()}" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"storageUnit")' />:
                 </text>
-                <textbox key="{meta:getStorageLocationStorageUnitDescription()}" tab="{meta:getStorageLocationIsAvailable()},{meta:getStorageLocationLocation()}"/>
+                <textbox key="{meta:getStorageLocationStorageUnitDescription()}" tab="{meta:getStorageLocationIsAvailable()},{meta:getStorageLocationLocation()}" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"available")' />:
                 </text>
-                <check key="{meta:getStorageLocationIsAvailable()}" tab="{meta:getStorageLocationName()},{meta:getStorageLocationStorageUnitDescription()}"/>
+                <check key="{meta:getStorageLocationIsAvailable()}" tab="{meta:getStorageLocationName()},{meta:getStorageLocationStorageUnitDescription()}" />
               </row>
             </TablePanel>
-            <TabPanel key="tabPanel" height = "295">
-            <tab key="currentTab" text="{resource:getString($constants,'current')}">
-            <VerticalPanel>
-              <widget>
-                   <tree key="storageCurrentTree" width="auto" maxRows="11" showScroll="ALWAYS" >
-	                  <header>
-	                    <col width="200" header="{resource:getString($constants,'storageLocationItem')}"/>
-	                    <col width="100" header="{resource:getString($constants,'user')}"/>
-	                    <col width="150" header="{resource:getString($constants,'checkIn')}"/> 	  
-	                    <col width="150" header="{resource:getString($constants,'checkOut')}"/>                  
-	                  </header>
-	                  <leaf key="locationName">
-	                    <col>
-	                      <label/>
-	                    </col>
-	                  </leaf>
-	                  <leaf key="storage">
-	                    <col>
-	                      <label/>
-	                    </col>
-	                    <col>
-	                      <label/>
-	                    </col>
-	                    <col>
-	                      <textbox field = "Date" pattern="{resource:getString($constants,'dateTimePattern')}"/>
-	                    </col>
-	                    <col>
-	                      <textbox field = "Date" pattern="{resource:getString($constants,'dateTimePattern')}"/>
-	                    </col>
-	                  </leaf>
-	              </tree>	                         
-              </widget> 
-              <widget style="TableButtonFooter">
+            <TabPanel key="tabPanel" width = "630" height="295">
+              <tab key="currentTab" text="{resource:getString($constants,'current')}">
+                <VerticalPanel>
+                  <widget>
+                    <tree key="storageCurrentTree" width="auto" maxRows="11" showScroll="ALWAYS">
+                      <header>
+                        <col width="200" header="{resource:getString($constants,'storageLocationItem')}" />
+                        <col width="100" header="{resource:getString($constants,'user')}" />
+                        <col width="150" header="{resource:getString($constants,'checkIn')}" />
+                        <col width="150" header="{resource:getString($constants,'checkOut')}" />
+                      </header>
+                      <leaf key="locationName">
+                        <col>
+                          <label />
+                        </col>
+                      </leaf>
+                      <leaf key="storage">
+                        <col>
+                          <label />
+                        </col>
+                        <col>
+                          <label />
+                        </col>
+                        <col>
+                          <textbox pattern="{resource:getString($constants,'dateTimePattern')}" field="Date" />
+                        </col>
+                        <col>
+                          <textbox pattern="{resource:getString($constants,'dateTimePattern')}" field="Date" />
+                        </col>
+                      </leaf>
+                    </tree>
+                  </widget>
+                  <widget style="TableButtonFooter">
                     <HorizontalPanel>
                       <appButton key="moveItemsButton" style="Button">
                         <HorizontalPanel>
@@ -189,31 +189,31 @@ UIRF Software License are applicable instead of those above.
                         </HorizontalPanel>
                       </appButton>
                     </HorizontalPanel>
-             </widget>
-            </VerticalPanel>
-            </tab>
-            <tab key="historyTab" text="{resource:getString($constants,'history')}">
-            <VerticalPanel>
-              <widget>
-                <table key="storageHistoryTable" width="auto" maxRows="11" showScroll="ALWAYS" tab="{meta:getStorageLocationName()},{meta:getStorageLocationIsAvailable()}" title="">
-                  <col key="{meta:getReferenceId()}" width="100" header="{resource:getString($constants,'storageLocation')}">
-                    <textbox/>
-                  </col>
-                  <col key="{meta:getReferenceId()}" width="100" header="{resource:getString($constants,'item')}">
-                    <textbox/>
-                  </col>
-                  <col key="{meta:getSystemUserId()}" width="100" header="{resource:getString($constants,'user')}">
-                    <textbox/>
-                  </col>
-                  <col key="{meta:getCheckin()}" width="147" header="{resource:getString($constants,'checkIn')}">
-                    <textbox field = "Date" pattern="{resource:getString($constants,'dateTimePattern')}"/>
-                  </col>
-                  <col key="{meta:getCheckout()}" width="150" header="{resource:getString($constants,'checkOut')}">
-                    <textbox field = "Date" pattern="{resource:getString($constants,'dateTimePattern')}"/>
-                  </col>
-                </table>
-              </widget>
-              <widget style="TableButtonFooter">
+                  </widget>
+                </VerticalPanel>
+              </tab>
+              <tab key="historyTab" text="{resource:getString($constants,'history')}">
+                <VerticalPanel>
+                  <widget>
+                    <table key="storageHistoryTable" width="auto" maxRows="11" showScroll="ALWAYS" tab="{meta:getStorageLocationName()},{meta:getStorageLocationIsAvailable()}" title="">
+                      <col key="{meta:getReferenceId()}" width="100" header="{resource:getString($constants,'storageLocation')}">
+                        <textbox />
+                      </col>
+                      <col key="{meta:getReferenceId()}" width="100" header="{resource:getString($constants,'item')}">
+                        <textbox />
+                      </col>
+                      <col key="{meta:getSystemUserId()}" width="100" header="{resource:getString($constants,'user')}">
+                        <textbox />
+                      </col>
+                      <col key="{meta:getCheckin()}" width="147" header="{resource:getString($constants,'checkIn')}">
+                        <textbox pattern="{resource:getString($constants,'dateTimePattern')}" field="Date" />
+                      </col>
+                      <col key="{meta:getCheckout()}" width="150" header="{resource:getString($constants,'checkOut')}">
+                        <textbox pattern="{resource:getString($constants,'dateTimePattern')}" field="Date" />
+                      </col>
+                    </table>
+                  </widget>
+                  <widget style="TableButtonFooter">
                     <HorizontalPanel>
                       <appButton key="historyPrevButton" style="Button">
                         <HorizontalPanel>
@@ -226,11 +226,11 @@ UIRF Software License are applicable instead of those above.
                         </HorizontalPanel>
                       </appButton>
                     </HorizontalPanel>
-             </widget>           
-            </VerticalPanel>
-            </tab>
-           </TabPanel>
-          </VerticalPanel>          
+                  </widget>
+                </VerticalPanel>
+              </tab>
+            </TabPanel>
+          </VerticalPanel>
         </VerticalPanel>
       </HorizontalPanel>
     </screen>

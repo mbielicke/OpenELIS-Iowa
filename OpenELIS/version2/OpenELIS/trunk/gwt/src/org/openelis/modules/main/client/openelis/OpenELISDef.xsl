@@ -215,6 +215,9 @@ UIRF Software License are applicable instead of those above.
                 <code>if(OpenELIS.security.hasModule("systemvariable","SELECT")){</code>
                 <menuItem key="systemVariable" description="{resource:getString($constants,'systemVariableDescription')}" icon="systemVariableIcon" label="{resource:getString($constants,'systemVariable')}" />
                 <code>}</code>
+                <code>if(OpenELIS.security.hasModule("pws","SELECT")){</code>
+                <menuItem key="pws" description="{resource:getString($constants,'pwsInformationDescription')}" icon="systemVariableIcon" label="{resource:getString($constants,'pwsInformation')}" />
+                <code>}</code>
               </menuPanel>
             </menuItem>
             <menuItem>
