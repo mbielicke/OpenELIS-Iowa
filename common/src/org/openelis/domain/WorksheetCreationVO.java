@@ -35,10 +35,9 @@ public class WorksheetCreationVO implements RPC {
     private static final long serialVersionUID = 1L;
 
     protected Integer  analysisId, accessionNumber, priority, testId, timeHolding,
-                       timeTaAverage, preAnalysisId, statusId;
+                       timeTaAverage, preAnalysisId, sectionId, statusId;
     protected Long     dueDays;
-    protected String   domain, envDescription, /*projectName,*/ testName, methodName,
-                       sectionName;
+    protected String   domain, envDescription, /*projectName,*/ testName, methodName;
     protected Datetime collectionDate, collectionTime, receivedDate, expireDate;
 
     public WorksheetCreationVO() {
@@ -51,7 +50,7 @@ public class WorksheetCreationVO implements RPC {
                                String description, Integer priority, /*String projectName,*/
                                Integer testId, String testName, String methodName,
                                Integer timeHolding, Integer timeTaAverage,
-                               String sectionName, Integer preAnalysisId, Integer statusId) {
+                               Integer sectionId, Integer preAnalysisId, Integer statusId) {
         setAnalysisId(analysisId);
         setDomain(domain);
         setAccessionNumber(accessionNumber);
@@ -66,7 +65,7 @@ public class WorksheetCreationVO implements RPC {
         setMethodName(methodName);
         setTimeHolding(timeHolding);
         setTimeTaAverage(timeTaAverage);
-        setSectionName(sectionName);
+        setSectionId(sectionId);
         setPreAnalysisId(preAnalysisId);
         setStatusId(statusId);
     }
@@ -195,12 +194,12 @@ public class WorksheetCreationVO implements RPC {
         this.timeTaAverage = timeTaAverage;
     }
 
-    public String getSectionName() {
-        return sectionName;
+    public Integer getSectionId() {
+        return sectionId;
     }
 
-    public void setSectionName(String sectionName) {
-        this.sectionName = sectionName;
+    public void setSectionId(Integer sectionId) {
+        this.sectionId = sectionId;
     }
 
     public Integer getPreAnalysisId() {

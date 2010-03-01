@@ -65,7 +65,6 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
                                 ANA_TEST_TIME_HOLDING = "_analysis.test.timeHolding",
                                 ANA_TEST_TIME_TA_AVERAGE = "_analysis.test.timeTaAverage",
                                 ANA_SECTION_ID = "_analysis.sectionId",
-                                ANA_SECTION_NAME = "_analysis.section.name",
                                 ANA_PRE_ANALYSIS_ID = "_analysis.preAnalysisId",
                                 ANA_STATUS_ID = "_analysis.statusId",
                                 
@@ -87,9 +86,9 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
                                                   ANA_ID, ANA_TEST_ID, ANA_TEST_NAME,
                                                   ANA_TEST_METHOD_NAME, ANA_TEST_TIME_HOLDING,
                                                   ANA_TEST_TIME_TA_AVERAGE, ANA_SECTION_ID,
-                                                  ANA_SECTION_NAME, ANA_PRE_ANALYSIS_ID,
-                                                  ANA_STATUS_ID, SAMP_DESCRIPTION,
-                                                  ANA_DUE_DAYS, ANA_EXPIRE_DATE));
+                                                  ANA_PRE_ANALYSIS_ID, ANA_STATUS_ID,
+                                                  SAMP_DESCRIPTION, ANA_DUE_DAYS,
+                                                  ANA_EXPIRE_DATE));
     }
 
     public static String getWorksheetId() {
@@ -178,10 +177,6 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
 
     public static String getAnalysisSectionId() {
         return ANA_SECTION_ID;
-    }
-
-    public static String getAnalysisSectionName() {
-        return ANA_SECTION_NAME;
     }
 
     public static String getAnalysisPreAnalysisId() {

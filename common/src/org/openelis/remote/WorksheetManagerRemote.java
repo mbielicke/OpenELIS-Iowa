@@ -2,6 +2,7 @@ package org.openelis.remote;
 
 import javax.ejb.Remote;
 
+import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
 
@@ -22,5 +23,7 @@ public interface WorksheetManagerRemote {
     
     public WorksheetManager abortUpdate(Integer id) throws Exception;
     
-    public WorksheetItemManager fetchItemByWorksheetId(Integer id) throws Exception;
+    public WorksheetItemManager fetchWorksheetItemByWorksheetId(Integer id) throws Exception;
+
+    public WorksheetAnalysisManager fetchWorksheetAnalysisByWorksheetItemId(Integer id) throws Exception;
 }

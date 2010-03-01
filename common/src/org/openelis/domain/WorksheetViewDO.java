@@ -25,6 +25,7 @@
  */
 package org.openelis.domain;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.openelis.utilcommon.DataBaseUtil;
@@ -40,7 +41,8 @@ public class WorksheetViewDO extends WorksheetDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String          systemUser, testName, methodName;
+    protected ArrayList<AnalysisViewDO> testList;
+    protected String                    systemUser;
 
     public WorksheetViewDO() {
 
@@ -51,14 +53,6 @@ public class WorksheetViewDO extends WorksheetDO {
         super(id, createdDate, systemUserId, statusId, formatId, relatedWorksheetId);
     }
 
-    public WorksheetViewDO(Integer id, Date createdDate, Integer systemUserId,
-                           Integer statusId, Integer formatId, Integer relatedWorksheetId,
-                           String testName, String methodName) {
-        super(id, createdDate, systemUserId, statusId, formatId, relatedWorksheetId);
-        setTestName(testName);
-        setMethodName(methodName);
-    }
-
     public String getSystemUser() {
         return systemUser;
     }
@@ -67,19 +61,11 @@ public class WorksheetViewDO extends WorksheetDO {
         this.systemUser = DataBaseUtil.trim(systemUser);
     }
 
-    public String getTestName() {
-        return testName;
+    public ArrayList<AnalysisViewDO> getTestList() {
+        return testList;
     }
 
-    public void setTestName(String testName) {
-        this.testName = testName;
-    }
-
-    public String getMethodName() {
-        return methodName;
-    }
-
-    public void setMethodName(String methodName) {
-        this.methodName = methodName;
+    public void setTestList(ArrayList<AnalysisViewDO> testList) {
+        this.testList = testList;
     }
 }
