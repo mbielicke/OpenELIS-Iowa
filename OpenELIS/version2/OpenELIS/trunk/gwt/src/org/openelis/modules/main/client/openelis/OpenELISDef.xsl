@@ -125,7 +125,7 @@ UIRF Software License are applicable instead of those above.
 				<menuItem key="worksheetCreation" description="{resource:getString($constants,'worksheetCreationDescription')}" enable="true" icon="worksheetCreationIcon" label="{resource:getString($constants,'worksheetCreation')}"/>
 				<code>}</code>
 				<code>if(OpenELIS.security.hasModule("worksheet","SELECT")){</code>
-				<menuItem key="worksheetCompletion" description="{resource:getString($constants,'worksheetCompletionDescription')}"	enable="true" icon="worksheetCompletionIcon" label="{resource:getString($constants,'worksheetCompletion')}"/>
+				<menuItem key="worksheetCompletion" description="{resource:getString($constants,'worksheetCompletionDescription')}"	enable="false" icon="worksheetCompletionIcon" label="{resource:getString($constants,'worksheetCompletion')}"/>
 				<code>}</code>
                 <menuItem key="addOrCancel" description="{resource:getString($constants,'addOrCancelDescription')}" enable="false" icon="addOrCancelIcon" label="{resource:getString($constants,'addOrCancel')}" />
                 <menuItem key="reviewAndRelease" description="{resource:getString($constants,'reviewAndReleaseDescription')}" enable="true" icon="reviewAndReleaseIcon" label="{resource:getString($constants,'reviewAndRelease')}" />
@@ -146,7 +146,9 @@ UIRF Software License are applicable instead of those above.
                 <menuItem key="internalOrder" description="{resource:getString($constants,'internalOrderDescription')}" enable="true" icon="internalOrderIcon" label="{resource:getString($constants,'internalOrder')}" />
                 <code>}</code>
                 <menuItem key="vendorOrder" description="{resource:getString($constants,'vendorOrderDescription')}" enable="false" icon="vendorOrderIcon" label="{resource:getString($constants,'vendorOrder')}" />
-                <menuItem key="kitOrder" description="{resource:getString($constants,'kitOrderDescription')}" enable="false" icon="kitOrderIcon" label="{resource:getString($constants,'kitOrder')}" />
+                <code>if(OpenELIS.security.hasModule("order","SELECT")){</code>
+                <menuItem key="kitOrder" description="{resource:getString($constants,'kitOrderDescription')}" enable="true" icon="kitOrderIcon" label="{resource:getString($constants,'kitOrder')}" />
+                <code>}</code>
                 <html>&lt;hr/&gt;</html>
                 <menuItem key="fillOrder" description="{resource:getString($constants,'fillOrderDescription')}" enable="false" icon="fillOrderIcon" label="{resource:getString($constants,'fillOrder')}" />
                 <menuItem key="shipping" description="{resource:getString($constants,'shippingDescription')}" enable="false" icon="shippingIcon" label="{resource:getString($constants,'shipping')}" />

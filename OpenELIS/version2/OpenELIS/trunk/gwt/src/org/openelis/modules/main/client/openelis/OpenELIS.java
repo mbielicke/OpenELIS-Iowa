@@ -45,6 +45,7 @@ import org.openelis.modules.inventoryItem.client.InventoryItemScreen;
 import org.openelis.modules.label.client.LabelScreen;
 import org.openelis.modules.method.client.MethodScreen;
 import org.openelis.modules.order.client.InternalOrderScreen;
+import org.openelis.modules.order.client.KitOrderScreen;
 import org.openelis.modules.organization.client.OrganizationScreen;
 import org.openelis.modules.panel.client.PanelScreen;
 import org.openelis.modules.privateWellWaterSampleLogin.client.PrivateWellWaterSampleLoginScreen;
@@ -551,7 +552,7 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                         //   browser.addScreen(new OrderScreen(new String[] {"kits"}));
+                            browser.addScreen(new KitOrderScreen());
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
