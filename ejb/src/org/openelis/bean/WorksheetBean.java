@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
@@ -37,6 +38,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.WorksheetDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.entity.Worksheet;
@@ -47,6 +49,12 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.WorksheetLocal;
+import org.openelis.manager.AnalysisManager;
+import org.openelis.manager.AnalysisManagerProxy;
+import org.openelis.manager.WorksheetAnalysisManager;
+import org.openelis.manager.WorksheetItemManager;
+import org.openelis.manager.WorksheetManager;
+import org.openelis.manager.WorksheetManagerProxy;
 import org.openelis.meta.WorksheetCompletionMeta;
 import org.openelis.remote.WorksheetRemote;
 import org.openelis.security.domain.SystemUserDO;
@@ -85,11 +93,20 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
 
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetViewDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
-        int                        i;
+        int                        i, j, k;
+        Integer                    analysisId, testId, methodId;
         Query                      query;
         QueryBuilderV2             builder;
+        ArrayList<AnalysisViewDO>  waList;
         ArrayList<WorksheetViewDO> list;
+        HashMap<String, AnalysisViewDO> analysisMap;
         SystemUserDO               user;
+        AnalysisBean               analysis;
+        AnalysisViewDO             aVDO;
+        WorksheetAnalysisManager   waManager;
+        WorksheetItemManager       wiManager;
+        WorksheetManager           wManager;
+        WorksheetManagerProxy      wManagerProxy;
         WorksheetViewDO            worksheet;
 
         builder = new QueryBuilderV2();
@@ -99,9 +116,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
                           WorksheetCompletionMeta.getSystemUserId()+", "+
                           WorksheetCompletionMeta.getStatusId()+", "+
                           WorksheetCompletionMeta.getFormatId()+", "+
-                          WorksheetCompletionMeta.getRelatedWorksheetId()/*+", "+
-                          WorksheetCompletionMeta.getTestName()+", "+
-                          WorksheetCompletionMeta.getMethodName()*/+") ");
+                          WorksheetCompletionMeta.getRelatedWorksheetId()+") ");
         builder.constructWhere(fields);
         builder.setOrderBy(WorksheetCompletionMeta.getId());
 
@@ -113,6 +128,8 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
         if (list.isEmpty())
             throw new NotFoundException();
         
+        analysis      = new AnalysisBean();
+        wManagerProxy = new WorksheetManagerProxy();
         for (i = 0; i < list.size(); i++) {
             worksheet = list.get(i);
             
@@ -121,6 +138,28 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
                 if (user != null)
                     worksheet.setSystemUser(user.getLoginName());
             }
+            
+            waList = new ArrayList<AnalysisViewDO>();
+            analysisMap = new HashMap<String, AnalysisViewDO>();
+            wManager = wManagerProxy.fetchById(worksheet.getId());
+            wiManager = wManager.getItems();
+            for (j = 0; j < wiManager.count(); j++) {
+                waManager = wiManager.getWorksheetAnalysisAt(j);
+                for (k = 0; k < waManager.count(); k++) {
+                    analysisId = waManager.getWorksheetAnalysisAt(k).getAnalysisId();
+                    if (analysisId != null) {
+                        aVDO = analysis.fetchById(analysisId);
+                        testId = aVDO.getTestId();
+                        methodId = aVDO.getMethodId();
+                        if (!analysisMap.containsKey(testId+","+methodId)) {
+                            analysisMap.put(testId+","+methodId, aVDO);
+                            waList.add(aVDO);
+                        }
+                    }
+                }
+            }
+            
+            worksheet.setTestList(waList);
         }
         
         list = DataBaseUtil.subList(list, first, max);

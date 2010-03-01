@@ -85,7 +85,7 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
                           WorksheetCreationMeta.getAnalysisTestMethodName()+", "+
                           WorksheetCreationMeta.getAnalysisTestTimeHolding()+", " +
                           WorksheetCreationMeta.getAnalysisTestTimeTaAverage()+", " +
-                          WorksheetCreationMeta.getAnalysisSectionName()+", "+
+                          WorksheetCreationMeta.getAnalysisSectionId()+", "+
                           WorksheetCreationMeta.getAnalysisPreAnalysisId()+", "+
                           WorksheetCreationMeta.getAnalysisStatusId()+") ");
         builder.constructWhere(fields);
