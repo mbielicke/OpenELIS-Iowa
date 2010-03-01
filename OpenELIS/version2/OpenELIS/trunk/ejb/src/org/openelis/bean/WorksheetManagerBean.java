@@ -38,6 +38,7 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.local.LockLocal;
+import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.remote.WorksheetManagerRemote;
@@ -123,8 +124,12 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
         return fetchById(id);
     }
 
-    public WorksheetItemManager fetchItemByWorksheetId(Integer id) throws Exception {
+    public WorksheetItemManager fetchWorksheetItemByWorksheetId(Integer id) throws Exception {
         return WorksheetItemManager.fetchByWorksheetId(id);
+    }
+    
+    public WorksheetAnalysisManager fetchWorksheetAnalysisByWorksheetItemId(Integer id) throws Exception {
+        return WorksheetAnalysisManager.fetchByWorksheetItemId(id);
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {

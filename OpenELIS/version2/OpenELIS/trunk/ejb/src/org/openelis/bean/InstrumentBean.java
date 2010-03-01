@@ -79,6 +79,14 @@ public class InstrumentBean implements InstrumentRemote , InstrumentLocal{
         return data;
     }
     
+    public ArrayList<InstrumentViewDO> fetchByName(String name, int max) throws Exception{
+        Query query = manager.createNamedQuery("Instrument.FetchByName");
+        query.setParameter("name", name);
+        query.setMaxResults(max);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
     @SuppressWarnings("unchecked")
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
