@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import javax.ejb.Remote;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.InstrumentViewDO;
 import org.openelis.gwt.common.data.QueryData;
 
 @Remote
@@ -37,4 +38,5 @@ public interface InstrumentRemote {
     
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
     
+    public ArrayList<InstrumentViewDO> fetchByName(String name, int maxResults) throws Exception;
 }
