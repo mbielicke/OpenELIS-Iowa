@@ -118,8 +118,8 @@ public class StorageLocationLookupScreen extends Screen implements HasActionHand
                         if(name == null) 
                             name = data.getName();
                         row.cells.get(0).setValue(name);
-                        row.cells.get(1).setValue(data.getLocation());
-                        row.cells.get(2).setValue(data.getStorageUnitDescription());
+                        row.cells.get(1).setValue(data.getStorageUnitDescription());
+                        row.cells.get(2).setValue(data.getLocation());                        
                         row.data = data;
                         model.add(row);
                     }
