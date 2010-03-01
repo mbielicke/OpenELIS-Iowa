@@ -69,7 +69,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'accessionNum')" />:
               </text>
-              <textbox key="{meta:getSampleAccessionNumber()}" width="75px" tab="{meta:getAnalysisStatusId()},{meta:getAnalysisSectionId()}" field="Integer" />
+              <textbox key="{meta:getSampleAccessionNumber()}" width="80px" tab="{meta:getAnalysisStatusId()},{meta:getAnalysisSectionId()}" field="Integer" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'status')" />:
               </text>
@@ -83,11 +83,11 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'received')" />:
               </text>
-              <calendar key="{meta:getSampleReceivedDate()}" begin="0" end="4" width="110px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getSampleEnteredDate()},{meta:getSampleItemTypeOfSampleId()}" />
+              <calendar key="{meta:getSampleReceivedDate()}" begin="0" end="4" width="130px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getSampleEnteredDate()},{meta:getSampleItemTypeOfSampleId()}" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'entered')" />:
               </text>
-              <calendar key="{meta:getSampleEnteredDate()}" begin="0" end="4" width="110px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="searchButton,{meta:getSampleReceivedDate()}" />
+              <calendar key="{meta:getSampleEnteredDate()}" begin="0" end="4" width="130px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="searchButton,{meta:getSampleReceivedDate()}" />
             </row>
           </TablePanel>
           <widget halign="center" valign="middle">
@@ -114,8 +114,8 @@ UIRF Software License are applicable instead of those above.
           <col key="{meta:getAnalysisTestMethodName()}" width="100" header="{resource:getString($constants,'method')}" sort="true">
             <label />
           </col>
-          <col key="{meta:getAnalysisSectionName()}" width="100" header="{resource:getString($constants,'section')}" sort="true">
-            <label />
+          <col key="{meta:getAnalysisSectionId()}" width="100" header="{resource:getString($constants,'section')}" sort="true">
+            <dropdown width="80"/>
           </col>
           <col key="{meta:getAnalysisStatusId()}" width="75" header="{resource:getString($constants,'status')}" sort="true">
             <dropdown width="55"/>
@@ -123,13 +123,13 @@ UIRF Software License are applicable instead of those above.
           <col key="{meta:getSampleCollectionDate}" width="75" header="{resource:getString($constants,'collected')}" sort="true">
             <calendar pattern="{resource:getString($constants,'datePattern')}" begin="0" end="2"/>
           </col>
-          <col key="{meta:getSampleReceivedDate}" width="100" header="{resource:getString($constants,'received')}" sort="true">
+          <col key="{meta:getSampleReceivedDate}" width="110" header="{resource:getString($constants,'received')}" sort="true">
             <calendar pattern="{resource:getString($constants,'dateTimePattern')}" begin="0" end="4"/>
           </col>
           <col key="{meta:getAnalysisDueDays()}" width="50" header="{resource:getString($constants,'due')}" sort="true">
             <label />
           </col>
-          <col key="{meta:getAnalysisExpireDate()}" width="100" header="{resource:getString($constants,'expire')}" sort="true">
+          <col key="{meta:getAnalysisExpireDate()}" width="110" header="{resource:getString($constants,'expire')}" sort="true">
             <calendar pattern="{resource:getString($constants,'dateTimePattern')}" begin="0" end="4"/>
           </col>
           <col key="{meta:getSampleEnvironmentalPriority()}" width="65" header="{resource:getString($constants,'priority')}" sort="true">

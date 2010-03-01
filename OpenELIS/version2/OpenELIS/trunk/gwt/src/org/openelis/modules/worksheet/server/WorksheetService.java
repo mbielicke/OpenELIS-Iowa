@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.data.Query;
+import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.persistence.EJBFactory;
@@ -64,8 +65,12 @@ public class WorksheetService {
         return remoteManager().abortUpdate(id);
     }
     
-    public WorksheetItemManager fetchItemByWorksheetId(Integer id) throws Exception {
-        return remoteManager().fetchItemByWorksheetId(id);
+    public WorksheetItemManager fetchWorksheetItemByWorksheetId(Integer id) throws Exception {
+        return remoteManager().fetchWorksheetItemByWorksheetId(id);
+    }
+
+    public WorksheetAnalysisManager fetchWorksheetAnalysisByWorksheetItemId(Integer id) throws Exception {
+        return remoteManager().fetchWorksheetAnalysisByWorksheetItemId(id);
     }
 
     private WorksheetRemote remote() {

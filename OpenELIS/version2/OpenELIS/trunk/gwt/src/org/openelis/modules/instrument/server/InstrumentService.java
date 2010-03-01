@@ -28,6 +28,7 @@ package org.openelis.modules.instrument.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.InstrumentViewDO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.InstrumentLogManager;
@@ -48,6 +49,14 @@ public class InstrumentService {
         }
     }
     
+    public ArrayList<InstrumentViewDO> fetchByName(String name) throws Exception {
+        try {
+            return remote().fetchByName(name + "%", 10);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
     public InstrumentManager fetchWithLogs(Integer id) throws Exception {
         try {
             return remoteManager().fetchWithLogs(id);

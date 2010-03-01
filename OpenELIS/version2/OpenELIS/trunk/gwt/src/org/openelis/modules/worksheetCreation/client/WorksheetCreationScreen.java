@@ -32,7 +32,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
@@ -46,6 +45,7 @@ import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.domain.WorksheetDO;
 import org.openelis.domain.WorksheetItemDO;
+import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.SecurityException;
@@ -56,7 +56,6 @@ import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeCloseEvent;
 import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
@@ -79,6 +78,7 @@ import org.openelis.gwt.widget.table.event.SortEvent;
 import org.openelis.gwt.widget.table.event.SortHandler;
 import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
+import org.openelis.manager.QcManager;
 import org.openelis.manager.TestWorksheetManager;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
@@ -86,41 +86,41 @@ import org.openelis.manager.WorksheetManager;
 import org.openelis.meta.WorksheetCreationMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.qc.client.QcLookupScreen;
+import org.openelis.modules.worksheet.client.WorksheetQcAnalysisSelectionScreen;
 import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
 
-public class WorksheetCreationScreen extends Screen implements HasActionHandlers<WorksheetCreationScreen.Action> {
+public class WorksheetCreationScreen extends Screen {
 
     private boolean                               isTemplateLoaded, isSaved, wasExitCalled;
     private int                                   tempId, qcStartIndex;
-    private Integer                               formatBatch, formatTotal, qcDup,
-                                                  statusWorking, typeFixed, typeRand,
-                                                  typeLastWell, typeLastRun, typeLastBoth;
+    private Integer                               formatBatch, formatTotal,
+                                                  qcDup, statusWorking, typeFixed,
+                                                  typeRand, typeLastWell, typeLastRun,
+                                                  typeLastBoth;
     private ScreenService                         qcService;
     private SecurityModule                        security;
     private WorksheetManager                      manager;
 
-    private AppButton                             saveButton, exitButton, insertQCWorksheetButton,
+    private AppButton                             lookupWorksheetButton, saveButton,
+                                                  exitButton, insertQCWorksheetButton,
                                                   insertQCLookupButton, removeRowButton;
 
     protected ArrayList<Integer>                  testIds;
     protected ArrayList<TableDataRow>             analysisItems, qcLastRunList,
                                                   qcLastBothList, qcLinkModel,
                                                   testWorksheetItems;
-    protected Confirm                             worksheetRemoveQCConfirm, worksheetSaveConfirm,
-                                                  worksheetExitConfirm;
+    protected Confirm                             worksheetRemoveQCConfirm, worksheetRemoveLastOfQCConfirm,
+                                                  worksheetSaveConfirm, worksheetExitConfirm;
     protected QcLookupScreen                      qcLookupScreen;
     protected TableDataRow                        qcItems[];
     protected TableWidget                         worksheetItemTable;
-    protected TextBox<Integer>                    worksheetId;
+    protected TextBox<Integer>                    worksheetId, relatedWorksheetId;
     protected TestWorksheetDO                     testWorksheetDO;
     protected TestWorksheetManager                twManager;
+    protected WorksheetQcAnalysisSelectionScreen  waSelectionScreen;
     protected WorksheetCreationLookupScreen       wcLookupScreen;
-    protected WorksheetLookupScreen               wLookupScreen;
+    protected WorksheetLookupScreen               wLookupScreen, wQCLookupScreen;
     protected ValidationErrorsList                qcErrors;
-    
-    public enum Action {
-        ITEMS_CHANGED
-    };
     
     public WorksheetCreationScreen() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetCreationDef.class));
@@ -158,11 +158,11 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         wasExitCalled    = false;
 
         try {
-            DictionaryCache.preloadByCategorySystemNames("worksheet_status",
-                                                         "analysis_status",
+            DictionaryCache.preloadByCategorySystemNames("analysis_status",
                                                          "type_of_sample", 
                                                          "test_worksheet_format",
-                                                         "test_worksheet_item_type");
+                                                         "test_worksheet_item_type",
+                                                         "worksheet_status");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -204,12 +204,34 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
             }
         });
 
+        relatedWorksheetId = (TextBox)def.getWidget(WorksheetCreationMeta.getWorksheetRelatedWorksheetId());
+        addScreenHandler(relatedWorksheetId, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                relatedWorksheetId.setValue(manager.getWorksheet().getRelatedWorksheetId());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                relatedWorksheetId.enable(false);
+            }
+        });
+
+        lookupWorksheetButton = (AppButton)def.getWidget("lookupWorksheetButton");
+        addScreenHandler(lookupWorksheetButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                openWorksheetLookup();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                lookupWorksheetButton.enable(true);
+            }
+        });
+
         saveButton = (AppButton)def.getWidget("saveButton");
         addScreenHandler(saveButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 if (worksheetSaveConfirm == null) {
-                    worksheetSaveConfirm = new Confirm(Confirm.Type.QUESTION,
-                                                       consts.get("worksheetSaveConfirm"),
+                    worksheetSaveConfirm = new Confirm(Confirm.Type.QUESTION, "",
+                                                       consts.get("worksheetCreationSaveConfirm"),
                                                        "Don't Save", "Save");
                     worksheetSaveConfirm.addSelectionHandler(new SelectionHandler<Integer>(){
                         public void onSelection(SelectionEvent<Integer> event) {
@@ -291,7 +313,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         insertQCWorksheetButton = (AppButton)def.getWidget("insertQCWorksheetButton");
         addScreenHandler(insertQCWorksheetButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                openWorksheetLookup();
+                openWorksheetQCLookup();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -313,24 +335,53 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         removeRowButton = (AppButton)def.getWidget("removeRowButton");
         addScreenHandler(removeRowButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int          rowIndex;
-                TableDataRow dataRow;
+                int                 rowIndex;
+                TableDataRow        dataRow;
                 
                 rowIndex = worksheetItemTable.getSelectedRow();
                 if (rowIndex > -1 && worksheetItemTable.numRows() > 0) {
                     dataRow = worksheetItemTable.getRow(rowIndex);
-                    if (dataRow.data instanceof TestWorksheetItemDO) {
+                    if (dataRow.data instanceof ArrayList) {
                         if (worksheetRemoveQCConfirm == null) {
-                            worksheetRemoveQCConfirm = new Confirm(Confirm.Type.QUESTION,
-                                                               consts.get("worksheetRemoveQCConfirm"),
-                                                               "Don't Remove", "Remove");
-                            worksheetRemoveQCConfirm.addSelectionHandler(new SelectionHandler<Integer>(){
+                            worksheetRemoveQCConfirm = new Confirm(Confirm.Type.QUESTION, "",
+                                                                   consts.get("worksheetRemoveQCConfirm"),
+                                                                   "Don't Remove", "Remove");
+                            worksheetRemoveQCConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
                                 public void onSelection(SelectionEvent<Integer> event) {
+                                    TableDataRow        qcRow;
+                                    TestWorksheetItemDO twiDO;
+
                                     switch(event.getSelectedItem().intValue()) {
                                         case 1:
-                                            qcItems[worksheetItemTable.getSelectedRow()] = null;
-                                            mergeAnalysesAndQCs();
-                                            break;
+                                            qcRow = worksheetItemTable.getSelection();
+                                            twiDO = (TestWorksheetItemDO) ((ArrayList)qcRow.data).get(0);
+                                            
+                                            if (typeLastWell.equals(twiDO.getTypeId()) ||
+                                                typeLastRun.equals(twiDO.getTypeId()) ||
+                                                typeLastBoth.equals(twiDO.getTypeId())) {
+                                                if (worksheetRemoveLastOfQCConfirm == null) {
+                                                    worksheetRemoveLastOfQCConfirm = new Confirm(Confirm.Type.QUESTION, "",
+                                                                                                 consts.get("worksheetRemoveLastOfQCConfirm"),
+                                                                                                 "Don't Remove", "Remove");
+                                                    worksheetRemoveLastOfQCConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
+                                                        public void onSelection(SelectionEvent<Integer> event) {
+                                                            switch(event.getSelectedItem().intValue()) {
+                                                                case 1:
+                                                                    testWorksheetItems.remove(worksheetItemTable.getSelection());
+                                                                    buildQCWorksheet();
+                                                                    mergeAnalysesAndQCs();
+                                                                    break;
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                                worksheetRemoveLastOfQCConfirm.show();
+                                            } else {
+                                                testWorksheetItems.remove(qcRow);
+                                                buildQCWorksheet();
+                                                mergeAnalysesAndQCs();
+                                                break;
+                                            }
                                     }
                                 }
                             });
@@ -386,7 +437,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         for (DictionaryDO resultDO : dictList)
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         ((Dropdown<Integer>)worksheetItemTable.getColumns().get(6).getColumnWidget()).setModel(model);
-    }
+}
     
     protected void openLookupWindow() {
         if (wcLookupScreen == null) {
@@ -394,15 +445,15 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
                 wcLookupScreen = new WorksheetCreationLookupScreen();
                 wcLookupScreen.addActionHandler(new ActionHandler<WorksheetCreationLookupScreen.Action>() {
                     public void onAction(ActionEvent<WorksheetCreationLookupScreen.Action> event) {
-                        ArrayList<TableDataRow> model;
+                        ArrayList<TableDataRow> list;
                         TableDataRow            row, newRow;
                         WorksheetCreationVO     data;
 
                         if (event.getAction() == WorksheetCreationLookupScreen.Action.ADD) {
-                            model = (ArrayList<TableDataRow>)event.getData();
-                            if (model != null) {
-                                for (int i = 0; i < model.size(); i++) {
-                                    row  = model.get(i);
+                            list = (ArrayList<TableDataRow>)event.getData();
+                            if (list != null && list.size() > 0) {
+                                for (int i = 0; i < list.size(); i++) {
+                                    row  = list.get(i);
                                     newRow = new TableDataRow(11);
                                     data = (WorksheetCreationVO)row.data;
                                     
@@ -440,9 +491,9 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
 
                                 isSaved = false;
                                 saveButton.enable(true);
+                                worksheetItemTable.enable(true);
                                 insertQCWorksheetButton.enable(true);
                                 insertQCLookupButton.enable(true);
-                                worksheetItemTable.enable(true);
                             }
                         }
                     }
@@ -485,6 +536,8 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         wDO.setSystemUserId(OpenELIS.security.getSystemUserId());
         wDO.setStatusId(statusWorking);
         wDO.setFormatId(testWorksheetDO.getFormatId());
+        if (relatedWorksheetId.getFieldValue() != null)
+            wDO.setRelatedWorksheetId(relatedWorksheetId.getFieldValue());
         
         try {
             wiManager = manager.getItems();
@@ -503,8 +556,8 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
             waDO = new WorksheetAnalysisDO();
             waDO.setId((Integer)row.key);
             waDO.setAccessionNumber(row.cells.get(1).value.toString());
-            if (row.data instanceof QcDO) {
-                waDO.setQcId(((QcDO)row.data).getId());
+            if (row.data instanceof ArrayList) {
+                waDO.setQcId(((QcDO)((ArrayList<Object>)row.data).get(1)).getId());
             } else {
                 waDO.setAnalysisId(((WorksheetCreationVO)row.data).getAnalysisId());
             }
@@ -513,8 +566,8 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
                 waManager = wiManager.getWorksheetAnalysisAt(i);
                 waManager.addWorksheetAnalysis(waDO);
             } catch (Exception anyE) {
-                // TODO -- Need to code real exception handling
-                anyE.printStackTrace();
+                Window.alert("save(): " + anyE.getMessage());
+                window.clearStatus();
             }
         }
         
@@ -529,12 +582,13 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
             saveButton.enable(false);
             insertQCWorksheetButton.enable(false);
             insertQCLookupButton.enable(false);
+            lookupWorksheetButton.enable(false);
             removeRowButton.enable(false);
             worksheetItemTable.enable(false);
         } catch (ValidationErrorsList e) {
             showErrors(e);
         } catch (Exception e) {
-            Window.alert("commitAdd(): " + e.getMessage());
+            Window.alert("save(): " + e.getMessage());
             window.clearStatus();
         }
     }
@@ -542,7 +596,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
     protected void exit() {
         if (!isSaved) {
             if (worksheetExitConfirm == null) {
-                worksheetExitConfirm = new Confirm(Confirm.Type.QUESTION,
+                worksheetExitConfirm = new Confirm(Confirm.Type.QUESTION, "",
                                                    consts.get("worksheetExitConfirm"),
                                                    "Don't Exit", "Exit");
                 worksheetExitConfirm.addSelectionHandler(new SelectionHandler<Integer>(){
@@ -566,21 +620,44 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
 
     private void loadQCTemplate() {
         int                  i;
+        String               message;
+        ArrayList<Object>    dataList;
         ArrayList<QcDO>      list;
         QcDO                 qcDO = null;
+        TableDataRow         qcRow;
         TestWorksheetItemDO  twiDO;
         
         try {
             if (twManager == null) {
                 twManager = TestWorksheetManager.fetchByTestId(testIds.get(0));
-                testWorksheetDO = twManager.getWorksheet();
+                if (twManager != null) {
+                    testWorksheetDO = twManager.getWorksheet();
+                } else {
+                    //
+                    // If there is no worksheet definition for the test, load
+                    // default definition and clear items list
+                    //
+                    testWorksheetDO = new TestWorksheetDO();
+                    testWorksheetDO.setFormatId(formatTotal);
+                    testWorksheetDO.setBatchCapacity(500);
+                    testWorksheetDO.setTotalCapacity(500);
+                    testWorksheetItems.clear();
+                    buildQCWorksheet();
+                    isTemplateLoaded = false;
+                    return;
+                }                
             }
             if (testWorksheetItems == null)
                 testWorksheetItems = new ArrayList<TableDataRow>();
 
+            //
+            // Only clear the error list if this is our first time through
+            //
+            if (qcStartIndex == 0)
+                qcErrors.getErrorList().clear();
+            
             i = qcStartIndex;
             qcStartIndex = 0;
-            qcErrors.getErrorList().clear();
             for (; i < twManager.itemCount(); i++) {
                 twiDO = twManager.getItemAt(i);
                 try {
@@ -598,25 +675,43 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
                         qcDO = list.get(0);
                     }
 
-                    testWorksheetItems.add(new TableDataRow(null, twiDO, qcDO));
+                    qcRow = new TableDataRow(11);
+                    qcRow.cells.get(2).value = qcDO.getName();             // description
+                    
+                    dataList = new ArrayList<Object>();
+                    dataList.add(twiDO);
+                    dataList.add(qcDO);
+                    qcRow.data = dataList;
+                    
+                    testWorksheetItems.add(qcRow);
                 } catch (Exception anyE) {
-                    // TODO Auto-generated catch block
-                    anyE.printStackTrace();
+                    Window.alert("loadQCTemplate(): " + anyE.getMessage());
+                    window.clearStatus();
                 }
             }
         } catch (Exception anyE) {
-            // TODO -- Need to code real exception handling
-            anyE.printStackTrace();
+            Window.alert("loadQCTemplate(): " + anyE.getMessage());
+            window.clearStatus();
         }
         
         buildQCWorksheet();
         isTemplateLoaded = true;
+        
+        if (qcErrors.size() > 0 && qcStartIndex == 0) {
+            message = "";
+            for (i = 0; i < qcErrors.size(); i++) {
+                if (message.length() > 0)
+                    message += "\n\n";
+                message += ((Exception)qcErrors.getErrorList().get(i)).getMessage();
+            }
+            Window.alert(message);
+        }
     }
     
     private void buildQCWorksheet() {
         int                      i, j, posNum, randSize, numBatches, startIndex;
+        String                   accessionNumber;
         ArrayList<TableDataRow>  qcRandList, qcLastWellList, lastOf;
-        QcDO                     qcDO;
         TableDataRow             qcRow, qcRow1;
         TestWorksheetItemDO      twiDO;
 
@@ -641,18 +736,22 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         // Random and LastOf QC Items for later.
         //
         for (i = 0; i < testWorksheetItems.size(); i++) {
-            twiDO = (TestWorksheetItemDO) testWorksheetItems.get(i).getCells().get(0);
-            qcDO  = (QcDO) testWorksheetItems.get(i).getCells().get(1);
+            qcRow = testWorksheetItems.get(i);
+            twiDO = (TestWorksheetItemDO) ((ArrayList<Object>)testWorksheetItems.get(i).data).get(0);
             
-            qcRow = new TableDataRow(11);
             qcRow.key = getNextTempId();                           // fake worksheet analysis id
-            qcRow.cells.get(2).value = qcDO.getName();             // description
-            qcRow.data = qcDO;
             
             if (typeFixed.equals(twiDO.getTypeId()))
                 for (j = 0; j < numBatches; j++) {
                     posNum = j * testWorksheetDO.getBatchCapacity() + twiDO.getPosition() - 1;
-                    qcRow.cells.get(1).value = "X."+getPositionNumber(posNum);     // qc accession #
+                    
+                    //
+                    // Do NOT overwrite accession numbers on QCs pulled from other
+                    // worksheets
+                    //
+                    accessionNumber = (String) qcRow.cells.get(1).value;
+                    if (accessionNumber == null || accessionNumber.startsWith("X."))
+                        qcRow.cells.get(1).value = "X."+getPositionNumber(posNum);     // qc accession #
                     qcItems[posNum] = qcRow;
                 }
             else if (typeRand.equals(twiDO.getTypeId()))
@@ -677,7 +776,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         for (i = 0; i < numBatches; i++) {
             posNum = i * testWorksheetDO.getBatchCapacity() + startIndex;
             for (j = 0; j < lastOf.size(); j++) {
-                qcRow = lastOf.get(j);
+                qcRow = (TableDataRow) lastOf.get(j).clone();
                 qcRow.cells.get(1).value = "X."+getPositionNumber(posNum);     // qc accession #
                 qcItems[posNum++] = qcRow;
             }
@@ -690,7 +789,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         for (i = 0; i < numBatches; i++) {
             j = 0;
             while (j < randSize) {
-                qcRow = qcRandList.get(j);
+                qcRow = (TableDataRow) qcRandList.get(j).clone();
                 posNum = (int) (Math.random() * (testWorksheetDO.getBatchCapacity() - 1)) + i * testWorksheetDO.getBatchCapacity();
                 if (qcItems[posNum] == null) {
                     if (posNum + 1 < testWorksheetDO.getTotalCapacity()) {
@@ -709,9 +808,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
     @SuppressWarnings("unchecked")
     private void mergeAnalysesAndQCs() {
         int                     i, j, k;
-        String                  pos;
         ArrayList<TableDataRow> items, lastOf;
-        FormErrorException      fEE;
         TableDataRow            row;
         
         //
@@ -786,19 +883,6 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         ((Dropdown<Integer>)worksheetItemTable.getColumns().get(3).getColumnWidget()).setModel(qcLinkModel);
         
         worksheetItemTable.load(items);
-        
-        if (qcErrors.size() > 0) {
-            for (i = qcErrors.size() - 1; i >= 0; i--) {
-                fEE = (FormErrorException) qcErrors.getErrorList().get(i);
-                if (fEE.getParams().length >= 2) {
-                    pos = fEE.getParams()[1];
-                    if (Integer.parseInt(pos) >= items.size())
-                        qcErrors.getErrorList().remove(i);
-                }
-            }
-        
-            showErrors(qcErrors);
-        }
     }
     
     private void openWorksheetLookup() {
@@ -809,6 +893,16 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
                 wLookupScreen = new WorksheetLookupScreen();
                 wLookupScreen.addActionHandler(new ActionHandler<WorksheetLookupScreen.Action>() {
                     public void onAction(ActionEvent<WorksheetLookupScreen.Action> event) {
+                        ArrayList<TableDataRow> list;
+                        WorksheetViewDO         wVDO;
+
+                        if (event.getAction() == WorksheetLookupScreen.Action.OK) {
+                            list = (ArrayList<TableDataRow>)event.getData();
+                            if (list != null) {
+                                wVDO = (WorksheetViewDO)list.get(0).data;
+                                relatedWorksheetId.setValue(wVDO.getId());
+                            }
+                        }
                     }
                 });
             }
@@ -816,6 +910,104 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
             modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
             modal.setName(consts.get("worksheetLookup"));
             modal.setContent(wLookupScreen);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert("error: " + e.getMessage());
+            return;
+        }
+    }
+
+    private void openWorksheetQCLookup() {
+        ScreenWindow modal;
+        
+        try {
+            if (wQCLookupScreen == null) {
+                wQCLookupScreen = new WorksheetLookupScreen();
+                wQCLookupScreen.addActionHandler(new ActionHandler<WorksheetLookupScreen.Action>() {
+                    public void onAction(ActionEvent<WorksheetLookupScreen.Action> event) {
+                        ArrayList<TableDataRow> list;
+                        ScreenWindow            modal2;
+                        WorksheetViewDO         wVDO;
+
+                        if (event.getAction() == WorksheetLookupScreen.Action.OK) {
+                            list = (ArrayList<TableDataRow>)event.getData();
+                            if (list != null) {
+                                wVDO = (WorksheetViewDO)list.get(0).data;
+                                try {
+                                    if (waSelectionScreen == null) {
+                                        waSelectionScreen = new WorksheetQcAnalysisSelectionScreen();
+                                        waSelectionScreen.addActionHandler(new ActionHandler<WorksheetQcAnalysisSelectionScreen.Action>() {
+                                            public void onAction(ActionEvent<WorksheetQcAnalysisSelectionScreen.Action> event) {
+                                                int                     i, r;
+                                                ArrayList<TableDataRow> list;
+                                                ArrayList<Object>       dataList;
+                                                QcManager               qcManager;
+                                                TableDataRow            qcRow;
+                                                TestWorksheetItemDO     twiDO;
+                                                WorksheetAnalysisDO     waDO;
+    
+                                                if (event.getAction() == WorksheetQcAnalysisSelectionScreen.Action.OK) {
+                                                    list = (ArrayList<TableDataRow>)event.getData();
+                                                    if (list != null) {
+                                                        r = worksheetItemTable.getSelectedRow();
+                                                        if (r == -1)
+                                                            r = worksheetItemTable.numRows();
+                                                        else
+                                                            r++;
+                                                        
+                                                        for (i = 0; i < list.size(); i++) {
+                                                            waDO = (WorksheetAnalysisDO)list.get(i).data;
+                                                            try {
+                                                                qcManager = qcService.call("fetchById", waDO.getQcId());
+                                                                twiDO = new TestWorksheetItemDO();
+                                                                twiDO.setPosition(r+1);
+                                                                twiDO.setTypeId(typeFixed);
+                                                                twiDO.setQcName(qcManager.getQc().getName());
+                                                                
+                                                                qcRow = new TableDataRow(11);
+                                                                qcRow.cells.get(1).value = waDO.getAccessionNumber();
+                                                                qcRow.cells.get(2).value = qcManager.getQc().getName();
+                                                                
+                                                                dataList = new ArrayList<Object>();
+                                                                dataList.add(twiDO);
+                                                                dataList.add((QcDO)qcManager.getQc());
+                                                                qcRow.data = dataList;
+                                                                
+                                                                testWorksheetItems.add(qcRow);
+                                                                r++;
+                                                            } catch (Exception anyE) {
+                                                                anyE.printStackTrace();
+                                                                Window.alert("error: " + anyE.getMessage());
+                                                            }
+                                                        }
+                                                        
+                                                        buildQCWorksheet();
+                                                        mergeAnalysesAndQCs();
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    }
+                                    
+                                    modal2 = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+                                    waSelectionScreen.setWorksheetId(wVDO.getId());
+                                    waSelectionScreen.draw();
+                                    modal2.setContent(waSelectionScreen);
+                                    modal2.setName(consts.get("worksheetNumber")+wVDO.getId().toString());
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    Window.alert("error: " + e.getMessage());
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+            modal.setName(consts.get("worksheetLookup"));
+            modal.setContent(wQCLookupScreen);
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert("error: " + e.getMessage());
@@ -832,7 +1024,9 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
                 qcLookupScreen.addActionHandler(new ActionHandler<QcLookupScreen.Action>() {
                     public void onAction(ActionEvent<QcLookupScreen.Action> event) {
                         int                 i, r;
+                        ArrayList<Object>   dataList;
                         ArrayList<QcDO>     list;
+                        TableDataRow        qcRow;
                         QcDO                qcDO;
                         TestWorksheetItemDO twiDO;
 
@@ -869,9 +1063,19 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
                                     twiDO.setTypeId(typeFixed);
                                     twiDO.setQcName(qcDO.getName());
                                     
-                                    testWorksheetItems.add(new TableDataRow(null, twiDO, qcDO));
+                                    qcRow = new TableDataRow(11);
+                                    qcRow.cells.get(2).value = qcDO.getName();             // description
+                                    
+                                    dataList = new ArrayList<Object>();
+                                    dataList.add(twiDO);
+                                    dataList.add(qcDO);
+                                    qcRow.data = dataList;
+                                    
+                                    testWorksheetItems.add(qcRow);
                                     r++;
                                 }
+                                
+                                qcLookupScreen.window.close();
                                 
                                 if (qcStartIndex != 0)
                                     loadQCTemplate();
@@ -907,10 +1111,6 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
             return;
         }
     }
-
-    public HandlerRegistration addActionHandler(ActionHandler<WorksheetCreationScreen.Action> handler) {
-        return addHandler(handler, ActionEvent.getType());
-    }        
 
     private Object getPositionNumber(int position) {
         int    major, minor;
