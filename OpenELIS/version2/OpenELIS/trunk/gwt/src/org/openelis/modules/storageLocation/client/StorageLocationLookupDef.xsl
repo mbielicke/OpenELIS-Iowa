@@ -63,10 +63,10 @@ UIRF Software License are applicable instead of those above.
                   <col key="parent" width="140" sort="false" header="Parent">
                     <label />
                   </col>
-                  <col key="location" width="140" sort="false" header="{resource:getString($constants,'location')}">
+                  <col key="unitDesc" width="140" sort="false" header="{resource:getString($constants,'storageUnit')}">
                     <label />
                   </col>
-                  <col key="unitDesc" width="140" sort="false" header="{resource:getString($constants,'storageUnit')}">
+                  <col key="location" width="140" sort="false" header="{resource:getString($constants,'location')}">
                     <label />
                   </col>
                 </table>
