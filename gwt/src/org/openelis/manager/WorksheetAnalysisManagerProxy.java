@@ -38,7 +38,7 @@ public class WorksheetAnalysisManagerProxy {
     }
 
     public WorksheetAnalysisManager fetchByWorksheetItemId(Integer worksheetItemId) throws Exception {
-        return service.call("fetchWorksheeetAnalysisByWorksheetItemId", worksheetItemId);
+        return service.call("fetchWorksheetAnalysisByWorksheetItemId", worksheetItemId);
     }
 
     public WorksheetAnalysisManager add(WorksheetAnalysisManager manager, HashMap<Integer,Integer> idHash) throws Exception {

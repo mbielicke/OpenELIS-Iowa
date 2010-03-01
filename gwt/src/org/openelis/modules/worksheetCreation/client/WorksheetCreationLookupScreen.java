@@ -42,12 +42,14 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SectionDO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.SecurityUtil;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
@@ -81,8 +83,9 @@ import org.openelis.modules.main.client.openelis.OpenELIS;
 public class WorksheetCreationLookupScreen extends Screen 
                                            implements HasActionHandlers<WorksheetCreationLookupScreen.Action> {
 
-    private ScreenService            testService;
-    private SecurityModule           security;
+    private Integer                 statusReleased, statusCancelled;
+    private ScreenService           testService;
+    private SecurityModule          security;
 
     protected AppButton             searchButton, addButton, selectAllButton;
     protected AutoComplete<Integer> testId;
@@ -117,6 +120,14 @@ public class WorksheetCreationLookupScreen extends Screen
      * screen is attached to the browser. It is usually called in deferred command.
      */
     private void postConstructor() {
+        try {
+            DictionaryCache.preloadByCategorySystemNames("analysis_status",
+                                                         "type_of_sample");
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            window.close();
+        }
+
         initialize();
         setState(State.DEFAULT);
         setState(State.QUERY);
@@ -315,8 +326,16 @@ public class WorksheetCreationLookupScreen extends Screen
     @SuppressWarnings("unchecked")
     private void initializeDropdowns() {
         ArrayList<DictionaryDO> dictList;
-        ArrayList<SectionDO> sectList;
+        ArrayList<SectionDO>    sectList;
         ArrayList<TableDataRow> model;
+
+        try {
+            statusReleased  = DictionaryCache.getIdFromSystemName("analysis_released");
+            statusCancelled = DictionaryCache.getIdFromSystemName("analysis_cancelled");
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            window.close();
+        }
 
         //
         // load analysis status dropdown model
@@ -327,6 +346,7 @@ public class WorksheetCreationLookupScreen extends Screen
         for (SectionDO resultDO : sectList)
             model.add(new TableDataRow(resultDO.getId(),resultDO.getName()));
         sectionId.setModel(model);
+        ((Dropdown<Integer>)analysesTable.getColumns().get(4).getColumnWidget()).setModel(model);
         
         //
         // load analysis status dropdown model
@@ -439,7 +459,7 @@ public class WorksheetCreationLookupScreen extends Screen
                 row.cells.get(1).value = analysisRow.getDescription();
                 row.cells.get(2).value = analysisRow.getTestName();
                 row.cells.get(3).value = analysisRow.getMethodName();
-                row.cells.get(4).value = analysisRow.getSectionName();
+                row.cells.get(4).value = analysisRow.getSectionId();
                 row.cells.get(5).value = analysisRow.getStatusId();          
                 row.cells.get(6).value = analysisRow.getCollectionDate();
                 row.cells.get(7).value = analysisRow.getReceivedDate();
@@ -459,7 +479,78 @@ public class WorksheetCreationLookupScreen extends Screen
     }
     
     protected void addAnalyses() {
-        ActionEvent.fire(this, Action.ADD, analysesTable.getSelections());
+        int                     i;
+        SectionViewDO           sectionVDO;
+        StringBuffer            message;
+        WorksheetCreationVO     analysisRow;
+        ArrayList<TableDataRow> selections;
+        
+        i = 0;
+        message = new StringBuffer();
+        selections = analysesTable.getSelections();
+        while (i < selections.size()) {
+            analysisRow = (WorksheetCreationVO) selections.get(i).data;
+            if (! isAnalysisEditable(analysisRow)) {
+                selections.remove(i);
+                
+                message.append(consts.get("accessionNum")).append(analysisRow.getAccessionNumber())
+                       .append("\t").append(analysisRow.getTestName().trim()).append(",")
+                       .append(analysisRow.getMethodName().trim());
+                try {
+                    sectionVDO = SectionCache.getSectionFromId(analysisRow.getSectionId());
+                    message.append("\t").append(sectionVDO.getName().trim());
+                } catch (Exception anyE) {
+                    anyE.printStackTrace();
+                    message.append("\t").append("ERROR");
+                }
+                message.append("\n");
+            } else {
+                i++;
+            }
+        }
+        
+        if (message.length() > 0)
+            Window.alert(consts.get("worksheetItemsNotAdded")+":\n\n"+message.toString());
+        if (selections.size() > 0)
+            ActionEvent.fire(this, Action.ADD, selections);
+    }
+
+    /**
+     * Returns true if analysis can be added to the worksheet and the user has
+     * permission to add it.
+     */
+    private boolean isAnalysisEditable(WorksheetCreationVO analysisRow) {
+        boolean editable;
+        
+        editable = false;
+        if (analysisRow != null) {
+            editable = //canAddTest(analysisRow) &&
+                       (!statusReleased.equals(analysisRow.getStatusId()) ||
+                        !statusCancelled.equals(analysisRow.getStatusId()));
+        }
+        return editable;
+    }
+
+    private boolean canAddTest(WorksheetCreationVO analysisRow) {
+        boolean       allow;
+        SectionViewDO section;
+        SecurityUtil  securityUtil;
+
+        allow = false;
+        if (analysisRow == null)
+            return allow;
+
+        securityUtil = OpenELIS.security;
+        try {
+            section = SectionCache.getSectionFromId(analysisRow.getSectionId());
+            if (securityUtil.getSection(section.getName()) != null &&
+                securityUtil.getSection(section.getName()).hasCompletePermission())
+                allow = true;
+        } catch (Exception anyE) {
+            Window.alert(anyE.getMessage());
+        }
+
+        return allow;
     }
 
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {

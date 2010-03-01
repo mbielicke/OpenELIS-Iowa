@@ -38,6 +38,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SecuritySystemUserDO;
 import org.openelis.domain.WorksheetViewDO;
@@ -64,6 +65,8 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.meta.WorksheetCompletionMeta;
@@ -81,7 +84,7 @@ public class WorksheetLookupScreen extends Screen
     private ScreenService         userService;
     
     public enum Action {
-        SELECT
+        OK, CANCEL
     };
 
     public WorksheetLookupScreen() throws Exception {
@@ -206,9 +209,17 @@ public class WorksheetLookupScreen extends Screen
             }
         });
         
+        worksheetTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                // this table cannot be edited
+                event.cancel();
+            }
+        });
+
         okButton = (AppButton)def.getWidget("ok");
         addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                ok();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -219,7 +230,7 @@ public class WorksheetLookupScreen extends Screen
         cancelButton = (AppButton)def.getWidget("cancel");
         addScreenHandler(cancelButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                window.close();
+                cancel();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -280,10 +291,11 @@ public class WorksheetLookupScreen extends Screen
     }
 
     private void setQueryResult(ArrayList<WorksheetViewDO> list) {
-        int                     i;
-        ArrayList<TableDataRow> model;
-        TableDataRow            row;
-        WorksheetViewDO         worksheetRow;
+        int                       i, j;
+        ArrayList<AnalysisViewDO> testList;
+        ArrayList<TableDataRow>   model;
+        TableDataRow              row;
+        WorksheetViewDO           worksheetRow;
         
         window.setDone(consts.get("queryingComplete"));
 
@@ -304,8 +316,15 @@ public class WorksheetLookupScreen extends Screen
                 row.cells.get(1).value = worksheetRow.getSystemUser();
                 row.cells.get(2).value = worksheetRow.getCreatedDate();
                 row.cells.get(3).value = worksheetRow.getStatusId();
-//                row.cells.get(4).value = worksheetRow.getTestName();
-//                row.cells.get(5).value = worksheetRow.getMethodName();          
+/*                
+                testList = worksheetRow.getTestList();
+                if (testList != null) {
+                    for (j = 0; j < testList.size(); j++) { 
+                        row.cells.get(4).value = worksheetRow.getTestName();
+                        row.cells.get(5).value = worksheetRow.getMethodName();
+                    }
+                }
+*/
                 row.data = worksheetRow;
 
                 model.add(row);
@@ -315,10 +334,20 @@ public class WorksheetLookupScreen extends Screen
         }
     }
     
-    protected void selectWorksheet() {
-        ActionEvent.fire(this, Action.SELECT, worksheetTable.getSelections());
+    private void ok() {
+        ArrayList<TableDataRow> selections = worksheetTable.getSelections();
+        
+        if (selections.size() > 0)
+            ActionEvent.fire(this, Action.OK, selections);
+        
+        window.close();
     }
-
+    
+    private void cancel() {
+        ActionEvent.fire(this, Action.CANCEL, null);
+        window.close();
+    }
+    
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
         return addHandler(handler, ActionEvent.getType());
     }
