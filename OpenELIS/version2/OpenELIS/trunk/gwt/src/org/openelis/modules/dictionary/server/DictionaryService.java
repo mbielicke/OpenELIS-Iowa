@@ -41,7 +41,7 @@ import org.openelis.remote.DictionaryRemote;
 
 public class DictionaryService {
 
-    private static final int rowPP = 19;
+    private static final int rowPP = 20;
 
     public CategoryManager fetchById(Integer id) throws Exception {
         try {
