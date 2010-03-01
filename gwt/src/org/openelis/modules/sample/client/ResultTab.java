@@ -114,9 +114,8 @@ public class ResultTab extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 testResultsTable.enable(canEdit() &&
-                                        EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                        EnumSet.of(State.ADD, State.UPDATE)
                                                .contains(event.getState()));
-                testResultsTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
