@@ -6,9 +6,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.openelis.cache.DictionaryCache;
-import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.SampleDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.LastPageException;
@@ -18,7 +16,6 @@ import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeCloseEvent;
@@ -61,6 +58,7 @@ import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.modules.sample.client.AccessionNumberUtility;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
 import org.openelis.modules.sample.client.AuxDataTab;
@@ -68,12 +66,11 @@ import org.openelis.modules.sample.client.EnvironmentalTab;
 import org.openelis.modules.sample.client.PrivateWellTab;
 import org.openelis.modules.sample.client.QAEventsTab;
 import org.openelis.modules.sample.client.ResultTab;
-import org.openelis.modules.sample.client.SampleItemAnalysisTreeTab;
+import org.openelis.modules.sample.client.SampleHistoryUtility;
 import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleNotesTab;
 import org.openelis.modules.sample.client.SampleTreeUtility;
 import org.openelis.modules.sample.client.StorageTab;
-import org.openelis.modules.sample.client.SampleItemAnalysisTreeTab.Action;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -117,6 +114,8 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 	
 	private ScreenNavigator 		       nav;
 	private SampleManager                  manager;
+    protected AccessionNumberUtility       accessionNumUtil;
+    protected SampleHistoryUtility         historyUtility;
 	
 	private TabPanel                  	   sampleContent;
 	//private org.openelis.gwt.widget.TabBar                         sampleBar;
@@ -133,7 +132,14 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 	private ResultTab      				   testResultsTab;
 	private TreeWidget                     atozTree;
 	private int                            tempId;
-	private SampleTreeUtility				   treeUtil;	
+	private SampleTreeUtility			   treeUtil;	
+	
+    protected MenuItem                     historySample, historySampleEnvironmental,historySamplePrivateWell,
+    historySampleProject, historySampleOrganization, historySampleItem,
+    historyAnalysis, historyCurrentResult, historyStorage, historySampleQA,
+    historyAnalysisQA, historyAuxData;
+    
+    private SampleTrackingScreen trackScreen = this; 
 	
     public SampleTrackingScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SampleTrackingDef.class));
@@ -366,6 +372,150 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         			cancelTestButton.enable(false);
         	}
         });
+        historyUtility = new SampleHistoryUtility(window){
+            public void historyCurrentResult() {
+              ActionEvent.fire(trackScreen, ResultTab.Action.RESULT_HISTORY, null);
+            }  
+        };
+
+        historySample = (MenuItem)def.getWidget("historySample");
+        addScreenHandler(historySample, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySample();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historySample.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historySampleEnvironmental = (MenuItem)def.getWidget("historySampleEnvironmental");
+        addScreenHandler(historySampleEnvironmental, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySampleEnvironmental();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+            	if(manager.getSample().getDomain().equals(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG))
+            		historySampleEnvironmental.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            	else
+            		historySampleEnvironmental.enable(false);
+            }
+        });
+        
+        historySamplePrivateWell = (MenuItem)def.getWidget("historySamplePrivateWell");
+        addScreenHandler(historySamplePrivateWell, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySamplePrivateWell();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+            	if(manager.getSample().getDomain().equals(SampleManager.WELL_DOMAIN_FLAG))
+            		historySamplePrivateWell.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            	else
+            		historySamplePrivateWell.enable(false);
+            }
+        });
+        
+        historySampleProject = (MenuItem)def.getWidget("historySampleProject");
+        addScreenHandler(historySampleProject, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySampleProject();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historySampleProject.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historySampleOrganization = (MenuItem)def.getWidget("historySampleOrganization");
+        addScreenHandler(historySampleOrganization, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySampleOrganization();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historySampleOrganization.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historySampleItem = (MenuItem)def.getWidget("historySampleItem");
+        addScreenHandler(historySampleItem, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySampleItem();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historySampleItem.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historyAnalysis = (MenuItem)def.getWidget("historyAnalysis");
+        addScreenHandler(historyAnalysis, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historyAnalysis();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historyAnalysis.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historyCurrentResult = (MenuItem)def.getWidget("historyCurrentResult");
+        addScreenHandler(historyCurrentResult, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historyCurrentResult();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historyCurrentResult.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historyStorage = (MenuItem)def.getWidget("historyStorage");
+        addScreenHandler(historyStorage, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historyStorage();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historyStorage.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historySampleQA = (MenuItem)def.getWidget("historySampleQA");
+        addScreenHandler(historySampleQA, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySampleQA();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historySampleQA.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historyAnalysisQA = (MenuItem)def.getWidget("historyAnalysisQA");
+        addScreenHandler(historyAnalysisQA, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historyAnalysisQA();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historyAnalysisQA.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        
+        historyAuxData = (MenuItem)def.getWidget("historyAuxData");
+        addScreenHandler(historyAuxData, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historyAuxData();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historyAuxData.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });        
         
         nav = new ScreenNavigator(def) {
         	
@@ -396,6 +546,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             public boolean fetch(RPC entry) {
             	if(manager == null) {
             		manager = (SampleManager)entry;
+            		historyUtility.setManager(manager);
             		treeUtil.setManager(manager);
             		setState(State.DISPLAY);
             		resetScreen();
@@ -423,7 +574,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 					   	TreeDataItem sample = new TreeDataItem();
 				    	sample.checkForChildren(true);
 				    	sample.leafType = "sample";
-				    	sample.data = vo.getSample();
+				    	sample.data = vo.getBundle();
 				    	sample.cells.add(new TableDataCell(vo.getSample().getAccessionNumber()));
 				    	try {
 				    		sample.cells.add(new TableDataCell(DictionaryCache.getEntryFromId(vo.getSample().getStatusId()).getEntry()));
@@ -620,10 +771,10 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         		if(event.getSelectedItem().leafType.equals("note")) {
         			
         			if(event.getSelectedItem().parent.leafType.equals("sample")) {
-        				SampleDO key = (SampleDO)event.getSelectedItem().data;
+        				SampleDataBundle key = (SampleDataBundle)event.getSelectedItem().data;
         				try {
-        					if(!key.getId().equals(manager.getSample().getId())) {
-        						fetchById(key.getId());
+        					if(!key.getSampleManager().getSample().getId().equals(manager.getSample().getId())) {
+        						fetchById(key.getSampleManager().getSample().getId());
         					}
         					sampleNotesTab.setManager(manager);
         					sampleNotesTab.draw();
@@ -654,9 +805,9 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         		}
         		if(event.getSelectedItem().leafType.equals("auxdata")){
         			try {
-        				SampleDO key = (SampleDO)event.getSelectedItem().data;
-        				if(!key.getId().equals(manager.getSample().getId())){
-    						fetchById(key.getId());
+        				SampleDataBundle key = (SampleDataBundle)event.getSelectedItem().data;
+        				if(!key.getSampleManager().getSample().getId().equals(manager.getSample().getId())){
+    						fetchById(key.getSampleManager().getSample().getId());
         				}
         				auxDataTab.setManager(manager);
         				auxDataTab.draw();
@@ -1094,12 +1245,12 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     		}
     		TreeDataItem note = new TreeDataItem();
     		note.leafType = "note";
-    		note.data = sm.getSample();
+    		note.data = sm.getBundle();
     		note.cells.add(new TableDataCell("Notes"));
     		sample.addItem(note);
     		TreeDataItem aux = new TreeDataItem();
     		aux.leafType = "auxdata";
-    		aux.data = sm.getSample();
+    		aux.data = sm.getBundle();
     		aux.cells.add(new TableDataCell("Aux Data"));
     		sample.addItem(aux);
     	}
@@ -1190,6 +1341,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
         try {
             manager = manager.fetchForUpdate();
+            historyUtility.setManager(manager);
             treeUtil.setManager(manager);
             nav.getQueryResult().set(nav.getSelection(), manager);
             setState(State.UPDATE);
@@ -1224,6 +1376,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 manager.validate();
                 manager.getSample().setStatusId(sampleLoggedInId);
                 manager = manager.update();
+                historyUtility.setManager(manager);
                 nav.getQueryResult().set(nav.getSelection(), manager);
                 setState(Screen.State.DISPLAY);
                 DataChangeEvent.fire(this);
@@ -1255,6 +1408,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             
             try {
                 manager = manager.abortUpdate();
+                historyUtility.setManager(manager);
                 nav.getQueryResult().set(nav.getSelection(), manager);
                 checkNode(atozTree.getData().get(nav.getSelection()));
                 setState(State.DISPLAY);
@@ -1276,11 +1430,13 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         	String domain = manager.getSample().getDomain();
             manager = SampleManager.getInstance();
             manager.getSample().setDomain(domain);
+            historyUtility.setManager(manager);
             setState(State.DEFAULT);
         }else if(!id.equals(manager.getSample().getId())){
             window.setBusy(consts.get("fetching"));
             try {
                manager = SampleManager.fetchWithItemsAnalyses(id);
+               historyUtility.setManager(manager);
             } catch (Exception e) {
                 e.printStackTrace();
                 setState(State.DEFAULT);
@@ -1444,9 +1600,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     }
 
 	public HandlerRegistration addActionHandler(ActionHandler handler) {
-		// TODO Auto-generated method stub
-		return null;
+		return addHandler(handler,ActionEvent.getType());
 	}
-
     
 }

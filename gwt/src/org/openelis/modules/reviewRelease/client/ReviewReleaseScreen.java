@@ -19,7 +19,10 @@ import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
@@ -30,6 +33,7 @@ import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.TabPanel;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
@@ -42,6 +46,7 @@ import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.modules.sample.client.AccessionNumberUtility;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
 import org.openelis.modules.sample.client.AuxDataTab;
@@ -49,14 +54,17 @@ import org.openelis.modules.sample.client.EnvironmentalTab;
 import org.openelis.modules.sample.client.PrivateWellTab;
 import org.openelis.modules.sample.client.QAEventsTab;
 import org.openelis.modules.sample.client.ResultTab;
+import org.openelis.modules.sample.client.SampleHistoryUtility;
 import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleNotesTab;
 import org.openelis.modules.sample.client.StorageTab;
+import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -64,7 +72,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class ReviewReleaseScreen extends Screen {
+public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
     
     private Integer                        analysisLoggedInId, analysisCancelledId,
     analysisReleasedId, analysisInPrep, sampleLoggedInId, sampleErrorStatusId,
@@ -90,6 +98,8 @@ public class ReviewReleaseScreen extends Screen {
     protected CalendarLookUp               collectedDate, receivedDate;
 	
 	private SecurityModule 				   security;
+    protected AccessionNumberUtility       accessionNumUtil;
+    protected SampleHistoryUtility         historyUtility;
 	
 	private ScreenNavigator 		       nav;
 	private SampleManager                  manager;
@@ -107,6 +117,13 @@ public class ReviewReleaseScreen extends Screen {
 	private AuxDataTab                     auxDataTab;
 	private ResultTab      				   testResultsTab;
 	private TableWidget                    atozTable;
+	
+    protected MenuItem                     historySample, historySampleEnvironmental,historySamplePrivateWell,
+    historySampleProject, historySampleOrganization, historySampleItem,
+    historyAnalysis, historyCurrentResult, historyStorage, historySampleQA,
+    historyAnalysisQA, historyAuxData;
+    
+    private ReviewReleaseScreen reviewScreen = this; 
 	
 	
     public ReviewReleaseScreen() throws Exception {
@@ -243,14 +260,14 @@ public class ReviewReleaseScreen extends Screen {
         releaseButton = (AppButton)def.getWidget("release");
         addScreenHandler(releaseButton, new ScreenEventHandler<Object>() {
         	public void onClick(ClickEvent event){
-
+        		release();
         	}
         	
         	public void onStateChange(StateChangeEvent<State> event) {
         		releaseButton.enable(event.getState() == State.DISPLAY);
         	}
         });
-        
+        /*
         reportButton = (AppButton)def.getWidget("report");
         addScreenHandler(reportButton, new ScreenEventHandler<Object>() {
         	public void onClick(ClickEvent event) {
@@ -261,6 +278,151 @@ public class ReviewReleaseScreen extends Screen {
         		reportButton.enable(event.getState() == State.DISPLAY);
         	}
         });
+        */
+        historyUtility = new SampleHistoryUtility(window){
+            public void historyCurrentResult() {
+              ActionEvent.fire(reviewScreen, ResultTab.Action.RESULT_HISTORY, null);
+            }  
+        };
+
+        historySample = (MenuItem)def.getWidget("historySample");
+        addScreenHandler(historySample, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySample();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historySample.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historySampleEnvironmental = (MenuItem)def.getWidget("historySampleEnvironmental");
+        addScreenHandler(historySampleEnvironmental, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySampleEnvironmental();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+            	if(manager.getSample().getDomain().equals(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG))
+            		historySampleEnvironmental.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            	else
+            		historySampleEnvironmental.enable(false);
+            }
+        });
+        
+        historySamplePrivateWell = (MenuItem)def.getWidget("historySamplePrivateWell");
+        addScreenHandler(historySamplePrivateWell, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySamplePrivateWell();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+            	if(manager.getSample().getDomain().equals(SampleManager.WELL_DOMAIN_FLAG))
+            		historySamplePrivateWell.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            	else
+            		historySamplePrivateWell.enable(false);
+            }
+        });
+        
+        historySampleProject = (MenuItem)def.getWidget("historySampleProject");
+        addScreenHandler(historySampleProject, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySampleProject();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historySampleProject.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historySampleOrganization = (MenuItem)def.getWidget("historySampleOrganization");
+        addScreenHandler(historySampleOrganization, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySampleOrganization();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historySampleOrganization.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historySampleItem = (MenuItem)def.getWidget("historySampleItem");
+        addScreenHandler(historySampleItem, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySampleItem();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historySampleItem.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historyAnalysis = (MenuItem)def.getWidget("historyAnalysis");
+        addScreenHandler(historyAnalysis, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historyAnalysis();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historyAnalysis.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historyCurrentResult = (MenuItem)def.getWidget("historyCurrentResult");
+        addScreenHandler(historyCurrentResult, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historyCurrentResult();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historyCurrentResult.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historyStorage = (MenuItem)def.getWidget("historyStorage");
+        addScreenHandler(historyStorage, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historyStorage();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historyStorage.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historySampleQA = (MenuItem)def.getWidget("historySampleQA");
+        addScreenHandler(historySampleQA, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySampleQA();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historySampleQA.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historyAnalysisQA = (MenuItem)def.getWidget("historyAnalysisQA");
+        addScreenHandler(historyAnalysisQA, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historyAnalysisQA();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historyAnalysisQA.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        
+        historyAuxData = (MenuItem)def.getWidget("historyAuxData");
+        addScreenHandler(historyAuxData, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historyAuxData();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historyAuxData.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        }); 
               
         
         nav = new ScreenNavigator(def) {
@@ -307,8 +469,9 @@ public class ReviewReleaseScreen extends Screen {
 						analysis.cells.add(new TableDataCell(vo.getAccession()));
 						analysis.cells.add(new TableDataCell(vo.getTest()));
 						analysis.cells.add(new TableDataCell(vo.getMethod()));
-						analysis.cells.add(new TableDataCell(DictionaryCache.getEntryFromId(vo.getAnalysisStatus()).getEntry()));
-						analysis.cells.add(new TableDataCell(DictionaryCache.getEntryFromId(vo.getSpecimenStatus()).getEntry()));
+						analysis.cells.add(new TableDataCell(vo.getAnalysisStatus()));
+						analysis.cells.add(new TableDataCell(vo.getSpecimenStatus()));
+						analysis.data = vo;
 						model.add(analysis);	
 					}
 					
@@ -546,7 +709,7 @@ public class ReviewReleaseScreen extends Screen {
 
         try {
             manager = manager.fetchForUpdate();
-
+            historyUtility.setManager(manager);
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
             window.clearStatus();
@@ -577,7 +740,7 @@ public class ReviewReleaseScreen extends Screen {
                 manager.validate();
                 manager.getSample().setStatusId(sampleLoggedInId);
                 manager = manager.add();
-
+                historyUtility.setManager(manager);
                 setState(Screen.State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
@@ -596,7 +759,7 @@ public class ReviewReleaseScreen extends Screen {
                 manager.validate();
                 manager.getSample().setStatusId(sampleLoggedInId);
                 manager = manager.update();
-
+                historyUtility.setManager(manager);
                 setState(Screen.State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
@@ -619,6 +782,7 @@ public class ReviewReleaseScreen extends Screen {
         	String domain = manager.getSample().getDomain();
             manager = SampleManager.getInstance();
             manager.getSample().setDomain(domain);
+            historyUtility.setManager(manager);
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
             window.setDone(consts.get("queryAborted"));
@@ -648,10 +812,12 @@ public class ReviewReleaseScreen extends Screen {
             manager = SampleManager.getInstance();
             manager.getSample().setDomain(domain);
             setState(State.DEFAULT);
+            historyUtility.setManager(manager);
         }else if(manager == null || !manager.getSample().getId().equals(vo.getSampleId())){
             window.setBusy(consts.get("fetching"));
             try {
                manager = SampleManager.fetchWithItemsAnalyses(vo.getSampleId());
+               historyUtility.setManager(manager);
                dataBundle = getAnalysisBundle(vo.getAnalysisId());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -758,6 +924,15 @@ public class ReviewReleaseScreen extends Screen {
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
         ((Dropdown<Integer>)def.getWidget(SampleMeta.getStatusId())).setModel(model);
+        ((Dropdown<Integer>)atozTable.getColumnWidget(SampleMeta.getStatusId())).setModel(model);
+        
+        // analysis status dropdown
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("analysis_status"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+
+        ((Dropdown<Integer>)atozTable.getColumnWidget(SampleMeta.getAnalysisStatusId())).setModel(model);
         
     }
     
@@ -859,4 +1034,24 @@ public class ReviewReleaseScreen extends Screen {
 			}
 		});
 	}
+
+	public HandlerRegistration addActionHandler(ActionHandler handler) {
+		return addHandler(handler,ActionEvent.getType());
+	}
+	
+	private void release() {
+		ArrayList<TableDataRow> rows = atozTable.getSelections();
+		for(int i = 0; i < rows.size(); i++) {
+			try {
+				SampleDataBundle bundle = getAnalysisBundle(((ReviewReleaseVO)rows.get(i).data).getAnalysisId());
+				bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).releaseAnalyssisAt(bundle.getAnalysisIndex());
+			}catch(Exception e) {
+				if(e instanceof ValidationErrorsList)
+					showErrors((ValidationErrorsList)e);
+				else
+					Window.alert(e.getMessage());
+			}
+		}
+	}
+	
 }
