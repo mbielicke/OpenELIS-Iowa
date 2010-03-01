@@ -73,6 +73,7 @@ UIRF Software License are applicable instead of those above.
                 </text>
               </HorizontalPanel>
             </appButton>
+            <!-- 
             <appButton action="report" key="report" style="ButtonPanelButton">
               <HorizontalPanel>
                 <AbsolutePanel height="20" style="finalReportButton" width="20" />
@@ -81,12 +82,42 @@ UIRF Software License are applicable instead of those above.
                 </text>
               </HorizontalPanel>
             </appButton>
+            -->
             <xsl:call-template name="buttonPanelDivider" />
             <xsl:call-template name="commitButton" />
             <xsl:call-template name="abortButton" />
+            <xsl:call-template name="buttonPanelDivider" />
+            <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
+              <menuItem>
+                <menuDisplay>
+                  <appButton style="ButtonPanelButton" action="option">
+                    <HorizontalPanel>
+                      <text>
+                        <xsl:value-of select='resource:getString($constants,"options")' />
+                      </text>
+                      <AbsolutePanel width="20px" height="20px" style="OptionsButtonImage" />
+                    </HorizontalPanel>
+                  </appButton>
+                </menuDisplay>
+                 <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                  <menuItem key="historySample" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySample')}" />
+                  <menuItem key="historySampleEnvironmental" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleEnvironmental')}" />
+                  <menuItem key="historySamplePrivateWell" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySamplePrivateWell')}" />
+                  <menuItem key="historySampleProject" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleProject')}" />
+                  <menuItem key="historySampleOrganization" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleOrganization')}" />
+                  <menuItem key="historySampleItem" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleItem')}" />
+                  <menuItem key="historyAnalysis" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyAnalysis')}" />
+                  <menuItem key="historyCurrentResult" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyCurrentResult')}" />
+			      <menuItem key="historyStorage" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyStorage')}" />
+                  <menuItem key="historySampleQA" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleQA')}" />
+                  <menuItem key="historyAnalysisQA" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyAnalysisQA')}" />
+                  <menuItem key="historyAuxData" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyAuxData')}" />
+                </menuPanel>
+              </menuItem>
+            </menuPanel>
           </HorizontalPanel>
         </AbsolutePanel>
-        <table key="atozTable" maxRows="10" showScroll="ALWAYS" width="auto">
+        <table key="atozTable" maxRows="10" showScroll="ALWAYS" width="auto" multiSelect="true">
           <col header="Accession #" key="{meta:getAccessionNumber()}" width="115">
             <textbox field="Integer" />
           </col>
@@ -96,11 +127,11 @@ UIRF Software License are applicable instead of those above.
           <col header="Method" key="{meta:getAnalysisMethodName()}" width="192">
             <textbox field="String" />
           </col>
-          <col header="Analysis Status" width="100">
-            <label />
+          <col header="Analysis Status" width="100" key="{meta:getAnalysisStatusId()}">
+            <dropdown field="Integer" width="100"/>
           </col>
-          <col header="Specimen Status" width="100">
-            <label />
+          <col header="Specimen Status" width="100" key="{meta:getStatusId()}">
+            <dropdown field="Integer" width="100"/>
           </col>
         </table>
         <TabPanel height="274" key="SampleContent" width="715">
