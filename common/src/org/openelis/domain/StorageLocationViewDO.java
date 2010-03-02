@@ -6,19 +6,16 @@ public class StorageLocationViewDO extends StorageLocationDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String          storageUnitDescription, parentStorageLocationName;
+    protected String          storageUnitDescription;
+
 
     public StorageLocationViewDO() {
-
     }
 
     public StorageLocationViewDO(Integer id, Integer sortOrder, String name, String location,
                                  Integer parentStorageLocationId, Integer storageUnitId,
-                                 String isAvailable,String parentStorageLocationName,
-                                 String storageUnitDescription) {
+                                 String isAvailable, String storageUnitDescription) {
         super(id, sortOrder, name, location, parentStorageLocationId, storageUnitId, isAvailable);
-
-        setParentStorageLocationName(parentStorageLocationName);
         setStorageUnitDescription(storageUnitDescription);
     }
 
@@ -29,13 +26,4 @@ public class StorageLocationViewDO extends StorageLocationDO {
     public void setStorageUnitDescription(String storageUnitDescription) {
         this.storageUnitDescription = DataBaseUtil.trim(storageUnitDescription);
     }
-
-    public String getParentStorageLocationName() {
-        return parentStorageLocationName;
-    }
-
-    public void setParentStorageLocationName(String parentStorageLocationName) {
-        this.parentStorageLocationName = DataBaseUtil.trim(parentStorageLocationName);
-    }
-
 }

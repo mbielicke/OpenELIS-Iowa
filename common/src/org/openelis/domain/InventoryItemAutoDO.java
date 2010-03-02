@@ -105,7 +105,7 @@ public class InventoryItemAutoDO implements RPC {
         setName(name);
         setStore(store);
         setLocationId(locationId);
-        setLocation(DataBaseUtil.formatStorageLocation(childStorageLocName, childStorageLocLocation, childStorageUnit, parentStorageLocName));
+//        setLocation(DataBaseUtil.formatStorageLocation(childStorageLocName, childStorageLocLocation, childStorageUnit, parentStorageLocName));
         setLotNum(lotNum);
         setExpDate(expDate);
         setQuantityOnHand(quantityOnHand);
@@ -134,7 +134,7 @@ public class InventoryItemAutoDO implements RPC {
         setDescription(description);
         setStore(store);
         setLocationId(locationId);
-        setLocation(DataBaseUtil.formatStorageLocation(childStorageLocName, childStorageLocLocation, childStorageUnit, parentStorageLocName));
+//        setLocation(DataBaseUtil.formatStorageLocation(childStorageLocName, childStorageLocLocation, childStorageUnit, parentStorageLocName));
         setLotNum(lotNum);
         setExpDate(expDate);
         setQuantityOnHand(quantityOnHand);

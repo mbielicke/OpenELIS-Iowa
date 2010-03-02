@@ -30,13 +30,14 @@ import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 
-public class OrderManager implements RPC, HasNotesInt {
+public class OrderManager implements RPC {
 
     private static final long                    serialVersionUID = 1L;
 
     protected OrderViewDO                        order;
     protected OrderItemManager                   items;
-    protected NoteManager                        notes;
+    protected OrderFillManager                   fills;
+    protected NoteManager                        shipNotes, customerNotes;
 
     public static final String   TYPE_INTERNAL = "I",
                                  TYPE_VENDOR   = "V",
@@ -51,7 +52,8 @@ public class OrderManager implements RPC, HasNotesInt {
     protected OrderManager() {
         order = null;
         items = null;
-        notes = null;
+        fills = null;
+        shipNotes = null;
     }
 
     /**
@@ -84,8 +86,8 @@ public class OrderManager implements RPC, HasNotesInt {
         return proxy().fetchWithItems(id);
     }
 
-    public static OrderManager fetchWithReceipts(Integer id) throws Exception {
-        return proxy().fetchWithReceipts(id);
+    public static OrderManager fetchWithFills(Integer id) throws Exception {
+        return proxy().fetchWithFills(id);
     }
 
     public static OrderManager fetchWithNotes(Integer id) throws Exception {
@@ -132,23 +134,59 @@ public class OrderManager implements RPC, HasNotesInt {
         return items;
     }
 
-    public NoteManager getNotes() throws Exception {
-        if (notes == null) {
+    public OrderFillManager getFills() throws Exception {
+        if (fills == null) {
             if (order.getId() != null) {
                 try {
-                    notes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.ORDER, order.getId(), false);
+                    fills = OrderFillManager.fetchByOrderId(order.getId());
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
                     throw e;
                 }
             }
-            if (notes == null){
-                notes = NoteManager.getInstance();
-                notes.setIsExternal(false);
+            if (fills == null)
+                fills = OrderFillManager.getInstance();
+        }
+        return fills;
+    }
+
+    public NoteManager getShippingNotes() throws Exception {
+        if (shipNotes == null) {
+            if (order.getId() != null) {
+                try {
+                    shipNotes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.ORDER, order.getId(), false);
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+            if (shipNotes == null){
+                shipNotes = NoteManager.getInstance();
+                shipNotes.setIsExternal(false);
             }
         }
-        return notes;
+        return shipNotes;
+    }
+
+    public NoteManager getCustomerNotes() throws Exception {
+        if (customerNotes == null) {
+            if (order.getId() != null) {
+                try {
+                    customerNotes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.ORDER, order.getId(), true);
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+            if (customerNotes == null){
+                customerNotes = NoteManager.getInstance();
+                customerNotes.setIsExternal(true);
+            }
+        }
+        return customerNotes;
     }
 
     private static OrderManagerProxy proxy() {

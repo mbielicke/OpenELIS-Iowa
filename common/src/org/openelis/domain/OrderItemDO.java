@@ -50,6 +50,7 @@ public class OrderItemDO extends DataObject {
         setQuantity(quantity);
         setCatalogNumber(catalogNumber);
         setUnitCost(unitCost);
+        _changed = false;
     }
 
     public Integer getId() {
@@ -58,6 +59,7 @@ public class OrderItemDO extends DataObject {
 
     public void setId(Integer id) {
         this.id = id;
+        _changed = true;
     }
 
     public Integer getOrderId() {
@@ -66,6 +68,7 @@ public class OrderItemDO extends DataObject {
 
     public void setOrderId(Integer orderId) {
         this.orderId = orderId;
+        _changed = true;
     }
 
     public Integer getInventoryItemId() {
@@ -74,6 +77,7 @@ public class OrderItemDO extends DataObject {
 
     public void setInventoryItemId(Integer inventoryItemId) {
         this.inventoryItemId = inventoryItemId;
+        _changed = true;
     }
 
     public Integer getQuantity() {
@@ -82,6 +86,7 @@ public class OrderItemDO extends DataObject {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+        _changed = true;
     }
 
     public String getCatalogNumber() {
@@ -90,6 +95,7 @@ public class OrderItemDO extends DataObject {
 
     public void setCatalogNumber(String catalogNumber) {
         this.catalogNumber = DataBaseUtil.trim(catalogNumber);
+        _changed = true;
     }
 
     public Double getUnitCost() {
@@ -98,5 +104,6 @@ public class OrderItemDO extends DataObject {
 
     public void setUnitCost(Double unitCost) {
         this.unitCost = unitCost;
+        _changed = true;
     }
 }

@@ -331,30 +331,4 @@ public class DataBaseUtil {
             list.add(new DatabaseException(e.getMessage()));
         }
     }
-
-    //
-    // move this to somewhere else
-    //
-    public static String formatStorageLocation(String storageName,
-                                               String StorageLocation,
-                                               String storageUnitDesc) {
-        return formatStorageLocation(storageName, StorageLocation, storageUnitDesc, null);
-    }
-
-    public static String formatStorageLocation(String storageName,
-                                               String StorageLocation,
-                                               String storageUnitDesc,
-                                               String parentStorageLocationName) {
-        String returnString = "";
-
-        if (parentStorageLocationName != null) {
-            returnString += parentStorageLocationName.trim() + ", " + storageUnitDesc.trim() +
-                            ", " + StorageLocation.trim();
-        } else {
-            returnString += storageName.trim() + ", " + storageUnitDesc.trim() + ", " +
-                            StorageLocation.trim();
-        }
-
-        return returnString;
-    }
 }

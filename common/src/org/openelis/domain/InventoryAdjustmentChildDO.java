@@ -77,7 +77,7 @@ public class InventoryAdjustmentChildDO implements RPC {
         setLocationId(locationId);
         setInventoryItemId(inventoryItemId);
         setInventoryItem(inventoryItem);
-        setStorageLocation(DataBaseUtil.formatStorageLocation(storageLocName, storageLocLocation, storageUnitDescription));
+//        setStorageLocation(DataBaseUtil.formatStorageLocation(storageLocName, storageLocLocation, storageUnitDescription));
         setPhysicalCount(physicalCount);
         setAdjustedQuantity(adjustedQuantity);
     }
