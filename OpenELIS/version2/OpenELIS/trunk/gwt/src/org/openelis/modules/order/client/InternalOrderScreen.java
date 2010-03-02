@@ -31,6 +31,8 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.InventoryItemViewDO;
+import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
@@ -56,22 +58,22 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.QueryFieldUtil;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TabPanel;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.meta.OrderMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
-import org.openelis.modules.note.client.NotesTab;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -86,13 +88,13 @@ public class InternalOrderScreen extends Screen {
     private ScreenNavigator nav;
 
     private ItemTab         itemTab;
-    //private ReceiptTab      receiptTab;
-    private NotesTab        noteTab;
+    private FillTab         fillTab;
+    private ShipNoteTab     shipNoteTab;
     private Tabs            tab;
 
     private AppButton       queryButton, previousButton, nextButton, addButton, updateButton,
                             commitButton, abortButton;
-
+    private MenuItem        orderHistory, itemHistory;
     private TextBox         id, neededInDays, requestedBy;
     private CalendarLookUp  orderedDate;
     private Dropdown<Integer> statusId, costCenterId;
@@ -100,7 +102,7 @@ public class InternalOrderScreen extends Screen {
     private Integer         status_pending;
 
     private enum Tabs {
-        ITEM, RECEIPT, NOTE
+        ITEM, FILL, SHIPNOTE
     };
 
     public InternalOrderScreen() throws Exception {
@@ -124,9 +126,11 @@ public class InternalOrderScreen extends Screen {
         manager = OrderManager.getInstance();
 
         try {
-            DictionaryCache.preloadByCategorySystemNames("order_status", "cost_centers");
+            DictionaryCache.preloadByCategorySystemNames("order_status", "cost_centers",
+                                                         "inventory_store", "inventory_unit");
         } catch (Exception e) {
             Window.alert("OrderSreen: missing dictionary entry; " + e.getMessage());
+            window.close();
         }
         
         initialize();
@@ -224,7 +228,29 @@ public class InternalOrderScreen extends Screen {
                 abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
             }
         });
+
+        orderHistory = (MenuItem)def.getWidget("orderHistory");
+        addScreenHandler(orderHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                orderHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                orderHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
         
+        itemHistory = (MenuItem)def.getWidget("itemHistory");
+        addScreenHandler(itemHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                itemHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                itemHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+
         //
         // screen fields
         //
@@ -328,11 +354,13 @@ public class InternalOrderScreen extends Screen {
         // tabs
         //
         tabPanel = (TabPanel)def.getWidget("tabPanel");
-        tabPanel.addSelectionHandler(new SelectionHandler<Integer>() {
-            public void onSelection(SelectionEvent<Integer> event) {
+        tabPanel.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+            public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
                 int i;
 
-                i = event.getSelectedItem().intValue();
+                // tab screen order should be the same as enum or this will
+                // not work
+                i = event.getItem().intValue();
                 tab = Tabs.values()[i];
 
                 window.setBusy();
@@ -353,30 +381,30 @@ public class InternalOrderScreen extends Screen {
                 itemTab.setState(event.getState());
             }
         });
-/*
-        receiptTab = new ReceiptTab(def, window);
-        addScreenHandler(receiptTab, new ScreenEventHandler<Object>() {
+
+        fillTab = new FillTab(def, window);
+        addScreenHandler(fillTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                receiptTab.setManager(manager);
-                if (tab == Tabs.RECEIPT)
+                fillTab.setManager(manager);
+                if (tab == Tabs.FILL)
                     drawTabs();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                receiptTab.setState(event.getState());
+                fillTab.setState(event.getState());
             }
         });
-*/
-        noteTab = new NotesTab(def, window, "notesPanel", "standardNoteButton");
-        addScreenHandler(noteTab, new ScreenEventHandler<Object>() {
+
+        shipNoteTab = new ShipNoteTab(def, window, "notesPanel", "standardNoteButton");
+        addScreenHandler(shipNoteTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                noteTab.setManager(manager);
-                if (tab == Tabs.NOTE)
+                shipNoteTab.setManager(manager);
+                if (tab == Tabs.SHIPNOTE)
                     drawTabs();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                noteTab.setState(event.getState());
+                shipNoteTab.setState(event.getState());
             }
         });
 
@@ -384,8 +412,16 @@ public class InternalOrderScreen extends Screen {
         // left hand navigation panel
         //
         nav = new ScreenNavigator(def) {
-            public void executeQuery(final Query query) {
+            public void executeQuery(Query query) {
+                QueryData field;
+
                 window.setBusy(consts.get("querying"));
+                // this screen should only query for internal orders
+                field = new QueryData();
+                field.key = OrderMeta.getType();
+                field.query = OrderManager.TYPE_INTERNAL;
+                field.type = QueryData.Type.STRING;
+                query.setFields(field);
 
                 service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
@@ -501,8 +537,8 @@ public class InternalOrderScreen extends Screen {
 
         // clear all the tabs
         itemTab.draw();
-        //receiptTab.draw();
-        noteTab.draw();
+        fillTab.draw();
+        shipNoteTab.draw();
         
         setFocus(id);
         window.setDone(consts.get("enterFieldsToQuery"));
@@ -546,10 +582,14 @@ public class InternalOrderScreen extends Screen {
 
         try {
             manager = manager.fetchForUpdate();
-
-            setState(State.UPDATE);
-            DataChangeEvent.fire(this);
-            setFocus(neededInDays);
+            if (! status_pending.equals(manager.getOrder().getStatusId())) {
+                Window.alert(consts.get("orderStatusNotPendingForUpdate"));
+                manager = manager.abortUpdate();
+            } else {
+                setState(State.UPDATE);
+                DataChangeEvent.fire(this);
+                setFocus(neededInDays);
+            }
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
@@ -643,6 +683,30 @@ public class InternalOrderScreen extends Screen {
                                   ReferenceTable.ORDER, hist);                
     }
     
+    protected void itemHistory() {
+        int i, count;
+        IdNameVO refVoList[];
+        OrderItemManager man;
+        OrderItemViewDO data;
+
+        try {
+            man = manager.getItems();
+            count = man.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = man.getItemAt(i);
+                refVoList[i] = new IdNameVO(data.getId(), data.getInventoryItemName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("orderItemHistory"),
+                                  ReferenceTable.ORDER_ITEM, refVoList);
+    }
+
     protected boolean fetchById(Integer id) {
         if (id == null) {
             manager = OrderManager.getInstance();
@@ -654,10 +718,10 @@ public class InternalOrderScreen extends Screen {
                     case ITEM:
                         manager = OrderManager.fetchWithItems(id);
                         break;
-                    case RECEIPT:
-                        manager = OrderManager.fetchWithReceipts(id);
+                    case FILL:
+                        manager = OrderManager.fetchWithFills(id);
                         break;
-                    case NOTE:
+                    case SHIPNOTE:
                         manager = OrderManager.fetchWithNotes(id);
                         break;
                 }
@@ -684,11 +748,11 @@ public class InternalOrderScreen extends Screen {
             case ITEM:
                 itemTab.draw();
                 break;
-            case RECEIPT:
-                //receiptTab.draw();
+            case FILL:
+                fillTab.draw();
                 break;
-            case NOTE:
-                noteTab.draw();
+            case SHIPNOTE:
+                shipNoteTab.draw();
                 break;
         }
     }

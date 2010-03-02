@@ -98,7 +98,7 @@ public class OrganizationScreen extends Screen {
 
     private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
                                   commitButton, abortButton;
-    protected MenuItem            orgHistory, orgContactHistory, orgParameterHistory;
+    private MenuItem              orgHistory, orgContactHistory, orgParameterHistory;
     private TextBox               id, name, multipleUnit, city, zipCode, streetAddress;
     private CheckBox              isActive;
     private Dropdown<String>      stateCode, country;
@@ -138,6 +138,7 @@ public class OrganizationScreen extends Screen {
                                                          "contact_type", "parameter_type");
         } catch (Exception e) {
             Window.alert("OrganizationScreen: missing dictionary entry; " + e.getMessage());
+            window.close();
         }
         
         initialize();

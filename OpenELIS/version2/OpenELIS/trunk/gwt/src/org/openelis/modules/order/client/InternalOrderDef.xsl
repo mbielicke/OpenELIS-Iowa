@@ -141,7 +141,8 @@ UIRF Software License are applicable instead of those above.
                     </appButton>
                   </menuDisplay>
                   <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                    <xsl:call-template name="historyMenuItem" />
+                    <menuItem key="orderHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'orderHistory')}" />
+                    <menuItem key="itemHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'orderItemHistory')}" />
                   </menuPanel>
                 </menuItem>
               </menuPanel>
@@ -197,7 +198,7 @@ UIRF Software License are applicable instead of those above.
               <tab key="itemTab" text="{resource:getString($constants,'items')}">
                 <VerticalPanel padding="0" spacing="0">
                   <table key="itemTable" width="auto" maxRows="10" showScroll="ALWAYS">
-                    <col key="{meta:getOrderItemQuantity()}" width="65" header="{resource:getString($constants,'quantity')}">
+                    <col key="{meta:getOrderItemQuantity()}" align="right" width="65" header="{resource:getString($constants,'quantity')}">
                       <textbox field="Integer" required="true" />
                     </col>
                     <col key="{meta:getOrderItemInventoryItemName()}" width="275" header="{resource:getString($constants,'inventoryItem')}">
@@ -238,16 +239,16 @@ UIRF Software License are applicable instead of those above.
 
 <!-- TAB 2 (receipts) -->
 
-              <tab key="receiptTab" text="{resource:getString($constants,'filled')}">
+              <tab key="fillTab" text="{resource:getString($constants,'filled')}">
                 <VerticalPanel padding="0" spacing="0">
-                  <table key="receiptTable" width="auto" maxRows="10" showScroll="ALWAYS">
+                  <table key="fillTable" width="auto" maxRows="10" showScroll="ALWAYS">
                     <col key="" width="150" header="{resource:getString($constants,'inventoryItem')}">
                       <label />
                     </col>
                     <col key="" width="180" header="{resource:getString($constants,'location')}">
                       <label />
                     </col>
-                    <col key="" width="65" header="{resource:getString($constants,'quantity')}">
+                    <col key="" width="65" align="right" header="{resource:getString($constants,'quantity')}">
                       <label />
                     </col>
                     <col key="" width="85" header="{resource:getString($constants,'lotNum')}">

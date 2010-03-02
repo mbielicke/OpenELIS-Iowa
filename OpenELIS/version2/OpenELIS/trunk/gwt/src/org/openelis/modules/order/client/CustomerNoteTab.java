@@ -23,10 +23,40 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.inventoryItem.client;
 
+package org.openelis.modules.order.client;
+
+import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.screen.ScreenDefInt;
+import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.manager.OrderManager;
+import org.openelis.modules.note.client.NotesTab;
 
-public interface InventoryItemDef extends ScreenDefInt {
+import com.google.gwt.user.client.Window;
 
+public class CustomerNoteTab extends NotesTab {
+
+    protected OrderManager parentManager;
+    
+    public CustomerNoteTab(ScreenDefInt def, ScreenWindow window, String notesPanelKey,
+                        String editButtonKey) {
+        super(def, window, notesPanelKey, editButtonKey);
+    }
+
+    public void setManager(OrderManager parentManager) {
+        this.parentManager = parentManager;
+        loaded = false;
+    }
+
+    public void draw() {
+        if (parentManager != null && !loaded) {
+            try {
+                manager = parentManager.getCustomerNotes();
+                DataChangeEvent.fire(this);
+                loaded = true;
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+            }
+        }
+    }
 }
