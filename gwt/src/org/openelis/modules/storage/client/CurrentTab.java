@@ -366,6 +366,7 @@ public class CurrentTab extends Screen {
                 }
             });
         }
+        window.clearStatus();
         modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
         modal.setName(consts.get("storageLocationSelection"));
         modal.setContent(storageLocationLookup);
