@@ -145,17 +145,18 @@ public class WorksheetCreationScreen extends Screen {
      * command.
      */
     private void postConstructor() {
-        analysisItems    = new ArrayList<TableDataRow>();
-        isSaved          = true;
-        isTemplateLoaded = false;
-        manager          = WorksheetManager.getInstance();
-        qcErrors         = new ValidationErrorsList();
-        qcLastRunList    = new ArrayList<TableDataRow>();
-        qcLastBothList   = new ArrayList<TableDataRow>();
-        qcStartIndex     = 0;
-        tempId           = -1;
-        testIds          = new ArrayList<Integer>();
-        wasExitCalled    = false;
+        analysisItems      = new ArrayList<TableDataRow>();
+        isSaved            = true;
+        isTemplateLoaded   = false;
+        manager            = WorksheetManager.getInstance();
+        qcErrors           = new ValidationErrorsList();
+        qcLastRunList      = new ArrayList<TableDataRow>();
+        qcLastBothList     = new ArrayList<TableDataRow>();
+        qcStartIndex       = 0;
+        tempId             = -1;
+        testIds            = new ArrayList<Integer>();
+        testWorksheetItems = new ArrayList<TableDataRow>();
+        wasExitCalled      = false;
 
         try {
             DictionaryCache.preloadByCategorySystemNames("analysis_status",
@@ -476,14 +477,7 @@ public class WorksheetCreationScreen extends Screen {
                                 
                                 if (testIds.size() > 1) {
                                     Window.alert(consts.get("multipleTestsOnWorksheet"));
-                                    twManager = null;
-                                    testWorksheetDO = new TestWorksheetDO();
-                                    testWorksheetDO.setFormatId(formatTotal);
-                                    testWorksheetDO.setBatchCapacity(500);
-                                    testWorksheetDO.setTotalCapacity(500);
-                                    testWorksheetItems.clear();
-                                    buildQCWorksheet();
-                                    isTemplateLoaded = false;
+                                    clearQCTemplate();
                                 } else if (!isTemplateLoaded) {
                                     loadQCTemplate();
                                 }
@@ -630,25 +624,19 @@ public class WorksheetCreationScreen extends Screen {
         try {
             if (twManager == null) {
                 twManager = TestWorksheetManager.fetchByTestId(testIds.get(0));
-                if (twManager != null) {
-                    testWorksheetDO = twManager.getWorksheet();
-                } else {
+                //
+                // If there is no worksheet definition, an empty manager is returned
+                //
+                testWorksheetDO = twManager.getWorksheet();
+                if (testWorksheetDO.getId() == null) {
                     //
                     // If there is no worksheet definition for the test, load
                     // default definition and clear items list
                     //
-                    testWorksheetDO = new TestWorksheetDO();
-                    testWorksheetDO.setFormatId(formatTotal);
-                    testWorksheetDO.setBatchCapacity(500);
-                    testWorksheetDO.setTotalCapacity(500);
-                    testWorksheetItems.clear();
-                    buildQCWorksheet();
-                    isTemplateLoaded = false;
+                    clearQCTemplate();
                     return;
                 }                
             }
-            if (testWorksheetItems == null)
-                testWorksheetItems = new ArrayList<TableDataRow>();
 
             //
             // Only clear the error list if this is our first time through
@@ -1146,5 +1134,15 @@ public class WorksheetCreationScreen extends Screen {
    
    private int getNextTempId() {
        return --tempId;
+   }
+   
+   private void clearQCTemplate() {
+       twManager = null;
+       testWorksheetDO.setFormatId(formatTotal);
+       testWorksheetDO.setBatchCapacity(500);
+       testWorksheetDO.setTotalCapacity(500);
+       testWorksheetItems.clear();
+       buildQCWorksheet();
+       isTemplateLoaded = false;
    }
 }
