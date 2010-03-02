@@ -56,12 +56,11 @@ public class OrderManagerProxy {
         return m;
     }
 
-    public OrderManager fetchWithReceipts(Integer id) throws Exception {
+    public OrderManager fetchWithFills(Integer id) throws Exception {
         OrderManager m;
 
         m = fetchById(id);
-// TODO
-//        m.getReceipts();
+        m.getFills();
 
         return m;
     }
@@ -70,7 +69,8 @@ public class OrderManagerProxy {
         OrderManager m;
 
         m = fetchById(id);
-        m.getNotes();
+        m.getShippingNotes();
+        m.getCustomerNotes();
 
         return m;
     }
@@ -85,10 +85,10 @@ public class OrderManagerProxy {
             man.getItems().setOrderId(id);
             man.getItems().add();
         }
-        if (man.notes != null) {
-            man.getNotes().setReferenceId(id);
-            man.getNotes().setReferenceTableId(ReferenceTable.ORDER);
-            man.getNotes().add();
+        if (man.shipNotes != null) {
+            man.getShippingNotes().setReferenceId(id);
+            man.getShippingNotes().setReferenceTableId(ReferenceTable.ORDER);
+            man.getShippingNotes().add();
         }
 
         return man;
@@ -104,10 +104,10 @@ public class OrderManagerProxy {
             man.getItems().setOrderId(id);
             man.getItems().update();
         }
-        if (man.notes != null) {
-            man.getNotes().setReferenceId(id);
-            man.getNotes().setReferenceTableId(ReferenceTable.ORDER);
-            man.getNotes().update();
+        if (man.shipNotes != null) {
+            man.getShippingNotes().setReferenceId(id);
+            man.getShippingNotes().setReferenceTableId(ReferenceTable.ORDER);
+            man.getShippingNotes().update();
         }
 
         return man;
