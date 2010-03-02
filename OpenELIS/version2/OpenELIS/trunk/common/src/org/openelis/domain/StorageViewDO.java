@@ -19,7 +19,7 @@ public class StorageViewDO extends StorageDO {
       
         super(id, referenceId, referenceTableId, storageLocationId, checkin, checkout, systemUserId);
       
-        setStorageLocation(DataBaseUtil.formatStorageLocation(storageLocName, StorageLocLocation, unitDesc, parentLocName));        
+//        setStorageLocation(DataBaseUtil.formatStorageLocation(storageLocName, StorageLocLocation, unitDesc, parentLocName));        
     }
     
     public String getStorageLocation() {

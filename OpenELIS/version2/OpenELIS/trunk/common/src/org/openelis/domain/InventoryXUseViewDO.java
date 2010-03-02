@@ -27,44 +27,54 @@ package org.openelis.domain;
 
 import java.util.Date;
 
+import org.openelis.gwt.common.Datetime;
 import org.openelis.utilcommon.DataBaseUtil;
 
 /**
- * The class extends inventory location DO and carries several commonly used
- * fields such as inventory item name and location name. The additional fields
- * are for read/display only and do not get committed to the database. Note:
- * isChanged will reflect any changes to read/display fields.
+ * The class extends the label DO and carries an additional scriptlet name
+ * field. This additional fields is for read/display only and does not get
+ * committed to the database. Note: isChanged will reflect any changes to
+ * read/display fields.
  */
 
-public class InventoryLocationViewDO extends InventoryLocationDO {
+public class InventoryXUseViewDO extends InventoryXUseDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String          inventoryItemName, inventoryLocationName, storageLocationName,
-                              storageLocationUnitDescription, storageLocationLocation;
+    protected String          storageLocationName, storageLocationUnitDescription,
+                              storageLocationLocation, inventoryItemName, lotNumber;
+    protected Datetime        expirationDate;
 
-    public InventoryLocationViewDO() {
+    public InventoryXUseViewDO() {
     }
 
-    public InventoryLocationViewDO(Integer id, Integer inventoryItemId, String lotNumber,
-                                   Integer storageLocationId, Integer quantityOnhand,
-                                   Date expirationDate, String inventoryItemName,
-                                   String storageLocationName,
-                                   String storageLocationUnitDescription,
-                                   String storageLocationLocation) {
-        super(id, inventoryItemId, lotNumber, storageLocationId, quantityOnhand, expirationDate);
-        setInventoryItemName(inventoryItemName);
+    public InventoryXUseViewDO(Integer id, Integer inventoryLocationId, Integer orderItemId,
+                               Integer quantity, String lotNumber, Date expirationDate,
+                               String storageLocationName, String storageLocationUnitDescription,
+                               String storageLocationLocation, String inventoryItemName) {
+        super(id, inventoryLocationId, orderItemId, quantity);
+        setLotNumber(lotNumber);
+        setExpirationDate(DataBaseUtil.toYD(expirationDate));
         setStorageLocationName(storageLocationName);
         setStorageLocationUnitDescription(storageLocationUnitDescription);
         setStorageLocationLocation(storageLocationLocation);
+        setInventoryItemName(inventoryItemName);
     }
 
-    public String getInventoryItemName() {
-        return inventoryItemName;
+    public String getLotNumber() {
+        return lotNumber;
     }
 
-    public void setInventoryItemName(String inventoryItemName) {
-        this.inventoryItemName = DataBaseUtil.trim(inventoryItemName);
+    public void setLotNumber(String lotNumber) {
+        this.lotNumber = DataBaseUtil.trim(lotNumber);
+    }
+
+    public Datetime getExpirationDate() {
+        return expirationDate;
+    }
+
+    public void setExpirationDate(Datetime expirationDate) {
+        this.expirationDate = DataBaseUtil.toYD(expirationDate);
     }
 
     public String getStorageLocationName() {
@@ -89,5 +99,13 @@ public class InventoryLocationViewDO extends InventoryLocationDO {
 
     public void setStorageLocationLocation(String storageLocationLocation) {
         this.storageLocationLocation = DataBaseUtil.trim(storageLocationLocation);
+    }
+
+    public String getInventoryItemName() {
+        return inventoryItemName;
+    }
+
+    public void setInventoryItemName(String inventoryItemName) {
+        this.inventoryItemName = DataBaseUtil.trim(inventoryItemName);
     }
 }

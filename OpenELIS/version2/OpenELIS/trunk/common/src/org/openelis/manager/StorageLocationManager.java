@@ -105,6 +105,16 @@ public class StorageLocationManager implements RPC {
         proxy().validate(this);
     }
   
+    // Convenience methods
+
+    /**
+     * Returns a concatenated storage name for display purposes.  
+     */
+    public static String getLocationForDisplay(String name, String unit,
+                                               String location) {
+        return name + ", " + unit + " " + location;
+    }
+
     //
     // other managers
     //

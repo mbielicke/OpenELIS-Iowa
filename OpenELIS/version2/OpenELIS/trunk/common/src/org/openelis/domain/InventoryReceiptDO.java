@@ -199,7 +199,7 @@ public class InventoryReceiptDO implements RPC {
         setIsSerialMaintained(isSerialMaintained);
 
         setStorageLocationId(storageLocationId);
-        setStorageLocation(DataBaseUtil.formatStorageLocation(storageLocName, storageLocLocation, storageUnitDescription));
+//        setStorageLocation(DataBaseUtil.formatStorageLocation(storageLocName, storageLocLocation, storageUnitDescription));
         setExpDate(expDate);
         setLotNumber(lotNumber);
     }
@@ -263,14 +263,14 @@ public class InventoryReceiptDO implements RPC {
         setIsSerialMaintained(isSerialMaintained);
 
         setStorageLocationId(storageLocationId);
-        setStorageLocation(DataBaseUtil.formatStorageLocation(storageLocName, storageLocLocation, storageUnitDescription));
+//        setStorageLocation(DataBaseUtil.formatStorageLocation(storageLocName, storageLocLocation, storageUnitDescription));
         setExpDate(expDate);
         setLotNumber(lotNumber);
         setFromInventoryItemId(fromItemId);
         setFromInventoryItem(fromItem);
         setFromItemDesc(fromItemDesc);
         setFromStorageLocationId(fromStorageLocationId);
-        setFromStorageLocation(DataBaseUtil.formatStorageLocation(fromStorageLocName, fromStorageLocLocation, fromStorageUnitDescription));
+//        setFromStorageLocation(DataBaseUtil.formatStorageLocation(fromStorageLocName, fromStorageLocLocation, fromStorageUnitDescription));
         setFromQtyOnHand(fromQtyOnHand);
         setFromItemStore(fromStore);
         setFromitemDispensedUnits(fromDisUnits);
