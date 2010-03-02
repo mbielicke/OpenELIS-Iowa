@@ -136,7 +136,7 @@ public class StorageLocationLookupScreen extends Screen implements HasActionHand
         
         addScreenHandler(location, new ScreenEventHandler<ArrayList<TableDataRow>>() {            
             public void onDataChange(DataChangeEvent event) {
-                location.load(null);
+                location.setSelection(new TableDataRow(null,""));
             }
             
             public void onStateChange(StateChangeEvent<State> event) {
