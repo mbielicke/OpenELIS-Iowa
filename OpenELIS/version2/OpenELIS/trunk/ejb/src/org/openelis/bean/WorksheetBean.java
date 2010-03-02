@@ -138,7 +138,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
                 if (user != null)
                     worksheet.setSystemUser(user.getLoginName());
             }
-            
+/*            
             waList = new ArrayList<AnalysisViewDO>();
             analysisMap = new HashMap<String, AnalysisViewDO>();
             wManager = wManagerProxy.fetchById(worksheet.getId());
@@ -160,6 +160,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
             }
             
             worksheet.setTestList(waList);
+*/
         }
         
         list = DataBaseUtil.subList(list, first, max);
