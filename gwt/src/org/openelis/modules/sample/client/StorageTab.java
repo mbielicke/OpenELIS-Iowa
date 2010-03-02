@@ -57,6 +57,7 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
+import org.openelis.manager.StorageLocationManager;
 import org.openelis.manager.StorageManager;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -79,8 +80,7 @@ public class StorageTab extends Screen {
     private Integer                 analysisCancelledId, analysisReleasedId;
 
     public StorageTab(ScreenDefInt def, ScreenWindow window) {
-        service = new ScreenService(
-                                    "OpenELISServlet?service=org.openelis.modules.storage.server.StorageService");
+        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.storage.server.StorageService");
         setDef(def);
         setWindow(window);
 
@@ -191,6 +191,7 @@ public class StorageTab extends Screen {
 
         location.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
+                String locationName;
                 QueryFieldUtil parser;
                 TableDataRow row;
                 StorageLocationViewDO data;
@@ -209,12 +210,10 @@ public class StorageTab extends Screen {
                         row = new TableDataRow(1);
                         data = list.get(i);
 
+                        locationName = StorageLocationManager.getLocationForDisplay(data.getName(), data.getStorageUnitDescription(),
+                                                                                    data.getLocation());
                         row.key = data.getId();
-                        row.cells.get(0).value = 
-                            DataBaseUtil.formatStorageLocation(data.getName(), data.getLocation(), 
-                                                               data.getStorageUnitDescription(), 
-                                                               data.getParentStorageLocationName());
-
+                        row.cells.get(0).value = locationName; 
                         model.add(row);
                     }
                     location.showAutoMatches(model);

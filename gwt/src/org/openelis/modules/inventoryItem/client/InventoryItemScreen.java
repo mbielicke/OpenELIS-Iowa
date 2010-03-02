@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
-import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameStoreVO;
 import org.openelis.domain.IdNameVO;
@@ -52,7 +51,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -65,10 +63,10 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.InventoryComponentManager;
 import org.openelis.manager.InventoryItemManager;
 import org.openelis.manager.InventoryLocationManager;
+import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.InventoryItemMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
@@ -1021,6 +1019,7 @@ public class InventoryItemScreen extends Screen {
     
     protected void invLocationHistory() {
         int i, count;
+        String locationName;
         IdNameVO refVoList[];
         InventoryLocationManager man;
         InventoryLocationViewDO data;
@@ -1031,7 +1030,10 @@ public class InventoryItemScreen extends Screen {
             refVoList = new IdNameVO[count];
             for (i = 0; i < count; i++ ) {
                 data = man.getLocationAt(i);
-                refVoList[i] = new IdNameVO(data.getId(), data.getStorageLocationName());
+                locationName = StorageLocationManager.getLocationForDisplay(data.getStorageLocationName(),
+                                                                            data.getStorageLocationUnitDescription(),
+                                                                            data.getStorageLocationLocation());
+                refVoList[i] = new IdNameVO(data.getId(), locationName);
             }
         } catch (Exception e) {
             e.printStackTrace();

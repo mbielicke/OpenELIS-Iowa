@@ -27,47 +27,28 @@ package org.openelis.manager;
 
 import org.openelis.gwt.services.ScreenService;
 
-public class OrderManagerProxy {
-
+public class OrderFillManagerProxy {
     protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.order.server.OrderService";
     protected ScreenService       service;
 
-    public OrderManagerProxy() {
+    public OrderFillManagerProxy() {
         service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
 
-    public OrderManager fetchById(Integer id) throws Exception {
-        return service.call("fetchById", id);
+    public OrderFillManager fetchByOrderId(Integer orgId) throws Exception {
+        return service.call("fetchFillByOrderId", orgId);
     }
 
-    public OrderManager fetchWithItems(Integer id) throws Exception {
-        return service.call("fetchWithItems", id);
+    public OrderFillManager add(OrderFillManager man) throws Exception {
+        assert false : "not supported";
+        return null;
     }
 
-    public OrderManager fetchWithFills(Integer id) throws Exception {
-        return service.call("fetchWithFills", id);
+    public OrderFillManager update(OrderFillManager man) throws Exception {
+        assert false : "not supported";
+        return null;
     }
-
-    public OrderManager fetchWithNotes(Integer id) throws Exception {
-        return service.call("fetchWithNotes", id);
-    }
-
-    public OrderManager add(OrderManager man) throws Exception {
-        return service.call("add", man);
-    }
-
-    public OrderManager update(OrderManager man) throws Exception {
-        return service.call("update", man);
-    }
-
-    public OrderManager fetchForUpdate(Integer id) throws Exception {
-        return service.call("fetchForUpdate", id);
-    }
-
-    public OrderManager abortUpdate(Integer id) throws Exception {
-        return service.call("abortUpdate", id);
-    }
-
-    public void validate(OrderManager man) throws Exception {
+    
+    public void validate(OrderFillManager man) throws Exception {
     }
 }

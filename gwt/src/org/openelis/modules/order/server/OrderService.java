@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
+import org.openelis.manager.OrderFillManager;
 import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.persistence.EJBFactory;
@@ -57,9 +58,9 @@ public class OrderService {
         }
     }
 
-    public OrderManager fetchWithReceipts(Integer id) throws Exception {
+    public OrderManager fetchWithFills(Integer id) throws Exception {
         try {
-            return remoteManager().fetchWithReceipts(id);
+            return remoteManager().fetchWithFills(id);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
@@ -125,6 +126,14 @@ public class OrderService {
         }
     }
     
+    public OrderFillManager fetchFillByOrderId(Integer id) throws Exception {
+        try {
+            return remoteManager().fetchFillByOrderId(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
     private OrderRemote remote() {
         return (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
     }
