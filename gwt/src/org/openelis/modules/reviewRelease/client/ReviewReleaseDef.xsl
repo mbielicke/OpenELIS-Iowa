@@ -121,7 +121,7 @@ UIRF Software License are applicable instead of those above.
           <col header="Accession #" key="{meta:getAccessionNumber()}" width="115">
             <textbox field="Integer" />
           </col>
-          <col header="Test" key="{meta:getAnalysisTestName()}" width="185">
+          <col header="Test" key="{meta:getAnalysisTestName()}" width="192">
             <textbox field="String" />
           </col>
           <col header="Method" key="{meta:getAnalysisMethodName()}" width="192">
