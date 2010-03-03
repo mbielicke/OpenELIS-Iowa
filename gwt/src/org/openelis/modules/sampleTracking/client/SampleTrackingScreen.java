@@ -58,6 +58,7 @@ import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.modules.reviewRelease.client.ReviewReleaseScreen.Tabs;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
@@ -178,15 +179,16 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     
     private void initialize() {
     	sampleContent = (TabPanel)def.getWidget("SampleContent");
-    
+    	
         sampleContent.addSelectionHandler(new SelectionHandler<Integer>() {
     		public void onSelection(SelectionEvent<Integer> event) {
     			tab = Tabs.values()[event.getSelectedItem()];
+    			drawTabs();
     		}
     	});
         
     	sampleContent.getTabBar().setStyleName("None");
-        
+    	
         final MenuItem envMenuQuery = (MenuItem)def.getWidget("environmentalSample");
         envMenuQuery.addClickHandler(new ClickHandler() {
         	public void onClick(ClickEvent event) {
@@ -1542,8 +1544,13 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
    			sampleContent.setTabVisible(tab.ordinal(),tabList.contains(tab));
     	}
     	
-    	sampleContent.selectTab(tabs[0].ordinal());
-    	sampleContent.getTabBar().setStyleName("gwt-TabBar");
+    	if(tabs[0] == Tabs.BLANK){
+    		sampleContent.selectTab(tabs[0].ordinal());
+    		sampleContent.getTabBar().setStyleName("None");
+    	}else{
+    		sampleContent.selectTab(tabs[0].ordinal());
+    		sampleContent.getTabBar().setStyleName("gwt-TabBar");
+    	}
     }
     
     protected void similar() {

@@ -97,13 +97,13 @@ UIRF Software License are applicable instead of those above.
                 </appButton>
               </menuDisplay>
               <menuPanel layout="vertical" position="below" style="buttonMenuContainer">
-                <menuItem description="" icon="environmentalSampleLoginIcon" key="environmentalSample" label="{resource:getString($constants,'environmentalSampleLogin')}" style="TopMenuRowContainer" />
-                <menuItem description="" enable="false" icon="clinicalSampleLoginIcon" key="clinicalSample" label="{resource:getString($constants,'clinicalSampleLogin')}" style="TopMenuRowContainer" />
-                <menuItem description="" enable="false" icon="animalSampleLoginIcon" key="animalSample" label="{resource:getString($constants,'animalSampleLogin')}" style="TopMenuRowContainer" />
-                <menuItem description="" enable="false" icon="newbornScreeningSampleLoginIcon" key="newbornScreeningSample" label="{resource:getString($constants,'newbornScreeningSampleLogin')}" style="TopMenuRowContainer" />
-                <menuItem description="" enable="false" icon="ptSampleLoginIcon" key="ptSample" label="{resource:getString($constants,'ptSampleLogin')}" style="TopMenuRowContainer" />
-                <menuItem description="" enable="false" icon="sdwisSampleLoginIcon" key="sdwisSample" label="{resource:getString($constants,'sdwisSampleLogin')}" style="TopMenuRowContainer" />
-                <menuItem description="" enable="true" icon="privateWellWaterSampleLoginIcon" key="privateWellWaterSample" label="{resource:getString($constants,'privateWellWaterSampleLogin')}" style="TopMenuRowContainer" />
+                <menuItem description="" icon="environmentalSampleLoginIcon" key="environmentalSample" label="{resource:getString($constants,'environmentalSample')}" style="TopMenuRowContainer" />
+                <menuItem description="" enable="false" icon="clinicalSampleLoginIcon" key="clinicalSample" label="{resource:getString($constants,'clinicalSample')}" style="TopMenuRowContainer" />
+                <menuItem description="" enable="false" icon="animalSampleLoginIcon" key="animalSample" label="{resource:getString($constants,'animalSample')}" style="TopMenuRowContainer" />
+                <menuItem description="" enable="false" icon="newbornScreeningSampleLoginIcon" key="newbornScreeningSample" label="{resource:getString($constants,'newbornScreeningSample')}" style="TopMenuRowContainer" />
+                <menuItem description="" enable="false" icon="ptSampleLoginIcon" key="ptSample" label="{resource:getString($constants,'ptSample')}" style="TopMenuRowContainer" />
+                <menuItem description="" enable="false" icon="sdwisSampleLoginIcon" key="sdwisSample" label="{resource:getString($constants,'sdwisSample')}" style="TopMenuRowContainer" />
+                <menuItem description="" enable="true" icon="privateWellWaterSampleLoginIcon" key="privateWellWaterSample" label="{resource:getString($constants,'privateWellWaterSample')}" style="TopMenuRowContainer" />
               </menuPanel>
             </menuItem>
             <xsl:call-template name="previousButton" />
