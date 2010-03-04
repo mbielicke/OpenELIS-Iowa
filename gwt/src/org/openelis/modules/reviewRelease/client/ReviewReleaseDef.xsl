@@ -130,7 +130,7 @@ UIRF Software License are applicable instead of those above.
           <col header="Analysis Status" width="100" key="{meta:getAnalysisStatusId()}">
             <dropdown field="Integer" width="100"/>
           </col>
-          <col header="Specimen Status" width="100" key="{meta:getStatusId()}">
+          <col header="Sample Status" width="100" key="{meta:getStatusId()}">
             <dropdown field="Integer" width="100"/>
           </col>
         </table>
