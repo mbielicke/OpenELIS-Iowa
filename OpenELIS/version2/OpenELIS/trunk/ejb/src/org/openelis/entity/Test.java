@@ -84,8 +84,10 @@ import org.openelis.utils.Auditable;
                       + " from Test t LEFT JOIN t.method m where t.name like :name and t.isActive='Y' order by t.name"),
     @NamedQuery( name = "Test.FetchByNameSampleItemType",
                 query = "select distinct new org.openelis.domain.TestMethodVO(t.id, t.name, t.description, m.id, m.name, m.description)"
-                      + " from Test t left join t.method m LEFT JOIN t.testTypeOfSample type where t.name like :name and type.typeOfSampleId = :typeId and t.isActive='Y' order by t.name")})
-    
+                      + " from Test t left join t.method m LEFT JOIN t.testTypeOfSample type where t.name like :name and type.typeOfSampleId = :typeId and t.isActive='Y' order by t.name"),
+    @NamedQuery( name = "Test.FetchTestMethodSampleTypeList",
+                 query = "select distinct new org.openelis.domain.TestMethodSampleTypeVO(t.id, t.name, m.name, type.typeOfSampleId, d.entry)"
+                       + " from Test t left join t.method m INNER JOIN t.testTypeOfSample type LEFT JOIN type.dictionary d where t.isActive='Y' order by t.name, m.name, d.entry")})
 
 @Entity
 @Table(name = "test")

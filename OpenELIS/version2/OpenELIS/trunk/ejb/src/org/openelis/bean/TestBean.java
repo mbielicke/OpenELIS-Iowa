@@ -38,6 +38,7 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.PanelVO;
+import org.openelis.domain.TestMethodSampleTypeVO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.entity.Test;
@@ -99,6 +100,19 @@ public class TestBean implements TestRemote, TestLocal {
             e.printStackTrace();
             throw e;
         }
+    }
+    
+    public ArrayList<TestMethodSampleTypeVO> getTestMethodSampleTypeList() throws Exception {
+        Query query;
+        List returnList;
+        
+        query = manager.createNamedQuery("Test.FetchTestMethodSampleTypeList");
+        returnList = query.getResultList();
+        
+        query = manager.createNamedQuery("Panel.FetchPanelSampleTypeList");
+        returnList.addAll(query.getResultList());
+        
+        return DataBaseUtil.toArrayList(returnList);
     }
     
     public ArrayList<TestMethodVO> query(ArrayList<QueryData> fields, int first, int max)

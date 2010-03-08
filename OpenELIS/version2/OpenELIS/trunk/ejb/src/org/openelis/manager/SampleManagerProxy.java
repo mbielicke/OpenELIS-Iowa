@@ -140,8 +140,10 @@ public class SampleManagerProxy {
         sampleId = man.getSample().getId();
         sampleRefId = ReferenceTable.SAMPLE;
 
-        man.getDomainManager().setSampleId(sampleId);
-        man.getDomainManager().add();
+        if(man.getDomainManager() != null){
+            man.getDomainManager().setSampleId(sampleId);
+            man.getDomainManager().add();
+        }
 
         man.getSampleItems().setSampleId(sampleId);
         man.getSampleItems().add();
