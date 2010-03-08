@@ -115,7 +115,7 @@ public class DictionaryCache {
                     idList.put(dictDO.getId(), dictDO);
                 }
             }catch(Exception e){
-                throw new Exception("DictionaryCache.getIdFromSystemName: \""+systemName+"\" not found in system.  Please call the system administrator.");    
+                throw new Exception("DictionaryCache.getIdFromSystemName: \""+systemName+"\" not found in system.");    
             }
         }
         
@@ -135,7 +135,7 @@ public class DictionaryCache {
                     idList.put(dictDO.getId(), dictDO);
                 }
             }catch(Exception e){
-                throw new Exception("DictionaryCache getSystemNameFromId: id \""+id+"\" not found in system.  Please call the system administrator.");
+                throw new Exception("DictionaryCache getSystemNameFromId: id \""+id+"\" not found in system.");
             }
         }
         
@@ -154,7 +154,7 @@ public class DictionaryCache {
                     idList.put(dictDO.getId(), dictDO);
                 }
             }catch(Exception e){
-                throw new Exception("DictionaryCache.getEntryFromId: id \""+id+"\" not found in system.  Please call the system administrator.");    
+                throw new Exception("DictionaryCache.getEntryFromId: id \""+id+"\" not found in system.");    
             }
         }
         
@@ -203,7 +203,7 @@ public class DictionaryCache {
             }
 
         }catch(Exception e){
-            throw new Exception("DictionaryCache.preloadByCategorySystemNamesInt error: Please call the system administrator.");
+            throw new Exception("DictionaryCache.preloadByCategorySystemNamesInt error.");
         }
     }
     
