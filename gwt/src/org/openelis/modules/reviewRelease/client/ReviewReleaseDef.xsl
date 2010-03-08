@@ -65,6 +65,14 @@ UIRF Software License are applicable instead of those above.
             <xsl:call-template name="buttonPanelDivider" />
             <xsl:call-template name="updateButton" />
             <xsl:call-template name="buttonPanelDivider" />
+            <appButton action="complete" key="complete" style="ButtonPanelButton">
+              <HorizontalPanel>
+                <AbsolutePanel height="20" style="completeIcon" width="20" />
+                <text>
+                  <xsl:value-of select='resource:getString($constants,"complete")' />
+                </text>
+              </HorizontalPanel>
+            </appButton>
             <appButton action="release" key="release" style="ButtonPanelButton">
               <HorizontalPanel>
                 <AbsolutePanel height="20" style="reviewAndReleaseIcon" width="20" />
@@ -73,6 +81,7 @@ UIRF Software License are applicable instead of those above.
                 </text>
               </HorizontalPanel>
             </appButton>
+            
             <!-- 
             <appButton action="report" key="report" style="ButtonPanelButton">
               <HorizontalPanel>
