@@ -61,7 +61,7 @@ public class HistoryTab extends Screen {
     private int                pageNum;
     
     public HistoryTab(ScreenDefInt def, ScreenWindow window) {
-        setDef(def);
+        setDefinition(def);
         setWindow(window);
         initialize();  
     }

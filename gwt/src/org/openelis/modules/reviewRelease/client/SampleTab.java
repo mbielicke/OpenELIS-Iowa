@@ -32,7 +32,7 @@ public class SampleTab extends Screen {
 	boolean loaded;
 
 	public SampleTab(ScreenDefInt def, ScreenWindow window) {
-		setDef(def);
+		setDefinition(def);
 		setWindow(window);
 		
 		initialize();

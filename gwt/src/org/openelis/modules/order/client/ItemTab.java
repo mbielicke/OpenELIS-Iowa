@@ -52,7 +52,7 @@ public class ItemTab extends Screen {
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
         inventoryService = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
 
-        setDef(def);
+        setDefinition(def);
         setWindow(window);
         initialize();
         

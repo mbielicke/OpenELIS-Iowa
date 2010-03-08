@@ -35,7 +35,7 @@ public class ParameterTab extends Screen {
     private boolean             loaded;
 
     public ParameterTab(ScreenDefInt def, ScreenWindow window) {
-        setDef(def);
+        setDefinition(def);
         setWindow(window);
         initialize();
 

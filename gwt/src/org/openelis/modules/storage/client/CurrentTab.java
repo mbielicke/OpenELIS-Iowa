@@ -71,7 +71,7 @@ public class CurrentTab extends Screen {
     private HashMap<Integer, StorageLocationManager> storageLocationCache;
 
     public CurrentTab(ScreenDefInt def, ScreenWindow window) {
-        setDef(def);
+        setDefinition(def);
         setWindow(window);
         initialize();
     }

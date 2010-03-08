@@ -36,7 +36,7 @@ public class WorksheetTab extends Screen {
     private boolean          loaded;
 
     public WorksheetTab(ScreenDefInt def, ScreenWindow window) {
-        setDef(def);
+        setDefinition(def);
         setWindow(window);
         initialize();
         

@@ -48,7 +48,7 @@ public class MonitorTab extends Screen{
     private TableWidget monitorTable;    
 
     public MonitorTab(ScreenDefInt def, ScreenWindow window) {
-        setDef(def);
+        setDefinition(def);
         setWindow(window);
         initialize();
     }

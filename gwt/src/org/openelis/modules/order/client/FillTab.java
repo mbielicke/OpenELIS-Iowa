@@ -26,7 +26,7 @@ public class FillTab extends Screen {
     public FillTab(ScreenDefInt def, ScreenWindow window) {
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
 
-        setDef(def);
+        setDefinition(def);
         setWindow(window);
         initialize();
     }

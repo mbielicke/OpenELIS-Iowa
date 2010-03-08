@@ -48,7 +48,7 @@ public class FacilityTab extends Screen {
     private TableWidget facilityTable;
     
     public FacilityTab(ScreenDefInt def, ScreenWindow window) {
-        setDef(def);
+        setDefinition(def);
         setWindow(window);
         initialize();
     }

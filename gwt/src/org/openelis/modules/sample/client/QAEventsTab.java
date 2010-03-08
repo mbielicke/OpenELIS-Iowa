@@ -84,7 +84,7 @@ public class QAEventsTab extends Screen {
     public QAEventsTab(ScreenDefInt def, ScreenWindow window) {
         service = new ScreenService(
                                     "OpenELISServlet?service=org.openelis.modules.qaevent.server.QaEventService");
-        setDef(def);
+        setDefinition(def);
         setWindow(window);
 
         initialize();

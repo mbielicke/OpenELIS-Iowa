@@ -69,7 +69,7 @@ public class ComponentTab extends Screen {
     public ComponentTab(ScreenDefInt def, ScreenWindow window) {
         service = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
 
-        setDef(def);
+        setDefinition(def);
         setWindow(window);
         initialize();
     }

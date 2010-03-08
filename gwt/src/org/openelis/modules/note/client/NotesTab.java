@@ -35,7 +35,7 @@ public class NotesTab extends Screen {
 
     public NotesTab(ScreenDefInt def, ScreenWindow window, String notesPanelKey,
                     String editButtonKey) {
-        setDef(def);
+        setDefinition(def);
         setWindow(window);
 
         userName = OpenELIS.security.getSystemUserName();

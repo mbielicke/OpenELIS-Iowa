@@ -97,7 +97,7 @@ public class ResultTab extends Screen {
     private String                                  addedAnalyteName;
 
     public ResultTab(ScreenDefInt def, ScreenWindow window) {
-        setDef(def);
+        setDefinition(def);
         setWindow(window);
 
         initialize();

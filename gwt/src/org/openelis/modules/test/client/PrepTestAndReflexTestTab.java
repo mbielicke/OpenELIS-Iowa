@@ -95,7 +95,7 @@ public class PrepTestAndReflexTestTab extends Screen implements
     private Label<String>         prepMethodName, reflexMethodName;
 
     public PrepTestAndReflexTestTab(ScreenDefInt def, ScreenWindow window, ScreenService service) {
-        setDef(def);
+        setDefinition(def);
         setWindow(window);
         this.service = service;
 

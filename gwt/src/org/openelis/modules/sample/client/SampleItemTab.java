@@ -63,7 +63,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
     protected Dropdown<Integer> typeOfSampleId, sourceOfSampleId, containerId, unitOfMeasureId;
 
     public SampleItemTab(ScreenDefInt def, ScreenWindow window) {
-        setDef(def);
+        setDefinition(def);
         setWindow(window);
 
         initialize();

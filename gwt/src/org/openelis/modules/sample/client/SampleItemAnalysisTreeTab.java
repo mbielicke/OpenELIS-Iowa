@@ -90,7 +90,7 @@ public class SampleItemAnalysisTreeTab extends Screen
     protected boolean         loaded = false;
 
     public SampleItemAnalysisTreeTab(ScreenDefInt def, ScreenWindow window, HasActionHandlers parentScreen) {
-        setDef(def);
+        setDefinition(def);
         setWindow(window);
 
         this.parentScreen = parentScreen;

@@ -42,7 +42,6 @@ public class KitOrderScreen extends Screen {
     
     public KitOrderScreen() throws Exception {
         super((ScreenDefInt)GWT.create(KitOrderDef.class));
-
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
 
         security = OpenELIS.security.getModule("order");
