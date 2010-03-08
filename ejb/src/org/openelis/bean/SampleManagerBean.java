@@ -171,8 +171,21 @@ public class SampleManagerBean  implements SampleManagerRemote {
 
         errorsList = new ValidationErrorsList();
 
-        //FIXME check to see if sample is fast login
-        //RETURN THE SAMPLEMANAGER WHEN IT IS FAST LOGIN
+        // check for dups, if it is quick login return the manager
+        try {
+            checkSample = sampleLocal.fetchByAccessionNumber(sampleDO.getAccessionNumber());
+
+            if (checkSample != null && !checkSample.getId().equals(sampleDO.getId())){
+                if(SampleManager.QUICK_ENTRY.equals(checkSample.getDomain()))
+                    return fetchForUpdate(checkSample.getId());
+                else
+                    errorsList.add(new FieldErrorException("accessionNumberDuplicate", SampleMeta.getAccessionNumber()));
+            }
+
+        } catch (Exception e) {
+            if(!(e.getCause() instanceof NoResultException))
+                throw e;
+        }
         
         // get system variable
         sysVarList = sysVariable.fetchByName("last_accession_number", 1);
@@ -181,17 +194,6 @@ public class SampleManagerBean  implements SampleManagerRemote {
         // we need to set the error
         if (sampleDO.getAccessionNumber().compareTo(new Integer(sysVarDO.getValue())) > 0)
             errorsList.add(new FieldErrorException("accessionNumberNotInUse", SampleMeta.getAccessionNumber()));
-
-        // check for dups
-        try {
-            checkSample = sampleLocal.fetchByAccessionNumber(sampleDO.getAccessionNumber());
-
-            if (checkSample != null && !checkSample.getId().equals(sampleDO.getId()))
-                errorsList.add(new FieldErrorException("accessionNumberDuplicate", SampleMeta.getAccessionNumber()));
-
-        } catch (Exception e) {
-            //noresultexception exception good in this case, no error
-        }
 
         if (errorsList.size() > 0)
             throw errorsList;
