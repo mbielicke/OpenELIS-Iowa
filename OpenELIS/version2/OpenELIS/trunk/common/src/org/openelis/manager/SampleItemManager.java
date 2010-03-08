@@ -233,7 +233,7 @@ public class SampleItemManager implements RPC {
         AnalysisManager fromMan, toMan; 
         AnalysisViewDO analysisDO;
         
-        assert fromAnalysisBundle.getType() != SampleDataBundle.Type.ANALYSIS : "from bundle needs to be analysis bundle";
+        assert fromAnalysisBundle.getType() == SampleDataBundle.Type.ANALYSIS : "from bundle needs to be analysis bundle";
         
         toIndex = toBundle.getSampleItemIndex();
         anIndex = fromAnalysisBundle.getAnalysisIndex();

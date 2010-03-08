@@ -46,6 +46,8 @@ public interface SystemVariableRemote {
 
     public SystemVariableDO fetchForUpdate(Integer id) throws Exception;
 
+    public SystemVariableDO fetchForUpdateByName(String name) throws Exception;
+    
     public SystemVariableDO abortUpdate(Integer id) throws Exception;
 
     public void delete(SystemVariableDO data) throws Exception;

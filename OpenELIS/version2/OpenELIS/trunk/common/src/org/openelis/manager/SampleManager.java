@@ -60,7 +60,8 @@ public class SampleManager implements RPC, HasAuxDataInt {
                                                   PT_DOMAIN_FLAG = "P", 
                                                   SDWIS_DOMAIN_FLAG = "S", 
                                                   WELL_DOMAIN_FLAG = "W",
-                                                  FAST_LOGIN_DOMAIN_FLAG = "F";
+                                                  FAST_LOGIN_DOMAIN_FLAG = "F",
+                                                  QUICK_ENTRY = "Q";
 
     protected transient static SampleManagerProxy proxy;
 
@@ -197,17 +198,25 @@ public class SampleManager implements RPC, HasAuxDataInt {
                 }
             }
     
-            if (sampleDomain == null) {
-                if (domain.equals(HUMAN_DOMAIN_FLAG))
-                    sampleDomain = SampleHumanManager.getInstance();
-                else if (domain.equals(ENVIRONMENTAL_DOMAIN_FLAG))
-                    sampleDomain = SampleEnvironmentalManager.getInstance();
-                else if (domain.equals(WELL_DOMAIN_FLAG))
-                    sampleDomain = SamplePrivateWellManager.getInstance();
-            }
+            if (sampleDomain == null) 
+                createEmptyDomainManager();
         }
     
         return sampleDomain;
+    }
+    
+    public void createEmptyDomainManager() throws Exception {
+        String domain;
+        
+        domain = sample.getDomain();
+        assert domain != null : "domain is null";
+        
+        if (domain.equals(HUMAN_DOMAIN_FLAG))
+            sampleDomain = SampleHumanManager.getInstance();
+        else if (domain.equals(ENVIRONMENTAL_DOMAIN_FLAG))
+            sampleDomain = SampleEnvironmentalManager.getInstance();
+        else if (domain.equals(WELL_DOMAIN_FLAG))
+            sampleDomain = SamplePrivateWellManager.getInstance();
     }
 
     public SampleProjectManager getProjects() throws Exception {

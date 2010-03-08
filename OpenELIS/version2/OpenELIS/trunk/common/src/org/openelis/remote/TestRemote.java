@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import javax.ejb.Remote;
 
 import org.openelis.domain.PanelVO;
+import org.openelis.domain.TestMethodSampleTypeVO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.common.data.QueryData;
 
@@ -41,4 +42,6 @@ public interface TestRemote {
     public ArrayList<TestMethodVO> fetchByName(String name, int maxResults) throws Exception;
     
     public ArrayList<PanelVO> fetchNameMethodSectionByName(String name, int maxResults) throws Exception;
+    
+    public ArrayList<TestMethodSampleTypeVO> getTestMethodSampleTypeList() throws Exception;
 }
