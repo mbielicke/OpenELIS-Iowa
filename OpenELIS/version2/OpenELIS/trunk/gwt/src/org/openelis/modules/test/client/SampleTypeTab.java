@@ -73,7 +73,7 @@ public class SampleTypeTab extends Screen implements HasActionHandlers<SampleTyp
     private AppButton     addButton, removeButton;
 
     public SampleTypeTab(ScreenDefInt def, ScreenWindow window) {
-        setDef(def);
+        setDefinition(def);
         setWindow(window);       
         
         initialize();

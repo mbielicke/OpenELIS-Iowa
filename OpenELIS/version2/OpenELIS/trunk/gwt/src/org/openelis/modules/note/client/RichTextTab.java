@@ -36,7 +36,7 @@ public class RichTextTab extends Screen {
 
     public RichTextTab(ScreenDefInt def, ScreenWindow window, String richtextPanelKey,
                        String editButtonKey) {
-        setDef(def);
+        setDefinition(def);
         setWindow(window);
 
         userName = OpenELIS.security.getSystemUserName();

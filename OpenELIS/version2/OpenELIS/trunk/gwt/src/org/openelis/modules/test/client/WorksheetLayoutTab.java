@@ -92,7 +92,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
 
     public WorksheetLayoutTab(ScreenDefInt def, ScreenWindow window, ScreenService service,
                               ScreenService scriptletService, ScreenService qcService) {
-        setDef(def);
+        setDefinition(def);
         setWindow(window);
         this.service = service;
         this.scriptletService = scriptletService;

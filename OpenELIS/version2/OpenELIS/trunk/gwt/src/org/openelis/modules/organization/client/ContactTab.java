@@ -35,7 +35,7 @@ public class ContactTab extends Screen {
     private boolean             loaded;
 
     public ContactTab(ScreenDefInt def, ScreenWindow window) {
-        setDef(def);
+        setDefinition(def);
         setWindow(window);
         initialize();
         

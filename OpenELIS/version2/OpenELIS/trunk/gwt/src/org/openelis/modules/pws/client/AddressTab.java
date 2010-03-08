@@ -48,7 +48,7 @@ public class AddressTab extends Screen {
     private TableWidget addressTable;    
     
     public AddressTab(ScreenDefInt def, ScreenWindow window) {
-        setDef(def);
+        setDefinition(def);
         setWindow(window);
         initialize();
     }

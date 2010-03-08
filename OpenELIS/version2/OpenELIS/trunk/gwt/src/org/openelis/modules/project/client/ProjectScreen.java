@@ -40,6 +40,7 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -398,7 +399,7 @@ public class ProjectScreen extends Screen {
         addScreenHandler(name, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 scriptletId.setSelection(manager.getProject().getScriptletId(),
-                                       getString(manager.getProject().getScriptletName()));
+                                       Util.toString(manager.getProject().getScriptletName()));
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {

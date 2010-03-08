@@ -143,7 +143,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
     public AnalyteAndResultTab(ScreenDefInt def, ScreenWindow window, ScreenService service,
                                ScreenService scriptletService, ScreenService analyteService,
                                ScreenService dictionaryService) {
-        setDef(def);
+        setDefinition(def);
         setWindow(window);
         this.service = service;
         this.scriptletService = scriptletService;

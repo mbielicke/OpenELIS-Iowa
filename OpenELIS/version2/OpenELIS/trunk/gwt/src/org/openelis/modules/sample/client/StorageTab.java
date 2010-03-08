@@ -80,7 +80,7 @@ public class StorageTab extends Screen {
 
     public StorageTab(ScreenDefInt def, ScreenWindow window) {
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.storage.server.StorageService");
-        setDef(def);
+        setDefinition(def);
         setWindow(window);
 
         userName = OpenELIS.security.getSystemUserName();

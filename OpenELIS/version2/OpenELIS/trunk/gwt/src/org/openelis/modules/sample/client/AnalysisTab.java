@@ -109,7 +109,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         panelService = new ScreenService(
                                          "controller?service=org.openelis.modules.panel.server.PanelService");
 
-        setDef(def);
+        setDefinition(def);
         setWindow(window);
 
         initialize();

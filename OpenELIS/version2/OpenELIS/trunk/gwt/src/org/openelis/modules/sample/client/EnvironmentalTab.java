@@ -78,7 +78,7 @@ public class EnvironmentalTab extends Screen {
     protected boolean                      loaded = false;
 
     public EnvironmentalTab(ScreenDefInt def, ScreenWindow window) {
-        setDef(def);
+        setDefinition(def);
         setWindow(window);
 
         orgService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");

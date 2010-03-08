@@ -37,7 +37,7 @@ public class LocationTab extends Screen {
 	private boolean loaded;
 	
 	public LocationTab(ScreenDefInt def, ScreenWindow window) {
-		setDef(def);
+		setDefinition(def);
 		setWindow(window);
 		initialize();
 

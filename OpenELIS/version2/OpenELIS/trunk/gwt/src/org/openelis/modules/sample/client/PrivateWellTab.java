@@ -82,7 +82,7 @@ public class PrivateWellTab extends Screen {
     protected boolean                 loaded = false;
 
     public PrivateWellTab(ScreenDefInt def, ScreenWindow window) {
-        setDef(def);
+        setDefinition(def);
         setWindow(window);
 
         orgService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
