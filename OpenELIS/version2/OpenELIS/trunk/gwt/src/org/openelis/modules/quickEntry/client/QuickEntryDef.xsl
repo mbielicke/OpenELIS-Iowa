@@ -1,4 +1,3 @@
-
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -25,8 +24,7 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
-<xsl:stylesheet
+  <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
   xmlns:locale="xalan://java.util.Locale"
@@ -35,8 +33,7 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
-  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:meta="xalan://org.openelis.meta.SampleMeta">
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
 
   <xsl:import href="IMPORT/button.xsl" />
   <xsl:variable name="language" select="doc/locale" />
@@ -51,8 +48,8 @@ UIRF Software License are applicable instead of those above.
         <AbsolutePanel spacing="0" style="ButtonPanelContainer">
           <HorizontalPanel>
             <xsl:call-template name="commitButton" />
-            <xsl:call-template name="abortButton" />
-            <xsl:call-template name="buttonPanelDivider" />
+            <!-- 
+                        <xsl:call-template name="buttonPanelDivider" />
             <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
               <menuItem>
                 <menuDisplay>
@@ -69,66 +66,78 @@ UIRF Software License are applicable instead of those above.
                   <xsl:call-template name="historyMenuItem" />
                 </menuPanel>
               </menuItem>
-            </menuPanel>
+            </menuPanel>-->
           </HorizontalPanel>
         </AbsolutePanel>
 
 <!--end button panel code-->
 
         <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
-        <HorizontalPanel width="100%">
-          <TablePanel style="Form">
-          	<row>
-              <text style="Prompt">
+          <TablePanel>
+          <row>
+          		<text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'entry')" />:
               </text>
-              <textbox key="entry" width="135px" field="Integer"/>
-              </row>
-          </TablePanel>
-          <widget halign="right">
-          <TablePanel style="Form">
-          <row>
+              <textbox key="entry" width="158px" max="20" case="UPPER" field="String" tab="entry, entry"/>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'accessionNum')" />:
               </text>
-              <textbox key="accessionNumber" width="75px" field="Integer" style="ScreenTextboxDisplayOnly"/>
-              <text style="Prompt">
-                <xsl:value-of select="resource:getString($constants,'received')" />:
-              </text>
-              <calendar key="receivedDate" begin="0" end="4" max="0" width="120px" style="ScreenTextboxDisplayOnly" pattern="{resource:getString($constants,'dateTimePattern')}"/>
+              <textbox key="accessionNumber" width="75px" field="Integer" tab="entry, entry"/>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'tubeNum')" />:
               </text>
-              <textbox key="tubeNumber" width="75px" style="ScreenTextboxDisplayOnly" field="Integer"/>
+              <textbox key="tubeNumber" width="75px" field="Integer" tab="entry, entry"/>
+              <text style="Prompt">
+                <xsl:value-of select="resource:getString($constants,'received')" />:
+              </text>
+              <calendar key="receivedDate" begin="0" end="4" width="125px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="entry, entry"/>
               </row>
               <row>
+              <widget colspan="2">
+              <HorizontalPanel/>
+              </widget>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'testMethodSampleType')" />:
               </text>
               <widget colspan="5">
-              	<dropdown key="testMethodSampleType" width="400" popWidth="400" style="ScreenTextboxDisplayOnly" field="Integer" />
+              	<dropdown key="testMethodSampleType" width="419" popWidth="auto" field="String" tab="entry, entry"/>
               </widget>
               </row>
+              <row>
+              <widget colspan="2">
+              <HorizontalPanel/>
+              </widget>
+              <text style="Prompt">
+              	<xsl:value-of select="resource:getString($constants,'currentDateTime')" />:
+              </text>
+              <check key="currentDateTime" tab="entry, entry"/>
+         	  <text style="Prompt">
+	        	<xsl:value-of select="resource:getString($constants,'printLabels')" />:
+	          </text>
+              	<check key="printLabels" tab="entry, entry"/>
+             <text style="Prompt">
+	        	<xsl:value-of select="resource:getString($constants,'printer')" />:
+	    	</text>
+		    <dropdown key="printer" width="121" popWidth="auto" tab="entry, entry"/>
+              </row>
           </TablePanel>
-          </widget>
-          </HorizontalPanel>
-          <table key="quickEntryTable" width="auto" maxRows="15" showScroll="ALWAYS" title="">
+          <table key="quickEntryTable" width="auto" maxRows="15" style="ScreenTableWithSides" showScroll="ALWAYS" title="" tab="entry,entry">
             <col width="90" header="{resource:getString($constants,'accessionNum')}">
               <label />
             </col>
             <col width="130" header="{resource:getString($constants,'received')}">
-              <label />
+              <calendar begin="0" end="4" max="0" pattern="{resource:getString($constants,'dateTimePattern')}"/>
             </col>
-            <col width="80" header="{resource:getString($constants,'tubeNum')}">
-              <label />
-            </col>
-            <col width="150" header="{resource:getString($constants,'test')}">
+            <col width="160" header="{resource:getString($constants,'test')}">
               <label />
             </col>
             <col width="150" header="{resource:getString($constants,'method')}">
               <label />
             </col>
             <col width="150" header="{resource:getString($constants,'sampleType')}">
+              <label />
+            </col>
+            <col width="80" header="{resource:getString($constants,'tubeNum')}">
               <label />
             </col>
             </table>

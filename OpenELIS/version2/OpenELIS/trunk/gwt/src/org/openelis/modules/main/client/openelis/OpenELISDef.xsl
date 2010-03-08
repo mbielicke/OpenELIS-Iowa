@@ -83,9 +83,9 @@ UIRF Software License are applicable instead of those above.
 <!--				
 <menuItem key="fullLogin" icon="fullLoginIcon" label="{resource:getString($constants,'fullLogin')}" description="{resource:getString($constants,'fullLoginDescription')}"/>
   -->
-
+ <code>if(OpenELIS.security.hasModule("quickentry","SELECT")){</code>
                 <menuItem key="quickEntry" description="{resource:getString($constants,'quickEntryDescription')}" enable="true" icon="quickEntryIcon" label="{resource:getString($constants,'quickEntry')}" />
-
+<code>}</code>
 <!--				
 <menuItem key="secondEntry" icon="secondEntryIcon" label="{resource:getString($constants,'secondEntry')}" description="{resource:getString($constants,'secondEntryDescription')}"/>
   -->
@@ -100,8 +100,9 @@ UIRF Software License are applicable instead of those above.
                 <menuItem key="newbornScreeningSampleLogin" description="{resource:getString($constants,'newbornScreeningSampleLoginDescription')}" enable="false" icon="newbornScreeningSampleLoginIcon" label="{resource:getString($constants,'newbornScreeningSampleLogin')}" />
                 <menuItem key="ptSampleLogin" description="{resource:getString($constants,'ptSampleLoginDescription')}" enable="false" icon="ptSampleLoginIcon" label="{resource:getString($constants,'ptSampleLogin')}" />
                 <menuItem key="sdwisSampleLogin" description="{resource:getString($constants,'sdwisSampleLoginDescription')}" enable="false" icon="sdwisSampleLoginIcon" label="{resource:getString($constants,'sdwisSampleLogin')}" />
+                <code>if(OpenELIS.security.hasModule("sampleprivatewell","SELECT")){</code>
                 <menuItem key="privateWellWaterSampleLogin" description="{resource:getString($constants,'privateWellWaterSampleLoginDescription')}" enable="true" icon="privateWellWaterSampleLoginIcon" label="{resource:getString($constants,'privateWellWaterSampleLogin')}" />
-
+				<code>}</code>
 <!-- 
 <menuItem key="sampleManagement" icon="sampleManagementIcon" label="{resource:getString($constants,'sampleManagement')}" description="{resource:getString($constants,'sampleManagementDescription')}"/>
   -->
@@ -218,7 +219,7 @@ UIRF Software License are applicable instead of those above.
                 <menuItem key="systemVariable" description="{resource:getString($constants,'systemVariableDescription')}" icon="systemVariableIcon" label="{resource:getString($constants,'systemVariable')}" />
                 <code>}</code>
                 <code>if(OpenELIS.security.hasModule("pws","SELECT")){</code>
-                <menuItem key="pws" description="{resource:getString($constants,'pwsInformationDescription')}" icon="systemVariableIcon" label="{resource:getString($constants,'pwsInformation')}" />
+                <menuItem key="pws" description="{resource:getString($constants,'pwsInformationDescription')}" icon="sdwisSampleLoginIcon" label="{resource:getString($constants,'pwsInformation')}" />
                 <code>}</code>
               </menuPanel>
             </menuItem>

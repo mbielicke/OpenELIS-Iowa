@@ -84,7 +84,6 @@ public class SampleItemAnalysisTreeTab extends Screen
     private Integer           analysisCancelledId, analysisReleasedId;
     protected TreeWidget      itemsTree;
     protected AppButton       removeRow, addItem, addAnalysis;
-    protected TestPrepUtility testLookup;
     private HasActionHandlers parentScreen;
     private SampleManager     manager;
     protected SampleTreeUtility  treeUtil;

@@ -60,7 +60,7 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel spacing="0">
               <widget>
                 <table key="storageLocationTable" width="auto" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
-                  <col key="parent" width="140" sort="false" header="Parent">
+                  <col key="parent" width="140" sort="false" header="{resource:getString($constants,'parent')}">
                     <label />
                   </col>
                   <col key="unitDesc" width="140" sort="false" header="{resource:getString($constants,'storageUnit')}">
