@@ -91,7 +91,7 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
    
     protected Dropdown<Integer>            statusId;
     protected TreeWidget                   itemsTree;
-    protected AppButton                    removeRow, releaseButton, reportButton,
+    protected AppButton                    removeRow, releaseButton, reportButton, completeButton,
     									   addItem, addAnalysis, queryButton, updateButton,
     									   nextButton, prevButton, commitButton, abortButton;
     
@@ -267,6 +267,18 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
         		releaseButton.enable(event.getState() == State.DISPLAY);
         	}
         });
+        
+        completeButton = (AppButton)def.getWidget("complete");
+        addScreenHandler(releaseButton, new ScreenEventHandler<Object>() {
+        	public void onClick(ClickEvent event){
+        		complete();
+        	}
+        	
+        	public void onStateChange(StateChangeEvent<State> event) {
+        		completeButton.enable(event.getState() == State.DISPLAY);
+        	}
+        });
+        
         /*
         reportButton = (AppButton)def.getWidget("report");
         addScreenHandler(reportButton, new ScreenEventHandler<Object>() {
@@ -1045,6 +1057,21 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
 			try {
 				SampleDataBundle bundle = getAnalysisBundle(((ReviewReleaseVO)rows.get(i).data).getAnalysisId());
 				bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).releaseAnalyssisAt(bundle.getAnalysisIndex());
+			}catch(Exception e) {
+				if(e instanceof ValidationErrorsList)
+					showErrors((ValidationErrorsList)e);
+				else
+					Window.alert(e.getMessage());
+			}
+		}
+	}
+	
+	private void complete() {
+		ArrayList<TableDataRow> rows = atozTable.getSelections();
+		for(int i = 0; i < rows.size(); i++) {
+			try {
+				SampleDataBundle bundle = getAnalysisBundle(((ReviewReleaseVO)rows.get(i).data).getAnalysisId());
+				bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).completeAnalysisAt(bundle.getAnalysisIndex());
 			}catch(Exception e) {
 				if(e instanceof ValidationErrorsList)
 					showErrors((ValidationErrorsList)e);

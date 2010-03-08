@@ -3,6 +3,7 @@ package org.openelis.modules.reviewRelease.client;
 import java.util.EnumSet;
 
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
@@ -42,7 +43,7 @@ public class SampleTab extends Screen {
         accessionNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                accessionNumber.setValue(getString(manager.getSample().getAccessionNumber()));
+                accessionNumber.setValue(Util.toString(manager.getSample().getAccessionNumber()));
             }
 
             public void onValueChange(final ValueChangeEvent<Integer> event) {
@@ -70,7 +71,7 @@ public class SampleTab extends Screen {
         orderNumber = (TextBox<Integer>)def.getWidget("orderNumber");
         addScreenHandler(orderNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                orderNumber.setValue(getString(manager.getSample().getOrderId()));
+                orderNumber.setValue(Util.toString(manager.getSample().getOrderId()));
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
