@@ -32,7 +32,6 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.TestPrepViewDO;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.SecurityUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -46,7 +45,6 @@ import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestPrepManager;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.test.client.TestPrepLookupScreen;
 
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -69,14 +67,11 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
     private ArrayList<SampleDataBundle> bundles;
     private int                         numberOfPrepScreensDrawn;
     private ScreenService               panelService;
-    private SecurityUtil                security;
     private ValidationErrorsList        errorsList;
 
     public TestPrepUtility() {
         panelService = new ScreenService(
                                          "controller?service=org.openelis.modules.panel.server.PanelService");
-
-        security = OpenELIS.security;
 
         try {
             anInPrepId = DictionaryCache.getIdFromSystemName("analysis_inprep");

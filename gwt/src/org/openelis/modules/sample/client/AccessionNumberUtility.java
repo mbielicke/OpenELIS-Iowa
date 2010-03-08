@@ -25,6 +25,9 @@
 */
 package org.openelis.modules.sample.client;
 
+import org.openelis.domain.SampleDO;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.manager.SampleManager;
 
@@ -37,57 +40,21 @@ public class AccessionNumberUtility {
         service = new ScreenService("OpenELISServlet?service="+SAMPLE_SERVICE_URL);
     }
     
-    public SampleManager accessionNumberEntered(SampleManager man) throws Exception {
-        SampleManager tmpMan;
+    public SampleManager accessionNumberEntered(SampleDO sampleDO) throws Exception {
+        return service.call("validateAccessionNumber", sampleDO);
+    }
+    
+    public Integer getNewAccessionNumber() throws Exception {
+        Integer newNum;
+        ValidationErrorsList erList;
         
-        tmpMan = service.call("validateAccessionNumber", man.getSample());
+        newNum = service.callInteger("getNewAccessionNumber");
         
-        if(tmpMan != null)
-            return tmpMan;
-            
-         return man;
+        if(newNum != null)
+            return newNum;
+        
+        erList = new ValidationErrorsList();
+        erList.add(new FormErrorException("newAccessionNumError"));
+        throw erList;
     }
 }
-
-/*GWT
- * public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
-        service.call("validateAccessionNumber", sampleDO);
-    }
- */
-
-/* EJB
-public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
-ValidationErrorsList errorsList;
-
-SystemVariableLocal svl = sysVariableLocal();
-ArrayList<SystemVariableDO> sysVarList;
-SystemVariableDO sysVarDO;
-SampleDO checkSample;
-
-errorsList = new ValidationErrorsList();
-
-// get system variable
-sysVarList = svl.fetchByName("last_accession_number", 1);
-sysVarDO = sysVarList.get(0);
-
-// we need to set the error
-if (sampleDO.getAccessionNumber().compareTo(new Integer(sysVarDO.getValue())) > 0)
-    errorsList.add(new FieldErrorException("accessionNumberNotInUse",
-                                           SampleMeta.getAccessionNumber()));
-
-// check for dups
-try {
-    checkSample = sampleLocal().fetchByAccessionNumber(sampleDO.getAccessionNumber());
-
-    if (checkSample != null && !checkSample.getId().equals(sampleDO.getId()))
-        errorsList.add(new FieldErrorException("accessionNumberDuplicate",
-                                               SampleMeta.getAccessionNumber()));
-
-} catch (Exception e) {
-    // resultnotfound exception good in this case, no error
-}
-
-if (errorsList.size() > 0)
-    throw errorsList;
-}
-*/

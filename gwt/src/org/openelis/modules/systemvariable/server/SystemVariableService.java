@@ -29,6 +29,7 @@ package org.openelis.modules.systemvariable.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.IdVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
@@ -94,7 +95,7 @@ public class SystemVariableService {
             throw new DatabaseException(e);
         }
     }
-
+    
     private SystemVariableRemote remote() {
         return (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
     }

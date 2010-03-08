@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleDO;
+import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.SampleItemManager;
@@ -40,6 +41,7 @@ import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.SampleManagerRemote;
 import org.openelis.remote.SampleQAEventManagerRemote;
 import org.openelis.remote.SampleRemote;
+import org.openelis.remote.SystemVariableRemote;
 
 public class SampleService {
     private static final int rowPP = 12;
@@ -145,12 +147,37 @@ public class SampleService {
         }
     }
     
-    public void validateAccessionNumber(SampleDO sampleDO) throws Exception {
+    public SampleManager validateAccessionNumber(SampleDO sampleDO) throws Exception {
         try{
-            managerRemote().validateAccessionNumber(sampleDO);
+            return managerRemote().validateAccessionNumber(sampleDO);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
+    }
+    
+    public Integer getNewAccessionNumber() throws Exception {
+        SystemVariableDO  sysVarDO;
+        int tries, i;
+        Integer value;
+        
+        sysVarDO = null;
+        tries = 5;
+        value = null;
+        i=0;
+        while(i<tries && sysVarDO == null){
+            try {
+                sysVarDO = sysVarRemote().fetchForUpdateByName("last_accession_number");
+                value = Integer.valueOf(sysVarDO.getValue());
+                value = value+1;
+                sysVarDO.setValue(value.toString());
+                sysVarRemote().update(sysVarDO);
+            } catch (Exception e) {
+                Thread.sleep(50);
+            }
+            i++;
+        }
+        
+        return value;
     }
 
     private SampleRemote remote(){
@@ -163,5 +190,9 @@ public class SampleService {
     
     private SampleQAEventManagerRemote qaRemote(){
         return (SampleQAEventManagerRemote)EJBFactory.lookup("openelis/SampleQAEventManagerBean/remote");
+    }
+    
+    private SystemVariableRemote sysVarRemote() {
+        return (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
     }
 }

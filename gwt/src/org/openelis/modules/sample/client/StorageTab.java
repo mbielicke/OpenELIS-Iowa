@@ -60,7 +60,6 @@ import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.manager.StorageManager;
 import org.openelis.modules.main.client.openelis.OpenELIS;
-import org.openelis.utilcommon.DataBaseUtil;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
@@ -207,13 +206,17 @@ public class StorageTab extends Screen {
                     list = service.callList("fetchAvailableByName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new TableDataRow(1);
+                        row = new TableDataRow(3);
                         data = list.get(i);
 
                         locationName = StorageLocationManager.getLocationForDisplay(data.getName(), data.getStorageUnitDescription(),
                                                                                     data.getLocation());
                         row.key = data.getId();
-                        row.cells.get(0).value = locationName; 
+                        row.cells.get(0).value = data.getName();
+                        row.cells.get(1).value = data.getStorageUnitDescription();
+                        row.cells.get(2).value = data.getLocation();
+                        row.display = locationName;
+                        
                         model.add(row);
                     }
                     location.showAutoMatches(model);

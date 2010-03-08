@@ -52,6 +52,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CalendarLookUp;
@@ -431,34 +432,44 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             }
 
             public void onValueChange(final ValueChangeEvent<Integer> event) {
-                SampleManager tmpMan;
+                SampleManager quickEntryMan;
+                
                 try {
                     manager.getSample().setAccessionNumber(event.getValue());
-
+                    
                     if (accessionNumUtil == null)
                         accessionNumUtil = new AccessionNumberUtility();
 
-                    tmpMan = accessionNumUtil.accessionNumberEntered(manager);
+                    quickEntryMan = accessionNumUtil.accessionNumberEntered(manager.getSample());
 
-                    if (tmpMan != manager) {
-                        manager = tmpMan;
+                    if (quickEntryMan != null) {
+                        manager = quickEntryMan;
+                        manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
+                        manager.createEmptyDomainManager();
+                        
+                        setFocus(null);
+                        setState(State.UPDATE);
                         DataChangeEvent.fire(wellScreen);
+                        window.clearStatus();
                     }
 
                 } catch (ValidationErrorsList e) {
                     showErrors(e);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
+                    accessionNumber.setValue(getString(null));
+                    manager.getSample().setAccessionNumber(null);
+                    setFocus(accessionNumber);
                 }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                accessionNumber.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                              .contains(event.getState()));
+                accessionNumber.enable(EnumSet.of(State.ADD, State.QUERY)
+                                       .contains(event.getState()));
                 accessionNumber.setQueryMode(event.getState() == State.QUERY);
 
-                if (EnumSet.of(State.ADD, State.UPDATE, State.QUERY).contains(event.getState()))
-                    accessionNumber.setFocus(true);
+                if (EnumSet.of(State.ADD, State.QUERY).contains(event.getState()))
+                    setFocus(accessionNumber);
             }
         });
 
@@ -484,6 +495,9 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
 
             public void onStateChange(StateChangeEvent<State> event) {
                 orderNumber.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                
+                if (EnumSet.of(State.UPDATE).contains(event.getState()))
+                    setFocus(orderNumber);
             }
         });
 
@@ -870,7 +884,9 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
     }
 
     protected void commit() {
+        setFocus(null);
         clearErrors();
+        
         if ( !validate()) {
             window.setError(consts.get("correctErrors"));
             return;
@@ -971,6 +987,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
     }
 
     public void abort() {
+        setFocus(null);
         clearErrors();
         window.setBusy(consts.get("cancelChanges"));
 
@@ -989,12 +1006,19 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             window.setDone(consts.get("addAborted"));
 
         } else if (state == State.UPDATE) {
-
             try {
                 manager = manager.abortUpdate();
-                historyUtility.setManager(manager);                
                 
-                setState(State.DISPLAY);
+                if(SampleManager.QUICK_ENTRY.equals(manager.getSample().getDomain())){
+                    setState(State.DEFAULT);
+                    manager = SampleManager.getInstance();
+                    manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
+                    
+                }else{
+                    historyUtility.setManager(manager);
+                    setState(State.DISPLAY);
+                }
+                
                 DataChangeEvent.fire(this);
                 window.clearStatus();
 

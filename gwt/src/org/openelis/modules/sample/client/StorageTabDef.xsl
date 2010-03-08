@@ -48,8 +48,10 @@ UIRF Software License are applicable instead of those above.
               <label />
             </col>
             <col width="259" header="{resource:getString($constants,'location')}">
-              <autoComplete key="" width="215px" case="LOWER" popWidth="auto" field="Integer" required="true">
-                <col width="240" header="{resource:getString($constants,'name')}" />
+              <autoComplete key="" width="215" case="LOWER" popWidth="auto" field="Integer" required="true">
+                <col width="140" header="{resource:getString($constants,'parent')}"/>
+                <col width="140" header="{resource:getString($constants,'storageUnit')}"/>
+                <col width="140" header="{resource:getString($constants,'location')}"/>
               </autoComplete>
             </col>
             <col width="135" header="{resource:getString($constants,'checkIn')}">

@@ -25,6 +25,24 @@
 */
 package org.openelis.modules.quickEntry.server;
 
-public class QuickEntryService {
+import java.util.ArrayList;
 
+import org.openelis.domain.TestMethodSampleTypeVO;
+import org.openelis.gwt.common.DatabaseException;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.TestRemote;
+
+public class QuickEntryService {
+    
+    public ArrayList<TestMethodSampleTypeVO> fetchTestMethodSampleTypeList() throws Exception {
+        try{
+            return testRemote().getTestMethodSampleTypeList();
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+    
+    private TestRemote testRemote(){
+        return (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
+    }
 }
