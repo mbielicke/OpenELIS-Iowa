@@ -51,6 +51,7 @@ import org.openelis.gwt.event.BeforeCloseEvent;
 import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
+import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
@@ -106,6 +107,7 @@ public class QuickEntryScreen extends Screen {
     private TableDataRow                    rowToBeAdded;
 
     private Integer                         userId, sampleLoggedInId;
+    private Datetime                        todaysDate;
     private AccessionNumberUtility          accNumUtil;
     private ScreenService                   calendarService;
     private SecurityModule                  security;
@@ -221,6 +223,31 @@ public class QuickEntryScreen extends Screen {
         addScreenHandler(receivedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 receivedDate.setValue(null);
+            }
+            
+            public void onValueChange(ValueChangeEvent<Datetime> event) {
+                if(todaysDate.after(event.getValue())){
+                        LocalizedException ex = new LocalizedException("recievedDateNotTodayExceptionBody", event.getValue().toString());
+                        receivedDateNotTodayConfirm = new Confirm(Confirm.Type.QUESTION,
+                                                            consts.get("recievedDateNotTodayExceptionTitle"),
+                                                            ex.getMessage(),
+                                                            "No", "Yes");
+                        receivedDateNotTodayConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
+                            public void onSelection(SelectionEvent<Integer> event) {
+                                switch (event.getSelectedItem().intValue()) {
+                                    case 0:
+                                        receivedDate.setValue(null);
+                                        break;
+                                    case 1:
+                                        receivedDate.setValue(recDate.getValue());
+                                        break;
+                                }
+                            }
+                        });
+
+                    receivedDateNotTodayConfirm.show();
+                    
+                    }
             }
             
             public void onStateChange(StateChangeEvent<State> event) {
@@ -393,29 +420,29 @@ public class QuickEntryScreen extends Screen {
         if (recDate.exceptions == null) {
             recDate.validate();
             if (recDate.exceptions == null){
-                if (windowCloseConfirm == null) {
-                    windowCloseConfirm = new Confirm(Confirm.Type.QUESTION,
-                                                        consts.get("onCloseConfirmTitle"),
-                                                        consts.get("onCloseConfirmBody"),
-                                                        "No", "Yes", "Cancel");
-                        windowCloseConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
+                if(todaysDate.after(recDate.getValue())){
+                    LocalizedException ex = new LocalizedException("recievedDateNotTodayExceptionBody", recDate.getValue().toString());
+                    receivedDateNotTodayConfirm = new Confirm(Confirm.Type.QUESTION,
+                                                        consts.get("recievedDateNotTodayExceptionTitle"),
+                                                        ex.getMessage(),
+                                                        "No", "Yes");
+                    receivedDateNotTodayConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
                         public void onSelection(SelectionEvent<Integer> event) {
                             switch (event.getSelectedItem().intValue()) {
                                 case 0:
-                                    close = true;
-                                    window.close();
+                                    //do nothing
                                     break;
                                 case 1:
-                                    commit();
+                                    receivedDate.setValue(recDate.getValue());
                                     break;
                             }
                         }
                     });
-                }
-
-                windowCloseConfirm.show();
-//                recievedDateNotTodayExceptionBody
-                receivedDate.setValue(recDate.getValue());
+                
+                    receivedDateNotTodayConfirm.show();
+                
+                }else
+                    receivedDate.setValue(recDate.getValue());
                 
             } else {
                 LocalizedException e = new LocalizedException("invalidEntryException", val);
@@ -788,9 +815,9 @@ public class QuickEntryScreen extends Screen {
 
         try {
             sampleLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
-
+            todaysDate = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
+            
             testPanelList = service.callList("fetchTestMethodSampleTypeList");
-
             model = new ArrayList<TableDataRow>();
             model.add(new TableDataRow(null, ""));
 
