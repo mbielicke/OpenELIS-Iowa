@@ -99,7 +99,6 @@ public class StorageLocationLookupScreen extends Screen implements HasActionHand
                 StorageLocationViewDO data;
                 ArrayList<StorageLocationViewDO> list;
                 ArrayList<TableDataRow> model;
-                String name;
 
                 parser = new QueryFieldUtil();
                 parser.parse(event.getMatch());
@@ -114,8 +113,8 @@ public class StorageLocationLookupScreen extends Screen implements HasActionHand
                         row = new TableDataRow(3);
                         row.key = data.getId();
                         row.cells.get(0).setValue(data.getName());
-                        row.cells.get(1).setValue(data.getLocation());
-                        row.cells.get(2).setValue(data.getStorageUnitDescription());
+                        row.cells.get(1).setValue(data.getStorageUnitDescription());
+                        row.cells.get(2).setValue(data.getLocation());                        
                         row.data = data;
                         model.add(row);
                     }
@@ -132,7 +131,7 @@ public class StorageLocationLookupScreen extends Screen implements HasActionHand
         
         addScreenHandler(location, new ScreenEventHandler<ArrayList<TableDataRow>>() {            
             public void onDataChange(DataChangeEvent event) {
-                location.load(null);
+                location.setSelection(new TableDataRow(null, ""));
             }
             
             public void onStateChange(StateChangeEvent<State> event) {
