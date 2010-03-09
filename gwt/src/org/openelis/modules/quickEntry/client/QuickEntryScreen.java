@@ -33,6 +33,7 @@ import java.util.Iterator;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.OrganizationContactDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.TestMethodSampleTypeVO;
@@ -42,9 +43,12 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
+import org.openelis.gwt.event.BeforeCloseEvent;
+import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -54,8 +58,10 @@ import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
+import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.DateField;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
@@ -64,7 +70,6 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
-import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
@@ -87,9 +92,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class QuickEntryScreen extends Screen {
 
     protected DateField                     recDate;
-    protected boolean                       useCurrentTime, printLabelsOnTheFly;
+    protected boolean                       useCurrentTime, printLabelsOnTheFly, close;
     protected TestPrepUtility               testLookup;
-
+    protected Confirm                       windowCloseConfirm, receivedDateNotTodayConfirm;
+    
     private CalendarLookUp                  receivedDate;
     private TextBox                         entry, tubeNumber;
     private TextBox<Integer>                accessionNumber;
@@ -130,7 +136,7 @@ public class QuickEntryScreen extends Screen {
     private void postConstructor() {
         initialize();
         initializeDropdowns();
-        setState(State.ADD);
+        setState(State.DEFAULT);
         DataChangeEvent.fire(this);
 
         DeferredCommand.addCommand(new Command() {
@@ -142,7 +148,39 @@ public class QuickEntryScreen extends Screen {
 
     private void initialize() {
         managers = new HashMap<Integer, SampleManager>();
+        close = false;
+        
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+                if(close){
+                    close = false;
+                }else if(quickEntryTable.numRows() > 0){
+                    event.cancel();
+                    if (windowCloseConfirm == null) {
+                        windowCloseConfirm = new Confirm(Confirm.Type.QUESTION,
+                                                            consts.get("onCloseConfirmTitle"),
+                                                            consts.get("onCloseConfirmBody"),
+                                                            "No", "Yes", "Cancel");
+                            windowCloseConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
+                            public void onSelection(SelectionEvent<Integer> event) {
+                                switch (event.getSelectedItem().intValue()) {
+                                    case 0:
+                                        close = true;
+                                        window.close();
+                                        break;
+                                    case 1:
+                                        commit();
+                                        break;
+                                }
+                            }
+                        });
+                    }
 
+                    windowCloseConfirm.show();
+                }
+            }
+        });
+        
         entry = (TextBox)def.getWidget("entry");
         addScreenHandler(entry, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -154,14 +192,14 @@ public class QuickEntryScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                entry.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                entry.enable(EnumSet.of(State.ADD, State.DEFAULT).contains(event.getState()));
             }
         });
 
         accessionNumber = (TextBox<Integer>)def.getWidget("accessionNumber");
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                accessionNumber.setValue(getString(null));
+                accessionNumber.setValue(Util.toString(null));
             }
             public void onStateChange(StateChangeEvent<State> event) {
                 accessionNumber.enable(false);
@@ -186,7 +224,7 @@ public class QuickEntryScreen extends Screen {
             }
             
             public void onStateChange(StateChangeEvent<State> event) {
-                receivedDate.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                receivedDate.enable(EnumSet.of(State.ADD, State.DEFAULT).contains(event.getState()));
             }
         });
 
@@ -196,7 +234,7 @@ public class QuickEntryScreen extends Screen {
                 testMethodSampleType.setValue(null);
             }
             public void onStateChange(StateChangeEvent<State> event) {
-                testMethodSampleType.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                testMethodSampleType.enable(EnumSet.of(State.ADD, State.DEFAULT).contains(event.getState()));
             }
         });
 
@@ -209,7 +247,7 @@ public class QuickEntryScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                currentDateTime.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                currentDateTime.enable(EnumSet.of(State.ADD, State.DEFAULT).contains(event.getState()));
             }
         });
 
@@ -222,21 +260,21 @@ public class QuickEntryScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                printLabels.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                printLabels.enable(EnumSet.of(State.ADD, State.DEFAULT).contains(event.getState()));
             }
         });
 
         printer = (Dropdown)def.getWidget("printer");
         addScreenHandler(printer, new ScreenEventHandler<String>() {
             public void onStateChange(StateChangeEvent<State> event) {
-                printer.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                printer.enable(EnumSet.of(State.ADD, State.DEFAULT).contains(event.getState()));
             }
         });
 
         quickEntryTable = (TableWidget)def.getWidget("quickEntryTable");
         addScreenHandler(quickEntryTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                quickEntryTable.load(new ArrayList<TableDataRow>());
+                quickEntryTable.load(getTableModel());
             }
             
             public void onStateChange(StateChangeEvent<State> event) {
@@ -261,7 +299,7 @@ public class QuickEntryScreen extends Screen {
                 rowDeleted(event.getIndex(), event.getRow());
             }
         });
-
+        
         removeRowButton = (AppButton)def.getWidget("removeRowButton");
         addScreenHandler(removeRowButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -303,35 +341,42 @@ public class QuickEntryScreen extends Screen {
         Collection<SampleManager> manList;
         Iterator<SampleManager> itr;
         SampleManager manager;
+        ValidationErrorsList errorsList;
         
         setFocus(null);
         window.setBusy(consts.get("adding"));
         
-        try {
-            manList = managers.values();
-            itr = manList.iterator();
+        manList = managers.values();
+        itr = manList.iterator();
+        errorsList = new ValidationErrorsList();
+        manager = null;
+        while(itr.hasNext()){
+            try{
+            manager = itr.next();
+            manager.getSample().setStatusId(sampleLoggedInId);
             
-            while(itr.hasNext()){
-                manager = itr.next();
-                manager.getSample().setStatusId(sampleLoggedInId);
+            if(manager.getSample().getId() == null)
                 manager.add();
+            else{
+                manager.update();
             }
             
-            managers.clear();
+            managers.remove(manager.getSample().getAccessionNumber());
             
-            setState(Screen.State.ADD);
-            DataChangeEvent.fire(this);
-            window.clearStatus();
-        } catch (ValidationErrorsList e) {
-            showErrors(e);
-
-            if ( !e.hasErrors() && e.hasWarnings())
-                showWarningsDialog(e);
-        } catch (Exception e) {
-            Window.alert("commitAdd(): " + e.getMessage());
+            }catch(Exception e){
+                errorsList.add(new FormErrorException("rowError", 
+                               manager.getSample().getAccessionNumber().toString(), e.getMessage()));
+            }
+        }
+           
+        if(errorsList.size() > 0)
+            showErrors(errorsList);
+        else{
+            setState(Screen.State.DEFAULT);
             window.clearStatus();
         }
-        window.clearStatus();
+        
+        DataChangeEvent.fire(this);
     }
 
     private void entryChanged() {
@@ -347,9 +392,32 @@ public class QuickEntryScreen extends Screen {
         recDate.setStringValue(val);
         if (recDate.exceptions == null) {
             recDate.validate();
-            if (recDate.exceptions == null)
+            if (recDate.exceptions == null){
+                if (windowCloseConfirm == null) {
+                    windowCloseConfirm = new Confirm(Confirm.Type.QUESTION,
+                                                        consts.get("onCloseConfirmTitle"),
+                                                        consts.get("onCloseConfirmBody"),
+                                                        "No", "Yes", "Cancel");
+                        windowCloseConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
+                        public void onSelection(SelectionEvent<Integer> event) {
+                            switch (event.getSelectedItem().intValue()) {
+                                case 0:
+                                    close = true;
+                                    window.close();
+                                    break;
+                                case 1:
+                                    commit();
+                                    break;
+                            }
+                        }
+                    });
+                }
+
+                windowCloseConfirm.show();
+//                recievedDateNotTodayExceptionBody
                 receivedDate.setValue(recDate.getValue());
-            else {
+                
+            } else {
                 LocalizedException e = new LocalizedException("invalidEntryException", val);
                 window.setError(e.getMessage());
             }
@@ -505,15 +573,23 @@ public class QuickEntryScreen extends Screen {
             itemMan = man.getSampleItems();
             anMan = itemMan.getAnalysisAt(bundle.getSampleItemIndex());
 
-            anMan.removeAnalysisAt(bundle.getAnalysisIndex());
-            // if its the last analysis remove the manager
-            if (anMan.count() == 0)
-                itemMan.removeSampleItemAt(bundle.getSampleItemIndex());
-
-            // if its the last item remove the manager from the hash
-            if (itemMan.count() == 0)
+            if(man.getSample().getId() != null && !accessionNumExistsInTable(man.getSample().getAccessionNumber())){
+                man.abortUpdate();
                 managers.remove(man.getSample().getAccessionNumber());
-
+            }else{
+                anMan.removeAnalysisAt(bundle.getAnalysisIndex());
+                // if its the last analysis remove the manager
+                if (anMan.count() == 0)
+                    itemMan.removeSampleItemAt(bundle.getSampleItemIndex());
+    
+                // if its the last item remove the manager from the hash
+                if (itemMan.count() == 0)
+                    managers.remove(man.getSample().getAccessionNumber());
+            }
+            
+            if(quickEntryTable.numRows() == 0)
+                setState(State.DEFAULT);
+            
             window.clearStatus();
         } catch (Exception e) {
             Window.alert("rowDeleted: " + e.getMessage());
@@ -568,6 +644,8 @@ public class QuickEntryScreen extends Screen {
             rowToBeAdded = row;
             analysisTestChanged(id, (typeDO.getTestId() == null), anBundle, sampleMan);
 
+            if(quickEntryTable.numRows() == 1)
+                setState(State.ADD);
         } catch (Exception e) {
             Window.alert("rowAdded: " + e.getMessage());
         }
@@ -637,6 +715,70 @@ public class QuickEntryScreen extends Screen {
         }
 
         return true;
+    }
+    
+    private boolean accessionNumExistsInTable(Integer accessionNumber){
+        TableDataRow row;
+        
+        for(int i=0; i<quickEntryTable.numRows(); i++){
+            row = quickEntryTable.getRow(i);
+            
+            if(accessionNumber.equals(row.cells.get(0).value))
+                return true;
+        }
+        
+        return false;
+    }
+    
+    private ArrayList<TableDataRow> getTableModel() {
+        Collection<SampleManager> manList;
+        Iterator<SampleManager> itr;
+        SampleManager manager;
+        SampleItemManager itemMan;
+        AnalysisManager anMan;
+        SampleDO sampleDO;
+        SampleItemViewDO itemDO;
+        AnalysisViewDO anDO;
+        TableDataRow row;
+        OrganizationContactDO data;
+        ArrayList<TableDataRow> model;
+        
+        model = new ArrayList<TableDataRow>();
+        if (managers.size() == 0)
+            return model;
+
+        try {
+            manList = managers.values();
+            itr = manList.iterator();
+            while(itr.hasNext()){       //samples
+                manager = itr.next();
+                sampleDO = manager.getSample();
+                
+                for(int i=0; i<manager.getSampleItems().count(); i++){ //items
+                    itemMan = manager.getSampleItems();
+                    anMan = itemMan.getAnalysisAt(i);
+                    itemDO = itemMan.getSampleItemAt(i);
+                    
+                    for(int j=0; j<anMan.count(); j++){   //analyses
+                        anDO = anMan.getAnalysisAt(j);
+                        if(anDO.getId() < 0){
+                            row = new TableDataRow(6);
+                            row.cells.get(0).value = sampleDO.getAccessionNumber();
+                            row.cells.get(1).value = sampleDO.getReceivedDate();
+                            row.cells.get(2).value = anDO.getTestName();
+                            row.cells.get(3).value = anDO.getMethodName();
+                            row.cells.get(4).value = itemDO.getTypeOfSample();
+                            //TODO not here yet row.cells.get(5).value = "";
+                            model.add(row);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
+        return model;
     }
 
     private void initializeDropdowns() {

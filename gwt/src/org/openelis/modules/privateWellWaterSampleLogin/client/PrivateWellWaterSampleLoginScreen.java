@@ -38,6 +38,7 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -428,7 +429,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         accessionNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                accessionNumber.setValue(getString(manager.getSample().getAccessionNumber()));
+                accessionNumber.setValue(Util.toString(manager.getSample().getAccessionNumber()));
             }
 
             public void onValueChange(final ValueChangeEvent<Integer> event) {
@@ -457,7 +458,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                     showErrors(e);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
-                    accessionNumber.setValue(getString(null));
+                    accessionNumber.setValue(Util.toString(null));
                     manager.getSample().setAccessionNumber(null);
                     setFocus(accessionNumber);
                 }
@@ -476,7 +477,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         orderNumber = (TextBox<Integer>)def.getWidget("orderNumber");
         addScreenHandler(orderNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                orderNumber.setValue(getString(manager.getSample().getOrderId()));
+                orderNumber.setValue(Util.toString(manager.getSample().getOrderId()));
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {

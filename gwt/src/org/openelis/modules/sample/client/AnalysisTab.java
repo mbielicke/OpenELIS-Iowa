@@ -39,6 +39,7 @@ import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
@@ -257,7 +258,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         revision = (TextBox)def.getWidget(SampleMeta.getAnalysisRevision());
         addScreenHandler(revision, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                revision.setValue(getString(analysis.getRevision()));
+                revision.setValue(Util.toString(analysis.getRevision()));
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {

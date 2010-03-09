@@ -31,6 +31,7 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.gwt.common.Util;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -167,7 +168,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
         quantity = (TextBox)def.getWidget(SampleMeta.getItemQuantity());
         addScreenHandler(quantity, new ScreenEventHandler<Double>() {
             public void onDataChange(DataChangeEvent event) {
-                quantity.setValue(getString(sampleItem.getQuantity()));
+                quantity.setValue(Util.toString(sampleItem.getQuantity()));
             }
 
             public void onValueChange(ValueChangeEvent<Double> event) {

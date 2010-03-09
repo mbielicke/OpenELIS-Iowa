@@ -123,8 +123,12 @@ public class AnalysisManagerProxy {
                 if(analysisDO.getPreAnalysisId() == null){
                     if(!idHash.containsKey(analysisDO.getId())){
                         Integer oldId = analysisDO.getId();
-                        update(man, analysisDO, i);
-
+                        
+                        if(oldId != null && oldId > 0)
+                            update(man, analysisDO, i);
+                        else
+                            add(man, analysisDO, i);
+                        
                         idHash.put(oldId, analysisDO.getId());
                         idHash.put(analysisDO.getId(), null);
                     }
@@ -134,7 +138,11 @@ public class AnalysisManagerProxy {
                     if(prepId != null){
                         Integer oldId = analysisDO.getId();
                         analysisDO.setPreAnalysisId(prepId);
-                        update(man, analysisDO, i);
+                        
+                        if(oldId != null && oldId > 0)
+                            update(man, analysisDO, i);
+                        else
+                            add(man, analysisDO, i);
                         
                         idHash.put(oldId, analysisDO.getId());
                         idHash.put(analysisDO.getId(), null);
@@ -145,7 +153,10 @@ public class AnalysisManagerProxy {
                     if(prepId == null){
                         Integer oldId = analysisDO.getId();
                         
-                        update(man, analysisDO, i);
+                        if(oldId != null && oldId > 0)
+                            update(man, analysisDO, i);
+                        else
+                            add(man, analysisDO, i);
                         
                         idHash.put(oldId, analysisDO.getId());
                         
