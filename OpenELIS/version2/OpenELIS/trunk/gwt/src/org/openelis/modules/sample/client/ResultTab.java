@@ -43,6 +43,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Popup;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataCell;
@@ -378,45 +379,6 @@ public class ResultTab extends Screen {
                 if (suggestionsScreen == null) {
                     try {
                         suggestionsScreen = new ResultSuggestionsScreen();
-                        suggestionsScreen.addActionHandler(new ActionHandler<ResultSuggestionsScreen.Action>() {
-                            public void onAction(ActionEvent<ResultSuggestionsScreen.Action> event) {
-                                if (event.getAction() == ResultSuggestionsScreen.Action.OK) {
-                                    int row;
-                                    int col;
-                                    ResultViewDO resultDO;
-                                    TestResultDO testResultDO;
-                                    Integer testResultId;
-                                    String val;
-
-                                    row = testResultsTable.getSelectedRow();
-                                    col = testResultsTable.getSelectedCol();
-                                    val = (String)event.getData();
-                                    testResultsTable.setCell(row, col, val);
-                                    resultDO = displayManager.getObjectAt(row, col - 2);
-                                    testResultsTable.clearCellExceptions(row, col);
-
-                                    try {
-                                        testResultId = manager.validateResultValue(
-                                                                                   resultDO.getResultGroup(),
-                                                                                   anDO.getUnitOfMeasureId(),
-                                                                                   val);
-                                        testResultDO = manager.getTestResultList()
-                                                              .get(testResultId);
-
-                                        resultDO.setTypeId(testResultDO.getTypeId());
-                                        resultDO.setTestResultId(testResultDO.getId());
-                                        resultDO.setValue(val);
-                                    } catch (ParseException e) {
-                                        testResultsTable.clearCellExceptions(row, col);
-                                        testResultsTable.setCellException(row, col, e);
-                                        resultDO.setTypeId(null);
-                                        resultDO.setTestResultId(null);
-                                    } catch (Exception e) {
-                                        Window.alert(e.getMessage());
-                                    }
-                                }
-                            }
-                        });
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -425,13 +387,12 @@ public class ResultTab extends Screen {
                     }
                 }
 
-                ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-                modal.setName(consts.get("testAnalyteSelection"));
-                modal.setContent(suggestionsScreen);
-
-                suggestionsScreen.setValidator(
-                                               manager.getResultValidator(resultDO.getResultGroup()),
-                                               anDO.getUnitOfMeasureId(), resultDO.getValue());
+                Popup popUp = new Popup(consts.get("suggestions"), suggestionsScreen);
+                
+                suggestionsScreen.setValidator(manager.getResultValidator(resultDO.getResultGroup()),
+                                               anDO.getUnitOfMeasureId());
+                
+                popUp.show();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {

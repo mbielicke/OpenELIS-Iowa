@@ -44,41 +44,14 @@
       <xsl:value-of select="props" />
     </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="ResultSuggestionsScreen" name="{resource:getString($constants,'prepTestPicker')}">
-      <VerticalPanel padding="0" spacing="0">
-        <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
-          <TablePanel style="Form">
-            <row>
-              <text style="Prompt">
-                <xsl:value-of select="resource:getString($constants,'value')" />:
-              </text>
-              <autoComplete key="suggestion" width="180" max="80" popWidth="auto" field="String">
-                <col width="180" header="Suggested Values" />
-              </autoComplete>
-            </row>
-          </TablePanel>
-        </VerticalPanel>
-
-<!--button panel code-->
-
-        <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
-          <HorizontalPanel>
-            <xsl:call-template name="okButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="cancelButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-          </HorizontalPanel>
-        </AbsolutePanel>
-
-<!--end button panel-->
-
-      </VerticalPanel>
+    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="ResultSuggestionsScreen" name="{resource:getString($constants,'suggestions')}">
+    	<VerticalPanel>
+		   	<table key="suggestionsTable" width="auto" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
+		        <col width="400">
+		   	        <label />
+		           </col>
+		   	</table>
+	   	</VerticalPanel>
     </screen>
   </xsl:template>
 </xsl:stylesheet>
