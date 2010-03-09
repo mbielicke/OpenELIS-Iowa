@@ -27,35 +27,25 @@ package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
 
-import org.openelis.gwt.event.ActionEvent;
-import org.openelis.gwt.event.ActionHandler;
-import org.openelis.gwt.event.GetMatchesEvent;
-import org.openelis.gwt.event.GetMatchesHandler;
-import org.openelis.gwt.event.HasActionHandlers;
+import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableRow;
+import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.utilcommon.ResultValidator;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 
-public class ResultSuggestionsScreen extends Screen implements HasActionHandlers<ResultSuggestionsScreen.Action>{
-    public enum Action {OK};
-    
-    protected AutoComplete<String> suggestion;
+public class ResultSuggestionsScreen extends Screen {
+    protected TableWidget suggestionsTable;
     
     protected ResultValidator resultValidator;
     protected Integer unitId;
-    protected String value;
      
      public ResultSuggestionsScreen() throws Exception {
          super((ScreenDefInt)GWT.create(ResultSuggestionsDef.class));
@@ -68,91 +58,48 @@ public class ResultSuggestionsScreen extends Screen implements HasActionHandlers
      }
 
      private void initialize() {
-         suggestion = (AutoComplete<String>)def.getWidget("suggestion");
-         addScreenHandler(suggestion, new ScreenEventHandler<String>() {
-             public void onValueChange(ValueChangeEvent<String> event) {
-                 value = event.getValue();
+         suggestionsTable = (TableWidget)def.getWidget("suggestionsTable");
+         addScreenHandler(suggestionsTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+             public void onDataChange(DataChangeEvent event) {
+                 suggestionsTable.load(getTableModel());
              }
-
-             public void onStateChange(StateChangeEvent<State> event) {
-                 suggestion.enable(true);
-             }
-         });
-         
-         suggestion.addGetMatchesHandler(new GetMatchesHandler() {
-                 public void onGetMatches(GetMatchesEvent event) {
-                     String valueEntered;
-                     TableDataRow row;
-                     ArrayList<TableDataRow> model;
-                     ArrayList<String> suggestions;
-                     
-                     valueEntered= event.getMatch();
-                     
-                     model = new ArrayList<TableDataRow>();
-                     model.add(new TableDataRow(valueEntered, valueEntered));
-                     
-                     suggestions = resultValidator.getRanges(unitId);
-                     for(int i=0; i<suggestions.size(); i++){
-                         row = new TableDataRow(suggestions.get(i),suggestions.get(i));
-                         row.enabled = false;
-                         model.add(row);
-                     }
-                     
-                     suggestions = resultValidator.getDictionaryRanges(unitId);
-                     for(int i=0; i<suggestions.size(); i++)
-                         model.add(new TableDataRow(suggestions.get(i),suggestions.get(i)));
-                     
-                     ((AutoComplete<String>)event.getSource()).showAutoMatches(model);
-                 }
-             });
              
-         
-         final AppButton okButton = (AppButton)def.getWidget("ok");
-         addScreenHandler(okButton, new ScreenEventHandler<Object>() {
-             public void onClick(ClickEvent event) {
-                 ok();
-             }
-
              public void onStateChange(StateChangeEvent<State> event) {
-                 okButton.enable(true);
+                 suggestionsTable.enable(true);
              }
          });
          
-         final AppButton cancelButton = (AppButton)def.getWidget("cancel");
-         addScreenHandler(cancelButton, new ScreenEventHandler<Object>() {
-             public void onClick(ClickEvent event) {
-                 cancel();
-             }
-
-             public void onStateChange(StateChangeEvent<State> event) {
-                 cancelButton.enable(true);
-             }
+         suggestionsTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>(){
+            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+                //do nothing
+            } 
          });
-
      }
      
-     private void ok(){
-         window.close();
-         ActionEvent.fire(this, Action.OK, value);
+     private ArrayList<TableDataRow> getTableModel(){
+         TableDataRow row;
+         ArrayList<TableDataRow> model;
+         ArrayList<String> suggestions;
+         
+         model = new ArrayList<TableDataRow>();
+         
+         suggestions = resultValidator.getRanges(unitId);
+         for(int i=0; i<suggestions.size(); i++){
+             row = new TableDataRow(suggestions.get(i),suggestions.get(i));
+             model.add(row);
+         }
+         
+         suggestions = resultValidator.getDictionaryRanges(unitId);
+         for(int i=0; i<suggestions.size(); i++)
+             model.add(new TableDataRow(suggestions.get(i),suggestions.get(i)));
+         
+         return model;
      }
      
-     private void cancel(){
-         window.close();
-     }
-     
-     public void setValidator(ResultValidator resultValidator, Integer unitId, String currentValue){
+     public void setValidator(ResultValidator resultValidator, Integer unitId){
          this.resultValidator = resultValidator;
          this.unitId = unitId;
          
-         suggestion.setSelection(currentValue, currentValue);
-         DeferredCommand.addCommand(new Command() {
-             public void execute() {
-                 setFocus(suggestion);
-             }
-         });
-     }
-
-     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
-         return addHandler(handler, ActionEvent.getType());
+         DataChangeEvent.fire(this);
      }
  }

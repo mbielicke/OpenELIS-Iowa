@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.exception.ParseException;
+import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.RPC;
 
 /**
@@ -189,7 +190,8 @@ public class ResultValidator implements RPC {
         ArrayList<Item> list;
         ArrayList<String> ranges;
         HashMap<String, Integer> dictUnit;
-
+        LocalizedException e;
+        
         if (unitId == null)
             unitId = 0;
 
@@ -199,9 +201,22 @@ public class ResultValidator implements RPC {
             list = units.get(0);
 
         ranges = new ArrayList<String>();
+        e = null;
         if (list != null)
-            for (Item i : list)
-                ranges.add(i.resultRange.toString());
+            for (Item i : list){
+                if(i.type == Type.NUMERIC)
+                    e = new LocalizedException("numbericPlainText", i.resultRange.toString());
+                else if(i.type == Type.TITER)
+                    e = new LocalizedException("titerPlainText", i.resultRange.toString());
+                else if(i.type ==  Type.DATE)
+                    e = new LocalizedException("datePlainText", i.resultRange.toString());
+                else if(i.type == Type.DATE_TIME)
+                    e = new LocalizedException("datetimePlainText", i.resultRange.toString());
+                else if(i.type == Type.TIME)
+                    e = new LocalizedException("timePlainText", i.resultRange.toString());
+                
+                ranges.add(e.getMessage());
+            }
 
         return ranges;
     }
@@ -213,6 +228,7 @@ public class ResultValidator implements RPC {
         ArrayList<Item> list;
         ArrayList<String> ranges;
         HashMap<String, Integer> dictUnit;
+        LocalizedException e;
 
         if (unitId == null)
             unitId = 0;
@@ -222,10 +238,13 @@ public class ResultValidator implements RPC {
         if (list == null && dictUnit == null)
             dictUnit = dictionary.get(0);
 
+        e = null;
         ranges = new ArrayList<String>();
         if (dictUnit != null)
-            for (String i : dictUnit.keySet())
-                ranges.add(i);
+            for (String i : dictUnit.keySet()){
+                e = new LocalizedException("dictionaryPlainText", i);
+                ranges.add(e.getMessage());
+            }
 
         return ranges;
     }
