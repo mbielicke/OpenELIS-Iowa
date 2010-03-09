@@ -146,7 +146,9 @@ UIRF Software License are applicable instead of those above.
                 <code>if(OpenELIS.security.hasModule("order","SELECT")){</code>
                 <menuItem key="internalOrder" description="{resource:getString($constants,'internalOrderDescription')}" enable="true" icon="internalOrderIcon" label="{resource:getString($constants,'internalOrder')}" />
                 <code>}</code>
-                <menuItem key="vendorOrder" description="{resource:getString($constants,'vendorOrderDescription')}" enable="false" icon="vendorOrderIcon" label="{resource:getString($constants,'vendorOrder')}" />
+                <code>if(OpenELIS.security.hasModule("order","SELECT")){</code>
+                <menuItem key="vendorOrder" description="{resource:getString($constants,'vendorOrderDescription')}" enable="true" icon="vendorOrderIcon" label="{resource:getString($constants,'vendorOrder')}" />
+                <code>}</code>
                 <code>if(OpenELIS.security.hasModule("order","SELECT")){</code>
                 <menuItem key="kitOrder" description="{resource:getString($constants,'kitOrderDescription')}" enable="true" icon="kitOrderIcon" label="{resource:getString($constants,'kitOrder')}" />
                 <code>}</code>

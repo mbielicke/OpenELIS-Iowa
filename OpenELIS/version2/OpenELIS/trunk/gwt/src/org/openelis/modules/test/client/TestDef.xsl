@@ -396,7 +396,7 @@ UIRF Software License are applicable instead of those above.
                 </tab>
                 <tab key="analyteTab" tab="analyteTable,analyteTable" text="{resource:getString($constants,'analytesResults')}">
                   <VerticalPanel padding="0" spacing="0">
-                    <table key="analyteTable" width="607px" maxRows="8" showScroll="ALWAYS">
+                    <table key="analyteTable" width="607px" maxRows="8" showScroll="ALWAYS" multiSelect = "true">
                       <col key="analyteLookup" width="152" sort="false" header="1">
                         <autoComplete width="125px" case="MIXED" popWidth="auto" field="Integer">
                           <col width="300" />
@@ -469,7 +469,7 @@ UIRF Software License are applicable instead of those above.
                           <text style="Prompt">
                             <xsl:value-of select="resource:getString($constants,'type')" />:
                           </text>
-                          <dropdown key="{meta:getAnalyteTypeId()}" width="75px" field="Integer" />
+                          <dropdown key="{meta:getAnalyteTypeId()}" width="75px" popWidth = "90px" field="Integer" />
                           <text style="Prompt">
                             <xsl:value-of select="resource:getString($constants,'reportable')" />:
                           </text>

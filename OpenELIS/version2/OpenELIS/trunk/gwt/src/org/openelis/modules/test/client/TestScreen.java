@@ -61,6 +61,7 @@ import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -542,7 +543,7 @@ public class TestScreen extends Screen {
         timeTaMax = (TextBox)def.getWidget(TestMeta.getTimeTaMax());
         addScreenHandler(timeTaMax, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                timeTaMax.setValue(getString(manager.getTest().getTimeTaMax()));
+                timeTaMax.setValue(Util.toString(manager.getTest().getTimeTaMax()));
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -559,7 +560,7 @@ public class TestScreen extends Screen {
         timeTaAverage = (TextBox)def.getWidget(TestMeta.getTimeTaAverage());
         addScreenHandler(timeTaAverage, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                timeTaAverage.setValue(getString(manager.getTest().getTimeTaAverage()));
+                timeTaAverage.setValue(Util.toString(manager.getTest().getTimeTaAverage()));
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -576,7 +577,7 @@ public class TestScreen extends Screen {
         timeTaWarning = (TextBox)def.getWidget(TestMeta.getTimeTaWarning());
         addScreenHandler(timeTaWarning, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                timeTaWarning.setValue(getString(manager.getTest().getTimeTaWarning()));
+                timeTaWarning.setValue(Util.toString(manager.getTest().getTimeTaWarning()));
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -593,7 +594,7 @@ public class TestScreen extends Screen {
         timeTransit = (TextBox)def.getWidget(TestMeta.getTimeTransit());
         addScreenHandler(timeTransit, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                timeTransit.setValue(getString(manager.getTest().getTimeTransit()));
+                timeTransit.setValue(Util.toString(manager.getTest().getTimeTransit()));
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -610,7 +611,7 @@ public class TestScreen extends Screen {
         timeHolding = (TextBox)def.getWidget(TestMeta.getTimeHolding());
         addScreenHandler(timeHolding, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                timeHolding.setValue(getString(manager.getTest().getTimeHolding()));
+                timeHolding.setValue(Util.toString(manager.getTest().getTimeHolding()));
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -724,7 +725,7 @@ public class TestScreen extends Screen {
         labelQty = (TextBox)def.getWidget(TestMeta.getLabelQty());
         addScreenHandler(labelQty, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                labelQty.setValue(getString(manager.getTest().getLabelQty()));
+                labelQty.setValue(Util.toString(manager.getTest().getLabelQty()));
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -930,7 +931,7 @@ public class TestScreen extends Screen {
         reportingSequence = (TextBox)def.getWidget(TestMeta.getReportingSequence());
         addScreenHandler(reportingSequence, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                reportingSequence.setValue(getString(manager.getTest().getReportingSequence()));
+                reportingSequence.setValue(Util.toString(manager.getTest().getReportingSequence()));
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {

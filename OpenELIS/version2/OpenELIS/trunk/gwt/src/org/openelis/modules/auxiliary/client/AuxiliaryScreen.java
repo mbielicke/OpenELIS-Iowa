@@ -1322,6 +1322,9 @@ public class AuxiliaryScreen extends Screen {
     private void validateValue(AuxFieldValueViewDO data, String value) throws LocalizedException {
         IdNameVO dict;
 
+        if(value == null)
+            return;
+        
         try {
             if (typeDict.equals(data.getTypeId())) {
                 dict = getDictionary((String)value);
