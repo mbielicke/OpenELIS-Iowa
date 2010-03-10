@@ -709,10 +709,21 @@ public class AnalysisManager implements RPC {
     }
 
     protected void removeAnalysisAtNoDelete(int index) {
+        SampleDataBundle bundle;
+        
         if (items == null || index >= items.size())
             return;
 
         items.remove(index);
+        
+        // renumber sample bundle analyses indexes
+        // when a node is removed
+        for (int i = index; i < items.size(); i++ ) {
+            bundle = items.get(i).bundle;
+
+            if (bundle != null)
+                bundle.setIndex(i);
+        }
     }
 
     // these are friendly methods so only managers and proxies can call this
