@@ -81,15 +81,18 @@ public class SampleItemAnalysisTreeTab extends Screen
         REFRESH_TABS
     };
 
-    private Integer           analysisCancelledId, analysisReleasedId;
-    protected TreeWidget      itemsTree;
-    protected AppButton       removeRow, addItem, addAnalysis;
-    private HasActionHandlers parentScreen;
-    private SampleManager     manager;
-    protected SampleTreeUtility  treeUtil;
-    protected boolean         loaded = false;
+    private Integer                       analysisCancelledId, analysisReleasedId;
+    protected TreeWidget                  itemsTree;
+    protected AppButton                   removeRow, addItem, addAnalysis, popoutTree;
+    private HasActionHandlers             parentScreen;
+    private SampleManager                 manager;
+    protected SampleTreeUtility           treeUtil;
+    protected SampleItemAnalysisTreeTab   treeTab;
+    protected SampleItemsPopoutTreeLookup treePopoutScreen;
+    protected boolean                     loaded = false;
 
-    public SampleItemAnalysisTreeTab(ScreenDefInt def, ScreenWindow window, HasActionHandlers parentScreen) {
+    public SampleItemAnalysisTreeTab(ScreenDefInt def, ScreenWindow window,
+                                     HasActionHandlers parentScreen) {
         setDefinition(def);
         setWindow(window);
 
@@ -100,29 +103,30 @@ public class SampleItemAnalysisTreeTab extends Screen
     }
 
     private void initialize() {
-        final SampleItemAnalysisTreeTab treeTab = this;
-        
+        treeTab = this;
+
         itemsTree = (TreeWidget)def.getWidget("itemsTestsTree");
-        treeUtil = new SampleTreeUtility(window, itemsTree, parentScreen){
-            public TreeDataItem addNewTreeRowFromBundle(TreeDataItem parentRow, SampleDataBundle bundle) {
+        treeUtil = new SampleTreeUtility(window, itemsTree, parentScreen) {
+            public TreeDataItem addNewTreeRowFromBundle(TreeDataItem parentRow,
+                                                        SampleDataBundle bundle) {
                 TreeDataItem row;
-                
+
                 row = new TreeDataItem(2);
                 row.leafType = "analysis";
                 row.data = bundle;
-                
+
                 itemsTree.addChildItem(parentRow, row);
-                
+
                 return row;
             }
         };
-        
-        treeUtil.addActionHandler(new ActionHandler(){
+
+        treeUtil.addActionHandler(new ActionHandler() {
             public void onAction(ActionEvent event) {
                 ActionEvent.fire(null, event.getAction(), event.getData());
             }
         });
-        
+
         addScreenHandler(itemsTree, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 itemsTree.load(getTreeModel());
@@ -284,10 +288,24 @@ public class SampleItemAnalysisTreeTab extends Screen
         addScreenHandler(removeRow, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 treeUtil.onRemoveRowButtonClick();
+                
+                if(itemsTree.getSelectedRow() == -1)
+                    removeRow.enable(false);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 removeRow.enable(false);
+            }
+        });
+
+        popoutTree = (AppButton)def.getWidget("popoutTree");
+        addScreenHandler(popoutTree, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                onTreePopoutClick();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                popoutTree.enable(EnumSet.of(State.DISPLAY, State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -312,11 +330,39 @@ public class SampleItemAnalysisTreeTab extends Screen
                     selected = itemsTree.getSelection();
                     treeUtil.updateAnalysisRow(selected);
                     itemsTree.refreshRow(selected);
-                } else if(event.getAction() == ResultTab.Action.RESULT_HISTORY){
+                } else if (event.getAction() == ResultTab.Action.RESULT_HISTORY) {
                     historyCurrentResult();
                 }
             }
         });
+    }
+
+    private void onTreePopoutClick() {
+        try {
+            if (treePopoutScreen == null) {
+                // final EnvironmentalTab env = this;
+                treePopoutScreen = new SampleItemsPopoutTreeLookup();
+
+                treePopoutScreen.addActionHandler(new ActionHandler<SampleItemsPopoutTreeLookup.Action>() {
+                    public void onAction(ActionEvent<SampleItemsPopoutTreeLookup.Action> event) {
+                        DataChangeEvent.fire(treeTab, itemsTree);
+
+                    }
+                });
+            }
+
+            ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+            modal.setName(consts.get("itemsAndAnalyses"));
+
+            modal.setContent(treePopoutScreen);
+            treePopoutScreen.setData(manager);
+            treePopoutScreen.setScreenState(state);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert("onTreePopoutClick: " + e.getMessage());
+            return;
+        }
     }
 
     private void initializeDropdowns() {
@@ -340,9 +386,6 @@ public class SampleItemAnalysisTreeTab extends Screen
 
         ((Dropdown<Integer>)itemsTree.getColumns().get("analysis").get(1).colWidget).setModel(model);
     }
-
-    
-    
 
     private ArrayList<TreeDataItem> getTreeModel() {
         int i, j;
@@ -371,7 +414,7 @@ public class SampleItemAnalysisTreeTab extends Screen
                 treeUtil.updateSampleItemRow(row);
 
                 tmp = keyTable.get(itemDO.getId());
-                if (tmp != null) {
+                if (itemDO.getId() != null && tmp != null) {
                     tmp.addItem(row);
                 } else {
                     keyTable.put(itemDO.getId(), row);
@@ -403,7 +446,8 @@ public class SampleItemAnalysisTreeTab extends Screen
 
         return model;
     }
-    protected void historyCurrentResult(){
+
+    protected void historyCurrentResult() {
         TreeDataItem item;
         SampleDataBundle bundle;
         AnalysisResultManager man;
@@ -412,43 +456,45 @@ public class SampleItemAnalysisTreeTab extends Screen
         ResultViewDO data;
         ArrayList<IdNameVO> refVoArrayList;
         IdNameVO[] refVoList;
-        
+
         item = itemsTree.getSelection();
-        
-        if(item == null || !"analysis".equals(item.leafType)){
+
+        if (item == null || !"analysis".equals(item.leafType)) {
             window.setError(consts.get("resultHistoryException"));
             return;
         }
-        
-        try{
+
+        try {
             bundle = (SampleDataBundle)item.data;
-            man = manager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).getAnalysisResultAt(bundle.getAnalysisIndex());
+            man = manager.getSampleItems()
+                         .getAnalysisAt(bundle.getSampleItemIndex())
+                         .getAnalysisResultAt(bundle.getAnalysisIndex());
             rowCount = man.rowCount();
             refVoArrayList = new ArrayList<IdNameVO>();
-            for(i=0; i<rowCount; i++){
+            for (i = 0; i < rowCount; i++ ) {
                 row = man.getRowAt(i);
                 count = row.size();
-                
-                for(j=0; j<count; j++){
+
+                for (j = 0; j < count; j++ ) {
                     data = row.get(j);
                     refVoArrayList.add(new IdNameVO(data.getId(), data.getAnalyte()));
                 }
             }
-    
+
             refVoList = new IdNameVO[refVoArrayList.size()];
-            for(i=0; i<refVoArrayList.size(); i++)
+            for (i = 0; i < refVoArrayList.size(); i++ )
                 refVoList[i] = refVoArrayList.get(i);
-    
+
             HistoryScreen.showHistory(OpenELIS.consts.get("historyCurrentResult"),
-                          ReferenceTable.RESULT, refVoList);
+                                      ReferenceTable.RESULT, refVoList);
             window.clearStatus();
-            
+
         } catch (Exception e) {
             window.clearStatus();
-            Window.alert("historyCurrentResult: "+e.getMessage());
-        }        
+            Window.alert("historyCurrentResult: " + e.getMessage());
+        }
     }
-    
+
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
         return addHandler(handler, ActionEvent.getType());
     }
