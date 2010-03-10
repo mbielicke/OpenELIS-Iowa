@@ -99,12 +99,7 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
                     cancelAnalysisConfirm.show();
 
                 } else {
-                    bundle = (SampleDataBundle)selectedTreeRow.data;
-                    anDO = manager.getSampleItems()
-                                  .getAnalysisAt(bundle.getSampleItemIndex())
-                                  .getAnalysisAt(bundle.getAnalysisIndex());
-
-                    cleanupTestsWithPrep(anDO.getId());
+                    cleanupTestsWithPrep(selectedTreeRow);
                     itemsTree.deleteRow(selectedTreeRow);
                 }
             } else {
@@ -142,19 +137,25 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
         window.clearStatus();
     }
 
-    public void cleanupTestsWithPrep(Integer analysisId) {
+    public void cleanupTestsWithPrep(TreeDataItem selectedRow) {
         TreeDataItem treeItem;
         SampleDataBundle bundle;
         AnalysisManager anMan;
         AnalysisViewDO anDO;
-
+        Integer analysisId;
+        
         try {
-            // grab the sample item parent
-            TreeDataItem selectedRow = itemsTree.getSelection();
+            // grab the current analysis id
+            bundle = (SampleDataBundle)selectedRow.data;
+            analysisId = manager.getSampleItems()
+                          .getAnalysisAt(bundle.getSampleItemIndex())
+                          .getAnalysisAt(bundle.getAnalysisIndex()).getId();
+            
             if ("analysis".equals(selectedRow.leafType))
                 selectedRow = selectedRow.parent;
 
             anMan = null;
+            bundle = null;
             // iterate through all the children
             for (int i = 0; i < selectedRow.getItems().size(); i++ ) {
                 treeItem = selectedRow.getItem(i);
@@ -223,7 +224,7 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
             itemsTree.refreshRow(treeRow);
 
             // cleanup the other rows
-            cleanupTestsWithPrep(anMan.getAnalysisAt(bundle.getAnalysisIndex()).getId());
+            cleanupTestsWithPrep(treeRow);
 
             ActionEvent.fire(this, Action.REFRESH_TABS, bundle);
             

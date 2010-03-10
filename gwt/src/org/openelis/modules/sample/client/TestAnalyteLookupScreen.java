@@ -77,16 +77,6 @@ public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers
         DataChangeEvent.fire(this);
     }
     
-    /**
-     * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred
-     * command.
-     */
-    private void postConstructor() {
-
-
-    }
-    
     private void initialize() {
         testAnalyteTable = (TableWidget)def.getWidget("testAnalyteTable");
         addScreenHandler(testAnalyteTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {

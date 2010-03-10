@@ -210,8 +210,8 @@ UIRF Software License are applicable instead of those above.
                   </tree>
                 </row>
                 <row>
-                  <widget style="TreeButtonFooter">
-                    <HorizontalPanel>
+                 	<widget style="TreeButtonFooter">
+                    	<HorizontalPanel>
                       <appButton key="addItemButton" style="Button">
                         <HorizontalPanel>
                           <AbsolutePanel style="AddRowButtonImage" />
@@ -228,7 +228,7 @@ UIRF Software License are applicable instead of those above.
                           </text>
                         </HorizontalPanel>
                       </appButton>
-                      <appButton key="removeRowButton" style="Button" action="removeRow">
+                      <appButton key="removeRowButton" style="Button">
                         <HorizontalPanel>
                           <AbsolutePanel style="RemoveRowButtonImage" />
                           <text>
@@ -236,8 +236,16 @@ UIRF Software License are applicable instead of those above.
                           </text>
                         </HorizontalPanel>
                       </appButton>
-                    </HorizontalPanel>
-                  </widget>
+                      <appButton key="popoutTree" style="Button">
+                      <HorizontalPanel>
+                          <AbsolutePanel style="popoutButtonImage" />
+                          <text>
+                            Pop-out
+                          </text>
+                        </HorizontalPanel>
+                      </appButton>
+                      </HorizontalPanel>
+					</widget>
                 </row>
               </TablePanel>
             </VerticalPanel>
