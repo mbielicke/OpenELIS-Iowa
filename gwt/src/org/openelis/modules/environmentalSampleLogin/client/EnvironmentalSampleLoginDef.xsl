@@ -240,7 +240,7 @@ UIRF Software License are applicable instead of those above.
                       <HorizontalPanel>
                           <AbsolutePanel style="popoutButtonImage" />
                           <text>
-                            Pop-out
+                          <xsl:value-of select="resource:getString($constants,'popout')" />
                           </text>
                         </HorizontalPanel>
                       </appButton>
