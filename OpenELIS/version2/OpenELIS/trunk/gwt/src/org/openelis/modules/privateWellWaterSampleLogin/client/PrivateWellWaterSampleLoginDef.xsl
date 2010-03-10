@@ -334,6 +334,14 @@ UIRF Software License are applicable instead of those above.
                           </text>
                         </HorizontalPanel>
                       </appButton>
+                      <appButton key="popoutTree" style="Button">
+                      <HorizontalPanel>
+                          <AbsolutePanel style="popoutButtonImage" />
+                          <text>
+                          <xsl:value-of select="resource:getString($constants,'popout')" />
+                          </text>
+                        </HorizontalPanel>
+                      </appButton>
                     </HorizontalPanel>
                   </widget>
                 </row>
