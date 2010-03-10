@@ -229,19 +229,21 @@ public class SampleItemManager implements RPC {
      * @throws Exception
      */
     public void moveAnalysis(SampleDataBundle fromAnalysisBundle,  SampleDataBundle toBundle) throws Exception {
-        int toIndex, anIndex; 
+        int toItemIndex, fromItemIndex, fromAnalysisIndex; 
         AnalysisManager fromMan, toMan; 
         AnalysisViewDO analysisDO;
         
         assert fromAnalysisBundle.getType() == SampleDataBundle.Type.ANALYSIS : "from bundle needs to be analysis bundle";
         
-        toIndex = toBundle.getSampleItemIndex();
-        anIndex = fromAnalysisBundle.getAnalysisIndex();
-        fromMan = getAnalysisAt(anIndex); 
-        toMan = getAnalysisAt(toIndex); 
+        toItemIndex = toBundle.getSampleItemIndex();
+        fromItemIndex = fromAnalysisBundle.getSampleItemIndex();
+        fromAnalysisIndex = fromAnalysisBundle.getAnalysisIndex();
         
-        analysisDO = fromMan.getAnalysisAt(anIndex);
-        fromMan.removeAnalysisAtNoDelete(anIndex); 
+        fromMan = getAnalysisAt(fromItemIndex); 
+        toMan = getAnalysisAt(toItemIndex); 
+        
+        analysisDO = fromMan.getAnalysisAt(fromAnalysisIndex);
+        fromMan.removeAnalysisAtNoDelete(fromAnalysisIndex); 
         toMan.addAnalysis(analysisDO);
     }
     
