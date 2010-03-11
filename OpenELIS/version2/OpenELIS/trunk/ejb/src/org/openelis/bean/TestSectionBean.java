@@ -101,23 +101,23 @@ public class TestSectionBean implements TestSectionLocal {
         return data;
     }
     
-    public void delete(TestSectionViewDO tsDO) throws Exception {
+    public void delete(TestSectionViewDO data) throws Exception {
         TestSection ts;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        ts = manager.find(TestSection.class, tsDO.getId());
+        ts = manager.find(TestSection.class, data.getId());
 
         if (ts != null)
             manager.remove(ts);
 
     }
 
-    public void validate(TestSectionViewDO secDO) throws Exception {        
+    public void validate(TestSectionViewDO data) throws Exception {        
         ValidationErrorsList list;
         
         list = new ValidationErrorsList();
-        if (secDO.getSectionId() == null) {
+        if (data.getSectionId() == null) {
             list.add(new FieldErrorException("fieldRequiredException",
                                              TestMeta.getSectionSectionId()));
         } 

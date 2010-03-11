@@ -295,8 +295,7 @@ public class PanelScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                panelItemTable.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                             .contains(event.getState()));
+                panelItemTable.enable(true);
                 panelItemTable.setQueryMode(event.getState() == State.QUERY);
             }
         });

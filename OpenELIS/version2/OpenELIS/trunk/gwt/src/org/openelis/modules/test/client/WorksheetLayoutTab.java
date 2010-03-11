@@ -47,6 +47,7 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -56,6 +57,8 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
@@ -100,9 +103,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         
         initialize();
         initializeDropdowns();            
-    }
-    
-
+    }    
 
     private void initialize() {
         screen = this;
@@ -126,8 +127,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                formatId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
-                                       .contains(event.getState()));
+                formatId.enable(true);
                 formatId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -265,6 +265,13 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
 
         });
+        
+        worksheetTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {                
+                if(state != State.ADD && state != State.UPDATE && state != State.QUERY)  
+                    event.cancel();
+            }            
+        });
 
         worksheetTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
@@ -358,10 +365,16 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                worksheetAnalyteTable.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                                    .contains(event.getState()));
+                worksheetAnalyteTable.enable(true);
                 worksheetAnalyteTable.setQueryMode(event.getState() == State.QUERY);
             }
+        });
+        
+        worksheetAnalyteTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {                
+                if(state != State.ADD && state != State.UPDATE && state != State.QUERY)  
+                    event.cancel();
+            }            
         });
 
         worksheetAnalyteTable.addCellEditedHandler(new CellEditedHandler() {
