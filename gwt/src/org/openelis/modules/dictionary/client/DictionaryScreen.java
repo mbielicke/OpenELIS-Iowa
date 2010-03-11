@@ -69,6 +69,8 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
@@ -393,14 +395,20 @@ public class DictionaryScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
                 
-                enable = EnumSet.of(State.QUERY, State.ADD, State.UPDATE).contains(event.getState());
-                dictTable.enable(enable);
+                dictTable.enable(true);
                 dictTable.setQueryMode(event.getState() == State.QUERY);
 
                 enable = EnumSet.of(State.ADD, State.UPDATE).contains(event.getState());
                 dictTable.enableDrag(enable);
                 dictTable.enableDrop(enable);
             }
+        });
+        
+        dictTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {                
+                if(state != State.ADD && state != State.UPDATE && state != State.QUERY)  
+                    event.cancel();
+            }            
         });
 
         dictTable.addCellEditedHandler(new CellEditedHandler() {

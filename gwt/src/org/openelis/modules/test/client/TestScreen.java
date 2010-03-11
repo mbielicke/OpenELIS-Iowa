@@ -77,6 +77,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -92,6 +93,8 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
@@ -747,10 +750,16 @@ public class TestScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sectionTable.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                           .contains(event.getState()));
+                sectionTable.enable(true);
                 sectionTable.setQueryMode(event.getState() == State.QUERY);
             }
+        });
+        
+        sectionTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {                
+                if(state != State.ADD && state != State.UPDATE && state != State.QUERY)  
+                    event.cancel();
+            }            
         });
 
         sectionTable.addCellEditedHandler(new CellEditedHandler() {
@@ -759,14 +768,17 @@ public class TestScreen extends Screen {
                 Integer val;
                 String systemName;
                 TestSectionViewDO data;
+                TestSectionManager man;
 
                 r = event.getRow();
                 c = event.getCol();
+                     
                 val = (Integer)sectionTable.getObject(r, c);
-
+                                
                 try {
-                    data = manager.getTestSections().getSectionAt(r);
-
+                    man = manager.getTestSections();
+                    data = man.getSectionAt(r);
+                                                        
                     switch (c) {
                         case 0:
                             data.setSectionId(val);
@@ -778,16 +790,16 @@ public class TestScreen extends Screen {
                             systemName = DictionaryCache.getSystemNameFromId(val);
                             if (systemName != null) {
                                 if ("test_section_default".equals(systemName)) {
-                                    for (i = 0; i < manager.getTestSections().count(); i++ ) {
+                                    for (i = 0; i < man.count(); i++ ) {
                                         if (i == r)
                                             continue;
-                                        data = manager.getTestSections().getSectionAt(i);
+                                        data = man.getSectionAt(i);
                                         data.setFlagId(null);
                                         sectionTable.setCell(i,c,null);
                                     }
                                 } else {
-                                    for (i = 0; i < manager.getTestSections().count(); i++ ) {
-                                        data = manager.getTestSections().getSectionAt(i);
+                                    for (i = 0; i < man.count(); i++ ) {
+                                        data = man.getSectionAt(i);
                                         data.setFlagId(val);
                                         sectionTable.setCell(i,c,val);
                                     }

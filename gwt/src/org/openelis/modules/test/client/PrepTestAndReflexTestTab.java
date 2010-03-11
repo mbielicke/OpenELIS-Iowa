@@ -46,6 +46,7 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -113,10 +114,16 @@ public class PrepTestAndReflexTestTab extends Screen implements
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                testPrepTable.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                            .contains(event.getState()));
+                testPrepTable.enable(true);
                 testPrepTable.setQueryMode(event.getState() == State.QUERY);
             }
+        });
+        
+        testPrepTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {                
+                if(state != State.ADD && state != State.UPDATE && state != State.QUERY)  
+                    event.cancel();
+            }            
         });
 
         testPrepTable.addCellEditedHandler(new CellEditedHandler() {
@@ -152,6 +159,7 @@ public class PrepTestAndReflexTestTab extends Screen implements
 
             }
         });
+        
         testPrepTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 int r;
@@ -272,8 +280,7 @@ public class PrepTestAndReflexTestTab extends Screen implements
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                testReflexTable.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                              .contains(event.getState()));
+                testReflexTable.enable(true);
                 testReflexTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -281,8 +288,11 @@ public class PrepTestAndReflexTestTab extends Screen implements
         testReflexTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 int r, c;
-                TableDataRow val;
-
+                TableDataRow val;                
+                            
+                if(state != State.ADD && state != State.UPDATE && state != State.QUERY)  
+                    event.cancel();
+                
                 r = event.getRow();
                 c = event.getCol();
 

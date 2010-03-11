@@ -136,7 +136,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
     private int                                          anaSelCol, tempId;
 
     private ScreenService                                scriptletService, analyteService,
-                    dictionaryService;
+                                                         dictionaryService;
 
     private ResultRangeNumeric                           rangeNumeric;
     private ResultRangeTiter                             rangeTiter;
@@ -181,7 +181,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                analyteTable.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                analyteTable.enable(true);
             }
         });
 
@@ -191,10 +191,9 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
         analyteTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>(){
             public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
                 ArrayList<TableDataRow> selections;
-                TableDataRow row,selRow;
+                TableDataRow row,selRow;             
                 
-                selections = analyteTable.getSelections();
-                //Window.alert("size "+ selections.size());
+                selections = analyteTable.getSelections();  
                 
                 if(state != State.ADD  && state != State.UPDATE) 
                     return;
@@ -228,17 +227,24 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 int r, c;
                 Integer key;
                 TableDataRow row, val, prevVal;
+                AutoComplete<Integer> auto;
                 boolean cancel;
 
                 r = event.getRow();
                 c = event.getCol();
                 anaSelCol = c;
-                enableAnalyteWidgets(true); 
+
+                if (state != State.ADD && state != State.UPDATE) {
+                    event.cancel();
+                }
+
+                enableAnalyteWidgets(true);
                 cancel = false;
-                
+                auto = (AutoComplete<Integer>)analyteTable.getColumns().get(c).getColumnWidget();
+
                 try {
                     row = analyteTable.getRow(r);
-                    if (displayManager.isHeaderRow(r)) {
+                    if ((Boolean)row.data) {
                         // 
                         // the first two columns of a header row are immutable
                         // and we also don't want to allow a user to be able to
@@ -271,7 +277,8 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                             }
 
                             //
-                            // since we cannot allow adding or removing of columns
+                            // since we cannot allow adding or removing of
+                            // columns
                             // if col exceeds the number of columns that a given
                             // row group has for itself in the manager, we set
                             // canAddRemoveColumn to false if this is the case
@@ -288,69 +295,82 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                             // 
                             canAddRemoveColumn = true;
                         }
-                    } else if (c > displayManager.columnCount(r)) {
+                        
                         //
-                        // for a header row, we allow editing of the cell that's
-                        // next to last cell that has data in it but in the case
-                        // of a non-header row, i.e. here we don't;
-                        // only cells under those header cells that have data in
-                        // them can be edited; in addition to this, we disable
-                        // the three widgets and disallow adding or removing
-                        // columns
+                        // send DataChangeEvent to the three widgets to make
+                        // them either show the data that corresponds to this
+                        // cell or make them go blank 
                         //
-                        event.cancel();
-                        cancel = true;
-                        enableAnalyteWidgets(false);
-                        canAddRemoveColumn = false;
-                    } else if (c > 0) {
-                        if (c == 1) {
-                            prevVal = (TableDataRow)row.cells.get(c - 1).getValue();
+                        refreshAnalyteWidgets();
+                    } else {
+                        if (c > displayManager.columnCount(r)) {
                             //
-                            // we disallow the editing of the first result group
-                            // cell if there's no analyte selected in the first
-                            // cell of the analyte row
+                            // for a header row, we allow editing of the cell
+                            // that's next to last cell that has data in it but in the
+                            // case of a non-header row, i.e. here, we don't;
+                            // only cells under those header cells that have
+                            // data in them can be edited; in addition to this, we
+                            // disable the three widgets and disallow adding or removing
+                            // columns
                             //
-                            if (prevVal == null || prevVal.key == null) {
-                                event.cancel();
-                                cancel = true;
+                            event.cancel();
+                            cancel = true;
+                            enableAnalyteWidgets(false);
+                            canAddRemoveColumn = false;                            
+                        } else if (c > 0) {
+                            if (c == 1) {
+                                prevVal = (TableDataRow)row.cells.get(c - 1).getValue();
+                                //
+                                // we disallow the editing of the first result
+                                // group
+                                // cell if there's no analyte selected in the
+                                // first
+                                // cell of the analyte row
+                                //
+                                if (prevVal == null || prevVal.key == null) {
+                                    event.cancel();
+                                    cancel = true;
+                                }
                             }
-                        }
-                        val = (TableDataRow)row.cells.get(c).getValue();
-                        if (val != null && val.key != null) {
-                            //
-                            // here we check to see if there was a result group
-                            // selected and if there was we open the tab
-                            // corresponding
-                            // to it
-                            key = (Integer)val.key;
-                            if (key - 1 < resultTabPanel.getTabBar().getTabCount()) {
-                                resultTabPanel.selectTab(key - 1);
+                            val = (TableDataRow)row.cells.get(c).getValue();
+                            if (val != null && val.key != null) {
+                                //
+                                // here we check to see if there was a result
+                                // group
+                                // selected and if there was we open the tab
+                                // corresponding
+                                // to it
+                                key = (Integer)val.key;
+                                if (key - 1 < resultTabPanel.getTabBar().getTabCount()) {
+                                    resultTabPanel.selectTab(key - 1);
+                                }
                             }
+                            // 
+                            // we disable the three widgets and disallow adding
+                            // or removing columns and make the three widget to
+                            // show no data
+                            //
+                            enableAnalyteWidgets(false);
+                            canAddRemoveColumn = false;
+                            anaSelCol = -1;
+                            auto.setDelay(1);
                         }
-                        // 
-                        // we disable the three widgets and disallow adding or
-                        // removing columns and make the three widget to show no
-                        // data
+                        
                         //
-                        enableAnalyteWidgets(false);
-                        canAddRemoveColumn = false;
-                        anaSelCol = -1;
+                        // send DataChangeEvent to the three widgets to make
+                        // them either show the data that corresponds to this
+                        // cell or make them go blank 
+                        //  
+                        refreshAnalyteWidgets();
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                
-                if(analyteTable.getSelections().size() > 1 && !cancel) 
-                    window.setStatus(consts.get("multiSelRowEditCol")+c,"");
+
+                if (analyteTable.getSelections().size() > 1 && !cancel)
+                    window.setStatus(consts.get("multiSelRowEditCol") + c, "");
                 else
                     window.clearStatus();
-
-                //
-                // send DataChangeEvent to the three widgets to make them either
-                // show the data that corresponds to this cell or make them go
-                // blank
-                //
-                refreshAnalyteWidgets();
             }
 
         });
@@ -432,6 +452,8 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                             //
                             for(i = 0; i < rows.length; i++) {
                                 data = displayManager.getObjectAt(rows[i], c - 1);
+                                if(data == null)
+                                    continue;
                                 data.setResultGroup(key);
                                 analyteTable.setCell(rows[i], c, new TableDataRow(key, key.toString()));
                             }
@@ -635,6 +657,12 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                             typeId.setSelection(data.getTypeId());
                         else
                             typeId.setSelection(null);
+                        
+                        /*if (data == null || "Y".equals(data.getIsColumn()))
+                            typeId.setSelection(null);
+                        else
+                            typeId.setSelection(data.getTypeId());*/
+
                     }
             }
 
@@ -706,6 +734,11 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                         isReportable.setValue(data.getIsReportable());
                     else
                         isReportable.setValue("N");
+                    
+                  /*if (data == null || "Y".equals(data.getIsColumn()))
+                        isReportable.setValue("N");
+                    else
+                        isReportable.setValue(data.getIsReportable());*/
 
                 }
 
@@ -771,6 +804,12 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                         data = displayManager.getObjectAt(r, anaSelCol);
                     else
                         data = displayManager.getObjectAt(r, anaSelCol - 1);
+                    
+                    /*if (data == null || "Y".equals(data.getIsColumn()))
+                        scriptlet.setSelection(null, "");
+                    else
+                        scriptlet.setSelection(data.getScriptletId(), data.getScriptletName());*/
+                                        
                     if (data != null)
                         scriptlet.setSelection(data.getScriptletId(), data.getScriptletName());
                     else
@@ -951,7 +990,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                resultTable.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                resultTable.enable(true);
             }
         });
 
@@ -959,6 +998,9 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 int r, c, group;
 
+                if(state != State.ADD  && state != State.UPDATE) 
+                    event.cancel();
+                
                 r = event.getRow();
                 c = event.getCol();
                 group = resultTabPanel.getTabBar().getSelectedTab();
