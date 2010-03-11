@@ -1,5 +1,4 @@
 
-
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -36,14 +35,18 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
-  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:meta="xalan://org.openelis.meta.SampleMeta">
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
 
-  <xsl:template name="ResultTab">
-    <VerticalPanel padding="0" spacing="0">
+  <xsl:import href="IMPORT/button.xsl" />
+  <xsl:variable name="language" select="doc/locale" />
+  <xsl:variable name="props" select="doc/props" />
+  <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
+  <xsl:template match="doc">
+    <screen id="ResultPopoutTab" name="{resource:getString($constants,'testResults')}">
+      <VerticalPanel padding="0" spacing="0">
       <TablePanel padding="0" spacing="0">
         <row>
-          <table key="testResultsTable" width="697" maxRows="9" showScroll="ALWAYS" title="">
+          <table key="testResultsTable" width="905" maxRows="20" showScroll="ALWAYS" title="">
           <col width="65" class="org.openelis.modules.sample.client.SampleResultTableColumn">
                 <label />
               </col>
@@ -106,18 +109,22 @@ UIRF Software License are applicable instead of those above.
                   </text>
                 </HorizontalPanel>
               </appButton>
-              <appButton key="popoutTable" style="Button">
-                      <HorizontalPanel>
-                          <AbsolutePanel style="popoutButtonImage" />
-                          <text>
-                          <xsl:value-of select="resource:getString($constants,'popout')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
             </HorizontalPanel>
           </widget>
         </row>
       </TablePanel>
-    </VerticalPanel>
+	<!--button panel code-->
+        <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
+          <HorizontalPanel>
+            <xsl:call-template name="okButton">
+              <xsl:with-param name="language">
+                <xsl:value-of select="language" />
+              </xsl:with-param>
+            </xsl:call-template>
+          </HorizontalPanel>
+        </AbsolutePanel>
+	<!--end button panel-->
+      </VerticalPanel>
+    </screen>
   </xsl:template>
 </xsl:stylesheet>
