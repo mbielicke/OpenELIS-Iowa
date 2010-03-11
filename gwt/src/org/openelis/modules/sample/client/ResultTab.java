@@ -38,6 +38,7 @@ import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
+import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
@@ -63,28 +64,31 @@ import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.modules.test.client.TestAnalyteDisplayManager;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
-public class ResultTab extends Screen {
+public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Action>{
     public enum Action {
-        RESULT_HISTORY
+        RESULT_HISTORY, CLOSE
     };
 
     private boolean                                 loaded;
 
     protected AppButton                             addResultButton, removeResultButton,
-                    suggestionsButton;
+                    suggestionsButton, popoutTable, okButton;
     protected TableWidget                           testResultsTable;
     private ArrayList<TableColumn>                  resultTableCols;
 
     protected TestAnalyteLookupScreen               testAnalyteScreen;
     protected ResultSuggestionsScreen               suggestionsScreen;
 
+    protected ResultTab                             resultPopoutScreen;
     protected AnalysisResultManager                 manager;
     private TestAnalyteDisplayManager<ResultViewDO> displayManager;
     protected GetMatchesHandler                     resultMatchesHandler;
@@ -104,6 +108,17 @@ public class ResultTab extends Screen {
         initialize();
 
         initializeDropdowns();
+    }
+
+    public ResultTab() throws Exception {
+        super((ScreenDefInt)GWT.create(ResultPopoutTabDef.class));
+
+        // Setup link between Screen and widget Handlers
+        initialize();
+        initializeDropdowns();
+        
+        // Initialize Screen
+        setState(State.DEFAULT);
     }
 
     private void initialize() {
@@ -204,15 +219,15 @@ public class ResultTab extends Screen {
                 row = event.getRow();
                 col = event.getCol();
                 resultDO = null;
-                
+
                 tableRow = testResultsTable.getRow(row);
                 val = (String)tableRow.cells.get(col).value;
-                
+
                 if (col == 0)
                     resultDO = displayManager.getObjectAt(row, 0);
                 else
                     resultDO = displayManager.getObjectAt(row, col - 2);
-                 
+
                 if (col == 0) {
                     resultDO.setIsReportable(val);
 
@@ -225,7 +240,7 @@ public class ResultTab extends Screen {
 
                         resultDO.setTypeId(testResultDo.getTypeId());
                         resultDO.setTestResultId(testResultDo.getId());
-                   
+
                     } catch (ParseException e) {
                         testResultsTable.clearCellExceptions(row, col);
                         testResultsTable.setCellException(row, col, e);
@@ -245,17 +260,14 @@ public class ResultTab extends Screen {
 
         testResultsTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
-                TableDataRow row, prow;
+                TableDataRow row;
                 int index, prowIndex, numCols;
                 Integer rowGroup;
                 ResultViewDO resultDO;
-                TestResultDO testResultDo;
-                Integer testResultId;
                 String val;
 
                 index = event.getIndex();
                 row = event.getRow();
-                prow = testResultsTable.getRow(index - 1);
                 prowIndex = index - 1;
 
                 rowGroup = displayManager.getObjectAt(prowIndex, 0).getRowGroup();
@@ -273,7 +285,7 @@ public class ResultTab extends Screen {
                 numCols = displayManager.columnCount(index);
                 manager.setDefaultsLoaded(false);
                 for (int i = 2; i < numCols; i++ ) {
-                    resultDO = displayManager.getObjectAt(index, i-2);
+                    resultDO = displayManager.getObjectAt(index, i - 2);
                     row.key = resultDO.getId();
                     try {
                         val = getResultValue(resultDO, anDO.getUnitOfMeasureId());
@@ -281,7 +293,8 @@ public class ResultTab extends Screen {
 
                         if (val != null && !"".equals(val)) {
                             resultDO.setValue(val);
-                            displayManager.validateResultValue(manager, resultDO, anDO.getUnitOfMeasureId());
+                            displayManager.validateResultValue(manager, resultDO,
+                                                               anDO.getUnitOfMeasureId());
                         }
                     } catch (ParseException e) {
                         testResultsTable.clearCellExceptions(index, i);
@@ -352,8 +365,8 @@ public class ResultTab extends Screen {
                 int r;
 
                 r = testResultsTable.getSelectedRow();
-                if (r > -1 && testResultsTable.numRows() > 0){
-                    if(!onlyRowUnderHeading(r))
+                if (r > -1 && testResultsTable.numRows() > 0) {
+                    if ( !onlyRowUnderHeading(r))
                         testResultsTable.deleteRow(r);
                     else
                         window.setError(consts.get("atLeastOneResultUnderHeading"));
@@ -388,10 +401,11 @@ public class ResultTab extends Screen {
                 }
 
                 Popup popUp = new Popup(consts.get("suggestions"), suggestionsScreen);
-                
-                suggestionsScreen.setValidator(manager.getResultValidator(resultDO.getResultGroup()),
+
+                suggestionsScreen.setValidator(
+                                               manager.getResultValidator(resultDO.getResultGroup()),
                                                anDO.getUnitOfMeasureId());
-                
+
                 popUp.show();
             }
 
@@ -399,6 +413,38 @@ public class ResultTab extends Screen {
                 suggestionsButton.enable(false);
             }
         });
+
+        popoutTable = (AppButton)def.getWidget("popoutTable");
+        if(popoutTable != null){
+            addScreenHandler(popoutTable, new ScreenEventHandler<Object>() {
+                public void onClick(ClickEvent event) {
+                    onTablePopoutClick();
+                }
+    
+                public void onStateChange(StateChangeEvent<State> event) {
+                    popoutTable.enable(EnumSet.of(State.DISPLAY, State.ADD, State.UPDATE)
+                                              .contains(event.getState()));
+                }
+            });
+        }
+
+        okButton = (AppButton)def.getWidget("ok");
+        if (okButton != null) {
+            addScreenHandler(okButton, new ScreenEventHandler<Object>() {
+                public void onClick(ClickEvent event) {
+                    ok();
+                }
+
+                public void onStateChange(StateChangeEvent<State> event) {
+                    okButton.enable(true);
+                }
+            });
+        }
+    }
+
+    private void ok() {
+        // ActionEvent.fire(this, Action.CLOSE, null);
+        window.close();
     }
 
     private ArrayList<TableDataRow> getTableModel() {
@@ -433,7 +479,7 @@ public class ResultTab extends Screen {
                 headerFilled = false;
             }
 
-            len = displayManager.columnCount(m)-2;
+            len = displayManager.columnCount(m) - 2;
             row = new TableDataRow(numberOfCols);
             row.data = new Boolean(false);
             validateResults = (state == State.ADD || state == State.UPDATE);
@@ -442,17 +488,18 @@ public class ResultTab extends Screen {
                 resultDO = displayManager.getObjectAt(m, c);
                 row.key = resultDO.getId();
                 try {
-                    if(c == 0){
+                    if (c == 0) {
                         row.cells.get(0).setValue(resultDO.getIsReportable());
                         row.cells.get(1).setValue(resultDO.getAnalyte());
                     }
-                    
+
                     val = getResultValue(resultDO, anDO.getUnitOfMeasureId());
                     row.cells.get(c + 2).setValue(val);
 
                     if (validateResults && val != null && !"".equals(val)) {
                         resultDO.setValue(val);
-                        displayManager.validateResultValue(manager, resultDO, anDO.getUnitOfMeasureId());
+                        displayManager.validateResultValue(manager, resultDO,
+                                                           anDO.getUnitOfMeasureId());
                     }
                 } catch (ParseException e) {
                     row.cells.get(c + 2).clearExceptions();
@@ -464,7 +511,7 @@ public class ResultTab extends Screen {
                     Window.alert(e.getMessage());
                 }
 
-                if ( !headerFilled) 
+                if ( !headerFilled && c > 0)
                     hrow.cells.get(c + 2).setValue(resultDO.getAnalyte());
             }
             headerFilled = true;
@@ -474,16 +521,15 @@ public class ResultTab extends Screen {
 
         return model;
     }
-    
-    private String getResultValue(ResultViewDO resultDO, Integer unitOfMeasureId){
+
+    private String getResultValue(ResultViewDO resultDO, Integer unitOfMeasureId) {
         String val;
         if (resultDO.getValue() != null || resultDO.getId() != null)
             val = resultDO.getValue();
 
         else
-            val = manager.getDefaultValue(resultDO.getResultGroup(),
-                                          anDO.getUnitOfMeasureId());
-        
+            val = manager.getDefaultValue(resultDO.getResultGroup(), anDO.getUnitOfMeasureId());
+
         return val;
     }
 
@@ -510,15 +556,13 @@ public class ResultTab extends Screen {
 
     private void resizeResultTable(int numOfCols) {
         TableColumn col;
-        int width = 200;
+        int width = 206;
 
         if (numOfCols == 1)
             return;
         else if (numOfCols == 3)
-            width = 250;
-        else if (numOfCols == 4)
-            width = 210;
-
+            width = 311;
+        
         if (resultTableCols == null)
             resultTableCols = (ArrayList<TableColumn>)testResultsTable.getColumns().clone();
         testResultsTable.getColumns().clear();
@@ -538,7 +582,7 @@ public class ResultTab extends Screen {
         int r, maxCols;
         TableDataRow row;
         TestAnalyteViewDO an;
-        
+
         r = testResultsTable.getSelectedRow();
         maxCols = displayManager.maxColumnCount();
 
@@ -559,6 +603,33 @@ public class ResultTab extends Screen {
         }
     }
 
+    private void onTablePopoutClick() {
+        try {
+            if (resultPopoutScreen == null) {
+                resultPopoutScreen = new ResultTab();
+
+                resultPopoutScreen.addActionHandler(new ActionHandler<ResultTab.Action>() {
+                    public void onAction(ActionEvent<ResultTab.Action> event) {
+                        draw();
+                    }
+                });
+            }
+
+            ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+            modal.setName(consts.get("testResults"));
+
+            modal.setContent(resultPopoutScreen);
+            resultPopoutScreen.setData(bundle);
+            resultPopoutScreen.setScreenState(state);
+            resultPopoutScreen.draw();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert("onTablePopoutClick: " + e.getMessage());
+            return;
+        }
+    }
+
     private void initializeDropdowns() {
         try {
             analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
@@ -572,17 +643,21 @@ public class ResultTab extends Screen {
         }
     }
 
-    private boolean onlyRowUnderHeading(int index){
+    private boolean onlyRowUnderHeading(int index) {
         boolean prevHeader, postHeader;
-        
-        prevHeader = (Boolean)testResultsTable.getRow(index-1).data;
-        postHeader = (Boolean)testResultsTable.getRow(index+1).data;
-        
+
+        prevHeader = (Boolean)testResultsTable.getRow(index - 1).data;
+        postHeader = (Boolean)testResultsTable.getRow(index + 1).data;
+
         return prevHeader && postHeader;
     }
-    
+
     private boolean canEdit() {
         return (anDO != null && !analysisCancelledId.equals(anDO.getStatusId()) && !analysisReleasedId.equals(anDO.getStatusId()));
+    }
+
+    public void setScreenState(State state) {
+        setState(state);
     }
 
     public void setData(SampleDataBundle data) {
@@ -630,5 +705,9 @@ public class ResultTab extends Screen {
                 Window.alert(e.getMessage());
             }
         }
+    }
+    
+    public HandlerRegistration addActionHandler(ActionHandler<ResultTab.Action> handler) {
+        return addHandler(handler, ActionEvent.getType());
     }
 }
