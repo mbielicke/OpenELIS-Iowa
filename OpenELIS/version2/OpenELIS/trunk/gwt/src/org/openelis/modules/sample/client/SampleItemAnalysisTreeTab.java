@@ -38,6 +38,8 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
+import org.openelis.gwt.event.BeforeCloseEvent;
+import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
@@ -106,7 +108,7 @@ public class SampleItemAnalysisTreeTab extends Screen
         treeTab = this;
 
         itemsTree = (TreeWidget)def.getWidget("itemsTestsTree");
-        treeUtil = new SampleTreeUtility(window, itemsTree, parentScreen) {
+        treeUtil = new SampleTreeUtility(window, itemsTree, (Screen)parentScreen) {
             public TreeDataItem addNewTreeRowFromBundle(TreeDataItem parentRow,
                                                         SampleDataBundle bundle) {
                 TreeDataItem row;
@@ -121,9 +123,10 @@ public class SampleItemAnalysisTreeTab extends Screen
             }
         };
 
-        treeUtil.addActionHandler(new ActionHandler() {
-            public void onAction(ActionEvent event) {
-                ActionEvent.fire(null, event.getAction(), event.getData());
+        treeUtil.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {
+            public void onAction(ActionEvent<TestPrepUtility.Action> event) {
+                
+                ActionEvent.fire(treeTab, Action.REFRESH_TABS, event.getData());
             }
         });
 
@@ -339,24 +342,21 @@ public class SampleItemAnalysisTreeTab extends Screen
 
     private void onTreePopoutClick() {
         try {
-            if (treePopoutScreen == null) {
-                // final EnvironmentalTab env = this;
+            if (treePopoutScreen == null)
                 treePopoutScreen = new SampleItemsPopoutTreeLookup();
 
-                treePopoutScreen.addActionHandler(new ActionHandler<SampleItemsPopoutTreeLookup.Action>() {
-                    public void onAction(ActionEvent<SampleItemsPopoutTreeLookup.Action> event) {
-                        DataChangeEvent.fire(treeTab, itemsTree);
-
-                    }
-                });
-            }
-
-            ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+            ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
             modal.setName(consts.get("itemsAndAnalyses"));
 
             modal.setContent(treePopoutScreen);
             treePopoutScreen.setData(manager);
             treePopoutScreen.setScreenState(state);
+            
+            modal.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>(){
+               public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+                   DataChangeEvent.fire(treeTab, itemsTree);                    
+                } 
+            });
 
         } catch (Exception e) {
             e.printStackTrace();

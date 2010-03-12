@@ -38,92 +38,17 @@ UIRF Software License are applicable instead of those above.
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
 
   <xsl:import href="IMPORT/button.xsl" />
+  <xsl:import href="OPENELIS/org/openelis/modules/sample/client/ResultTabDef.xsl" />
   <xsl:variable name="language" select="doc/locale" />
   <xsl:variable name="props" select="doc/props" />
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
   <xsl:template match="doc">
     <screen id="ResultPopoutTab" name="{resource:getString($constants,'testResults')}">
       <VerticalPanel padding="0" spacing="0">
-      <TablePanel padding="0" spacing="0">
-        <row>
-          <table key="testResultsTable" width="905" maxRows="20" showScroll="ALWAYS" title="">
-          <col width="65" class="org.openelis.modules.sample.client.SampleResultTableColumn">
-                <label />
-              </col>
-            <col width="200">
-              <textbox max="80"/>
-            </col>
-            <col width="200">
-              <textbox max="80"/>
-            </col>
-            <col width="200">
-              <textbox max="80"/>
-            </col>
-            <col width="200">
-              <textbox max="80"/>
-            </col>
-            <col width="200">
-              <textbox max="80"/>
-            </col>
-            <col width="200">
-              <textbox max="80"/>
-            </col>
-            <col width="200">
-              <textbox max="80"/>
-            </col>
-            <col width="200">
-              <textbox max="80"/>
-            </col>
-            <col width="200">
-              <textbox max="80"/>
-            </col>
-            <col width="200">
-              <textbox max="80"/>
-            </col>
-          </table>
-        </row>
-        <row>
-          <widget style="TableButtonFooter">
-            <HorizontalPanel>
-              <appButton key="addResultButton" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="AddRowButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'addRow')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
-              <appButton key="removeResultButton" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="RemoveRowButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
-              <appButton key="suggestionsButton" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="PickerButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'suggestions')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
-            </HorizontalPanel>
-          </widget>
-        </row>
-      </TablePanel>
-	<!--button panel code-->
-        <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
-          <HorizontalPanel>
-            <xsl:call-template name="okButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-          </HorizontalPanel>
-        </AbsolutePanel>
-	<!--end button panel-->
+      <xsl:call-template name="ResultTab">
+      	<xsl:with-param name="widthParam">905</xsl:with-param>
+      	<xsl:with-param name="maxRowsParam">25</xsl:with-param>
+      </xsl:call-template>
       </VerticalPanel>
     </screen>
   </xsl:template>

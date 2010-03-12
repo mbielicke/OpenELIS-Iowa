@@ -299,14 +299,9 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
 
                 field.setTypeId(val.getTypeId());
 
-                // we dont need to go through the trouble to prepare for
-                // validation for display
-                // only add and update where they can edit
-                if (state == State.UPDATE || state == State.ADD) {
-                    validatorItem = getDataItemForRow(field.getTypeId(), values);
-                    adb = new AuxDataBundle(validatorItem, field);
-                    row.data = adb;
-                }
+                validatorItem = getDataItemForRow(field.getTypeId(), values);
+                adb = new AuxDataBundle(validatorItem, field);
+                row.data = adb;
 
                 model.add(row);
             }

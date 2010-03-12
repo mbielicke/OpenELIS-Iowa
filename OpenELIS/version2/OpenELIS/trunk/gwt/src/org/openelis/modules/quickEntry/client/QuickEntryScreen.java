@@ -270,11 +270,6 @@ public class QuickEntryScreen extends Screen {
             public void onValueChange(ValueChangeEvent<String> event) {
                 if ("Y".equals(event.getValue()))
                     updateRecievedDate();
-                DeferredCommand.addCommand(new Command() {
-                	public void execute() {
-                		setFocus(entry);
-                	}
-                });
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -287,7 +282,6 @@ public class QuickEntryScreen extends Screen {
             public void onValueChange(ValueChangeEvent<String> event) {
                 // if ("Y".equals(event.getValue()))
                 // updateRecievedDate();
-                setFocus(entry);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {

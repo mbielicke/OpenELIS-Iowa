@@ -40,10 +40,12 @@ UIRF Software License are applicable instead of those above.
   xmlns:meta="xalan://org.openelis.meta.SampleMeta">
 
   <xsl:template name="ResultTab">
+  <xsl:param name="widthParam" select="697"/>
+  <xsl:param name="maxRowsParam" select="9"/>
     <VerticalPanel padding="0" spacing="0">
       <TablePanel padding="0" spacing="0">
         <row>
-          <table key="testResultsTable" width="697" maxRows="9" showScroll="ALWAYS" title="">
+          <table key="testResultsTable" width="{string($widthParam)}" maxRows="{string($maxRowsParam)}" showScroll="ALWAYS" title="">
           <col width="65" class="org.openelis.modules.sample.client.SampleResultTableColumn">
                 <label />
               </col>

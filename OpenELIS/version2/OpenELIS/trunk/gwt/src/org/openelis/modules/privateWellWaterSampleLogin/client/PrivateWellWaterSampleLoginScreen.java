@@ -448,10 +448,14 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                         manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
                         manager.createEmptyDomainManager();
                         
-                        setFocus(null);
-                        setState(State.UPDATE);
-                        DataChangeEvent.fire(wellScreen);
-                        window.clearStatus();
+                        DeferredCommand.addCommand(new Command() {
+                            public void execute() {
+                                 setFocus(null);
+                                 setState(State.UPDATE);
+                                 DataChangeEvent.fire(wellScreen);
+                                 window.clearStatus();
+                            }
+                        });
                     }
 
                 } catch (ValidationErrorsList e) {

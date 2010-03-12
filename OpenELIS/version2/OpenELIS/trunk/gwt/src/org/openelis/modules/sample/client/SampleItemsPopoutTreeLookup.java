@@ -71,16 +71,9 @@ import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
-public class SampleItemsPopoutTreeLookup extends Screen
-                                                       implements
-                                                       HasActionHandlers<SampleItemsPopoutTreeLookup.Action> {
-    public enum Action {
-        CLOSE
-    };
-
+public class SampleItemsPopoutTreeLookup extends Screen {
     protected SampleTreeUtility treeUtil;
     protected TreeWidget        sampleTreePopout;
-    protected AppButton         okButton;
     private SampleManager       manager;
 
     public SampleItemsPopoutTreeLookup() throws Exception {
@@ -196,24 +189,8 @@ public class SampleItemsPopoutTreeLookup extends Screen
         });
         
         sampleTreePopout.addTarget(sampleTreePopout);
-        
-        okButton = (AppButton)def.getWidget("ok");
-        addScreenHandler(okButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                ok();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                okButton.enable(true);
-            }
-        });
     }
     
-    private void ok(){
-        ActionEvent.fire(this, Action.CLOSE, null);
-        window.close();
-    }
-
     private ArrayList<TreeDataItem> getTreeModel() {
         int i, j;
         AnalysisManager am;
@@ -291,9 +268,5 @@ public class SampleItemsPopoutTreeLookup extends Screen
         this.manager = manager;
         treeUtil.setManager(manager);
         DataChangeEvent.fire(this);
-    }
-
-    public HandlerRegistration addActionHandler(ActionHandler<SampleItemsPopoutTreeLookup.Action> handler) {
-        return addHandler(handler, ActionEvent.getType());
     }
 }

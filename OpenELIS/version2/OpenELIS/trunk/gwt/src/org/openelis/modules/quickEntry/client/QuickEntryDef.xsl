@@ -90,7 +90,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'received')" />:
               </text>
-              <calendar key="receivedDate" begin="0" end="4" width="125px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="entry, entry"/>
+              <calendar key="receivedDate" begin="0" end="4" min="364" max="0" width="125px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="entry, entry"/>
               </row>
               <row>
               <widget colspan="2">
@@ -118,7 +118,7 @@ UIRF Software License are applicable instead of those above.
              <text style="Prompt">
 	        	<xsl:value-of select="resource:getString($constants,'printer')" />:
 	    	</text>
-		    <dropdown key="printer" width="121" popWidth="auto" tab="entry, entry"/>
+		    <dropdown key="printer" width="121" popWidth="auto" field="Integer" tab="entry, entry"/>
               </row>
           </TablePanel>
           <table key="quickEntryTable" width="auto" maxRows="15" style="ScreenTableWithSides" showScroll="ALWAYS" title="" tab="entry,entry">
