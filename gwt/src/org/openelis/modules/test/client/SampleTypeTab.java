@@ -40,7 +40,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindow;
@@ -110,13 +109,13 @@ public class SampleTypeTab extends Screen implements HasActionHandlers<SampleTyp
             public void onCellUpdated(CellEditedEvent event) {
                 int row, col;
                 Integer val;
-                TestTypeOfSampleDO sampleTypeDO;
+                TestTypeOfSampleDO data;
 
                 row = event.getRow();
                 col = event.getCol();
-                val = (Integer)table.getRow(row).cells.get(col).value;
+                val = (Integer)table.getObject(row,col);
                 try {
-                    sampleTypeDO = manager.getSampleTypes().getTypeAt(row);
+                    data = manager.getSampleTypes().getTypeAt(row);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     return;
@@ -124,11 +123,11 @@ public class SampleTypeTab extends Screen implements HasActionHandlers<SampleTyp
 
                 switch (col) {
                     case 0:
-                        sampleTypeDO.setTypeOfSampleId(val);
+                        data.setTypeOfSampleId(val);
                         break;
                     case 1:
-                        sampleTypeDO.setUnitOfMeasureId(val);
-                        ActionEvent.fire(screen, Action.UNIT_CHANGED, sampleTypeDO);
+                        data.setUnitOfMeasureId(val);
+                        ActionEvent.fire(screen, Action.UNIT_CHANGED, data);
                         break;
                 }
             }
@@ -147,13 +146,13 @@ public class SampleTypeTab extends Screen implements HasActionHandlers<SampleTyp
 
         table.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
-                TestTypeOfSampleDO typeDO;
+                TestTypeOfSampleDO data;
                 int index;
                 try {
                     index = event.getIndex();
-                    typeDO = manager.getSampleTypes().getTypeAt(index);
+                    data = manager.getSampleTypes().getTypeAt(index);
                     manager.getSampleTypes().removeTypeAt(index);
-                    ActionEvent.fire(screen, Action.UNIT_DELETED, typeDO);
+                    ActionEvent.fire(screen, Action.UNIT_DELETED, data);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
