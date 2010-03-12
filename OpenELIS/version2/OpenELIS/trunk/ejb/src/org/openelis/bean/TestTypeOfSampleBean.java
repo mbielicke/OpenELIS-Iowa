@@ -99,22 +99,22 @@ public class TestTypeOfSampleBean implements TestTypeOfSampleLocal {
         return data;
     }
     
-    public void delete(TestTypeOfSampleDO sampleTypeDO) throws Exception {
+    public void delete(TestTypeOfSampleDO data) throws Exception {
         TestTypeOfSample sampleType;
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        sampleType = manager.find(TestTypeOfSample.class, sampleTypeDO.getId());
+        sampleType = manager.find(TestTypeOfSample.class, data.getId());
         if (sampleType != null)
             manager.remove(sampleType);
 
     }
 
-    public void validate(TestTypeOfSampleDO sampleType) throws Exception {
+    public void validate(TestTypeOfSampleDO data) throws Exception {
         ValidationErrorsList list;
         
         list = new ValidationErrorsList();
         
-        if (sampleType.getTypeOfSampleId() == null) {
+        if (data.getTypeOfSampleId() == null) {
             list.add(new FieldErrorException("fieldRequiredException",
                                              TestMeta.getTypeOfSampleTypeOfSampleId()));
         }
