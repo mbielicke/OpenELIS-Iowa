@@ -36,6 +36,8 @@ import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
+import org.openelis.gwt.event.BeforeCloseEvent;
+import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.HasActionHandlers;
@@ -75,13 +77,13 @@ import com.google.gwt.user.client.Window;
 
 public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Action>{
     public enum Action {
-        RESULT_HISTORY, CLOSE
+        RESULT_HISTORY
     };
 
     private boolean                                 loaded;
 
     protected AppButton                             addResultButton, removeResultButton,
-                    suggestionsButton, popoutTable, okButton;
+                    suggestionsButton, popoutTable;
     protected TableWidget                           testResultsTable;
     private ArrayList<TableColumn>                  resultTableCols;
 
@@ -116,7 +118,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         // Setup link between Screen and widget Handlers
         initialize();
         initializeDropdowns();
-        
+        popoutTable.setVisible(false);
         // Initialize Screen
         setState(State.DEFAULT);
     }
@@ -415,7 +417,6 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         });
 
         popoutTable = (AppButton)def.getWidget("popoutTable");
-        if(popoutTable != null){
             addScreenHandler(popoutTable, new ScreenEventHandler<Object>() {
                 public void onClick(ClickEvent event) {
                     onTablePopoutClick();
@@ -426,25 +427,6 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                                               .contains(event.getState()));
                 }
             });
-        }
-
-        okButton = (AppButton)def.getWidget("ok");
-        if (okButton != null) {
-            addScreenHandler(okButton, new ScreenEventHandler<Object>() {
-                public void onClick(ClickEvent event) {
-                    ok();
-                }
-
-                public void onStateChange(StateChangeEvent<State> event) {
-                    okButton.enable(true);
-                }
-            });
-        }
-    }
-
-    private void ok() {
-        // ActionEvent.fire(this, Action.CLOSE, null);
-        window.close();
     }
 
     private ArrayList<TableDataRow> getTableModel() {
@@ -605,23 +587,22 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
     private void onTablePopoutClick() {
         try {
-            if (resultPopoutScreen == null) {
+            if (resultPopoutScreen == null) 
                 resultPopoutScreen = new ResultTab();
 
-                resultPopoutScreen.addActionHandler(new ActionHandler<ResultTab.Action>() {
-                    public void onAction(ActionEvent<ResultTab.Action> event) {
-                        draw();
-                    }
-                });
-            }
-
-            ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+            ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
             modal.setName(consts.get("testResults"));
 
             modal.setContent(resultPopoutScreen);
             resultPopoutScreen.setData(bundle);
             resultPopoutScreen.setScreenState(state);
             resultPopoutScreen.draw();
+            
+            modal.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>(){
+                public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+                    draw();                    
+                }
+            });
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -26,13 +26,13 @@ import com.google.gwt.user.client.Window;
 public abstract class SampleTreeUtility extends Screen implements HasActionHandlers {
 
     protected TestPrepUtility testLookup;
-    private HasActionHandlers parentScreen;
+    private Screen parentScreen;
     private SampleManager     manager;
     private ScreenWindow      window;
     private TreeWidget        itemsTree;
     private Confirm           cancelAnalysisConfirm;
 
-    public SampleTreeUtility(ScreenWindow window, TreeWidget itemsTree, HasActionHandlers parentScreen) {
+    public SampleTreeUtility(ScreenWindow window, TreeWidget itemsTree, Screen parentScreen) {
         this.window = window;
         this.itemsTree = itemsTree;
         this.parentScreen = parentScreen;
@@ -82,8 +82,8 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
                 if (selectedTreeRow.key != null) {
                     if (cancelAnalysisConfirm == null) {
                         cancelAnalysisConfirm = new Confirm(Confirm.Type.QUESTION,
-                                                            ((Screen)parentScreen).consts.get("cancelAnalysisCaption"),
-                                                            ((Screen)parentScreen).consts.get("cancelAnalysisMessage"),
+                                                            parentScreen.consts.get("cancelAnalysisCaption"),
+                                                            parentScreen.consts.get("cancelAnalysisMessage"),
                                                             "No", "Yes");
                         cancelAnalysisConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
                             public void onSelection(SelectionEvent<Integer> event) {
@@ -183,7 +183,7 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
 
         if (testLookup == null) {
             testLookup = new TestPrepUtility();
-            testLookup.setScreen((Screen)parentScreen);
+            testLookup.setScreen(parentScreen);
             
             testLookup.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {
                 public void onAction(ActionEvent<org.openelis.modules.sample.client.TestPrepUtility.Action> event) {
@@ -229,7 +229,7 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
             ActionEvent.fire(this, Action.REFRESH_TABS, bundle);
             
         }catch(ValidationErrorsList e){
-            ((Screen)parentScreen).showErrors(e);
+            parentScreen.showErrors(e);
         } catch (Exception e) {
             Window.alert("cancelAnalysisRow: " + e.getMessage());
         }
