@@ -54,10 +54,10 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel>
               <table key="atozTable" width="auto" maxRows="20" style="atozTable">
                 <col width="95" header="{resource:getString($constants,'name')}">
-                  <label />
+                  <label field="String" />
                 </col>
                 <col width="95" header="{resource:getString($constants,'lotNumber')}">
-                  <label />
+                  <label field="Integer" />
                 </col>
               </table>
               <widget halign="center">
@@ -123,7 +123,7 @@ UIRF Software License are applicable instead of those above.
                         <text>
                           <xsl:value-of select='resource:getString($constants,"options")' />
                         </text>
-                        <AbsolutePanel width="20px" height="20px" style="OptionsButtonImage" />
+                        <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
                       </HorizontalPanel>
                     </appButton>
                   </menuDisplay>
@@ -144,7 +144,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'name')" />:
                   </text>
                   <widget colspan="6">
-                    <textbox key="{meta:getName()}" width="215" case="LOWER" max="30" tab="{meta:getTypeId()},QcAnalyteTable" required="true" />
+                    <textbox key="{meta:getName()}" width="215" case="LOWER" max="30" tab="{meta:getTypeId()},QcAnalyteTable" field="String" required="true" />
                   </widget>
                 </row>
                 <row>
@@ -169,7 +169,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'source')" />:
                   </text>
                   <widget colspan="6">
-                    <textbox key="{meta:getSource()}" width="215" max="30" tab="{meta:getLotNumber()},{meta:getInventoryItemName()}" required="true" />
+                    <textbox key="{meta:getSource()}" width="215" max="30" tab="{meta:getLotNumber()},{meta:getInventoryItemName()}" field="String" required="true" />
                   </widget>
                 </row>
                 <row>
@@ -177,7 +177,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'lotNumber')" />:
                   </text>
                   <widget colspan="6">
-                    <textbox key="{meta:getLotNumber()}" width="215" max="30" tab="{meta:getIsActive()},{meta:getSource()}" required="true" />
+                    <textbox key="{meta:getLotNumber()}" width="215" max="30" tab="{meta:getIsActive()},{meta:getSource()}" field="Integer" required="true" />
                   </widget>
                 </row>
                 <row>
@@ -236,7 +236,7 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel>
               <table key="QcAnalyteTable" width="625" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getExpireDate()}">
                 <col key="{meta:getQcAnalyteAnalyteName()}" width="270" align="left" header="{resource:getString($constants,'analyte')}">
-                  <autoComplete popWidth="auto" field="Integer" required="true">
+                  <autoComplete width="auto" popWidth="auto" field="Integer" required="true">
                     <col width="300" />
                   </autoComplete>
                 </col>

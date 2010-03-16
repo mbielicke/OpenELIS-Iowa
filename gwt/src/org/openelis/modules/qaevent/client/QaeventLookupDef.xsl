@@ -1,5 +1,4 @@
 
-
 <!--
 		Exhibit A - UIRF Open-source Based Public Software License. The
 		contents of this file are subject to the UIRF Open-source Based Public
@@ -18,49 +17,48 @@
 		provisions of a UIRF Software License are applicable instead of those
 		above.
   -->
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:xalan="http://xml.apache.org/xalan"
-                xmlns:resource="xalan://org.openelis.util.UTFResource"
-                xmlns:locale="xalan://java.util.Locale" 
-                extension-element-prefixes="resource"
-                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
-                xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-                version="1.0">
-  <xsl:import href="IMPORT/button.xsl"/>
+<xsl:stylesheet
+  version="1.0"
+  extension-element-prefixes="resource"
+  xmlns:locale="xalan://java.util.Locale"
+  xmlns:resource="xalan://org.openelis.util.UTFResource"
+  xmlns:xalan="http://xml.apache.org/xalan"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
+
+  <xsl:import href="IMPORT/button.xsl" />
   <xalan:component prefix="resource">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
   </xalan:component>
   <xalan:component prefix="locale">
-    <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
+    <xalan:script lang="javaclass" src="xalan://java.util.Locale" />
   </xalan:component>
-
   <xsl:template match="doc">
     <xsl:variable name="language">
-      <xsl:value-of select="locale"/>
+      <xsl:value-of select="locale" />
     </xsl:variable>
     <xsl:variable name="props">
-      <xsl:value-of select="props"/>
+      <xsl:value-of select="props" />
     </xsl:variable>
-
-    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
-    <screen id="QaEventPicker" name="{resource:getString($constants,'qaEventSelection')}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
+    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="QaEventPicker" name="{resource:getString($constants,'qaEventSelection')}">
       <VerticalPanel padding="0" spacing="0">
-        	<table key="qaEventTable" width="auto" maxRows="10" showScroll="ALWAYS" multiSelect="true" title="">
-        	<col width="120" header="{resource:getString($constants,'name')}">
-        	   	<label/>
-        	</col>
-        	<col width="180" header="{resource:getString($constants,'description')}">
-        	   	<label/>
-        	</col>
-        	<col width="100" header="{resource:getString($constants,'type')}">
-	        	<dropdown width="85px" popWidth="auto" field="Integer"/>
-        	</col>
-            <col width="70" header="{resource:getString($constants,'billable')}">
-               	<check/>
-            </col>
-         	</table>
-
+        <table key="qaEventTable" width="auto" maxRows="10" multiSelect="true" showScroll="ALWAYS" title="">
+          <col width="120" header="{resource:getString($constants,'name')}">
+            <label field="String" />
+          </col>
+          <col width="180" header="{resource:getString($constants,'description')}">
+            <label field="String" />
+          </col>
+          <col width="100" header="{resource:getString($constants,'type')}">
+            <dropdown width="85px" popWidth="auto" field="Integer" />
+          </col>
+          <col width="70" header="{resource:getString($constants,'billable')}">
+            <check />
+          </col>
+        </table>
         <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
           <HorizontalPanel>
             <xsl:call-template name="okButton">
@@ -75,7 +73,6 @@
             </xsl:call-template>
           </HorizontalPanel>
         </AbsolutePanel>
-
       </VerticalPanel>
     </screen>
   </xsl:template>

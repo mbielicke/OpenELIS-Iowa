@@ -54,7 +54,7 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel>
               <table key="atozTable" width="auto" maxRows="18" style="atozTable">
                 <col width="175" header="{resource:getString($constants,'name')}">
-                  <label />
+                  <label field="String" />
                 </col>
               </table>
               <widget halign="center">
@@ -120,7 +120,7 @@ UIRF Software License are applicable instead of those above.
                         <text>
                           <xsl:value-of select='resource:getString($constants,"options")' />
                         </text>
-                        <AbsolutePanel width="20px" height="20px" style="OptionsButtonImage" />
+                        <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
                       </HorizontalPanel>
                     </appButton>
                   </menuDisplay>
@@ -146,7 +146,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'name')" />:
                 </text>
                 <widget colspan="6">
-                  <textbox key="{meta:getName()}" width="145" case="LOWER" max="20" tab="{meta:getDescription()},{meta:getId()}" required="true" />
+                  <textbox key="{meta:getName()}" width="145" case="LOWER" max="20" tab="{meta:getDescription()},{meta:getId()}" field="String" required="true" />
                 </widget>
               </row>
               <row>
@@ -154,7 +154,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'description')" />:
                 </text>
                 <widget colspan="6">
-                  <textbox key="{meta:getDescription()}" width="425" max="60" tab="{meta:getOwnerId()},{meta:getName()}" required="true" />
+                  <textbox key="{meta:getDescription()}" width="425" max="60" tab="{meta:getOwnerId()},{meta:getName()}" field="String" required="true" />
                 </widget>
               </row>
               <row>
@@ -162,7 +162,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'owner')" />:
                 </text>
                 <widget>
-                  <autoComplete key="{meta:getOwnerId()}" width="145" case="LOWER" tab="{meta:getIsActive()},{meta:getDescription()}" required="true" />
+                  <autoComplete key="{meta:getOwnerId()}" width="145" case="LOWER" tab="{meta:getIsActive()},{meta:getDescription()}" field="Integer" required="true" />
                 </widget>
               </row>
               <row>
@@ -174,7 +174,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'referenceTo')" />:
                 </text>
                 <widget>
-                  <textbox key="{meta:getReferenceTo()}" width="145" max="20" tab="{meta:getScriptletName()},{meta:getCompletedDate()}" />
+                  <textbox key="{meta:getReferenceTo()}" width="145" max="20" tab="{meta:getScriptletName()},{meta:getCompletedDate()}" field="String" />
                 </widget>
               </row>
               <row>
@@ -200,13 +200,13 @@ UIRF Software License are applicable instead of those above.
               <widget valign="top">
                 <table key="parameterTable" width="590" maxRows="8" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getId()},{meta:getScriptletName()}">
                   <col key="{meta:getProjectParameterParameter()}" width="325" header="{resource:getString($constants,'parameter')}">
-                    <textbox required="true" />
+                    <textbox field="String" required="true" />
                   </col>
                   <col key="{meta:getProjectParameterOperationId()}" width="80" header="{resource:getString($constants,'operation')}">
-                    <dropdown width="80" required="true" />
+                    <dropdown width="80" field="Integer" required="true" />
                   </col>
                   <col key="{meta:getProjectParameterValue()}" width="400" header="{resource:getString($constants,'value')}">
-                    <textbox required="true" />
+                    <textbox field="String" required="true" />
                   </col>
                 </table>
               </widget>

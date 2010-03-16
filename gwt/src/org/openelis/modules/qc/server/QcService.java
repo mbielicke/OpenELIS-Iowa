@@ -44,18 +44,14 @@ public class QcService {
     private static final int rowPP = 20;
 
     public QcManager fetchById(Integer id) throws Exception {
-        try {
-            return remoteManager().fetchById(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchById(id);
     }
 
     public ArrayList<QcDO> fetchByName(String search) throws Exception {
         ArrayList<QcDO> list;
-        
+
         try {
-            list = remote().fetchByName(search+"%", 10);
+            list = remote().fetchByName(search + "%", 10);
         } catch (NotFoundException e) {
             list = new ArrayList<QcDO>(0);
         } catch (RuntimeException e) {
@@ -66,9 +62,9 @@ public class QcService {
 
     public ArrayList<QcDO> fetchActiveByName(String search) throws Exception {
         ArrayList<QcDO> list;
-        
+
         try {
-            list = remote().fetchActiveByName(search+"%", 10);
+            list = remote().fetchActiveByName(search + "%", 10);
         } catch (NotFoundException e) {
             list = new ArrayList<QcDO>(0);
         } catch (RuntimeException e) {
@@ -78,64 +74,36 @@ public class QcService {
     }
 
     public QcManager fetchWithAnalytes(Integer id) throws Exception {
-        try {
-            return remoteManager().fetchWithAnalytes(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchWithAnalytes(id);
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        try {
-            return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
     }
 
     public QcManager add(QcManager man) throws Exception {
-        try {
-            return remoteManager().add(man);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().add(man);
     }
 
     public QcManager update(QcManager man) throws Exception {
-        try {
-            return remoteManager().update(man);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().update(man);
     }
 
     public QcManager fetchForUpdate(Integer id) throws Exception {
-        try {
-            return remoteManager().fetchForUpdate(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchForUpdate(id);
     }
 
     public QcManager abortUpdate(Integer id) throws Exception {
-        try {
-            return remoteManager().abortUpdate(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().abortUpdate(id);
     }
 
     //
     // support for QcAnalyteManager and QcParameterManager
     //
     public QcAnalyteManager fetchAnalyteByQcId(Integer id) throws Exception {
-        try {
-            return remoteManager().fetchAnalyteByQcId(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchAnalyteByQcId(id);
     }
-    
+
     private QcRemote remote() {
         return (QcRemote)EJBFactory.lookup("openelis/QcBean/remote");
     }
@@ -143,7 +111,7 @@ public class QcService {
     private QcManagerRemote remoteManager() {
         return (QcManagerRemote)EJBFactory.lookup("openelis/QcManagerBean/remote");
     }
-    
+
     private DictionaryRemote dictRemote() {
         return (DictionaryRemote)EJBFactory.lookup("openelis/DictionaryBean/remote");
     }

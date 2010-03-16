@@ -62,7 +62,7 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'enterSearch')" />:
                   </text>
-                  <textbox key="findTextBox" width="253" />
+                  <textbox key="findTextBox" width="253" field="String" />
                 </row>
               </TablePanel>
               <VerticalPanel>
@@ -82,11 +82,11 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel spacing="0">
               <widget>
                 <table key="dictEntTable" width="auto" maxRows="6" multiSelect="true" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
-                  <col key="entry" width="250" sort="false" header="{resource:getString($constants,'entry')}">
-                    <label width="250" />
+                  <col key="entry" width="250" header="{resource:getString($constants,'entry')}">
+                    <label width="250" field="String" />
                   </col>
-                  <col key="category" width="176" sort="false" header="{resource:getString($constants,'category')}">
-                    <label width="176" />
+                  <col key="category" width="176" header="{resource:getString($constants,'category')}">
+                    <label width="176" field="String" />
                   </col>
                 </table>
               </widget>
@@ -96,7 +96,7 @@ UIRF Software License are applicable instead of those above.
             </VerticalPanel>
           </VerticalPanel>
         </HorizontalPanel>
-        <VerticalPanel width="504px" spacing="0">
+        <VerticalPanel width="504" spacing="0">
           <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
             <HorizontalPanel>
               <xsl:call-template name="okButton">

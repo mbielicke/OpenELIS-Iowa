@@ -56,10 +56,10 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel>
               <table key="atozTable" width="auto" maxRows="19" style="atozTable">
                 <col width="75" header="{resource:getString($constants,'orderNum')}">
-                  <label />
+                  <label field="String" />
                 </col>
                 <col width="150" header="{resource:getString($constants,'requestedBy')}">
-                  <label />
+                  <label field="String" />
                 </col>
               </table>
               <widget halign="center">
@@ -144,19 +144,19 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"orderNum")' />:
                 </text>
-                <textbox key="{meta:getId()}" width="90px" case="LOWER" max="20" tab="{meta:getNeededInDays()},{meta:getExternalOrderNumber()}" />
+                <textbox key="{meta:getId()}" width="90" case="LOWER" max="20" tab="{meta:getNeededInDays()},{meta:getExternalOrderNumber()}" field="Integer" />
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"neededDays")' />:
                 </text>
                 <widget colspan="5">
-                  <textbox key="{meta:getNeededInDays()}" width="75px" tab="{meta:getStatusId()},{meta:getId()}" />
+                  <textbox key="{meta:getNeededInDays()}" width="75" tab="{meta:getStatusId()},{meta:getId()}" field="Integer" />
                 </widget>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"status")' />:
                 </text>
-                <dropdown key="{meta:getStatusId()}" width="90px" case="MIXED" popWidth="auto" tab="{meta:getOrganizationName()},{meta:getNeededInDays()}" />
+                <dropdown key="{meta:getStatusId()}" width="90" case="MIXED" popWidth="auto" tab="{meta:getOrganizationName()},{meta:getNeededInDays()}" field="Integer" />
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"vendor")' />:
                 </text>
@@ -178,57 +178,57 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select='resource:getString($constants,"aptSuite")' />:
                 </text>
                 <widget colspan="5">
-                  <textbox key="{meta:getOrganizationAddressMultipleUnit()}" width="188px" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" />
+                  <textbox key="{meta:getOrganizationAddressMultipleUnit()}" width="188" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"requestedBy")' />:
                 </text>
-                <textbox key="{meta:getRequestedBy()}" width="203px" tab="{meta:getCostCenterId()},{meta:getOrderedDate()}" />
+                <textbox key="{meta:getRequestedBy()}" width="203" tab="{meta:getCostCenterId()},{meta:getOrderedDate()}" field="String" />
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"address")' />:
                 </text>
                 <widget colspan="5">
-                  <textbox key="{meta:getOrganizationAddressStreetAddress()}" width="188px" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" />
+                  <textbox key="{meta:getOrganizationAddressStreetAddress()}" width="188" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"costCenter")' />:
                 </text>
-                <dropdown key="{meta:getCostCenterId()}" width="203px" case="MIXED" popWidth="auto" tab="{meta:getExternalOrderNumber()},{meta:getRequestedBy()}" />
+                <dropdown key="{meta:getCostCenterId()}" width="203" case="MIXED" popWidth="auto" tab="{meta:getExternalOrderNumber()},{meta:getRequestedBy()}" field="Integer" />
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"city")' />:
                 </text>
                 <widget colspan="5">
-                  <textbox key="{meta:getOrganizationAddressCity()}" width="188px" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" />
+                  <textbox key="{meta:getOrganizationAddressCity()}" width="188" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"extOrderNum")' />:
                 </text>
-                <textbox key="{meta:getExternalOrderNumber()}" width="203px" case="MIXED" max="20" tab="{meta:getId()},{meta:getCostCenterId()}" />
+                <textbox key="{meta:getExternalOrderNumber()}" width="203" case="MIXED" max="20" tab="{meta:getId()},{meta:getCostCenterId()}" field="Integer" />
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"state")' />:
                 </text>
                 <widget>
-                  <textbox key="{meta:getOrganizationAddressState()}" width="35px" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" />
+                  <textbox key="{meta:getOrganizationAddressState()}" width="35" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="Integer" />
                 </widget>
                 <widget>
-                  <HorizontalPanel width="17px" />
+                  <HorizontalPanel width="17" />
                 </widget>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"zipcode")' />:
                 </text>
                 <widget>
-                  <textbox key="{meta:getOrganizationAddressZipCode()}" width="65px" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" />
+                  <textbox key="{meta:getOrganizationAddressZipCode()}" width="65" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
               </row>
             </TablePanel>
 <!-- TAB PANEL -->
-            <TabPanel key="orderTabPanel" width="591" height="275px">
+            <TabPanel key="orderTabPanel" width="591" height="275">
 <!-- TAB 1 (items) -->
               <tab key="itemsTab" text="{resource:getString($constants,'items')}">
                 <VerticalPanel padding="0" spacing="0">
@@ -249,7 +249,7 @@ UIRF Software License are applicable instead of those above.
                         </autoComplete>
                       </col>
                       <col width="163" header="{resource:getString($constants,'store')}">
-                        <label />
+                        <label field="String" />
                       </col>
                       <col width="70" header="{resource:getString($constants,'unitCost')}">
                         <textbox mask="{resource:getString($constants,'editorCurrencyFormat')}" pattern="{resource:getString($constants,'displayCurrencyFormat')}" field="Integer" />
@@ -281,28 +281,26 @@ UIRF Software License are applicable instead of those above.
               </tab>
 <!-- TAB 2 (receipts) -->
               <tab key="receiptsTab" text="{resource:getString($constants,'receipt')}">
-                <widget>
-                  <table key="receiptsTable" width="auto" maxRows="11" showScroll="ALWAYS" title="">
-                    <col width="80" header="{resource:getString($constants,'dateRec')}">
-                      <label />
-                    </col>
-                    <col width="155" header="{resource:getString($constants,'item')}">
-                      <label />
-                    </col>
-                    <col width="95" header="{resource:getString($constants,'upc')}">
-                      <label />
-                    </col>
-                    <col width="40" header="{resource:getString($constants,'qty')}">
-                      <label />
-                    </col>
-                    <col width="55" header="{resource:getString($constants,'cost')}">
-                      <textbox pattern="{resource:getString($constants,'displayCurrencyFormat')}" />
-                    </col>
-                    <col width="130" header="{resource:getString($constants,'extReference')}">
-                      <label />
-                    </col>
-                  </table>
-                </widget>
+                <table key="receiptsTable" width="auto" maxRows="11" showScroll="ALWAYS" title="">
+                  <col width="80" header="{resource:getString($constants,'dateRec')}">
+                    <label field="String" />
+                  </col>
+                  <col width="155" header="{resource:getString($constants,'item')}">
+                    <label field="String" />
+                  </col>
+                  <col width="95" header="{resource:getString($constants,'upc')}">
+                    <label field="String" />
+                  </col>
+                  <col width="40" header="{resource:getString($constants,'qty')}">
+                    <label field="String" />
+                  </col>
+                  <col width="55" header="{resource:getString($constants,'cost')}">
+                    <textbox pattern="{resource:getString($constants,'displayCurrencyFormat')}" field="String" />
+                  </col>
+                  <col width="130" header="{resource:getString($constants,'extReference')}">
+                    <label field="String" />
+                  </col>
+                </table>
               </tab>
 <!-- TAB 3 (order notes) -->
               <tab key="noteTab" text="{resource:getString($constants,'orderShippingNotes')}">

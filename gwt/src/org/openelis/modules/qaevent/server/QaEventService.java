@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QaEventVO;
 import org.openelis.domain.QaEventViewDO;
-import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.QaEventRemote;
@@ -40,67 +39,35 @@ public class QaEventService {
     private static final int rowPP = 14;
 
     public QaEventViewDO fetchById(Integer id) throws Exception {
-        try {
-            return remote().fetchById(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remote().fetchById(id);
     }
 
     public ArrayList<QaEventVO> fetchByTestId(Integer id) throws Exception {
-        try {
-            return remote().fetchByTestId(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remote().fetchByTestId(id);
     }
 
     public ArrayList<QaEventVO> fetchByCommon() throws Exception {
-        try {
-            return remote().fetchByCommon();
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remote().fetchByCommon();
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        try {
-            return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
     }
 
     public QaEventViewDO add(QaEventViewDO data) throws Exception {
-        try {
-            return remote().add(data);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remote().add(data);
     }
 
     public QaEventViewDO update(QaEventViewDO data) throws Exception {
-        try {
-            return remote().update(data);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remote().update(data);
     }
 
     public QaEventViewDO fetchForUpdate(Integer id) throws Exception {
-        try {
-            return remote().fetchForUpdate(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remote().fetchForUpdate(id);
     }
 
     public QaEventViewDO abortUpdate(Integer id) throws Exception {
-        try {
-            return remote().abortUpdate(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remote().abortUpdate(id);
     }
 
     private QaEventRemote remote() {

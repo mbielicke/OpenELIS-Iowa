@@ -1,5 +1,4 @@
 
-
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -26,7 +25,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -44,31 +42,27 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-
 <!-- main screen -->
-
     <screen id="InternalOrder" name="{resource:getString($constants,'internalOrder')}">
       <HorizontalPanel padding="0" spacing="0">
-
 <!--left table goes here -->
-
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
           <HorizontalPanel width="225">
             <buttonGroup key="atozButtons">
-              <VerticalPanel spacing="0" padding="0" height="100%" style="AtoZ">
+              <VerticalPanel height="100%" padding="0" spacing="0" style="AtoZ">
                 <xsl:call-template name="aToZButton">
                   <xsl:with-param name="keyParam">#</xsl:with-param>
-                  <xsl:with-param name="queryParam">&gt;0 </xsl:with-param>
+                  <xsl:with-param name="queryParam">&gt;0</xsl:with-param>
                 </xsl:call-template>
               </VerticalPanel>
             </buttonGroup>
             <VerticalPanel>
               <table key="atozTable" width="auto" maxRows="19" style="atozTable">
                 <col width="75" header="{resource:getString($constants,'orderNum')}">
-                  <label />
+                  <label field="Integer" />
                 </col>
                 <col width="150" header="{resource:getString($constants,'requestedBy')}">
-                  <label />
+                  <label field="String" />
                 </col>
               </table>
               <widget halign="center">
@@ -84,9 +78,7 @@ UIRF Software License are applicable instead of those above.
             </VerticalPanel>
           </HorizontalPanel>
         </CollapsePanel>
-
 <!--button panel code-->
-
         <VerticalPanel padding="0" spacing="0">
           <AbsolutePanel spacing="0" style="ButtonPanelContainer">
             <HorizontalPanel>
@@ -148,9 +140,7 @@ UIRF Software License are applicable instead of those above.
               </menuPanel>
             </HorizontalPanel>
           </AbsolutePanel>
-
 <!--end button panel-->
-
           <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
@@ -188,27 +178,23 @@ UIRF Software License are applicable instead of those above.
                 <dropdown key="{meta:getCostCenterId()}" width="187" popWidth="auto" tab="{meta:getId()},{meta:getOrderedDate()}" field="Integer" />
               </row>
             </TablePanel>
-
 <!-- TAB PANEL -->
-
             <TabPanel key="tabPanel" width="605" height="285">
-
 <!-- TAB 1 (Items) -->
-
               <tab key="itemTab" text="{resource:getString($constants,'items')}">
                 <VerticalPanel padding="0" spacing="0">
                   <table key="itemTable" width="auto" maxRows="10" showScroll="ALWAYS">
-                    <col key="{meta:getOrderItemQuantity()}" align="right" width="65" header="{resource:getString($constants,'quantity')}">
+                    <col key="{meta:getOrderItemQuantity()}" width="65" align="right" header="{resource:getString($constants,'quantity')}">
                       <textbox field="Integer" required="true" />
                     </col>
                     <col key="{meta:getOrderItemInventoryItemName()}" width="275" header="{resource:getString($constants,'inventoryItem')}">
-                      <autoComplete case="LOWER" field="Integer" required="true">
+                      <autoComplete width="auto" case="LOWER" field="Integer" required="true">
                         <col width="135" header="{resource:getString($constants,'name')}" />
-                        <col width="110" header="{resource:getString($constants,'store')}" >
-                          <dropdown width="110" popWidth="auto" field="Integer"/>
+                        <col width="110" header="{resource:getString($constants,'store')}">
+                          <dropdown width="110" popWidth="auto" field="Integer" />
                         </col>
-                        <col width="110" header="{resource:getString($constants,'dispensedUnits')}" >
-                          <dropdown width="110" popWidth="auto" field="Integer"/>
+                        <col width="110" header="{resource:getString($constants,'dispensedUnits')}">
+                          <dropdown width="110" popWidth="auto" field="Integer" />
                         </col>
                       </autoComplete>
                     </col>
@@ -236,33 +222,29 @@ UIRF Software License are applicable instead of those above.
                   </HorizontalPanel>
                 </VerticalPanel>
               </tab>
-
 <!-- TAB 2 (receipts) -->
-
               <tab key="fillTab" text="{resource:getString($constants,'filled')}">
                 <VerticalPanel padding="0" spacing="0">
                   <table key="fillTable" width="auto" maxRows="10" showScroll="ALWAYS">
                     <col key="" width="150" header="{resource:getString($constants,'inventoryItem')}">
-                      <label />
+                      <label field="String" />
                     </col>
                     <col key="" width="180" header="{resource:getString($constants,'location')}">
-                      <label />
+                      <label field="String" />
                     </col>
                     <col key="" width="65" align="right" header="{resource:getString($constants,'quantity')}">
-                      <label />
+                      <label field="String" />
                     </col>
                     <col key="" width="85" header="{resource:getString($constants,'lotNum')}">
-                      <label />
+                      <label field="String" />
                     </col>
                     <col key="" width="92" header="{resource:getString($constants,'expDate')}">
-                      <label />
+                      <label field="String" />
                     </col>
                   </table>
                 </VerticalPanel>
               </tab>
-
 <!-- TAB 3 (order notes) -->
-
               <tab key="noteTab" text="{resource:getString($constants,'orderShippingNotes')}">
                 <VerticalPanel padding="0" spacing="0">
                   <notes key="notesPanel" width="604" height="247" />

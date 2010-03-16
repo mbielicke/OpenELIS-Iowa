@@ -218,15 +218,15 @@ public class SectionBean implements SectionRemote {
         String name;
         ValidationErrorsList exceptionList;
         Query query;
-        List<IdNameVO> list;
-        IdNameVO sectDO;
+        List<SectionDO> list;
+        SectionDO sectDO;
         int i;
         Integer psecId;
 
         name = data.getName();
         exceptionList = new ValidationErrorsList();
-        if (DataBaseUtil.isEmpty(name)) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException", meta.getName()));
+        if (name == null) {
+            exceptionList.add(new FieldErrorException("fieldRequiredException", SectionMeta.getName()));
         } else {
             query = manager.createNamedQuery("Section.FetchByName");
             query.setParameter("name", name);
@@ -234,7 +234,7 @@ public class SectionBean implements SectionRemote {
             for (i = 0; i < list.size(); i++) {
                 sectDO = list.get(i);
                 if(!sectDO.getId().equals(data.getId())) {
-                    exceptionList.add(new FieldErrorException("fieldUniqueException", meta.getName()));
+                    exceptionList.add(new FieldErrorException("fieldUniqueException", SectionMeta.getName()));
                     break;
                 }
             }
@@ -247,7 +247,7 @@ public class SectionBean implements SectionRemote {
         psecId = data.getParentSectionId();
         if (psecId != null && psecId.equals(data.getId())) {
             exceptionList.add(new FieldErrorException("sectItsOwnParentException",
-                                                      meta.getParentSectionName()));
+                                                      SectionMeta.getParentSectionName()));
         }
 
         if (exceptionList.size() > 0)

@@ -1,5 +1,4 @@
 
-
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -26,7 +25,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -44,14 +42,10 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-
 <!-- main screen -->
-
     <screen id="Organization" name="{resource:getString($constants,'organization')}">
       <HorizontalPanel padding="0" spacing="0">
-
 <!--left table goes here -->
-
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
           <HorizontalPanel width="225">
             <buttonGroup key="atozButtons">
@@ -60,7 +54,7 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel>
               <table key="atozTable" width="auto" maxRows="20" style="atozTable">
                 <col width="175" header="{resource:getString($constants,'name')}">
-                  <label />
+                  <label field="String" />
                 </col>
               </table>
               <widget halign="center">
@@ -76,9 +70,7 @@ UIRF Software License are applicable instead of those above.
             </VerticalPanel>
           </HorizontalPanel>
         </CollapsePanel>
-
 <!--button panel code-->
-
         <VerticalPanel padding="0" spacing="0">
           <AbsolutePanel spacing="0" style="ButtonPanelContainer">
             <HorizontalPanel>
@@ -128,7 +120,7 @@ UIRF Software License are applicable instead of those above.
                         <text>
                           <xsl:value-of select='resource:getString($constants,"options")' />
                         </text>
-                        <AbsolutePanel width="20px" height="20px" style="OptionsButtonImage" />
+                        <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
                       </HorizontalPanel>
                     </appButton>
                   </menuDisplay>
@@ -141,9 +133,7 @@ UIRF Software License are applicable instead of those above.
               </menuPanel>
             </HorizontalPanel>
           </AbsolutePanel>
-
 <!--end button panel-->
-
           <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
@@ -208,13 +198,9 @@ UIRF Software License are applicable instead of those above.
                 </widget>
               </row>
             </TablePanel>
-
 <!-- TAB PANEL -->
-
             <TabPanel key="tabPanel" width="605" height="285">
-
 <!-- TAB 1 -->
-
               <tab key="contactTab" tab="contactTable,contactTable" text="{resource:getString($constants,'contact')}">
                 <VerticalPanel padding="0" spacing="0">
                   <table key="contactTable" width="587" maxRows="10" showScroll="ALWAYS" tab="{meta:getId()},{meta:getIsActive()}">
@@ -280,9 +266,7 @@ UIRF Software License are applicable instead of those above.
                   </widget>
                 </VerticalPanel>
               </tab>
-
 <!-- TAB 2 -->
-
               <tab key="parameterTab" tab="parameterTable,parameterTable" text="{resource:getString($constants,'parameter')}">
                 <VerticalPanel padding="0" spacing="0">
                   <table key="parameterTable" width="587" maxRows="10" showScroll="ALWAYS" tab="{meta:getId()},{meta:getIsActive()}">
@@ -315,9 +299,7 @@ UIRF Software License are applicable instead of those above.
                   </widget>
                 </VerticalPanel>
               </tab>
-
 <!-- TAB 3 -->
-
               <tab key="notesTab" tab="standardNoteButton,standardNoteButton" text="{resource:getString($constants,'note')}">
                 <VerticalPanel padding="0" spacing="0">
                   <notes key="notesPanel" width="604" height="247" />

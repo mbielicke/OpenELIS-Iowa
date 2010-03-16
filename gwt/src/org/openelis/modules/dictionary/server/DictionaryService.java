@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.CategoryManager;
 import org.openelis.manager.DictionaryManager;
@@ -44,101 +43,52 @@ public class DictionaryService {
     private static final int rowPP = 20;
 
     public CategoryManager fetchById(Integer id) throws Exception {
-        try {
-            return remoteManager().fetchById(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchById(id);
     }
 
     public ArrayList<IdNameVO> fetchByEntry(Query query) throws Exception {
-        try {
-            return dictRemote().fetchByEntry(query.getFields());
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return dictRemote().fetchByEntry(query.getFields());
     }
 
     public ArrayList<IdNameVO> fetchByCategoryName(String name) throws Exception {
-        try {
-            return remote().fetchByName(name);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remote().fetchByName(name);
     }
 
     public ArrayList<DictionaryDO> fetchByEntry(String entry) throws Exception {
-        try {
-            return dictRemote().fetchByEntry(entry+"%",10);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return dictRemote().fetchByEntry(entry + "%", 10);
     }
-    
+
     public CategoryManager fetchWithEntries(Integer id) throws Exception {
-        try {
-            return remoteManager().fetchWithEntries(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchWithEntries(id);
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        try {
-            return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
     }
 
     public CategoryManager add(CategoryManager man) throws Exception {
-        try {
-            return remoteManager().add(man);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().add(man);
     }
 
     public CategoryManager update(CategoryManager man) throws Exception {
-        try {
-            return remoteManager().update(man);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().update(man);
     }
 
     public CategoryManager fetchForUpdate(Integer id) throws Exception {
-        try {
-            return remoteManager().fetchForUpdate(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchForUpdate(id);
     }
 
     public CategoryManager abortUpdate(Integer id) throws Exception {
-        try {
-            return remoteManager().abortUpdate(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().abortUpdate(id);
     }
-    
+
     public DictionaryManager fetchEntryByCategoryId(Integer id) throws Exception {
-        try {
-            return remoteManager().fetchEntryByCategoryId(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchEntryByCategoryId(id);
     }
-    
 
     public DictionaryViewDO validateForDelete(DictionaryViewDO data) throws Exception {
-        try {
-            dictRemote().validateForDelete(data);        
-            return data;
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        dictRemote().validateForDelete(data);
+        return data;
     }
 
     private CategoryRemote remote() {

@@ -52,7 +52,7 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel>
               <table key="atozTable" width="auto" maxRows="18" style="atozTable">
                 <col width="175" header="{resource:getString($constants,'name')}">
-                  <label />
+                  <label field="String" />
                 </col>
               </table>
               <widget halign="center">
@@ -118,7 +118,7 @@ UIRF Software License are applicable instead of those above.
                         <text>
                           <xsl:value-of select='resource:getString($constants,"options")' />
                         </text>
-                        <AbsolutePanel width="20px" height="20px" style="OptionsButtonImage" />
+                        <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
                       </HorizontalPanel>
                     </appButton>
                   </menuDisplay>
@@ -137,13 +137,13 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"name")' />:
                 </text>
-                <textbox key="{meta:getName()}" width="150" case="LOWER" max="20" tab="{meta:getLocation()},{meta:getIsAvailable()}" required="true" />
+                <textbox key="{meta:getName()}" width="150" case="LOWER" max="20" tab="{meta:getLocation()},{meta:getIsAvailable()}" field="String" required="true" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"location")' />:
                 </text>
-                <textbox key="{meta:getLocation()}" width="395" max="80" tab="{meta:getStorageUnitDescription()},{meta:getName()}" required="true" />
+                <textbox key="{meta:getLocation()}" width="395" max="80" tab="{meta:getStorageUnitDescription()},{meta:getName()}" field="String" required="true" />
               </row>
               <row>
                 <text style="Prompt">
@@ -165,13 +165,13 @@ UIRF Software License are applicable instead of those above.
               <widget>
                 <table key="childStorageLocsTable" width="auto" maxRows="11" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getIsAvailable()}" title="">
                   <col key="{meta:getChildStorageUnitDescription()}" width="225" header="{resource:getString($constants,'storageSubUnit')}">
-                    <autoComplete field="Integer" required="true">
+                    <autoComplete width="auto" field="Integer" required="true">
                       <col width="180" header="{resource:getString($constants,'description')}" />
                       <col width="70" header="{resource:getString($constants,'category')}" />
                     </autoComplete>
                   </col>
                   <col key="{meta:getChildLocation()}" width="275" header="{resource:getString($constants,'location')}">
-                    <textbox max="80" required="true" />
+                    <textbox max="80" field="String" required="true" />
                   </col>
                   <col key="{meta:getChildIsAvailable()}" width="80" header="{resource:getString($constants,'available')}">
                     <check>Y</check>

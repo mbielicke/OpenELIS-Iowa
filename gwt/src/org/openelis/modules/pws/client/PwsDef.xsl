@@ -54,7 +54,7 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel>
               <table key="atozTable" width="auto" maxRows="20" style="atozTable">
                 <col width="175" header="{resource:getString($constants,'name')}">
-                  <label />
+                  <label field="String" />
                 </col>
               </table>
               <widget halign="center">
@@ -111,18 +111,18 @@ UIRF Software License are applicable instead of those above.
                     <text style="Prompt">
                       <xsl:value-of select="resource:getString($constants,'pwsId')" />:
                     </text>
-                    <textbox key="{meta:getNumber0()}" width="68" case="UPPER" field="String" tab = "{meta:getAlternateStNum()},{meta:getEffEndDt()}" />
+                    <textbox key="{meta:getNumber0()}" width="68" case="UPPER" tab="{meta:getAlternateStNum()},{meta:getEffEndDt()}" field="String" />
                     <text style="Prompt">
                       <xsl:value-of select="resource:getString($constants,'fieldOfficeNum')" />:
                     </text>
-                    <textbox key="{meta:getAlternateStNum()}" width="40" case="UPPER" max="5" field="String" tab = "{meta:getName()},{meta:getNumber0()}"/>
+                    <textbox key="{meta:getAlternateStNum()}" width="40" case="UPPER" max="5" tab="{meta:getName()},{meta:getNumber0()}" field="String" />
                   </row>
                   <row>
                     <text style="Prompt">
                       <xsl:value-of select="resource:getString($constants,'name')" />:
                     </text>
                     <widget colspan="3">
-                      <textbox key="{meta:getName()}" width="285" case="UPPER" max="40" field="String" tab = "{meta:getDPrinCitySvdNm()},{meta:getAlternateStNum()}"/>
+                      <textbox key="{meta:getName()}" width="285" case="UPPER" max="40" tab="{meta:getDPrinCitySvdNm()},{meta:getAlternateStNum()}" field="String" />
                     </widget>
                   </row>
                   <row>
@@ -130,7 +130,7 @@ UIRF Software License are applicable instead of those above.
                       <xsl:value-of select="resource:getString($constants,'city')" />:
                     </text>
                     <widget colspan="3">
-                      <textbox key="{meta:getDPrinCitySvdNm()}" width="285" case="UPPER" max="40" field="String" tab = "{meta:getDPrinCntySvdNm()},{meta:getName()}"/>
+                      <textbox key="{meta:getDPrinCitySvdNm()}" width="285" case="UPPER" max="40" tab="{meta:getDPrinCntySvdNm()},{meta:getName()}" field="String" />
                     </widget>
                   </row>
                   <row>
@@ -138,14 +138,14 @@ UIRF Software License are applicable instead of those above.
                       <xsl:value-of select="resource:getString($constants,'county')" />:
                     </text>
                     <widget colspan="3">
-                      <textbox key="{meta:getDPrinCntySvdNm()}" width="285" case="UPPER" max="40" field="String" tab = "{meta:getDPwsStTypeCd()},{meta:getDPrinCitySvdNm()}"/>
+                      <textbox key="{meta:getDPrinCntySvdNm()}" width="285" case="UPPER" max="40" tab="{meta:getDPwsStTypeCd()},{meta:getDPrinCitySvdNm()}" field="String" />
                     </widget>
                   </row>
                   <row>
                     <text style="Prompt">
                       <xsl:value-of select="resource:getString($constants,'stateType')" />:
                     </text>
-                    <textbox key="{meta:getDPwsStTypeCd()}" width="33" max="4" field="String" tab = "{meta:getActivityStatusCd()},{meta:getDPrinCntySvdNm()}"/>
+                    <textbox key="{meta:getDPwsStTypeCd()}" width="33" max="4" tab="{meta:getActivityStatusCd()},{meta:getDPrinCntySvdNm()}" field="String" />
                   </row>
                 </TablePanel>
               </VerticalPanel>
@@ -155,14 +155,14 @@ UIRF Software License are applicable instead of those above.
                     <text style="Prompt">
                       <xsl:value-of select="resource:getString($constants,'status')" />:
                     </text>
-                    <textbox key="{meta:getActivityStatusCd()}" width="12" case="UPPER" max="1" field="String" tab = "{meta:getDPopulationCount()},{meta:getDPwsStTypeCd()}"/>
+                    <textbox key="{meta:getActivityStatusCd()}" width="12" case="UPPER" max="1" tab="{meta:getDPopulationCount()},{meta:getDPwsStTypeCd()}" field="String" />
                     <widget colspan="2">
                       <text style="Prompt">
                         <xsl:value-of select="resource:getString($constants,'population')" />:
                       </text>
                     </widget>
                     <widget colspan="3">
-                      <textbox key="{meta:getDPopulationCount()}" width="61" field="Integer" tab = "{meta:getActivityRsnTxt()},{meta:getActivityStatusCd()}"/>
+                      <textbox key="{meta:getDPopulationCount()}" width="61" tab="{meta:getActivityRsnTxt()},{meta:getActivityStatusCd()}" field="Integer" />
                     </widget>
                   </row>
                   <row>
@@ -170,36 +170,36 @@ UIRF Software License are applicable instead of those above.
                       <xsl:value-of select="resource:getString($constants,'reason')" />:
                     </text>
                     <widget colspan="7">
-                      <textarea key="{meta:getActivityRsnTxt()}" width="275" height="50" tab = "{meta:getStartDay()},{meta:getDPopulationCount()}"/>
+                      <textarea key="{meta:getActivityRsnTxt()}" width="275" height="50" tab="{meta:getStartDay()},{meta:getDPopulationCount()}" />
                     </widget>
                   </row>
                   <row>
                     <text style="Prompt">
                       <xsl:value-of select="resource:getString($constants,'startDay')" />:
                     </text>
-                    <textbox key="{meta:getStartDay()}" width="19" max="2" field="Integer" tab = "{meta:getStartMonth()},{meta:getActivityRsnTxt()}"/>
+                    <textbox key="{meta:getStartDay()}" width="19" max="2" tab="{meta:getStartMonth()},{meta:getActivityRsnTxt()}" field="Integer" />
                     <text style="Prompt">
                       <xsl:value-of select="resource:getString($constants,'month')" />:
                     </text>
-                    <textbox key="{meta:getStartMonth()}" width="19" max="2" field="Integer" tab = "{meta:getEffBeginDt()},{meta:getStartDay()}"/>
+                    <textbox key="{meta:getStartMonth()}" width="19" max="2" tab="{meta:getEffBeginDt()},{meta:getStartDay()}" field="Integer" />
                     <text style="Prompt">
                       <xsl:value-of select='resource:getString($constants,"effectiveBegin")' />:
                     </text>
-                    <calendar key="{meta:getEffBeginDt()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab = "{meta:getEndDay()},{meta:getStartMonth()}"/>
+                    <calendar key="{meta:getEffBeginDt()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getEndDay()},{meta:getStartMonth()}" />
                   </row>
                   <row>
                     <text style="Prompt">
                       <xsl:value-of select="resource:getString($constants,'endDay')" />:
                     </text>
-                    <textbox key="{meta:getEndDay()}" width="19" max="2" field="Integer" tab = "{meta:getEndMonth()},{meta:getEffBeginDt()}"/>
+                    <textbox key="{meta:getEndDay()}" width="19" max="2" tab="{meta:getEndMonth()},{meta:getEffBeginDt()}" field="Integer" />
                     <text style="Prompt">
                       <xsl:value-of select="resource:getString($constants,'month')" />:
                     </text>
-                    <textbox key="{meta:getEndMonth()}" width="19" max="2" field="Integer" tab = "{meta:getEffEndDt()},{meta:getEndDay()}"/>
+                    <textbox key="{meta:getEndMonth()}" width="19" max="2" tab="{meta:getEffEndDt()},{meta:getEndDay()}" field="Integer" />
                     <text style="Prompt">
                       <xsl:value-of select='resource:getString($constants,"effectiveEnd")' />:
                     </text>
-                    <calendar key="{meta:getEffEndDt()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab = "{meta:getNumber0()},{meta:getEndMonth()}"/>
+                    <calendar key="{meta:getEffEndDt()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getNumber0()},{meta:getEndMonth()}" />
                   </row>
                 </TablePanel>
               </VerticalPanel>
@@ -294,10 +294,10 @@ UIRF Software License are applicable instead of those above.
                       <textbox field="String" />
                     </col>
                     <col key="{meta:getMonitorCompBeginDate()}" width="80" header="{resource:getString($constants,'beginDate')}">
-                      <textbox field="Date"  pattern="{resource:getString($constants,'datePattern')}" />
+                      <textbox pattern="{resource:getString($constants,'datePattern')}" field="Date" />
                     </col>
                     <col key="{meta:getMonitorCompEndDate()}" width="80" header="{resource:getString($constants,'endDate')}">
-                      <textbox field="Date"  pattern="{resource:getString($constants,'datePattern')}"/>
+                      <textbox pattern="{resource:getString($constants,'datePattern')}" field="Date" />
                     </col>
                     <col key="{meta:getMonitorFrequencyName()}" width="130" header="{resource:getString($constants,'frequency')}">
                       <textbox field="String" />

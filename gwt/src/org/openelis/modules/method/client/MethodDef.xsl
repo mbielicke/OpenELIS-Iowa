@@ -54,7 +54,7 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel>
               <table key="atozTable" width="auto" maxRows="9" style="atozTable">
                 <col width="175" header="{resource:getString($constants,'method')}">
-                  <label />
+                  <label field="String" />
                 </col>
               </table>
               <widget halign="center">
@@ -120,7 +120,7 @@ UIRF Software License are applicable instead of those above.
                         <text>
                           <xsl:value-of select='resource:getString($constants,"options")' />
                         </text>
-                        <AbsolutePanel width="20px" height="20px" style="OptionsButtonImage" />
+                        <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
                       </HorizontalPanel>
                     </appButton>
                   </menuDisplay>
@@ -139,7 +139,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'name')" />:
                 </text>
                 <widget colspan="6">
-                  <textbox key="{meta:getName()}" width="145" case="LOWER" max="20" tab="{meta:getDescription()},{meta:getActiveEnd()}" required="true" />
+                  <textbox key="{meta:getName()}" width="145" case="LOWER" max="20" tab="{meta:getDescription()},{meta:getActiveEnd()}" field="String" required="true" />
                 </widget>
               </row>
               <row>
@@ -147,7 +147,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'description')" />:
                 </text>
                 <widget colspan="6">
-                  <textbox key="{meta:getDescription()}" width="425" case="MIXED" max="60" tab="{meta:getReportingDescription()},{meta:getName()}" />
+                  <textbox key="{meta:getDescription()}" width="425" case="MIXED" max="60" tab="{meta:getReportingDescription()},{meta:getName()}" field="String" />
                 </widget>
               </row>
               <row>
@@ -155,7 +155,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'reportDescription')" />:
                 </text>
                 <widget colspan="6">
-                  <textbox key="{meta:getReportingDescription()}" width="425" case="MIXED" max="60" tab="{meta:getIsActive()},{meta:getDescription()}" />
+                  <textbox key="{meta:getReportingDescription()}" width="425" case="MIXED" max="60" tab="{meta:getIsActive()},{meta:getDescription()}" field="String" />
                 </widget>
               </row>
               <row>

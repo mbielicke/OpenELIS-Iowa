@@ -29,7 +29,6 @@ import java.util.ArrayList;
 
 import org.openelis.domain.PanelVO;
 import org.openelis.domain.TestMethodVO;
-import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
@@ -47,156 +46,79 @@ public class TestService {
     private static final int rowPP = 26;
 
     public TestManager fetchById(Integer testId) throws Exception {
-        try {
-            return remoteManager().fetchById(testId);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchById(testId);
     }
 
     public ArrayList<TestMethodVO> fetchByName(String name) throws Exception {
-        try {
-            return remote().fetchByName(name + "%", 10);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remote().fetchByName(name + "%", 10);
     }
 
     public ArrayList<PanelVO> fetchNameMethodSectionByName(String name) throws Exception {
-        try {
-            return remote().fetchNameMethodSectionByName(name + "%", 1000000);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remote().fetchNameMethodSectionByName(name + "%", 1000000);
     }
 
     public TestTypeOfSampleManager fetchSampleTypeByTestId(Integer testId) throws Exception {
-        try {
-            return remoteManager().fetchSampleTypeByTestId(testId);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchSampleTypeByTestId(testId);
     }
 
     public TestAnalyteManager fetchTestAnalyteByTestId(Integer testId) throws Exception {
-        try {
-            return remoteManager().fetchTestAnalytesByTestId(testId);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchTestAnalytesByTestId(testId);
     }
 
     public TestResultManager fetchTestResultByTestId(Integer testId) throws Exception {
-        try {
-            return remoteManager().fetchTestResultsByTestId(testId);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchTestResultsByTestId(testId);
     }
 
     public TestPrepManager fetchPrepTestsByTestId(Integer testId) throws Exception {
-        try {
-            return remoteManager().fetchPrepTestsByTestId(testId);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchPrepTestsByTestId(testId);
     }
 
     public TestReflexManager fetchReflexiveTestByTestId(Integer testId) throws Exception {
-        try {
-            return remoteManager().fetchReflexiveTestsByTestId(testId);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchReflexiveTestsByTestId(testId);
     }
 
     public TestWorksheetManager fetchWorksheetByTestId(Integer testId) throws Exception {
-        try {
-            return remoteManager().fetchWorksheetByTestId(testId);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchWorksheetByTestId(testId);
     }
 
     public TestManager fetchWithSampleTypes(Integer testId) throws Exception {
-        try {
-            return remoteManager().fetchWithSampleTypes(testId);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchWithSampleTypes(testId);
     }
 
     public TestManager fetchWithAnalytesAndResults(Integer testId) throws Exception {
-        try {
-            return remoteManager().fetchWithAnalytesAndResults(testId);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
-
+        return remoteManager().fetchWithAnalytesAndResults(testId);
     }
 
     public TestManager fetchWithPrepTestsSampleTypes(Integer testId) throws Exception {
-        try {
-            return remoteManager().fetchWithPrepTestsSampleTypes(testId);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchWithPrepTestsSampleTypes(testId);
     }
- 
+
     public TestManager fetchWithPrepTestsAndReflexTests(Integer testId) throws Exception {
-        try {
-            return remoteManager().fetchWithPrepTestsAndReflexTests(testId);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchWithPrepTestsAndReflexTests(testId);
     }
 
     public TestManager fetchWithWorksheet(Integer testId) throws Exception {
-        try {
-            return remoteManager().fetchWithWorksheet(testId);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchWithWorksheet(testId);
     }
 
     public ArrayList<TestMethodVO> query(Query query) throws Exception {
-        try {
-            return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
     }
 
     public TestManager add(TestManager man) throws Exception {
-        try {
-            return remoteManager().add(man);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().add(man);
     }
 
     public TestManager update(TestManager man) throws Exception {
-        try {
-            return remoteManager().update(man);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().update(man);
     }
 
     public TestManager fetchForUpdate(Integer testId) throws Exception {
-        try {
-            return remoteManager().fetchForUpdate(testId);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchForUpdate(testId);
     }
 
     public TestManager abortUpdate(Integer testId) throws Exception {
-        try {
-            return remoteManager().abortUpdate(testId);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().abortUpdate(testId);
     }
 
     private TestRemote remote() {
