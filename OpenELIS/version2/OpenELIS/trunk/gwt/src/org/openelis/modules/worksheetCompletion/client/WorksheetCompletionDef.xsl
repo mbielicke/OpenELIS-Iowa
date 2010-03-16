@@ -24,7 +24,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -42,49 +41,49 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen id="WorksheetCompletion" name="{resource:getString($constants,'worksheetCompletion')}">
-  	  <VerticalPanel padding="0" spacing="0">
-	    <AbsolutePanel spacing="0" style="ButtonPanelContainer">
-	      <HorizontalPanel>
-		    <appButton key="printButton" style="ButtonPanelButton" action="print">
-		      <HorizontalPanel>
-		        <AbsolutePanel style="PrintButtonImage" />
-		        <text>
-		          <xsl:value-of select="resource:getString($constants,'print')" />
-		        </text>
-		      </HorizontalPanel>
-		    </appButton>
-		    <appButton key="exitButton" style="ButtonPanelButton" action="exit">
-		      <HorizontalPanel>
-		        <AbsolutePanel style="ExitButtonImage" />
-		        <text>
-		          <xsl:value-of select="resource:getString($constants,'exit')" />
-		        </text>
-		      </HorizontalPanel>
-		    </appButton>
-	      </HorizontalPanel>
-	    </AbsolutePanel>
+      <VerticalPanel padding="0" spacing="0">
+        <AbsolutePanel spacing="0" style="ButtonPanelContainer">
+          <HorizontalPanel>
+            <appButton key="printButton" style="ButtonPanelButton" action="print">
+              <HorizontalPanel>
+                <AbsolutePanel style="PrintButtonImage" />
+                <text>
+                  <xsl:value-of select="resource:getString($constants,'print')" />
+                </text>
+              </HorizontalPanel>
+            </appButton>
+            <appButton key="exitButton" style="ButtonPanelButton" action="exit">
+              <HorizontalPanel>
+                <AbsolutePanel style="ExitButtonImage" />
+                <text>
+                  <xsl:value-of select="resource:getString($constants,'exit')" />
+                </text>
+              </HorizontalPanel>
+            </appButton>
+          </HorizontalPanel>
+        </AbsolutePanel>
         <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
           <TablePanel style="Form">
             <row>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'worksheetNumber')" />:
               </text>
-              <textbox key="{meta:getId()}" width="100px" case="LOWER" field="String"/>
+              <textbox key="{meta:getId()}" width="100" case="LOWER" field="String" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'status')" />:
               </text>
-              <dropdown key="{meta:getStatusId()}" width="100px" popWidth="100px" tab="lookupWorksheetButton,tabPanel" field="Integer" />
+              <dropdown key="{meta:getStatusId()}" width="100" popWidth="100" tab="lookupWorksheetButton,tabPanel" field="Integer" />
             </row>
             <row>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'relatedWorksheetNumber')" />:
               </text>
               <HorizontalPanel>
-                <textbox key="{meta:getRelatedWorksheetId()}" width="100px" case="LOWER" field="String"/>
-	            <appButton key="lookupWorksheetButton" style="LookupButton" action="lookupWorksheet" tab="tabPanel,{meta:getStatusId()}">
+                <textbox key="{meta:getRelatedWorksheetId()}" width="100" case="LOWER" field="String" />
+                <appButton key="lookupWorksheetButton" style="LookupButton" tab="tabPanel,{meta:getStatusId()}" action="lookupWorksheet">
                   <AbsolutePanel style="LookupButtonImage" />
-	            </appButton>
-	          </HorizontalPanel>
+                </appButton>
+              </HorizontalPanel>
             </row>
           </TablePanel>
 <!-- TAB PANEL -->
@@ -93,17 +92,18 @@ UIRF Software License are applicable instead of those above.
             <tab key="worksheetItemTab" tab="worksheetItemTable,worksheetItemTable" text="{resource:getString($constants,'worksheet')}">
               <VerticalPanel padding="0" spacing="0">
                 <table key="worksheetItemTable" width="587" maxRows="10" showScroll="ALWAYS" tab="{meta:getId()},{meta:getId()}">
-                  <col key="{meta:getWorksheetItemPosition()}" width="50" header="{resource:getString($constants,'position')}" sort="false">
-                    <label />
+                  <col key="{meta:getWorksheetItemPosition()}" width="50" header="{resource:getString($constants,'position')}">
+                    <label field="String" />
                   </col>
-                  <col key="{meta:getWorksheetAnalysisAccessionNumber()}" width="90" header="{resource:getString($constants,'accessionNum')}" sort="true">
-                    <label />
+                  <col key="{meta:getWorksheetAnalysisAccessionNumber()}" width="90" sort="true" header="{resource:getString($constants,'accessionNum')}">
+                    <label field="String" />
                   </col>
 <!--
-                  <col key="{meta:getSampleDescription()}" width="110" header="{resource:getString($constants,'description')}" sort="true">
-                    <label />
-                  </col>
--->
+  
+<col key="{meta:getSampleDescription()}" width="110" header="{resource:getString($constants,'description')}" sort="true">
+<label />
+</col>
+  -->
                 </table>
                 <widget style="TableButtonFooter">
                   <HorizontalPanel>

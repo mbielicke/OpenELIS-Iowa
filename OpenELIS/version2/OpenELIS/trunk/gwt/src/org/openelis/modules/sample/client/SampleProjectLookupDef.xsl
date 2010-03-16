@@ -1,5 +1,4 @@
 
-
 <!--
 		Exhibit A - UIRF Open-source Based Public Software License. The
 		contents of this file are subject to the UIRF Open-source Based Public
@@ -18,7 +17,6 @@
 		provisions of a UIRF Software License are applicable instead of those
 		above.
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -51,13 +49,13 @@
           <row>
             <table key="sampleProjectTable" width="auto" maxRows="10" showScroll="ALWAYS" tab="sampleProjectTable,sampleProjectTable" title="">
               <col width="120" header="Name">
-                <autoComplete width="100px" case="UPPER">
+                <autoComplete width="100" case="UPPER" field="Integer">
                   <col width="115" header="Name" />
                   <col width="190" header="Desc" />
                 </autoComplete>
               </col>
               <col width="160" header="Description">
-                <label />
+                <label field="String" />
               </col>
               <col width="70" header="Is Perm">
                 <check />
@@ -87,9 +85,7 @@
             </widget>
           </row>
         </TablePanel>
-
 <!--button panel code-->
-
         <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
           <HorizontalPanel>
             <xsl:call-template name="okButton">
@@ -99,9 +95,7 @@
             </xsl:call-template>
           </HorizontalPanel>
         </AbsolutePanel>
-
 <!--end button panel-->
-
       </VerticalPanel>
     </screen>
   </xsl:template>

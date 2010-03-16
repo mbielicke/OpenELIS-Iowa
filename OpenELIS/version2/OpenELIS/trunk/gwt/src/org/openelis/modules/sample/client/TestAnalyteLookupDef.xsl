@@ -25,7 +25,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -56,10 +55,10 @@ UIRF Software License are applicable instead of those above.
       <VerticalPanel padding="0" spacing="0">
         <table key="testAnalyteTable" width="auto" maxRows="10" multiSelect="true" showScroll="ALWAYS" title="">
           <col width="400" header="{resource:getString($constants,'analyte')}">
-            <label />
+            <label field="String" />
           </col>
           <col width="120" header="{resource:getString($constants,'type')}">
-            <dropdown width="100" />
+            <dropdown width="100" field="Integer" />
           </col>
           <col width="50" header="{resource:getString($constants,'alias')}">
             <check />

@@ -1,5 +1,4 @@
 
-
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -26,7 +25,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -40,44 +38,44 @@ UIRF Software License are applicable instead of those above.
   xmlns:meta="xalan://org.openelis.meta.SampleMeta">
 
   <xsl:template name="ResultTab">
-  <xsl:param name="widthParam" select="697"/>
-  <xsl:param name="maxRowsParam" select="9"/>
+    <xsl:param name="widthParam" select="697" />
+    <xsl:param name="maxRowsParam" select="9" />
     <VerticalPanel padding="0" spacing="0">
       <TablePanel padding="0" spacing="0">
         <row>
           <table key="testResultsTable" width="{string($widthParam)}" maxRows="{string($maxRowsParam)}" showScroll="ALWAYS" title="">
-          <col width="65" class="org.openelis.modules.sample.client.SampleResultTableColumn">
-                <label />
-              </col>
-            <col width="200">
-              <textbox max="80"/>
+            <col width="65" class="org.openelis.modules.sample.client.SampleResultTableColumn">
+              <label field="String" />
             </col>
             <col width="200">
-              <textbox max="80"/>
+              <textbox max="80" field="String" />
             </col>
             <col width="200">
-              <textbox max="80"/>
+              <textbox max="80" field="String" />
             </col>
             <col width="200">
-              <textbox max="80"/>
+              <textbox max="80" field="String" />
             </col>
             <col width="200">
-              <textbox max="80"/>
+              <textbox max="80" field="String" />
             </col>
             <col width="200">
-              <textbox max="80"/>
+              <textbox max="80" field="String" />
             </col>
             <col width="200">
-              <textbox max="80"/>
+              <textbox max="80" field="String" />
             </col>
             <col width="200">
-              <textbox max="80"/>
+              <textbox max="80" field="String" />
             </col>
             <col width="200">
-              <textbox max="80"/>
+              <textbox max="80" field="String" />
             </col>
             <col width="200">
-              <textbox max="80"/>
+              <textbox max="80" field="String" />
+            </col>
+            <col width="200">
+              <textbox max="80" field="String" />
             </col>
           </table>
         </row>
@@ -109,13 +107,13 @@ UIRF Software License are applicable instead of those above.
                 </HorizontalPanel>
               </appButton>
               <appButton key="popoutTable" style="Button">
-                      <HorizontalPanel>
-                          <AbsolutePanel style="popoutButtonImage" />
-                          <text>
-                          <xsl:value-of select="resource:getString($constants,'popout')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
+                <HorizontalPanel>
+                  <AbsolutePanel style="popoutButtonImage" />
+                  <text>
+                    <xsl:value-of select="resource:getString($constants,'popout')" />
+                  </text>
+                </HorizontalPanel>
+              </appButton>
             </HorizontalPanel>
           </widget>
         </row>

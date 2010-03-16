@@ -24,7 +24,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -43,13 +42,13 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen id="WorksheetCreationLookup" name="{resource:getString($constants,'worksheetCreationLookup')}">
       <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
-      	<HorizontalPanel>
+        <HorizontalPanel>
           <TablePanel style="Form">
             <row>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'test')" />:
               </text>
-              <autoComplete key="{meta:getAnalysisTestId()}" width="150px" case="LOWER" popWidth="auto" tab="{meta:getAnalysisSectionId()},analysisTable" field="Integer">
+              <autoComplete key="{meta:getAnalysisTestId()}" width="150" case="LOWER" popWidth="auto" tab="{meta:getAnalysisSectionId()},analysisTable" field="Integer">
                 <col width="150" header="Test" />
                 <col width="150" header="Method" />
                 <col width="200" header="Description" />
@@ -59,86 +58,86 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'method')" />:
               </text>
-              <textbox key="{meta:getAnalysisTestMethodName()}" width="150px" case="LOWER" field="String" />
+              <textbox key="{meta:getAnalysisTestMethodName()}" width="150" case="LOWER" field="String" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'section')" />:
               </text>
-              <dropdown key="{meta:getAnalysisSectionId()}" width="130px" popWidth="130px" tab="{meta:getSampleAccessionNumber()},meta:getAnalysisTestId()" field="Integer" />
+              <dropdown key="{meta:getAnalysisSectionId()}" width="130" popWidth="130px" tab="{meta:getSampleAccessionNumber()},meta:getAnalysisTestId()" field="Integer" />
             </row>
             <row>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'accessionNum')" />:
               </text>
-              <textbox key="{meta:getSampleAccessionNumber()}" width="80px" tab="{meta:getAnalysisStatusId()},{meta:getAnalysisSectionId()}" field="Integer" />
+              <textbox key="{meta:getSampleAccessionNumber()}" width="80" tab="{meta:getAnalysisStatusId()},{meta:getAnalysisSectionId()}" field="Integer" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'status')" />:
               </text>
-              <dropdown key="{meta:getAnalysisStatusId()}" width="100px" popWidth="100px" tab="{meta:getSampleItemTypeOfSampleId()},{meta:getSampleAccessionNumber()}" field="Integer" />
+              <dropdown key="{meta:getAnalysisStatusId()}" width="100" popWidth="100" tab="{meta:getSampleItemTypeOfSampleId()},{meta:getSampleAccessionNumber()}" field="Integer" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'sampleType')" />:
               </text>
-              <dropdown key="{meta:getSampleItemTypeOfSampleId()}" width="175px" popWidth="175px" tab="{meta:getSampleReceivedDate()},meta:getAnalysisStatusId()" field="Integer" />
+              <dropdown key="{meta:getSampleItemTypeOfSampleId()}" width="175" popWidth="175" tab="{meta:getSampleReceivedDate()},meta:getAnalysisStatusId()" field="Integer" />
             </row>
             <row>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'received')" />:
               </text>
-              <calendar key="{meta:getSampleReceivedDate()}" begin="0" end="4" width="130px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getSampleEnteredDate()},{meta:getSampleItemTypeOfSampleId()}" />
+              <calendar key="{meta:getSampleReceivedDate()}" begin="0" end="4" width="130" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getSampleEnteredDate()},{meta:getSampleItemTypeOfSampleId()}" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'entered')" />:
               </text>
-              <calendar key="{meta:getSampleEnteredDate()}" begin="0" end="4" width="130px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="searchButton,{meta:getSampleReceivedDate()}" />
+              <calendar key="{meta:getSampleEnteredDate()}" begin="0" end="4" width="130" pattern="{resource:getString($constants,'dateTimePattern')}" tab="searchButton,{meta:getSampleReceivedDate()}" />
             </row>
           </TablePanel>
           <widget halign="center" valign="middle">
-              <appButton key="searchButton" style="Button" action="search" tab="analysisTable,{meta:getSampleEnteredDate()}">
-                <HorizontalPanel>
-                  <AbsolutePanel style="FindButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'search')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
+            <appButton key="searchButton" style="Button" tab="analysisTable,{meta:getSampleEnteredDate()}" action="search">
+              <HorizontalPanel>
+                <AbsolutePanel style="FindButtonImage" />
+                <text>
+                  <xsl:value-of select="resource:getString($constants,'search')" />
+                </text>
+              </HorizontalPanel>
+            </appButton>
           </widget>
         </HorizontalPanel>
-        <table key="analysesTable" width="800" maxRows="9" showScroll="ALWAYS" tab="addButton,searchButton" title="" style="ScreenTableWithSides">
-          <col key="{meta:getSampleAccessionNumber()}" width="90" header="{resource:getString($constants,'accessionNum')}" sort="true">
-            <label />
+        <table key="analysesTable" width="800" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" tab="addButton,searchButton" title="">
+          <col key="{meta:getSampleAccessionNumber()}" width="90" sort="true" header="{resource:getString($constants,'accessionNum')}">
+            <label field="String" />
           </col>
-          <col key="{meta:getSampleEnvironmentalDescription()}" width="150" header="{resource:getString($constants,'description')}" sort="true">
-            <label />
+          <col key="{meta:getSampleEnvironmentalDescription()}" width="150" sort="true" header="{resource:getString($constants,'description')}">
+            <label field="String" />
           </col>
-          <col key="{meta:getAnalysisTestId()}" width="100" header="{resource:getString($constants,'test')}" sort="true">
-            <label />
+          <col key="{meta:getAnalysisTestId()}" width="100" sort="true" header="{resource:getString($constants,'test')}">
+            <label field="Integer" />
           </col>
-          <col key="{meta:getAnalysisTestMethodName()}" width="100" header="{resource:getString($constants,'method')}" sort="true">
-            <label />
+          <col key="{meta:getAnalysisTestMethodName()}" width="100" sort="true" header="{resource:getString($constants,'method')}">
+            <label field="String" />
           </col>
-          <col key="{meta:getAnalysisSectionId()}" width="100" header="{resource:getString($constants,'section')}" sort="true">
-            <dropdown width="80"/>
+          <col key="{meta:getAnalysisSectionId()}" width="100" sort="true" header="{resource:getString($constants,'section')}">
+            <dropdown width="80" field="Integer" />
           </col>
-          <col key="{meta:getAnalysisStatusId()}" width="75" header="{resource:getString($constants,'status')}" sort="true">
-            <dropdown width="55"/>
+          <col key="{meta:getAnalysisStatusId()}" width="75" sort="true" header="{resource:getString($constants,'status')}">
+            <dropdown width="55" field="Integer" />
           </col>
-          <col key="{meta:getSampleCollectionDate}" width="75" header="{resource:getString($constants,'collected')}" sort="true">
-            <calendar pattern="{resource:getString($constants,'datePattern')}" begin="0" end="2"/>
+          <col key="{meta:getSampleCollectionDate}" width="75" sort="true" header="{resource:getString($constants,'collected')}">
+            <calendar begin="0" end="2" pattern="{resource:getString($constants,'datePattern')}" />
           </col>
-          <col key="{meta:getSampleReceivedDate}" width="110" header="{resource:getString($constants,'received')}" sort="true">
-            <calendar pattern="{resource:getString($constants,'dateTimePattern')}" begin="0" end="4"/>
+          <col key="{meta:getSampleReceivedDate}" width="110" sort="true" header="{resource:getString($constants,'received')}">
+            <calendar begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
           </col>
-          <col key="{meta:getAnalysisDueDays()}" width="50" header="{resource:getString($constants,'due')}" sort="true">
-            <label />
+          <col key="{meta:getAnalysisDueDays()}" width="50" sort="true" header="{resource:getString($constants,'due')}">
+            <label field="Integer" />
           </col>
-          <col key="{meta:getAnalysisExpireDate()}" width="110" header="{resource:getString($constants,'expire')}" sort="true">
-            <calendar pattern="{resource:getString($constants,'dateTimePattern')}" begin="0" end="4"/>
+          <col key="{meta:getAnalysisExpireDate()}" width="110" sort="true" header="{resource:getString($constants,'expire')}">
+            <calendar begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
           </col>
-          <col key="{meta:getSampleEnvironmentalPriority()}" width="65" header="{resource:getString($constants,'priority')}" sort="true">
-            <label />
+          <col key="{meta:getSampleEnvironmentalPriority()}" width="65" sort="true" header="{resource:getString($constants,'priority')}">
+            <label field="String" />
           </col>
         </table>
         <widget style="TableFooterPanel">
           <HorizontalPanel>
-            <appButton key="addButton" style="Button" action="add" tab="selectAllButton,analysesTable">
+            <appButton key="addButton" style="Button" tab="selectAllButton,analysesTable" action="add">
               <HorizontalPanel>
                 <AbsolutePanel style="AddRowButtonImage" />
                 <text>
@@ -146,7 +145,7 @@ UIRF Software License are applicable instead of those above.
                 </text>
               </HorizontalPanel>
             </appButton>
-            <appButton key="selectAllButton" style="Button" action="selectAll" tab="{meta:getAnalysisTestId()},addButton">
+            <appButton key="selectAllButton" style="Button" tab="{meta:getAnalysisTestId()},addButton" action="selectAll">
               <HorizontalPanel>
                 <AbsolutePanel style="SelectAllButtonImage" />
                 <text>

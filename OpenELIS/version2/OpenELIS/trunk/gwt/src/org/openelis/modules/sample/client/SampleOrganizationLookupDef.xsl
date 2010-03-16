@@ -1,5 +1,4 @@
 
-
 <!--
 		Exhibit A - UIRF Open-source Based Public Software License. The
 		contents of this file are subject to the UIRF Open-source Based Public
@@ -18,7 +17,6 @@
 		provisions of a UIRF Software License are applicable instead of those
 		above.
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -51,13 +49,13 @@
           <row>
             <table key="sampleOrganizationTable" width="auto" maxRows="10" showScroll="ALWAYS" tab="sampleOrganizationTable,sampleOrganizationTable" title="">
               <col width="120" header="Type">
-                <dropdown width="110px" />
+                <dropdown width="110" field="Integer" />
               </col>
               <col width="35" header="Id">
-                <label />
+                <label field="Integer" />
               </col>
               <col width="160" header="Name">
-                <autoComplete width="130px" case="UPPER">
+                <autoComplete width="130px" case="UPPER" field="Integer">
                   <col width="180" header="Name" />
                   <col width="110" header="Street" />
                   <col width="100" header="City" />
@@ -65,10 +63,10 @@
                 </autoComplete>
               </col>
               <col width="110" header="City">
-                <label />
+                <label field="String" />
               </col>
               <col width="55" header="State">
-                <label />
+                <label field="String" />
               </col>
             </table>
           </row>

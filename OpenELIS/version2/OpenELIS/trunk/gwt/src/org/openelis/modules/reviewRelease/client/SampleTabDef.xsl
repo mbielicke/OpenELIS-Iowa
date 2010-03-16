@@ -24,7 +24,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -38,44 +37,43 @@ UIRF Software License are applicable instead of those above.
   xmlns:meta="xalan://org.openelis.meta.SampleMeta">
 
   <xsl:template name="ResultTab">
-                <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
-              <TablePanel style="Form">
-                <row>
-                  <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'accessionNum')" />:
-                  </text>
-                  <textbox field="Integer" key="{meta:getAccessionNumber()}" required="true" tab="orderNumber,SampleContent" width="75px" />
-                  <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'orderNum')" />:
-                  </text>
-                  <textbox field="Integer" key="orderNumber" tab="{meta:getCollectionDate()},{meta:getAccessionNumber()}" width="75px" />
-                  <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'collected')" />:
-                  </text>
-                  <calendar begin="0" end="2" key="{meta:getCollectionDate()}" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getCollectionTime()},orderNumber" width="80px" />
-                  <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'time')" />:
-                  </text>
-                  <textbox begin="3" end="5" field="Date" key="{meta:getCollectionTime()}" pattern="{resource:getString($constants,'timePattern')}" tab="{meta:getReceivedDate()},{meta:getCollectionDate()}" width="60px" />
-                </row>
-                <row>
-                  <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'received')" />:
-                  </text>
-                  <calendar begin="0" end="4" key="{meta:getReceivedDate()}" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getStatusId()},{meta:getCollectionTime()}" width="110px" />
-                  <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'status')" />:
-                  </text>
-                  <dropdown field="Integer" key="{meta:getStatusId()}" popWidth="110px" required="true" tab="{meta:getClientReference()},{meta:getReceivedDate()}" width="110px" />
-                  <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'clntRef')" />:
-                  </text>
-                  <widget colspan="3">
-                    <textbox field="String" key="{meta:getClientReference()}" tab="SampleContent,{meta:getStatusId()}" width="175px" />
-                  </widget>
-                </row>
-              </TablePanel>
-            </VerticalPanel>
+    <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
+      <TablePanel style="Form">
+        <row>
+          <text style="Prompt">
+            <xsl:value-of select="resource:getString($constants,'accessionNum')" />:
+          </text>
+          <textbox key="{meta:getAccessionNumber()}" width="75" tab="orderNumber,SampleContent" field="Integer" required="true" />
+          <text style="Prompt">
+            <xsl:value-of select="resource:getString($constants,'orderNum')" />:
+          </text>
+          <textbox key="orderNumber" width="75" tab="{meta:getCollectionDate()},{meta:getAccessionNumber()}" field="Integer" />
+          <text style="Prompt">
+            <xsl:value-of select="resource:getString($constants,'collected')" />:
+          </text>
+          <calendar key="{meta:getCollectionDate()}" begin="0" end="2" width="80" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getCollectionTime()},orderNumber" />
+          <text style="Prompt">
+            <xsl:value-of select="resource:getString($constants,'time')" />:
+          </text>
+          <textbox key="{meta:getCollectionTime()}" begin="3" end="5" width="60" pattern="{resource:getString($constants,'timePattern')}" tab="{meta:getReceivedDate()},{meta:getCollectionDate()}" field="Date" />
+        </row>
+        <row>
+          <text style="Prompt">
+            <xsl:value-of select="resource:getString($constants,'received')" />:
+          </text>
+          <calendar key="{meta:getReceivedDate()}" begin="0" end="4" width="110" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getStatusId()},{meta:getCollectionTime()}" />
+          <text style="Prompt">
+            <xsl:value-of select="resource:getString($constants,'status')" />:
+          </text>
+          <dropdown key="{meta:getStatusId()}" width="110" popWidth="110px" tab="{meta:getClientReference()},{meta:getReceivedDate()}" field="Integer" required="true" />
+          <text style="Prompt">
+            <xsl:value-of select="resource:getString($constants,'clntRef')" />:
+          </text>
+          <widget colspan="3">
+            <textbox key="{meta:getClientReference()}" width="175" tab="SampleContent,{meta:getStatusId()}" field="String" />
+          </widget>
+        </row>
+      </TablePanel>
+    </VerticalPanel>
   </xsl:template>
-
 </xsl:stylesheet>
