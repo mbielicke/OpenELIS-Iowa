@@ -43,38 +43,38 @@ UIRF Software License are applicable instead of those above.
     <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="StorageLocationLookup" name="{resource:getString($constants,'storageLocationSelection')}">
       <VerticalPanel>
         <HorizontalPanel height="100%" spacing="0">
-<!--left table goes here -->          
-          <VerticalPanel style="WhiteContentPanel" spacing="0">
+<!--left table goes here -->
+          <VerticalPanel spacing="0" style="WhiteContentPanel">
             <HorizontalPanel>
               <TablePanel style="Form">
                 <row>
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'search')" />:
                   </text>
-                  <autoComplete key="location" width="375" >
+                  <autoComplete key="location" width="375" field="Integer">
                     <col width="375" />
                   </autoComplete>
                 </row>
-              </TablePanel>             
+              </TablePanel>
             </HorizontalPanel>
             <VerticalPanel spacing="0">
               <widget>
                 <table key="storageLocationTable" width="auto" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
-                  <col key="parent" width="140" sort="false" header="{resource:getString($constants,'parent')}">
-                    <label />
+                  <col key="parent" width="140" header="{resource:getString($constants,'parent')}">
+                    <label field="String" />
                   </col>
-                  <col key="unitDesc" width="140" sort="false" header="{resource:getString($constants,'storageUnit')}">
-                    <label />
+                  <col key="unitDesc" width="140" header="{resource:getString($constants,'storageUnit')}">
+                    <label field="String" />
                   </col>
-                  <col key="location" width="140" sort="false" header="{resource:getString($constants,'location')}">
-                    <label />
+                  <col key="location" width="140" header="{resource:getString($constants,'location')}">
+                    <label field="String" />
                   </col>
                 </table>
               </widget>
             </VerticalPanel>
           </VerticalPanel>
         </HorizontalPanel>
-        <VerticalPanel width="457px" spacing="0">
+        <VerticalPanel width="457" spacing="0">
           <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
             <HorizontalPanel>
               <xsl:call-template name="okButton">

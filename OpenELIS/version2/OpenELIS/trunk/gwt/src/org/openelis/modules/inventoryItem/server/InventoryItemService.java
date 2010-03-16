@@ -44,11 +44,7 @@ public class InventoryItemService {
     private static final int rowPP = 23;
 
     public InventoryItemManager fetchById(Integer id) throws Exception {
-        try {
-            return remoteManager().fetchById(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchById(id);
     }
 
     public ArrayList<InventoryItemDO> fetchActiveByName(String search) throws Exception {
@@ -75,95 +71,50 @@ public class InventoryItemService {
     }
 
     public InventoryItemManager fetchWithComponents(Integer id) throws Exception {
-        try {
-            return remoteManager().fetchWithComponents(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchWithComponents(id);
     }
 
     public InventoryItemManager fetchWithLocations(Integer id) throws Exception {
-        try {
-            return remoteManager().fetchWithLocations(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchWithLocations(id);
     }
 
     public InventoryItemManager fetchWithManufacturing(Integer id) throws Exception {
-        try {
-            return remoteManager().fetchWithManufacturing(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchWithManufacturing(id);
     }
 
-    public InventoryItemManager fetchWithNotes(Integer id) throws Exception {
-        try {
-            return remoteManager().fetchWithNotes(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+    public InventoryItemManager fetchWithNotes(Integer id) throws Exception {       
+        return remoteManager().fetchWithNotes(id);
     }
 
-    public ArrayList<IdNameStoreVO> query(Query query) throws Exception {
-        try {
-            return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+    public ArrayList<IdNameStoreVO> query(Query query) throws Exception {        
+        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
     }
 
-    public InventoryItemManager add(InventoryItemManager man) throws Exception {
-        try {
-            return remoteManager().add(man);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+    public InventoryItemManager add(InventoryItemManager man) throws Exception {        
+        return remoteManager().add(man);
     }
 
-    public InventoryItemManager update(InventoryItemManager man) throws Exception {
-        try {
-            return remoteManager().update(man);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
-
+    public InventoryItemManager update(InventoryItemManager man) throws Exception {       
+        return remoteManager().update(man);
     }
 
-    public InventoryItemManager fetchForUpdate(Integer id) throws Exception {
-        try {
-            return remoteManager().fetchForUpdate(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+    public InventoryItemManager fetchForUpdate(Integer id) throws Exception {        
+        return remoteManager().fetchForUpdate(id);
     }
 
-    public InventoryItemManager abortUpdate(Integer id) throws Exception {
-        try {
-            return remoteManager().abortUpdate(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+    public InventoryItemManager abortUpdate(Integer id) throws Exception {       
+        return remoteManager().abortUpdate(id);
     }
 
     //
     // support for InventoryComponentManager and InventoryLocationManager
     //
-    public InventoryComponentManager fetchComponentByInventoryItemId(Integer id) throws Exception {
-        try {
-            return remoteManager().fetchComponentByInventoryItemId(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+    public InventoryComponentManager fetchComponentByInventoryItemId(Integer id) throws Exception {        
+        return remoteManager().fetchComponentByInventoryItemId(id);
     }
     
-    public InventoryLocationManager fetchLocationByInventoryItemId(Integer id) throws Exception {
-        try {
-            return remoteManager().fetchLocationByInventoryItemId(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+    public InventoryLocationManager fetchLocationByInventoryItemId(Integer id) throws Exception {        
+        return remoteManager().fetchLocationByInventoryItemId(id);
     }
 
     private InventoryItemRemote remote() {

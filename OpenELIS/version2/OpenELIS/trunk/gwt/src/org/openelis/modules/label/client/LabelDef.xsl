@@ -51,7 +51,7 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel>
               <table key="atozTable" width="auto" maxRows="9" style="atozTable">
                 <col width="175" header="{resource:getString($constants,'name')}">
-                  <label />
+                  <label field="String" />
                 </col>
               </table>
               <widget halign="center">
@@ -121,7 +121,7 @@ UIRF Software License are applicable instead of those above.
                         <text>
                           <xsl:value-of select='resource:getString($constants,"options")' />
                         </text>
-                        <AbsolutePanel width="20px" height="20px" style="OptionsButtonImage" />
+                        <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
                       </HorizontalPanel>
                     </appButton>
                   </menuDisplay>
@@ -138,19 +138,19 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"name")' />:
                 </text>
-                <textbox key="{meta:getName()}" width="215" case="LOWER" max="30" tab="{meta:getDescription()},{meta:getScriptletName()}" required="true" />
+                <textbox key="{meta:getName()}" width="215" case="LOWER" max="30" tab="{meta:getDescription()},{meta:getScriptletName()}" field="String" required="true" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"description")' />:
                 </text>
-                <textbox key="{meta:getDescription()}" width="425" max="60" tab="{meta:getPrinterTypeId()},{meta:getName()}" />
+                <textbox key="{meta:getDescription()}" width="425" max="60" tab="{meta:getPrinterTypeId()},{meta:getName()}" field="String" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"printerType")' />:
                 </text>
-                <dropdown key="{meta:getPrinterTypeId()}" width="90" tab="{meta:getScriptletName()},{meta:getDescription()}" required="true" />
+                <dropdown key="{meta:getPrinterTypeId()}" width="90" tab="{meta:getScriptletName()},{meta:getDescription()}" field="Integer" required="true" />
               </row>
               <row>
                 <text style="Prompt">

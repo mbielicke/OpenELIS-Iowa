@@ -44,14 +44,14 @@ UIRF Software License are applicable instead of those above.
     <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Dictionary" name="{resource:getString($constants,'dictionary')}">
       <HorizontalPanel padding="0" spacing="0">
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
-          <HorizontalPanel width="225px">
+          <HorizontalPanel width="225">
             <buttonGroup key="atozButtons">
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
               <table key="atozTable" width="auto" maxRows="20" style="atozTable">
                 <col width="175" header="{resource:getString($constants,'catName')}">
-                  <label />
+                  <label field="String" />
                 </col>
               </table>
               <widget halign="center">
@@ -116,7 +116,7 @@ UIRF Software License are applicable instead of those above.
                         <text>
                           <xsl:value-of select='resource:getString($constants,"options")' />
                         </text>
-                        <AbsolutePanel width="20px" height="20px" style="OptionsButtonImage" />
+                        <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
                       </HorizontalPanel>
                     </appButton>
                   </menuDisplay>
@@ -136,7 +136,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select='resource:getString($constants,"catName")' />:
                 </text>
                 <widget colspan="5">
-                  <textbox key="{meta:getName()}" width="355px" case="MIXED" max="50" tab="{meta:getDescription()},{meta:getSystemName()}" required="true" />
+                  <textbox key="{meta:getName()}" width="355" case="MIXED" max="50" tab="{meta:getDescription()},{meta:getSystemName()}" field="String" required="true" />
                 </widget>
               </row>
               <row>
@@ -144,20 +144,20 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select='resource:getString($constants,"description")' />:
                 </text>
                 <widget colspan="3">
-                  <textbox key="{meta:getDescription()}" width="425px" case="MIXED" max="60" tab="{meta:getSectionId()},{meta:getName()}" />
+                  <textbox key="{meta:getDescription()}" width="425" case="MIXED" max="60" tab="{meta:getSectionId()},{meta:getName()}" field="String" />
                 </widget>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"section")' />:
                 </text>
-                <dropdown key="{meta:getSectionId()}" width="100px" case="LOWER" tab="{meta:getSystemName()},{meta:getDescription()}" />
+                <dropdown key="{meta:getSectionId()}" width="100" case="LOWER" tab="{meta:getSystemName()},{meta:getDescription()}" field="Integer" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"systemName")' />:
                 </text>
-                <textbox key="{meta:getSystemName()}" width="215px" case="MIXED" max="30" tab="{meta:getIsSystem()},{meta:getSectionId()}" required="true" />
+                <textbox key="{meta:getSystemName()}" width="215" case="MIXED" max="30" tab="{meta:getIsSystem()},{meta:getSectionId()}" field="String" required="true" />
               </row>
               <row>
                 <text style="Prompt">

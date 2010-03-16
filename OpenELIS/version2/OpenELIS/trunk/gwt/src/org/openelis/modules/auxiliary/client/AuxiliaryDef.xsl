@@ -52,7 +52,7 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel>
               <table key="atozTable" width="auto" maxRows="25" style="atozTable">
                 <col width="175" header="{resource:getString($constants,'groupName')}">
-                  <label />
+                  <label field="String" />
                 </col>
               </table>
               <widget halign="center">
@@ -139,7 +139,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'groupName')" />:
                 </text>
                 <widget colspan="5">
-                  <textbox key="{meta:getName()}" width="145" case="LOWER" max="20" tab="{meta:getDescription()},auxFieldValueTable" required="true" />
+                  <textbox key="{meta:getName()}" width="145" case="LOWER" max="20" tab="{meta:getDescription()},auxFieldValueTable" field="String" required="true" />
                 </widget>
               </row>
               <row>
@@ -147,7 +147,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'description')" />:
                 </text>
                 <widget colspan="5">
-                  <textbox key="{meta:getDescription()}" width="425" max="60" tab="{meta:getIsActive()},{meta:getName()}" />
+                  <textbox key="{meta:getDescription()}" width="425" max="60" tab="{meta:getIsActive()},{meta:getName()}" field="String" />
                 </widget>
               </row>
               <row>
@@ -190,7 +190,7 @@ UIRF Software License are applicable instead of those above.
                   <check />
                 </col>
                 <col key="{meta:getFieldDescription()}" width="200" header="{resource:getString($constants,'description')}">
-                  <textbox max="60" />
+                  <textbox max="60" field="String" />
                 </col>
                 <col key="{meta:getFieldScriptletName()}" width="150" header="{resource:getString($constants,'scriptlet')}">
                   <autoComplete width="150" popWidth="auto" field="Integer">

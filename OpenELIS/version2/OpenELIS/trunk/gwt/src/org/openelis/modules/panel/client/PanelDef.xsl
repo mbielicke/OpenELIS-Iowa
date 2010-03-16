@@ -58,7 +58,7 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel>
               <table key="atozTable" width="auto" maxRows="14" style="atozTable">
                 <col width="175" header="{resource:getString($constants,'name')}">
-                  <label />
+                  <label field="String" />
                 </col>
               </table>
               <widget halign="center">
@@ -128,7 +128,7 @@ UIRF Software License are applicable instead of those above.
                         <text>
                           <xsl:value-of select='resource:getString($constants,"options")' />
                         </text>
-                        <AbsolutePanel width="20px" height="20px" style="OptionsButtonImage" />
+                        <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
                       </HorizontalPanel>
                     </appButton>
                   </menuDisplay>
@@ -147,29 +147,29 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'name')" />:
                 </text>
-                <textbox key="{meta:getName()}" width="145" case="LOWER" max="20" tab="{meta:getDescription()},{meta:getDescription()}" required="true" />
+                <textbox key="{meta:getName()}" width="145" case="LOWER" max="20" tab="{meta:getDescription()},{meta:getDescription()}" field="String" required="true" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'description')" />:
                 </text>
-                <textbox key="{meta:getDescription()}" width="425" max="60" tab="addedTestTable,{meta:getName()}" />
+                <textbox key="{meta:getDescription()}" width="425" max="60" tab="addedTestTable,{meta:getName()}" field="String" />
               </row>
             </TablePanel>
             <HorizontalPanel>
               <VerticalPanel style="Form">
                 <widget valign="top">
                   <table key="panelItemTable" width="auto" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getDescription()}" title="">
-                    <col key="{meta:getItemTestName()}" width="135" align="left" sort="false" header="{resource:getString($constants,'test')}">
+                    <col key="{meta:getItemTestName()}" width="135" align="left" header="{resource:getString($constants,'test')}">
                       <textbox field="String" />
                     </col>
-                    <col key="{meta:getItemMethodName()}" width="135" align="left" sort="false" header="{resource:getString($constants,'method')}">
+                    <col key="{meta:getItemMethodName()}" width="135" align="left" header="{resource:getString($constants,'method')}">
                       <textbox field="String" />
                     </col>
                   </table>
                 </widget>
                 <HorizontalPanel>
-                  <HorizontalPanel width="5px" />
+                  <HorizontalPanel width="5" />
                   <widget style="TableButtonFooter">
                     <HorizontalPanel>
                       <appButton key="removeTestButton" style="Button">
@@ -200,7 +200,7 @@ UIRF Software License are applicable instead of those above.
                   </widget>
                 </HorizontalPanel>
               </VerticalPanel>
-              <HorizontalPanel width="10px" />
+              <HorizontalPanel width="10" />
               <widget valign="middle" style="WhiteContentPanel">
                 <appButton key="addTestButton" style="Button">
                   <HorizontalPanel>
@@ -211,7 +211,7 @@ UIRF Software License are applicable instead of those above.
                   </HorizontalPanel>
                 </appButton>
               </widget>
-              <HorizontalPanel width="10px" />
+              <HorizontalPanel width="10" />
               <VerticalPanel style="Form">
                 <table key="allTestsTable" width="auto" maxRows="9" multiSelect="true" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
                   <col key="test" width="90" align="left" sort="true" header="{resource:getString($constants,'test')}">

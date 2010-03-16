@@ -49,7 +49,7 @@
         <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
         	<table key="prepTestTable" width="auto" maxRows="10" showScroll="ALWAYS" title="">
             	<col width="500" header="{resource:getString($constants,'prepTestMethod')}">
-                	<label/>
+                	<label field="String"/>
                 </col>
          	</table>
      	</VerticalPanel>

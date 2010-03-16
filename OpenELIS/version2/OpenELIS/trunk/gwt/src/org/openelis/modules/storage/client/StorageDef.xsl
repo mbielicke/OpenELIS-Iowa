@@ -52,7 +52,7 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel>
               <table key="atozTable" width="auto" maxRows="19" style="atozTable">
                 <col width="175" header="{resource:getString($constants,'storageLocationName')}">
-                  <label />
+                  <label field="String" />
                 </col>
               </table>
               <widget halign="center">
@@ -113,19 +113,19 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"storageLocationName")' />:
                 </text>
-                <textbox key="{meta:getStorageLocationName()}" width="150" case="LOWER" tab="{meta:getStorageLocationLocation()},{meta:getStorageLocationIsAvailable()}" />
+                <textbox key="{meta:getStorageLocationName()}" width="150" case="LOWER" tab="{meta:getStorageLocationLocation()},{meta:getStorageLocationIsAvailable()}" field="String" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"location")' />:
                 </text>
-                <textbox key="{meta:getStorageLocationLocation()}" width="395" tab="{meta:getStorageLocationStorageUnitDescription()},{meta:getStorageLocationName()}" />
+                <textbox key="{meta:getStorageLocationLocation()}" width="395" tab="{meta:getStorageLocationStorageUnitDescription()},{meta:getStorageLocationName()}" field="String" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"storageUnit")' />:
                 </text>
-                <textbox key="{meta:getStorageLocationStorageUnitDescription()}" tab="{meta:getStorageLocationIsAvailable()},{meta:getStorageLocationLocation()}" />
+                <textbox key="{meta:getStorageLocationStorageUnitDescription()}" tab="{meta:getStorageLocationIsAvailable()},{meta:getStorageLocationLocation()}" field="String" />
               </row>
               <row>
                 <text style="Prompt">
@@ -134,7 +134,7 @@ UIRF Software License are applicable instead of those above.
                 <check key="{meta:getStorageLocationIsAvailable()}" tab="{meta:getStorageLocationName()},{meta:getStorageLocationStorageUnitDescription()}" />
               </row>
             </TablePanel>
-            <TabPanel key="tabPanel" width = "630" height="295">
+            <TabPanel key="tabPanel" width="630" height="295">
               <tab key="currentTab" text="{resource:getString($constants,'current')}">
                 <VerticalPanel>
                   <widget>
@@ -147,15 +147,15 @@ UIRF Software License are applicable instead of those above.
                       </header>
                       <leaf key="locationName">
                         <col>
-                          <label />
+                          <label field="String" />
                         </col>
                       </leaf>
                       <leaf key="storage">
                         <col>
-                          <label />
+                          <label field="String" />
                         </col>
                         <col>
-                          <label />
+                          <label field="String" />
                         </col>
                         <col>
                           <textbox pattern="{resource:getString($constants,'dateTimePattern')}" field="Date" />
@@ -197,13 +197,13 @@ UIRF Software License are applicable instead of those above.
                   <widget>
                     <table key="storageHistoryTable" width="auto" maxRows="11" showScroll="ALWAYS" tab="{meta:getStorageLocationName()},{meta:getStorageLocationIsAvailable()}" title="">
                       <col key="{meta:getReferenceId()}" width="100" header="{resource:getString($constants,'storageLocation')}">
-                        <textbox />
+                        <textbox field="Integer" />
                       </col>
                       <col key="{meta:getReferenceId()}" width="100" header="{resource:getString($constants,'item')}">
-                        <textbox />
+                        <textbox field="Integer" />
                       </col>
                       <col key="{meta:getSystemUserId()}" width="100" header="{resource:getString($constants,'user')}">
-                        <textbox />
+                        <textbox field="String" />
                       </col>
                       <col key="{meta:getCheckin()}" width="147" header="{resource:getString($constants,'checkIn')}">
                         <textbox pattern="{resource:getString($constants,'dateTimePattern')}" field="Date" />

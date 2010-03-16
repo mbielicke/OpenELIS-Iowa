@@ -55,7 +55,7 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'enterSearch')" />:
                   </text>
-                  <textbox key="findTextBox" width="253" />
+                  <textbox key="findTextBox" width="253" field="String" />
                   <appButton key="findButton" style="Button" action="find">
                     <HorizontalPanel>
                       <AbsolutePanel style="FindButtonImage" />
@@ -71,17 +71,17 @@ UIRF Software License are applicable instead of those above.
               <widget>
                 <table key="qcTable" width="auto" maxRows="6" multiSelect="true" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
                   <col key="{meta:getName()}" width="150" sort="false" header="{resource:getString($constants,'name')}">
-                    <label />
+                    <label field="String" />
                   </col>
                   <col key="{meta:getLotNumber()}" width="150" sort="false" header="{resource:getString($constants,'lotNumber')}">
-                    <label />
+                    <label field="String" />
                   </col>
-  	              <col key="{meta:getUsableDate()}" width="130" header="{resource:getString($constants,'usableDate')}" sort="true">
-	                <calendar pattern="{resource:getString($constants,'dateTimePattern')}" begin="0" end="4"/>
-	              </col>
-	              <col key="{meta:getExpireDate()}" width="130" header="{resource:getString($constants,'expireDate')}" sort="true">
-	                <calendar pattern="{resource:getString($constants,'dateTimePattern')}" begin="0" end="4"/>
-	              </col>
+                  <col key="{meta:getUsableDate()}" width="130" sort="true" header="{resource:getString($constants,'usableDate')}">
+                    <calendar begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
+                  </col>
+                  <col key="{meta:getExpireDate()}" width="130" sort="true" header="{resource:getString($constants,'expireDate')}">
+                    <calendar begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
+                  </col>
                 </table>
               </widget>
               <widget>

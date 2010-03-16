@@ -47,37 +47,37 @@ UIRF Software License are applicable instead of those above.
           <VerticalPanel style="WhiteContentPanel">
             <VerticalPanel spacing="0">
               <widget>
-                 <tree key="historyTree" width="auto" maxRows="10" showScroll="ALWAYS" >
-	                  <header>
-	                    <col width="200" header="{resource:getString($constants,'nameDateAndTime')}"/>
-	                    <col width="130" header="{resource:getString($constants,'userName')}"/>
-	                    <col width="80" header="{resource:getString($constants,'operation')}"/> 	                    
-	                  </header>
-	                  <leaf key="itemLabel">
-	                    <col>
-	                      <label/>
-	                    </col>
-	                  </leaf>
-	                  <leaf key="historyItem">
-	                    <col>
-	                      <textbox field = "Date" pattern="{resource:getString($constants,'dateTimeSecondPattern')}"/>
-	                    </col>
-	                    <col>
-	                      <label/>
-	                    </col>
-	                    <col>
-	                      <label/>
-	                    </col>
-	                  </leaf>
-	                  <leaf key="fields">
-	                    <col>
-	                      <label/>
-	                    </col>
-	                    <col>
-	                      <label/>
-	                    </col>
-	                  </leaf>
-	              </tree>	              
+                <tree key="historyTree" width="auto" maxRows="10" showScroll="ALWAYS">
+                  <header>
+                    <col width="200" header="{resource:getString($constants,'nameDateAndTime')}" />
+                    <col width="130" header="{resource:getString($constants,'userName')}" />
+                    <col width="80" header="{resource:getString($constants,'operation')}" />
+                  </header>
+                  <leaf key="itemLabel">
+                    <col>
+                      <label field="String" />
+                    </col>
+                  </leaf>
+                  <leaf key="historyItem">
+                    <col>
+                      <textbox pattern="{resource:getString($constants,'dateTimeSecondPattern')}" field="Date" />
+                    </col>
+                    <col>
+                      <label field="String" />
+                    </col>
+                    <col>
+                      <label field="String" />
+                    </col>
+                  </leaf>
+                  <leaf key="fields">
+                    <col>
+                      <label field="String" />
+                    </col>
+                    <col>
+                      <label field="String" />
+                    </col>
+                  </leaf>
+                </tree>
               </widget>
             </VerticalPanel>
           </VerticalPanel>

@@ -54,7 +54,7 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel>
               <table key="atozTable" width="auto" maxRows="23" style="atozTable">
                 <col width="110" header="{resource:getString($constants,'name')}">
-                  <label />
+                  <label field = "String"/>
                 </col>
                 <col width="105" header="{resource:getString($constants,'store')}">
                   <dropdown width="105" field="Integer" />
@@ -278,7 +278,7 @@ UIRF Software License are applicable instead of those above.
                         </autoComplete>
                       </col>
                       <col key="{meta:getComponentDescription()}" width="370" header="{resource:getString($constants,'description')}">
-                        <label />
+                        <label field = "String"/>
                       </col>
                       <col key="{meta:getComponentQuantity()}" width="70" header="{resource:getString($constants,'quantity')}">
                         <textbox max="10" field="Double" required="true" />

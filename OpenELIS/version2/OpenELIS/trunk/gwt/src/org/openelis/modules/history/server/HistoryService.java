@@ -28,7 +28,6 @@ package org.openelis.modules.history.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.HistoryVO;
-import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.persistence.EJBFactory;
@@ -37,20 +36,16 @@ import org.openelis.remote.HistoryRemote;
 public class HistoryService {
 
     public ArrayList<HistoryVO> fetchByReferenceIdAndTable(Query query) throws Exception {
-        try {
-            Integer referenceId,referenceTableId;
-            QueryData field;
-            
-            field = query.getFields().get(0);
-            referenceId = Integer.parseInt(field.query);
-            
-            field = query.getFields().get(1);
-            referenceTableId = Integer.parseInt(field.query);
-            
-            return remote().fetchByReferenceIdAndTable(referenceId, referenceTableId);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        Integer referenceId, referenceTableId;
+        QueryData field;
+
+        field = query.getFields().get(0);
+        referenceId = Integer.parseInt(field.query);
+
+        field = query.getFields().get(1);
+        referenceTableId = Integer.parseInt(field.query);
+
+        return remote().fetchByReferenceIdAndTable(referenceId, referenceTableId);
     }
 
     private HistoryRemote remote() {

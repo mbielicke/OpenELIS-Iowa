@@ -53,10 +53,10 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel>
               <table key="atozTable" width="auto" maxRows="14" style="atozTable">
                 <col width="120" header="{resource:getString($constants,'name')}">
-                  <label />
+                  <label field="String" />
                 </col>
                 <col width="120" header="{resource:getString($constants,'test')}">
-                  <label />
+                  <label field="String" />
                 </col>
               </table>
               <widget halign="center">
@@ -122,7 +122,7 @@ UIRF Software License are applicable instead of those above.
                         <text>
                           <xsl:value-of select='resource:getString($constants,"options")' />
                         </text>
-                        <AbsolutePanel width="20px" height="20px" style="OptionsButtonImage" />
+                        <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
                       </HorizontalPanel>
                     </appButton>
                   </menuDisplay>

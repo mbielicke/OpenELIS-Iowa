@@ -54,7 +54,7 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel>
               <table key="atozTable" width="auto" maxRows="9" style="atozTable">
                 <col width="175" header="{resource:getString($constants,'name')}">
-                  <label />
+                  <label field="String" />
                 </col>
               </table>
               <widget halign="center">
@@ -143,13 +143,13 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"name")' />:
                 </text>
-                <textbox key="{meta:getName()}" width="150" case="LOWER" max="60" tab="{meta:getDescription()},{meta:getText()}" required="true" />
+                <textbox key="{meta:getName()}" width="150" case="LOWER" max="60" tab="{meta:getDescription()},{meta:getText()}" field="String" required="true" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"description")' />:
                 </text>
-                <textbox key="{meta:getDescription()}" width="300" max="60" tab="{meta:getText()},{meta:getName()}" required="true" />
+                <textbox key="{meta:getDescription()}" width="300" max="60" tab="{meta:getText()},{meta:getName()}" field="String" required="true" />
               </row>
               <row>
                 <widget valign="top">

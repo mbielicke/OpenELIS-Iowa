@@ -40,30 +40,27 @@ import org.openelis.remote.OrganizationManagerRemote;
 import org.openelis.remote.OrganizationRemote;
 
 /*
- * This class provides service for OrganizationManager and OrganizationContactManager. 
+ * This class provides service for OrganizationManager and
+ * OrganizationContactManager.
  */
 public class OrganizationService {
 
     private static final int rowPP = 20;
 
     public OrganizationManager fetchById(Integer id) throws Exception {
-        try {
-            return remoteManager().fetchById(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchById(id);
     }
 
     public ArrayList<OrganizationDO> fetchByIdOrName(String search) throws Exception {
         int id;
         ArrayList<OrganizationDO> list;
-        
+
         try {
             id = Integer.parseInt(search);
             list = new ArrayList<OrganizationDO>(1);
             list.add(remote().fetchActiveById(id));
         } catch (NumberFormatException e) {
-            list = remote().fetchActiveByName(search+"%", 10);
+            list = remote().fetchActiveByName(search + "%", 10);
         } catch (NotFoundException e) {
             list = new ArrayList<OrganizationDO>(0);
         } catch (RuntimeException e) {
@@ -73,87 +70,46 @@ public class OrganizationService {
     }
 
     public OrganizationManager fetchWithContacts(Integer id) throws Exception {
-        try {
-            return remoteManager().fetchWithContacts(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchWithContacts(id);
     }
 
     public OrganizationManager fetchWithNotes(Integer id) throws Exception {
-        try {
-            return remoteManager().fetchWithNotes(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchWithNotes(id);
     }
 
     public OrganizationManager fetchWithParameters(Integer id) throws Exception {
-        try {
-            return remoteManager().fetchWithParameters(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchWithParameters(id);
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        try {
-            return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
     }
 
     public OrganizationManager add(OrganizationManager man) throws Exception {
-        try {
-            return remoteManager().add(man);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().add(man);
     }
 
     public OrganizationManager update(OrganizationManager man) throws Exception {
-        try {
-            return remoteManager().update(man);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
-
+        return remoteManager().update(man);
     }
 
     public OrganizationManager fetchForUpdate(Integer id) throws Exception {
-        try {
-            return remoteManager().fetchForUpdate(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchForUpdate(id);
     }
 
     public OrganizationManager abortUpdate(Integer id) throws Exception {
-        try {
-            return remoteManager().abortUpdate(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().abortUpdate(id);
     }
 
     //
     // support for OrganizationContactManager and OrganizationParameterManager
     //
     public OrganizationContactManager fetchContactByOrganizationId(Integer id) throws Exception {
-        try {
-            return remoteManager().fetchContactByOrganizationId(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchContactByOrganizationId(id);
     }
-    
+
     public OrganizationParameterManager fetchParameterByOrganizationId(Integer id) throws Exception {
-        try {
-            return remoteManager().fetchParameterByOrganizationId(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchParameterByOrganizationId(id);
     }
 
     private OrganizationRemote remote() {
