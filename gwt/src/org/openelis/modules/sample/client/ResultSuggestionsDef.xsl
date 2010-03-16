@@ -17,7 +17,6 @@
 		provisions of a UIRF Software License are applicable instead of those
 		above.
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -45,13 +44,13 @@
     </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="ResultSuggestionsScreen" name="{resource:getString($constants,'suggestions')}">
-    	<VerticalPanel>
-		   	<table key="suggestionsTable" width="auto" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
-		        <col width="400">
-		   	        <label />
-		           </col>
-		   	</table>
-	   	</VerticalPanel>
+      <VerticalPanel>
+        <table key="suggestionsTable" width="auto" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
+          <col width="400">
+            <label field="String" />
+          </col>
+        </table>
+      </VerticalPanel>
     </screen>
   </xsl:template>
 </xsl:stylesheet>

@@ -1,5 +1,4 @@
 
-
 <!--
 		Exhibit A - UIRF Open-source Based Public Software License. The
 		contents of this file are subject to the UIRF Open-source Based Public
@@ -18,7 +17,6 @@
 		provisions of a UIRF Software License are applicable instead of those
 		above.
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -49,10 +47,10 @@
       <VerticalPanel padding="0" spacing="0">
         <table key="auxGroupsTable" width="auto" maxRows="10" multiSelect="true" showScroll="ALWAYS" title="">
           <col width="205" header="{resource:getString($constants,'name')}">
-            <label />
+            <label field="String" />
           </col>
           <col width="265" header="{resource:getString($constants,'description')}">
-            <label />
+            <label field="String" />
           </col>
         </table>
         <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">

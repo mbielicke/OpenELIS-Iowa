@@ -25,7 +25,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -53,9 +52,7 @@ UIRF Software License are applicable instead of those above.
   <xsl:template match="doc">
     <screen id="EnvironmentalSampleLogin" name="{resource:getString($constants,'environmentalSampleLogin')}">
       <VerticalPanel padding="0" spacing="0">
-
 <!--button panel code-->
-
         <AbsolutePanel spacing="0" style="ButtonPanelContainer">
           <HorizontalPanel>
             <xsl:call-template name="queryButton" />
@@ -76,11 +73,11 @@ UIRF Software License are applicable instead of those above.
                       <text>
                         <xsl:value-of select='resource:getString($constants,"options")' />
                       </text>
-                      <AbsolutePanel width="20px" height="20px" style="OptionsButtonImage" />
+                      <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
                     </HorizontalPanel>
                   </appButton>
                 </menuDisplay>
-                 <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                <menuPanel layout="vertical" position="below" style="topMenuContainer">
                   <menuItem key="historySample" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySample')}" />
                   <menuItem key="historySampleEnvironmental" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleEnvironmental')}" />
                   <menuItem key="historySampleProject" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleProject')}" />
@@ -88,7 +85,7 @@ UIRF Software License are applicable instead of those above.
                   <menuItem key="historySampleItem" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleItem')}" />
                   <menuItem key="historyAnalysis" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyAnalysis')}" />
                   <menuItem key="historyCurrentResult" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyCurrentResult')}" />
-			      <menuItem key="historyStorage" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyStorage')}" />
+                  <menuItem key="historyStorage" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyStorage')}" />
                   <menuItem key="historySampleQA" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleQA')}" />
                   <menuItem key="historyAnalysisQA" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyAnalysisQA')}" />
                   <menuItem key="historyAuxData" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyAuxData')}" />
@@ -97,43 +94,41 @@ UIRF Software License are applicable instead of those above.
             </menuPanel>
           </HorizontalPanel>
         </AbsolutePanel>
-
 <!--end button panel code-->
-
         <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
           <TablePanel style="Form">
             <row>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'accessionNum')" />:
               </text>
-              <textbox key="{meta:getAccessionNumber()}" width="75px" tab="orderNumber,billTo" field="Integer" required="true" />
+              <textbox key="{meta:getAccessionNumber()}" width="75" tab="orderNumber,billTo" field="Integer" required="true" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'orderNum')" />:
               </text>
-              <textbox key="orderNumber" width="75px" tab="{meta:getCollectionDate()},{meta:getAccessionNumber()}" field="Integer" />
+              <textbox key="orderNumber" width="75" tab="{meta:getCollectionDate()},{meta:getAccessionNumber()}" field="Integer" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'collected')" />:
               </text>
-              <calendar key="{meta:getCollectionDate()}" begin="0" end="2" max="0" width="90px" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getCollectionTime()},orderNumber" />
+              <calendar key="{meta:getCollectionDate()}" begin="0" end="2" width="90" max="0" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getCollectionTime()},orderNumber" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'time')" />:
               </text>
-              <textbox key="{meta:getCollectionTime()}" begin="3" end="5" width="60px" pattern="{resource:getString($constants,'timePattern')}" tab="{meta:getReceivedDate()},{meta:getCollectionDate()}" field="Date" />
+              <textbox key="{meta:getCollectionTime()}" begin="3" end="5" width="60" pattern="{resource:getString($constants,'timePattern')}" tab="{meta:getReceivedDate()},{meta:getCollectionDate()}" field="Date" />
             </row>
             <row>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'received')" />:
               </text>
-              <calendar key="{meta:getReceivedDate()}" begin="0" end="4" max="0" width="125px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getStatusId()},{meta:getCollectionTime()}" />
+              <calendar key="{meta:getReceivedDate()}" begin="0" end="4" width="125" max="0" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getStatusId()},{meta:getCollectionTime()}" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'status')" />:
               </text>
-              <dropdown key="{meta:getStatusId()}" width="110px" popWidth="110px" tab="{meta:getClientReference()},{meta:getReceivedDate()}" field="Integer" required="true" />
+              <dropdown key="{meta:getStatusId()}" width="110" popWidth="110" tab="{meta:getClientReference()},{meta:getReceivedDate()}" field="Integer" required="true" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'clntRef')" />:
               </text>
               <widget colspan="3">
-                <textbox key="{meta:getClientReference()}" width="175px" max="20" tab="{meta:getEnvIsHazardous()},{meta:getStatusId()}" field="String" />
+                <textbox key="{meta:getClientReference()}" width="175" max="20" tab="{meta:getEnvIsHazardous()},{meta:getStatusId()}" field="String" />
               </widget>
             </row>
           </TablePanel>
@@ -150,24 +145,24 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'priority')" />:
                 </text>
-                <textbox key="{meta:getEnvPriority()}" width="90px" tab="{meta:getEnvCollector()},{meta:getEnvIsHazardous()}" field="Integer" />
+                <textbox key="{meta:getEnvPriority()}" width="90" tab="{meta:getEnvCollector()},{meta:getEnvIsHazardous()}" field="Integer" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'collector')" />:
                 </text>
-                <textbox key="{meta:getEnvCollector()}" width="235px" max="40" tab="{meta:getEnvCollectorPhone()},{meta:getEnvPriority()}" field="String" />
+                <textbox key="{meta:getEnvCollector()}" width="235" max="40" tab="{meta:getEnvCollectorPhone()},{meta:getEnvPriority()}" field="String" />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'phone')" />:
                 </text>
-                <textbox key="{meta:getEnvCollectorPhone()}" width="120px" max="21" tab="{meta:getEnvLocation()},{meta:getEnvCollector()}" field="String" />
+                <textbox key="{meta:getEnvCollectorPhone()}" width="120" max="21" tab="{meta:getEnvLocation()},{meta:getEnvCollector()}" field="String" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'location')" />:
                 </text>
                 <HorizontalPanel>
-                  <textbox key="{meta:getEnvLocation()}" width="175px" max="40" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" field="String" />
+                  <textbox key="{meta:getEnvLocation()}" width="175" max="40" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" field="String" />
                   <appButton key="locButton" style="LookupButton">
                     <AbsolutePanel style="LookupButtonImage" />
                   </appButton>
@@ -175,7 +170,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'desc')" />:
                 </text>
-                <textbox key="{meta:getEnvDescription()}" width="315px" max="40" tab="itemsTestsTree,{meta:getEnvLocation()}" field="String" />
+                <textbox key="{meta:getEnvDescription()}" width="315" max="40" tab="itemsTestsTree,{meta:getEnvLocation()}" field="String" />
               </row>
             </TablePanel>
           </VerticalPanel>
@@ -193,25 +188,25 @@ UIRF Software License are applicable instead of those above.
                     </header>
                     <leaf key="sampleItem">
                       <col>
-                        <label />
+                        <label field="String" />
                       </col>
                       <col>
-                        <label />
+                        <label field="String" />
                       </col>
                     </leaf>
                     <leaf key="analysis">
                       <col>
-                        <label />
+                        <label field="String" />
                       </col>
                       <col>
-                        <dropdown width="110px" case="LOWER" popWidth="110px" field="String" />
+                        <dropdown width="110" case="LOWER" popWidth="110" field="String" />
                       </col>
                     </leaf>
                   </tree>
                 </row>
                 <row>
-                 	<widget style="TreeButtonFooter">
-                    	<HorizontalPanel>
+                  <widget style="TreeButtonFooter">
+                    <HorizontalPanel>
                       <appButton key="addItemButton" style="Button">
                         <HorizontalPanel>
                           <AbsolutePanel style="AddRowButtonImage" />
@@ -237,15 +232,15 @@ UIRF Software License are applicable instead of those above.
                         </HorizontalPanel>
                       </appButton>
                       <appButton key="popoutTree" style="Button">
-                      <HorizontalPanel>
+                        <HorizontalPanel>
                           <AbsolutePanel style="popoutButtonImage" />
                           <text>
-                          <xsl:value-of select="resource:getString($constants,'popout')" />
+                            <xsl:value-of select="resource:getString($constants,'popout')" />
                           </text>
                         </HorizontalPanel>
                       </appButton>
-                      </HorizontalPanel>
-					</widget>
+                    </HorizontalPanel>
+                  </widget>
                 </row>
               </TablePanel>
             </VerticalPanel>
@@ -259,7 +254,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'project')" />:
                   </text>
                   <HorizontalPanel>
-                    <autoComplete key="{meta:getProjectName()}" width="175px" case="UPPER" popWidth="auto" tab="{meta:getOrgName()},itemsTestsTree" field="Integer">
+                    <autoComplete key="{meta:getProjectName()}" width="175" case="UPPER" popWidth="auto" tab="{meta:getOrgName()},itemsTestsTree" field="Integer">
                       <col width="115" header="{resource:getString($constants,'name')}" />
                       <col width="190" header="{resource:getString($constants,'desc')}" />
                     </autoComplete>
@@ -273,7 +268,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'reportTo')" />:
                   </text>
                   <HorizontalPanel>
-                    <autoComplete key="{meta:getOrgName()}" width="175px" case="UPPER" popWidth="auto" tab="{meta:getBillTo()},{meta:getProjectName()}" field="Integer">
+                    <autoComplete key="{meta:getOrgName()}" width="175" case="UPPER" popWidth="auto" tab="{meta:getBillTo()},{meta:getProjectName()}" field="Integer">
                       <col width="180" header="{resource:getString($constants,'name')}" />
                       <col width="110" header="{resource:getString($constants,'street')}" />
                       <col width="100" header="{resource:getString($constants,'city')}" />
@@ -289,7 +284,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'billTo')" />:
                   </text>
                   <HorizontalPanel>
-                    <autoComplete key="{meta:getBillTo()}" width="175px" case="UPPER" popWidth="auto" tab="sampleItemTabPanel,{meta:getOrgName()}" field="Integer">
+                    <autoComplete key="{meta:getBillTo()}" width="175" case="UPPER" popWidth="auto" tab="sampleItemTabPanel,{meta:getOrgName()}" field="Integer">
                       <col width="180" header="{resource:getString($constants,'name')}" />
                       <col width="110" header="{resource:getString($constants,'street')}" />
                       <col width="100" header="{resource:getString($constants,'city')}" />
@@ -303,7 +298,7 @@ UIRF Software License are applicable instead of those above.
               </TablePanel>
             </VerticalPanel>
           </HorizontalPanel>
-          <TabPanel key="sampleItemTabPanel" width="715px" height="236px">
+          <TabPanel key="sampleItemTabPanel" width="715" height="236">
             <tab key="tab0" tab="{meta:getItemTypeOfSampleId()},{meta:getItemUnitOfMeasureId()}" text="{resource:getString($constants,'sampleItem')}">
               <xsl:call-template name="SampleItemTab" />
             </tab>

@@ -1,5 +1,4 @@
 
-
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -26,7 +25,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -49,7 +47,7 @@ UIRF Software License are applicable instead of those above.
             </text>
           </row>
           <row>
-            <notes key="sampleExtNotesPanel" width="351px" height="190px" style="ScreenTableWithSides" />
+            <notes key="sampleExtNotesPanel" width="351" height="190" style="ScreenTableWithSides" />
           </row>
           <row>
             <widget style="TableButtonFooter">
@@ -72,7 +70,7 @@ UIRF Software License are applicable instead of those above.
             </text>
           </row>
           <row>
-            <notes key="sampleIntNotesPanel" width="351px" height="190px" style="ScreenTableWithSides" />
+            <notes key="sampleIntNotesPanel" width="351" height="190" style="ScreenTableWithSides" />
           </row>
           <row>
             <widget style="TableButtonFooter">

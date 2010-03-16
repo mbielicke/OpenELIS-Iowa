@@ -24,7 +24,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -51,25 +50,25 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'worksheetNumber')" />:
                 </text>
-                <textbox key="{meta:getId()}" width="100px" tab="{meta:getSystemUserId()},cancelButton" field="Integer" />
+                <textbox key="{meta:getId()}" width="100" tab="{meta:getSystemUserId()},cancelButton" field="Integer" />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'worksheetUser')" />
                 </text>
-                <autoComplete key="{meta:getSystemUserId()}" width="100px" case="LOWER" popWidth="auto" tab="{meta:getCreatedDate()},{meta:getId()}" field="Integer" />
+                <autoComplete key="{meta:getSystemUserId()}" width="100" case="LOWER" popWidth="auto" tab="{meta:getCreatedDate()},{meta:getId()}" field="Integer" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'created')" />:
                 </text>
-                <calendar key="{meta:getCreatedDate()}" begin="0" end="4" width="130px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getStatusId()},{meta:getSystemUserId()}" />
+                <calendar key="{meta:getCreatedDate()}" begin="0" end="4" width="130" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getStatusId()},{meta:getSystemUserId()}" />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'status')" />:
                 </text>
-                <dropdown key="{meta:getStatusId()}" width="100px" popWidth="100px" tab="searchButton,{meta:getCreatedDate()}" field="Integer" />
+                <dropdown key="{meta:getStatusId()}" width="100" popWidth="100" tab="searchButton,{meta:getCreatedDate()}" field="Integer" />
               </row>
             </TablePanel>
             <widget halign="center" valign="middle">
-              <appButton key="searchButton" style="Button" action="search" tab="worksheetTable,{meta:getStatusId()}">
+              <appButton key="searchButton" style="Button" tab="worksheetTable,{meta:getStatusId()}" action="search">
                 <HorizontalPanel>
                   <AbsolutePanel style="FindButtonImage" />
                   <text>
@@ -79,32 +78,31 @@ UIRF Software License are applicable instead of those above.
               </appButton>
             </widget>
           </HorizontalPanel>
-          <table key="worksheetTable" width="auto" maxRows="9" showScroll="ALWAYS" multiSelect="false" tab="okButton,searchButton" title="" style="ScreenTableWithSides">
-            <col key="{meta:getId()}" width="100" header="{resource:getString($constants,'worksheetNumber')}" sort="true">
-              <label />
+          <table key="worksheetTable" width="auto" maxRows="9" multiSelect="false" showScroll="ALWAYS" style="ScreenTableWithSides" tab="okButton,searchButton" title="">
+            <col key="{meta:getId()}" width="100" sort="true" header="{resource:getString($constants,'worksheetNumber')}">
+              <label field="Integer" />
             </col>
-            <col key="{meta:getSystemUserId()}" width="100" header="{resource:getString($constants,'worksheetUser')}" sort="true">
-              <label />
+            <col key="{meta:getSystemUserId()}" width="100" sort="true" header="{resource:getString($constants,'worksheetUser')}">
+              <label field="Integer" />
             </col>
-            <col key="{meta:getCreatedDate()}" width="130" header="{resource:getString($constants,'created')}" sort="true">
-              <calendar pattern="{resource:getString($constants,'dateTimePattern')}" begin="0" end="4"/>
+            <col key="{meta:getCreatedDate()}" width="130" sort="true" header="{resource:getString($constants,'created')}">
+              <calendar begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
             </col>
-            <col key="{meta:getStatusId()}" width="100" header="{resource:getString($constants,'status')}" sort="true">
-              <dropdown width="80" />
+            <col key="{meta:getStatusId()}" width="100" sort="true" header="{resource:getString($constants,'status')}">
+              <dropdown width="80" field="Integer" />
             </col>
 <!-- 
-            <col key="{meta:getTestName()}" width="100" header="{resource:getString($constants,'test')}" sort="true">
-              <label />
-            </col>
-            <col key="{meta:getMethodName()}" width="75" header="{resource:getString($constants,'method')}" sort="true">
-              <label />
-            </col>
--->
+  
+<col key="{meta:getTestName()}" width="100" header="{resource:getString($constants,'test')}" sort="true">
+<label />
+</col>
+<col key="{meta:getMethodName()}" width="75" header="{resource:getString($constants,'method')}" sort="true">
+<label />
+</col>
+  -->
           </table>
         </VerticalPanel>
-
 <!--button panel code-->
-
         <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
           <HorizontalPanel>
             <xsl:call-template name="okButton">
@@ -119,9 +117,7 @@ UIRF Software License are applicable instead of those above.
             </xsl:call-template>
           </HorizontalPanel>
         </AbsolutePanel>
-
 <!--end button panel-->
-
       </VerticalPanel>
     </screen>
   </xsl:template>

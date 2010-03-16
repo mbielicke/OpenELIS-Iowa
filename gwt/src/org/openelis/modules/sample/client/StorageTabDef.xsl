@@ -1,5 +1,4 @@
 
-
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -26,7 +25,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -45,13 +43,13 @@ UIRF Software License are applicable instead of those above.
         <row>
           <table key="storageTable" width="auto" maxRows="8" showScroll="ALWAYS" title="">
             <col width="155" header="{resource:getString($constants,'user')}">
-              <label />
+              <label field="Integer" />
             </col>
             <col width="259" header="{resource:getString($constants,'location')}">
               <autoComplete key="" width="215" case="LOWER" popWidth="auto" field="Integer" required="true">
-                <col width="140" header="{resource:getString($constants,'parent')}"/>
-                <col width="140" header="{resource:getString($constants,'storageUnit')}"/>
-                <col width="140" header="{resource:getString($constants,'location')}"/>
+                <col width="140" header="{resource:getString($constants,'parent')}" />
+                <col width="140" header="{resource:getString($constants,'storageUnit')}" />
+                <col width="140" header="{resource:getString($constants,'location')}" />
               </autoComplete>
             </col>
             <col width="135" header="{resource:getString($constants,'checkIn')}">

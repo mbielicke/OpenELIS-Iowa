@@ -25,7 +25,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -45,10 +44,10 @@ UIRF Software License are applicable instead of those above.
   <xsl:template match="doc">
     <screen id="ResultPopoutTab" name="{resource:getString($constants,'testResults')}">
       <VerticalPanel padding="0" spacing="0">
-      <xsl:call-template name="ResultTab">
-      	<xsl:with-param name="widthParam">905</xsl:with-param>
-      	<xsl:with-param name="maxRowsParam">25</xsl:with-param>
-      </xsl:call-template>
+        <xsl:call-template name="ResultTab">
+          <xsl:with-param name="widthParam">905</xsl:with-param>
+          <xsl:with-param name="maxRowsParam">25</xsl:with-param>
+        </xsl:call-template>
       </VerticalPanel>
     </screen>
   </xsl:template>

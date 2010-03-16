@@ -1,5 +1,4 @@
 
-
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -26,7 +25,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -46,7 +44,7 @@ UIRF Software License are applicable instead of those above.
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'test')" />:
           </text>
-          <autoComplete key="{meta:getAnalysisTestName()}" width="150px" case="LOWER" popWidth="auto" field="Integer">
+          <autoComplete key="{meta:getAnalysisTestName()}" width="150" case="LOWER" popWidth="auto" field="Integer">
             <col width="150" header="{resource:getString($constants,'test')}" />
             <col width="150" header="{resource:getString($constants,'method')}" />
             <col width="200" header="{resource:getString($constants,'description')}" />
@@ -54,7 +52,7 @@ UIRF Software License are applicable instead of those above.
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'method')" />:
           </text>
-          <autoComplete key="{meta:getAnalysisMethodName()}" width="150px" case="LOWER" popWidth="auto" field="Integer">
+          <autoComplete key="{meta:getAnalysisMethodName()}" width="150" case="LOWER" popWidth="auto" field="Integer">
             <col width="150" header="{resource:getString($constants,'method')}" />
           </autoComplete>
         </row>
@@ -62,11 +60,11 @@ UIRF Software License are applicable instead of those above.
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'status')" />:
           </text>
-          <dropdown key="{meta:getAnalysisStatusId()}" width="150px" popWidth="150px" field="Integer" />
+          <dropdown key="{meta:getAnalysisStatusId()}" width="150" popWidth="150" field="Integer" />
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'revision')" />:
           </text>
-          <textbox key="{meta:getAnalysisRevision()}" width="60px" field="Integer" />
+          <textbox key="{meta:getAnalysisRevision()}" width="60" field="Integer" />
         </row>
         <row>
           <text style="Prompt">
@@ -76,19 +74,19 @@ UIRF Software License are applicable instead of those above.
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'section')" />:
           </text>
-          <dropdown key="{meta:getAnalysisSectionName()}" width="150px" case="LOWER" popWidth="150px" field="Integer" />
+          <dropdown key="{meta:getAnalysisSectionName()}" width="150" case="LOWER" popWidth="150" field="Integer" />
         </row>
         <row>
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'unit')" />:
           </text>
-          <dropdown key="{meta:getAnalysisUnitOfMeasureId()}" width="150px" popWidth="150px" field="Integer" />
+          <dropdown key="{meta:getAnalysisUnitOfMeasureId()}" width="150" popWidth="150" field="Integer" />
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'samplePrep')" />:
           </text>
           <autoComplete key="{meta:getAnalysisSamplePrep()}" width="350" popWidth="auto" field="Integer">
-                  <col width="350" header="Name" />
-                </autoComplete>
+            <col width="350" header="Name" />
+          </autoComplete>
         </row>
         <row>
           <text style="Prompt">

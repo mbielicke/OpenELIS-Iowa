@@ -1,5 +1,4 @@
 
-
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -26,7 +25,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -49,10 +47,10 @@ UIRF Software License are applicable instead of those above.
                 <check />
               </col>
               <col width="300" header="{resource:getString($constants,'name')}">
-                <label />
+                <label field="String" />
               </col>
               <col width="303" class="org.openelis.modules.sample.client.AuxTableColumn" header="{resource:getString($constants,'value')}">
-                <label />
+                <label field="String" />
               </col>
             </table>
           </widget>
@@ -86,16 +84,16 @@ UIRF Software License are applicable instead of those above.
             <xsl:value-of select="resource:getString($constants,'description')" />:
           </text>
           <widget colspan="3">
-            <textbox key="auxDesc" width="275px" style="ScreenTextboxDisplayOnly" />
+            <textbox key="auxDesc" width="275" style="ScreenTextboxDisplayOnly" field="String" />
           </widget>
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'method')" />:
           </text>
-          <textbox key="auxMethod" width="125px" style="ScreenTextboxDisplayOnly" />
+          <textbox key="auxMethod" width="125" style="ScreenTextboxDisplayOnly" field="String" />
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'unit')" />:
           </text>
-          <textbox key="auxUnits" width="125px" style="ScreenTextboxDisplayOnly" />
+          <textbox key="auxUnits" width="125" style="ScreenTextboxDisplayOnly" field="String" />
         </row>
       </TablePanel>
     </VerticalPanel>

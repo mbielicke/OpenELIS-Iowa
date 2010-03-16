@@ -1,5 +1,4 @@
 
-
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -26,7 +25,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -45,10 +43,10 @@ UIRF Software License are applicable instead of those above.
         <row>
           <table key="sampleQATable" width="auto" maxRows="8" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
             <col key="{meta:getSampleSubQaName()}" width="172" header="{resource:getString($constants,'sampleQAEvent')}">
-              <label />
+              <label field="String" />
             </col>
             <col key="{meta:getSampleQaTypeId()}" width="90" header="{resource:getString($constants,'type')}">
-              <dropdown width="75px" popWidth="75px" field="Integer" />
+              <dropdown width="75" popWidth="75" field="Integer" />
             </col>
             <col key="{meta:getSampleQaIsBillable()}" width="61" header="{resource:getString($constants,'billable')}">
               <check />
@@ -59,10 +57,10 @@ UIRF Software License are applicable instead of those above.
           </widget>
           <table key="analysisQATable" width="auto" maxRows="8" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
             <col key="{meta:getAnalysisAubQaName()}" width="172" header="{resource:getString($constants,'analysisQAEvent')}">
-              <label />
+              <label field="String" />
             </col>
             <col key="{meta:getAnalysisQaTypeId()}" width="90" header="{resource:getString($constants,'type')}">
-              <dropdown width="75px" popWidth="75px" field="Integer" />
+              <dropdown width="75" popWidth="75" field="Integer" />
             </col>
             <col key="meta:getAnalysisQaIsBillable()" width="60" header="{resource:getString($constants,'billable')}">
               <check />

@@ -24,7 +24,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -44,20 +43,18 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen id="WorksheetQcAnalysisSelection" name="{resource:getString($constants,'worksheetQcAnalysisSelection')}">
       <VerticalPanel padding="0" spacing="0">
-        <table key="worksheetQcAnalysisTable" width="auto" maxRows="10" showScroll="ALWAYS" multiSelect="true" tab="okButton,searchButton" title="">
-          <col key="{meta:getWorksheetItemPosition()}" width="50" header="{resource:getString($constants,'position')}" sort="false">
-            <label />
+        <table key="worksheetQcAnalysisTable" width="auto" maxRows="10" multiSelect="true" showScroll="ALWAYS" tab="okButton,searchButton" title="">
+          <col key="{meta:getWorksheetItemPosition()}" width="50" header="{resource:getString($constants,'position')}">
+            <label field="String" />
           </col>
-          <col key="{meta:getSampleAccessionNumber()}" width="90" header="{resource:getString($constants,'accessionNum')}" sort="true">
-            <label />
+          <col key="{meta:getSampleAccessionNumber()}" width="90" sort="true" header="{resource:getString($constants,'accessionNum')}">
+            <label field="String" />
           </col>
-          <col key="{meta:getSampleDescription()}" width="110" header="{resource:getString($constants,'description')}" sort="true">
-            <label />
+          <col key="{meta:getSampleDescription()}" width="110" sort="true" header="{resource:getString($constants,'description')}">
+            <label field="String" />
           </col>
         </table>
-
 <!--button panel code-->
-
         <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
           <HorizontalPanel>
             <xsl:call-template name="okButton">
@@ -72,9 +69,7 @@ UIRF Software License are applicable instead of those above.
             </xsl:call-template>
           </HorizontalPanel>
         </AbsolutePanel>
-
 <!--end button panel-->
-
       </VerticalPanel>
     </screen>
   </xsl:template>
