@@ -641,8 +641,8 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         
         atozTree.addBeforeDropHandler(new BeforeDropHandler<TreeRow>() {
 			public void onBeforeDrop(BeforeDropEvent<TreeRow> event) {
-				TreeDataItem dragItem = event.getDragObject().item;
-				TreeDataItem dropTarget = (TreeDataItem)event.getDropTarget();
+				TreeDataItem dragItem = event.getDragObject().dragItem;
+				TreeDataItem dropTarget = ((TreeRow)event.getDropTarget()).item;
 				SampleDataBundle dragKey = (SampleDataBundle)dragItem.data;
 				SampleDataBundle dropKey = (SampleDataBundle)dropTarget.data;
 				try {
@@ -650,6 +650,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 					//atozTree.deleteRow(dragItem);
 					//atozTree.addChildItem(dropTarget, dragItem, dropTarget.getItems().size()-2);
 					TreeDataItem sample = atozTree.getData().get(nav.getSelection());
+					atozTree.unselect(-1);
 					checkNode(sample);
 					//atozTree.refreshRow(sample);
 				}catch(Exception e) {
@@ -671,11 +672,13 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         
         atozTree.addDropEnterHandler(new DropEnterHandler<TreeRow>() {
 			public void onDropEnter(DropEnterEvent<TreeRow> event) {
-				TreeDataItem dropTarget = (TreeDataItem)event.getDropTarget();
-				TreeDataItem dragItem = event.getDragObject().item;
+				TreeDataItem dropTarget = ((TreeRow)event.getDropTarget()).item;
+				TreeDataItem dragItem = ((TreeRow)event.getDragObject()).dragItem;
 				
-				if((!dropTarget.leafType.equals("item") || dragItem.parent == dropTarget) &&
-				   (((SampleDataBundle)dropTarget.data).getSampleManager().getSample().getId().equals(((SampleDataBundle)dragItem.data).getSampleManager().getSample().getId())))
+				if(dropTarget.leafType.equals("item") && dragItem.parent != dropTarget &&
+				   (((SampleDataBundle)dropTarget.data).getSampleManager().getSample().getId().equals(((SampleDataBundle)dragItem.data).getSampleManager().getSample().getId()))){
+				
+				}else
 					event.cancel();
 			}
         });
@@ -1266,7 +1269,9 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     		return;
     	}
     	ArrayList<SampleDataBundle> openItems = new ArrayList<SampleDataBundle>();
-    	checkChildOpen(item.getFirstChild(),openItems);
+    	for(TreeDataItem child : item.getItems()) {
+    		checkChildOpen(child,openItems);
+    	}
     	item.getItems().clear();    	
     	try {
     		loadSampleItem(manager,item);
@@ -1281,7 +1286,9 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     }
     
     private boolean searchForKey(SampleDataBundle bundle, TreeDataItem item) {
-    	if(bundle == item.data){
+    	if(bundle.getType() == ((SampleDataBundle)item.data).getType() &&
+    	   bundle.getSampleItemIndex() == ((SampleDataBundle)item.data).getSampleItemIndex() &&
+    	   bundle.getAnalysisIndex() == ((SampleDataBundle)item.data).getAnalysisIndex()){
     		if(!item.open)
     			item.toggle();
     		return true;
