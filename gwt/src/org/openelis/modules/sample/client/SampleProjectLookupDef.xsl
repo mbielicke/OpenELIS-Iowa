@@ -49,15 +49,15 @@
           <row>
             <table key="sampleProjectTable" width="auto" maxRows="10" showScroll="ALWAYS" tab="sampleProjectTable,sampleProjectTable" title="">
               <col width="120" header="Name">
-                <autoComplete width="100" case="UPPER" field="Integer">
+                <autoComplete width="130" case="UPPER" field="Integer">
                   <col width="115" header="Name" />
                   <col width="190" header="Desc" />
                 </autoComplete>
               </col>
-              <col width="160" header="Description">
+              <col width="240" header="Description">
                 <label field="String" />
               </col>
-              <col width="70" header="Is Perm">
+              <col width="60" header="Is Perm">
                 <check />
               </col>
             </table>
