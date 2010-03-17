@@ -159,17 +159,19 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             public void onSelection(SelectionEvent<TableRow> event) {
                 int row;
                 ResultViewDO resultDO;
-
-                row = testResultsTable.getSelectedRow();
-                resultDO = displayManager.getObjectAt(row, 0);
-
-                if (testAnalyteRequiredId.equals(resultDO.getTypeId()))
-                    removeResultButton.enable(false);
-                else
-                    removeResultButton.enable(true);
-
-                addResultButton.enable(true);
-                suggestionsButton.enable(true);
+                
+                if(EnumSet.of(State.ADD, State.UPDATE).contains(state)){
+                    row = testResultsTable.getSelectedRow();
+                    resultDO = displayManager.getObjectAt(row, 0);
+    
+                    if (testAnalyteRequiredId.equals(resultDO.getTypeId()))
+                        removeResultButton.enable(false);
+                    else
+                        removeResultButton.enable(true);
+    
+                    addResultButton.enable(true);
+                    suggestionsButton.enable(true);
+                }
             }
         });
 
@@ -319,6 +321,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                     index = displayManager.getIndexAt(event.getIndex());
                     manager.removeRowAt(index);
                     displayManager.setDataGrid(manager.getResults());
+                    removeResultButton.enable(false);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }

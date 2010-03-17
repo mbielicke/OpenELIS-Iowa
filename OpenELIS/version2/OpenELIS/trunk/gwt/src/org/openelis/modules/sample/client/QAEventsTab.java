@@ -46,6 +46,7 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
@@ -61,6 +62,10 @@ import org.openelis.manager.SampleQaEventManager;
 import org.openelis.modules.qaevent.client.QaeventLookupScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Window;
 
 public class QAEventsTab extends Screen {
@@ -102,6 +107,19 @@ public class QAEventsTab extends Screen {
                 sampleQATable.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                             .contains(event.getState()));
                 sampleQATable.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        sampleQATable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
+            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+                //always allow selection
+            }
+        });
+
+        sampleQATable.addSelectionHandler(new SelectionHandler<TableRow>() {
+            public void onSelection(SelectionEvent<TableRow> event) {
+                if(EnumSet.of(State.ADD, State.UPDATE).contains(state))
+                    removeSampleQAButton.enable(true);
             }
         });
 
@@ -149,6 +167,7 @@ public class QAEventsTab extends Screen {
         sampleQATable.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
                 sampleQAManager.removeSampleQAAt(event.getIndex());
+                removeSampleQAButton.enable(false);
             }
         });
 
@@ -162,8 +181,7 @@ public class QAEventsTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeSampleQAButton.enable(EnumSet.of(State.ADD, State.UPDATE)
-                                                   .contains(event.getState()));
+                removeSampleQAButton.enable(false);
             }
         });
 
@@ -204,6 +222,19 @@ public class QAEventsTab extends Screen {
                 analysisQATable.setQueryMode(event.getState() == State.QUERY);
             }
         });
+        
+        analysisQATable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
+            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+                //always allow selection
+            }
+        });
+
+        analysisQATable.addSelectionHandler(new SelectionHandler<TableRow>() {
+            public void onSelection(SelectionEvent<TableRow> event) {
+                if(EnumSet.of(State.ADD, State.UPDATE).contains(state))
+                    removeAnalysisQAButton.enable(true);
+            }
+        });
 
         analysisQATable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
@@ -239,6 +270,7 @@ public class QAEventsTab extends Screen {
         analysisQATable.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
                 analysisQAManager.removeAnalysisQAAt(event.getIndex());
+                removeAnalysisQAButton.enable(false);
             }
         });
 
@@ -253,11 +285,7 @@ public class QAEventsTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeAnalysisQAButton.enable(canEditAnalysisQA() &&
-                                              (SampleDataBundle.Type.ANALYSIS == type) &&
-                                              anDO.getTestId() != null &&
-                                              EnumSet.of(State.ADD, State.UPDATE)
-                                                     .contains(event.getState()));
+                removeAnalysisQAButton.enable(false);
             }
         });
 

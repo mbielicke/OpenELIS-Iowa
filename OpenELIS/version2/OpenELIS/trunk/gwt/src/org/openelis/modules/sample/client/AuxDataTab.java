@@ -68,6 +68,8 @@ import org.openelis.utilcommon.ResultValidator;
 import org.openelis.utilcommon.ResultValidator.Type;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Window;
@@ -110,7 +112,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                 auxValsTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
-
+        
         auxValsTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 int r, c;
@@ -168,6 +170,12 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                 }
             }
         });
+        
+        auxValsTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
+            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+                //always allow selection
+            }
+        });
 
         auxValsTable.addSelectionHandler(new SelectionHandler<TableRow>() {
             public void onSelection(SelectionEvent<TableRow> event) {
@@ -177,6 +185,9 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                 auxMethod.setValue(fieldDO.getMethodName());
                 auxDesc.setValue(fieldDO.getDescription());
                 auxUnits.setValue(fieldDO.getUnitOfMeasureName());
+                
+                if(EnumSet.of(State.ADD, State.UPDATE).contains(state))
+                    removeAuxButton.enable(true);
             };
         });
 
@@ -224,13 +235,14 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                 if (Window.confirm(consts.get("removeAuxMessage")))
                     manager.removeAuxDataGroupAt(auxValsTable.getSelectedRow());
 
+                removeAuxButton.enable(false);
+                
                 // reload the tab
                 DataChangeEvent.fire(tab);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeAuxButton.enable(EnumSet.of(State.ADD, State.UPDATE)
-                                              .contains(event.getState()));
+                removeAuxButton.enable(false);
             }
         });
 
