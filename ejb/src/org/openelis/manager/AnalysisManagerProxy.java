@@ -176,7 +176,7 @@ public class AnalysisManagerProxy {
         
         analysisRefId = ReferenceTable.ANALYSIS;
         
-      //FIXME remoce this  analysisDO.setSampleItemId(man.getSampleItemId());
+        analysisDO.setSampleItemId(man.getSampleItemId());
         analysisLocal().add(analysisDO);
         
         item = man.getItemAt(i);
