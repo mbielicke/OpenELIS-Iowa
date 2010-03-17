@@ -51,6 +51,7 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
@@ -62,6 +63,10 @@ import org.openelis.manager.SampleOrganizationManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -70,7 +75,7 @@ import com.google.gwt.user.client.Window;
 public class SampleOrganizationLookupScreen  extends Screen implements HasActionHandlers<SampleOrganizationLookupScreen.Action> {
 
     private SampleOrganizationManager manager;
-
+    protected AppButton organizationRemoveButton;
     public enum Action {
         OK
     };
@@ -100,6 +105,19 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
             public void onStateChange(StateChangeEvent<State> event) {
                 sampleOrganizationTable.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
                 sampleOrganizationTable.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        sampleOrganizationTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
+            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+                //always allow selection
+            }
+        });
+
+        sampleOrganizationTable.addSelectionHandler(new SelectionHandler<TableRow>() {
+            public void onSelection(SelectionEvent<TableRow> event) {
+                if(EnumSet.of(State.ADD, State.UPDATE).contains(state))
+                    organizationRemoveButton.enable(true);
             }
         });
 
@@ -209,9 +227,11 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
         sampleOrganizationTable.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
                 manager.removeOrganizationAt(event.getIndex());
+                organizationRemoveButton.enable(false);
             }
         });
-        final AppButton organizationRemoveButton = (AppButton)def.getWidget("organizationRemoveButton");
+        
+        organizationRemoveButton = (AppButton)def.getWidget("organizationRemoveButton");
         addScreenHandler(organizationRemoveButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int selectedRow = sampleOrganizationTable.getSelectedRow();
@@ -220,7 +240,7 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
                 }
             }
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationRemoveButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                organizationRemoveButton.enable(false);
             }
             
         });

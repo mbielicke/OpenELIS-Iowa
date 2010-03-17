@@ -48,13 +48,13 @@
         <TablePanel padding="0" spacing="0">
           <row>
             <table key="sampleOrganizationTable" width="auto" maxRows="10" showScroll="ALWAYS" tab="sampleOrganizationTable,sampleOrganizationTable" title="">
-              <col width="120" header="Type">
+              <col width="125" header="Type">
                 <dropdown width="110" field="Integer" />
               </col>
-              <col width="35" header="Id">
+              <col width="70" header="Id">
                 <label field="Integer" />
               </col>
-              <col width="160" header="Name">
+              <col width="220" header="Name">
                 <autoComplete width="130px" case="UPPER" field="Integer">
                   <col width="180" header="Name" />
                   <col width="110" header="Street" />

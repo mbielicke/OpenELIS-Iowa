@@ -45,6 +45,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
@@ -56,6 +57,10 @@ import org.openelis.manager.SampleProjectManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -64,7 +69,8 @@ import com.google.gwt.user.client.Window;
 public class SampleProjectLookupScreen extends Screen implements HasActionHandlers<SampleProjectLookupScreen.Action> {
 
     private SampleProjectManager manager;
-
+    protected AppButton projectRemoveButton;
+    
     public enum Action {
         OK
     };
@@ -93,6 +99,19 @@ public class SampleProjectLookupScreen extends Screen implements HasActionHandle
             public void onStateChange(StateChangeEvent<State> event) {
                 sampleProjectTable.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
                 sampleProjectTable.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        sampleProjectTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
+            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+                //always allow selection
+            }
+        });
+
+        sampleProjectTable.addSelectionHandler(new SelectionHandler<TableRow>() {
+            public void onSelection(SelectionEvent<TableRow> event) {
+                if(EnumSet.of(State.ADD, State.UPDATE).contains(state))
+                    projectRemoveButton.enable(true);
             }
         });
 
@@ -180,9 +199,11 @@ public class SampleProjectLookupScreen extends Screen implements HasActionHandle
         sampleProjectTable.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
                 manager.removeProjectAt(event.getIndex());
+                projectRemoveButton.enable(false);
             }
         });
-        final AppButton projectRemoveButton = (AppButton)def.getWidget("projectRemoveButton");
+        
+        projectRemoveButton = (AppButton)def.getWidget("projectRemoveButton");
         addScreenHandler(projectRemoveButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int selectedRow = sampleProjectTable.getSelectedRow();
@@ -191,7 +212,7 @@ public class SampleProjectLookupScreen extends Screen implements HasActionHandle
                 }
             }
             public void onStateChange(StateChangeEvent<State> event) {
-                projectRemoveButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                projectRemoveButton.enable(false);
             }
             
         });
