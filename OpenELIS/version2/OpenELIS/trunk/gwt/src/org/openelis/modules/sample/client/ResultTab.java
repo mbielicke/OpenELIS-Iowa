@@ -128,6 +128,9 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         addScreenHandler(testResultsTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
                 testResultsTable.load(getTableModel());
+                
+                if(testResultsTable.numRows() > 0)
+                    popoutTable.enable(true);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -426,8 +429,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                 }
     
                 public void onStateChange(StateChangeEvent<State> event) {
-                    popoutTable.enable(EnumSet.of(State.DISPLAY, State.ADD, State.UPDATE)
-                                              .contains(event.getState()));
+                    popoutTable.enable(false);
                 }
             });
     }
