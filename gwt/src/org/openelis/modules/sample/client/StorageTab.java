@@ -47,6 +47,7 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
@@ -62,6 +63,10 @@ import org.openelis.manager.StorageManager;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Window;
 
 public class StorageTab extends Screen {
@@ -160,7 +165,20 @@ public class StorageTab extends Screen {
                 }
             }
         });
+        
+        storageTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
+            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+                //always allow selection
+            }
+        });
 
+        storageTable.addSelectionHandler(new SelectionHandler<TableRow>() {
+            public void onSelection(SelectionEvent<TableRow> event) {
+                if(EnumSet.of(State.ADD, State.UPDATE).contains(state))
+                    removeStorageButton.enable(true);
+            }
+        });
+        
         storageTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 try {
@@ -181,7 +199,7 @@ public class StorageTab extends Screen {
             public void onRowDeleted(RowDeletedEvent event) {
                 try {
                     manager.removeStorageAt(event.getIndex());
-
+                    removeStorageButton.enable(false);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -264,9 +282,7 @@ public class StorageTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeStorageButton.enable(canEdit() &&
-                                           EnumSet.of(State.ADD, State.UPDATE)
-                                                  .contains(event.getState()));
+                removeStorageButton.enable(false);
             }
         });
 
