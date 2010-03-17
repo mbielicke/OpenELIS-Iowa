@@ -17,6 +17,7 @@ import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeCloseEvent;
@@ -1379,6 +1380,14 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             Query query;
             query = new Query();
             query.setFields(getQueryFields());
+            
+            // Added this Query Param to keep Quick Entry Samples out of query results
+            QueryData qd = new QueryData();
+            qd.query = "!Q";
+            qd.key = SampleMeta.getDomain();
+            qd.type = QueryData.Type.STRING;
+            query.setFields(qd);
+            
             nav.setQuery(query);
         } else if (state == State.UPDATE) {
             window.setBusy(consts.get("updating"));
