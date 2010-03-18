@@ -237,9 +237,10 @@ public class QuickEntryScreen extends Screen {
                                 switch (event.getSelectedItem().intValue()) {
                                     case 0:
                                         receivedDate.setValue(null);
+                                        setFocus(entry);
                                         break;
                                     case 1:
-                                        receivedDate.setValue(recDate.getValue());
+                                        setFocus(entry);
                                         break;
                                 }
                             }
@@ -389,6 +390,7 @@ public class QuickEntryScreen extends Screen {
             managers.remove(manager.getSample().getAccessionNumber());
             
             }catch(Exception e){
+                errorsList.add(new FormErrorException("quickCommitError"));
                 errorsList.add(new FormErrorException("rowError", 
                                manager.getSample().getAccessionNumber().toString(), e.getMessage()));
             }
