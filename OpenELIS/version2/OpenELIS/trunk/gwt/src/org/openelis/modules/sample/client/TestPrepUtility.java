@@ -279,7 +279,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         }
 
         ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-        modal.setContent(prepPickerScreen);
+        modal.setContent(prepPickerScreen, ScreenWindow.position+(numberOfPrepScreensDrawn*20), ScreenWindow.position+(numberOfPrepScreensDrawn*20));
         modal.setName(consts.get("prepTestPicker") + " " + testMethodName);
         prepPickerScreen.setManager(manager);
         numberOfPrepScreensDrawn++ ;
