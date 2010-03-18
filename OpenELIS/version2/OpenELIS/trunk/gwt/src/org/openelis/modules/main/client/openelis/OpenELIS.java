@@ -47,6 +47,7 @@ import org.openelis.modules.method.client.MethodScreen;
 import org.openelis.modules.order.client.InternalOrderScreen;
 import org.openelis.modules.order.client.KitOrderScreen;
 import org.openelis.modules.order.client.VendorOrderScreen;
+import org.openelis.modules.orderFill.client.OrderFillScreen;
 import org.openelis.modules.organization.client.OrganizationScreen;
 import org.openelis.modules.panel.client.PanelScreen;
 import org.openelis.modules.privateWellWaterSampleLogin.client.PrivateWellWaterSampleLoginScreen;
@@ -59,6 +60,7 @@ import org.openelis.modules.quickEntry.client.QuickEntryScreen;
 import org.openelis.modules.reviewRelease.client.ReviewReleaseScreen;
 import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
 import org.openelis.modules.section.client.SectionScreen;
+import org.openelis.modules.shipping.client.ShippingScreen;
 import org.openelis.modules.standardnote.client.StandardNoteScreen;
 import org.openelis.modules.storage.client.StorageScreen;
 import org.openelis.modules.storageLocation.client.StorageLocationScreen;
@@ -573,7 +575,7 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                         //   browser.addScreen(new FillOrderScreen());
+                            browser.addScreen(new OrderFillScreen());
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -592,7 +594,7 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                         //   browser.addScreen(new ShippingScreen());
+                            browser.addScreen(new ShippingScreen());
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());

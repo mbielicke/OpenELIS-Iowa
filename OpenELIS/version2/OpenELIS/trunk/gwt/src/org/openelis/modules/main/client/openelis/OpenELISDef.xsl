@@ -153,8 +153,12 @@ UIRF Software License are applicable instead of those above.
                 <menuItem key="kitOrder" description="{resource:getString($constants,'kitOrderDescription')}" enable="true" icon="kitOrderIcon" label="{resource:getString($constants,'kitOrder')}" />
                 <code>}</code>
                 <html>&lt;hr/&gt;</html>
-                <menuItem key="fillOrder" description="{resource:getString($constants,'fillOrderDescription')}" enable="false" icon="fillOrderIcon" label="{resource:getString($constants,'fillOrder')}" />
-                <menuItem key="shipping" description="{resource:getString($constants,'shippingDescription')}" enable="false" icon="shippingIcon" label="{resource:getString($constants,'shipping')}" />
+                <code>if(OpenELIS.security.hasModule("order","SELECT")){</code>
+                <menuItem key="fillOrder" description="{resource:getString($constants,'fillOrderDescription')}" enable="true" icon="fillOrderIcon" label="{resource:getString($constants,'fillOrder')}" />
+                <code>}</code>
+                <code>if(OpenELIS.security.hasModule("shipping","SELECT")){</code>
+                <menuItem key="shipping" description="{resource:getString($constants,'shippingDescription')}" enable="true" icon="shippingIcon" label="{resource:getString($constants,'shipping')}" />
+                <code>}</code>
                 <html>&lt;hr/&gt;</html>
                 <menuItem key="buildKits" description="{resource:getString($constants,'buildKitsDescription')}" enable="false" icon="buildKitsIcon" label="{resource:getString($constants,'buildKits')}" />
                 <menuItem key="inventoryTransfer" description="{resource:getString($constants,'inventoryTransferDescription')}" enable="false" icon="inventoryTransferIcon" label="{resource:getString($constants,'inventoryTransfer')}" />
