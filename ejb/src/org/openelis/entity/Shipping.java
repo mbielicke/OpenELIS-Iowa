@@ -53,9 +53,9 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-    @NamedQuery(name = "Shipping.Shipping", query = "select new org.openelis.domain.ShippingDO(s.id, s.statusId, s.shippedFromId, s.shippedToId, shipTo.name, " +
-            " s.processedById, s.processedDate, s.shippedMethodId, s.shippedDate, s.numberOfPackages, s.cost, shipTo.address.multipleUnit, shipTo.address.streetAddress, " +
-            " shipTo.address.city, shipTo.address.state, shipTo.address.zipCode) from Shipping s LEFT JOIN s.shipTo shipTo where s.id = :id")})
+    @NamedQuery(name = "Shipping.Shipping", query = "select new org.openelis.domain.ShippingDO(s.id, s.statusId, s.shippedFromId, s.shippedToId, shippedTo.name, " +
+            " s.processedById, s.processedDate, s.shippedMethodId, s.shippedDate, s.numberOfPackages, s.cost, shippedTo.address.multipleUnit, shippedTo.address.streetAddress, " +
+            " shippedTo.address.city, shippedTo.address.state, shippedTo.address.zipCode) from Shipping s LEFT JOIN s.shippedTo shippedTo where s.id = :id")})
               
 @Entity
 @Table(name="shipping")
@@ -96,7 +96,7 @@ public class Shipping implements Auditable, Cloneable {
   
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "shipped_to_id", insertable = false, updatable = false)
-  private Organization shipTo;
+  private Organization shippedTo;
   
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "shipping_id", insertable = false, updatable = false)
@@ -209,12 +209,12 @@ public class Shipping implements Auditable, Cloneable {
       this.shippingTracking = shippingTracking;
   }
   
-  public Organization getShipTo() {
-      return shipTo;
+  public Organization getShippedTo() {
+      return shippedTo;
   }
   
-  public void setShipTo(Organization shipTo) {
-      this.shipTo = shipTo;
+  public void setShippedTo(Organization shippedTo) {
+      this.shippedTo = shippedTo;
   }
   
   public void setClone() {

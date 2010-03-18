@@ -25,8 +25,51 @@
 */
 package org.openelis.modules.shipping.client;
 
+import org.openelis.gwt.common.SecurityException;
+import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDefInt;
+import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.modules.orderFill.client.OrderFillDef;
 
-public class ShippingScreen {//extends OpenELISScreenForm<ShippingForm, Query<TableDataRow<Integer>>> implements ClickListener, TableManager, ChangeListener, TabListener{
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+
+
+public class ShippingScreen extends Screen {
+    private SecurityModule        security;
+    
+    public ShippingScreen() throws Exception {
+        super((ScreenDefInt)GWT.create(ShippingDef.class));
+        service = new ScreenService("controller?service=org.openelis.modules.shipping.server.ShippingService");
+
+        security = OpenELIS.security.getModule("shipping");
+        if (security == null)
+            throw new SecurityException("screenPermException", "Shipping Screen");
+
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                postConstructor();
+            }
+        });
+    }
+
+    /**
+     * This method is called to set the initial state of widgets after the
+     * screen is attached to the browser. It is usually called in deferred
+     * command.
+     */
+    private void postConstructor() {
+
+    }
+}
+
+
+    
+    
+    //extends OpenELISScreenForm<ShippingForm, Query<TableDataRow<Integer>>> implements ClickListener, TableManager, ChangeListener, TabListener{
 /*
     public enum Action {Commited, Aborted}
     private CommandListener commandTarget;
@@ -430,4 +473,3 @@ public class ShippingScreen {//extends OpenELISScreenForm<ShippingForm, Query<Ta
         return m;
     }
     */
-}

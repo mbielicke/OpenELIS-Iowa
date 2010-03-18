@@ -58,7 +58,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.LockLocal;
-import org.openelis.metamap.ShippingMetaMap;
+import org.openelis.meta.ShippingMeta;
 import org.openelis.remote.ShippingRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
@@ -81,8 +81,7 @@ public class ShippingBean implements ShippingRemote{
     private LockLocal lockBean;
     private SystemUserUtilLocal sysUser;
     
-    private static int shippingRefTableId, orderItemRefTableId, sampleItemRefTableId;
-    private static final ShippingMetaMap ShippingMeta = new ShippingMetaMap();
+    private static int shippingRefTableId, orderItemRefTableId, sampleItemRefTableId;    
 
     public ShippingBean(){
         shippingRefTableId = ReferenceTable.SHIPPING;

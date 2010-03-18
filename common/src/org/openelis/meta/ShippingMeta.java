@@ -29,96 +29,175 @@ package org.openelis.meta;
   * Shipping META Data
   */
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 import org.openelis.gwt.common.Meta;
+import org.openelis.gwt.common.MetaMap;
 
-public class ShippingMeta implements Meta {
-  	protected String path = "";
-	private static final String entityName = "Shipping";
+public class ShippingMeta implements Meta, MetaMap {
 	
-	private static final String
-              ID					="id",
-              STATUS_ID					="statusId",
-              SHIPPED_FROM_ID					="shippedFromId",
-              SHIPPED_TO_ID                 ="shippedToId",
-              PROCESSED_BY_ID					="processedById",
-              PROCESSED_DATE					="processedDate",
-              SHIPPED_METHOD_ID					="shippedMethodId",
-              SHIPPED_DATE					="shippedDate",
-              NUMBER_OF_PACKAGES					="numberOfPackages",
-              COST                           ="cost";
-
-  	private static final String[] columnNames = {
-  	  ID,STATUS_ID,SHIPPED_FROM_ID,SHIPPED_TO_ID,PROCESSED_BY_ID,PROCESSED_DATE,SHIPPED_METHOD_ID,SHIPPED_DATE,NUMBER_OF_PACKAGES,COST};
+	private static final String ID = "_shipping.id",
+                                STATUS_ID = "_shipping.statusId",
+                                SHIPPED_FROM_ID = "_shipping.shippedFromId",
+                                SHIPPED_TO_ID = "_shipping.shippedToId",
+                                PROCESSED_BY_ID	= "_shipping.processedById",
+                                PROCESSED_DATE = "_shipping.processedDate",
+                                SHIPPED_METHOD_ID = "_shipping.shippedMethodId",
+                                SHIPPED_DATE = "_shipping.shippedDate",
+                                NUMBER_OF_PACKAGES = "_shipping.numberOfPackages",
+                                COST = "_shipping.cost",
+                                
+                                SHIPPED_TO_ADDRESS_ID = "_shippedTo.address.id",
+                                SHIPPED_TO_ADDRESS_MULTIPLE_UNIT = "_shippedTo.address.multipleUnit",
+                                SHIPPED_TO_ADDRESS_STREET_ADDRESS = "_shippedTo.address.streetAddress",
+                                SHIPPED_TO_ADDRESS_CITY = "_shippedTo.address.city",
+                                SHIPPED_TO_ADDRESS_STATE = "_shippedTo.address.state",
+                                SHIPPED_TO_ADDRESS_ZIP_CODE = "_shippedTo.address.zipCode",
+                                SHIPPED_TO_ADDRESS_WORK_PHONE = "_shippedTo.address.workPhone",
+                                SHIPPED_TO_ADDRESS_HOME_PHONE = "_shippedTo.address.homePhone",
+                                SHIPPED_TO_ADDRESS_CELL_PHONE = "_shippedTo.address.cellPhone",
+                                SHIPPED_TO_ADDRESS_FAX_PHONE = "_shippedTo.address.faxPhone",
+                                SHIPPED_TO_ADDRESS_EMAIL = "_shippedTo.address.email",
+                                SHIPPED_TO_ADDRESS_COUNTRY = "_shippedTo.address.country",
+                                
+                                TRACKING_ID = "_shippingTracking.id",
+                                TRACKING_SHIPPING_ID = "_shippingTracking.shippingId",
+                                TRACKING_TRACKING_NUMBER = "_shippingTracking.trackingNumber",
+	
+                                SHIPPED_TO_NAME = "_shipping.shippedTo.name";
   	  
-	private HashSet<String> columnHashList;
+    private static HashSet<String> names;
     
-    private void init() {
-        columnHashList = new HashSet<String>(columnNames.length);
-        for(int i = 0; i < columnNames.length; i++){
-            columnHashList.add(path+columnNames[i]);
-        }
+    static {
+        names = new HashSet<String>(Arrays.asList(ID, STATUS_ID, SHIPPED_FROM_ID, SHIPPED_TO_ID,
+                                                  PROCESSED_BY_ID, PROCESSED_DATE, SHIPPED_METHOD_ID,
+                                                  SHIPPED_DATE, NUMBER_OF_PACKAGES,COST,
+                                                  SHIPPED_TO_ADDRESS_ID, SHIPPED_TO_ADDRESS_MULTIPLE_UNIT,
+                                                  SHIPPED_TO_ADDRESS_STREET_ADDRESS, SHIPPED_TO_ADDRESS_CITY,
+                                                  SHIPPED_TO_ADDRESS_STATE, SHIPPED_TO_ADDRESS_ZIP_CODE,
+                                                  SHIPPED_TO_ADDRESS_WORK_PHONE, SHIPPED_TO_ADDRESS_HOME_PHONE,
+                                                  SHIPPED_TO_ADDRESS_CELL_PHONE, SHIPPED_TO_ADDRESS_FAX_PHONE,
+                                                  SHIPPED_TO_ADDRESS_EMAIL, SHIPPED_TO_ADDRESS_COUNTRY,
+                                                  TRACKING_ID, TRACKING_SHIPPING_ID, TRACKING_TRACKING_NUMBER,
+                                                  SHIPPED_TO_NAME));
     }
-    
-    public ShippingMeta() {
-		init();        
-    }
-    
-    public ShippingMeta(String path) {
-        this.path = path;
-		init();        
-    }
-
-    public String[] getColumnList() {
-        return columnNames;
-    }
-
-    public String getEntity() {
-        return entityName;
-    }
-
-    public boolean hasColumn(String columnName) {
-        return columnHashList.contains(columnName);
-    }
-    
-    
-    public String getId() {
-        return path + ID;
+        
+    public static String getId() {
+        return ID;
     } 
 
-    public String getStatusId() {
-        return path + STATUS_ID;
+    public static String getStatusId() {
+        return STATUS_ID;
     } 
 
-    public String getShippedFromId() {
-        return path + SHIPPED_FROM_ID;
+    public static String getShippedFromId() {
+        return SHIPPED_FROM_ID;
     } 
     
-    public String getShippedToId(){
-        return path + SHIPPED_TO_ID;
+    public static String getShippedToId(){
+        return SHIPPED_TO_ID;
     }
 
-    public String getProcessedById() {
-        return path + PROCESSED_BY_ID;
+    public static String getProcessedById() {
+        return PROCESSED_BY_ID;
     } 
 
-    public String getProcessedDate() {
-        return path + PROCESSED_DATE;
+    public static String getProcessedDate() {
+        return PROCESSED_DATE;
     } 
 
-    public String getShippedMethodId() {
-        return path + SHIPPED_METHOD_ID;
+    public static String getShippedMethodId() {
+        return SHIPPED_METHOD_ID;
     } 
 
-    public String getShippedDate() {
-        return path + SHIPPED_DATE;
+    public static String getShippedDate() {
+        return SHIPPED_DATE;
     } 
 
-    public String getNumberOfPackages() {
-        return path + NUMBER_OF_PACKAGES;
-    } 
-    public String getCost(){
-        return path + COST;
+    public static String getNumberOfPackages() {
+        return NUMBER_OF_PACKAGES;
     }  
+    
+    public static String getCost(){
+        return COST;
+    } 
+    
+    public static String getShippedToAddressId() {
+        return SHIPPED_TO_ADDRESS_ID;
+    }
+    
+    public static String getShippedToAddressMultipleUnit() {
+        return SHIPPED_TO_ADDRESS_MULTIPLE_UNIT;
+    }
+
+    public static String getShippedToAddressStreetAddress() {
+        return SHIPPED_TO_ADDRESS_STREET_ADDRESS;
+    }
+
+    public static String getShippedToAddressCity() {
+        return SHIPPED_TO_ADDRESS_CITY;
+    }
+
+    public static String getShippedToAddressState() {
+        return SHIPPED_TO_ADDRESS_STATE;
+    }
+
+    public static String getShippedToAddressZipCode() {
+        return SHIPPED_TO_ADDRESS_ZIP_CODE;
+    }
+    
+    public static String getShippedToAddressWorkPhone() {
+        return SHIPPED_TO_ADDRESS_WORK_PHONE;
+    }
+
+    public static String getShippedToAddressHomePhone() {
+        return SHIPPED_TO_ADDRESS_HOME_PHONE;
+    }
+
+    public static String getShippedToAddressCellPhone() {
+        return SHIPPED_TO_ADDRESS_CELL_PHONE;
+    }
+
+    public static String getShippedToAddressFaxPhone() {
+        return SHIPPED_TO_ADDRESS_FAX_PHONE;
+    }
+
+    public static String getShippedToAddressEmail() {
+        return SHIPPED_TO_ADDRESS_EMAIL;
+    }
+
+    public static String getShippedToAddressCountry() {
+        return SHIPPED_TO_ADDRESS_COUNTRY;
+    }
+    
+    public String getTrackingId() {
+        return TRACKING_ID;
+    } 
+
+    public String getTrackingShippingId() {
+        return TRACKING_SHIPPING_ID;
+    } 
+
+    public String getTrackingTrackingNumber() {
+        return TRACKING_TRACKING_NUMBER;
+    }
+    
+    public static String getShippedToName() {
+        return SHIPPED_TO_NAME;
+    }
+    
+    public boolean hasColumn(String columnName) {
+        return names.contains(columnName);
+    }
+    
+    public String buildFrom(String where) {
+        String from = "Shipping _shipping ";
+        if(where.indexOf("shippingTracking.") > -1)
+            from += ", IN (_shipping.shippingTracking) _shippingTracking ";
+        if(where.indexOf("shippedTo.") > -1)
+            from += ", (_shipping.shippedTo) _shippedTo ";
+
+        return from;
+    } 
 }   

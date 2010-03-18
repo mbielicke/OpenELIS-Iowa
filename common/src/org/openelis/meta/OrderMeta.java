@@ -50,11 +50,18 @@ public class OrderMeta implements Meta, MetaMap {
 	                               BILL_TO_ID = "_order.billToId",
 	                               SHIP_FROM_ID = "_order.shipFromId",
 	                               
+	                               ORGANIZATION_ADDRESS_ID = "_organization.address.id",
                                    ORGANIZATION_ADDRESS_MULTIPLE_UNIT = "_organization.address.multipleUnit",
                                    ORGANIZATION_ADDRESS_STREET_ADDRESS = "_organization.address.streetAddress",
                                    ORGANIZATION_ADDRESS_CITY = "_organization.address.city",
                                    ORGANIZATION_ADDRESS_STATE = "_organization.address.state",
                                    ORGANIZATION_ADDRESS_ZIP_CODE = "_organization.address.zipCode",
+                                   ORGANIZATION_ADDRESS_WORK_PHONE = "_organization.address.workPhone",
+                                   ORGANIZATION_ADDRESS_HOME_PHONE = "_organization.address.homePhone",
+                                   ORGANIZATION_ADDRESS_CELL_PHONE = "_organization.address.cellPhone",
+                                   ORGANIZATION_ADDRESS_FAX_PHONE = "_organization.address.faxPhone",
+                                   ORGANIZATION_ADDRESS_EMAIL = "_organization.address.email",
+                                   ORGANIZATION_ADDRESS_COUNTRY = "_organization.address.country",
                                    
 	                               ITEM_ID = "_orderItem.id",
 	                               ITEM_ORDER_ID = "_orderItem.orderId",
@@ -74,17 +81,31 @@ public class OrderMeta implements Meta, MetaMap {
 	                               RCPT_EXTERNAL_REFERENCE = "_inventoryRecept.externalReference",
 	                               RCPT_UPC = "_inventoryRecept.upc",	                              
 	                               
+	                               REPORT_TO_ADDRESS_ID = "_reportTo.address.id",
 	                               REPORT_TO_ADDRESS_MULTIPLE_UNIT = "_reportTo.address.multipleUnit",
 	                               REPORT_TO_ADDRESS_STREET_ADDRESS = "_reportTo.address.streetAddress",
 	                               REPORT_TO_ADDRESS_CITY = "_reportTo.address.city",
 	                               REPORT_TO_ADDRESS_STATE = "_reportTo.address.state",
-	                               REPORT_TO_ADDRESS_ZIP_CODE = "_reportTo.address.zipCode",     
+	                               REPORT_TO_ADDRESS_ZIP_CODE = "_reportTo.address.zipCode",
+	                               REPORT_TO_ADDRESS_WORK_PHONE = "_reportTo.address.workPhone",
+	                               REPORT_TO_ADDRESS_HOME_PHONE = "_reportTo.address.homePhone",
+	                               REPORT_TO_ADDRESS_CELL_PHONE = "_reportTo.address.cellPhone",
+	                               REPORT_TO_ADDRESS_FAX_PHONE = "_reportTo.address.faxPhone",
+	                               REPORT_TO_ADDRESS_EMAIL = "_reportTo.address.email",
+	                               REPORT_TO_ADDRESS_COUNTRY = "_reportTo.address.country",
 	                               
+	                               BILL_TO_ADDRESS_ID = "_billTo.address.id",
 	                               BILL_TO_ADDRESS_MULTIPLE_UNIT = "_billTo.address.multipleUnit",
 	                               BILL_TO_ADDRESS_STREET_ADDRESS = "_billTo.address.streetAddress",
 	                               BILL_TO_ADDRESS_CITY = "_billTo.address.city",
 	                               BILL_TO_ADDRESS_STATE = "_billTo.address.state",
 	                               BILL_TO_ADDRESS_ZIP_CODE = "_billTo.address.zipCode",
+	                               BILL_TO_ADDRESS_WORK_PHONE = "_billTo.address.workPhone",
+	                               BILL_TO_ADDRESS_HOME_PHONE = "_billTo.address.homePhone",
+	                               BILL_TO_ADDRESS_CELL_PHONE = "_billTo.address.cellPhone",
+	                               BILL_TO_ADDRESS_FAX_PHONE = "_billTo.address.faxPhone",
+	                               BILL_TO_ADDRESS_EMAIL = "_billTo.address.email",
+	                               BILL_TO_ADDRESS_COUNTRY = "_billTo.address.country",
 	                               
 	                               ORGANIZATION_NAME = "_order.organization.name",
 	                               REPORT_TO_NAME = "_reportTo.name",
@@ -100,10 +121,12 @@ public class OrderMeta implements Meta, MetaMap {
                                                   ORGANIZATION_ID, TYPE, EXTERNAL_ORDER_NUMBER,
                                                   REPORT_TO_ID, BILL_TO_ID, SHIP_FROM_ID,
                                                   
-                                                  ORGANIZATION_ADDRESS_MULTIPLE_UNIT,
-                                                  ORGANIZATION_ADDRESS_STREET_ADDRESS,
-                                                  ORGANIZATION_ADDRESS_CITY, ORGANIZATION_ADDRESS_STATE,
-                                                  ORGANIZATION_ADDRESS_ZIP_CODE,
+                                                  ORGANIZATION_ADDRESS_ID, ORGANIZATION_ADDRESS_MULTIPLE_UNIT,
+                                                  ORGANIZATION_ADDRESS_STREET_ADDRESS, ORGANIZATION_ADDRESS_CITY,
+                                                  ORGANIZATION_ADDRESS_STATE, ORGANIZATION_ADDRESS_ZIP_CODE,
+                                                  ORGANIZATION_ADDRESS_WORK_PHONE, ORGANIZATION_ADDRESS_HOME_PHONE,
+                                                  ORGANIZATION_ADDRESS_CELL_PHONE, ORGANIZATION_ADDRESS_FAX_PHONE,
+                                                  ORGANIZATION_ADDRESS_EMAIL, ORGANIZATION_ADDRESS_COUNTRY,
                                                   
                                                   ITEM_ID, ITEM_ORDER_ID, ITEM_INVENTORY_ITEM_ID,
                                                   ITEM_QUANTITY, ITEM_CATALOG_NUMBER, ITEM_UNIT_COST,
@@ -113,13 +136,19 @@ public class OrderMeta implements Meta, MetaMap {
                                                   RCPT_UNIT_COST, RCPT_QC_REFERENCE, RCPT_EXTERNAL_REFERENCE,
                                                   RCPT_UPC,
                                                   
-                                                  REPORT_TO_ADDRESS_MULTIPLE_UNIT, REPORT_TO_ADDRESS_STREET_ADDRESS,
-                                                  REPORT_TO_ADDRESS_CITY, REPORT_TO_ADDRESS_STATE,
-                                                  REPORT_TO_ADDRESS_ZIP_CODE,     
+                                                  REPORT_TO_ADDRESS_ID, REPORT_TO_ADDRESS_MULTIPLE_UNIT,
+                                                  REPORT_TO_ADDRESS_STREET_ADDRESS, REPORT_TO_ADDRESS_CITY,
+                                                  REPORT_TO_ADDRESS_STATE, REPORT_TO_ADDRESS_ZIP_CODE,
+                                                  REPORT_TO_ADDRESS_WORK_PHONE, REPORT_TO_ADDRESS_HOME_PHONE,
+                                                  REPORT_TO_ADDRESS_CELL_PHONE, REPORT_TO_ADDRESS_FAX_PHONE,
+                                                  REPORT_TO_ADDRESS_EMAIL, REPORT_TO_ADDRESS_COUNTRY,
                                                   
-                                                  BILL_TO_ADDRESS_MULTIPLE_UNIT, BILL_TO_ADDRESS_STREET_ADDRESS,
-                                                  BILL_TO_ADDRESS_CITY, BILL_TO_ADDRESS_STATE,
-                                                  BILL_TO_ADDRESS_ZIP_CODE,
+                                                  BILL_TO_ADDRESS_ID, BILL_TO_ADDRESS_MULTIPLE_UNIT,
+                                                  BILL_TO_ADDRESS_STREET_ADDRESS, BILL_TO_ADDRESS_CITY,
+                                                  BILL_TO_ADDRESS_STATE, BILL_TO_ADDRESS_ZIP_CODE,
+                                                  BILL_TO_ADDRESS_WORK_PHONE, BILL_TO_ADDRESS_HOME_PHONE,
+                                                  BILL_TO_ADDRESS_CELL_PHONE, BILL_TO_ADDRESS_FAX_PHONE,
+                                                  BILL_TO_ADDRESS_EMAIL, BILL_TO_ADDRESS_COUNTRY,
                                                   
                                                   ORGANIZATION_NAME, REPORT_TO_NAME, BILL_TO_NAME,
                                                   ITEM_INVENTORY_ITEM_NAME, ITEM_INVENTORY_ITEM_STORE_ID));
@@ -177,6 +206,10 @@ public class OrderMeta implements Meta, MetaMap {
         return SHIP_FROM_ID;
     }
     
+    public static String getOrganizationAddressId() {
+        return ORGANIZATION_ADDRESS_ID;
+    }
+    
     public static String getOrganizationAddressMultipleUnit() {
         return ORGANIZATION_ADDRESS_MULTIPLE_UNIT;
     }
@@ -195,6 +228,30 @@ public class OrderMeta implements Meta, MetaMap {
 
     public static String getOrganizationAddressZipCode() {
         return ORGANIZATION_ADDRESS_ZIP_CODE;
+    }
+    
+    public static String getOrganizationAddressWorkPhone() {
+        return ORGANIZATION_ADDRESS_WORK_PHONE;
+    }
+
+    public static String getOrganizationAddressHomePhone() {
+        return ORGANIZATION_ADDRESS_HOME_PHONE;
+    }
+
+    public static String getOrganizationAddressCellPhone() {
+        return ORGANIZATION_ADDRESS_CELL_PHONE;
+    }
+
+    public static String getOrganizationAddressFaxPhone() {
+        return ORGANIZATION_ADDRESS_FAX_PHONE;
+    }
+
+    public static String getOrganizationAddressEmail() {
+        return ORGANIZATION_ADDRESS_EMAIL;
+    }
+
+    public static String getOrganizationAddressCountry() {
+        return ORGANIZATION_ADDRESS_COUNTRY;
     }
 
     public static String getOrderItemId() {
@@ -261,6 +318,10 @@ public class OrderMeta implements Meta, MetaMap {
         return RCPT_UPC;
     }
     
+    public static String getReportToAddressId() {
+        return REPORT_TO_ADDRESS_ID;
+    }
+    
     public static String getReportToAddressMultipleUnit() {
         return REPORT_TO_ADDRESS_MULTIPLE_UNIT;
     }
@@ -279,6 +340,34 @@ public class OrderMeta implements Meta, MetaMap {
 
     public static String getReportToAddressZipCode() {
         return REPORT_TO_ADDRESS_ZIP_CODE;
+    }
+    
+    public static String getReportToAddressWorkPhone() {
+        return REPORT_TO_ADDRESS_WORK_PHONE;
+    }
+
+    public static String getReportToAddressHomePhone() {
+        return REPORT_TO_ADDRESS_HOME_PHONE;
+    }
+
+    public static String getReportToAddressCellPhone() {
+        return REPORT_TO_ADDRESS_CELL_PHONE;
+    }
+
+    public static String getReportToAddressFaxPhone() {
+        return REPORT_TO_ADDRESS_FAX_PHONE;
+    }
+
+    public static String getReportToAddressEmail() {
+        return REPORT_TO_ADDRESS_EMAIL;
+    }
+
+    public static String getReportToAddressCountry() {
+        return REPORT_TO_ADDRESS_COUNTRY;
+    }
+    
+    public static String getBillToAddressId() {
+        return BILL_TO_ADDRESS_ID;
     }
 
     public static String getBillToAddressMultipleUnit() {
@@ -299,6 +388,30 @@ public class OrderMeta implements Meta, MetaMap {
 
     public static String getBillToAddressZipCode() {
         return BILL_TO_ADDRESS_ZIP_CODE;
+    }
+    
+    public static String getBillToAddressWorkPhone() {
+        return BILL_TO_ADDRESS_WORK_PHONE;
+    }
+
+    public static String getBillToAddressHomePhone() {
+        return BILL_TO_ADDRESS_HOME_PHONE;
+    }
+
+    public static String getBillToAddressCellPhone() {
+        return BILL_TO_ADDRESS_CELL_PHONE;
+    }
+
+    public static String getBillToAddressFaxPhone() {
+        return BILL_TO_ADDRESS_FAX_PHONE;
+    }
+
+    public static String getBillToAddressEmail() {
+        return BILL_TO_ADDRESS_EMAIL;
+    }
+
+    public static String getBillToAddressCountry() {
+        return BILL_TO_ADDRESS_COUNTRY;
     }
     
     public static String getOrganizationName() {

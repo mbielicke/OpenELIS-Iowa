@@ -46,7 +46,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.dictionary.Dictionary"/>
     <inherits name="org.openelis.modules.environmentalSampleLogin.EnvironmentalSampleLogin"/>
     <inherits name="org.openelis.modules.favorites.Favorites"/>
-    <inherits name="org.openelis.modules.fillOrder.FillOrder"/>
+    <!-- <inherits name="org.openelis.modules.fillOrder.FillOrder"/> -->    
     <inherits name="org.openelis.modules.history.History"/>
     <inherits name="org.openelis.modules.instrument.Instrument"/>
     <inherits name="org.openelis.modules.inventoryAdjustment.InventoryAdjustment"/>
@@ -57,6 +57,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.newbornScreeningSampleLogin.NewbornScreeningSampleLogin"/>
     <inherits name="org.openelis.modules.note.Note"/>
     <inherits name="org.openelis.modules.order.Order"/>
+    <inherits name="org.openelis.modules.orderFill.OrderFill"/>
     <inherits name="org.openelis.modules.organization.Organization"/>
     <inherits name="org.openelis.modules.privateWellWaterSampleLogin.PrivateWellWaterSampleLogin"/>
     <inherits name="org.openelis.modules.project.Project"/>
