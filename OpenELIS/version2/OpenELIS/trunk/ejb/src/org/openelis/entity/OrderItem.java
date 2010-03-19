@@ -105,7 +105,7 @@ public class OrderItem implements Auditable, Cloneable {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "inventory_receipt_order_item", joinColumns = {@JoinColumn(name = "order_item_id")}, inverseJoinColumns = {@JoinColumn(name = "inventory_receipt_id")})
-    private Collection<InventoryReceipt> inventoryReceipts;
+    private Collection<InventoryReceipt> inventoryReceipt;
 
     @Transient
     private OrderItem                    original;
@@ -180,12 +180,12 @@ public class OrderItem implements Auditable, Cloneable {
         this.inventoryItem = inventoryItem;
     }
 
-    public Collection<InventoryReceipt> getInventoryReceipts() {
-        return inventoryReceipts;
+    public Collection<InventoryReceipt> getInventoryReceipt() {
+        return inventoryReceipt;
     }
 
-    public void setInventoryReceipts(Collection<InventoryReceipt> inventoryReceipts) {
-        this.inventoryReceipts = inventoryReceipts;
+    public void setInventoryReceipt(Collection<InventoryReceipt> inventoryReceipt) {
+        this.inventoryReceipt = inventoryReceipt;
     }
 
     public Collection<InventoryXUse> getInventoryXUse() {
