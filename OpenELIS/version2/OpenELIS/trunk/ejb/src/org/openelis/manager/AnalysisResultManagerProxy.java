@@ -35,6 +35,8 @@ import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestResultDO;
+import org.openelis.exception.ParseException;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.ResultLocal;
@@ -188,11 +190,93 @@ public class AnalysisResultManagerProxy {
 
     public void validate(AnalysisResultManager man, AnalysisViewDO anDO, ValidationErrorsList errorsList)
                                                                                     throws Exception {
+        ArrayList<ResultViewDO> results;
+        ResultViewDO result;
+        TestResultDO testResultDO;
+        Integer testResultId;
 
+        // go through the results and put a form error if one is found to be
+        // invalid
+        try {
+            for (int i = 0; i < man.rowCount(); i++ ) {
+                results = man.getRowAt(i);
+
+                for (int j = 0; j < results.size(); j++ ) {
+                    result = results.get(j);
+
+                    if (result.getValue() != null && !"".equals(result.getValue())) {
+                        testResultId = man.validateResultValue(result.getResultGroup(),
+                                                               anDO.getUnitOfMeasureId(),
+                                                               result.getValue());
+                        testResultDO = man.getTestResultList().get(testResultId);
+
+                        result.setTypeId(testResultDO.getTypeId());
+                        result.setTestResultId(testResultDO.getId());
+                    }
+                }
+            }
+
+        } catch (ParseException e) {
+            errorsList.add(new FormErrorException("oneOrMoreResultValuesInvalid",
+                                                  anDO.getTestName(), anDO.getMethodName()));
+        }
     }
     
     public void validateForComplete(AnalysisResultManager man, AnalysisViewDO anDO, ValidationErrorsList errorsList) throws Exception {
-        
+        ArrayList<ResultViewDO> results;
+        ResultViewDO result;
+        TestResultDO testResultDO;
+        Integer testResultId;
+        Integer resultRequiredId;
+        boolean requiredEx, invalidEx;
+        int i, j;
+
+        resultRequiredId = getIdFromSystemName("test_analyte_req");
+        i = 0;
+        requiredEx = false;
+        invalidEx = false;
+        // go through the results look for empty required and invalid results
+        while (i < man.rowCount() && ( !requiredEx || !invalidEx)) {
+            results = man.getRowAt(i);
+
+            j = 0;
+            while (j < results.size() && ( !requiredEx || !invalidEx)) {
+                result = results.get(j);
+
+                // if required if needs to have a value
+                if ( !requiredEx && resultRequiredId.equals(result.getTypeId()) &&
+                    (result.getValue() == null || "".equals(result.getValue())))
+                    requiredEx = true;
+
+                // make sure the result is valid if its filled out
+                if ( !invalidEx) {
+                    try {
+                        if (result.getValue() != null && !"".equals(result.getValue())) {
+                            testResultId = man.validateResultValue(result.getResultGroup(),
+                                                                   anDO.getUnitOfMeasureId(),
+                                                                   result.getValue());
+                            testResultDO = man.getTestResultList().get(testResultId);
+
+                            result.setTypeId(testResultDO.getTypeId());
+                            result.setTestResultId(testResultDO.getId());
+                        }
+                    } catch (ParseException e) {
+                        invalidEx = true;
+                    }
+                }
+                j++ ;
+            }
+
+            i++ ;
+        }
+
+        if (requiredEx)
+            errorsList.add(new FormErrorException("completeStatusRequiredResultsException",
+                                                  anDO.getTestName(), anDO.getMethodName()));
+
+        if (invalidEx)
+            errorsList.add(new FormErrorException("completeStatusInvalidResultsException",
+                                                  anDO.getTestName(), anDO.getMethodName()));
     }
     
     public Integer getIdFromSystemName(String systemName) throws Exception{

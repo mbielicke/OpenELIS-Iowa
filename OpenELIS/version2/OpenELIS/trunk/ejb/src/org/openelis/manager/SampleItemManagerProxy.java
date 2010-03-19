@@ -31,6 +31,7 @@ import javax.naming.InitialContext;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.SampleItemLocal;
 import org.openelis.manager.SampleItemManager.SampleItemListItem;
@@ -115,7 +116,26 @@ public class SampleItemManagerProxy {
     }
     
     public void validate(SampleItemManager man, ValidationErrorsList errorsList) throws Exception {
+        String sequenceNum;
+        SampleItemListItem item;
+        //you have to have at least 1 sample item
+        if(man.count() == 0)
+            errorsList.add(new FormErrorException("minOneSampleItemException"));
         
+        for(int i=0; i<man.count(); i++){
+            sequenceNum = man.getSampleItemAt(i).getItemSequence().toString();
+            //validate the sample item
+            if(man.getSampleItemAt(i).getTypeOfSampleId() == null)
+                errorsList.add(new FormErrorException("sampleItemTypeMissing", sequenceNum));
+            
+            item = man.getItemAt(i);
+            //validate the children
+            if(item.storage != null)
+                man.getStorageAt(i).validate(errorsList);
+            
+            if(item.analysis != null)
+                man.getAnalysisAt(i).validate(sequenceNum, man.getSampleItemAt(i).getTypeOfSampleId(), errorsList);
+        }
     }
     
     private SampleItemLocal local(){

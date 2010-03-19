@@ -29,9 +29,14 @@ import java.util.ArrayList;
 
 import javax.naming.InitialContext;
 
+import org.openelis.domain.SampleOrganizationDO;
 import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.gwt.common.FieldErrorWarning;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.local.SampleOrganizationLocal;
+import org.openelis.meta.SampleMeta;
 
 public class SampleOrganizationManagerProxy {
     public SampleOrganizationManager fetchBySampleId(Integer sampleId) throws Exception {
@@ -90,13 +95,50 @@ public class SampleOrganizationManagerProxy {
     }
     
     public void validate(SampleOrganizationManager man, ValidationErrorsList errorsList) throws Exception {
+        int numBillTo, numReportTo;
+        Integer orgBillToId, orgReportToId;
         
+        numBillTo = 0;
+        numReportTo = 0;
+        orgBillToId = dictionaryLocal().fetchBySystemName("org_bill_to").getId();
+        orgReportToId = dictionaryLocal().fetchBySystemName("org_report_to").getId();
+        
+        for(int i=0; i<man.count(); i++){
+            SampleOrganizationDO orgDO = man.getOrganizationAt(i);
+            if(orgBillToId.equals(orgDO.getTypeId()))
+                numBillTo++;
+            
+            if(orgReportToId.equals(orgDO.getTypeId()))
+                numReportTo++;
+        }
+        
+        if(numBillTo > 1)
+            errorsList.add(new FormErrorException("multipleBillToException"));
+        
+        if(numReportTo > 1)
+            errorsList.add(new FormErrorException("multipleReportToException"));
+        
+        if(numReportTo == 0)
+            errorsList.add(new FieldErrorWarning("reportToMissingWarning", SampleMeta.getOrgName()));
+            
+        if(numBillTo == 0)
+            errorsList.add(new FieldErrorWarning("billToMissingWarning", SampleMeta.getBillTo()));
     }
     
     private SampleOrganizationLocal local(){
         try{
             InitialContext ctx = new InitialContext();
             return (SampleOrganizationLocal)ctx.lookup("openelis/SampleOrganizationBean/local");
+        }catch(Exception e){
+             System.out.println(e.getMessage());
+             return null;
+        }
+    }
+    
+    private static DictionaryLocal dictionaryLocal(){
+        try{
+            InitialContext ctx = new InitialContext();
+            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
         }catch(Exception e){
              System.out.println(e.getMessage());
              return null;
