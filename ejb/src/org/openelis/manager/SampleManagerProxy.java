@@ -36,13 +36,17 @@ import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FieldErrorWarning;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalysisLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.SampleItemLocal;
 import org.openelis.local.SampleLocal;
+import org.openelis.local.SampleManagerLocal;
 import org.openelis.local.SystemVariableLocal;
+import org.openelis.meta.SampleMeta;
 
 public class SampleManagerProxy {
     public SampleManager fetchById(Integer sampleId) throws Exception {
@@ -321,7 +325,48 @@ public class SampleManagerProxy {
     }
 
     public void validate(SampleManager man, ValidationErrorsList errorsList) throws Exception {
-
+      //revalidate accession number
+        validateAccessionNumber(man.getSample(), errorsList);
+        
+        //sample validate code
+        SampleDO sampleDO = man.getSample();
+        
+        //validate the dates
+        //recieved date required
+        if(sampleDO.getReceivedDate() == null || sampleDO.getReceivedDate().getDate() == null)
+            errorsList.add(new FieldErrorWarning("fieldRequiredException", SampleMeta.getReceivedDate()));
+        else if(sampleDO.getEnteredDate() != null && sampleDO.getReceivedDate().before(sampleDO.getEnteredDate().add(-30)))
+            //recieved cant be more than 30 days before entered
+            errorsList.add(new FieldErrorWarning("receivedTooOldWarning", SampleMeta.getReceivedDate()));
+            
+       if(sampleDO.getEnteredDate() != null && sampleDO.getCollectionDate() != null){
+           if(sampleDO.getCollectionDate().before(sampleDO.getEnteredDate().add(-364)))
+               errorsList.add(new FieldErrorException("collectedTooOldException", SampleMeta.getCollectionDate()));
+           else if(sampleDO.getCollectionDate().before(sampleDO.getEnteredDate().add(-30)))
+               errorsList.add(new FieldErrorWarning("collectedTooOldWarning", SampleMeta.getCollectionDate()));
+       }
+        
+       if(sampleDO.getCollectionDate() == null)
+           errorsList.add(new FieldErrorWarning("collectedDateMissingWarning", SampleMeta.getCollectionDate()));
+       else if(sampleDO.getReceivedDate() != null){
+            if(sampleDO.getCollectionDate().compareTo(sampleDO.getReceivedDate()) == 1)
+                errorsList.add(new FieldErrorException("collectedDateInvalidError", SampleMeta.getReceivedDate()));
+       }
+        
+       if(man.sampleItems != null)
+           man.getSampleItems().validate(errorsList);
+       
+       if(man.organizations != null)
+           man.getOrganizations().validate(errorsList);
+       
+       if(man.projects != null)
+           man.getProjects().validate(errorsList);
+       
+       if(man.qaEvents != null)
+           man.getQaEvents().validate(errorsList);
+       
+       if(man.auxData != null)
+           man.getAuxData().validate(errorsList);
     }
 
     private SampleLocal sampleLocal() {
@@ -333,7 +378,29 @@ public class SampleManagerProxy {
             return null;
         }
     }
+    
+    private void validateAccessionNumber(SampleDO sampleDO, ValidationErrorsList errorsList) throws Exception {
+        try{
+            sampleManagerLocal().validateAccessionNumber(sampleDO);
+    
+        }catch(ValidationErrorsList e){
+            ArrayList<Exception> errors = e.getErrorList();
+            
+            for(int i=0; i<errors.size(); i++)
+                errorsList.add(errors.get(i));
+        }
+    }
 
+    private SampleManagerLocal sampleManagerLocal() {
+        try {
+            InitialContext ctx = new InitialContext();
+            return (SampleManagerLocal)ctx.lookup("openelis/SampleManagerBean/local");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+    
     private SampleItemLocal sampleItemLocal() {
         try {
             InitialContext ctx = new InitialContext();

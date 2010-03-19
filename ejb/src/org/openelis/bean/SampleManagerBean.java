@@ -47,6 +47,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.local.LockLocal;
 import org.openelis.local.SampleLocal;
+import org.openelis.local.SampleManagerLocal;
 import org.openelis.local.SystemVariableLocal;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
@@ -61,7 +62,7 @@ import org.openelis.utils.SecurityInterceptor;
 
 @SecurityDomain("openelis")
 @RolesAllowed("sample-select")
-public class SampleManagerBean  implements SampleManagerRemote {
+public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLocal {
 
     @PersistenceContext(name = "openelis")
     

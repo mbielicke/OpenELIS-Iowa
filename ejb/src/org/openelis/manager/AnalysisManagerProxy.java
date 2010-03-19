@@ -35,6 +35,8 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.SecurityUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalysisLocal;
@@ -257,11 +259,49 @@ public class AnalysisManagerProxy {
     }
     
     public void validate(AnalysisManager man, ValidationErrorsList errorsList) throws Exception {
-        
+        validate(man, null, null, errorsList);
     }
 
     public void validate(AnalysisManager man, String sampleItemSequence, Integer sampleTypeId, ValidationErrorsList errorsList) throws Exception {
+        AnalysisListItem item;
+        Integer cancelledStatusId;
+        AnalysisViewDO analysisDO;
+        TestManager testMan;
         
+        cancelledStatusId = dictionaryLocal().fetchBySystemName("analysis_cancelled").getId();
+        
+        if(man.count() == 0)
+            errorsList.add(new FormErrorWarning("minOneAnalysisException", sampleItemSequence));
+        
+        for(int i=0; i<man.count(); i++){
+            analysisDO = man.getAnalysisAt(i);
+            testMan = man.getTestAt(i);
+            
+            if(analysisDO.getTestId() == null)
+                errorsList.add(new FormErrorException("analysisTestIdMissing", sampleItemSequence));
+            
+            if(analysisDO.getTestId() != null && analysisDO.getSectionId() == null)
+                errorsList.add(new FormErrorException("analysisSectionIdMissing", analysisDO.getTestName(), analysisDO.getMethodName()));
+            
+            //ignore the sample type check if analysis is cancelled.  This is the only
+            //way they can fix this error in some cases.
+            if(analysisDO.getTestId() != null && !cancelledStatusId.equals(analysisDO.getStatusId()) && 
+                            !testMan.getSampleTypes().hasType(sampleTypeId))
+                errorsList.add(new FormErrorWarning("sampleTypeInvalid", analysisDO.getTestName(), analysisDO.getMethodName()));
+            
+            item = man.getItemAt(i);
+            //validate the children
+            
+            //we want to always run thorugh validate so it loads the data
+            //if the user didnt click on the tab
+            man.getAnalysisResultAt(i).validate(analysisDO, errorsList);
+            
+            if(item.qaEvents != null)
+                man.getQAEventAt(i).validate(errorsList);
+            
+            if(item.storages != null)
+                man.getStorageAt(i).validate(errorsList);
+        }
     }
     
     public SecurityUtil getSecurityUtil() {
