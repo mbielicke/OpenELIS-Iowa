@@ -68,7 +68,7 @@ public class PrivateWellTab extends Screen {
                     locationAddrMultipleUnit, locationAddrStreetAddress, locationAddrCity,
                     locationAddrZipCode, wellOwner, wellCollector;
     private TextBox<Integer>          wellOrganizationId, wellWellNumber;
-    private AutoComplete<Integer>     orgName;
+    private AutoComplete<String>      orgName;
     private Dropdown<String>          addressState, locationAddrState;
     private AutoComplete<Integer>     projectName;
     private AppButton                 projectLookup;
@@ -86,25 +86,27 @@ public class PrivateWellTab extends Screen {
         setDefinition(def);
         setWindow(window);
 
-        orgService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
-        projectService = new ScreenService("controller?service=org.openelis.modules.project.server.ProjectService");
+        orgService = new ScreenService(
+                                       "controller?service=org.openelis.modules.organization.server.OrganizationService");
+        projectService = new ScreenService(
+                                           "controller?service=org.openelis.modules.project.server.ProjectService");
 
         initialize();
         initializeDropdowns();
     }
 
     public void initialize() {
-        orgName = (AutoComplete<Integer>)def.getWidget(SampleMeta.getOrgName());
-        addScreenHandler(orgName, new ScreenEventHandler<Integer>() {
+        orgName = (AutoComplete<String>)def.getWidget(SampleMeta.getOrgName());
+        addScreenHandler(orgName, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 if (getWellManager().getPrivateWell().getOrganizationId() == null)
                     orgName.setSelection(null, getWellManager().getPrivateWell().getReportToName());
                 else
-                    orgName.setSelection(getWellManager().getPrivateWell().getOrganizationId(),
+                    orgName.setSelection(getWellManager().getPrivateWell().getOrgName(),
                                          getWellManager().getPrivateWell().getOrgName());
             }
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {
+            public void onValueChange(ValueChangeEvent<String> event) {
                 OrganizationDO orgDO;
                 SamplePrivateWellViewDO wellDO;
                 boolean enableAddressValues = false;
@@ -122,7 +124,7 @@ public class PrivateWellTab extends Screen {
                     addressFaxPhone.setValue(orgDO.getAddress().getFaxPhone());
                     enableAddressValues = false;
 
-                    wellDO.setOrganizationId(event.getValue());
+                    wellDO.setOrganizationId(orgDO.getId());
                     wellDO.setOrgName(orgDO.getName());
                     wellDO.setReportToName(null);
                     wellDO.setReportToAddressId(null);
@@ -140,7 +142,7 @@ public class PrivateWellTab extends Screen {
 
                     wellDO.setReportToName((String)orgName.getSelection().getCells().get(0));
                     wellDO.setReportToAddressId(null);
-                    wellDO.setOrganizationId(event.getValue());
+                    wellDO.setOrganizationId(null);
                     wellDO.setOrgName(null);
                     getWellManager().setReportToAddress(new AddressDO());
                 }
@@ -204,7 +206,7 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(wellOrganizationId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 wellOrganizationId.setValue(Util.toString(getWellManager().getPrivateWell()
-                                                                      .getOrganizationId()));
+                                                                          .getOrganizationId()));
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -491,7 +493,8 @@ public class PrivateWellTab extends Screen {
         wellWellNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getWellWellNumber());
         addScreenHandler(wellWellNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                wellWellNumber.setValue(Util.toString(getWellManager().getPrivateWell().getWellNumber()));
+                wellWellNumber.setValue(Util.toString(getWellManager().getPrivateWell()
+                                                                      .getWellNumber()));
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
