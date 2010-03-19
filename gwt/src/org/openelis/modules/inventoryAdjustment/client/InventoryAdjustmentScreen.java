@@ -25,8 +25,40 @@
 */
 package org.openelis.modules.inventoryAdjustment.client;
 
+import org.openelis.gwt.common.SecurityException;
+import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDefInt;
+import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.main.client.openelis.OpenELIS;
 
-public class InventoryAdjustmentScreen {
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+
+
+public class InventoryAdjustmentScreen extends Screen {
+    
+    private SecurityModule  security;
+    
+    public InventoryAdjustmentScreen() throws Exception {
+        super((ScreenDefInt)GWT.create(InventoryAdjustmentDef.class));
+        service = new ScreenService("controller?service=org.openelis.modules.inventoryAdjustment.server.InventoryAdjustmentService");        
+
+        security = OpenELIS.security.getModule("buildkits");
+        if (security == null)
+            throw new SecurityException("screenPermException", "Build Kits Screen");
+
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                postConstructor();
+            }
+        });
+    }
+    
+    private void postConstructor() {
+        
+    }
 }
 /*    
 

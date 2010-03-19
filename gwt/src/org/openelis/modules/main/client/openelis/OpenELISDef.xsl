@@ -160,12 +160,16 @@ UIRF Software License are applicable instead of those above.
                 <menuItem key="shipping" description="{resource:getString($constants,'shippingDescription')}" enable="true" icon="shippingIcon" label="{resource:getString($constants,'shipping')}" />
                 <code>}</code>
                 <html>&lt;hr/&gt;</html>
-                <menuItem key="buildKits" description="{resource:getString($constants,'buildKitsDescription')}" enable="false" icon="buildKitsIcon" label="{resource:getString($constants,'buildKits')}" />
+                <code>if(OpenELIS.security.hasModule("buildkits","SELECT")){</code>
+                <menuItem key="buildKits" description="{resource:getString($constants,'buildKitsDescription')}" enable="true" icon="buildKitsIcon" label="{resource:getString($constants,'buildKits')}" />
+                <code>}</code>
                 <menuItem key="inventoryTransfer" description="{resource:getString($constants,'inventoryTransferDescription')}" enable="false" icon="inventoryTransferIcon" label="{resource:getString($constants,'inventoryTransfer')}" />
                 <html>&lt;hr/&gt;</html>
                 <menuItem key="inventoryReceipt" description="{resource:getString($constants,'inventoryReceiptDescription')}" enable="false" icon="inventoryReceiptIcon" label="{resource:getString($constants,'inventoryReceipt')}" />
-                <menuItem key="inventoryAdjustment" description="{resource:getString($constants,'inventoryAdjustmentDescription')}" enable="false" icon="inventoryAdjustmentIcon" label="{resource:getString($constants,'inventoryAdjustment')}" />
+                <code>if(OpenELIS.security.hasModule("inventoryadjustment","SELECT")){</code>
+                <menuItem key="inventoryAdjustment" description="{resource:getString($constants,'inventoryAdjustmentDescription')}" enable="true" icon="inventoryAdjustmentIcon" label="{resource:getString($constants,'inventoryAdjustment')}" />
                 <code>if(OpenELIS.security.hasModule("inventoryitem","SELECT")){</code>
+                <code>}</code>
                 <menuItem key="inventoryItem" description="{resource:getString($constants,'inventoryItemDescription')}" enable="true" icon="inventoryItemIcon" label="{resource:getString($constants,'inventoryItem')}" />
                 <code>}</code>
               </menuPanel>

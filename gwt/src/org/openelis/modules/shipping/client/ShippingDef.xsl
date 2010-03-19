@@ -208,7 +208,7 @@ UIRF Software License are applicable instead of those above.
                       </col>
                     </table>
                   </widget>
-                  <widget halign="center" style="WhiteContentPanel">
+                  <widget style="TableButtonFooter">
                     <appButton key="removeRowButton" style="Button" action="removeRow">
                       <HorizontalPanel>
                         <AbsolutePanel style="RemoveRowButtonImage" />

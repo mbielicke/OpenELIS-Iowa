@@ -25,8 +25,39 @@
 */
 package org.openelis.modules.buildKits.client;
 
+import org.openelis.gwt.common.SecurityException;
+import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDefInt;
+import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.main.client.openelis.OpenELIS;
 
-public class BuildKitsScreen {
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+
+public class BuildKitsScreen extends Screen {
+    
+    private SecurityModule  security;
+    
+    public BuildKitsScreen() throws Exception {
+        super((ScreenDefInt)GWT.create(BuildKitsDef.class));
+        service = new ScreenService("controller?service=org.openelis.modules.buildKits.server.BuildKitsService");        
+
+        security = OpenELIS.security.getModule("buildkits");
+        if (security == null)
+            throw new SecurityException("screenPermException", "Build Kits Screen");
+
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                postConstructor();
+            }
+        });
+    }
+    
+    private void postConstructor() {
+        
+    }
 }
 /*
 

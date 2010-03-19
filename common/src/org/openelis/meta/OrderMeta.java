@@ -70,16 +70,16 @@ public class OrderMeta implements Meta, MetaMap {
 	                               ITEM_CATALOG_NUMBER = "_orderItem.catalogNumber",
 	                               ITEM_UNIT_COST = "_orderItem.unitCost",
 	                               
-	                               RCPT_ID = "_inventoryRecept.id",
-	                               RCPT_INVENTORY_ITEM_ID = "_inventoryRecept.inventoryItemId",
-	                               RCPT_ORDER_ITEM_ID = "_inventoryRecept.orderItemId",
-	                               RCPT_ORGANIZATION_ID = "_inventoryRecept.organizationId",
-	                               RCPT_RECEIVED_DATE = "_inventoryRecept.receivedDate",
-	                               RCPT_QUANTITY_RECEIVED = "_inventoryRecept.quantityReceived",
-	                               RCPT_UNIT_COST = "_inventoryRecept.unitCost",
-	                               RCPT_QC_REFERENCE = "_inventoryRecept.qcReference",
-	                               RCPT_EXTERNAL_REFERENCE = "_inventoryRecept.externalReference",
-	                               RCPT_UPC = "_inventoryRecept.upc",	                              
+	                               RCPT_ID = "_inventoryReceipt.id",
+	                               RCPT_INVENTORY_ITEM_ID = "_inventoryReceipt.inventoryItemId",
+	                               RCPT_ORDER_ITEM_ID = "_inventoryReceipt.orderItemId",
+	                               RCPT_ORGANIZATION_ID = "_inventoryReceipt.organizationId",
+	                               RCPT_RECEIVED_DATE = "_inventoryReceipt.receivedDate",
+	                               RCPT_QUANTITY_RECEIVED = "_inventoryReceipt.quantityReceived",
+	                               RCPT_UNIT_COST = "_inventoryReceipt.unitCost",
+	                               RCPT_QC_REFERENCE = "_inventoryReceipt.qcReference",
+	                               RCPT_EXTERNAL_REFERENCE = "_inventoryReceipt.externalReference",
+	                               RCPT_UPC = "_inventoryReceipt.upc",	                              
 	                               
 	                               REPORT_TO_ADDRESS_ID = "_reportTo.address.id",
 	                               REPORT_TO_ADDRESS_MULTIPLE_UNIT = "_reportTo.address.multipleUnit",
@@ -439,13 +439,21 @@ public class OrderMeta implements Meta, MetaMap {
     }
 
     public String buildFrom(String where) {
-        String from;
+        String from, oiFrom, irFrom;
+        
+        oiFrom = ",IN (_order.orderItem) _orderItem ";
+        irFrom = ",IN (_orderItem.inventoryReceipt) _inventoryReceipt ";
         
         from = "Order _order ";
         if (where.indexOf("orderItem.") > -1)
-            from += ",IN (_order.orderItem) _orderItem ";
+            from += oiFrom;
         if (where.indexOf("organization.") > -1)
-            from += ",IN (_order.organization) _organization ";
+            from += ",IN (_order.organization) _organization "; 
+        if (where.indexOf("inventoryReceipt.") > -1)
+            if (from.indexOf(oiFrom) < 0)
+                from += oiFrom + irFrom;
+            else
+                from += irFrom;
         if (where.indexOf("reportTo.") > -1)
             from += ", (_order.reportTo) _reportTo ";
         if (where.indexOf("billTo.") > -1)

@@ -77,7 +77,7 @@ UIRF Software License are applicable instead of those above.
 <!--end button panel-->
         <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
           <widget valign="top">
-            <table key="fillItemsTable" width="auto" maxRows="10" showScroll="ALWAYS">
+            <table key="fillItemsTable" width="auto" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides">
               <col key="process" width="20" header="">
                 <check />
               </col>

@@ -1,33 +1,33 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.entity;
 
 /**
-  * InventoryReceipt Entity POJO for database 
-  */
+ * InventoryReceipt Entity POJO for database
+ */
 
 import java.util.Collection;
 import java.util.Date;
@@ -41,8 +41,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -50,9 +48,11 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+
 /*
 @NamedQueries( {
     @NamedQuery(name = "InventoryReceipt.OrderItemListWithTransByOrderNum", query = "select distinct oi.id from InventoryTransaction tr LEFT JOIN tr.toOrder oi where " + 
@@ -81,191 +81,191 @@ import org.openelis.utils.Auditable;
                             " where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and ir.upc like :upc and i.isActive = 'Y' " +
                             " order by i.name"),
     @NamedQuery(name = "InventoryReceipt.LocationIdsByReceiptId", query = "select distinct il.id  from InventoryXPut tr LEFT JOIN tr.inventoryLocation il where tr.inventoryReceiptId = :id ")})
-*/                    
+*/  
+
 @Entity
-@Table(name="inventory_receipt")
-@EntityListeners({AuditUtil.class})
+@Table(name = "inventory_receipt")
+@EntityListeners( {AuditUtil.class})
 public class InventoryReceipt implements Auditable, Cloneable {
-  
-  @Id
-  @GeneratedValue
-  @Column(name="id")
-  private Integer id;             
 
-  @Column(name="inventory_item_id")
-  private Integer inventoryItemId;
-  
-  @Column(name="order_item_id")
-  private Integer orderItemId;      
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private Integer                   id;
 
-  @Column(name="organization_id")
-  private Integer organizationId;             
+    @Column(name = "inventory_item_id")
+    private Integer                   inventoryItemId;
 
-  @Column(name="received_date")
-  private Date receivedDate;             
+    @Column(name = "order_item_id")
+    private Integer                   orderItemId;
 
-  @Column(name="quantity_received")
-  private Integer quantityReceived;             
+    @Column(name = "organization_id")
+    private Integer                   organizationId;
 
-  @Column(name="unit_cost")
-  private Double unitCost;             
+    @Column(name = "received_date")
+    private Date                      receivedDate;
 
-  @Column(name="qc_reference")
-  private String qcReference;             
+    @Column(name = "quantity_received")
+    private Integer                   quantityReceived;
 
-  @Column(name="external_reference")
-  private String externalReference;             
+    @Column(name = "unit_cost")
+    private Double                    unitCost;
 
-  @Column(name="upc")
-  private String upc;  
-  
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "inventory_item_id", insertable = false, updatable = false)
-  private InventoryItem inventoryItem;
-  
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "organization_id", insertable = false, updatable = false)
-  private Organization organization;
-  
-//  @OneToOne(fetch = FetchType.LAZY)
-//  @JoinColumn(name = "order_item_id", insertable = false, updatable = false)
-//  private OrderItem orderItem;
-  
-  @OneToMany(fetch = FetchType.LAZY)
-  @JoinColumn(name = "inventory_receipt_id", insertable = false, updatable = false)
-  private Collection<InventoryXPut> transReceiptLocations;
-  
-  @ManyToMany(fetch  = FetchType.LAZY)
-  @JoinTable(name="inventory_receipt_order_item",
-             joinColumns={@JoinColumn(name="inventory_receipt_id")},
-             inverseJoinColumns={@JoinColumn(name="order_item_id")})
-  private Collection<OrderItem> orderItems; 
+    @Column(name = "qc_reference")
+    private String                    qcReference;
 
-  @Transient
-  private InventoryReceipt original;
+    @Column(name = "external_reference")
+    private String                    externalReference;
 
-  
-  public Integer getId() {
-    return id;
-  }
-  protected void setId(Integer id) {
-    if((id == null && this.id != null) || 
-       (id != null && !id.equals(this.id)))
-      this.id = id;
-  }
+    @Column(name = "upc")
+    private String                    upc;
 
-  public Integer getInventoryItemId() {
-    return inventoryItemId;
-  }
-  public void setInventoryItemId(Integer inventoryItemId) {
-    if((inventoryItemId == null && this.inventoryItemId != null) || 
-       (inventoryItemId != null && !inventoryItemId.equals(this.inventoryItemId)))
-      this.inventoryItemId = inventoryItemId;
-  }
-  
-  public Integer getOrderItemId() {
-      return orderItemId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "inventory_item_id", insertable = false, updatable = false)
+    private InventoryItem             inventoryItem;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id", insertable = false, updatable = false)
+    private Organization              organization;
+
+    // @OneToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "order_item_id", insertable = false, updatable = false)
+    // private OrderItem orderItem;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "inventory_receipt_id", insertable = false, updatable = false)
+    private Collection<InventoryXPut> transReceiptLocations;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "inventory_receipt_order_item", joinColumns = {@JoinColumn(name = "inventory_receipt_id")}, inverseJoinColumns = {@JoinColumn(name = "order_item_id")})
+    private Collection<OrderItem>     orderItems;
+
+    @Transient
+    private InventoryReceipt          original;
+
+    public Integer getId() {
+        return id;
     }
+
+    protected void setId(Integer id) {
+        if (DataBaseUtil.isDifferent(id, this.id))
+            this.id = id;
+    }
+
+    public Integer getInventoryItemId() {
+        return inventoryItemId;
+    }
+
+    public void setInventoryItemId(Integer inventoryItemId) {
+        if (DataBaseUtil.isDifferent(inventoryItemId, this.inventoryItemId))
+            this.inventoryItemId = inventoryItemId;
+    }
+
+    public Integer getOrderItemId() {
+        return orderItemId;
+    }
+
     public void setOrderItemId(Integer orderItemId) {
-      if((orderItemId == null && this.orderItemId != null) || 
-         (orderItemId != null && !orderItemId.equals(this.orderItemId)))
-        this.orderItemId = orderItemId;
+        if (DataBaseUtil.isDifferent(orderItemId, this.orderItemId))
+            this.orderItemId = orderItemId;
     }
 
-  public Integer getOrganizationId() {
-    return organizationId;
-  }
-  public void setOrganizationId(Integer organizationId) {
-    if((organizationId == null && this.organizationId != null) || 
-       (organizationId != null && !organizationId.equals(this.organizationId)))
-      this.organizationId = organizationId;
-  }
-
-  public Datetime getReceivedDate() {
-    if(receivedDate == null)
-      return null;
-    return new Datetime(Datetime.YEAR,Datetime.DAY,receivedDate);
-  }
-  public void setReceivedDate (Datetime receivedDate){
-    if((receivedDate == null && this.receivedDate != null) || (receivedDate != null && this.receivedDate == null) || 
-       (receivedDate != null && !receivedDate.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.receivedDate))))
-      this.receivedDate = receivedDate.getDate();
-  }
-
-  public Integer getQuantityReceived() {
-    return quantityReceived;
-  }
-  public void setQuantityReceived(Integer quantityReceived) {
-    if((quantityReceived == null && this.quantityReceived != null) || 
-       (quantityReceived != null && !quantityReceived.equals(this.quantityReceived)))
-      this.quantityReceived = quantityReceived;
-  }
-
-  public Double getUnitCost() {
-    return unitCost;
-  }
-  public void setUnitCost(Double unitCost) {
-    if((unitCost == null && this.unitCost != null) || 
-       (unitCost != null && !unitCost.equals(this.unitCost)))
-      this.unitCost = unitCost;
-  }
-
-  public String getQcReference() {
-    return qcReference;
-  }
-  public void setQcReference(String qcReference) {
-    if((qcReference == null && this.qcReference != null) || 
-       (qcReference != null && !qcReference.equals(this.qcReference)))
-      this.qcReference = qcReference;
-  }
-
-  public String getExternalReference() {
-    return externalReference;
-  }
-  public void setExternalReference(String externalReference) {
-    if((externalReference == null && this.externalReference != null) || 
-       (externalReference != null && !externalReference.equals(this.externalReference)))
-      this.externalReference = externalReference;
-  }
-
-  public String getUpc() {
-    return upc;
-  }
-  public void setUpc(String upc) {
-    if((upc == null && this.upc != null) || 
-       (upc != null && !upc.equals(this.upc)))
-      this.upc = upc;
-  }
-  
-  public InventoryItem getInventoryItem() {
-      return inventoryItem;
-  }
-  public void setInventoryItem(InventoryItem inventoryItem) {
-      this.inventoryItem = inventoryItem;
-  }
-  public Organization getOrganization() {
-      return organization;
-  }
-  public Collection<InventoryXPut> getTransReceiptLocations() {
-      return transReceiptLocations;
-  }
-  public Collection<OrderItem> getOrderItems() {
-      return orderItems;
-  }
-  public void setOrderItems(Collection<OrderItem> orderItems) {
-      this.orderItems = orderItems;
-  }
-
-  
-  public void setClone() {
-    try {
-        original = (InventoryReceipt)this.clone();
-    }catch(Exception e){
-        e.printStackTrace();
+    public Integer getOrganizationId() {
+        return organizationId;
     }
-  }
-  
-  public Audit getAudit() {
+
+    public void setOrganizationId(Integer organizationId) {
+        if (DataBaseUtil.isDifferent(organizationId, this.organizationId))
+            this.organizationId = organizationId;
+    }
+
+    public Datetime getReceivedDate() {
+        return DataBaseUtil.toYD(receivedDate);
+    }
+
+    public void setReceivedDate(Datetime receivedDate) {
+        if (DataBaseUtil.isDifferentYD(receivedDate, this.receivedDate))
+            this.receivedDate = DataBaseUtil.toDate(receivedDate);
+    }
+
+    public Integer getQuantityReceived() {
+        return quantityReceived;
+    }
+
+    public void setQuantityReceived(Integer quantityReceived) {
+        if (DataBaseUtil.isDifferent(quantityReceived, this.quantityReceived))
+            this.quantityReceived = quantityReceived;
+    }
+
+    public Double getUnitCost() {
+        return unitCost;
+    }
+
+    public void setUnitCost(Double unitCost) {
+        if (DataBaseUtil.isDifferent(unitCost, this.unitCost))
+            this.unitCost = unitCost;
+    }
+
+    public String getQcReference() {
+        return qcReference;
+    }
+
+    public void setQcReference(String qcReference) {
+        if (DataBaseUtil.isDifferent(qcReference, this.qcReference))
+            this.qcReference = qcReference;
+    }
+
+    public String getExternalReference() {
+        return externalReference;
+    }
+
+    public void setExternalReference(String externalReference) {
+        if (DataBaseUtil.isDifferent(externalReference, this.externalReference))
+            this.externalReference = externalReference;
+    }
+
+    public String getUpc() {
+        return upc;
+    }
+
+    public void setUpc(String upc) {
+        if (DataBaseUtil.isDifferent(upc, this.upc))
+            this.upc = upc;
+    }
+
+    public InventoryItem getInventoryItem() {
+        return inventoryItem;
+    }
+
+    public void setInventoryItem(InventoryItem inventoryItem) {
+        this.inventoryItem = inventoryItem;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public Collection<InventoryXPut> getTransReceiptLocations() {
+        return transReceiptLocations;
+    }
+
+    public Collection<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(Collection<OrderItem> orderItems) {
+        this.orderItems = orderItems;
+    }
+
+    public void setClone() {
+        try {
+            original = (InventoryReceipt)this.clone();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Audit getAudit() {
         Audit audit;
 
         audit = new Audit();
@@ -285,5 +285,5 @@ public class InventoryReceipt implements Auditable, Cloneable {
 
         return audit;
     }
-  
-}   
+
+}
