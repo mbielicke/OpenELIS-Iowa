@@ -92,11 +92,11 @@ public class OrderBean implements OrderRemote, OrderLocal {
                 list = organizationBean.fetchByIds(ids);
                 for (i = 0; i < list.size(); i++) {
                     organization = list.get(i);
-                    if (organization.getId().equals(data.getOrganizationId()))
+                    if (organization.getId().equals(data.getOrganizationId()) && data.getOrganization() == null)
                         data.setOrganization(organization);
-                    else if (organization.getId().equals(data.getReportToId()))
+                    else if (organization.getId().equals(data.getReportToId()) && data.getReportTo() == null)
                         data.setReportTo(organization);
-                    else if (organization.getId().equals(data.getBillToId()))
+                    else if (organization.getId().equals(data.getBillToId()) && data.getBillTo() == null)
                         data.setBillTo(organization);
                 }
             }
