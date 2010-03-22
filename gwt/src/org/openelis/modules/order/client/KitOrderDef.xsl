@@ -117,6 +117,25 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="language" />
                 </xsl:with-param>
               </xsl:call-template>
+              <xsl:call-template name="buttonPanelDivider" />
+              <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
+                <menuItem>
+                  <menuDisplay>
+                    <appButton style="ButtonPanelButton" action="option">
+                      <HorizontalPanel>
+                        <text>
+                          <xsl:value-of select='resource:getString($constants,"options")' />
+                        </text>
+                        <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
+                      </HorizontalPanel>
+                    </appButton>
+                  </menuDisplay>
+                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                    <menuItem key="orderHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'orderHistory')}" />
+                    <menuItem key="itemHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'orderItemHistory')}" />
+                  </menuPanel>
+                </menuItem>
+              </menuPanel>
             </HorizontalPanel>
           </AbsolutePanel>
 <!--end button panel-->
@@ -219,13 +238,17 @@ UIRF Software License are applicable instead of those above.
                 </widget>
               </row>
             </TablePanel>
+
 <!-- TAB PANEL -->
-            <TabPanel key="orderTabPanel" width="605" height="285">
+
+            <TabPanel key="tabPanel" width="605" height="285">
+
 <!-- TAB 1 (items) -->
+
               <tab key="itemTab" text="{resource:getString($constants,'items')}">
                 <VerticalPanel padding="0" spacing="0">
                   <table key="itemTable" width="auto" maxRows="10" showScroll="ALWAYS">
-                    <col key="{meta:getOrderItemQuantity()}" width="65" header="{resource:getString($constants,'quantity')}">
+                    <col key="{meta:getOrderItemQuantity()}" width="65" align="right" header="{resource:getString($constants,'quantity')}">
                       <textbox field="Integer" required="true" />
                     </col>
                     <col key="{meta:getOrderItemInventoryItemName()}" width="275" header="{resource:getString($constants,'inventoryItem')}">
@@ -263,48 +286,35 @@ UIRF Software License are applicable instead of those above.
                   </HorizontalPanel>
                 </VerticalPanel>
               </tab>
+
 <!-- TAB 2 (receipts) -->
-              <tab key="receiptsTab" text="{resource:getString($constants,'filled')}">
-                <TablePanel height="247" padding="0" spacing="0">
-                  <row>
-                    <widget>
-                      <table key="receiptsTable" width="auto" maxRows="10" showScroll="ALWAYS" title="">
-                        <col width="150" header="{resource:getString($constants,'inventoryItem')}">
-                          <label field="String" />
-                        </col>
-                        <col width="180" header="{resource:getString($constants,'location')}">
-                          <label field="String" />
-                        </col>
-                        <col width="65" header="{resource:getString($constants,'quantity')}">
-                          <label field="String" />
-                        </col>
-                        <col width="85" header="{resource:getString($constants,'lotNum')}">
-                          <label field="String" />
-                        </col>
-                        <col width="90" sort="true" header="{resource:getString($constants,'expDate')}">
-                          <label field="String" />
-                        </col>
-                      </table>
-                    </widget>
-                  </row>
-                </TablePanel>
-              </tab>
-<!-- TAB 3 (customer notes)-->
-              <tab key="customerNote" text="{resource:getString($constants,'customerNotes')}">
+
+              <tab key="fillTab" text="{resource:getString($constants,'filled')}">
                 <VerticalPanel padding="0" spacing="0">
-                  <notes key="notesPanel" width="604" height="247" />
-                  <appButton key="standardNoteButton" style="Button">
-                    <HorizontalPanel>
-                      <AbsolutePanel style="StandardNoteButtonImage" />
-                      <text>
-                        <xsl:value-of select="resource:getString($constants,'editNote')" />
-                      </text>
-                    </HorizontalPanel>
-                  </appButton>
+                  <table key="fillTable" width="auto" maxRows="10" showScroll="ALWAYS">
+                    <col key="" width="150" header="{resource:getString($constants,'inventoryItem')}">
+                      <label field="String" />
+                    </col>
+                    <col key="" width="180" header="{resource:getString($constants,'location')}">
+                      <label field="String" />
+                    </col>
+                    <col key="" width="65" align="right" header="{resource:getString($constants,'quantity')}">
+                      <label field="String" />
+                    </col>
+                    <col key="" width="85" header="{resource:getString($constants,'lotNum')}">
+                      <label field="String" />
+                    </col>
+                    <col key="" width="92" header="{resource:getString($constants,'expDate')}">
+                      <label field="String" />
+                    </col>
+                  </table>
                 </VerticalPanel>
               </tab>
+
+
 <!-- TAB 4 (order notes) -->
-              <tab key="orderShippingTab" text="{resource:getString($constants,'orderShippingNotes')}">
+
+              <tab key="noteTab" text="{resource:getString($constants,'orderShippingNotes')}">
                 <VerticalPanel padding="0" spacing="0">
                   <notes key="notesPanel" width="604" height="247" />
                   <appButton key="standardNoteButton" style="Button">
@@ -317,7 +327,25 @@ UIRF Software License are applicable instead of those above.
                   </appButton>
                 </VerticalPanel>
               </tab>
+
+<!-- TAB 3 (customer notes)-->
+
+              <tab key="customerNote" text="{resource:getString($constants,'customerNotes')}">
+                <VerticalPanel padding="0" spacing="0">
+                  <notes key="customerNotesPanel" width="604" height="247" />
+                  <appButton key="editNoteButton" style="Button">
+                    <HorizontalPanel>
+                      <AbsolutePanel style="StandardNoteButtonImage" />
+                      <text>
+                        <xsl:value-of select="resource:getString($constants,'editNote')" />
+                      </text>
+                    </HorizontalPanel>
+                  </appButton>
+                </VerticalPanel>
+              </tab>
+
 <!-- TAB 5 (report to/bill to)-->
+
               <tab key="reportToBillToTab" text="{resource:getString($constants,'reportToBillTo')}">
                 <HorizontalPanel height="247" padding="0" spacing="0">
                   <VerticalPanel>
