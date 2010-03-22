@@ -105,6 +105,8 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
             return (OrganizationDO) query.getSingleResult();
         } catch (NoResultException e) {
             throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
         }
     }
 
