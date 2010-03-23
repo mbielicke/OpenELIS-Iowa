@@ -85,17 +85,29 @@ public class ReportToBillToTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                OrganizationDO data;
+                OrganizationDO data;                             
                 
-                data = (OrganizationDO) reportToName.getSelection().data;
-                manager.getOrder().setReportToId(data.getId());
-                manager.getOrder().setReportTo(data);
-                
-                reportToAddressMultipleUnit.setValue(data.getAddress().getMultipleUnit());
-                reportToAddressStreetAddress.setValue(data.getAddress().getStreetAddress());
-                reportToAddressCity.setValue(data.getAddress().getCity());
-                reportToAddressState.setValue(data.getAddress().getState());
-                reportToAddressZipCode.setValue(data.getAddress().getZipCode());                
+                if(reportToName.getSelection() != null) {
+                    data = (OrganizationDO) reportToName.getSelection().data;
+                    
+                    manager.getOrder().setReportToId(data.getId());
+                    manager.getOrder().setReportTo(data);
+                    
+                    reportToAddressMultipleUnit.setValue(data.getAddress().getMultipleUnit());
+                    reportToAddressStreetAddress.setValue(data.getAddress().getStreetAddress());
+                    reportToAddressCity.setValue(data.getAddress().getCity());
+                    reportToAddressState.setValue(data.getAddress().getState());
+                    reportToAddressZipCode.setValue(data.getAddress().getZipCode());    
+                } else {
+                    manager.getOrder().setReportToId(null);
+                    manager.getOrder().setReportTo(null);
+                    
+                    reportToAddressMultipleUnit.setValue(null);
+                    reportToAddressStreetAddress.setValue(null);
+                    reportToAddressCity.setValue(null);
+                    reportToAddressState.setValue(null);
+                    reportToAddressZipCode.setValue(null);    
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -267,18 +279,29 @@ public class ReportToBillToTab extends Screen {
                     billToName.setSelection(null,"");
             }
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                OrganizationDO data;
+            public void onValueChange(ValueChangeEvent<Integer> event) {                                
+                OrganizationDO data;                             
                 
-                data = (OrganizationDO) billToName.getSelection().data;
-                manager.getOrder().setBillToId(data.getId());
-                manager.getOrder().setBillTo(data);
-                
-                billToAddressMultipleUnit.setValue(data.getAddress().getMultipleUnit());
-                billToAddressStreetAddress.setValue(data.getAddress().getStreetAddress());
-                billToAddressCity.setValue(data.getAddress().getCity());
-                billToAddressState.setValue(data.getAddress().getState());
-                billToAddressZipCode.setValue(data.getAddress().getZipCode());
+                if(billToName.getSelection() != null) {
+                    data = (OrganizationDO) billToName.getSelection().data;                    
+                    manager.getOrder().setBillToId(data.getId());
+                    manager.getOrder().setBillTo(data);
+                    
+                    billToAddressMultipleUnit.setValue(data.getAddress().getMultipleUnit());
+                    billToAddressStreetAddress.setValue(data.getAddress().getStreetAddress());
+                    billToAddressCity.setValue(data.getAddress().getCity());
+                    billToAddressState.setValue(data.getAddress().getState());
+                    billToAddressZipCode.setValue(data.getAddress().getZipCode());   
+                } else {
+                    manager.getOrder().setBillToId(null);
+                    manager.getOrder().setBillTo(null);
+                    
+                    billToAddressMultipleUnit.setValue(null);
+                    billToAddressStreetAddress.setValue(null);
+                    billToAddressCity.setValue(null);
+                    billToAddressState.setValue(null);
+                    billToAddressZipCode.setValue(null);
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {

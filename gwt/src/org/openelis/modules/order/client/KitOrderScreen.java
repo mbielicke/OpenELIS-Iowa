@@ -335,16 +335,28 @@ public class KitOrderScreen extends Screen {
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 OrganizationDO data;
-                
-                data = (OrganizationDO) organizationName.getSelection().data;
-                manager.getOrder().setOrganizationId(data.getId());
-                manager.getOrder().setOrganization(data);
-                
-                organizationAddressMultipleUnit.setValue(data.getAddress().getMultipleUnit());
-                organizationAddressStreetAddress.setValue(data.getAddress().getStreetAddress());
-                organizationAddressCity.setValue(data.getAddress().getCity());
-                organizationAddressState.setValue(data.getAddress().getState());
-                organizationAddressZipCode.setValue(data.getAddress().getZipCode());
+                                
+                if(organizationName.getSelection() != null) {
+                    data = (OrganizationDO) organizationName.getSelection().data;
+                    
+                    manager.getOrder().setOrganizationId(data.getId());
+                    manager.getOrder().setOrganization(data);
+                    
+                    organizationAddressMultipleUnit.setValue(data.getAddress().getMultipleUnit());
+                    organizationAddressStreetAddress.setValue(data.getAddress().getStreetAddress());
+                    organizationAddressCity.setValue(data.getAddress().getCity());
+                    organizationAddressState.setValue(data.getAddress().getState());
+                    organizationAddressZipCode.setValue(data.getAddress().getZipCode());
+                } else {
+                    manager.getOrder().setOrganizationId(null);
+                    manager.getOrder().setOrganization(null);
+                    
+                    organizationAddressMultipleUnit.setValue(null);
+                    organizationAddressStreetAddress.setValue(null);
+                    organizationAddressCity.setValue(null);
+                    organizationAddressState.setValue(null);
+                    organizationAddressZipCode.setValue(null);
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
