@@ -20,7 +20,6 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
@@ -34,8 +33,6 @@ import org.openelis.manager.OrderManager;
 import org.openelis.meta.OrderMeta;
 
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.user.client.Window;
 
 public class ItemTab extends Screen {
@@ -69,19 +66,26 @@ public class ItemTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                table.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                //table.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                table.enable(true);
                 table.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
         table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
-            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {                
+                if(state != State.ADD && state != State.UPDATE) { 
+                    event.cancel();
+                    return;
+                }
+                                
                 // store column is not editable -- it is set from inventory item
                 // column
                 if (event.getCol() == 2)
                     event.cancel();
             }
         });
+        
         table.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;

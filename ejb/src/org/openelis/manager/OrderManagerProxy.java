@@ -90,6 +90,11 @@ public class OrderManagerProxy {
             man.getShippingNotes().setReferenceTableId(ReferenceTable.ORDER);
             man.getShippingNotes().add();
         }
+        if (man.customerNotes != null) {
+            man.getCustomerNotes().setReferenceId(id);
+            man.getCustomerNotes().setReferenceTableId(ReferenceTable.ORDER);
+            man.getCustomerNotes().add();
+        }
 
         return man;
     }
@@ -108,6 +113,11 @@ public class OrderManagerProxy {
             man.getShippingNotes().setReferenceId(id);
             man.getShippingNotes().setReferenceTableId(ReferenceTable.ORDER);
             man.getShippingNotes().update();
+        }
+        if (man.customerNotes != null) {
+            man.getCustomerNotes().setReferenceId(id);
+            man.getCustomerNotes().setReferenceTableId(ReferenceTable.ORDER);
+            man.getCustomerNotes().update();
         }
 
         return man;
