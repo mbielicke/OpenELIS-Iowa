@@ -50,7 +50,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen id="ReviewRelase" name="Review and Release">
+    <screen id="ReviewRelase" name="{resource:getString($constants,'reviewAndRelease')}">
       <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
 <!--button panel code-->
         <AbsolutePanel spacing="0" style="ButtonPanelContainer">
