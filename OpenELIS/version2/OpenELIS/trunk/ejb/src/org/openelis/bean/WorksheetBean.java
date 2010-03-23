@@ -31,6 +31,7 @@ import java.util.HashMap;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.NoResultException;
@@ -48,9 +49,8 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.local.AnalysisLocal;
 import org.openelis.local.WorksheetLocal;
-import org.openelis.manager.AnalysisManager;
-import org.openelis.manager.AnalysisManagerProxy;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
@@ -91,23 +91,22 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
         return data;
 	}
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "static-access"})
     public ArrayList<WorksheetViewDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
-        int                        i, j, k;
-        Integer                    analysisId, testId, methodId;
-        Query                      query;
-        QueryBuilderV2             builder;
-        ArrayList<AnalysisViewDO>  waList;
-        ArrayList<WorksheetViewDO> list;
+        int                             i, j, k;
+        Integer                         analysisId, testId, methodId;
+        Query                           query;
+        QueryBuilderV2                  builder;
+        ArrayList<AnalysisViewDO>       waList;
+        ArrayList<WorksheetViewDO>      list;
         HashMap<String, AnalysisViewDO> analysisMap;
-        SystemUserDO               user;
-        AnalysisBean               analysis;
-        AnalysisViewDO             aVDO;
-        WorksheetAnalysisManager   waManager;
-        WorksheetItemManager       wiManager;
-        WorksheetManager           wManager;
-        WorksheetManagerProxy      wManagerProxy;
-        WorksheetViewDO            worksheet;
+        SystemUserDO                    user;
+        AnalysisViewDO                  aVDO;
+        WorksheetAnalysisManager        waManager;
+        WorksheetItemManager            wiManager;
+        WorksheetManager                wManager;
+        WorksheetManagerProxy           wManagerProxy;
+        WorksheetViewDO                 worksheet;
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
@@ -116,6 +115,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
                           WorksheetCompletionMeta.getSystemUserId()+", "+
                           WorksheetCompletionMeta.getStatusId()+", "+
                           WorksheetCompletionMeta.getFormatId()+", "+
+                          WorksheetCompletionMeta.getBatchCapacity()+", "+
                           WorksheetCompletionMeta.getRelatedWorksheetId()+") ");
         builder.constructWhere(fields);
         builder.setOrderBy(WorksheetCompletionMeta.getId());
@@ -128,7 +128,6 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
         if (list.isEmpty())
             throw new NotFoundException();
         
-        analysis      = new AnalysisBean();
         wManagerProxy = new WorksheetManagerProxy();
         for (i = 0; i < list.size(); i++) {
             worksheet = list.get(i);
@@ -138,7 +137,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
                 if (user != null)
                     worksheet.setSystemUser(user.getLoginName());
             }
-/*            
+            
             waList = new ArrayList<AnalysisViewDO>();
             analysisMap = new HashMap<String, AnalysisViewDO>();
             wManager = wManagerProxy.fetchById(worksheet.getId());
@@ -148,7 +147,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
                 for (k = 0; k < waManager.count(); k++) {
                     analysisId = waManager.getWorksheetAnalysisAt(k).getAnalysisId();
                     if (analysisId != null) {
-                        aVDO = analysis.fetchById(analysisId);
+                        aVDO = analysisLocal().fetchById(analysisId);
                         testId = aVDO.getTestId();
                         methodId = aVDO.getMethodId();
                         if (!analysisMap.containsKey(testId+","+methodId)) {
@@ -160,7 +159,6 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
             }
             
             worksheet.setTestList(waList);
-*/
         }
         
         list = DataBaseUtil.subList(list, first, max);
@@ -180,6 +178,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
         entity.setSystemUserId(data.getSystemUserId());
         entity.setStatusId(data.getStatusId());
         entity.setFormatId(data.getFormatId());
+        entity.setBatchCapacity(data.getBatchCapacity());
         entity.setRelatedWorksheetId(data.getRelatedWorksheetId());
 
         manager.persist(entity);
@@ -200,6 +199,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
         entity.setSystemUserId(data.getSystemUserId());
         entity.setStatusId(data.getStatusId());
         entity.setFormatId(data.getFormatId());
+        entity.setBatchCapacity(data.getBatchCapacity());
         entity.setRelatedWorksheetId(data.getRelatedWorksheetId());
 
         return data;
@@ -224,5 +224,17 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
 
         if (list.size() > 0)
             throw list;
+    }
+
+    private AnalysisLocal analysisLocal() {
+        InitialContext ctx;
+        
+        try {
+            ctx = new InitialContext();
+            return (AnalysisLocal)ctx.lookup("openelis/AnalysisBean/local");
+        } catch(Exception e) {
+             System.out.println(e.getMessage());
+             return null;
+        }
     }
 }

@@ -29,7 +29,7 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "Worksheet.FetchById",
-                query = "select new org.openelis.domain.WorksheetDO(w.id,w.createdDate,w.systemUserId,w.statusId,w.formatId,w.relatedWorksheetId) "+
+                query = "select new org.openelis.domain.WorksheetDO(w.id,w.createdDate,w.systemUserId,w.statusId,w.formatId,w.batchCapacity,w.relatedWorksheetId) "+
                         "from Worksheet w where w.id = :id")})
 
 @Entity
@@ -53,6 +53,9 @@ public class Worksheet implements Auditable, Cloneable {
 
     @Column(name = "format_id")
     private Integer                   formatId;
+
+    @Column(name = "batch_capacity")
+    private Integer                   batchCapacity;
 
     @Column(name = "related_worksheet_id")
     private Integer                   relatedWorksheetId;
@@ -109,6 +112,15 @@ public class Worksheet implements Auditable, Cloneable {
             this.formatId = formatId;
     }
 
+    public Integer getBatchCapacity() {
+        return batchCapacity;
+    }
+
+    public void setBatchCapacity(Integer batchCapacity) {
+        if (DataBaseUtil.isDifferent(batchCapacity, this.batchCapacity))
+            this.batchCapacity = batchCapacity;
+    }
+
     public Integer getRelatedWorksheetId() {
         return relatedWorksheetId;
     }
@@ -146,6 +158,7 @@ public class Worksheet implements Auditable, Cloneable {
                  .setField("system_user_id", systemUserId, original.systemUserId)
                  .setField("status_id", statusId, original.statusId)
                  .setField("format_id", formatId, original.formatId)
+                 .setField("batch_capacity", batchCapacity, original.batchCapacity)
                  .setField("related_worksheet_id", relatedWorksheetId, original.relatedWorksheetId);
 
         return audit;
