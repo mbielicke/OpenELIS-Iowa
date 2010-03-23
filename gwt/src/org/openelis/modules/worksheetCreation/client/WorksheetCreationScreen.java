@@ -78,7 +78,11 @@ import org.openelis.gwt.widget.table.event.SortEvent;
 import org.openelis.gwt.widget.table.event.SortHandler;
 import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
+import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.QcManager;
+import org.openelis.manager.SampleDataBundle;
+import org.openelis.manager.SampleItemManager;
+import org.openelis.manager.SampleManager;
 import org.openelis.manager.TestWorksheetManager;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
@@ -388,7 +392,7 @@ public class WorksheetCreationScreen extends Screen {
                             });
                         }
                         worksheetRemoveQCConfirm.show();
-                    } else if (dataRow.data instanceof WorksheetCreationVO) {
+                    } else if (dataRow.data instanceof SampleDataBundle) {
                         analysisItems.remove(dataRow);
                         mergeAnalysesAndQCs();
                     }
@@ -446,6 +450,7 @@ public class WorksheetCreationScreen extends Screen {
                 wcLookupScreen = new WorksheetCreationLookupScreen();
                 wcLookupScreen.addActionHandler(new ActionHandler<WorksheetCreationLookupScreen.Action>() {
                     public void onAction(ActionEvent<WorksheetCreationLookupScreen.Action> event) {
+                        Integer                 testId;
                         ArrayList<TableDataRow> list;
                         TableDataRow            row, newRow;
                         WorksheetCreationVO     data;
@@ -458,9 +463,10 @@ public class WorksheetCreationScreen extends Screen {
                                     newRow = new TableDataRow(11);
                                     data = (WorksheetCreationVO)row.data;
                                     
-                                    if (!testIds.contains(data.getTestId()))
-                                        testIds.add(data.getTestId());
-                                    
+                                    testId = data.getTestId();
+                                    if (!testIds.contains(testId))
+                                        testIds.add(testId);
+
                                     newRow.key = getNextTempId();                           // fake worksheet analysis id
                                     newRow.cells.get(1).value = row.cells.get(0).value;     // accession #
                                     newRow.cells.get(2).value = row.cells.get(1).value;     // description
@@ -530,6 +536,8 @@ public class WorksheetCreationScreen extends Screen {
         wDO.setSystemUserId(OpenELIS.security.getSystemUserId());
         wDO.setStatusId(statusWorking);
         wDO.setFormatId(testWorksheetDO.getFormatId());
+        if (formatBatch.equals(wDO.getFormatId()))
+            wDO.setBatchCapacity(testWorksheetDO.getBatchCapacity());
         if (relatedWorksheetId.getFieldValue() != null)
             wDO.setRelatedWorksheetId(relatedWorksheetId.getFieldValue());
         
@@ -851,7 +859,7 @@ public class WorksheetCreationScreen extends Screen {
         //
         // If last batch contains only QC items, remove it
         //
-        for (i--; i > -1 && items.get(i).data instanceof TestWorksheetItemDO; i--) {
+        for (i--; i > -1 && items.get(i).data instanceof ArrayList; i--) {
             if (i % testWorksheetDO.getTotalCapacity() == 0) {
                 while (i < items.size())
                     items.remove(i);

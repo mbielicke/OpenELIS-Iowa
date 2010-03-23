@@ -24,6 +24,7 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
+
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -92,17 +93,18 @@ UIRF Software License are applicable instead of those above.
               <dropdown width="80" field="Integer" />
             </col>
 <!-- 
-  
-<col key="{meta:getTestName()}" width="100" header="{resource:getString($constants,'test')}" sort="true">
-<label />
-</col>
-<col key="{meta:getMethodName()}" width="75" header="{resource:getString($constants,'method')}" sort="true">
-<label />
-</col>
-  -->
+            <col key="{meta:getTestName()}" width="100" header="{resource:getString($constants,'test')}" sort="true">
+              <label />
+            </col>
+            <col key="{meta:getMethodName()}" width="75" header="{resource:getString($constants,'method')}" sort="true">
+              <label />
+            </col>
+-->
           </table>
         </VerticalPanel>
+
 <!--button panel code-->
+
         <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
           <HorizontalPanel>
             <xsl:call-template name="okButton">
@@ -117,7 +119,9 @@ UIRF Software License are applicable instead of those above.
             </xsl:call-template>
           </HorizontalPanel>
         </AbsolutePanel>
+
 <!--end button panel-->
+
       </VerticalPanel>
     </screen>
   </xsl:template>

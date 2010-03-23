@@ -24,6 +24,7 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
+
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"

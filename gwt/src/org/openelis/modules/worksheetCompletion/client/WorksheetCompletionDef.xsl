@@ -24,6 +24,7 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
+
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -68,11 +69,46 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'worksheetNumber')" />:
               </text>
-              <textbox key="{meta:getId()}" width="100" case="LOWER" field="String" />
+              <textbox key="{meta:getId()}" width="100" case="LOWER" field="String"/>
+              <text style="Prompt">
+                <xsl:value-of select="resource:getString($constants,'instrumentName')" />:
+              </text>
+              <autoComplete key="instrumentId" width="150" case="LOWER" popWidth="auto" tab="loadFrom,lookupWorksheetButton" field="Integer">
+                <col width="150" header="Name" />
+                <col width="200" header="Description" />
+                <col width="75" header="Type">
+                  <dropdown width="75" popWidth="auto" field="Integer"/>
+                </col>
+                <col width="200" header="Location" />
+              </autoComplete>
+              <text style="Prompt">
+                <xsl:value-of select="resource:getString($constants,'initials')" />:
+              </text>
+              <textbox key="defaultInitials" width="50" case="LOWER" tab="defaultStartedDate,browseButton" field="String"/>
+            </row>
+            <row>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'status')" />:
               </text>
               <dropdown key="{meta:getStatusId()}" width="100" popWidth="100" tab="lookupWorksheetButton,tabPanel" field="Integer" />
+              <text style="Prompt">
+                <xsl:value-of select="resource:getString($constants,'loadFrom')" />:
+              </text>
+	          <HorizontalPanel>
+                <textbox key="loadFrom" width="200" case="LOWER" tab="loadButton,instrumentId" field="String"/>
+                <appButton key="browseButton" style="Button" action="browse" tab="loadButton,loadFrom">
+                  <HorizontalPanel>
+                    <AbsolutePanel style="FindButtonImage" />
+                    <text>
+                      <xsl:value-of select="resource:getString($constants,'browse')" />
+                    </text>
+                  </HorizontalPanel>
+                </appButton>
+              </HorizontalPanel>
+              <text style="Prompt">
+                <xsl:value-of select="resource:getString($constants,'started')" />:
+              </text>
+              <calendar key="defaultStartedDate" begin="0" end="4" width="130" pattern="{resource:getString($constants,'dateTimePattern')}" tab="defaultCompletedDate,defaultInitials" />
             </row>
             <row>
               <text style="Prompt">
@@ -80,30 +116,58 @@ UIRF Software License are applicable instead of those above.
               </text>
               <HorizontalPanel>
                 <textbox key="{meta:getRelatedWorksheetId()}" width="100" case="LOWER" field="String" />
-                <appButton key="lookupWorksheetButton" style="LookupButton" tab="tabPanel,{meta:getStatusId()}" action="lookupWorksheet">
+                <appButton key="lookupWorksheetButton" style="LookupButton" tab="instrumentId,{meta:getStatusId()}" action="lookupWorksheet">
                   <AbsolutePanel style="LookupButtonImage" />
                 </appButton>
               </HorizontalPanel>
+	          <HorizontalPanel/>
+              <appButton key="loadButton" style="Button" action="load" tab="defaultInitials,browseButton">
+                <HorizontalPanel>
+                  <AbsolutePanel style="LoadButtonImage" />
+                  <text>
+                    <xsl:value-of select="resource:getString($constants,'load')" />
+                  </text>
+                </HorizontalPanel>
+              </appButton>
+              <text style="Prompt">
+                <xsl:value-of select="resource:getString($constants,'completed')" />:
+              </text>
+              <calendar key="defaultCompletedDate" begin="0" end="4" width="130" pattern="{resource:getString($constants,'dateTimePattern')}" tab="tabPanel,defaultStartedDate" />
             </row>
           </TablePanel>
 <!-- TAB PANEL -->
-          <TabPanel key="tabPanel" width="605" height="285">
+          <TabPanel key="tabPanel" width="850" height="285">
 <!-- TAB 1 -->
             <tab key="worksheetItemTab" tab="worksheetItemTable,worksheetItemTable" text="{resource:getString($constants,'worksheet')}">
               <VerticalPanel padding="0" spacing="0">
-                <table key="worksheetItemTable" width="587" maxRows="10" showScroll="ALWAYS" tab="{meta:getId()},{meta:getId()}">
+                <table key="worksheetItemTable" width="832" maxRows="10" showScroll="ALWAYS" tab="{meta:getId()},{meta:getId()}">
                   <col key="{meta:getWorksheetItemPosition()}" width="50" header="{resource:getString($constants,'position')}">
                     <label field="String" />
                   </col>
                   <col key="{meta:getWorksheetAnalysisAccessionNumber()}" width="90" sort="true" header="{resource:getString($constants,'accessionNum')}">
                     <label field="String" />
                   </col>
-<!--
-  
-<col key="{meta:getSampleDescription()}" width="110" header="{resource:getString($constants,'description')}" sort="true">
-<label />
-</col>
-  -->
+                  <col key="{meta:getSampleDescription()}" width="110" header="{resource:getString($constants,'description')}" sort="true">
+                    <label field="String" />
+                  </col>
+                  <col key="{meta:getWorksheetAnalysisWorksheetAnalysisId}" width="90" header="{resource:getString($constants,'qcLink')}">
+                    <label field="String" />
+                  </col>
+                  <col key="{meta:getAnalysisTestName()}" width="100" header="{resource:getString($constants,'test')}" sort="true">
+                    <label field="String" />
+                  </col>
+                  <col key="{meta:getAnalysisTestMethodName()}" width="100" header="{resource:getString($constants,'method')}" sort="true">
+                    <label field="String" />
+                  </col>
+                  <col key="{meta:getAnalysisStatusId()}" width="75" header="{resource:getString($constants,'status')}" sort="true">
+                    <dropdown width="55" field="Integer" />
+                  </col>
+                  <col key="field7" width="100" header="Field 7">
+                    <label field="String" />
+                  </col>
+                  <col key="field8" width="100" header="Field 8">
+                    <label field="String" />
+                  </col>
                 </table>
                 <widget style="TableButtonFooter">
                   <HorizontalPanel>

@@ -38,7 +38,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import org.openelis.cache.DictionaryCache;
-import org.openelis.domain.AnalysisViewDO;
+//import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SecuritySystemUserDO;
 import org.openelis.domain.WorksheetViewDO;
@@ -109,6 +109,7 @@ public class WorksheetLookupScreen extends Screen
         setState(State.QUERY);
         initializeDropdowns();
         DataChangeEvent.fire(this);
+        setFocus(worksheetNumber);
     }
     
     /**
@@ -291,8 +292,8 @@ public class WorksheetLookupScreen extends Screen
     }
 
     private void setQueryResult(ArrayList<WorksheetViewDO> list) {
-        int                       i, j;
-        ArrayList<AnalysisViewDO> testList;
+        int                       i;//, j;
+//        ArrayList<AnalysisViewDO> testList;
         ArrayList<TableDataRow>   model;
         TableDataRow              row;
         WorksheetViewDO           worksheetRow;
