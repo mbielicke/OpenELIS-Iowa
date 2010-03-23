@@ -270,9 +270,6 @@ public class AnalysisManagerProxy {
         
         cancelledStatusId = dictionaryLocal().fetchBySystemName("analysis_cancelled").getId();
         
-        if(man.count() == 0)
-            errorsList.add(new FormErrorWarning("minOneAnalysisException", sampleItemSequence));
-        
         for(int i=0; i<man.count(); i++){
             analysisDO = man.getAnalysisAt(i);
             testMan = man.getTestAt(i);
@@ -282,12 +279,6 @@ public class AnalysisManagerProxy {
             
             if(analysisDO.getTestId() != null && analysisDO.getSectionId() == null)
                 errorsList.add(new FormErrorException("analysisSectionIdMissing", analysisDO.getTestName(), analysisDO.getMethodName()));
-            
-            //ignore the sample type check if analysis is cancelled.  This is the only
-            //way they can fix this error in some cases.
-            if(analysisDO.getTestId() != null && !cancelledStatusId.equals(analysisDO.getStatusId()) && 
-                            !testMan.getSampleTypes().hasType(sampleTypeId))
-                errorsList.add(new FormErrorWarning("sampleTypeInvalid", analysisDO.getTestName(), analysisDO.getMethodName()));
             
             item = man.getItemAt(i);
             //validate the children

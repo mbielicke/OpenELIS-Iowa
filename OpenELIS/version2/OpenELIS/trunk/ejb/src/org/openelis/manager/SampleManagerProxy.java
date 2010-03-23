@@ -331,24 +331,7 @@ public class SampleManagerProxy {
         //sample validate code
         SampleDO sampleDO = man.getSample();
         
-        //validate the dates
-        //recieved date required
-        if(sampleDO.getReceivedDate() == null || sampleDO.getReceivedDate().getDate() == null)
-            errorsList.add(new FieldErrorWarning("fieldRequiredException", SampleMeta.getReceivedDate()));
-        else if(sampleDO.getEnteredDate() != null && sampleDO.getReceivedDate().before(sampleDO.getEnteredDate().add(-30)))
-            //recieved cant be more than 30 days before entered
-            errorsList.add(new FieldErrorWarning("receivedTooOldWarning", SampleMeta.getReceivedDate()));
-            
-       if(sampleDO.getEnteredDate() != null && sampleDO.getCollectionDate() != null){
-           if(sampleDO.getCollectionDate().before(sampleDO.getEnteredDate().add(-364)))
-               errorsList.add(new FieldErrorException("collectedTooOldException", SampleMeta.getCollectionDate()));
-           else if(sampleDO.getCollectionDate().before(sampleDO.getEnteredDate().add(-30)))
-               errorsList.add(new FieldErrorWarning("collectedTooOldWarning", SampleMeta.getCollectionDate()));
-       }
-        
-       if(sampleDO.getCollectionDate() == null)
-           errorsList.add(new FieldErrorWarning("collectedDateMissingWarning", SampleMeta.getCollectionDate()));
-       else if(sampleDO.getReceivedDate() != null){
+        if(sampleDO.getCollectionDate() != null && sampleDO.getReceivedDate() != null){
             if(sampleDO.getCollectionDate().compareTo(sampleDO.getReceivedDate()) == 1)
                 errorsList.add(new FieldErrorException("collectedDateInvalidError", SampleMeta.getReceivedDate()));
        }

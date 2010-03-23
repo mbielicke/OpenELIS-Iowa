@@ -74,18 +74,30 @@ public class SampleMeta implements Meta, MetaMap {
                     WELL_OWNER = "_samplePrivateWell.owner",
                     WELL_COLLECTOR = "_samplePrivateWell.collector",
                     WELL_WELL_NUMBER = "_samplePrivateWell.wellNumber",
-                    WELL_REPORT_TO_ADDR_ID = "_reportToAddress.id", 
-                    WELL_REPORT_TO_ADDR_MULTIPLE_UNIT = "_reportToAddress.multipleUnit",
-                    WELL_REPORT_TO_ADDR_STREET_ADDRESS = "_reportToAddress.streetAddress", 
-                    WELL_REPORT_TO_ADDR_CITY = "_reportToAddress.city",
-                    WELL_REPORT_TO_ADDR_STATE = "_reportToAddress.state", 
-                    WELL_REPORT_TO_ADDR_ZIP_CODE = "_reportToAddress.zipCode",
-                    WELL_REPORT_TO_ADDR_WORK_PHONE = "_reportToAddress.workPhone", 
-                    WELL_REPORT_TO_ADDR_HOME_PHONE = "_reportToAddress.homePhone",
-                    WELL_REPORT_TO_ADDR_CELL_PHONE = "_reportToAddress.cellPhone", 
-                    WELL_REPORT_TO_ADDR_FAX_PHONE = "_reportToAddress.faxPhone",
-                    WELL_REPORT_TO_ADDR_EMAIL = "_reportToAddress.email", 
-                    WELL_REPORT_TO_ADDR_COUNTRY = "_reportToAddress.country",
+                    WELL_ORGANIZATION_NAME = "_wellOrganization.name",
+                    WELL_REPORT_TO_ADDR_ID = "_privateWellReportToAddress.id", 
+                    WELL_REPORT_TO_ADDR_MULTIPLE_UNIT = "_privateWellReportToAddress.multipleUnit",
+                    WELL_REPORT_TO_ADDR_STREET_ADDRESS = "_privateWellReportToAddress.streetAddress", 
+                    WELL_REPORT_TO_ADDR_CITY = "_privateWellReportToAddress.city",
+                    WELL_REPORT_TO_ADDR_STATE = "_privateWellReportToAddress.state", 
+                    WELL_REPORT_TO_ADDR_ZIP_CODE = "_privateWellReportToAddress.zipCode",
+                    WELL_REPORT_TO_ADDR_WORK_PHONE = "_privateWellReportToAddress.workPhone", 
+                    WELL_REPORT_TO_ADDR_HOME_PHONE = "_privateWellReportToAddress.homePhone",
+                    WELL_REPORT_TO_ADDR_CELL_PHONE = "_privateWellReportToAddress.cellPhone", 
+                    WELL_REPORT_TO_ADDR_FAX_PHONE = "_privateWellReportToAddress.faxPhone",
+                    WELL_REPORT_TO_ADDR_EMAIL = "_privateWellReportToAddress.email", 
+                    WELL_REPORT_TO_ADDR_COUNTRY = "_privateWellReportToAddress.country",
+                    WELL_LOCATION_ADDR_MULTIPLE_UNIT = "_wellLocationAddress.multipleUnit",
+                    WELL_LOCATION_ADDR_STREET_ADDRESS = "_wellLocationAddress.streetAddress", 
+                    WELL_LOCATION_ADDR_CITY = "_wellLocationAddress.city",
+                    WELL_LOCATION_ADDR_STATE = "_wellLocationAddress.state", 
+                    WELL_LOCATION_ADDR_ZIP_CODE = "_wellLocationAddress.zipCode",
+                    WELL_LOCATION_ADDR_WORK_PHONE = "_wellLocationAddress.workPhone", 
+                    WELL_LOCATION_ADDR_HOME_PHONE = "_wellLocationAddress.homePhone",
+                    WELL_LOCATION_ADDR_CELL_PHONE = "_wellLocationAddress.cellPhone", 
+                    WELL_LOCATION_ADDR_FAX_PHONE = "_wellLocationAddress.faxPhone",
+                    WELL_LOCATION_ADDR_EMAIL = "_wellLocationAddress.email", 
+                    WELL_LOCATION_ADDR_COUNTRY = "wellLocationAddress.country",
 
                     LOCATION_ADDR_MULTIPLE_UNIT = "_locationAddress.multipleUnit",
                     LOCATION_ADDR_STREET_ADDRESS = "_locationAddress.streetAddress", 
@@ -217,13 +229,19 @@ public class SampleMeta implements Meta, MetaMap {
                                                   WELL_ORGANIZATION_ID, WELL_REPORT_TO_NAME,
                                                   WELL_REPORT_TO_ADDRESS_ID, WELL_LOCATION,
                                                   WELL_LOCATION_ADDRESS_ID, WELL_OWNER,
-                                                  WELL_COLLECTOR, WELL_WELL_NUMBER, 
+                                                  WELL_COLLECTOR, WELL_WELL_NUMBER, WELL_ORGANIZATION_NAME,
                                                   WELL_REPORT_TO_ADDR_ID, WELL_REPORT_TO_ADDR_MULTIPLE_UNIT, 
                                                   WELL_REPORT_TO_ADDR_STREET_ADDRESS, WELL_REPORT_TO_ADDR_CITY,
                                                   WELL_REPORT_TO_ADDR_STATE, WELL_REPORT_TO_ADDR_ZIP_CODE,
                                                   WELL_REPORT_TO_ADDR_WORK_PHONE, WELL_REPORT_TO_ADDR_HOME_PHONE,
                                                   WELL_REPORT_TO_ADDR_CELL_PHONE, WELL_REPORT_TO_ADDR_FAX_PHONE,
                                                   WELL_REPORT_TO_ADDR_EMAIL, WELL_REPORT_TO_ADDR_COUNTRY,
+                                                  WELL_LOCATION_ADDR_MULTIPLE_UNIT, WELL_LOCATION_ADDR_STREET_ADDRESS,
+                                                  WELL_LOCATION_ADDR_CITY, WELL_LOCATION_ADDR_STATE,
+                                                  WELL_LOCATION_ADDR_ZIP_CODE, WELL_LOCATION_ADDR_WORK_PHONE, 
+                                                  WELL_LOCATION_ADDR_HOME_PHONE, WELL_LOCATION_ADDR_CELL_PHONE, 
+                                                  WELL_LOCATION_ADDR_FAX_PHONE, WELL_LOCATION_ADDR_EMAIL, 
+                                                  WELL_LOCATION_ADDR_COUNTRY,
                                                   ITEM_ID, ITEM_SAMPLE_ID, ITEM_SAMPLE_ITEM_ID,
                                                   ITEM_ITEM_SEQUENCE, ITEM_TYPE_OF_SAMPLE_ID,
                                                   ITEM_SOURCE_OF_SAMPLE_ID, ITEM_SOURCE_OTHER,
@@ -456,6 +474,10 @@ public class SampleMeta implements Meta, MetaMap {
         return WELL_WELL_NUMBER;
     }
     
+    public static String getWellOrganizationName(){
+        return WELL_ORGANIZATION_NAME;
+    }
+    
     public static String getWellReportToAddressMultipleUnit(){
      return WELL_REPORT_TO_ADDR_MULTIPLE_UNIT;   
     }
@@ -498,6 +520,50 @@ public class SampleMeta implements Meta, MetaMap {
     
     public static String getWellReportToAddressCountry(){
         return WELL_REPORT_TO_ADDR_COUNTRY;
+    }
+    
+    public static String getWellLocationAddrMultipleUnit(){
+        return WELL_LOCATION_ADDR_MULTIPLE_UNIT;
+    }
+    
+    public static String getWellLocationAddrStreetAddress(){
+        return WELL_LOCATION_ADDR_STREET_ADDRESS;
+    }
+    
+    public static String getWellLocationAddrCity(){
+        return WELL_LOCATION_ADDR_CITY;
+    }
+    
+    public static String getWellLocationAddrState(){
+        return WELL_LOCATION_ADDR_STATE;
+    }
+    
+    public static String getWellLocationAddrZipCode(){
+        return WELL_LOCATION_ADDR_ZIP_CODE;
+    }
+    
+    public static String getWellLocationAddrWorkPhone(){
+        return WELL_LOCATION_ADDR_WORK_PHONE;
+    }
+    
+    public static String getWellLocationAddrHomePhone(){
+        return WELL_LOCATION_ADDR_HOME_PHONE;
+    }
+    
+    public static String getWellLocationAddrCellPhone(){
+        return WELL_LOCATION_ADDR_CELL_PHONE;
+    }
+    
+    public static String getWellLocationAddrFaxPhone(){
+        return WELL_LOCATION_ADDR_FAX_PHONE;
+    }
+    
+    public static String getWellLocationAddrEmail(){
+        return WELL_LOCATION_ADDR_EMAIL;
+    }
+    
+    public static String getWellLocationAddrCountry(){
+        return WELL_LOCATION_ADDR_COUNTRY;
     }
     
     public static String getItemId() {
@@ -875,31 +941,34 @@ public class SampleMeta implements Meta, MetaMap {
     public String buildFrom(String where) {
         String from = "Sample _sample ";
 
-        if (where.indexOf("sampleEnvironmental.") > -1) {
+        //sample env
+        if (where.indexOf("sampleEnvironmental.") > -1) 
             from += ", IN (_sample.sampleEnvironmental) _sampleEnvironmental ";
-
-            if (where.indexOf("locationAddress.") > -1)
-                from += ", IN (_sampleEnvironmental.locationAddress) _locationAddress ";
-        }
         
-        if (where.indexOf("samplePrivateWell.") > -1) {
+        //sample private well
+        if (where.indexOf("samplePrivateWell.") > -1 || where.indexOf("_privateWellReportToAddress") > -1 || 
+                        where.indexOf("_wellOrganization.") > -1 || where.indexOf("_wellLocationAddress.") > -1) 
             from += ", IN (_sample.samplePrivateWell) _samplePrivateWell ";
+        
+        if (where.indexOf("_wellOrganization.") > -1 || where.indexOf("_privateWellReportToAddress") > -1)
+            from += " LEFT JOIN _samplePrivateWell.organization _wellOrganization ";
+        
+        if (where.indexOf("_privateWellReportToAddress") > -1){
+            from += " LEFT JOIN _wellOrganization.address _address ";
+            from += " LEFT JOIN _samplePrivateWell.reportToAddress _privateWellReportToAddress ";
+        } 
 
-            if (where.indexOf("locationAddress.") > -1)
-                from += ", IN (_samplePrivateWell.locationAddress) _locationAddress ";
+        if (where.indexOf("_wellLocationAddress.") > -1)
+            from += ", IN (_samplePrivateWell.locationAddress) _wellLocationAddress ";
             
-            if (where.indexOf("organization.") > -1){
-                from += ", IN (_samplePrivateWell.organizationlocationAddress) _organization ";
-                from += ", IN (_organization.address) _address ";
-                from += ", IN (_samplePrivateWell.reportToAddress) _reportToAddress ";
-            }
-        }
+        //sample sdwis
+        
+        //other
 
-        if (where.indexOf("sampleProject.") > -1)
+        if (where.indexOf("project.") > -1){
             from += ", IN (_sample.sampleProject) _sampleProject ";
-
-        if (where.indexOf("sampleOrganization.") > -1)
-            from += ", IN (_sample.sampleOrganization) _sampleOrganization ";
+            from += ", IN (_sampleProject.project) _project ";
+        }
 
         if (where.indexOf("sampleItem.") > -1 || where.indexOf("analysis.") > -1)
             from += ", IN (_sample.sampleItem) _sampleItem";

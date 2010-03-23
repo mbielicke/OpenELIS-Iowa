@@ -31,12 +31,10 @@ import javax.naming.InitialContext;
 
 import org.openelis.domain.SampleOrganizationDO;
 import org.openelis.domain.SampleOrganizationViewDO;
-import org.openelis.gwt.common.FieldErrorWarning;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.SampleOrganizationLocal;
-import org.openelis.meta.SampleMeta;
 
 public class SampleOrganizationManagerProxy {
     public SampleOrganizationManager fetchBySampleId(Integer sampleId) throws Exception {
@@ -117,12 +115,6 @@ public class SampleOrganizationManagerProxy {
         
         if(numReportTo > 1)
             errorsList.add(new FormErrorException("multipleReportToException"));
-        
-        if(numReportTo == 0)
-            errorsList.add(new FieldErrorWarning("reportToMissingWarning", SampleMeta.getOrgName()));
-            
-        if(numBillTo == 0)
-            errorsList.add(new FieldErrorWarning("billToMissingWarning", SampleMeta.getBillTo()));
     }
     
     private SampleOrganizationLocal local(){
