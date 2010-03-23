@@ -24,6 +24,7 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
+
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -54,7 +55,9 @@ UIRF Software License are applicable instead of those above.
             <label field="String" />
           </col>
         </table>
+
 <!--button panel code-->
+
         <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
           <HorizontalPanel>
             <xsl:call-template name="okButton">
@@ -69,7 +72,9 @@ UIRF Software License are applicable instead of those above.
             </xsl:call-template>
           </HorizontalPanel>
         </AbsolutePanel>
+
 <!--end button panel-->
+
       </VerticalPanel>
     </screen>
   </xsl:template>

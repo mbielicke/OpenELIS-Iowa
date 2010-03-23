@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrganizationContactDO;
+import org.openelis.domain.QcDO;
+import org.openelis.domain.WorksheetAnalysisDO;
+import org.openelis.domain.WorksheetItemDO;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -15,25 +19,39 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
+import org.openelis.gwt.widget.table.event.UnselectionEvent;
+import org.openelis.gwt.widget.table.event.UnselectionHandler;
+import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.OrganizationManager;
+import org.openelis.manager.QcManager;
+import org.openelis.manager.SampleDataBundle;
+import org.openelis.manager.SampleItemManager;
+import org.openelis.manager.SampleManager;
+import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetManager;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Window;
 
 public class WorksheetTab extends Screen {
 
-    private WorksheetManager manager;
-    private TableWidget      table;
-    private AppButton        editMultipleButton;
     private boolean          loaded;
+    private Integer          formatBatch, formatTotal;
+    private AppButton        editMultipleButton;
+    private TableWidget      table;
+    private WorksheetManager manager;
 
     public WorksheetTab(ScreenDefInt def, ScreenWindow window) {
         setDefinition(def);
@@ -53,6 +71,26 @@ public class WorksheetTab extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 table.enable(true);
+            }
+        });
+
+        table.addSelectionHandler(new SelectionHandler<TableRow>() {
+            public void onSelection(SelectionEvent event) {
+                if (table.getSelectedRow() != -1)
+                    editMultipleButton.enable(true);
+            }
+        });
+        
+        table.addUnselectionHandler(new UnselectionHandler<TableDataRow>() {
+            public void onUnselection(UnselectionEvent event) {
+                if (table.getSelectedRow() == -1)
+                    editMultipleButton.enable(false);
+            }
+        });
+        
+        table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                event.cancel();
             }
         });
 
@@ -125,6 +163,7 @@ public class WorksheetTab extends Screen {
         editMultipleButton = (AppButton)def.getWidget("editMultipleButton");
         addScreenHandler(editMultipleButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                editMultiple();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -134,53 +173,95 @@ public class WorksheetTab extends Screen {
     }
 
     private void initializeDropdowns() {
+        ArrayList<DictionaryDO> dictList;
         ArrayList<TableDataRow> model;
-/*        
+
+        try {
+            formatBatch = DictionaryCache.getIdFromSystemName("wsheet_num_format_batch");
+            formatTotal = DictionaryCache.getIdFromSystemName("wsheet_num_format_total");
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            window.close();
+        }
+        
+        //
+        // load analysis status dropdown model
+        //
+        dictList  = DictionaryCache.getListByCategorySystemName("analysis_status");
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("contact_type"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
-        ((Dropdown<Integer>)table.getColumns().get(0).getColumnWidget()).setModel(model);
-*/
+        for (DictionaryDO resultDO : dictList)
+            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
+        ((Dropdown<Integer>)table.getColumns().get(6).getColumnWidget()).setModel(model);
     }
     
     private ArrayList<TableDataRow> getTableModel() {
-/*
-        int i;
-        TableDataRow row;
-        OrganizationContactDO data;
-*/
-        ArrayList<TableDataRow> model;
+        int                      i, j;
+        ArrayList<TableDataRow>  model;
+        TableDataRow             row;
+        AnalysisManager          aManager;
+        AnalysisViewDO           aVDO;
+        QcManager                qcManager;
+        SampleDataBundle         bundle;
+        SampleManager            sManager;
+        SampleItemManager        siManager;
+        WorksheetAnalysisDO      waDO;
+        WorksheetAnalysisManager waManager;
+        WorksheetItemDO          wiDO;
         
         model = new ArrayList<TableDataRow>();
         if (manager == null)
             return model;
-/*
-        try {
-            for (i = 0; i < manager.getContacts().count(); i++) {
-                data = (OrganizationContactDO)manager.getContacts().getContactAt(i);
 
-                row = new TableDataRow(13);
-                row.cells.get(0).value = data.getContactTypeId();
-                row.cells.get(1).value = data.getName();
-                row.cells.get(2).value = data.getAddressDO().getMultipleUnit();
-                row.cells.get(3).value = data.getAddressDO().getStreetAddress();
-                row.cells.get(4).value = data.getAddressDO().getCity();
-                row.cells.get(5).value = data.getAddressDO().getState();
-                row.cells.get(6).value = data.getAddressDO().getZipCode();
-                row.cells.get(7).value = data.getAddressDO().getCountry();
-                row.cells.get(8).value = data.getAddressDO().getWorkPhone();
-                row.cells.get(9).value = data.getAddressDO().getHomePhone();
-                row.cells.get(10).value = data.getAddressDO().getCellPhone();
-                row.cells.get(11).value = data.getAddressDO().getFaxPhone();
-                row.cells.get(12).value = data.getAddressDO().getEmail();
+        try {
+            for (i = 0; i < manager.getItems().count(); i++) {
+                wiDO = manager.getItems().getWorksheetItemAt(i);
+                waManager = manager.getItems().getWorksheetAnalysisAt(i);
+
+                row = new TableDataRow(9);
+                row.cells.get(0).value = getPositionNumber(wiDO.getPosition());
+                for (j = 0; j < waManager.count(); j++) {
+                    waDO = waManager.getWorksheetAnalysisAt(j);
+
+                    if (j != 0)
+                        row.cells.get(0).value = null;
+                    
+                    row.cells.get(1).value = waDO.getAccessionNumber();
+
+                    if (waDO.getAnalysisId() != null) {
+                        bundle = waManager.getBundleAt(j);
+                        sManager = bundle.getSampleManager();
+                        aManager = sManager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
+                        aVDO = aManager.getAnalysisAt(bundle.getAnalysisIndex());
+
+                        row.cells.get(2).value = "";
+                        row.cells.get(3).value = "";
+                        row.cells.get(4).value = aVDO.getTestName();
+                        row.cells.get(5).value = aVDO.getMethodName();
+                        row.cells.get(6).value = aVDO.getStatusId();
+                        row.cells.get(7).value = "";
+                        row.cells.get(8).value = "";
+                        row.data = bundle;
+                    } else if (waDO.getQcId() != null) {
+                        qcManager = QcManager.fetchById(waDO.getQcId());
+                        
+                        row.cells.get(2).value = qcManager.getQc().getName();
+                        row.cells.get(3).value = "";
+                        row.cells.get(4).value = "";
+                        row.cells.get(5).value = "";
+                        row.cells.get(6).value = 0;
+                        row.cells.get(7).value = "";
+                        row.cells.get(8).value = "";
+                        row.data = qcManager;
+                    }
+                }
                 model.add(row);
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
         }
-*/
+
         return model;
     }
 
@@ -195,4 +276,41 @@ public class WorksheetTab extends Screen {
 
         loaded = true;
     }
+    
+    protected void editMultiple() {
+        // TODO - Add edit multiple code
+        Window.alert("Edit Multiple Popup");
+    }
+
+    private Object getPositionNumber(int position) {
+        int    major, minor;
+        Object positionNumber;
+        
+        positionNumber = "";
+        if (formatBatch.equals(manager.getWorksheet().getFormatId())) {
+            major = getPositionMajorNumber(position+1);
+            minor = getPositionMinorNumber(position+1);
+            positionNumber = major+"-"+minor;
+        } else if (formatTotal.equals(manager.getWorksheet().getFormatId())) {
+            positionNumber = position + 1;
+        }
+        
+        return positionNumber;
+    }
+    
+    /**
+     * Parses the position number and returns the major number
+     * for batch numbering.
+     */
+   private int getPositionMajorNumber(int position) {
+       return (int) (position / (double)manager.getWorksheet().getBatchCapacity() + .99);
+   }
+
+   /**
+     * Parses the position number and returns the minor number
+     * for batch numbering.
+     */
+   private int getPositionMinorNumber(int position) {
+       return position - (getPositionMajorNumber(position) - 1) * manager.getWorksheet().getBatchCapacity();
+   }
 }

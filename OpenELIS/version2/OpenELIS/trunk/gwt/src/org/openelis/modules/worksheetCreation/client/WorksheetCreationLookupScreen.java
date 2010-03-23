@@ -133,6 +133,7 @@ public class WorksheetCreationLookupScreen extends Screen
         setState(State.QUERY);
         initializeDropdowns();
         DataChangeEvent.fire(this);
+        setFocus(testId);
     }
     
     /**
