@@ -19,6 +19,7 @@ import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -745,6 +746,11 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
             Query query;
             query = new Query();
             query.setFields(getQueryFields());
+            QueryData qd = new QueryData();
+            qd.key = SampleMeta.getDomain();
+            qd.query = "!Q";
+            qd.type = QueryData.Type.STRING;
+            query.setFields(qd);
             nav.setQuery(query);
         } else if (state == State.ADD) {
             window.setBusy(consts.get("adding"));
