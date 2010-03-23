@@ -490,7 +490,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             }
         });
 
-        orderNumber = (TextBox<Integer>)def.getWidget("orderNumber");
+        orderNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getOrderId());
         addScreenHandler(orderNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 orderNumber.setValue(Util.toString(manager.getSample().getOrderId()));
@@ -511,7 +511,8 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orderNumber.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                orderNumber.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY).contains(event.getState()));
+                orderNumber.setQueryMode(event.getState() == State.QUERY);
                 
                 if (EnumSet.of(State.UPDATE).contains(event.getState()))
                     setFocus(orderNumber);

@@ -53,7 +53,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CalendarLookUp;
@@ -478,7 +477,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             }
         });
 
-        orderNumber = (TextBox<Integer>)def.getWidget("orderNumber");
+        orderNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getOrderId());
         addScreenHandler(orderNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 orderNumber.setValue(Util.toString(manager.getSample().getOrderId()));
@@ -499,7 +498,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orderNumber.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                orderNumber.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY).contains(event.getState()));
+                orderNumber.setQueryMode(event.getState() == State.QUERY);
                 
                 if (EnumSet.of(State.UPDATE).contains(event.getState()))
                     setFocus(orderNumber);

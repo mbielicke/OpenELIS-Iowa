@@ -605,6 +605,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             
             modal.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>(){
                 public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+                    loaded = false;
                     draw();                    
                 }
             });
