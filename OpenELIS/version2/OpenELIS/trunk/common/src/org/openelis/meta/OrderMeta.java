@@ -455,9 +455,9 @@ public class OrderMeta implements Meta, MetaMap {
             else
                 from += irFrom;
         if (where.indexOf("reportTo.") > -1)
-            from += ", (_order.reportTo) _reportTo ";
+            from += ",IN (_order.reportTo) _reportTo ";
         if (where.indexOf("billTo.") > -1)
-            from += ", (_order.billTo) _billTo ";
+            from += ",IN (_order.billTo) _billTo ";
 
         return from;
     }

@@ -112,14 +112,15 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         addScreenHandler(formatId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
-                    formatId.setSelection(manager.getTestWorksheet().getWorksheet().getFormatId());
+                    if(manager != null)
+                        formatId.setSelection(manager.getTestWorksheet().getWorksheet().getFormatId());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                try {
+                try {                    
                     manager.getTestWorksheet().getWorksheet().setFormatId(event.getValue());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
@@ -136,7 +137,8 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         addScreenHandler(batchCapacity, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
-                    batchCapacity.setValue(manager.getTestWorksheet().getWorksheet().getBatchCapacity());
+                    if(manager != null)
+                        batchCapacity.setValue(manager.getTestWorksheet().getWorksheet().getBatchCapacity());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -161,7 +163,8 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         addScreenHandler(totalCapacity, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
-                    totalCapacity.setValue(manager.getTestWorksheet().getWorksheet().getTotalCapacity());
+                    if(manager != null)
+                        totalCapacity.setValue(manager.getTestWorksheet().getWorksheet().getTotalCapacity());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -187,8 +190,9 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
-                    scriptlet.setSelection(manager.getTestWorksheet().getWorksheet().getScriptletId(),
-                                           manager.getTestWorksheet().getWorksheet().getScriptletName());
+                    if(manager != null)
+                        scriptlet.setSelection(manager.getTestWorksheet().getWorksheet().getScriptletId(),
+                                               manager.getTestWorksheet().getWorksheet().getScriptletName());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -237,8 +241,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                worksheetTable.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                             .contains(event.getState()));
+                worksheetTable.enable(true);
                 worksheetTable.setQueryMode(event.getState() == State.QUERY);
             }
         });

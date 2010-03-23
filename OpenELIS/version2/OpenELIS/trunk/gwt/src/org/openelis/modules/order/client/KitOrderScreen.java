@@ -33,7 +33,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderViewDO;
-import org.openelis.domain.OrganizationViewDO;
+import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
@@ -47,6 +47,8 @@ import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.BeforeCloseEvent;
 import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.GetMatchesEvent;
+import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.screen.Screen;
@@ -60,6 +62,7 @@ import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
+import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TabPanel;
 import org.openelis.gwt.widget.TextBox;
@@ -83,29 +86,33 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class KitOrderScreen extends Screen {
 
-    private OrderManager    manager;
-    private SecurityModule  security;
+    private OrderManager          manager;
+    private SecurityModule        security;
 
-    private ButtonGroup     atoz;
-    private ScreenNavigator nav;
+    private ButtonGroup           atoz;
+    private ScreenNavigator       nav;
 
-    private ItemTab         itemTab;
-    private FillTab         fillTab;
-    private ShipNoteTab     shipNoteTab;
-    private CustomerNoteTab custNoteTab;
-    private Tabs            tab;
+    private ItemTab               itemTab;
+    private FillTab               fillTab;
+    private ShipNoteTab           shipNoteTab;
+    private CustomerNoteTab       custNoteTab;
+    private ReportToBillToTab     reportToBillToTab;
+    private Tabs                  tab;
 
-    private AppButton       queryButton, previousButton, nextButton, addButton, updateButton,
-                            commitButton, abortButton;
-    private MenuItem        orderHistory, itemHistory;
-    private TextBox         id, neededInDays, requestedBy, organizationAddressMultipleUnit,
-                            organizationAddressStreetAddress, organizationAddressCity,
-                            organizationAddressState, organizationAddressZipCode;
-    private CalendarLookUp  orderedDate;
-    private Dropdown<Integer> statusId, shipFromId, costCenterId;
-    private AutoComplete<Integer> organizationName, description, reportToName, billToName;
-    private TabPanel        tabPanel;
-    private Integer         status_pending;
+    private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
+                                  commitButton, abortButton;
+    private MenuItem              orderHistory, itemHistory;
+    private TextBox               id, neededInDays, requestedBy, organizationAddressMultipleUnit,
+                                  organizationAddressStreetAddress, organizationAddressCity,
+                                  organizationAddressState, organizationAddressZipCode;
+    private CalendarLookUp        orderedDate;
+    private Dropdown<Integer>     statusId, shipFromId, costCenterId;
+    private AutoComplete<Integer> organizationName;
+    private AutoComplete<String>  description;
+    private TabPanel              tabPanel;
+    private Integer               status_pending;
+    
+    protected ScreenService       userService, organizationService;
 
     private enum Tabs {
         ITEM, FILL, SHIPNOTE, CUSTOMERNOTE, REPORTTO, TESTORDER, AUXDATA
@@ -115,6 +122,8 @@ public class KitOrderScreen extends Screen {
     public KitOrderScreen() throws Exception {
         super((ScreenDefInt)GWT.create(KitOrderDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
+        userService = new ScreenService("controller?service=org.openelis.server.SystemUserService");
+        organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
 
         security = OpenELIS.security.getModule("order");
         if (security == null)
@@ -134,7 +143,8 @@ public class KitOrderScreen extends Screen {
 
         try {
             DictionaryCache.preloadByCategorySystemNames("order_status", "cost_centers",
-                                                         "inventory_store", "inventory_unit");
+                                                         "inventory_store", "inventory_unit",
+                                                         "order_ship_from");
         } catch (Exception e) {
             Window.alert("OrderSreen: missing dictionary entry; " + e.getMessage());
             window.close();
@@ -312,14 +322,21 @@ public class KitOrderScreen extends Screen {
         organizationName = (AutoComplete)def.getWidget(OrderMeta.getOrganizationName());
         addScreenHandler(organizationName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                organizationName.setSelection(manager.getOrder().getOrganizationId(),
-                                              manager.getOrder().getOrganization().getName());
+                OrderViewDO data;                                    
+                
+                data = manager.getOrder();
+                if (data.getOrganization() != null) {
+                    organizationName.setSelection(data.getOrganizationId(),
+                                                  data.getOrganization().getName());
+                } else {
+                    organizationName.setSelection(null,"");
+                }
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                OrganizationViewDO data;
+                OrganizationDO data;
                 
-                data = (OrganizationViewDO) organizationName.getSelection().data;
+                data = (OrganizationDO) organizationName.getSelection().data;
                 manager.getOrder().setOrganizationId(data.getId());
                 manager.getOrder().setOrganization(data);
                 
@@ -334,6 +351,47 @@ public class KitOrderScreen extends Screen {
                 organizationName.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 organizationName.setQueryMode(event.getState() == State.QUERY);
             }
+        });
+        
+        
+        organizationName.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                QueryFieldUtil parser;
+                TableDataRow row;
+                OrganizationDO data;
+                ArrayList<OrganizationDO> list;
+                ArrayList<TableDataRow> model;
+
+                parser = new QueryFieldUtil();
+                parser.parse(event.getMatch());
+
+                window.setBusy();
+                try {
+                    list = organizationService.callList("fetchByIdOrName", parser.getParameter().get(0));
+                    model = new ArrayList<TableDataRow>();
+                    for (int i = 0; i < list.size(); i++ ) {
+                        row = new TableDataRow(4);
+                        data = list.get(i);
+
+                        row.key = data.getId();
+                        row.cells.get(0).value = data.getName();
+                        row.cells.get(1).value = data.getAddress().getStreetAddress();
+                        row.cells.get(2).value = data.getAddress().getCity();
+                        row.cells.get(3).value = data.getAddress().getState();
+                        
+                        row.data = data;
+                        
+                        model.add(row);
+                    }
+                    organizationName.showAutoMatches(model);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    Window.alert(e.getMessage());
+                }
+                window.clearStatus();
+                
+            }
+            
         });
 
         statusId = (Dropdown)def.getWidget(OrderMeta.getStatusId());
@@ -355,7 +413,13 @@ public class KitOrderScreen extends Screen {
         organizationAddressMultipleUnit = (TextBox)def.getWidget(OrderMeta.getOrganizationAddressMultipleUnit());
         addScreenHandler(organizationAddressMultipleUnit, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                organizationAddressMultipleUnit.setValue(manager.getOrder().getOrganization().getAddress().getMultipleUnit());
+                OrderViewDO data;
+                
+                data = manager.getOrder();
+                if (data.getOrganization() != null) 
+                    organizationAddressMultipleUnit.setValue(data.getOrganization().getAddress().getMultipleUnit());
+                else 
+                    organizationAddressMultipleUnit.setValue(null);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -387,7 +451,13 @@ public class KitOrderScreen extends Screen {
         organizationAddressStreetAddress = (TextBox)def.getWidget(OrderMeta.getOrganizationAddressStreetAddress());
         addScreenHandler(organizationAddressStreetAddress, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                organizationAddressStreetAddress.setValue(manager.getOrder().getOrganization().getAddress().getStreetAddress());
+                OrderViewDO data;
+                
+                data = manager.getOrder();
+                if (data.getOrganization() != null)
+                    organizationAddressStreetAddress.setValue(data.getOrganization().getAddress().getStreetAddress());
+                else 
+                    organizationAddressStreetAddress.setValue(null);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -419,7 +489,13 @@ public class KitOrderScreen extends Screen {
         organizationAddressCity = (TextBox)def.getWidget(OrderMeta.getOrganizationAddressCity());
         addScreenHandler(organizationAddressCity, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                organizationAddressCity.setValue(manager.getOrder().getOrganization().getAddress().getCity());
+                OrderViewDO data;
+                
+                data = manager.getOrder();
+                if (data.getOrganization() != null)
+                    organizationAddressCity.setValue(data.getOrganization().getAddress().getCity());
+                else 
+                    organizationAddressCity.setValue(null);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -451,7 +527,13 @@ public class KitOrderScreen extends Screen {
         organizationAddressState = (TextBox)def.getWidget(OrderMeta.getOrganizationAddressState());
         addScreenHandler(organizationAddressState, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                organizationAddressState.setValue(manager.getOrder().getOrganization().getAddress().getState());
+                OrderViewDO data;
+                
+                data = manager.getOrder();
+                if (data.getOrganization() != null)
+                    organizationAddressState.setValue(data.getOrganization().getAddress().getState());
+                else 
+                    organizationAddressState.setValue(null);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -467,7 +549,13 @@ public class KitOrderScreen extends Screen {
         organizationAddressZipCode = (TextBox)def.getWidget(OrderMeta.getOrganizationAddressZipCode());
         addScreenHandler(organizationAddressZipCode, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                organizationAddressZipCode.setValue(manager.getOrder().getOrganization().getAddress().getZipCode());
+                OrderViewDO data;
+                
+                data = manager.getOrder();
+                if (data.getOrganization() != null)
+                    organizationAddressZipCode.setValue(data.getOrganization().getAddress().getZipCode());
+                else
+                    organizationAddressZipCode.setValue(null);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -483,7 +571,10 @@ public class KitOrderScreen extends Screen {
         description = (AutoComplete)def.getWidget(OrderMeta.getDescription());
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                description.setSelection(null, manager.getOrder().getDescription());
+                String desc;
+                
+                desc = manager.getOrder().getDescription();
+                description.setSelection(desc, desc);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -496,6 +587,20 @@ public class KitOrderScreen extends Screen {
             }
         });
 
+        description.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                TableDataRow row;
+                ArrayList<TableDataRow> model;
+
+                model = new ArrayList<TableDataRow>();
+                
+                row = new TableDataRow(event.getMatch(), event.getMatch());
+                model.add(row);
+
+                description.showAutoMatches(model);
+            }
+
+        });
 
         //
         // tabs
@@ -565,6 +670,19 @@ public class KitOrderScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 custNoteTab.setState(event.getState());
+            }
+        });
+        
+        reportToBillToTab = new ReportToBillToTab(def, window);
+        addScreenHandler(reportToBillToTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                reportToBillToTab.setManager(manager);
+                if (tab == Tabs.REPORTTO)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                reportToBillToTab.setState(event.getState());
             }
         });
 
@@ -659,7 +777,6 @@ public class KitOrderScreen extends Screen {
     }
     
     private void initializeDropdowns() {
-        DictionaryDO dict;
         ArrayList<TableDataRow> model;
 
         // order status dropdown
@@ -676,6 +793,13 @@ public class KitOrderScreen extends Screen {
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
         costCenterId.setModel(model);
+        
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("order_ship_from"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        
+        shipFromId.setModel(model);
         
         try {
             status_pending = DictionaryCache.getIdFromSystemName("order_status_pending");
@@ -700,6 +824,7 @@ public class KitOrderScreen extends Screen {
         fillTab.draw();
         shipNoteTab.draw();
         custNoteTab.draw();
+        reportToBillToTab.draw();        
         
         setFocus(id);
         window.setDone(consts.get("enterFieldsToQuery"));
@@ -886,6 +1011,10 @@ public class KitOrderScreen extends Screen {
                     case CUSTOMERNOTE:
                         manager = OrderManager.fetchWithNotes(id);
                         break;
+                    case REPORTTO:
+                        manager = OrderManager.fetchById(id);
+                        break;    
+                        
                 }
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
@@ -919,6 +1048,9 @@ public class KitOrderScreen extends Screen {
             case CUSTOMERNOTE:
                 custNoteTab.draw();
                 break;
+            case REPORTTO:
+                reportToBillToTab.draw();
+                break;    
         }
     }
 }
