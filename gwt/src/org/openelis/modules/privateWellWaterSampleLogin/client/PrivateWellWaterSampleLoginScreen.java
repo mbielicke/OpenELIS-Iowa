@@ -534,9 +534,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collectedTime.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                collectedTime.enable(EnumSet.of(State.ADD, State.UPDATE)
                                             .contains(event.getState()));
-                collectedTime.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
