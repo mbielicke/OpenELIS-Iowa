@@ -28,6 +28,7 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
@@ -139,6 +140,44 @@ public class WorksheetAnalysisManager implements RPC {
         analyses.get(i).worksheetQcResult = qcResult;
     }
 
+    public SampleDataBundle getBundleAt(int i) throws Exception {
+        int                       j, k;
+        SampleManager             sManager;
+        SampleItemManager         siManager;
+        AnalysisManager           aManager;
+        AnalysisViewDO            aVDO;
+        WorksheetAnalysisDO       waDO;
+        WorksheetAnalysisListItem analysis = analyses.get(i);
+
+        if (analysis.bundle == null) {
+            waDO = analysis.worksheetAnalysis;
+            if (waDO != null && waDO.getId() != null) {
+                try {
+                    sManager = SampleManager.fetchByAccessionNumber(Integer.valueOf(waDO.getAccessionNumber()));
+                    siManager = sManager.getSampleItems();
+                    for (j = 0; j < siManager.count(); j++) {
+                        aManager = siManager.getAnalysisAt(j);
+                        for (k = 0; k < aManager.count(); k++) {
+                            aVDO = aManager.getAnalysisAt(k);
+                            if (waDO.getAnalysisId().equals(aVDO.getId())) {
+                                analysis.bundle = aManager.getBundleAt(k);
+                                break;
+                            }
+                        }
+                        if (analysis.bundle != null)
+                            break;
+                    }
+                } catch (NotFoundException e) {
+                    //ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+        }
+            
+        return analysis.bundle;
+    }
+
     public WorksheetAnalysisListItem getItemAt(int i) {
         return (WorksheetAnalysisListItem)analyses.get(i);
     }
@@ -207,5 +246,6 @@ public class WorksheetAnalysisManager implements RPC {
         WorksheetAnalysisDO      worksheetAnalysis;
         WorksheetResultManager   worksheetResult;
         WorksheetQcResultManager worksheetQcResult;
+        SampleDataBundle         bundle;
     }
 }

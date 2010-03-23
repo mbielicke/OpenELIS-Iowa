@@ -41,6 +41,7 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
                                 SYSTEM_USER_ID       = "_worksheet.systemUserId",
                                 STATUS_ID            = "_worksheet.statusId",
                                 FORMAT_ID            = "_worksheet.formatId",
+                                BATCH_CAPACITY       = "_worksheet.batchCapacity",
                                 RELATED_WORKSHEET_ID = "_worksheet.relatedWorksheetId",
 
                                 ITEM_ID             = "_worksheetItem.id",
@@ -69,10 +70,12 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
                                 QC_RESULT_SORT_ORDER            = "_worksheetQcResult.sortOrder",
                                 QC_RESULT_QC_ANALYTE_ID         = "_worksheetQcResult.qcAnalyteId",
                                 QC_RESULT_TYPE_ID               = "_worksheetQcResult.typeId",
-                                QC_RESULT_VALUE                 = "_worksheetQcResult.value"/*,
+                                QC_RESULT_VALUE                 = "_worksheetQcResult.value",
                                 
-                                TEST_NAME                       = "_test.name",
-                                METHOD_NAME                     = "_method.name"*/;
+                                SAMP_DESCRIPTION                = "_sample.description",   // combined field for all domain descriptions
+                                ANALYSIS_STATUS_ID              = "_analysis.status_id",
+                                ANALYSIS_TEST_NAME              = "_analysis.test.name",
+                                ANALYSIS_TEST_METHOD_NAME       = "_analysis.test.method.name";
 
     private static HashSet<String> names;
 
@@ -109,6 +112,10 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
 
     public static String getFormatId() {
         return FORMAT_ID;
+    }
+
+    public static String getBatchCapacity() {
+        return BATCH_CAPACITY;
     }
 
     public static String getRelatedWorksheetId() {
@@ -210,15 +217,23 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
     public static String getWorksheetQcResultValue() {
         return QC_RESULT_VALUE;
     }
-/*
-    public static String getTestName() {
-        return TEST_NAME;
+
+    public static String getSampleDescription() {
+        return SAMP_DESCRIPTION;
     }
 
-    public static String getMethodName() {
-        return METHOD_NAME;
+    public static String getAnalysisStatusId() {
+        return ANALYSIS_STATUS_ID;
     }
-*/
+
+    public static String getAnalysisTestName() {
+        return ANALYSIS_TEST_NAME;
+    }
+
+    public static String getAnalysisTestMethodName() {
+        return ANALYSIS_TEST_METHOD_NAME;
+    }
+
     public static HashSet<String> getNames() {
         return names;
     }

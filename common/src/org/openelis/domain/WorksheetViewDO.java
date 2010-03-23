@@ -49,8 +49,10 @@ public class WorksheetViewDO extends WorksheetDO {
     }
 
     public WorksheetViewDO(Integer id, Date createdDate, Integer systemUserId,
-                           Integer statusId, Integer formatId, Integer relatedWorksheetId) {
-        super(id, createdDate, systemUserId, statusId, formatId, relatedWorksheetId);
+                           Integer statusId, Integer formatId, Integer batchCapacity,
+                           Integer relatedWorksheetId) {
+        super(id, createdDate, systemUserId, statusId, formatId, batchCapacity,
+              relatedWorksheetId);
     }
 
     public String getSystemUser() {
