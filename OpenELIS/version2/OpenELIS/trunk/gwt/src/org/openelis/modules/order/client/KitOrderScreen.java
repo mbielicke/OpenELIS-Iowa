@@ -602,14 +602,35 @@ public class KitOrderScreen extends Screen {
         description.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 TableDataRow row;
-                ArrayList<TableDataRow> model;
+                ArrayList<TableDataRow> model;                
+                QueryFieldUtil parser;
+                IdNameVO data;
+                ArrayList<IdNameVO> list;
 
-                model = new ArrayList<TableDataRow>();
+                parser = new QueryFieldUtil();
+                parser.parse(event.getMatch());
+
+                window.setBusy();
+                try {
+                    list = service.callList("fetchByDescription", parser.getParameter().get(0));
+                    model = new ArrayList<TableDataRow>();
+                    
+                    row = new TableDataRow(event.getMatch(), event.getMatch());
+                    model.add(row);
+                    
+                    for (int i = 0; i < list.size(); i++ ) {
+                        data = list.get(i);
+                        row = new TableDataRow(data.getName(), data.getName());                  
+                        model.add(row);
+                    }
+                    description.showAutoMatches(model);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    Window.alert(e.getMessage());
+                }
+                window.clearStatus();
                 
-                row = new TableDataRow(event.getMatch(), event.getMatch());
-                model.add(row);
-
-                description.showAutoMatches(model);
+            
             }
 
         });

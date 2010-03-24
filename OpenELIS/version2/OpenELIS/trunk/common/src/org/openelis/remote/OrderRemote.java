@@ -35,4 +35,6 @@ import org.openelis.gwt.common.data.QueryData;
 @Remote
 public interface OrderRemote {
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
+
+    public ArrayList<IdNameVO> fetchByDescription(String string, int max) throws Exception;
 }

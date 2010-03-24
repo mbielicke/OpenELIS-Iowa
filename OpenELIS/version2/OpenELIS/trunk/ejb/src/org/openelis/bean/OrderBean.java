@@ -50,6 +50,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.OrderLocal;
 import org.openelis.local.OrganizationLocal;
+import org.openelis.manager.OrderManager;
 import org.openelis.meta.OrderMeta;
 import org.openelis.remote.OrderRemote;
 import org.openelis.util.QueryBuilderV2;
@@ -106,6 +107,16 @@ public class OrderBean implements OrderRemote, OrderLocal {
             throw new DatabaseException(e);
         }
         return data;
+    }
+    
+    public ArrayList<IdNameVO> fetchByDescription(String match, int max) throws Exception {
+        Query query;
+        
+        query = manager.createNamedQuery("Order.FetchByDescription");
+        query.setParameter("description", match);
+        query.setMaxResults(max);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
 
     @SuppressWarnings("unchecked")
