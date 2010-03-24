@@ -557,12 +557,15 @@ public class QuickEntryScreen extends Screen {
     }
 
     public void testLookupFinished(ArrayList<SampleDataBundle> bundles) {
+        int numOfRows;
         window.setBusy();
         TableDataRow newRow;
 
+        numOfRows = 0;
         if (bundles.size() == 0)
             rowToBeAdded = null;
         else {
+            numOfRows = quickEntryTable.numRows();
             newRow = null;
             quickEntryTable.fireEvents(false);
 
@@ -580,9 +583,13 @@ public class QuickEntryScreen extends Screen {
 
                 updateQuickEntryRowFromBundle(quickEntryTable.numRows() - 1);
             }
+            
 
             quickEntryTable.fireEvents(true);
         }
+        
+        if(numOfRows == 0 && quickEntryTable.numRows() > 0)
+            setState(State.ADD);
 
         window.clearStatus();
     }
@@ -671,8 +678,6 @@ public class QuickEntryScreen extends Screen {
             rowToBeAdded = row;
             analysisTestChanged(id, (typeDO.getTestId() == null), anBundle, sampleMan);
 
-            if(quickEntryTable.numRows() == 1)
-                setState(State.ADD);
         } catch (Exception e) {
             Window.alert("rowAdded: " + e.getMessage());
         }
