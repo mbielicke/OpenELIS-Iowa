@@ -98,9 +98,8 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     protected SampleItemViewDO                          sampleItem;
 
     protected Integer                                   analysisLoggedInId, analysisCancelledId,
-                                                        analysisReleasedId, analysisInPrepId,
-                                                        changedTestId;
-
+                    analysisReleasedId, analysisInPrepId, changedTestId;
+    
     private Confirm                                     changeTestConfirm;
     protected ScreenService                             panelService;
 
@@ -128,18 +127,19 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 changedTestId = event.getValue();
-               
+
                 if (manager.hasAnalysisResultsAt(analysisIndex)) {
                     if (changeTestConfirm == null) {
                         changeTestConfirm = new Confirm(Confirm.Type.WARN,
-                                                            consts.get("loseResultsCaption"),
-                                                            consts.get("loseResultsWarning"),
-                                                            "No", "Yes");
+                                                        consts.get("loseResultsCaption"),
+                                                        consts.get("loseResultsWarning"), "No",
+                                                        "Yes");
                         changeTestConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
                             public void onSelection(SelectionEvent<Integer> event) {
                                 switch (event.getSelectedItem().intValue()) {
                                     case 0:
-                                        test.setSelection(analysis.getTestId(), analysis.getTestName());
+                                        test.setSelection(analysis.getTestId(),
+                                                          analysis.getTestName());
                                         break;
                                     case 1:
                                         testChanged(changedTestId);
@@ -154,7 +154,6 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                     testChanged(changedTestId);
                 }
 
-                
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -289,7 +288,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
         });
 
-        sectionId = (Dropdown<Integer>)def.getWidget(SampleMeta.getAnalysisSectionName());
+        sectionId = (Dropdown<Integer>)def.getWidget(SampleMeta.getAnalysisSectionId());
         addScreenHandler(sectionId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 ArrayList<TableDataRow> sections;
@@ -329,7 +328,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
             public void onStateChange(StateChangeEvent<State> event) {
                 sectionId.enable(canEdit() &&
-                                 EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                                 EnumSet.of(State.ADD, State.UPDATE, State.QUERY).contains(event.getState()));
                 sectionId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -374,7 +373,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
             public void onStateChange(StateChangeEvent<State> event) {
                 unitOfMeasureId.enable(canEdit() &&
-                                       EnumSet.of(State.ADD, State.UPDATE)
+                                       EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                               .contains(event.getState()));
                 unitOfMeasureId.setQueryMode(event.getState() == State.QUERY);
             }
@@ -592,10 +591,10 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         unitModel = new HashMap<Integer, ArrayList<TableDataRow>>();
         fullUnitShown = true;
     }
-    
-    private void testChanged(Integer id){
+
+    private void testChanged(Integer id) {
         TableDataRow selectedRow;
-        
+
         try {
             selectedRow = test.getSelection();
 

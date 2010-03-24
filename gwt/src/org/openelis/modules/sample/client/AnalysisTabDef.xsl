@@ -74,7 +74,7 @@ UIRF Software License are applicable instead of those above.
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'section')" />:
           </text>
-          <dropdown key="{meta:getAnalysisSectionName()}" width="150" case="LOWER" popWidth="150" field="Integer" />
+          <dropdown key="{meta:getAnalysisSectionId()}" width="150" case="LOWER" popWidth="150" field="Integer" />
         </row>
         <row>
           <text style="Prompt">
