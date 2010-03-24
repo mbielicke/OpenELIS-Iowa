@@ -33,9 +33,12 @@ import javax.naming.InitialContext;
 
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.SampleDO;
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
+import org.openelis.local.SampleLocal;
+import org.openelis.local.SampleManagerLocal;
 import org.openelis.local.WorksheetAnalysisLocal;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetAnalysisManager.WorksheetAnalysisListItem;
@@ -158,12 +161,13 @@ public class WorksheetAnalysisManagerProxy {
         AnalysisViewDO            aVDO;
         AnalysisManager           aManager;
         DictionaryDO              newStatus;
+        SampleDO                  sample;
         SampleItemManager         siManager;
         SampleManager             sManager;
         WorksheetAnalysisListItem listItem;
         WorksheetAnalysisLocal    local;
         
-        local = local();
+        local  = local();
 
         if (analysis.getQcId() != null) {
             //
@@ -179,7 +183,8 @@ public class WorksheetAnalysisManagerProxy {
             //
             doBreak = false;
             newStatus = dictionaryLocal().fetchBySystemName("analysis_initiated");
-            sManager = SampleManager.fetchByAccessionNumber(Integer.valueOf(analysis.getAccessionNumber()));
+            sample = sampleLocal().fetchByAccessionNumber(Integer.valueOf(analysis.getAccessionNumber()));
+            sManager = sampleManagerLocal().fetchForUpdate(sample.getId());
             siManager = sManager.getSampleItems();
             for (j = 0; j < siManager.count(); j++) {
                 aManager = siManager.getAnalysisAt(j);
@@ -217,6 +222,7 @@ public class WorksheetAnalysisManagerProxy {
         AnalysisViewDO            aVDO;
         AnalysisManager           aManager;
         DictionaryDO              newStatus;
+        SampleDO                  sample;
         SampleItemManager         siManager;
         SampleManager             sManager;
         WorksheetAnalysisListItem listItem;
@@ -232,7 +238,8 @@ public class WorksheetAnalysisManagerProxy {
             if (analysis.getAnalysisId() != null) {
                 doBreak = false;
                 newStatus = dictionaryLocal().fetchBySystemName("analysis_completed");
-                sManager = SampleManager.fetchByAccessionNumber(Integer.valueOf(analysis.getAccessionNumber()));
+                sample = sampleLocal().fetchByAccessionNumber(Integer.valueOf(analysis.getAccessionNumber()));
+                sManager = sampleManagerLocal().fetchForUpdate(sample.getId());
                 siManager = sManager.getSampleItems();
                 for (k = 0; k < siManager.count(); k++) {
                     aManager = siManager.getAnalysisAt(k);
@@ -307,6 +314,30 @@ public class WorksheetAnalysisManagerProxy {
         try {
             ctx = new InitialContext();
             return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
+        } catch(Exception e) {
+             System.out.println(e.getMessage());
+             return null;
+        }
+    }
+
+    private SampleLocal sampleLocal() {
+        InitialContext ctx;
+        
+        try {
+            ctx = new InitialContext();
+            return (SampleLocal)ctx.lookup("openelis/SampleBean/local");
+        } catch(Exception e) {
+             System.out.println(e.getMessage());
+             return null;
+        }
+    }
+
+    private SampleManagerLocal sampleManagerLocal() {
+        InitialContext ctx;
+        
+        try {
+            ctx = new InitialContext();
+            return (SampleManagerLocal)ctx.lookup("openelis/SampleManagerBean/local");
         } catch(Exception e) {
              System.out.println(e.getMessage());
              return null;
