@@ -206,8 +206,8 @@ public class SampleMeta implements Meta, MetaMap {
                     PROJECT_OWNER_ID = "_project.ownerId",
                     PROJECT_SCRIPTLET_ID = "_project.scriptletId",
 
-                    ANALYSIS_TEST_NAME = "_test.name", ANALYSIS_SECTION_NAME = "_section.name",
-                    ANALYSIS_METHOD_NAME = "_test.method.name";
+                    ANALYSIS_TEST_NAME = "_test.name", 
+                    ANALYSIS_METHOD_NAME = "_method.name";
 
     private static HashSet<String> names;
 
@@ -286,8 +286,7 @@ public class SampleMeta implements Meta, MetaMap {
                                                   PROJECT_STARTED_DATE, PROJECT_COMPLETED_DATE,
                                                   PROJECT_IS_ACTIVE, PROJECT_REFERENCE_TO,
                                                   PROJECT_OWNER_ID, PROJECT_SCRIPTLET_ID,
-                                                  ANALYSIS_TEST_NAME, ANALYSIS_SECTION_NAME,
-                                                  ANALYSIS_METHOD_NAME));
+                                                  ANALYSIS_TEST_NAME, ANALYSIS_METHOD_NAME));
     }
 
     public static String getId() {
@@ -702,7 +701,7 @@ public class SampleMeta implements Meta, MetaMap {
         return ANALYSISSUBQA_ID;
     }
 
-    public static String getAnalysisAubQaName() {
+    public static String getAnalysisSubQaName() {
         return ANALYSISSUBQA_NAME;
     }
 
@@ -930,10 +929,6 @@ public class SampleMeta implements Meta, MetaMap {
         return ANALYSIS_METHOD_NAME;
     }
 
-    public static String getAnalysisSectionName() {
-        return ANALYSIS_SECTION_NAME;
-    }
-
     public boolean hasColumn(String columnName) {
         return names.contains(columnName);
     }
@@ -961,23 +956,39 @@ public class SampleMeta implements Meta, MetaMap {
         if (where.indexOf("_wellLocationAddress.") > -1)
             from += ", IN (_samplePrivateWell.locationAddress) _wellLocationAddress ";
             
-        //sample sdwis
-        
-        //other
-
+        //common sample fields
         if (where.indexOf("project.") > -1){
             from += ", IN (_sample.sampleProject) _sampleProject ";
             from += ", IN (_sampleProject.project) _project ";
         }
 
-        if (where.indexOf("sampleItem.") > -1 || where.indexOf("analysis.") > -1)
+        if (where.indexOf("sampleItem.") > -1 || where.indexOf("analysis.") > -1 || where.indexOf("test.") > -1 || 
+                        where.indexOf("method.") > -1|| where.indexOf("analysisQaevent.") > -1 || 
+                        where.indexOf("aQaevent.") > -1)
             from += ", IN (_sample.sampleItem) _sampleItem";
 
-        if (where.indexOf("analysis.") > -1)
+        if (where.indexOf("analysis.") > -1 || where.indexOf("test.") > -1 || 
+                        where.indexOf("method.") > -1 || where.indexOf("analysisQaevent.") > -1 || 
+                        where.indexOf("aQaevent.") > -1)
             from += ", IN (_sampleItem.analysis) _analysis ";
+        
+        if (where.indexOf("test.") > -1 || where.indexOf("method.") > -1)
+            from += ", IN (_analysis.test) _test ";
+        
+        if (where.indexOf("method.") > -1)
+            from += ", IN (_test.method) _method ";
+        
+        if(where.indexOf("sampleQaevent.") > -1 || where.indexOf("sQaevent.") > -1)
+            from += ", IN(_sample.sampleQAEvent) _sampleQaevent";
 
-        if (where.indexOf("sampleQAEvent.") > -1)
-            from += ", IN (_sampleItem.sampleQAEvent) sampleQAEvent ";
+        if (where.indexOf("sQaevent.") > -1)
+            from += ", IN (_sampleQaevent.qaEvent) _sQaevent ";
+
+        if(where.indexOf("analysisQaevent.") > -1 || where.indexOf("aQaevent.") > -1)
+            from += ", IN(_analysis.analysisQAEvent) _analysisQaevent";
+
+        if (where.indexOf("aQaevent.") > -1)
+            from += ", IN (_analysisQaevent.qaEvent) _aQaevent ";
 
         return from;
     }

@@ -136,6 +136,10 @@ public class Analysis implements Auditable, Cloneable {
   @JoinColumn(name = "test_id", insertable = false, updatable = false)
   private Test test;
   
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "section_id", insertable = false, updatable = false)
+  private Section section;
+  
   //analysis qa events
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "analysis_id")
@@ -341,5 +345,11 @@ public Analysis getPreAnalysis() {
 }
 public void setPreAnalysis(Analysis preAnalysis) {
     this.preAnalysis = preAnalysis;
+}
+public Section getSection() {
+    return section;
+}
+public void setSection(Section section) {
+    this.section = section;
 }
 }   
