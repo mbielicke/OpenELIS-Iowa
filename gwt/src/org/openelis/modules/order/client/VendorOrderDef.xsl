@@ -1,3 +1,4 @@
+
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -24,6 +25,7 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
+
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -76,7 +78,9 @@ UIRF Software License are applicable instead of those above.
           </HorizontalPanel>
         </CollapsePanel>
         <VerticalPanel padding="0" spacing="0">
+
 <!--button panel code-->
+
           <AbsolutePanel spacing="0" style="ButtonPanelContainer">
             <HorizontalPanel>
               <xsl:call-template name="queryButton">
@@ -137,7 +141,9 @@ UIRF Software License are applicable instead of those above.
               </menuPanel>
             </HorizontalPanel>
           </AbsolutePanel>
+
 <!--end button panel-->
+
           <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
@@ -227,9 +233,13 @@ UIRF Software License are applicable instead of those above.
                 </widget>
               </row>
             </TablePanel>
+
 <!-- TAB PANEL -->
+
             <TabPanel key="orderTabPanel" width="591" height="275">
+
 <!-- TAB 1 (items) -->
+
               <tab key="itemsTab" text="{resource:getString($constants,'items')}">
                 <VerticalPanel padding="0" spacing="0">
                   <widget>
@@ -279,7 +289,9 @@ UIRF Software License are applicable instead of those above.
                   </HorizontalPanel>
                 </VerticalPanel>
               </tab>
+
 <!-- TAB 2 (receipts) -->
+
               <tab key="receiptsTab" text="{resource:getString($constants,'receipt')}">
                 <table key="receiptsTable" width="auto" maxRows="11" showScroll="ALWAYS" title="">
                   <col width="80" header="{resource:getString($constants,'dateRec')}">
@@ -302,7 +314,9 @@ UIRF Software License are applicable instead of those above.
                   </col>
                 </table>
               </tab>
+
 <!-- TAB 3 (order notes) -->
+
               <tab key="noteTab" text="{resource:getString($constants,'orderShippingNotes')}">
                 <VerticalPanel padding="0" spacing="0">
                   <notes key="notesPanel" width="591" height="247" />
