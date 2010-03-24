@@ -365,8 +365,11 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         	public void onClick(ClickEvent event){
         		try {
         			cancelTest();
+        		}catch (ValidationErrorsList e) {
+                        showErrors(e);
         		}catch(Exception e) {
-        			
+        			e.printStackTrace();
+        			Window.alert(e.toString());
         		}
         	}
         	public void onStateChange(StateChangeEvent<State> event){
@@ -1068,7 +1071,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 note.data = bundle;
                 note.cells.add(new TableDataCell("Notes"));
                 row.addItem(note);
-                itemsTree.addChildItem(parentRow, row, parentRow.getItems().size() - 2);
+                atozTree.addChildItem(parentRow, row, parentRow.getItems().size() - 2);
                 
                 return row;
             }
@@ -1215,11 +1218,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     					analysis.leafType = "analysis";
     					analysis.data = sm.getSampleItems().getAnalysisAt(i).getBundleAt(j);
     					analysis.cells.add(new TableDataCell(sm.getSampleItems().getAnalysisAt(i).getAnalysisAt(j).getTestName()+" : "+sm.getSampleItems().getAnalysisAt(i).getAnalysisAt(j).getMethodName()));
-    					try {
-    						analysis.cells.add(new TableDataCell(DictionaryCache.getEntryFromId(sm.getSampleItems().getAnalysisAt(i).getAnalysisAt(j).getStatusId()).getEntry()));
-    					}catch(Exception e){
-    						analysis.cells.add(new TableDataCell(sm.getSampleItems().getAnalysisAt(i).getAnalysisAt(j).getStatusId()));
-    					}
+    					analysis.cells.add(new TableDataCell(sm.getSampleItems().getAnalysisAt(i).getAnalysisAt(j).getStatusId()));
     					TreeDataItem results = new TreeDataItem();
     					results.leafType = "result";
     					results.data = sm.getSampleItems().getAnalysisAt(i).getBundleAt(j);
@@ -1517,6 +1516,13 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
         ((Dropdown<Integer>)def.getWidget(SampleMeta.getStatusId())).setModel(model);
         
+        // analysis status dropdown
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("analysis_status"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        ((Dropdown<Integer>)atozTree.getColumns().get("analysis").get(1).colWidget).setModel(model);
+        
     }
     
     private void drawTabs() {
@@ -1609,6 +1615,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             
 			atozTree.addChildItem(sampleItem, analysis, analysisIndex);			
 			atozTree.select(analysis);
+			atozTree.scrollToSelection();
 			
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -1621,6 +1628,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     	int sindex = ((SampleDataBundle)atozTree.getSelection().data).getSampleItemIndex();
     	int aindex = ((SampleDataBundle)atozTree.getSelection().data).getAnalysisIndex();
     	manager.getSampleItems().getAnalysisAt(sindex).cancelAnalysisAt(aindex);
+    	atozTree.setCell(atozTree.getSelectedRow(), 1, manager.getSampleItems().getAnalysisAt(sindex).getAnalysisAt(aindex).getStatusId());
     }
 
 	public HandlerRegistration addActionHandler(ActionHandler handler) {
