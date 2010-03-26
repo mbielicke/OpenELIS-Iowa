@@ -39,16 +39,19 @@ UIRF Software License are applicable instead of those above.
   <xsl:template name="InternalNoteTab">
     <xsl:param name="widthParam" select="250" />
     <xsl:param name="heightParam" select="250" />
+    <xsl:variable name="language" select="locale" />
+    <xsl:variable name="props" select="props" />
+    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <VerticalPanel padding="0" spacing="0">
-                  <notes key="notesPanel" width="{string($widthParam)}" height="{string($heightParam)}" />
-                  <appButton key="standardNoteButton" style="Button">
-                    <HorizontalPanel>
-                      <AbsolutePanel style="StandardNoteButtonImage" />
-                      <text>
-                        <xsl:value-of select="resource:getString($constants,'addNote')" />
-                      </text>
-                    </HorizontalPanel>
-                  </appButton>
-                </VerticalPanel>
+      <notes key="notesPanel" width="{string($widthParam)}" height="{string($heightParam)}" />
+      <appButton key="standardNoteButton" style="Button">
+        <HorizontalPanel>
+          <AbsolutePanel style="StandardNoteButtonImage" />
+          <text>
+            <xsl:value-of select="resource:getString($constants,'addNote')" />
+          </text>
+        </HorizontalPanel>
+      </appButton>
+    </VerticalPanel>
   </xsl:template>
 </xsl:stylesheet>
