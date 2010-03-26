@@ -38,18 +38,23 @@ UIRF Software License are applicable instead of those above.
   xmlns:meta="xalan://org.openelis.meta.SampleMeta">
 
   <xsl:template name="AuxDataTab">
+  	<xsl:param name="col2WidthParam" select="300" />
+  	<xsl:param name="col3WidthParam" select="303" />
+    <xsl:param name="maxRowsParam" select="6" />
     <VerticalPanel padding="0" spacing="0">
       <TablePanel padding="0" spacing="0">
         <row>
           <widget colspan="6">
-            <table key="auxValsTable" width="auto" maxRows="6" showScroll="ALWAYS" title="">
+            <table key="auxValsTable" width="auto" maxRows="{string($maxRowsParam)}" showScroll="ALWAYS" title="">
               <col width="85" header="{resource:getString($constants,'reportable')}">
                 <check />
               </col>
-              <col width="300" header="{resource:getString($constants,'name')}">
-                <label field="String" />
+              <col width="{string($col2WidthParam)}" header="{resource:getString($constants,'name')}">
+              	<autoComplete width="{string($col2WidthParam)}" popWidth="auto" field="Integer">
+                  <col width="{string($col2WidthParam)}" header="Name" />
+                </autoComplete>
               </col>
-              <col width="303" class="org.openelis.modules.sample.client.AuxTableColumn" header="{resource:getString($constants,'value')}">
+              <col width="{string($col3WidthParam)}" class="org.openelis.modules.sample.client.AuxTableColumn" header="{resource:getString($constants,'value')}">
                 <label field="String" />
               </col>
             </table>
