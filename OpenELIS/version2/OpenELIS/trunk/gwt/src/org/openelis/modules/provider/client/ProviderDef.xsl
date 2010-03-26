@@ -38,6 +38,7 @@ UIRF Software License are applicable instead of those above.
   xmlns:meta="xalan://org.openelis.meta.ProviderMeta">
 
   <xsl:import href="IMPORT/aToZOneColumn.xsl" />
+  <xsl:import href="OPENELIS/org/openelis/modules/note/client/InternalNoteTabDef.xsl" />
   <xsl:template match="doc">
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
@@ -247,17 +248,10 @@ UIRF Software License are applicable instead of those above.
               </tab>
 <!-- TAB 2 -->
               <tab key="notesTab" text="{resource:getString($constants,'note')}">
-                <VerticalPanel padding="0" spacing="0">
-                  <notes key="notesPanel" width="605" height="247" />
-                  <appButton key="standardNoteButton" style="Button">
-                    <HorizontalPanel>
-                      <AbsolutePanel style="StandardNoteButtonImage" />
-                      <text>
-                        <xsl:value-of select="resource:getString($constants,'addNote')" />
-                      </text>
-                    </HorizontalPanel>
-                  </appButton>
-                </VerticalPanel>
+              	<xsl:call-template name="InternalNoteTab">
+          			<xsl:with-param name="widthParam">605</xsl:with-param>
+          			<xsl:with-param name="heightParam">247</xsl:with-param>
+        		</xsl:call-template>
               </tab>
             </TabPanel>
           </VerticalPanel>
