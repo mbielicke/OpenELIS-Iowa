@@ -33,6 +33,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LocalizedException;
@@ -81,7 +82,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
     protected TableWidget           auxValsTable;
     protected AppButton             addAuxButton, removeAuxButton;
     protected TextBox               auxMethod, auxUnits, auxDesc;
-    protected AutoComplete<Integer> ac;
+    protected AutoComplete<Integer> ac, auxField;
     protected Integer               alphaLowerId, alphaUpperId, alphaMixedId, timeId, numericId,
                     dateId, dateTimeId, dictionaryId;
 
@@ -108,8 +109,10 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                auxValsTable.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
-                auxValsTable.setQueryMode(event.getState() == State.QUERY);
+                auxValsTable.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY).contains(event.getState()));
+                //auxValsTable.setQueryMode(event.getState() == State.QUERY);
+                //((HasField)auxValsTable.getColumns().get(1).colWidget).setQueryMode(false);
+                //auxValsTable.fireEvents(true);
             }
         });
         
@@ -120,21 +123,28 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                 r = event.getRow();
 
                 auxValsTable.clearCellExceptions(r, c);
+                window.clearStatus();
+                
+                if(state == State.QUERY && c == 0)
+                    event.cancel();
             }
         });
         auxValsTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
+                TableDataRow row;
                 Object val;
                 AuxDataViewDO data;
                 AuxFieldViewDO fieldDO;
-
-                if (state == State.QUERY)
-                    return;
-
+                AuxDataBundle adb;
+                
                 r = event.getRow();
                 c = event.getCol();
                 val = auxValsTable.getObject(r, c);
+                data = null;
+                
+                if(state == State.QUERY)
+                     return;
 
                 try {
                     data = manager.getAuxDataAt(r);
@@ -148,8 +158,8 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                         data.setIsReportable((String)val);
                         break;
                     case 2:
-                        TableDataRow row = auxValsTable.getRow(r);
-                        AuxDataBundle adb = (AuxDataBundle)row.data;
+                        row = auxValsTable.getRow(r);
+                        adb = (AuxDataBundle)row.data;
                         ResultValidator rv = adb.validator;
                         fieldDO = (AuxFieldViewDO)adb.fieldDO;
                         data.setValue(val.toString());
@@ -179,14 +189,20 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
 
         auxValsTable.addSelectionHandler(new SelectionHandler<TableRow>() {
             public void onSelection(SelectionEvent<TableRow> event) {
-                TableRow row = event.getSelectedItem();
-                AuxFieldViewDO fieldDO = ((AuxDataBundle)row.row.data).fieldDO;
-
-                auxMethod.setValue(fieldDO.getMethodName());
-                auxDesc.setValue(fieldDO.getDescription());
-                auxUnits.setValue(fieldDO.getUnitOfMeasureName());
+                TableRow row;
+                AuxDataBundle bundle;
                 
-                if(EnumSet.of(State.ADD, State.UPDATE).contains(state))
+                row = event.getSelectedItem();
+                bundle = (AuxDataBundle)row.row.data;
+                if(bundle != null){
+                    AuxFieldViewDO fieldDO = bundle.fieldDO;
+    
+                    auxMethod.setValue(fieldDO.getMethodName());
+                    auxDesc.setValue(fieldDO.getDescription());
+                    auxUnits.setValue(fieldDO.getUnitOfMeasureName());
+                }
+                
+                if(EnumSet.of(State.ADD, State.UPDATE, State.QUERY).contains(state))
                     removeAuxButton.enable(true);
             };
         });
@@ -222,7 +238,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addAuxButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                addAuxButton.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY).contains(event.getState()));
             }
         });
 
@@ -341,66 +357,69 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
 
                 for (int j = 0; j < man.count(); j++ ) {
                     fieldDO = man.getAuxFieldAt(j);
-                    values = man.getValuesAt(j).getValues();
-                    defaultValue = man.getValuesAt(j).getDefaultValue();
-                    valueDO = values.get(0);
-                    dataDO = new AuxDataViewDO();
-
-                    dataDO.setTypeId(valueDO.getTypeId());
-                    dataDO.setAuxFieldId(fieldDO.getId());
-                    dataDO.setIsReportable(fieldDO.getIsReportable());
-                    dataDO.setValue(valueDO.getValue());
-                    dataDO.setDictionary(valueDO.getDictionary());
-                    fieldDO.setTypeId(valueDO.getTypeId());
-
-                    manager.addAuxDataFieldsAndValues(dataDO, fieldDO, values);
-
-                    row = new TableDataRow(3);
-                    row.cells.get(0).value = fieldDO.getIsReportable();
-                    row.cells.get(1).value = fieldDO.getAnalyteName();
-
-                    validatorItem = getDataItemForRow(valueDO.getTypeId(), values);
-                    adb = new AuxDataBundle(validatorItem, fieldDO);
-                    row.data = adb;
-
-                    if (defaultValue != null) {
-                        try {
-                            if (dictionaryId.equals(valueDO.getTypeId())) {
-                                String dictionary, value;
-                                AuxFieldValueViewDO a;
-
-                                dictionary = defaultValue.getValue();
-
-                                value = null;
-                                for (int k = 0; k < values.size(); k++ ) {
-                                    a = values.get(k);
-                                    if (a.getDictionary().equals(dictionary)) {
-                                        value = a.getValue();
-                                        break;
+                    
+                    if("Y".equals(fieldDO.getIsActive())){
+                        values = man.getValuesAt(j).getValues();
+                        defaultValue = man.getValuesAt(j).getDefaultValue();
+                        valueDO = values.get(0);
+                        dataDO = new AuxDataViewDO();
+    
+                        dataDO.setTypeId(valueDO.getTypeId());
+                        dataDO.setAuxFieldId(fieldDO.getId());
+                        dataDO.setIsReportable(fieldDO.getIsReportable());
+                        dataDO.setValue(valueDO.getValue());
+                        dataDO.setDictionary(valueDO.getDictionary());
+                        fieldDO.setTypeId(valueDO.getTypeId());
+    
+                        manager.addAuxDataFieldsAndValues(dataDO, fieldDO, values);
+    
+                        row = new TableDataRow(3);
+                        row.cells.get(0).value = fieldDO.getIsReportable();
+                        row.cells.get(1).value = fieldDO.getAnalyteName();
+    
+                        validatorItem = getDataItemForRow(valueDO.getTypeId(), values);
+                        adb = new AuxDataBundle(validatorItem, fieldDO);
+                        row.data = adb;
+    
+                        if (defaultValue != null && state != State.QUERY) {
+                            try {
+                                if (dictionaryId.equals(valueDO.getTypeId())) {
+                                    String dictionary, value;
+                                    AuxFieldValueViewDO a;
+    
+                                    dictionary = defaultValue.getValue();
+    
+                                    value = null;
+                                    for (int k = 0; k < values.size(); k++ ) {
+                                        a = values.get(k);
+                                        if (a.getDictionary().equals(dictionary)) {
+                                            value = a.getValue();
+                                            break;
+                                        }
                                     }
-                                }
-
-                                if (value == null)
-                                    throw new Exception();
-                                else
+    
+                                    if (value == null)
+                                        throw new Exception();
+                                    else
+                                        row.cells.get(2).value = getCorrectColValueByType(
+                                                                                          value,
+                                                                                          dictionary,
+                                                                                          valueDO.getTypeId());
+    
+                                } else
                                     row.cells.get(2).value = getCorrectColValueByType(
-                                                                                      value,
-                                                                                      dictionary,
+                                                                                      defaultValue.getValue(),
+                                                                                      null,
                                                                                       valueDO.getTypeId());
-
-                            } else
-                                row.cells.get(2).value = getCorrectColValueByType(
-                                                                                  defaultValue.getValue(),
-                                                                                  null,
-                                                                                  valueDO.getTypeId());
-
-                        } catch (Exception e) {
-                            row.cells.get(2)
-                                     .addException(
-                                                   new LocalizedException("illegalDefaultValueException"));
+    
+                            } catch (Exception e) {
+                                row.cells.get(2)
+                                         .addException(
+                                                       new LocalizedException("illegalDefaultValueException"));
+                            }
                         }
+                        auxValsTable.addRow(row);
                     }
-                    auxValsTable.addRow(row);
                 }
             }
             auxValsTable.fireEvents(true);
@@ -517,6 +536,28 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
 
         ((AutoComplete<Integer>)event.getSource()).showAutoMatches(model);
     }
+    
+    public ArrayList<IdNameVO> getAuxQueryFields(){
+        ArrayList<IdNameVO> returnList;
+        TableDataRow row;
+        AuxDataBundle adb;
+        IdNameVO idName;
+        returnList = new ArrayList<IdNameVO>();
+        
+        for(int i=0; i<auxValsTable.numRows(); i++){
+            row = auxValsTable.getRow(i);
+            adb = (AuxDataBundle)row.data;
+            
+            if(row.cells.get(2).value != null){
+                idName = new IdNameVO();
+                idName.setId(adb.fieldDO.getId());
+                idName.setName(row.cells.get(2).value.toString());
+                returnList.add(idName);
+            }
+        }
+        
+        return returnList;
+    }
 
     private void initializeDropdowns() {
         try {
@@ -543,8 +584,12 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
         if ( !loaded) {
             try {
                 manager = parentMan.getAuxData();
-                DataChangeEvent.fire(this);
                 loaded = true;
+                
+                if (state != State.QUERY) {
+                    StateChangeEvent.fire(this, state);
+                    DataChangeEvent.fire(this);
+                }
 
             } catch (Exception e) {
                 Window.alert(e.getMessage());

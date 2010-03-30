@@ -31,6 +31,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.DateField;
@@ -47,7 +48,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class AuxTableColumn extends TableColumn {
     protected GetMatchesHandler     screen;
-    protected TextBox               alphaTextBox;
+    protected TextBox<String>       alphaTextBox;
+    protected TextBox<Integer>      numericTextBox;
     protected TextBox<Double>       numTextBox;
     protected CalendarLookUp        calendar;
     protected AutoComplete<Integer> autoComplete;
@@ -60,7 +62,7 @@ public class AuxTableColumn extends TableColumn {
         setColumnWidget(getCellWidget(row));
         return super.getDisplayWidget(row);
     }
-    
+
     public void loadWidget(Widget widget, TableDataRow row, int modelIndex) {
         setColumnWidget(getCellWidget(row));
         super.loadWidget(widget, row, modelIndex);
@@ -99,17 +101,32 @@ public class AuxTableColumn extends TableColumn {
         return autoComplete;
     }
 
-    private TextBox getAlphaTextbox(Case boxCase) {
+    private TextBox<String> getAlphaTextbox(Case boxCase) {
         if (alphaTextBox == null) {
-            alphaTextBox = new TextBox();
+            alphaTextBox = new TextBox<String>();
             alphaTextBox.setStyleName("ScreenTextBox");
             alphaTextBox.setField(new StringField());
             alphaTextBox.setLength(80);
         }
 
         alphaTextBox.setCase(boxCase);
+        alphaTextBox.setQueryMode( ((Screen)screen).state == State.QUERY);
 
         return alphaTextBox;
+    }
+
+    private TextBox getNumericTextbox() {
+        if(((Screen)screen).state == State.QUERY)
+            return getAlphaTextbox(Case.MIXED);
+        
+        if (numericTextBox == null) {
+            numericTextBox = new TextBox<Integer>();
+            numericTextBox.setStyleName("ScreenTextBox");
+            numericTextBox.setField(new IntegerField());
+            numericTextBox.setLength(80);
+        }
+        
+        return numericTextBox;
     }
 
     private CalendarLookUp getCalendar(byte begin, byte end) {
@@ -129,6 +146,7 @@ public class AuxTableColumn extends TableColumn {
 
         calendar.setField(field);
         calendar.init(begin, end, false);
+        //calendar.setQueryMode( ((Screen)screen).state == State.QUERY);
 
         return calendar;
     }
@@ -146,9 +164,9 @@ public class AuxTableColumn extends TableColumn {
     private Widget getCellWidget(TableDataRow row) {
         Integer typeId;
         typeId = getCellTypeId(row);
-        
-        if(alphaLowerId == null){
-            try{
+
+        if (alphaLowerId == null) {
+            try {
                 alphaLowerId = DictionaryCache.getIdFromSystemName("aux_alpha_lower");
                 alphaUpperId = DictionaryCache.getIdFromSystemName("aux_alpha_upper");
                 alphaMixedId = DictionaryCache.getIdFromSystemName("aux_alpha_mixed");
@@ -157,11 +175,10 @@ public class AuxTableColumn extends TableColumn {
                 dateId = DictionaryCache.getIdFromSystemName("aux_date");
                 dateTimeId = DictionaryCache.getIdFromSystemName("aux_date_time");
                 dictionaryId = DictionaryCache.getIdFromSystemName("aux_dictionary");
-            }catch(Exception e){
+            } catch (Exception e) {
                 Window.alert(e.getMessage());
             }
         }
-        
 
         if (typeId == null)
             return getLabel();
@@ -172,7 +189,7 @@ public class AuxTableColumn extends TableColumn {
         else if (alphaMixedId.equals(typeId) || timeId.equals(typeId))
             return getAlphaTextbox(Case.MIXED);
         else if (numericId.equals(typeId))
-            return getAlphaTextbox(Case.MIXED);
+            return getNumericTextbox();
         else if (dateId.equals(typeId))
             return getCalendar(Datetime.YEAR, Datetime.DAY);
         else if (dateTimeId.equals(typeId))
@@ -187,7 +204,7 @@ public class AuxTableColumn extends TableColumn {
 
     private Integer getCellTypeId(TableDataRow row) {
         AuxDataBundle data = (AuxDataBundle)row.data;
-        
+
         if (data == null)
             return null;
         else
