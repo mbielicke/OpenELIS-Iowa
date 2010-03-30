@@ -502,10 +502,11 @@ public class QAEventsTab extends Screen {
                 else
                     analysisQAManager = anMan.getQAEventAt(bundle.getAnalysisIndex());
 
-                if (state != State.QUERY) {
+                if (state != State.QUERY) 
                     StateChangeEvent.fire(this, state);
-                    DataChangeEvent.fire(this);
-                }
+                
+                DataChangeEvent.fire(this);
+                
                 loaded = true;
             } catch (Exception e) {
                 Window.alert(e.getMessage());
