@@ -146,8 +146,8 @@ public class SampleItemsPopoutTreeLookup extends Screen {
         sampleTreePopout.addBeforeDropHandler(new BeforeDropHandler<TreeRow>() {
             public void onBeforeDrop(BeforeDropEvent<TreeRow> event) {
                 AnalysisViewDO anDO;
-                TreeDataItem dragItem = event.getDragObject().item;
-                TreeDataItem dropTarget = (TreeDataItem)event.getDropTarget();
+                TreeDataItem dropTarget = ((TreeRow)event.getDropTarget()).item;
+                TreeDataItem dragItem = event.getDragObject().dragItem;
                 SampleDataBundle dragKey = (SampleDataBundle)dragItem.data;
                 SampleDataBundle dropKey = (SampleDataBundle)dropTarget.data;
                 try {
@@ -178,8 +178,8 @@ public class SampleItemsPopoutTreeLookup extends Screen {
         
         sampleTreePopout.addDropEnterHandler(new DropEnterHandler<TreeRow>() {
             public void onDropEnter(DropEnterEvent<TreeRow> event) {
-                TreeDataItem dropTarget = (TreeDataItem)event.getDropTarget();
-                TreeDataItem dragItem = event.getDragObject().item;
+                TreeDataItem dropTarget = ((TreeRow)event.getDropTarget()).item;
+                TreeDataItem dragItem = event.getDragObject().dragItem;
                 
                 if((dropTarget.leafType.equals("sampleItem") && dropTarget.hasChildren()) || 
                                 (dropTarget.leafType.equals("analysis") && 

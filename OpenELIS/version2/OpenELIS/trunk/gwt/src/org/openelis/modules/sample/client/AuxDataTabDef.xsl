@@ -34,8 +34,7 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
-  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:meta="xalan://org.openelis.meta.SampleMeta">
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
 
   <xsl:template name="AuxDataTab">
   	<xsl:param name="col2WidthParam" select="300" />
@@ -50,9 +49,7 @@ UIRF Software License are applicable instead of those above.
                 <check />
               </col>
               <col width="{string($col2WidthParam)}" header="{resource:getString($constants,'name')}">
-              	<autoComplete width="{string($col2WidthParam)}" popWidth="auto" field="Integer">
-                  <col width="{string($col2WidthParam)}" header="Name" />
-                </autoComplete>
+              	<label field="String" />
               </col>
               <col width="{string($col3WidthParam)}" class="org.openelis.modules.sample.client.AuxTableColumn" header="{resource:getString($constants,'value')}">
                 <label field="String" />
