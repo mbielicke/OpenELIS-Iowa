@@ -162,7 +162,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                         adb = (AuxDataBundle)row.data;
                         ResultValidator rv = adb.validator;
                         fieldDO = (AuxFieldViewDO)adb.fieldDO;
-                        data.setValue(val.toString());
+                        data.setValue(getCorrectManValueByType(val, fieldDO.getTypeId()));
 
                         if (rv != null) {
                             try {
@@ -367,7 +367,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                         dataDO.setTypeId(valueDO.getTypeId());
                         dataDO.setAuxFieldId(fieldDO.getId());
                         dataDO.setIsReportable(fieldDO.getIsReportable());
-                        dataDO.setValue(valueDO.getValue());
+                        //dataDO.setValue(valueDO.getValue());
                         dataDO.setDictionary(valueDO.getDictionary());
                         fieldDO.setTypeId(valueDO.getTypeId());
     
@@ -432,6 +432,9 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
 
     private Object getCorrectColValueByType(String value, String dictionary, Integer typeId)
                                                                                             throws Exception {
+        if(value == null)
+            return null;
+        
         if (alphaLowerId.equals(typeId) || alphaUpperId.equals(typeId) ||
             alphaMixedId.equals(typeId) || timeId.equals(typeId))
             return value;
@@ -448,7 +451,8 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
         else if (dictionaryId.equals(typeId)) {
             if (dictionary == null)
                 throw new Exception();
-            return new TableDataRow(new Integer(value), dictionary);
+            
+                return new TableDataRow(new Integer(value), dictionary);
         }
 
         return null;
@@ -500,7 +504,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             df.setValue( ((Datetime)value));
             return df.toString();
         } else if (dictionaryId.equals(typeId))
-            return ((Integer)value).toString();
+            return ((TableDataRow)value).key.toString();
 
         return null;
     }
@@ -551,7 +555,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             if(row.cells.get(2).value != null){
                 idName = new IdNameVO();
                 idName.setId(adb.fieldDO.getId());
-                idName.setName(row.cells.get(2).value.toString());
+                idName.setName(getCorrectManValueByType(row.cells.get(2).value, adb.fieldDO.getTypeId()));
                 returnList.add(idName);
             }
         }
@@ -586,10 +590,11 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                 manager = parentMan.getAuxData();
                 loaded = true;
                 
-                if (state != State.QUERY) {
+                if (state != State.QUERY)
                     StateChangeEvent.fire(this, state);
-                    DataChangeEvent.fire(this);
-                }
+                   
+               DataChangeEvent.fire(this);
+               
 
             } catch (Exception e) {
                 Window.alert(e.getMessage());
