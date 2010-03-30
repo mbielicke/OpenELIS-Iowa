@@ -160,7 +160,8 @@ public class SampleMeta implements Meta, MetaMap {
                     SAMPLEQA_TYPE_ID = "_sampleQaevent.typeId",
                     SAMPLEQA_IS_BILLABLE = "_sampleQaevent.isBillable",
 
-                    SAMPLESUBQA_ID = "_sQaevent.id", SAMPLESUBQA_NAME = "_sQaevent.name",
+                    SAMPLESUBQA_ID = "_sQaevent.id", 
+                    SAMPLESUBQA_NAME = "_sQaevent.name",
                     SAMPLESUBQA_DESCRIPTION = "_sQaevent.description",
                     SAMPLESUBQA_TEST_ID = "_sQaevent.testId",
                     SAMPLESUBQA_TYPE_ID = "_sQaevent.typeId",
@@ -205,6 +206,14 @@ public class SampleMeta implements Meta, MetaMap {
                     PROJECT_REFERENCE_TO = "_project.referenceTo",
                     PROJECT_OWNER_ID = "_project.ownerId",
                     PROJECT_SCRIPTLET_ID = "_project.scriptletId",
+                    
+                    AUX_DATA_ID = "_auxData.id",
+                    AUX_DATA_AUX_FIELD_ID = "_auxData.auxFieldId",
+                    AUX_DATA_REFERENCE_ID = "_auxData.referenceId",
+                    AUX_DATA_REFERENCE_TABLE_ID = "_auxData.referenceTableId",
+                    AUX_DATA_IS_REPORTABLE = "_auxData.isReportable",
+                    AUX_DATA_TYPE_ID = "_auxData.typeId",
+                    AUX_DATA_VALUE = "_auxData.value",
 
                     ANALYSIS_TEST_NAME = "_test.name", 
                     ANALYSIS_METHOD_NAME = "_method.name";
@@ -286,7 +295,10 @@ public class SampleMeta implements Meta, MetaMap {
                                                   PROJECT_STARTED_DATE, PROJECT_COMPLETED_DATE,
                                                   PROJECT_IS_ACTIVE, PROJECT_REFERENCE_TO,
                                                   PROJECT_OWNER_ID, PROJECT_SCRIPTLET_ID,
-                                                  ANALYSIS_TEST_NAME, ANALYSIS_METHOD_NAME));
+                                                  AUX_DATA_ID, AUX_DATA_AUX_FIELD_ID,
+                                                  AUX_DATA_REFERENCE_ID, AUX_DATA_REFERENCE_TABLE_ID,
+                                                  AUX_DATA_IS_REPORTABLE, AUX_DATA_TYPE_ID,
+                                                  AUX_DATA_VALUE, ANALYSIS_TEST_NAME, ANALYSIS_METHOD_NAME));
     }
 
     public static String getId() {
@@ -709,7 +721,7 @@ public class SampleMeta implements Meta, MetaMap {
         return ANALYSISSUBQA_DESCRIPTION;
     }
 
-    public static String getAnalysisAubQaTestId() {
+    public static String getAnalysisSubQaTestId() {
         return ANALYSISSUBQA_TEST_ID;
     }
 
@@ -920,6 +932,34 @@ public class SampleMeta implements Meta, MetaMap {
     public static String getProjectScriptletId() {
         return PROJECT_SCRIPTLET_ID;
     }
+    
+    public static String getAuxDataId(){
+        return AUX_DATA_ID;
+    }
+    
+    public static String getAuxDataAuxFieldId(){
+        return AUX_DATA_AUX_FIELD_ID;
+    }
+    
+    public static String getAuxDataReferenceId(){
+        return AUX_DATA_REFERENCE_ID;
+    }
+    
+    public static String getAuxDataReferenceTableId(){
+        return AUX_DATA_REFERENCE_TABLE_ID;
+    }
+    
+    public static String getAuxDataIsReportable(){
+        return AUX_DATA_IS_REPORTABLE;
+    }
+    
+    public static String getAuxDataTypeId(){
+        return AUX_DATA_TYPE_ID;
+    }
+    
+    public static String getAuxDataValue(){
+        return AUX_DATA_VALUE;
+    }
 
     public static String getAnalysisTestName() {
         return ANALYSIS_TEST_NAME;
@@ -989,6 +1029,9 @@ public class SampleMeta implements Meta, MetaMap {
 
         if (where.indexOf("aQaevent.") > -1)
             from += ", IN (_analysisQaevent.qaEvent) _aQaevent ";
+        
+        if(where.indexOf("auxData.") > -1)
+            from += ", IN (_sample.auxData) _auxData ";
 
         return from;
     }

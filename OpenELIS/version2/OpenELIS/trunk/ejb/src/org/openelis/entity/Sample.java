@@ -150,6 +150,11 @@ public class Sample implements Auditable, Cloneable {
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "sample_id")
   private Collection<SampleQaevent> sampleQAEvent;
+  
+  //aux data records
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "reference_id")
+  private Collection<AuxData> auxData;
 
   @Transient
   private Sample original;
@@ -373,5 +378,11 @@ public Collection<SamplePrivateWell> getSamplePrivateWell() {
 }
 public void setSamplePrivateWell(Collection<SamplePrivateWell> samplePrivateWell) {
     this.samplePrivateWell = samplePrivateWell;
+}
+public Collection<AuxData> getAuxData() {
+    return auxData;
+}
+public void setAuxData(Collection<AuxData> auxData) {
+    this.auxData = auxData;
 }  
 }   
