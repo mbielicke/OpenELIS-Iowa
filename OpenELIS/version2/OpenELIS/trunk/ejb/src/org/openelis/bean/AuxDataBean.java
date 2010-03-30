@@ -77,7 +77,7 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
                 for(int i=0; i<data.size(); i++){
                     dataDO = data.get(i);
                 
-                    if(dictionaryTypeId.equals(dataDO.getTypeId())){
+                    if(dictionaryTypeId.equals(dataDO.getTypeId()) && dataDO.getValue() != null){
                         query = manager.createNamedQuery("Dictionary.FetchById");
                         query.setParameter("id", new Integer(dataDO.getValue()));
                         dictDO = (DictionaryViewDO)query.getResultList().get(0);
