@@ -31,6 +31,7 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.LastPageException;
@@ -1064,6 +1065,48 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         return true;
     }
 
+    public ArrayList<QueryData> getQueryFields() {
+        ArrayList<QueryData> returnList;
+        ArrayList<IdNameVO> auxFields;
+        QueryData queryData;
+        IdNameVO idName;
+        
+        returnList = super.getQueryFields();
+        
+        //add aux data values if necessary
+        auxFields = auxDataTab.getAuxQueryFields();
+        
+        if(auxFields.size() > 0){
+            //add ref table
+            queryData = new QueryData();
+            queryData.key = SampleMeta.getAuxDataReferenceTableId();
+            queryData.type = QueryData.Type.INTEGER;
+            queryData.query = String.valueOf(ReferenceTable.SAMPLE);
+            returnList.add(queryData);
+            
+            //add aux fields
+            for(int i=0; i<auxFields.size(); i++){
+                idName = auxFields.get(i);
+                
+                //aux data id
+                queryData = new QueryData();
+                queryData.key = SampleMeta.getAuxDataAuxFieldId();
+                queryData.type = QueryData.Type.INTEGER;
+                queryData.query = String.valueOf(idName.getId());
+                returnList.add(queryData);
+                
+                //aux data value
+                queryData = new QueryData();
+                queryData.key = SampleMeta.getAuxDataValue();
+                queryData.type = QueryData.Type.STRING;
+                queryData.query = idName.getName();
+                returnList.add(queryData);
+            }
+        }
+        
+        return returnList;
+    }
+    
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
 
