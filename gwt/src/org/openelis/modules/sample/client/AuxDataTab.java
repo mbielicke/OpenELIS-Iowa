@@ -122,7 +122,6 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                 c = event.getCol();
                 r = event.getRow();
 
-                auxValsTable.clearCellExceptions(r, c);
                 window.clearStatus();
                 
                 if(state == State.QUERY && c == 0)
@@ -166,10 +165,11 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
 
                         if (rv != null) {
                             try {
+                                auxValsTable.clearCellExceptions(r, c);
                                 rv.validate(null,
                                             getCorrectManValueByType(val, fieldDO.getTypeId()));
                             } catch (ParseException e) {
-                                auxValsTable.clearCellExceptions(r, c);
+                                //auxValsTable.clearCellExceptions(r, c);
                                 auxValsTable.setCellException(r, c, e);
                             } catch (Exception e) {
                                 Window.alert(e.getMessage());
