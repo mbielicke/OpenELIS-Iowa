@@ -27,6 +27,7 @@ package org.openelis.modules.worksheetCreation.client;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -78,11 +79,8 @@ import org.openelis.gwt.widget.table.event.SortEvent;
 import org.openelis.gwt.widget.table.event.SortHandler;
 import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
-import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.QcManager;
 import org.openelis.manager.SampleDataBundle;
-import org.openelis.manager.SampleItemManager;
-import org.openelis.manager.SampleManager;
 import org.openelis.manager.TestWorksheetManager;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
@@ -95,7 +93,8 @@ import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
 
 public class WorksheetCreationScreen extends Screen {
 
-    private boolean                               isTemplateLoaded, isSaved, wasExitCalled;
+    private boolean                               hasErrors, isTemplateLoaded,
+                                                  isSaved, wasExitCalled;
     private int                                   tempId, qcStartIndex;
     private Integer                               formatBatch, formatTotal,
                                                   qcDup, statusWorking, typeFixed,
@@ -115,6 +114,7 @@ public class WorksheetCreationScreen extends Screen {
                                                   testWorksheetItems;
     protected Confirm                             worksheetRemoveQCConfirm, worksheetRemoveLastOfQCConfirm,
                                                   worksheetSaveConfirm, worksheetExitConfirm;
+    protected HashMap<Integer,Exception>          qcErrors;
     protected QcLookupScreen                      qcLookupScreen;
     protected TableDataRow                        qcItems[];
     protected TableWidget                         worksheetItemTable;
@@ -124,7 +124,6 @@ public class WorksheetCreationScreen extends Screen {
     protected WorksheetQcAnalysisSelectionScreen  waSelectionScreen;
     protected WorksheetCreationLookupScreen       wcLookupScreen;
     protected WorksheetLookupScreen               wLookupScreen, wQCLookupScreen;
-    protected ValidationErrorsList                qcErrors;
     
     public WorksheetCreationScreen() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetCreationDef.class));
@@ -150,10 +149,11 @@ public class WorksheetCreationScreen extends Screen {
      */
     private void postConstructor() {
         analysisItems      = new ArrayList<TableDataRow>();
+        hasErrors          = false;
         isSaved            = true;
         isTemplateLoaded   = false;
         manager            = WorksheetManager.getInstance();
-        qcErrors           = new ValidationErrorsList();
+        qcErrors           = new HashMap<Integer,Exception>();
         qcLastRunList      = new ArrayList<TableDataRow>();
         qcLastBothList     = new ArrayList<TableDataRow>();
         qcStartIndex       = 0;
@@ -524,7 +524,7 @@ public class WorksheetCreationScreen extends Screen {
             return;
         }
         
-        if (qcErrors.size() > 0) {
+        if (hasErrors) {
             Window.alert("Please fix errors on worksheet before saving");
             return;
         }
@@ -621,8 +621,8 @@ public class WorksheetCreationScreen extends Screen {
     }
 
     private void loadQCTemplate() {
-        int                  i;
-        String               message;
+        int                  i, j;
+//        String               message;
         ArrayList<Object>    dataList;
         ArrayList<QcDO>      list;
         QcDO                 qcDO = null;
@@ -650,7 +650,7 @@ public class WorksheetCreationScreen extends Screen {
             // Only clear the error list if this is our first time through
             //
             if (qcStartIndex == 0)
-                qcErrors.getErrorList().clear();
+                qcErrors = new HashMap<Integer, Exception>(testWorksheetDO.getTotalCapacity());
             
             i = qcStartIndex;
             qcStartIndex = 0;
@@ -659,11 +659,14 @@ public class WorksheetCreationScreen extends Screen {
                 try {
                     list = qcService.callList("fetchActiveByName", twiDO.getQcName());
                     if (list.size() == 0) {
-                        qcErrors.add(new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), twiDO.getPosition().toString()));
+//                        qcErrors.add(new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), twiDO.getPosition().toString()));
+                        for (j = twiDO.getPosition(); j < testWorksheetDO.getTotalCapacity(); j += testWorksheetDO.getBatchCapacity())
+                            qcErrors.put(j, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), String.valueOf(j)));
                         qcDO = new QcDO();
                         qcDO.setName(twiDO.getQcName());
                     } else if (list.size() > 1) {
-                        Window.alert(new FormErrorException("multiMatchingActiveQc", twiDO.getQcName(), twiDO.getPosition().toString()).getMessage());
+//                        Window.alert(new FormErrorException("multiMatchingActiveQc", twiDO.getQcName(), twiDO.getPosition().toString()).getMessage());
+                        Window.alert(new FormErrorException("multiMatchingActiveQc", twiDO.getQcName(), String.valueOf(i+1)).getMessage());
                         openQCLookup(twiDO.getQcName(), list);
                         qcStartIndex = i + 1;
                         break;
@@ -692,16 +695,6 @@ public class WorksheetCreationScreen extends Screen {
         
         buildQCWorksheet();
         isTemplateLoaded = true;
-        
-        if (qcErrors.size() > 0 && qcStartIndex == 0) {
-            message = "";
-            for (i = 0; i < qcErrors.size(); i++) {
-                if (message.length() > 0)
-                    message += "\n\n";
-                message += ((Exception)qcErrors.getErrorList().get(i)).getMessage();
-            }
-            Window.alert(message);
-        }
     }
     
     private void buildQCWorksheet() {
@@ -805,6 +798,8 @@ public class WorksheetCreationScreen extends Screen {
     private void mergeAnalysesAndQCs() {
         int                     i, j, k;
         ArrayList<TableDataRow> items, lastOf;
+        Exception               tempE;
+        String                  message;
         TableDataRow            row;
         
         //
@@ -879,6 +874,26 @@ public class WorksheetCreationScreen extends Screen {
         ((Dropdown<Integer>)worksheetItemTable.getColumns().get(3).getColumnWidget()).setModel(qcLinkModel);
         
         worksheetItemTable.load(items);
+        
+        clearErrors();
+        hasErrors = false;
+        if (!qcErrors.isEmpty()) {
+            message = "";
+            for (i = 0; i < items.size(); i++) {
+                tempE = (Exception)qcErrors.get(i+1);
+                if (tempE == null)
+                    continue;
+                if (message.length() > 0)
+                    message += "\n\n";
+                message += tempE.getMessage();
+                hasErrors = true;
+            }
+            
+            if (hasErrors) {
+                window.setError(message);
+                Window.alert(message);
+            }
+        }
     }
     
     private void openWorksheetLookup() {
