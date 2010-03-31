@@ -263,7 +263,7 @@ public class AnalysisResultManager implements RPC {
                 
                 while (a < everyAliasList.size() &&
                                 everyAliasList.get(a).getParentAnalyteId().equals(taDO.getAnalyteId())) {
-                    anDO = everyAliasList.get(j);
+                    anDO = everyAliasList.get(a);
                     if(newAnalyteId){
                         analyteId = anDO.getParentAnalyteId();
                         aliasSubList = new ArrayList<TestAnalyteViewDO>();
