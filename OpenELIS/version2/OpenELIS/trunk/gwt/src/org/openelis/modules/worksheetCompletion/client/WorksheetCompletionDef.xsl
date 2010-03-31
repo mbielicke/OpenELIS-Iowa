@@ -37,6 +37,7 @@ UIRF Software License are applicable instead of those above.
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
   xmlns:meta="xalan://org.openelis.meta.WorksheetCompletionMeta">
 
+  <xsl:import href="OPENELIS/org/openelis/modules/note/client/InternalNoteTabDef.xsl" />
   <xsl:template match="doc">
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
@@ -162,10 +163,22 @@ UIRF Software License are applicable instead of those above.
                   <col key="{meta:getAnalysisStatusId()}" width="75" header="{resource:getString($constants,'status')}" sort="true">
                     <dropdown width="55" field="Integer" />
                   </col>
-                  <col key="field7" width="100" header="Field 7">
+                  <col key="analyteName" width="100" header="Analyte">
                     <label field="String" />
                   </col>
-                  <col key="field8" width="100" header="Field 8">
+                  <col key="rawValue" width="100" header="Raw Value">
+                    <label field="String" />
+                  </col>
+                  <col key="dilutionFactor" width="100" header="Dilution Factor">
+                    <label field="String" />
+                  </col>
+                  <col key="finalValue" width="100" header="Final Value">
+                    <label field="String" />
+                  </col>
+                  <col key="expectedValue" width="100" header="Expected Value">
+                    <label field="String" />
+                  </col>
+                  <col key="quantLimit" width="100" header="Quant. Limit">
                     <label field="String" />
                   </col>
                 </table>
@@ -185,17 +198,10 @@ UIRF Software License are applicable instead of those above.
             </tab>
 <!-- TAB 2 -->
             <tab key="notesTab" tab="standardNoteButton,standardNoteButton" text="{resource:getString($constants,'note')}">
-              <VerticalPanel padding="0" spacing="0">
-                <notes key="notesPanel" width="604" height="247" />
-                <appButton key="standardNoteButton" style="Button" tab="{meta:getId()},{meta:getId()}">
-                  <HorizontalPanel>
-                    <AbsolutePanel style="StandardNoteButtonImage" />
-                    <text>
-                      <xsl:value-of select="resource:getString($constants,'addNote')" />
-                    </text>
-                  </HorizontalPanel>
-                </appButton>
-              </VerticalPanel>
+              <xsl:call-template name="InternalNoteTab">
+          	    <xsl:with-param name="widthParam">850</xsl:with-param>
+          		  <xsl:with-param name="heightParam">247</xsl:with-param>
+              </xsl:call-template>
             </tab>
           </TabPanel>
         </VerticalPanel>
