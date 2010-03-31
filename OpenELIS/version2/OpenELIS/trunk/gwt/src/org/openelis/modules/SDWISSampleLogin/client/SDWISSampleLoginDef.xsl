@@ -136,38 +136,40 @@ UIRF Software License are applicable instead of those above.
 					<TablePanel style="Form">
 							<row>
 								<text style="Prompt">PWS Id:</text>
-								<textbox key="pwsid" width="75px" field="Integer"/>	
+								<HorizontalPanel>
+                  					<textbox key="pwsid" width="75" field="Integer" />
+                  					<appButton key="pwsButton" style="LookupButton">
+                    					<AbsolutePanel style="LookupButtonImage" />
+                  					</appButton>
+                				</HorizontalPanel>
 								<text style="Prompt">PWS Name:</text>
-								<widget colspan="3">
-									<textbox key="pwsname" width="250px" field="String"/>	
-								</widget>
+								<textbox key="pwsname" width="250px" field="String"/>	
+								<text style="Prompt">State Lab #:</text>
+								<textbox key="stateLabNum" tab="??,??" width="75px" field="Integer"/>
+							</row>
+							<row>
 								<text style="Prompt">Facil Id:</text>
 								<textbox key="facilid" width="75px" field="Integer"/>
-							</row>
-							<row>
-								<text style="Prompt">Sample Point Id:</text>
-								<textbox key="samplepoitnid" width="75px" field="Integer"/>	
-								<text style="Prompt">Point Desc:</text>
-								<widget colspan="3">
-									<textbox key="pwsname" width="250px" field="String"/>	
-								</widget>
-								<text style="Prompt">Repeat:</text>
-								<textbox key="repeat" width="75px" field="Integer"/>
-							</row>
-							<row>
-								<text style="Prompt">Sample Category:</text>
-								<dropdown key="sampleCategory" width="80px" field="Integer"/>
 								<text style="Prompt">Sample Type:</text>
-								<dropdown key="sampleType" width="70px" field="Integer"/>	
-								<text style="Prompt">Collector:</text>
-								<textbox key="collector" width="130px" field="String"/>
-							</row>
-							<row>
-								<text style="Prompt">Lead Sample Type:</text>
-								<dropdown key="leadSampleType" width="75px" field="Integer"/>
+								<dropdown key="sampleType" width="70px" field="Integer"/>
 								<text style="Prompt">Original Sample #:</text>
 								<textbox key="orioignalid" tab="??,??" width="75px" field="Integer"/>		
-								
+							</row>
+							<row>
+								<text style="Prompt">Sample Pt Id:</text>
+								<textbox key="samplepoitnid" width="75px" field="Integer"/>	
+								<text style="Prompt">Point Desc:</text>
+								<textbox key="pwsname" width="250px" field="String"/>	
+								<text style="Prompt">Repeat:</text>
+								<dropdown key="repeat" width="75px" field="Integer"/>
+							</row>
+							<row>
+								<text style="Prompt">Sample Cat:</text>
+								<dropdown key="sampleCategory" width="80px" field="Integer"/>
+								<text style="Prompt">Collector:</text>
+								<textbox key="collector" width="130px" field="String"/>
+								<text style="Prompt">Lead Sample Type:</text>
+								<dropdown key="leadSampleType" width="75px" field="Integer"/>
 							</row> 
 							</TablePanel>
 							</VerticalPanel>
