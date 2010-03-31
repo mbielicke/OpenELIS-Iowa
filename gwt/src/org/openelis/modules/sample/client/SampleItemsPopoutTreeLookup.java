@@ -33,8 +33,6 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemViewDO;
-import org.openelis.gwt.event.ActionEvent;
-import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeDragStartEvent;
 import org.openelis.gwt.event.BeforeDragStartHandler;
 import org.openelis.gwt.event.BeforeDropEvent;
@@ -44,18 +42,17 @@ import org.openelis.gwt.event.DropEnterEvent;
 import org.openelis.gwt.event.DropEnterHandler;
 import org.openelis.gwt.event.DropEvent;
 import org.openelis.gwt.event.DropHandler;
-import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.event.StateChangeHandler;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
-import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
+import org.openelis.gwt.widget.table.event.RowMovedEvent;
+import org.openelis.gwt.widget.table.event.RowMovedHandler;
 import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.gwt.widget.tree.TreeRow;
 import org.openelis.gwt.widget.tree.TreeWidget;
@@ -65,10 +62,8 @@ import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
 public class SampleItemsPopoutTreeLookup extends Screen {
@@ -160,21 +155,32 @@ public class SampleItemsPopoutTreeLookup extends Screen {
                     
                     treeUtil.cleanupTestsWithPrep(dragItem);
                     manager.getSampleItems().moveAnalysis(dragKey,dropKey);
-                    DataChangeEvent.fire(popScreen, sampleTreePopout);
+                  //  DataChangeEvent.fire(popScreen, sampleTreePopout);
                     
                 }catch(Exception e) {
                     e.printStackTrace();
                     Window.alert("Move failed: "+e.getMessage());
                 }
-                event.cancel();
+                //event.cancel();
                 
             }
         });
         
+        /*
         sampleTreePopout.addDropHandler(new DropHandler<TreeRow>() {
             public void onDrop(DropEvent<TreeRow> event) {
             }
-        });
+        });*/
+        
+        /*sampleTreePopout.addRowMovedHandler(new RowMovedHandler() {
+            public void onRowMoved(RowMovedEvent event) {
+                try {
+                    manager.getEntries().moveEntry(event.getOldIndex(), event.getNewIndex());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }                
+            }            
+        });*/
         
         sampleTreePopout.addDropEnterHandler(new DropEnterHandler<TreeRow>() {
             public void onDropEnter(DropEnterEvent<TreeRow> event) {
