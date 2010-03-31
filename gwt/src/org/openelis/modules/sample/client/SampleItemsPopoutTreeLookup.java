@@ -141,6 +141,7 @@ public class SampleItemsPopoutTreeLookup extends Screen {
         sampleTreePopout.addBeforeDropHandler(new BeforeDropHandler<TreeRow>() {
             public void onBeforeDrop(BeforeDropEvent<TreeRow> event) {
                 AnalysisViewDO anDO;
+                AnalysisManager am;
                 TreeDataItem dropTarget = ((TreeRow)event.getDropTarget()).item;
                 TreeDataItem dragItem = event.getDragObject().dragItem;
                 SampleDataBundle dragKey = (SampleDataBundle)dragItem.data;
@@ -155,32 +156,17 @@ public class SampleItemsPopoutTreeLookup extends Screen {
                     
                     treeUtil.cleanupTestsWithPrep(dragItem);
                     manager.getSampleItems().moveAnalysis(dragKey,dropKey);
-                  //  DataChangeEvent.fire(popScreen, sampleTreePopout);
+                    
+                    //reset the dropped row data bundle
+                    am = manager.getSampleItems().getAnalysisAt(dropKey.getSampleItemIndex());
+                    dragItem.data = am.getBundleAt(am.count()-1);
                     
                 }catch(Exception e) {
                     e.printStackTrace();
                     Window.alert("Move failed: "+e.getMessage());
                 }
-                //event.cancel();
-                
             }
         });
-        
-        /*
-        sampleTreePopout.addDropHandler(new DropHandler<TreeRow>() {
-            public void onDrop(DropEvent<TreeRow> event) {
-            }
-        });*/
-        
-        /*sampleTreePopout.addRowMovedHandler(new RowMovedHandler() {
-            public void onRowMoved(RowMovedEvent event) {
-                try {
-                    manager.getEntries().moveEntry(event.getOldIndex(), event.getNewIndex());
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                }                
-            }            
-        });*/
         
         sampleTreePopout.addDropEnterHandler(new DropEnterHandler<TreeRow>() {
             public void onDropEnter(DropEnterEvent<TreeRow> event) {
