@@ -108,7 +108,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'collected')" />:
               </text>
-              <calendar key="{meta:getCollectionDate()}" begin="0" end="2" width="90" max="0" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getCollectionTime()},{meta:getOrderId()}" />
+              <calendar key="{meta:getCollectionDate()}" begin="0" end="2" width="90" maxValue="0" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getCollectionTime()},{meta:getOrderId()}" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'time')" />:
               </text>
@@ -118,7 +118,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'received')" />:
               </text>
-              <calendar key="{meta:getReceivedDate()}" begin="0" end="4" width="125" max="0" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getStatusId()},{meta:getCollectionTime()}" />
+              <calendar key="{meta:getReceivedDate()}" begin="0" end="4" width="125" maxValue="0" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getStatusId()},{meta:getCollectionTime()}" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'status')" />:
               </text>
@@ -143,33 +143,33 @@ UIRF Software License are applicable instead of those above.
                   					</appButton>
                 				</HorizontalPanel>
 								<text style="Prompt">PWS Name:</text>
-								<textbox key="pwsname" width="250px" field="String"/>	
+								<textbox key="pwsname" width="250" field="String"/>	
 								<text style="Prompt">State Lab #:</text>
-								<textbox key="stateLabNum" tab="??,??" width="75px" field="Integer"/>
+								<textbox key="stateLabNum" tab="??,??" width="75" field="Integer"/>
 							</row>
 							<row>
-								<text style="Prompt">Facil Id:</text>
-								<textbox key="facilid" width="75px" field="Integer"/>
+								<text style="Prompt">Facility Id:</text>
+								<textbox key="facilid" width="75" field="Integer"/>
 								<text style="Prompt">Sample Type:</text>
-								<dropdown key="sampleType" width="70px" field="Integer"/>
+								<dropdown key="sampleType" width="70" field="Integer"/>
 								<text style="Prompt">Original Sample #:</text>
-								<textbox key="orioignalid" tab="??,??" width="75px" field="Integer"/>		
+								<textbox key="orioignalid" tab="??,??" width="75" field="Integer"/>		
 							</row>
 							<row>
 								<text style="Prompt">Sample Pt Id:</text>
-								<textbox key="samplepoitnid" width="75px" field="Integer"/>	
+								<textbox key="samplepoitnid" width="75" field="Integer"/>	
 								<text style="Prompt">Point Desc:</text>
-								<textbox key="pwsname" width="250px" field="String"/>	
+								<textbox key="pwsname" width="250" field="String"/>	
 								<text style="Prompt">Repeat:</text>
-								<dropdown key="repeat" width="75px" field="Integer"/>
+								<dropdown key="repeat" width="75" field="Integer"/>
 							</row>
 							<row>
 								<text style="Prompt">Sample Cat:</text>
-								<dropdown key="sampleCategory" width="80px" field="Integer"/>
+								<dropdown key="sampleCategory" width="80" field="Integer"/>
 								<text style="Prompt">Collector:</text>
-								<textbox key="collector" width="130px" field="String"/>
+								<textbox key="collector" width="130" field="String"/>
 								<text style="Prompt">Lead Sample Type:</text>
-								<dropdown key="leadSampleType" width="75px" field="Integer"/>
+								<dropdown key="leadSampleType" width="75" field="Integer"/>
 							</row> 
 							</TablePanel>
 							</VerticalPanel>
@@ -245,25 +245,25 @@ UIRF Software License are applicable instead of those above.
             </VerticalPanel>
 	        <VerticalPanel style="subform">
               <text style="FormTitle">
-                <xsl:value-of select="resource:getString($constants,'organizationInfo')" />
+	              Composite/Organization Info
               </text>
               <TablePanel style="Form">
               <row>
               	<text style="Prompt">Indicator:</text>
 				<check key="indicator"/>	
               	<text style="Prompt">Sequence:</text>
-				<textbox key="sequence" width="85px" field="Integer"/>	
+				<textbox key="sequence" width="78" field="Integer"/>	
               </row>
               <row>
               	<text style="Prompt">Comp Sample #:</text>
               	<widget colspan="3">
-				<textbox key="compsamnpleid" width="75px" field="Integer"/>
+				<textbox key="compsamnpleid" width="75" field="Integer"/>
 				</widget>	
 			  </row>
 			  <row>
 				<text style="Prompt">Composite Date:</text>
 				<widget colspan="3">
-				<calendar key="compdate" begin="0" end="2" width="110px"/>
+				<calendar key="compdate" begin="0" end="2" width="110"/>
 				</widget>	
               </row>
                 <row>
@@ -272,7 +272,7 @@ UIRF Software License are applicable instead of those above.
                   </text>
                   <widget colspan="3">
                   <HorizontalPanel>
-                    <autoComplete key="{meta:getOrgName()}" width="155" case="UPPER" popWidth="auto" tab="{meta:getBillTo()},{meta:getProjectName()}" field="Integer">
+                    <autoComplete key="{meta:getOrgName()}" width="148" case="UPPER" popWidth="auto" tab="{meta:getBillTo()},{meta:getProjectName()}" field="Integer">
                       <col width="180" header="{resource:getString($constants,'name')}" />
                       <col width="110" header="{resource:getString($constants,'street')}" />
                       <col width="100" header="{resource:getString($constants,'city')}" />
@@ -290,7 +290,7 @@ UIRF Software License are applicable instead of those above.
                   </text>
                   <widget colspan="3">
                   <HorizontalPanel>
-                    <autoComplete key="{meta:getBillTo()}" width="155" case="UPPER" popWidth="auto" tab="sampleItemTabPanel,{meta:getOrgName()}" field="Integer">
+                    <autoComplete key="{meta:getBillTo()}" width="148" case="UPPER" popWidth="auto" tab="sampleItemTabPanel,{meta:getOrgName()}" field="Integer">
                       <col width="180" header="{resource:getString($constants,'name')}" />
                       <col width="110" header="{resource:getString($constants,'street')}" />
                       <col width="100" header="{resource:getString($constants,'city')}" />
