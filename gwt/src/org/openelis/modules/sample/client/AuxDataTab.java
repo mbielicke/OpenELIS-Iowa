@@ -505,8 +505,11 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
     private String getCorrectManValueByType(Object value, Integer typeId) {
         DateField df;
         if (alphaLowerId.equals(typeId) || alphaUpperId.equals(typeId) ||
-            alphaMixedId.equals(typeId) || timeId.equals(typeId) || numericId.equals(typeId))
+            alphaMixedId.equals(typeId) || timeId.equals(typeId))
             return (String)value;
+        
+        else if(numericId.equals(typeId))
+            return ((Integer)value).toString();
 
         else if (dateId.equals(typeId)) {
             df = new DateField();
