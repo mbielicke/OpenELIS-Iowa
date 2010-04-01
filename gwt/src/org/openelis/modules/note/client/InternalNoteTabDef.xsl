@@ -37,13 +37,13 @@ UIRF Software License are applicable instead of those above.
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
 
   <xsl:template name="InternalNoteTab">
-    <xsl:param name="widthParam" select="250" />
-    <xsl:param name="heightParam" select="250" />
+    <xsl:param name="width" select="250" />
+    <xsl:param name="height" select="250" />
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <VerticalPanel padding="0" spacing="0">
-      <notes key="notesPanel" width="{string($widthParam)}" height="{string($heightParam)}" />
+      <notes key="notesPanel" width="{string($width)}" height="{string($height)}" />
       <appButton key="standardNoteButton" style="Button">
         <HorizontalPanel>
           <AbsolutePanel style="StandardNoteButtonImage" />

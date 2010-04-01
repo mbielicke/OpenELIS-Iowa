@@ -199,8 +199,8 @@ UIRF Software License are applicable instead of those above.
 <!-- TAB 2 -->
             <tab key="notesTab" tab="standardNoteButton,standardNoteButton" text="{resource:getString($constants,'note')}">
               <xsl:call-template name="InternalNoteTab">
-          	    <xsl:with-param name="widthParam">850</xsl:with-param>
-          		  <xsl:with-param name="heightParam">247</xsl:with-param>
+          	    <xsl:with-param name="width">850</xsl:with-param>
+          		  <xsl:with-param name="height">247</xsl:with-param>
               </xsl:call-template>
             </tab>
           </TabPanel>
