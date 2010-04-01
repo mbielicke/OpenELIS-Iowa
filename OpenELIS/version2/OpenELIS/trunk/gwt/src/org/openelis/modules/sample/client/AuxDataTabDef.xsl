@@ -37,21 +37,25 @@ UIRF Software License are applicable instead of those above.
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
 
   <xsl:template name="AuxDataTab">
-  	<xsl:param name="col2WidthParam" select="300" />
-  	<xsl:param name="col3WidthParam" select="303" />
-    <xsl:param name="maxRowsParam" select="6" />
+  	<xsl:param name="col2Width" select="300" />
+  	<xsl:param name="col3Width" select="303" />
+    <xsl:param name="maxRows" select="6" />
+    <xsl:param name="showTwoInfoRows" select="false" />
+    
+    <xsl:variable name="showTwo" select="page/@number"/> 
+    
     <VerticalPanel padding="0" spacing="0">
       <TablePanel padding="0" spacing="0">
         <row>
           <widget colspan="6">
-            <table key="auxValsTable" width="auto" maxRows="{string($maxRowsParam)}" showScroll="ALWAYS" title="">
+            <table key="auxValsTable" width="auto" maxRows="{string($maxRows)}" showScroll="ALWAYS" title="">
               <col width="85" header="{resource:getString($constants,'reportable')}">
                 <check />
               </col>
-              <col width="{string($col2WidthParam)}" header="{resource:getString($constants,'name')}">
+              <col width="{string($col2Width)}" header="{resource:getString($constants,'name')}">
               	<label field="String" />
               </col>
-              <col width="{string($col3WidthParam)}" class="org.openelis.modules.sample.client.AuxTableColumn" header="{resource:getString($constants,'value')}">
+              <col width="{string($col3Width)}" class="org.openelis.modules.sample.client.AuxTableColumn" header="{resource:getString($constants,'value')}">
                 <label field="String" />
               </col>
             </table>
@@ -80,14 +84,38 @@ UIRF Software License are applicable instead of those above.
           </widget>
         </row>
       </TablePanel>
+      <xsl:choose>
+		<xsl:when test="$showTwoInfoRows = 'true'">
+		<!-- 2 -->
       <TablePanel style="Form">
         <row>
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'description')" />:
           </text>
           <widget colspan="3">
-            <textbox key="auxDesc" width="275" style="ScreenTextboxDisplayOnly" field="String" />
+            <textbox key="auxDesc" width="400" style="ScreenTextboxDisplayOnly" field="String" />
           </widget>
+       	</row>
+        <row>
+          <text style="Prompt">
+            <xsl:value-of select="resource:getString($constants,'method')" />:
+          </text>
+          <textbox key="auxMethod" width="181" style="ScreenTextboxDisplayOnly" field="String" />
+          <text style="Prompt">
+            <xsl:value-of select="resource:getString($constants,'unit')" />:
+          </text>
+          <textbox key="auxUnits" width="181" style="ScreenTextboxDisplayOnly" field="String" />
+        </row>
+      </TablePanel>
+		</xsl:when>
+		<xsl:otherwise>
+		<!-- 1 -->
+      <TablePanel style="Form">
+        <row>
+          <text style="Prompt">
+            <xsl:value-of select="resource:getString($constants,'description')" />:
+          </text>
+          <textbox key="auxDesc" width="275" style="ScreenTextboxDisplayOnly" field="String" />
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'method')" />:
           </text>
@@ -98,6 +126,8 @@ UIRF Software License are applicable instead of those above.
           <textbox key="auxUnits" width="125" style="ScreenTextboxDisplayOnly" field="String" />
         </row>
       </TablePanel>
+		</xsl:otherwise>
+      </xsl:choose>
     </VerticalPanel>
   </xsl:template>
 </xsl:stylesheet>
