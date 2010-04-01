@@ -49,6 +49,8 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataCell;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.gwt.widget.tree.TreeRow;
 import org.openelis.gwt.widget.tree.TreeWidget;
@@ -630,6 +632,12 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         			event.getItem().checkForChildren(true);
         			event.getItem().getItems().clear();
         		}
+        	}
+        });
+        
+        atozTree.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+        	public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+        		event.cancel();
         	}
         });
         
@@ -1629,6 +1637,8 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     	int aindex = ((SampleDataBundle)atozTree.getSelection().data).getAnalysisIndex();
     	manager.getSampleItems().getAnalysisAt(sindex).cancelAnalysisAt(aindex);
     	atozTree.setCell(atozTree.getSelectedRow(), 1, manager.getSampleItems().getAnalysisAt(sindex).getAnalysisAt(aindex).getStatusId());
+    	analysisTab.setData(manager.getSampleItems().getAnalysisAt(sindex).getBundleAt(aindex));
+    	analysisTab.draw();
     }
 
 	public HandlerRegistration addActionHandler(ActionHandler handler) {
