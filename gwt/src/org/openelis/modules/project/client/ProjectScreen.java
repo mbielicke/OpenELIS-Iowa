@@ -68,6 +68,8 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
@@ -460,10 +462,17 @@ public class ProjectScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                parameterTable.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                             .contains(event.getState()));
+                parameterTable.enable(true);
                 parameterTable.setQueryMode(event.getState() == State.QUERY);
             }
+        });                
+        
+        parameterTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                if(state != State.ADD && state != State.UPDATE && state != State.QUERY)
+                    event.cancel();                
+            }
+            
         });
 
         parameterTable.addCellEditedHandler(new CellEditedHandler() {

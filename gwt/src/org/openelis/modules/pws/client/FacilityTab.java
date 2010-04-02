@@ -36,6 +36,8 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.manager.PwsFacilityManager;
 import org.openelis.manager.PwsManager;
 
@@ -61,10 +63,15 @@ public class FacilityTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                facilityTable.enable(false);                
+                facilityTable.enable(true);                
             }
         });    
         
+        facilityTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                event.cancel();
+            }            
+        });
     }
 
     private ArrayList<TableDataRow> getTableModel() {

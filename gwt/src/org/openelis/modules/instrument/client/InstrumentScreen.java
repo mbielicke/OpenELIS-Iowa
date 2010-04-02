@@ -52,6 +52,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -67,6 +68,8 @@ import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataCell;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
@@ -428,7 +431,7 @@ public class InstrumentScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                activeEnd.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                activeEnd.enable(true);
                 activeEnd.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -445,6 +448,14 @@ public class InstrumentScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 logTable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));               
             }
+        });
+        
+        logTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                if(state != State.ADD && state != State.UPDATE && state != State.QUERY)  
+                    event.cancel();                
+            }
+            
         });
 
         logTable.addCellEditedHandler(new CellEditedHandler() {

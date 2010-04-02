@@ -86,7 +86,6 @@ public class ReportToBillToTab extends Screen {
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 OrganizationDO data;                             
-                
                 if(reportToName.getSelection() != null) {
                     data = (OrganizationDO) reportToName.getSelection().data;
                     
@@ -281,7 +280,6 @@ public class ReportToBillToTab extends Screen {
 
             public void onValueChange(ValueChangeEvent<Integer> event) {                                
                 OrganizationDO data;                             
-                
                 if(billToName.getSelection() != null) {
                     data = (OrganizationDO) billToName.getSelection().data;                    
                     manager.getOrder().setBillToId(data.getId());

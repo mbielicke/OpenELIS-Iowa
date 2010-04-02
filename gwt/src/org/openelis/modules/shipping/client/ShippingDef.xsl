@@ -122,10 +122,10 @@ UIRF Software License are applicable instead of those above.
               </text>
               <widget colspan="5">
                 <autoComplete key="{meta:getShippedToName()}" width="199" case="UPPER" tab="{meta:getProcessedDate()},{meta:getShippedFromId()}" field="Integer">
-                  <col width="180" header="Name" />
-                  <col width="110" header="Street" />
-                  <col width="100" header="City" />
-                  <col width="20" header="St" />
+                  <col width="180" header="{resource:getString($constants,'name')}" />
+                  <col width="110" header="{resource:getString($constants,'street')}" />
+                  <col width="100" header="{resource:getString($constants,'city')}" />
+                  <col width="20" header="{resource:getString($constants,'st')}" />
                 </autoComplete>
               </widget>
             </row>
@@ -221,21 +221,30 @@ UIRF Software License are applicable instead of those above.
                 </VerticalPanel>
               </HorizontalPanel>
             </tab>
-            <tab key="orderNotesTab" text="{resource:getString($constants,'orderShippingNotes')}">
+            <!-- <tab key="orderNotesTab" text="{resource:getString($constants,'orderShippingNotes')}">
               <VerticalPanel width="625" height="200" padding="0" spacing="0">
                 <TablePanel key="noteFormPanel" padding="0" spacing="0" style="Form">
                   <row>
-                    <HorizontalPanel height="15" />
-                  </row>
-                  <row>
-                    <HorizontalPanel width="14" />
                     <widget>
-                      <textarea width="576" height="155" /><!-- key="{noteMeta:getText()}" -->
+                      <textarea width="625" height="155" key="{noteMeta:getText()}" />
                     </widget>
                   </row>
                 </TablePanel>
               </VerticalPanel>
-            </tab>
+            </tab> -->
+            <tab key="noteTab" text="{resource:getString($constants,'orderShippingNotes')}">
+                <VerticalPanel padding="0" spacing="0">
+                  <notes key="notesPanel" width="625" height="187" />
+                  <appButton key="standardNoteButton" style="Button">
+                    <HorizontalPanel>
+                      <AbsolutePanel style="StandardNoteButtonImage" />
+                      <text>
+                        <xsl:value-of select="resource:getString($constants,'addNote')" />
+                      </text>
+                    </HorizontalPanel>
+                  </appButton>
+                </VerticalPanel>
+             </tab>
           </TabPanel>
         </VerticalPanel>
       </VerticalPanel>
