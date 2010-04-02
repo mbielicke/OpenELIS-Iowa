@@ -124,7 +124,7 @@ UIRF Software License are applicable instead of those above.
 <!--end button panel code-->
         <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
           <TablePanel style="Form">
-            <row>
+           <row>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'accessionNum')" />:
               </text>
@@ -136,7 +136,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'collected')" />:
               </text>
-              <calendar key="{meta:getCollectionDate()}" begin="0" end="2" width="90px" maxValue="0" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getCollectionTime()},{meta:getOrderId()}" />
+              <calendar key="{meta:getCollectionDate()}" begin="0" end="2" width="90" maxValue="0" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getCollectionTime()},{meta:getOrderId()}" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'time')" />:
               </text>
@@ -155,7 +155,7 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select="resource:getString($constants,'clntRef')" />:
               </text>
               <widget colspan="3">
-                <textbox key="{meta:getClientReference()}" width="175" max="20" tab="{meta:getWellOrganizationName()},{meta:getStatusId()}" field="String" />
+                <textbox key="{meta:getClientReference()}" width="196" max="20" tab="{meta:getWellOrganizationName()},{meta:getStatusId()}" field="String" />
               </widget>
             </row>
           </TablePanel>

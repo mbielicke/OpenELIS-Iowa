@@ -27,14 +27,17 @@ package org.openelis.manager;
 
 public class SamplePrivateWellManagerProxy {
     public SamplePrivateWellManager add(SamplePrivateWellManager man) throws Exception {
-        throw new UnsupportedOperationException();
+        assert false : "not supported";
+        return null;
     }
 
     public SamplePrivateWellManager update(SamplePrivateWellManager man) throws Exception {
-        throw new UnsupportedOperationException();
+        assert false : "not supported";
+        return null;
     }
     
     public SamplePrivateWellManager fetch(Integer sampleId) throws Exception {
-        throw new UnsupportedOperationException();
+        assert false : "not supported";
+        return null;
     }
 }

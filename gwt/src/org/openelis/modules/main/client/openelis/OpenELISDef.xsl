@@ -98,7 +98,9 @@ UIRF Software License are applicable instead of those above.
                 <code>if(OpenELIS.security.hasModule("sampleprivatewell","SELECT")){</code>
                 <menuItem key="privateWellWaterSampleLogin" description="{resource:getString($constants,'privateWellWaterSampleLoginDescription')}" enable="true" icon="privateWellWaterSampleLoginIcon" label="{resource:getString($constants,'privateWellWaterSampleLogin')}" />
 				<code>}</code>
+				<code>if(OpenELIS.security.hasModule("samplesdwis","SELECT")){</code>
 				<menuItem key="sdwisSampleLogin" description="{resource:getString($constants,'sdwisSampleLoginDescription')}" enable="true" icon="sdwisSampleLoginIcon" label="{resource:getString($constants,'sdwisSampleLogin')}" />
+                <code>}</code>
                 <menuItem key="clinicalSampleLogin" description="{resource:getString($constants,'clinicalSampleLoginDescription')}" enable="false" icon="clinicalSampleLoginIcon" label="{resource:getString($constants,'clinicalSampleLogin')}" />
                 <menuItem key="newbornScreeningSampleLogin" description="{resource:getString($constants,'newbornScreeningSampleLoginDescription')}" enable="false" icon="newbornScreeningSampleLoginIcon" label="{resource:getString($constants,'newbornScreeningSampleLogin')}" />
                 <menuItem key="animalSampleLogin" description="{resource:getString($constants,'animalSampleLoginDescription')}" enable="false" icon="animalSampleLoginIcon" label="{resource:getString($constants,'animalSampleLogin')}" />

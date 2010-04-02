@@ -25,19 +25,18 @@
 */
 package org.openelis.manager;
 
-
-public class SampleEnvironmentalManagerProxy {
-    public SampleEnvironmentalManager add(SampleEnvironmentalManager man) throws Exception {
+public class SampleSDWISManagerProxy {
+    public SampleSDWISManager add(SampleSDWISManager man) throws Exception {
         assert false : "not supported";
         return null;
     }
 
-    public SampleEnvironmentalManager update(SampleEnvironmentalManager man) throws Exception {
+    public SampleSDWISManager update(SampleSDWISManager man) throws Exception {
         assert false : "not supported";
         return null;
     }
     
-    public SampleEnvironmentalManager fetch(Integer sampleId) throws Exception {
+    public SampleSDWISManager fetch(Integer sampleId) throws Exception {
         assert false : "not supported";
         return null;
     }
