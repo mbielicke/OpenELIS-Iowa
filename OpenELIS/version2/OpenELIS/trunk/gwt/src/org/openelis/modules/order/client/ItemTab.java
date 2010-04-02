@@ -19,6 +19,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.table.TableDataCell;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
@@ -41,7 +42,9 @@ public class ItemTab extends Screen {
     private TableWidget           table;
     private AutoComplete<Integer> inventory;
     private AppButton             addItemButton, removeItemButton;
+    
     private boolean               loaded;
+    private int                   numColumns;   
     
     protected ScreenService       inventoryService;
 
@@ -65,8 +68,7 @@ public class ItemTab extends Screen {
                 table.load(getTableModel());
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                //table.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+            public void onStateChange(StateChangeEvent<State> event) {               
                 table.enable(true);
                 table.setQueryMode(event.getState() == State.QUERY);
             }
@@ -85,6 +87,8 @@ public class ItemTab extends Screen {
                     event.cancel();
             }
         });
+        
+        numColumns = table.getColumns().size();
         
         table.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
@@ -115,6 +119,12 @@ public class ItemTab extends Screen {
                         data.setStoreId(row.getStoreId());
                         table.setCell(r, 2, data.getStoreId());
                         break;
+                    case 3:
+                        data.setUnitCost((Double)val);
+                        break;
+                    case 4:
+                        data.setCatalogNumber((String)val);
+                        break;    
                 }
             }
         });
@@ -226,6 +236,7 @@ public class ItemTab extends Screen {
         int i;
         OrderItemViewDO data;
         ArrayList<TableDataRow> model;
+        TableDataRow row;
 
         model = new ArrayList<TableDataRow>();
         if (manager == null)
@@ -234,10 +245,19 @@ public class ItemTab extends Screen {
         try {
             for (i = 0; i < manager.getItems().count(); i++ ) {
                 data = (OrderItemViewDO)manager.getItems().getItemAt(i);
-                model.add(new TableDataRow(null, data.getQuantity(), 
-                                           new TableDataRow(data.getInventoryItemId(),
-                                                            data.getInventoryItemName()),
-                                           data.getStoreId()));
+                row = new TableDataRow(numColumns);
+                            
+                row.cells.get(0).setValue(data.getQuantity());
+                row.cells.get(1).setValue(new TableDataRow(data.getInventoryItemId(),
+                                                           data.getInventoryItemName()));
+                row.cells.get(2).setValue(data.getStoreId());
+
+                if(numColumns > 3) {
+                    row.cells.get(3).setValue(data.getUnitCost());
+                    row.cells.get(4).setValue(data.getCatalogNumber());
+                }
+                
+                model.add(row);
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());

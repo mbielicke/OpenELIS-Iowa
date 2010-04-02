@@ -11,11 +11,14 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
@@ -56,13 +59,21 @@ public class LocationTab extends Screen {
         locationTable = (TableWidget)def.getWidget("locationTable");
         addScreenHandler(locationTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                locationTable.load(getTableModel());
+                if (state != State.QUERY)
+                    locationTable.load(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                locationTable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                locationTable.enable(true);
                 locationTable.setQueryMode(event.getState() == State.QUERY);
             }
+        });
+        
+        locationTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {                
+                if(state != State.ADD && state != State.UPDATE && state != State.QUERY)  
+                    event.cancel();
+            }            
         });
 
         locationTable.addCellEditedHandler(new CellEditedHandler() {

@@ -71,23 +71,8 @@ public class TestWorksheetAnalyteLookupScreen extends Screen
         // Setup link between Screen and widget Handlers
         initialize();
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-
-    }
-
-    /**
-     * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred
-     * command.
-     */
-    private void postConstructor() {
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
-
     }
 
     private void initialize() {

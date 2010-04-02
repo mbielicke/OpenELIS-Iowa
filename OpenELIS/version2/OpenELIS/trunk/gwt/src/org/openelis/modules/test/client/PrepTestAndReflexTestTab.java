@@ -224,15 +224,16 @@ public class PrepTestAndReflexTestTab extends Screen implements
                 String value;
                 int r;
 
-                selectedRow = event.getSelectedItem().row;
-                value = (String)selectedRow.cells.get(1).getValue();
+                selectedRow = event.getSelectedItem().row;                
                 r = testPrepTable.getSelectedRow();
 
                 // set the method
-                if (selectedRow != null && selectedRow.key != null)
+                if (selectedRow != null && selectedRow.key != null) {
+                    value = (String)selectedRow.cells.get(1).getValue();
                     testPrepTable.setCell(r, 1, value);
-                else
+                } else {
                     testPrepTable.setCell(r, 1, null);
+                }
             }
 
         });
@@ -406,15 +407,16 @@ public class PrepTestAndReflexTestTab extends Screen implements
                 String value;
                 int index;
 
-                selectedRow = event.getSelectedItem().row;
-                value = (String)selectedRow.cells.get(1).getValue();
+                selectedRow = event.getSelectedItem().row;                
                 index = testReflexTable.getSelectedRow();
 
                 // set the method
-                if (selectedRow != null && selectedRow.key != null)
+                if (selectedRow != null && selectedRow.key != null) {
+                    value = (String)selectedRow.cells.get(1).getValue();                    
                     testReflexTable.setCell(index, 1, value);
-                else
+                } else {
                     testReflexTable.setCell(index, 1, null);
+                }
 
             }
 

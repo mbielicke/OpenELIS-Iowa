@@ -29,9 +29,11 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.data.Query;
+import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderFillManager;
 import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
+import org.openelis.manager.OrderTestManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.OrderManagerRemote;
 import org.openelis.remote.OrderRemote;
@@ -57,6 +59,10 @@ public class OrderService {
 
     public OrderManager fetchWithNotes(Integer id) throws Exception {
         return remoteManager().fetchWithNotes(id);
+    }
+    
+    public OrderManager fetchWithTestsAndContainers(Integer id) throws Exception {
+        return remoteManager().fetchWithTestsAndContainers(id);
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
@@ -88,6 +94,14 @@ public class OrderService {
 
     public OrderFillManager fetchFillByOrderId(Integer id) throws Exception {
         return remoteManager().fetchFillByOrderId(id);
+    }
+    
+    public OrderTestManager fetchTestByOrderId(Integer id) throws Exception {
+        return remoteManager().fetchTestByOrderId(id);
+    }
+    
+    public OrderContainerManager fetchContainerByOrderId(Integer id) throws Exception {
+        return remoteManager().fetchContainerByOrderId(id);
     }
 
     private OrderRemote remote() {

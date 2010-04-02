@@ -51,6 +51,10 @@ public class OrderManagerProxy {
     public OrderManager fetchWithNotes(Integer id) throws Exception {
         return service.call("fetchWithNotes", id);
     }
+    
+    public OrderManager fetchWithTestsAndContainers(Integer id) throws Exception {
+        return service.call("fetchWithTestsAndContainers", id);
+    }
 
     public OrderManager add(OrderManager man) throws Exception {
         return service.call("add", man);

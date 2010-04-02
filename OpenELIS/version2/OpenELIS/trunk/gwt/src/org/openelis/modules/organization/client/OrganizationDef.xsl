@@ -186,10 +186,10 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'parentOrganization')" />:
                 </text>
                 <autoComplete key="{meta:getParentOrganizationName()}" width="241" case="UPPER" popWidth="auto" tab="{meta:getIsActive()},{meta:getAddressCountry()}" field="Integer">
-                  <col width="180" header="Name" />
-                  <col width="110" header="Street" />
-                  <col width="100" header="City" />
-                  <col width="20" header="St" />
+                  <col width="180" header="{resource:getString($constants,'name')}" />
+                  <col width="110" header="{resource:getString($constants,'street')}" />
+                  <col width="100" header="{resource:getString($constants,'city')}" />
+                  <col width="20" header="{resource:getString($constants,'st')}" />
                 </autoComplete>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'active')" />:

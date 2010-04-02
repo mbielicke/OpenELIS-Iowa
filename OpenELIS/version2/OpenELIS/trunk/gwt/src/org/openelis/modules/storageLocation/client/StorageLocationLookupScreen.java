@@ -49,8 +49,6 @@ import org.openelis.gwt.widget.table.TableWidget;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
 public class StorageLocationLookupScreen extends Screen implements HasActionHandlers<StorageLocationLookupScreen.Action> {
@@ -70,21 +68,6 @@ public class StorageLocationLookupScreen extends Screen implements HasActionHand
 
         // Setup link between Screen and widget Handlers
         initialize();
-
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-
-    }
-
-    /**
-     * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred
-     * command.
-     */
-    private void postConstructor() {
         setState(State.DEFAULT);
     }
 

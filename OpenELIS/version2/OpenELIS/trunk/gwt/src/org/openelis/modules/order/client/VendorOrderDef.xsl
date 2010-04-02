@@ -56,7 +56,7 @@ UIRF Software License are applicable instead of those above.
               </VerticalPanel>
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" width="auto" maxRows="19" style="atozTable">
+              <table key="atozTable" width="auto" maxRows="20" style="atozTable">
                 <col width="75" header="{resource:getString($constants,'orderNum')}">
                   <label field="String" />
                 </col>
@@ -168,10 +168,10 @@ UIRF Software License are applicable instead of those above.
                 </text>
                 <widget colspan="5">
                   <autoComplete key="{meta:getOrganizationName()}" width="188" case="UPPER" popWidth="auto" tab="{meta:getOrderedDate()},{meta:getStatusId()}" field="Integer">
-                    <col width="180" header="Name" />
-                    <col width="110" header="Street" />
-                    <col width="100" header="City" />
-                    <col width="20" header="St" />
+                    <col width="180" header="{resource:getString($constants,'name')}" />
+                    <col width="110" header="{resource:getString($constants,'street')}" />
+                    <col width="100" header="{resource:getString($constants,'city')}" />
+                    <col width="20" header="{resource:getString($constants,'st')}" />
                   </autoComplete>
                 </widget>
               </row>
@@ -179,7 +179,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"orderDate")' />:
                 </text>
-                <calendar key="{meta:getOrderedDate()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getRequestedBy()},{meta:getOrganizationName()}" />
+                <calendar key="{meta:getOrderedDate()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getRequestedBy()},{meta:getOrganizationName()}" />
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"aptSuite")' />:
                 </text>
@@ -215,12 +215,12 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"extOrderNum")' />:
                 </text>
-                <textbox key="{meta:getExternalOrderNumber()}" width="203" case="MIXED" max="20" tab="{meta:getId()},{meta:getCostCenterId()}" field="Integer" />
+                <textbox key="{meta:getExternalOrderNumber()}" width="203" case="MIXED" max="20" tab="{meta:getId()},{meta:getCostCenterId()}" field="String" />
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"state")' />:
                 </text>
                 <widget>
-                  <textbox key="{meta:getOrganizationAddressState()}" width="35" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="Integer" />
+                  <textbox key="{meta:getOrganizationAddressState()}" width="35" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
                 <widget>
                   <HorizontalPanel width="17" />
@@ -236,14 +236,14 @@ UIRF Software License are applicable instead of those above.
 
 <!-- TAB PANEL -->
 
-            <TabPanel key="orderTabPanel" width="591" height="275">
+            <TabPanel key="tabPanel" width="591" height="275">
 
 <!-- TAB 1 (items) -->
 
-              <tab key="itemsTab" text="{resource:getString($constants,'items')}">
+              <tab key="itemTab" text="{resource:getString($constants,'items')}">
                 <VerticalPanel padding="0" spacing="0">
                   <widget>
-                    <table key="itemsTable" width="auto" maxRows="10" showScroll="ALWAYS" title="">
+                    <table key="itemTable" width="auto" maxRows="10" showScroll="ALWAYS" title="">
                       <col key="{meta:getOrderItemQuantity()}" width="60" align="right" header="{resource:getString($constants,'quantity')}">
                         <textbox field="Integer" required="true" />
                       </col>
@@ -258,14 +258,14 @@ UIRF Software License are applicable instead of those above.
                           </col>
                         </autoComplete>
                       </col>
-                      <col width="163" header="{resource:getString($constants,'store')}">
-                        <label field="String" />
+                      <col key="{meta:getOrderItemInventoryItemStoreId()}" width="163" header="{resource:getString($constants,'store')}">
+                        <dropdown width="163" field="Integer" />
                       </col>
-                      <col width="70" header="{resource:getString($constants,'unitCost')}">
-                        <textbox mask="{resource:getString($constants,'editorCurrencyFormat')}" pattern="{resource:getString($constants,'displayCurrencyFormat')}" field="Integer" />
+                      <col key="{meta:getOrderItemUnitCost()}" width="70" header="{resource:getString($constants,'unitCost')}">
+                        <textbox pattern="{resource:getString($constants,'displayCurrencyFormat')}" field="Double" />
                       </col>
-                      <col width="87" header="{resource:getString($constants,'catalogNum')}">
-                        <textbox field="Integer" />
+                      <col key="{meta:getOrderItemCatalogNumber()}" width="87" header="{resource:getString($constants,'catalogNum')}">
+                        <textbox field="String" />
                       </col>
                     </table>
                   </widget>
@@ -292,7 +292,7 @@ UIRF Software License are applicable instead of those above.
 
 <!-- TAB 2 (receipts) -->
 
-              <tab key="receiptsTab" text="{resource:getString($constants,'receipt')}">
+              <tab key="receiptTab" text="{resource:getString($constants,'receipt')}">
                 <table key="receiptsTable" width="auto" maxRows="11" showScroll="ALWAYS" title="">
                   <col width="80" header="{resource:getString($constants,'dateRec')}">
                     <label field="String" />

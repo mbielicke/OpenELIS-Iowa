@@ -36,6 +36,8 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.manager.PwsAddressManager;
 import org.openelis.manager.PwsManager;
 
@@ -61,9 +63,15 @@ public class AddressTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addressTable.enable(false);
+                addressTable.enable(true);
             }
-        });          
+        });  
+        
+        addressTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                event.cancel();
+            }            
+        });
     }
     
     private ArrayList<TableDataRow> getTableModel() {

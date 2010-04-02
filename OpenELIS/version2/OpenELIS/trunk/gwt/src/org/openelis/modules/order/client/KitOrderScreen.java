@@ -73,6 +73,7 @@ import org.openelis.manager.OrderManager;
 import org.openelis.meta.OrderMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.modules.sample.client.AuxDataTab;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -97,6 +98,8 @@ public class KitOrderScreen extends Screen {
     private ShipNoteTab           shipNoteTab;
     private CustomerNoteTab       custNoteTab;
     private ReportToBillToTab     reportToBillToTab;
+    private AuxDataTab            auxDataTab;
+    private ContainerTab          containerTab;
     private Tabs                  tab;
 
     private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
@@ -111,11 +114,12 @@ public class KitOrderScreen extends Screen {
     private AutoComplete<String>  description;
     private TabPanel              tabPanel;
     private Integer               status_pending;
+    private String                descQuery;
     
     protected ScreenService       userService, organizationService;
 
     private enum Tabs {
-        ITEM, FILL, SHIPNOTE, CUSTOMERNOTE, REPORTTO, TESTORDER, AUXDATA
+        ITEM, FILL, SHIP_NOTE, CUSTOMER_NOTE, REPORT_TO, CONTAINER, AUX_DATA
     };
     
     
@@ -144,7 +148,8 @@ public class KitOrderScreen extends Screen {
         try {
             DictionaryCache.preloadByCategorySystemNames("order_status", "cost_centers",
                                                          "inventory_store", "inventory_unit",
-                                                         "order_ship_from");
+                                                         "order_ship_from","sample_container",
+                                                         "type_of_sample");
         } catch (Exception e) {
             Window.alert("OrderSreen: missing dictionary entry; " + e.getMessage());
             window.close();
@@ -231,7 +236,7 @@ public class KitOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                commitButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -242,7 +247,7 @@ public class KitOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -335,7 +340,7 @@ public class KitOrderScreen extends Screen {
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 OrganizationDO data;
-                                
+                
                 if(organizationName.getSelection() != null) {
                     data = (OrganizationDO) organizationName.getSelection().data;
                     
@@ -596,8 +601,9 @@ public class KitOrderScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 description.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 description.setQueryMode(event.getState() == State.QUERY);
+                descQuery = null;
             }
-        });
+        });        
 
         description.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
@@ -605,24 +611,35 @@ public class KitOrderScreen extends Screen {
                 ArrayList<TableDataRow> model;                
                 QueryFieldUtil parser;
                 IdNameVO data;
-                ArrayList<IdNameVO> list;
-
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
+                ArrayList<IdNameVO> list;  
+                String match;
+                
+                list = null;
+                match = event.getMatch();
                 window.setBusy();
+                
                 try {
-                    list = service.callList("fetchByDescription", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
                     
-                    row = new TableDataRow(event.getMatch(), event.getMatch());
+                    row = new TableDataRow(match, match);
                     model.add(row);
                     
-                    for (int i = 0; i < list.size(); i++ ) {
-                        data = list.get(i);
-                        row = new TableDataRow(data.getName(), data.getName());                  
-                        model.add(row);
-                    }
+                    if(descQuery == null || (!(match.indexOf(descQuery) == 0))) {
+                        parser = new QueryFieldUtil();
+                        parser.parse(match);
+                        list = service.callList("fetchByDescription", parser.getParameter().get(0));
+                        for (int i = 0; i < list.size(); i++ ) {
+                            data = list.get(i);
+                            row = new TableDataRow(data.getName(), data.getName());                  
+                            model.add(row);
+                        } 
+                        
+                        if(list.size() == 0)
+                            descQuery = match;
+                    } /* else {
+                        descQuery = match;
+                    } */                                                                                               
+                    
                     description.showAutoMatches(model);
                 } catch (Throwable e) {
                     e.printStackTrace();
@@ -684,7 +701,7 @@ public class KitOrderScreen extends Screen {
         addScreenHandler(shipNoteTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 shipNoteTab.setManager(manager);
-                if (tab == Tabs.SHIPNOTE)
+                if (tab == Tabs.SHIP_NOTE)
                     drawTabs();
             }
 
@@ -697,7 +714,7 @@ public class KitOrderScreen extends Screen {
         addScreenHandler(custNoteTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 custNoteTab.setManager(manager);
-                if (tab == Tabs.CUSTOMERNOTE)
+                if (tab == Tabs.CUSTOMER_NOTE)
                     drawTabs();
             }
 
@@ -710,12 +727,38 @@ public class KitOrderScreen extends Screen {
         addScreenHandler(reportToBillToTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 reportToBillToTab.setManager(manager);
-                if (tab == Tabs.REPORTTO)
+                if (tab == Tabs.REPORT_TO)
                     drawTabs();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 reportToBillToTab.setState(event.getState());
+            }
+        });
+        
+        auxDataTab = new AuxDataTab(def, window);
+        addScreenHandler(auxDataTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                auxDataTab.setManager(manager);
+                if (tab == Tabs.AUX_DATA)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                auxDataTab.setState(event.getState());
+            }
+        });
+        
+        containerTab  = new ContainerTab(def, window);
+        addScreenHandler(containerTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                containerTab.setManager(manager);
+                if (tab == Tabs.CONTAINER)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                containerTab.setState(event.getState());
             }
         });
 
@@ -727,7 +770,7 @@ public class KitOrderScreen extends Screen {
                 QueryData field;
 
                 window.setBusy(consts.get("querying"));
-                // this screen should only query for internal orders
+                // this screen should only query for kit orders
                 field = new QueryData();
                 field.key = OrderMeta.getType();
                 field.query = OrderManager.TYPE_KIT;
@@ -745,7 +788,7 @@ public class KitOrderScreen extends Screen {
                             window.setDone(consts.get("noRecordsFound"));
                             setState(State.DEFAULT);
                         } else if (error instanceof LastPageException) {
-                            window.setError("No more records in this direction");
+                            window.setError(consts.get("noMoreRecordInDir"));
                         } else {
                             Window.alert("Error: Order call query failed; " +
                                          error.getMessage());
@@ -1040,11 +1083,17 @@ public class KitOrderScreen extends Screen {
                     case FILL:
                         manager = OrderManager.fetchWithFills(id);
                         break;
-                    case SHIPNOTE:
-                    case CUSTOMERNOTE:
+                    case SHIP_NOTE:
+                    case CUSTOMER_NOTE:
                         manager = OrderManager.fetchWithNotes(id);
                         break;
-                    case REPORTTO:
+                    case REPORT_TO:
+                        manager = OrderManager.fetchById(id);
+                        break;
+                    case CONTAINER:
+                        manager = OrderManager.fetchWithTestsAndContainers(id);
+                        break;     
+                    case AUX_DATA:
                         manager = OrderManager.fetchById(id);
                         break;    
                         
@@ -1066,6 +1115,48 @@ public class KitOrderScreen extends Screen {
 
         return true;
     }
+    
+    public ArrayList<QueryData> getQueryFields() {
+        ArrayList<QueryData> returnList;
+        ArrayList<IdNameVO> auxFields;
+        QueryData queryData;
+        IdNameVO idName;
+        
+        returnList = super.getQueryFields();
+        
+        //add aux data values if necessary
+        auxFields = auxDataTab.getAuxQueryFields();
+        
+        if(auxFields.size() > 0){
+            //add ref table
+            queryData = new QueryData();
+            queryData.key = OrderMeta.getAuxDataReferenceTableId();
+            queryData.type = QueryData.Type.INTEGER;
+            queryData.query = String.valueOf(ReferenceTable.ORDER);
+            returnList.add(queryData);
+            
+            //add aux fields
+            for(int i=0; i<auxFields.size(); i++){
+                idName = auxFields.get(i);
+                
+                //aux data id
+                queryData = new QueryData();
+                queryData.key = OrderMeta.getAuxDataAuxFieldId();
+                queryData.type = QueryData.Type.INTEGER;
+                queryData.query = String.valueOf(idName.getId());
+                returnList.add(queryData);
+                
+                //aux data value
+                queryData = new QueryData();
+                queryData.key = OrderMeta.getAuxDataValue();
+                queryData.type = QueryData.Type.STRING;
+                queryData.query = idName.getName();
+                returnList.add(queryData);
+            }
+        }
+        
+        return returnList;
+    }
 
     private void drawTabs() {
         switch (tab) {
@@ -1075,14 +1166,20 @@ public class KitOrderScreen extends Screen {
             case FILL:
                 fillTab.draw();
                 break;
-            case SHIPNOTE:
+            case SHIP_NOTE:
                 shipNoteTab.draw();
                 break;
-            case CUSTOMERNOTE:
+            case CUSTOMER_NOTE:
                 custNoteTab.draw();
                 break;
-            case REPORTTO:
+            case REPORT_TO:
                 reportToBillToTab.draw();
+                break;   
+            case CONTAINER:
+                containerTab.draw();
+                break;    
+            case AUX_DATA:
+                auxDataTab.draw();
                 break;    
         }
     }

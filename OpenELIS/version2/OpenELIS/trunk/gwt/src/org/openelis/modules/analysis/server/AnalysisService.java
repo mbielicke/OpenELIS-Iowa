@@ -48,8 +48,10 @@ public class AnalysisService {
 
     public ArrayList<TestMethodVO> getTestMethodMatches(Query query) throws Exception {
         ArrayList<TestMethodVO> resultList;
-        resultList = panelRemote().fetchByNameSampleTypeWithTests(query.getFields().get(0).query+"%", new Integer(query.getFields().get(1).query), 10);
-        
+        if(query.getFields().size() > 1)
+            resultList = panelRemote().fetchByNameSampleTypeWithTests(query.getFields().get(0).query+"%", new Integer(query.getFields().get(1).query), 10);
+        else
+            resultList = panelRemote().fetchByNameWithTests(query.getFields().get(0).query+"%", 10);
         return resultList;
     }
 

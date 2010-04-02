@@ -81,25 +81,10 @@ public class DictionaryLookupScreen extends Screen
         
         // Setup link between Screen and widget Handlers
         initialize();
+        initializeDropdowns(); 
         
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-
-    }
-    
-
-    /**
-     * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred
-     * command.
-     */
-    private void postConstructor() {
-        setState(State.DEFAULT);
-        initializeDropdowns();
-    }
+        setState(State.DEFAULT);      
+    }    
 
     private void initialize() {        
 
@@ -107,7 +92,10 @@ public class DictionaryLookupScreen extends Screen
 
         category = (Dropdown)def.getWidget("category");
         addScreenHandler(category, new ScreenEventHandler<Integer>() {
-
+            public void onDataChange(DataChangeEvent event) {
+                category.setValue(null);
+            }
+            
             public void onStateChange(StateChangeEvent<State> event) {
                 category.enable(true);
             }
@@ -242,8 +230,7 @@ public class DictionaryLookupScreen extends Screen
     }
     
     public void clearFields() {
-        findTextBox.setText(null);
-        category.setValue(null);
+        DataChangeEvent.fire(this);
     }
 
     public void executeQuery(String pattern) {
