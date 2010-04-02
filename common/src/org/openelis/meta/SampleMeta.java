@@ -98,6 +98,25 @@ public class SampleMeta implements Meta, MetaMap {
                     WELL_LOCATION_ADDR_FAX_PHONE = "_wellLocationAddress.faxPhone",
                     WELL_LOCATION_ADDR_EMAIL = "_wellLocationAddress.email", 
                     WELL_LOCATION_ADDR_COUNTRY = "wellLocationAddress.country",
+                    
+                    //sample sdwis
+                    SDWIS_ID = "_sampleSDWIS.id",
+                    SDWIS_SAMPLE_ID = "_sampleSDWIS.sampleId",
+                    SDWIS_PWS_ID = "_sampleSDWIS.pwdId",
+                    SDWIS_STATE_LAB_ID = "_sampleSDWIS.stateLabId",
+                    SDWIS_FACILITY_ID = "_sampleSDWIS.facilityId",
+                    SDWIS_SAMPLE_TYPE_ID = "_sampleSDWIS.sampleTypeId",
+                    SDWIS_SAMPLE_CATEGORY_ID = "_sampleSDWIS.sampleCategoryId",
+                    SDWIS_PB_SAMPLE_TYPE_ID = "_sampleSDWIS.pbSampleTypeId",
+                    SDWIS_SAMPLE_POINT_ID = "_sampleSDWIS.samplePointId",
+                    SDWIS_LOCATION = "_sampleSDWIS.location",
+                    SDWIS_COLLECTOR = "_sampleSDWIS.collector",
+                    SDWIS_ORIGINAL_SAMPLE_NUMBER = "_sampleSDWIS.originalSampleNumber",
+                    SDWIS_REPEAT_CODE_ID = "_sampleSDWIS.repeatCodeId",
+                    SDWIS_COMPOSITE_INDICATOR = "_sampleSDWIS.compositeIndicator",
+                    SDWIS_COMPOSITE_SAMPLE_NUMBER = "_sampleSDWIS.compositeSampleNumber",
+                    SDWIS_COMPOSITE_DATE = "_sampleSDWIS.compositeDate",
+                    SDWIS_COMPOSITE_SEQUENCE = "_sampleSDWIS.compositeSequence",
 
                     LOCATION_ADDR_MULTIPLE_UNIT = "_locationAddress.multipleUnit",
                     LOCATION_ADDR_STREET_ADDRESS = "_locationAddress.streetAddress", 
@@ -250,8 +269,14 @@ public class SampleMeta implements Meta, MetaMap {
                                                   WELL_LOCATION_ADDR_ZIP_CODE, WELL_LOCATION_ADDR_WORK_PHONE, 
                                                   WELL_LOCATION_ADDR_HOME_PHONE, WELL_LOCATION_ADDR_CELL_PHONE, 
                                                   WELL_LOCATION_ADDR_FAX_PHONE, WELL_LOCATION_ADDR_EMAIL, 
-                                                  WELL_LOCATION_ADDR_COUNTRY,
-                                                  ITEM_ID, ITEM_SAMPLE_ID, ITEM_SAMPLE_ITEM_ID,
+                                                  WELL_LOCATION_ADDR_COUNTRY, SDWIS_ID, SDWIS_SAMPLE_ID,
+                                                  SDWIS_PWS_ID, SDWIS_STATE_LAB_ID, SDWIS_FACILITY_ID,
+                                                  SDWIS_SAMPLE_TYPE_ID, SDWIS_SAMPLE_CATEGORY_ID,
+                                                  SDWIS_PB_SAMPLE_TYPE_ID, SDWIS_SAMPLE_POINT_ID,
+                                                  SDWIS_LOCATION, SDWIS_COLLECTOR, SDWIS_ORIGINAL_SAMPLE_NUMBER,
+                                                  SDWIS_REPEAT_CODE_ID, SDWIS_COMPOSITE_INDICATOR,
+                                                  SDWIS_COMPOSITE_SAMPLE_NUMBER, SDWIS_COMPOSITE_DATE,
+                                                  SDWIS_COMPOSITE_SEQUENCE, ITEM_ID, ITEM_SAMPLE_ID, ITEM_SAMPLE_ITEM_ID,
                                                   ITEM_ITEM_SEQUENCE, ITEM_TYPE_OF_SAMPLE_ID,
                                                   ITEM_SOURCE_OF_SAMPLE_ID, ITEM_SOURCE_OTHER,
                                                   ITEM_CONTAINER_ID, ITEM_CONTAINER_REFERENCE,
@@ -575,6 +600,58 @@ public class SampleMeta implements Meta, MetaMap {
     
     public static String getWellLocationAddrCountry(){
         return WELL_LOCATION_ADDR_COUNTRY;
+    }
+    
+    public static String getSDWISId(){
+        return SDWIS_ID;
+    }
+    public static String getSDWISSampleId(){
+        return SDWIS_SAMPLE_ID;
+    }
+    public static String getSDWISPwsId(){
+        return SDWIS_PWS_ID;
+    }
+    public static String getSDWISStateLabId(){
+        return SDWIS_STATE_LAB_ID;
+    }
+    public static String getSDWISFacilityId(){
+        return SDWIS_FACILITY_ID;
+    }
+    public static String getSDWISSampleTypeId(){
+        return SDWIS_SAMPLE_TYPE_ID;
+    }
+    public static String getSDWISSampleCategoryId(){
+        return SDWIS_SAMPLE_CATEGORY_ID;
+    }
+    public static String getSDWISPbSampleTypeId(){
+        return SDWIS_PB_SAMPLE_TYPE_ID;
+    }
+    public static String getSDWISSamplePointId(){
+        return SDWIS_SAMPLE_POINT_ID;
+    }
+    public static String getSDWISLocation(){
+        return SDWIS_LOCATION;
+    }
+    public static String getSDWISCollector(){
+        return SDWIS_COLLECTOR;
+    }
+    public static String getSDWISOriginalSampleNumber(){
+        return SDWIS_ORIGINAL_SAMPLE_NUMBER;
+    }
+    public static String getSDWISRepeatCodeId(){
+        return SDWIS_REPEAT_CODE_ID;
+    }
+    public static String getSDWISCompositeIndicator(){
+        return SDWIS_COMPOSITE_INDICATOR;
+    }
+    public static String getSDWISCompositeSampleNumber(){
+        return SDWIS_COMPOSITE_SAMPLE_NUMBER;
+    }
+    public static String getSDWISCompositeDate(){
+        return SDWIS_COMPOSITE_DATE;
+    }
+    public static String getSDWISCompositeSequence(){
+        return SDWIS_COMPOSITE_SEQUENCE;
     }
     
     public static String getItemId() {
@@ -981,20 +1058,24 @@ public class SampleMeta implements Meta, MetaMap {
             from += ", IN (_sample.sampleEnvironmental) _sampleEnvironmental ";
         
         //sample private well
-        if (where.indexOf("samplePrivateWell.") > -1 || where.indexOf("_privateWellReportToAddress") > -1 || 
-                        where.indexOf("_wellOrganization.") > -1 || where.indexOf("_wellLocationAddress.") > -1) 
+        if (where.indexOf("samplePrivateWell.") > -1 || where.indexOf("privateWellReportToAddress") > -1 || 
+                        where.indexOf("wellOrganization.") > -1 || where.indexOf("wellLocationAddress.") > -1) 
             from += ", IN (_sample.samplePrivateWell) _samplePrivateWell ";
         
-        if (where.indexOf("_wellOrganization.") > -1 || where.indexOf("_privateWellReportToAddress") > -1)
+        if (where.indexOf("wellOrganization.") > -1 || where.indexOf("privateWellReportToAddress") > -1)
             from += " LEFT JOIN _samplePrivateWell.organization _wellOrganization ";
         
-        if (where.indexOf("_privateWellReportToAddress") > -1){
+        if (where.indexOf("privateWellReportToAddress") > -1){
             from += " LEFT JOIN _wellOrganization.address _address ";
             from += " LEFT JOIN _samplePrivateWell.reportToAddress _privateWellReportToAddress ";
         } 
 
-        if (where.indexOf("_wellLocationAddress.") > -1)
+        if (where.indexOf("wellLocationAddress.") > -1)
             from += ", IN (_samplePrivateWell.locationAddress) _wellLocationAddress ";
+        
+        //sample sdwis
+        if(where.indexOf("sampleSDWIS.") > -1)
+            from += ", IN (_sample.sampleSDWIS) _sampleSDWIS ";
             
         //common sample fields
         if (where.indexOf("project.") > -1){

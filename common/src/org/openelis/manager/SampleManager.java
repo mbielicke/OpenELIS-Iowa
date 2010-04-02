@@ -60,7 +60,6 @@ public class SampleManager implements RPC, HasAuxDataInt {
                                                   PT_DOMAIN_FLAG = "P", 
                                                   SDWIS_DOMAIN_FLAG = "S", 
                                                   WELL_DOMAIN_FLAG = "W",
-                                                  FAST_LOGIN_DOMAIN_FLAG = "F",
                                                   QUICK_ENTRY = "Q";
 
     protected transient static SampleManagerProxy proxy;
@@ -190,6 +189,8 @@ public class SampleManager implements RPC, HasAuxDataInt {
                         sampleDomain = SampleEnvironmentalManager.fetchBySampleId(sample.getId());
                     else if (domain.equals(WELL_DOMAIN_FLAG))
                         sampleDomain = SamplePrivateWellManager.fetchBySampleId(sample.getId());
+                    else if (domain.equals(SDWIS_DOMAIN_FLAG))
+                        sampleDomain = SampleSDWISManager.fetchBySampleId(sample.getId());
     
                 } catch (NotFoundException e) {
                     // ignore
@@ -217,6 +218,8 @@ public class SampleManager implements RPC, HasAuxDataInt {
             sampleDomain = SampleEnvironmentalManager.getInstance();
         else if (domain.equals(WELL_DOMAIN_FLAG))
             sampleDomain = SamplePrivateWellManager.getInstance();
+        else if (domain.equals(SDWIS_DOMAIN_FLAG))
+            sampleDomain = SampleSDWISManager.getInstance();
     }
 
     public SampleProjectManager getProjects() throws Exception {
