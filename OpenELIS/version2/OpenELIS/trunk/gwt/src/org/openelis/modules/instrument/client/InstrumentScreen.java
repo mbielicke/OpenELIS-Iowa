@@ -436,6 +436,13 @@ public class InstrumentScreen extends Screen {
             }
         });
 
+        logTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                if(state != State.ADD && state != State.UPDATE)  
+                    event.cancel();                
+            }            
+        });
+        
         logTable = (TableWidget)def.getWidget("logTable");
         addScreenHandler(logTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
@@ -446,17 +453,9 @@ public class InstrumentScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                logTable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));               
+                logTable.enable(true);               
             }
-        });
-        
-        logTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
-            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if(state != State.ADD && state != State.UPDATE && state != State.QUERY)  
-                    event.cancel();                
-            }
-            
-        });
+        });        
 
         logTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
