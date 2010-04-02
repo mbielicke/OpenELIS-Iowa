@@ -5,11 +5,14 @@ import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrganizationContactDO;
+import org.openelis.domain.QcAnalyteDO;
 import org.openelis.domain.QcDO;
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetItemDO;
+import org.openelis.domain.WorksheetQcResultDO;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -33,12 +36,15 @@ import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.OrganizationManager;
+import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.QcManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetManager;
+import org.openelis.manager.WorksheetQcResultManager;
+import org.openelis.manager.WorksheetResultManager;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -196,11 +202,12 @@ public class WorksheetTab extends Screen {
     }
     
     private ArrayList<TableDataRow> getTableModel() {
-        int                      i, j;
+        int                      i, j, k;
         ArrayList<TableDataRow>  model;
         TableDataRow             row;
         AnalysisManager          aManager;
         AnalysisViewDO           aVDO;
+        AnalyteViewDO            atVDO;
         QcManager                qcManager;
         SampleDataBundle         bundle;
         SampleManager            sManager;
@@ -208,6 +215,8 @@ public class WorksheetTab extends Screen {
         WorksheetAnalysisDO      waDO;
         WorksheetAnalysisManager waManager;
         WorksheetItemDO          wiDO;
+        WorksheetQcResultManager wqManager;
+        WorksheetResultManager   wrManager;
         
         model = new ArrayList<TableDataRow>();
         if (manager == null)
@@ -218,7 +227,7 @@ public class WorksheetTab extends Screen {
                 wiDO = manager.getItems().getWorksheetItemAt(i);
                 waManager = manager.getItems().getWorksheetAnalysisAt(i);
 
-                row = new TableDataRow(9);
+                row = new TableDataRow(13);
                 row.cells.get(0).value = getPositionNumber(wiDO.getPosition());
                 for (j = 0; j < waManager.count(); j++) {
                     waDO = waManager.getWorksheetAnalysisAt(j);
@@ -239,9 +248,22 @@ public class WorksheetTab extends Screen {
                         row.cells.get(4).value = aVDO.getTestName();
                         row.cells.get(5).value = aVDO.getMethodName();
                         row.cells.get(6).value = aVDO.getStatusId();
-                        row.cells.get(7).value = "";
-                        row.cells.get(8).value = "";
-                        row.data = bundle;
+/*                        
+                        wrManager = waManager.getWorksheetResultAt(j);
+                        if (wrManager.count() == 0)
+                            initializeWorksheetResults(wrManager, aManager);
+                                                       
+                        for (k = 0; k < wrManager.count(); k++) {
+*/
+                            row.cells.get(7).value = "";
+                            row.cells.get(8).value = "";
+                            row.cells.get(9).value = "";
+                            row.cells.get(10).value = "";
+                            row.cells.get(11).value = "";
+                            row.cells.get(12).value = "";
+                            row.data = bundle;
+                            model.add(row);
+//                        }
                     } else if (waDO.getQcId() != null) {
                         qcManager = QcManager.fetchById(waDO.getQcId());
                         
@@ -250,12 +272,24 @@ public class WorksheetTab extends Screen {
                         row.cells.get(4).value = "";
                         row.cells.get(5).value = "";
                         row.cells.get(6).value = 0;
-                        row.cells.get(7).value = "";
-                        row.cells.get(8).value = "";
-                        row.data = qcManager;
+/*                        
+                        wqManager = waManager.getWorksheetQcResultAt(j);
+                        if (wqManager.count() == 0)
+                            initializeWorksheetQcResults(qcManager, wqManager);
+                                                       
+                        for (k = 0; k < wqManager.count(); k++) {
+*/
+                            row.cells.get(7).value = "";
+                            row.cells.get(8).value = "";
+                            row.cells.get(9).value = "";
+                            row.cells.get(10).value = "";
+                            row.cells.get(11).value = "";
+                            row.cells.get(12).value = "";
+                            row.data = qcManager;
+                            model.add(row);
+//                        }
                     }
                 }
-                model.add(row);
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -312,5 +346,41 @@ public class WorksheetTab extends Screen {
      */
    private int getPositionMinorNumber(int position) {
        return position - (getPositionMajorNumber(position) - 1) * manager.getWorksheet().getBatchCapacity();
+   }
+   
+   /**
+    * Loads the WorksheetResultManager from the provided AnalysisManager.  This method is
+    * called when we have never loaded this worksheet since it was created. 
+    */
+   private void initializeWorksheetResults(WorksheetResultManager wrManager, AnalysisManager aManager) {
+       
+   }
+
+   /**
+    * Loads the WorksheetQcResultManager from the provided QcManager.  This method is
+    * called when we have never loaded this worksheet since it was created. 
+    */
+   private void initializeWorksheetQcResults(QcManager qcManager, WorksheetQcResultManager wqrManager) {
+       int                 i;
+       QcAnalyteDO         qcaDO;
+       QcAnalyteManager    qcaManager;
+       WorksheetQcResultDO wqrDO;
+       
+       try {
+           qcaManager = qcManager.getAnalytes();
+           for (i = 0; i < qcaManager.count(); i++) {
+               qcaDO = qcaManager.getAnalyteAt(i);
+               wqrDO = new WorksheetQcResultDO();
+               wqrDO.setSortOrder(i+1);
+               wqrDO.setQcAnalyteId(qcaDO.getId());
+               wqrDO.setTypeId(qcaDO.getTypeId());
+               wqrDO.setValue(qcaDO.getValue());
+               wqrManager.addWorksheetQcResult(wqrDO);
+           }
+       } catch (Exception anyE) {
+           // TODO - Code real exception handling
+           anyE.printStackTrace();
+           Window.alert(anyE.getMessage());
+       }
    }
 }

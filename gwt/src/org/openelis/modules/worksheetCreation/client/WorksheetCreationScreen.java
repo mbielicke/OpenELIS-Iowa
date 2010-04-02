@@ -907,7 +907,7 @@ public class WorksheetCreationScreen extends Screen {
                         ArrayList<TableDataRow> list;
                         WorksheetViewDO         wVDO;
 
-                        if (event.getAction() == WorksheetLookupScreen.Action.OK) {
+                        if (event.getAction() == WorksheetLookupScreen.Action.SELECT) {
                             list = (ArrayList<TableDataRow>)event.getData();
                             if (list != null) {
                                 wVDO = (WorksheetViewDO)list.get(0).data;
@@ -940,7 +940,7 @@ public class WorksheetCreationScreen extends Screen {
                         ScreenWindow            modal2;
                         WorksheetViewDO         wVDO;
 
-                        if (event.getAction() == WorksheetLookupScreen.Action.OK) {
+                        if (event.getAction() == WorksheetLookupScreen.Action.SELECT) {
                             list = (ArrayList<TableDataRow>)event.getData();
                             if (list != null) {
                                 wVDO = (WorksheetViewDO)list.get(0).data;

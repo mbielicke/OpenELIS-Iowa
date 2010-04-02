@@ -76,6 +76,7 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.FileUpload;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
@@ -135,11 +136,12 @@ public class WorksheetCompletionScreen extends Screen {
     protected Confirm                             worksheetRemoveQCConfirm, worksheetRemoveLastOfQCConfirm,
                                                   worksheetSaveConfirm, worksheetExitConfirm;
     protected Dropdown<Integer>                   statusId;
+//    protected FileUpload                          loadFile;
     protected QcLookupScreen                      qcLookupScreen;
     protected TableDataRow                        qcItems[];
     protected TableWidget                         worksheetItemTable;
     protected TextBox<Integer>                    worksheetId, relatedWorksheetId;
-    protected TextBox<String>                     loadFrom, defaultInitials;
+    protected TextBox<String>                     loadFile, defaultInitials;
     protected TestWorksheetDO                     testWorksheetDO;
     protected TestWorksheetManager                twManager;
     protected WorksheetLookupScreen               wLookupScreen;
@@ -203,7 +205,7 @@ public class WorksheetCompletionScreen extends Screen {
      */
     @SuppressWarnings("unchecked")
     private void initialize() {
-        printButton = (AppButton)def.getWidget("printButton");
+        printButton = (AppButton)def.getWidget("print");
         addScreenHandler(printButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 print();
@@ -211,17 +213,6 @@ public class WorksheetCompletionScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 printButton.enable(true);
-            }
-        });
-
-        exitButton = (AppButton)def.getWidget("exitButton");
-        addScreenHandler(exitButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                exit();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                exitButton.enable(true);
             }
         });
 
@@ -318,8 +309,9 @@ public class WorksheetCompletionScreen extends Screen {
             } 
         });
 
-        loadFrom = (TextBox)def.getWidget("loadFrom");
-        addScreenHandler(loadFrom, new ScreenEventHandler<String>() {
+        loadFile = (TextBox)def.getWidget("loadFile");
+//        loadFile = (FileUpload)def.getWidget("loadFile");
+        addScreenHandler(loadFile, new ScreenEventHandler<String>() {
             public void onValueChange(ValueChangeEvent event) {
                 String value;
                 
@@ -332,7 +324,7 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                loadFrom.enable(true);
+                loadFile.enable(true);
             }
         });
 
@@ -530,7 +522,7 @@ public class WorksheetCompletionScreen extends Screen {
                         ArrayList<TableDataRow> list;
                         WorksheetViewDO         wVDO;
 
-                        if (event.getAction() == WorksheetLookupScreen.Action.OK) {
+                        if (event.getAction() == WorksheetLookupScreen.Action.SELECT) {
                             list = (ArrayList<TableDataRow>)event.getData();
                             if (list != null) {
                                 wVDO = (WorksheetViewDO)list.get(0).data;
@@ -555,7 +547,8 @@ public class WorksheetCompletionScreen extends Screen {
     }
     
     protected void load() {
-        Window.alert("Worksheet loaded from '"+loadFrom.getValue()+"'");
+//        Window.alert("Worksheet loaded from '"+loadFile.getValue()+"'");
+        Window.alert("Worksheet loaded from '<loadFilename>'");
         isSaved = false;
     }
     
@@ -688,7 +681,7 @@ public class WorksheetCompletionScreen extends Screen {
                         ArrayList<TableDataRow> list;
                         WorksheetViewDO         wVDO;
 
-                        if (event.getAction() == WorksheetLookupScreen.Action.OK) {
+                        if (event.getAction() == WorksheetLookupScreen.Action.SELECT) {
                             list = (ArrayList<TableDataRow>)event.getData();
                             if (list != null) {
                                 wVDO = (WorksheetViewDO)list.get(0).data;
