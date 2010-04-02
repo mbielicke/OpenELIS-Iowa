@@ -43,6 +43,7 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -52,6 +53,8 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
@@ -99,10 +102,16 @@ public class ContainerTab extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 orderTestTable.enable(true);
-                orderTestTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
+        orderTestTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler(){
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                if(state != State.ADD && state != State.UPDATE)  
+                    event.cancel();                
+            }            
+        });
+        
         orderTestTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
@@ -275,6 +284,13 @@ public class ContainerTab extends Screen {
                 orderContainerTable.enable(true);
                 orderContainerTable.setQueryMode(event.getState() == State.QUERY);
             }
+        });
+        
+        orderContainerTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler(){
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                if(state != State.ADD && state != State.UPDATE && state != State.QUERY)  
+                    event.cancel();                
+            }            
         });
 
         orderContainerTable.addCellEditedHandler(new CellEditedHandler() {
