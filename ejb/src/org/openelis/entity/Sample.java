@@ -124,6 +124,11 @@ public class Sample implements Auditable, Cloneable {
   @JoinColumn(name = "sample_id")
   private Collection<SamplePrivateWell> samplePrivateWell;
   
+  //sample sdwis
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "sample_id")
+  private Collection<SampleSDWIS> sampleSDWIS;
+  
   //sample organizations
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "sample_id")
@@ -384,5 +389,11 @@ public Collection<AuxData> getAuxData() {
 }
 public void setAuxData(Collection<AuxData> auxData) {
     this.auxData = auxData;
+}
+public Collection<SampleSDWIS> getSampleSDWIS() {
+    return sampleSDWIS;
+}
+public void setSampleSDWIS(Collection<SampleSDWIS> sampleSDWIS) {
+    this.sampleSDWIS = sampleSDWIS;
 }  
 }   

@@ -32,6 +32,8 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -46,6 +48,12 @@ import org.openelis.utils.Auditable;
  * Sample SDWIS Entity POJO for database
  */
 
+@NamedQueries( {
+    @NamedQuery(name = "SampleSDWIS.FetchBySampleId", query = "select new org.openelis.domain.SampleSDWISViewDO(s.id, s.sampleId, s.pwsId, s.stateLabId, " +
+                       " s.facilityId, s.sampleTypeId, s.sampleCategoryId, s.pbSampleTypeId, s.samplePointId, s.location, s.collector, s.originalSampleNumber, " +
+                       " s.repeatCodeId, s.compositeIndicator, s.compositeSampleNumber, s.compositeDate, s.compositeSequence, '') from SampleSDWIS s where s.sampleId = :id")})
+       
+                       
 @Entity
 @Table(name = "sample_sdwis")
 @EntityListeners( {AuditUtil.class})

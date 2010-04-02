@@ -27,40 +27,40 @@ package org.openelis.manager;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.SampleEnvironmentalDO;
-import org.openelis.local.SampleEnvironmentalLocal;
+import org.openelis.domain.SampleSDWISViewDO;
+import org.openelis.local.SampleSDWISLocal;
 
-public class SampleEnvironmentalManagerProxy {
-    public SampleEnvironmentalManager add(SampleEnvironmentalManager man) throws Exception {
-        man.getEnvironmental().setSampleId(man.getSampleId());
-        local().add(man.getEnvironmental());
+public class SampleSDWISManagerProxy {
+    public SampleSDWISManager add(SampleSDWISManager man) throws Exception {
+        man.getSDWIS().setSampleId(man.getSampleId());
+        local().add(man.getSDWIS());
         
         return man;
     }
 
-    public SampleEnvironmentalManager update(SampleEnvironmentalManager man) throws Exception {
-        man.getEnvironmental().setSampleId(man.getSampleId());
-        local().update(man.getEnvironmental());
+    public SampleSDWISManager update(SampleSDWISManager man) throws Exception {
+        man.getSDWIS().setSampleId(man.getSampleId());
+        local().update(man.getSDWIS());
         
         return man;
     }
     
-    public SampleEnvironmentalManager fetch(Integer sampleId) throws Exception {
-        SampleEnvironmentalDO envDO;
-        SampleEnvironmentalManager em;
+    public SampleSDWISManager fetch(Integer sampleId) throws Exception {
+        SampleSDWISViewDO sdwisDO;
+        SampleSDWISManager sm;
         
-        envDO = local().fetchBySampleId(sampleId);
-        em = SampleEnvironmentalManager.getInstance();
+        sdwisDO = local().fetchBySampleId(sampleId);
+        sm = SampleSDWISManager.getInstance();
         
-        em.setEnvironmental(envDO);
+        sm.setSDWIS(sdwisDO);
         
-        return em;
+        return sm;
     }
     
-    private SampleEnvironmentalLocal local(){
+    private SampleSDWISLocal local(){
         try{
             InitialContext ctx = new InitialContext();
-            return (SampleEnvironmentalLocal)ctx.lookup("openelis/SampleEnvironmentalBean/local");
+            return (SampleSDWISLocal)ctx.lookup("openelis/SampleSDWISBean/local");
         }catch(Exception e){
              System.out.println(e.getMessage());
              return null;
