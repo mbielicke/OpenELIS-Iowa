@@ -35,38 +35,34 @@ import org.openelis.local.SamplePrivateWellLocal;
 public class SamplePrivateWellManagerProxy {
     public SamplePrivateWellManager add(SamplePrivateWellManager man) throws Exception {
         AddressDO adDO;
-        SamplePrivateWellLocal wl = getWellLocal();
-        AddressLocal al = getAddressLocal();
         
         //add the report to address if necessary
         if(man.getReportToAddress() != null){
-            adDO = al.add(man.getReportToAddress());
+            adDO = addressLocal().add(man.getReportToAddress());
             man.getPrivateWell().setReportToAddressId(adDO.getId());
         }
         
         man.getPrivateWell().setSampleId(man.getSampleId());
-        wl.add(man.getPrivateWell());
+        local().add(man.getPrivateWell());
         
         return man;
     }
 
     public SamplePrivateWellManager update(SamplePrivateWellManager man) throws Exception {
         AddressDO adDO;
-        SamplePrivateWellLocal wl = getWellLocal();
-        AddressLocal al = getAddressLocal();
         
         //delete the report to address if necessary
         if(man.getDeletedAddress() != null)
-            al.delete(man.getDeletedAddress());
+            addressLocal().delete(man.getDeletedAddress());
         
         //add the report to address if necessary
         if(man.getReportToAddress() != null && man.getReportToAddress().getId() == null){
-            adDO = al.add(man.getReportToAddress());
+            adDO = addressLocal().add(man.getReportToAddress());
             man.getPrivateWell().setReportToAddressId(adDO.getId());
         }
         
         man.getPrivateWell().setSampleId(man.getSampleId());
-        wl.update(man.getPrivateWell());
+        local().update(man.getPrivateWell());
         
         return man;
     }
@@ -74,26 +70,24 @@ public class SamplePrivateWellManagerProxy {
     public SamplePrivateWellManager fetch(Integer sampleId) throws Exception {
         SamplePrivateWellViewDO wellDO;
         AddressDO addressDO;
-        SamplePrivateWellLocal wl = getWellLocal();
-        AddressLocal al = getAddressLocal();
         
-        wellDO = wl.fetchBySampleId(sampleId);
+        wellDO = local().fetchBySampleId(sampleId);
         
         SamplePrivateWellManager pwm = SamplePrivateWellManager.getInstance();
         pwm.setPrivateWell(wellDO);
         
         if(wellDO.getOrganizationId() != null){
-            addressDO = al.fetchById(wellDO.getOrgAddressId());
+            addressDO = addressLocal().fetchById(wellDO.getOrgAddressId());
             pwm.setOrganizationAddress(addressDO);
         }else{
-            addressDO = al.fetchById(wellDO.getReportToAddressId());
+            addressDO = addressLocal().fetchById(wellDO.getReportToAddressId());
             pwm.setReportToAddress(addressDO);
         }
         
         return pwm;
     }
     
-    private SamplePrivateWellLocal getWellLocal(){
+    private SamplePrivateWellLocal local(){
         try{
             InitialContext ctx = new InitialContext();
             return (SamplePrivateWellLocal)ctx.lookup("openelis/SamplePrivateWellBean/local");
@@ -103,7 +97,7 @@ public class SamplePrivateWellManagerProxy {
         }
     }
     
-    private AddressLocal getAddressLocal(){
+    private AddressLocal addressLocal(){
         try{
             InitialContext ctx = new InitialContext();
             return (AddressLocal)ctx.lookup("openelis/AddressBean/local");
