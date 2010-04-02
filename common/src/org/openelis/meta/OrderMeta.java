@@ -107,6 +107,26 @@ public class OrderMeta implements Meta, MetaMap {
 	                               BILL_TO_ADDRESS_EMAIL = "_billTo.address.email",
 	                               BILL_TO_ADDRESS_COUNTRY = "_billTo.address.country",
 	                               
+	                               CONT_ID = "_orderContainer.id",
+	                               CONT_ORDER_ID = "_orderContainer.orderId",
+	                               CONT_CONTAINER_ID = "_orderContainer.containerId",
+	                               CONT_NUMBER_OF_CONTAINERS = "_orderContainer.numberOfContainers",
+	                               CONT_TYPE_OF_SAMPLE_ID = "_orderContainer.typeOfSampleId",
+	                               
+	                               TEST_ID = "_orderTest.id",
+	                               TEST_ORDER_ID = "_orderTest.orderId",
+	                               TEST_SORT_ORDER = "_orderTest.sortOrder",
+	                               TEST_REFERENCE_ID = "_orderTest.referenceId",
+	                               TEST_REFERENCE_TABLE_ID = "_orderTest.referenceTableId",
+	                               
+	                               AUX_DATA_ID = "_auxData.id",
+	                               AUX_DATA_AUX_FIELD_ID = "_auxData.auxFieldId",
+	                               AUX_DATA_REFERENCE_ID = "_auxData.referenceId",
+	                               AUX_DATA_REFERENCE_TABLE_ID = "_auxData.referenceTableId",
+	                               AUX_DATA_IS_REPORTABLE = "_auxData.isReportable",
+	                               AUX_DATA_TYPE_ID = "_auxData.typeId",
+	                               AUX_DATA_VALUE = "_auxData.value",
+	                               	                               
 	                               ORGANIZATION_NAME = "_order.organization.name",
 	                               REPORT_TO_NAME = "_reportTo.name",
                                    BILL_TO_NAME = "_billTo.name",
@@ -149,6 +169,16 @@ public class OrderMeta implements Meta, MetaMap {
                                                   BILL_TO_ADDRESS_WORK_PHONE, BILL_TO_ADDRESS_HOME_PHONE,
                                                   BILL_TO_ADDRESS_CELL_PHONE, BILL_TO_ADDRESS_FAX_PHONE,
                                                   BILL_TO_ADDRESS_EMAIL, BILL_TO_ADDRESS_COUNTRY,
+                                                  
+                                                  CONT_ID, CONT_ORDER_ID, CONT_CONTAINER_ID,
+                                                  CONT_NUMBER_OF_CONTAINERS, CONT_TYPE_OF_SAMPLE_ID,
+                                                  
+                                                  TEST_ID, TEST_ORDER_ID, TEST_SORT_ORDER, TEST_REFERENCE_ID,
+                                                  TEST_REFERENCE_TABLE_ID,
+                                                  
+                                                  AUX_DATA_ID, AUX_DATA_AUX_FIELD_ID, AUX_DATA_REFERENCE_ID,
+                                                  AUX_DATA_REFERENCE_TABLE_ID, AUX_DATA_IS_REPORTABLE,
+                                                  AUX_DATA_TYPE_ID, AUX_DATA_VALUE,
                                                   
                                                   ORGANIZATION_NAME, REPORT_TO_NAME, BILL_TO_NAME,
                                                   ITEM_INVENTORY_ITEM_NAME, ITEM_INVENTORY_ITEM_STORE_ID));
@@ -414,6 +444,74 @@ public class OrderMeta implements Meta, MetaMap {
         return BILL_TO_ADDRESS_COUNTRY;
     }
     
+    public static String getContainerId() {
+        return CONT_ID;
+    }
+    
+    public static String getContainerOrderId() {
+        return CONT_ORDER_ID;
+    }
+    
+    public static String getContainerContainerId() {
+        return CONT_CONTAINER_ID;
+    }
+    
+    public static String getContainerNumberOfContainers() {
+        return CONT_NUMBER_OF_CONTAINERS;
+    }
+    
+    public static String getContainerTypeOfSampleId() {
+        return CONT_TYPE_OF_SAMPLE_ID;
+    }
+    
+    public static String getTestId() {
+        return TEST_ID;
+    }
+    
+    public static String getTestOrderId() {
+        return TEST_ORDER_ID;
+    }
+    
+    public static String getTestSortOrder() {
+        return TEST_SORT_ORDER;
+    }
+    
+    public static String getTestReferenceId() {
+        return TEST_REFERENCE_ID;
+    }
+    
+    public static String getTestReferenceTableId() {
+        return TEST_REFERENCE_TABLE_ID;
+    }
+    
+    public static String getAuxDataId(){
+        return AUX_DATA_ID;
+    }
+    
+    public static String getAuxDataAuxFieldId(){
+        return AUX_DATA_AUX_FIELD_ID;
+    }
+    
+    public static String getAuxDataReferenceId(){
+        return AUX_DATA_REFERENCE_ID;
+    }
+    
+    public static String getAuxDataReferenceTableId(){
+        return AUX_DATA_REFERENCE_TABLE_ID;
+    }
+    
+    public static String getAuxDataIsReportable(){
+        return AUX_DATA_IS_REPORTABLE;
+    }
+    
+    public static String getAuxDataTypeId(){
+        return AUX_DATA_TYPE_ID;
+    }
+    
+    public static String getAuxDataValue(){
+        return AUX_DATA_VALUE;
+    }
+    
     public static String getOrganizationName() {
         return ORGANIZATION_NAME;
     }
@@ -458,6 +556,12 @@ public class OrderMeta implements Meta, MetaMap {
             from += ",IN (_order.reportTo) _reportTo ";
         if (where.indexOf("billTo.") > -1)
             from += ",IN (_order.billTo) _billTo ";
+        if (where.indexOf("orderContainer.") > -1)
+            from += ",IN (_order.orderContainer) _orderContainer ";
+        if (where.indexOf("orderTest.") > -1)
+            from += ",IN (_order.orderTest) _orderTest ";        
+        if(where.indexOf("auxData.") > -1)
+            from += ", IN (_order.auxData) _auxData ";
 
         return from;
     }

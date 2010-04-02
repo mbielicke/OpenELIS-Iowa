@@ -2,9 +2,11 @@ package org.openelis.remote;
 
 import javax.ejb.Remote;
 
+import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderFillManager;
 import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
+import org.openelis.manager.OrderTestManager;
 
 @Remote
 public interface OrderManagerRemote {
@@ -16,6 +18,8 @@ public interface OrderManagerRemote {
     public OrderManager fetchWithFills(Integer id) throws Exception;
 
     public OrderManager fetchWithNotes(Integer id) throws Exception;
+    
+    public OrderManager fetchWithTestsAndContainers(Integer id) throws Exception;
 
     public OrderManager add(OrderManager man) throws Exception;
 
@@ -28,5 +32,9 @@ public interface OrderManagerRemote {
     public OrderItemManager fetchItemByOrderId(Integer id) throws Exception;
 
     public OrderFillManager fetchFillByOrderId(Integer id) throws Exception;
+    
+    public OrderTestManager fetchTestByOrderId(Integer id) throws Exception;
+    
+    public OrderContainerManager fetchContainerByOrderId(Integer id) throws Exception;
 
 }

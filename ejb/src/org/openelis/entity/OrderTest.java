@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -17,6 +18,11 @@ import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+
+@NamedQuery( name = "OrderTest.FetchByOrderId",
+            query = "select distinct new org.openelis.domain.OrderTestViewDO(o.id, o.orderId, o.sortOrder," +
+            		"o.referenceId, o.referenceTableId, '', '', '')"
+                  + " from OrderTest o where o.orderId = :id")
 
 @Entity
 @Table(name = "order_test")
@@ -31,14 +37,14 @@ public class OrderTest implements Auditable, Cloneable {
     @Column(name = "order_id")
     private Integer   orderId;
 
-    @Column(name = "sequence")
-    private Integer   sequence;
+    @Column(name = "sort_order")
+    private Integer   sortOrder;
 
     @Column(name = "reference_id")
     private Integer   referenceId;
 
     @Column(name = "reference_table_id")
-    private Integer   referenceTableId;
+    private Integer   referenceTableId;   
 
     @Transient
     private OrderTest original;
@@ -62,12 +68,12 @@ public class OrderTest implements Auditable, Cloneable {
     }
 
     public Integer getSequence() {
-        return sequence;
+        return sortOrder;
     }
 
     public void setSequence(Integer sequence) {
-        if (DataBaseUtil.isDifferent(sequence, this.sequence))
-            this.sequence = sequence;
+        if (DataBaseUtil.isDifferent(sequence, this.sortOrder))
+            this.sortOrder = sequence;
     }
 
     public Integer getReferenceId() {
@@ -86,7 +92,7 @@ public class OrderTest implements Auditable, Cloneable {
     public void setReferenceTableId(Integer referenceTableId) {
         if (DataBaseUtil.isDifferent(referenceTableId, this.referenceTableId))
             this.referenceTableId = referenceTableId;
-    }
+    }    
 
     public void setClone() {
         try {
@@ -105,7 +111,7 @@ public class OrderTest implements Auditable, Cloneable {
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("order_id", orderId, original.orderId)
-                 .setField("sequence", sequence, original.sequence)
+                 .setField("sequence", sortOrder, original.sortOrder)
                  .setField("reference_id", referenceId, original.referenceId)
                  .setField("reference_table_id", referenceTableId, original.referenceTableId);
 

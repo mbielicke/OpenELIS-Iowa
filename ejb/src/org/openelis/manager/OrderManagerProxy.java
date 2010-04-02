@@ -74,6 +74,16 @@ public class OrderManagerProxy {
 
         return m;
     }
+    
+    public OrderManager fetchWithTestsAndContainers(Integer id) throws Exception {
+        OrderManager m;
+
+        m = fetchById(id);
+        m.getContainers();
+        m.getTests();
+
+        return m;
+    }
 
     public OrderManager add(OrderManager man) throws Exception {
         Integer id;
@@ -85,15 +95,33 @@ public class OrderManagerProxy {
             man.getItems().setOrderId(id);
             man.getItems().add();
         }
+        
         if (man.shipNotes != null) {
             man.getShippingNotes().setReferenceId(id);
             man.getShippingNotes().setReferenceTableId(ReferenceTable.ORDER);
             man.getShippingNotes().add();
         }
+        
         if (man.customerNotes != null) {
             man.getCustomerNotes().setReferenceId(id);
             man.getCustomerNotes().setReferenceTableId(ReferenceTable.ORDER);
             man.getCustomerNotes().add();
+        }
+        
+        if (man.auxData != null) {
+            man.getAuxData().setReferenceId(id);
+            man.getAuxData().setReferenceTableId(ReferenceTable.ORDER);
+            man.getAuxData().add();
+        }
+        
+        if (man.containers != null) {
+            man.getContainers().setOrderId(id);
+            man.getContainers().add();
+        }
+        
+        if (man.tests != null) {
+            man.getTests().setOrderId(id);
+            man.getTests().add();
         }
 
         return man;
@@ -109,15 +137,33 @@ public class OrderManagerProxy {
             man.getItems().setOrderId(id);
             man.getItems().update();
         }
+        
         if (man.shipNotes != null) {
             man.getShippingNotes().setReferenceId(id);
             man.getShippingNotes().setReferenceTableId(ReferenceTable.ORDER);
             man.getShippingNotes().update();
         }
+        
         if (man.customerNotes != null) {
             man.getCustomerNotes().setReferenceId(id);
             man.getCustomerNotes().setReferenceTableId(ReferenceTable.ORDER);
             man.getCustomerNotes().update();
+        }
+        
+        if (man.auxData != null) {
+            man.getAuxData().setReferenceId(id);
+            man.getAuxData().setReferenceTableId(ReferenceTable.ORDER);
+            man.getAuxData().update();
+        }
+        
+        if (man.containers != null) {
+            man.getContainers().setOrderId(id);
+            man.getContainers().update();
+        }
+        
+        if (man.tests != null) {
+            man.getTests().setOrderId(id);
+            man.getTests().update();
         }
 
         return man;

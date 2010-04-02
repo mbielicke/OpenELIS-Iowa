@@ -144,6 +144,18 @@ public class Order implements Auditable, Cloneable {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Collection<OrderItem> orderItem;
+    
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Collection<OrderContainer> orderContainer;
+    
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Collection<OrderTest> orderTest;
+    
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reference_id")
+    private Collection<AuxData> auxData;
 
     @Transient
     private Order                 original;
@@ -284,6 +296,30 @@ public class Order implements Auditable, Cloneable {
     public void setOrderItem(Collection<OrderItem> orderItem) {
         this.orderItem = orderItem;
     }
+    
+    public Collection<OrderContainer> getOrderContainer() {
+        return orderContainer;
+    }
+
+    public void setOrderContainer(Collection<OrderContainer> orderContainer) {
+        this.orderContainer = orderContainer;
+    }
+
+    public Collection<OrderTest> getOrderTest() {
+        return orderTest;
+    }
+
+    public void setOrderTest(Collection<OrderTest> orderTest) {
+        this.orderTest = orderTest;
+    }
+    
+    public Collection<AuxData> getAuxData() {
+        return auxData;
+    }
+    
+    public void setAuxData(Collection<AuxData> auxData) {
+        this.auxData = auxData;
+    }  
 
     public void setClone() {
         try {

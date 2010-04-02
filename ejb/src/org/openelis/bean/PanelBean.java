@@ -129,6 +129,52 @@ public class PanelBean implements PanelRemote, PanelLocal {
         return returnList;
     }
     
+    public ArrayList<TestMethodVO> fetchByNameWithTests(String name, int maxResults) throws Exception {
+        List<PanelDO> panelList;
+        List<TestMethodVO> testList;
+        ArrayList<TestMethodVO> returnList;
+        PanelDO panelDO;
+        TestMethodVO testDO;
+        int i,j;
+        
+        //check for panels first
+        Query query = manager.createNamedQuery("Panel.FetchByName");
+        query.setParameter("name", name);
+        query.setMaxResults(maxResults);
+        panelList = query.getResultList();
+        
+        //if the list isnt full find tests
+        testList = new ArrayList<TestMethodVO>();
+        if(panelList.size() < maxResults){
+            query = manager.createNamedQuery("Test.FetchWithMethodByName");
+            query.setParameter("name", name);
+            query.setMaxResults(maxResults);
+            testList = query.getResultList();
+        }
+        
+        returnList = new ArrayList<TestMethodVO>();
+        for(i=0; i<panelList.size(); i++){
+            panelDO = panelList.get(i);
+            testDO = new TestMethodVO();
+            
+            testDO.setTestId(panelDO.getId());
+            testDO.setTestName(panelDO.getName());
+            testDO.setTestDescription(panelDO.getDescription());
+            
+            returnList.add(testDO);
+        }
+        
+        j=0;
+        while(i<maxResults && j<testList.size()){
+            testDO = testList.get(j);
+            returnList.add(testDO);
+            i++;
+            j++;
+        }
+
+        return returnList;
+    }
+    
     public ArrayList<IdVO> fetchTestIdsFromPanel(Integer panelId) throws Exception {
         List<PanelItemDO> panelItemList;
         PanelItemDO panelItem;
