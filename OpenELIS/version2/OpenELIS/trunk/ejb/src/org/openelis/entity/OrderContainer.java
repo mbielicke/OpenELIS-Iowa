@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -18,6 +19,11 @@ import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
+@NamedQuery( name = "OrderContainer.FetchByOrderId",
+            query = "select distinct new org.openelis.domain.OrderContainerDO(o.id,o.orderId,o.containerId," +
+                     "o.numberOfContainers,o.typeOfSampleId)"
+                   + " from OrderContainer o where o.orderId = :id")
+                   
 @Entity
 @Table(name = "order_container")
 @EntityListeners( {AuditUtil.class})

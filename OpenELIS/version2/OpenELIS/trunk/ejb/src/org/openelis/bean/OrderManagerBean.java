@@ -38,9 +38,11 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.local.LockLocal;
+import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderFillManager;
 import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
+import org.openelis.manager.OrderTestManager;
 import org.openelis.remote.OrderManagerRemote;
 import org.openelis.utils.SecurityInterceptor;
 
@@ -71,6 +73,10 @@ public class OrderManagerBean implements OrderManagerRemote {
 
     public OrderManager fetchWithNotes(Integer id) throws Exception {
         return OrderManager.fetchWithNotes(id);
+    }
+    
+    public OrderManager fetchWithTestsAndContainers(Integer id) throws Exception {        
+        return OrderManager.fetchWithTestsAndContainers(id);
     }
 
     public OrderManager add(OrderManager man) throws Exception {
@@ -132,8 +138,17 @@ public class OrderManagerBean implements OrderManagerRemote {
     public OrderFillManager fetchFillByOrderId(Integer id) throws Exception {
         return OrderFillManager.fetchByOrderId(id);
     }
+    
+    public OrderContainerManager fetchContainerByOrderId(Integer id) throws Exception {        
+        return OrderContainerManager.fetchByOrderId(id);
+    }
+    
+    public OrderTestManager fetchTestByOrderId(Integer id) throws Exception {       
+        return OrderTestManager.fetchByOrderId(id);
+    }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
         SecurityInterceptor.applySecurity("order", flag);
     }
+
 }

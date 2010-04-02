@@ -249,8 +249,6 @@ public class StorageLocationBean implements StorageLocationRemote, StorageLocati
         Query query = null;
         query = manager.createNamedQuery("StorageLocation.FetchAvailableByName");
         query.setParameter("name",name);
-        query.setParameter("loc",name);
-        query.setParameter("desc",name);
         query.setMaxResults(max);
     
         return DataBaseUtil.toArrayList(query.getResultList());

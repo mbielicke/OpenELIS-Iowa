@@ -139,13 +139,14 @@ public class TestSectionManagerProxy {
             }
         }
 
-        if (numBlank == man.count()) {
+        /*if (numBlank == man.count()) {
             for (i = 0; i < man.count(); i++ ) {
                 exc = new TableFieldErrorException("allSectCantBeBlankException",i,
                                                    TestMeta.getSectionFlagId(),"sectionTable");
                 list.add(exc);
             }
-        } else if (numDef > 1) {
+        } else*/
+        if (numDef > 1) {
             for (i = 0; i < man.count(); i++ ) {
                 data = sectionList.get(i);
                 flagId = data.getFlagId();

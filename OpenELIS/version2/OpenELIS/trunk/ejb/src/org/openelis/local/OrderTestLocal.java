@@ -23,24 +23,25 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.remote;
+package org.openelis.local;
 
 import java.util.ArrayList;
 
-import javax.ejb.Remote;
+import javax.ejb.Local;
 
-import org.openelis.domain.IdNameVO;
-import org.openelis.domain.IdVO;
-import org.openelis.domain.TestMethodVO;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.domain.OrderTestViewDO;
 
-@Remote
-public interface PanelRemote {       
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;    
+@Local
+public interface OrderTestLocal {
+
+    public ArrayList<OrderTestViewDO> fetchByOrderId(Integer id) throws Exception;
+
+    public OrderTestViewDO add(OrderTestViewDO data) throws Exception;
     
-    public ArrayList<TestMethodVO> fetchByNameSampleTypeWithTests(String name, Integer sampleItemType, int maxResults) throws Exception;
+    public OrderTestViewDO update(OrderTestViewDO data) throws Exception;
+
+    public void delete(OrderTestViewDO data) throws Exception;
     
-    public ArrayList<TestMethodVO> fetchByNameWithTests(String name, int maxResults) throws Exception;
-    
-    public ArrayList<IdVO> fetchTestIdsFromPanel(Integer panelId) throws Exception;
- }
+    public void validate(OrderTestViewDO data) throws Exception;
+
+}

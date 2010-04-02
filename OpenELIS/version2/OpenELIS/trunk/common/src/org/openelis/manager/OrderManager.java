@@ -30,14 +30,17 @@ import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 
-public class OrderManager implements RPC {
+public class OrderManager implements RPC, HasAuxDataInt {
 
     private static final long                    serialVersionUID = 1L;
 
     protected OrderViewDO                        order;
     protected OrderItemManager                   items;
     protected OrderFillManager                   fills;
+    protected OrderContainerManager              containers; 
+    protected OrderTestManager                   tests; 
     protected NoteManager                        shipNotes, customerNotes;
+    protected AuxDataManager                     auxData;    
 
     public static final String   TYPE_INTERNAL = "I",
                                  TYPE_VENDOR   = "V",
@@ -92,6 +95,10 @@ public class OrderManager implements RPC {
 
     public static OrderManager fetchWithNotes(Integer id) throws Exception {
         return proxy().fetchWithNotes(id);
+    }
+    
+    public static OrderManager fetchWithTestsAndContainers(Integer id) throws Exception {
+        return proxy().fetchWithTestsAndContainers(id);
     }
 
     public OrderManager add() throws Exception {
@@ -188,6 +195,59 @@ public class OrderManager implements RPC {
         }
         return customerNotes;
     }
+    
+    public OrderContainerManager getContainers() throws Exception {
+        if (containers == null) {
+            if (order.getId() != null) {
+                try {
+                    containers = OrderContainerManager.fetchByOrderId(order.getId());
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+            if (containers == null)
+                containers = OrderContainerManager.getInstance();
+        }
+        return containers;
+    }
+    
+    public OrderTestManager getTests() throws Exception {
+        if (tests == null) {
+            if (order.getId() != null) {
+                try {
+                    tests = OrderTestManager.fetchByOrderId(order.getId());
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+            if (tests == null)
+                tests = OrderTestManager.getInstance();
+        }
+        return tests;
+    }
+    
+    public AuxDataManager getAuxData() throws Exception {
+        if (auxData == null) {
+            if (order.getId() != null) {
+                try {
+                    auxData = AuxDataManager.fetchById(order.getId(), ReferenceTable.ORDER);
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+    
+            if (auxData == null)
+                auxData = AuxDataManager.getInstance();
+        }
+    
+        return auxData;
+    }
 
     private static OrderManagerProxy proxy() {
         if (proxy == null)
@@ -195,4 +255,5 @@ public class OrderManager implements RPC {
 
         return proxy;
     }
+
 }

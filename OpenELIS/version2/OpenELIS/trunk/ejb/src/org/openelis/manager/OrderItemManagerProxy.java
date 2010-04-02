@@ -30,9 +30,7 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.OrderItemViewDO;
-import org.openelis.domain.OrderItemDO;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.OrderItemLocal;
 import org.openelis.local.OrderItemLocal;
 import org.openelis.utilcommon.DataBaseUtil;
 
