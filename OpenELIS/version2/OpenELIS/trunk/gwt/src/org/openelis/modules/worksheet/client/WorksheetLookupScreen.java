@@ -47,6 +47,8 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
+import org.openelis.gwt.event.BeforeCloseEvent;
+import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -61,6 +63,7 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.QueryFieldUtil;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
@@ -71,20 +74,19 @@ import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.meta.WorksheetCompletionMeta;
 
-public class WorksheetLookupScreen extends Screen 
-                                           implements HasActionHandlers<WorksheetLookupScreen.Action> {
+public class WorksheetLookupScreen extends Screen implements HasActionHandlers<WorksheetLookupScreen.Action> {
 
-    protected AppButton         searchButton, okButton, cancelButton;
+    protected AppButton             searchButton, selectButton, cancelButton;
     protected AutoComplete<Integer> systemUserId;
-    protected CalendarLookUp    createdDate;
-    protected Dropdown<Integer> statusId;
-    protected TableWidget       worksheetTable;
-    protected TextBox<Integer>  worksheetNumber;
-    
-    private ScreenService         userService;
+    protected CalendarLookUp        createdDate;
+    protected Dropdown<Integer>     statusId;
+    protected TableWidget           worksheetTable;
+    protected TextBox<Integer>      worksheetNumber;
+
+    private ScreenService           userService;
     
     public enum Action {
-        OK, CANCEL
+        SELECT, CANCEL
     };
 
     public WorksheetLookupScreen() throws Exception {
@@ -105,6 +107,13 @@ public class WorksheetLookupScreen extends Screen
      */
     private void postConstructor() {
         initialize();
+
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+                worksheetTable.clear();
+            }
+        });
+
         setState(State.DEFAULT);
         setState(State.QUERY);
         initializeDropdowns();
@@ -199,14 +208,14 @@ public class WorksheetLookupScreen extends Screen
         worksheetTable.addSelectionHandler(new SelectionHandler<TableRow>() {
             public void onSelection(SelectionEvent event) {
                 if (worksheetTable.getSelectedRow() != -1)
-                    okButton.enable(true);
+                    selectButton.enable(true);
             }
         });
         
         worksheetTable.addUnselectionHandler(new UnselectionHandler<TableDataRow>() {
             public void onUnselection(UnselectionEvent event) {
                 if (worksheetTable.getSelectedRow() == -1)
-                    okButton.enable(false);
+                    selectButton.enable(false);
             }
         });
         
@@ -217,14 +226,14 @@ public class WorksheetLookupScreen extends Screen
             }
         });
 
-        okButton = (AppButton)def.getWidget("ok");
-        addScreenHandler(okButton, new ScreenEventHandler<Object>() {
+        selectButton = (AppButton)def.getWidget("select");
+        addScreenHandler(selectButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                ok();
+                select();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                okButton.enable(false);
+                selectButton.enable(false);
             }
         });
 
@@ -237,7 +246,7 @@ public class WorksheetLookupScreen extends Screen
             public void onStateChange(StateChangeEvent<State> event) {
                 cancelButton.enable(true);
             }
-        });   
+        });
     }
     
     @SuppressWarnings("unchecked")
@@ -335,11 +344,11 @@ public class WorksheetLookupScreen extends Screen
         }
     }
     
-    private void ok() {
+    private void select() {
         ArrayList<TableDataRow> selections = worksheetTable.getSelections();
         
         if (selections.size() > 0)
-            ActionEvent.fire(this, Action.OK, selections);
+            ActionEvent.fire(this, Action.SELECT, selections);
         
         window.close();
     }

@@ -107,7 +107,7 @@ UIRF Software License are applicable instead of those above.
 
         <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
           <HorizontalPanel>
-            <xsl:call-template name="okButton">
+            <xsl:call-template name="selectButton">
               <xsl:with-param name="language">
                 <xsl:value-of select="language" />
               </xsl:with-param>

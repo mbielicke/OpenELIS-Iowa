@@ -39,9 +39,6 @@ UIRF Software License are applicable instead of those above.
   <xsl:template name="ExternalNoteTab">
     <xsl:param name="width" select="250" />
     <xsl:param name="height" select="250" />
-    <xsl:variable name="language" select="locale" />
-    <xsl:variable name="props" select="props" />
-    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <VerticalPanel padding="0" spacing="0">
       <notes key="notesPanel" width="{string($width)}" height="{string($height)}" />
       <appButton key="standardNoteButton" style="Button">

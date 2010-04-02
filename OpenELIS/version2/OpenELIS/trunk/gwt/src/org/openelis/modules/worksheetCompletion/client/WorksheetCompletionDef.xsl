@@ -37,6 +37,7 @@ UIRF Software License are applicable instead of those above.
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
   xmlns:meta="xalan://org.openelis.meta.WorksheetCompletionMeta">
 
+  <xsl:import href="IMPORT/button.xsl" />
   <xsl:import href="OPENELIS/org/openelis/modules/note/client/InternalNoteTabDef.xsl" />
   <xsl:template match="doc">
     <xsl:variable name="language" select="locale" />
@@ -46,22 +47,11 @@ UIRF Software License are applicable instead of those above.
       <VerticalPanel padding="0" spacing="0">
         <AbsolutePanel spacing="0" style="ButtonPanelContainer">
           <HorizontalPanel>
-            <appButton key="printButton" style="ButtonPanelButton" action="print">
-              <HorizontalPanel>
-                <AbsolutePanel style="PrintButtonImage" />
-                <text>
-                  <xsl:value-of select="resource:getString($constants,'print')" />
-                </text>
-              </HorizontalPanel>
-            </appButton>
-            <appButton key="exitButton" style="ButtonPanelButton" action="exit">
-              <HorizontalPanel>
-                <AbsolutePanel style="ExitButtonImage" />
-                <text>
-                  <xsl:value-of select="resource:getString($constants,'exit')" />
-                </text>
-              </HorizontalPanel>
-            </appButton>
+            <xsl:call-template name="printButton">
+              <xsl:with-param name="language">
+                <xsl:value-of select="language" />
+              </xsl:with-param>
+            </xsl:call-template>
           </HorizontalPanel>
         </AbsolutePanel>
         <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
@@ -95,9 +85,12 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'loadFrom')" />:
               </text>
+<!--
+			  <fu key="loadFile" action="loadFile" service="org.openelis.modules.worksheet.server.WorksheetService" method="loadFile"/>
+-->
 	          <HorizontalPanel>
-                <textbox key="loadFrom" width="200" case="LOWER" tab="loadButton,instrumentId" field="String"/>
-                <appButton key="browseButton" style="Button" action="browse" tab="loadButton,loadFrom">
+                <textbox key="loadFile" width="200" case="LOWER" tab="browseButton,instrumentId" field="String"/>
+                <appButton key="browseButton" style="Button" action="browse" tab="loadButton,loadFile">
                   <HorizontalPanel>
                     <AbsolutePanel style="FindButtonImage" />
                     <text>
