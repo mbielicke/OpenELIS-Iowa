@@ -68,16 +68,9 @@ public class SampleSDWISBean implements SampleSDWISLocal {
         entity.setFacilityId(data.getFacilityId());
         entity.setSampleTypeId(data.getSampleTypeId());
         entity.setSampleCategoryId(data.getSampleCategoryId());
-        entity.setPbSampleTypeId(data.getLeadSampleTypeId());
         entity.setSamplePointId(data.getSamplePointId());
         entity.setLocation(data.getLocation());
         entity.setCollector(data.getCollector());
-        entity.setOriginalSampleNumber(data.getOriginalSampleNumber());
-        entity.setRepeatCodeId(data.getRepeatCodeId());
-        entity.setCompositeIndicator(data.getCompositeIndicator());
-        entity.setCompositeSampleNumber(data.getCompositeSampleNumber());
-        entity.setCompositeDate(data.getCompositeDate());
-        entity.setCompositeSequence(data.getCompositeSequence());
         
         manager.persist(entity);
         
@@ -100,15 +93,8 @@ public class SampleSDWISBean implements SampleSDWISLocal {
         entity.setFacilityId(data.getFacilityId());
         entity.setSampleTypeId(data.getSampleTypeId());
         entity.setSampleCategoryId(data.getSampleCategoryId());
-        entity.setPbSampleTypeId(data.getLeadSampleTypeId());
         entity.setSamplePointId(data.getSamplePointId());
         entity.setLocation(data.getLocation());
         entity.setCollector(data.getCollector());
-        entity.setOriginalSampleNumber(data.getOriginalSampleNumber());
-        entity.setRepeatCodeId(data.getRepeatCodeId());
-        entity.setCompositeIndicator(data.getCompositeIndicator());
-        entity.setCompositeSampleNumber(data.getCompositeSampleNumber());
-        entity.setCompositeDate(data.getCompositeDate());
-        entity.setCompositeSequence(data.getCompositeSequence());
     }
 }

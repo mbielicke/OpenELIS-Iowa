@@ -25,8 +25,6 @@
 */
 package org.openelis.entity;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -38,7 +36,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
-import org.openelis.gwt.common.Datetime;
 import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
@@ -50,9 +47,8 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries( {
     @NamedQuery(name = "SampleSDWIS.FetchBySampleId", query = "select new org.openelis.domain.SampleSDWISViewDO(s.id, s.sampleId, s.pwsId, s.stateLabId, " +
-                       " s.facilityId, s.sampleTypeId, s.sampleCategoryId, s.pbSampleTypeId, s.samplePointId, s.location, s.collector, s.originalSampleNumber, " +
-                       " s.repeatCodeId, s.compositeIndicator, s.compositeSampleNumber, s.compositeDate, s.compositeSequence, '') from SampleSDWIS s where s.sampleId = :id")})
-       
+                       " s.facilityId, s.sampleTypeId, s.sampleCategoryId, s.samplePointId, s.location, s.collector, '') " +
+                       " from SampleSDWIS s where s.sampleId = :id")})
                        
 @Entity
 @Table(name = "sample_sdwis")
@@ -81,9 +77,6 @@ public class SampleSDWIS implements Auditable, Cloneable {
     @Column(name = "sample_category_id")
     private Integer sampleCategoryId;
     
-    @Column(name = "pb_sample_type_id")
-    private Integer pbSampleTypeId;
-    
     @Column(name = "sample_point_id")
     private String samplePointId;
     
@@ -92,24 +85,6 @@ public class SampleSDWIS implements Auditable, Cloneable {
     
     @Column(name = "collector")
     private String collector;
-    
-    @Column(name = "original_sample_number")
-    private String originalSampleNumber;
-    
-    @Column(name = "repeat_code_id")
-    private Integer repeatCodeId;
-    
-    @Column(name = "composite_indicator")
-    private String compositeIndicator;
-    
-    @Column(name = "composite_sample_number")
-    private String compositeSampleNumber;
-    
-    @Column(name = "composite_date")
-    private Date compositeDate;
-    
-    @Column(name = "composite_sequence")
-    private Integer compositeSequence;
     
     @Transient
     private SampleSDWIS original;
@@ -177,15 +152,6 @@ public class SampleSDWIS implements Auditable, Cloneable {
             this.sampleCategoryId = sampleCategoryId;
     }
 
-    public Integer getPbSampleTypeId() {
-        return pbSampleTypeId;
-    }
-
-    public void setPbSampleTypeId(Integer pbSampleTypeId) {
-        if (DataBaseUtil.isDifferent(pbSampleTypeId, this.pbSampleTypeId))
-            this.pbSampleTypeId = pbSampleTypeId;
-    }
-
     public String getSamplePointId() {
         return samplePointId;
     }
@@ -213,62 +179,6 @@ public class SampleSDWIS implements Auditable, Cloneable {
             this.collector = collector;
     }
 
-    public String getOriginalSampleNumber() {
-        return originalSampleNumber;
-    }
-
-    public void setOriginalSampleNumber(String originalSampleNumber) {
-        if (DataBaseUtil.isDifferent(originalSampleNumber, this.originalSampleNumber))
-            this.originalSampleNumber = originalSampleNumber;
-    }
-
-    public Integer getRepeatCodeId() {
-        return repeatCodeId;
-    }
-
-    public void setRepeatCodeId(Integer repeatCodeId) {
-        if (DataBaseUtil.isDifferent(repeatCodeId, this.repeatCodeId))
-            this.repeatCodeId = repeatCodeId;
-    }
-
-    public String getCompositeIndicator() {
-        return compositeIndicator;
-    }
-
-    public void setCompositeIndicator(String compositeIndicator) {
-        if (DataBaseUtil.isDifferent(compositeIndicator, this.compositeIndicator))
-            this.compositeIndicator = compositeIndicator;
-    }
-
-    public String getCompositeSampleNumber() {
-        return compositeSampleNumber;
-    }
-
-    public void setCompositeSampleNumber(String compositeSampleNumber) {
-        if (DataBaseUtil.isDifferent(compositeSampleNumber, this.compositeSampleNumber))
-            this.compositeSampleNumber = compositeSampleNumber;
-    }
-
-    public Datetime getCompositeDate() {
-        if(compositeDate == null)
-            return null;
-          return new Datetime(Datetime.YEAR,Datetime.DAY, compositeDate);
-    }
-
-    public void setCompositeDate(Datetime compositeDate) {
-        if(DataBaseUtil.isDifferentYD(compositeDate, this.compositeDate))
-            this.compositeDate = compositeDate.getDate();
-    }
-
-    public Integer getCompositeSequence() {
-        return compositeSequence;
-    }
-
-    public void setCompositeSequence(Integer compositeSequence) {
-        if (DataBaseUtil.isDifferent(compositeSequence, this.compositeSequence))
-            this.compositeSequence = compositeSequence;
-    }
-
     public void setClone() {
         try {
             original = (SampleSDWIS)this.clone();
@@ -291,17 +201,10 @@ public class SampleSDWIS implements Auditable, Cloneable {
                  .setField("facility_id", facilityId, original.facilityId)
                  .setField("sample_type_id", sampleTypeId, original.sampleTypeId)
                  .setField("sample_category_id", sampleCategoryId, original.sampleCategoryId)
-                 .setField("pb_sample_type_id", pbSampleTypeId, original.pbSampleTypeId)
                  .setField("sample_point_id", samplePointId, original.samplePointId)
                  .setField("location", location, original.location)
-                 .setField("collector", collector, original.collector)
-                 .setField("original_sample_number", originalSampleNumber, original.originalSampleNumber)
-                 .setField("repeat_code_id", repeatCodeId, original.repeatCodeId)
-                 .setField("composite_indicator", compositeIndicator, original.compositeIndicator)
-                 .setField("composite_sample_number", compositeSampleNumber, original.compositeSampleNumber)
-                 .setField("composite_date", compositeDate, original.compositeDate)
-                 .setField("composite_sequence", compositeSequence, original.compositeSequence);
-
+                 .setField("collector", collector, original.collector);
+                 
         return audit;
     }
 }
