@@ -25,10 +25,18 @@
  */
 package org.openelis.modules.sample.client;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 
-import org.openelis.gwt.common.Datetime;
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.OrganizationDO;
+import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.GetMatchesEvent;
+import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
@@ -36,27 +44,27 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
-import org.openelis.gwt.widget.CalendarLookUp;
-import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
+import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.SampleManager;
+import org.openelis.manager.SamplePrivateWellManager;
+import org.openelis.manager.SampleSDWISManager;
 import org.openelis.meta.SampleMeta;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.user.client.Window;
 
 public class SDWISTab extends Screen {
-    private Dropdown<Integer>              sDWISSampleTypeId, sDWISRepeatCodeId,
-                    sDWISSampleCategoryId, sDWISPbSampleTypeId;
-    private CalendarLookUp                 sDWISCompositeDate;
-    private TextBox                        sDWISPwsId, pwsName, sDWISStateLabId, sDWISFacilityId,
-                    sDWISOriginalSampleNumber, sDWISSamplePointId, pointDesc, sDWISCollector,
-                    sequence, sDWISCompositeSampleNumber;
-    private AutoComplete<Integer>          orgName, billTo;
+    private Dropdown<Integer>              sDWISSampleTypeId, sDWISSampleCategoryId;
+    private TextBox                        sDWISPwsId, pwsName,
+                                           sDWISSamplePointId, pointDesc, sDWISCollector;
+    private TextBox<Integer>               sDWISStateLabId, sDWISFacilityId;
+    private AutoComplete<Integer>          reportTo, billTo;
     private AppButton                      pwsButton, reportToLookup, billToLookup;
-    private CheckBox                       sDWISCompositeIndicator;
 
     private SampleOrganizationLookupScreen organizationScreen;
 
@@ -74,22 +82,23 @@ public class SDWISTab extends Screen {
                                        "controller?service=org.openelis.modules.organization.server.OrganizationService");
 
         initialize();
+        initializeDropdowns();
     }
 
     public void initialize() {
-        /*
         sDWISPwsId = (TextBox)def.getWidget(SampleMeta.getSDWISPwsId());
-        addScreenHandler(sDWISPwsId, new ScreenEventHandler<Integer>() {
+        addScreenHandler(sDWISPwsId, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                sDWISPwsId.setValue(DO.getSDWISPwsId());
+                sDWISPwsId.setValue(getSDWISManager().getSDWIS().getPwsId());
             }
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                DO.setSDWISPwsId(event.getValue());
+            public void onValueChange(ValueChangeEvent<String> event) {
+                getSDWISManager().getSDWIS().setPwsId(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sDWISPwsId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                sDWISPwsId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                         .contains(event.getState()));
                 sDWISPwsId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -108,47 +117,50 @@ public class SDWISTab extends Screen {
         pwsName = (TextBox)def.getWidget("pwsName");
         addScreenHandler(pwsName, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                pwsName.setValue(PWSNAME_DO.pwsName());
+                pwsName.setValue(getSDWISManager().getSDWIS().getPwsName());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                PWSNAME_DO.pwsName(event.getValue());
+                getSDWISManager().getSDWIS().setPwsName(event.getValue());  //FIXME probabaly not needed
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                pwsName.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                pwsName.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                      .contains(event.getState()));
                 pwsName.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        sDWISStateLabId = (TextBox)def.getWidget(SampleMeta.getSDWISStateLabId());
+        sDWISStateLabId = (TextBox<Integer>)def.getWidget(SampleMeta.getSDWISStateLabId());
         addScreenHandler(sDWISStateLabId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                sDWISStateLabId.setValue(DO.getSDWISStateLabId());
+                sDWISStateLabId.setValue(getSDWISManager().getSDWIS().getStateLabId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                DO.setSDWISStateLabId(event.getValue());
+                getSDWISManager().getSDWIS().setStateLabId(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sDWISStateLabId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                sDWISStateLabId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                              .contains(event.getState()));
                 sDWISStateLabId.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        sDWISFacilityId = (TextBox)def.getWidget(SampleMeta.getSDWISFacilityId());
+        sDWISFacilityId = (TextBox<Integer>)def.getWidget(SampleMeta.getSDWISFacilityId());
         addScreenHandler(sDWISFacilityId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                sDWISFacilityId.setValue(DO.getSDWISFacilityId());
+                sDWISFacilityId.setValue(getSDWISManager().getSDWIS().getFacilityId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                DO.setSDWISFacilityId(event.getValue());
+                getSDWISManager().getSDWIS().setFacilityId(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sDWISFacilityId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                sDWISFacilityId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                              .contains(event.getState()));
                 sDWISFacilityId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -156,47 +168,33 @@ public class SDWISTab extends Screen {
         sDWISSampleTypeId = (Dropdown)def.getWidget(SampleMeta.getSDWISSampleTypeId());
         addScreenHandler(sDWISSampleTypeId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                sDWISSampleTypeId.setSelection(DO.getSDWISSampleTypeId());
+                sDWISSampleTypeId.setSelection(getSDWISManager().getSDWIS().getSampleTypeId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                DO.setSDWISSampleTypeId(event.getValue());
+                getSDWISManager().getSDWIS().setSampleTypeId(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sDWISSampleTypeId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                sDWISSampleTypeId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                                .contains(event.getState()));
                 sDWISSampleTypeId.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        sDWISOriginalSampleNumber = (TextBox)def.getWidget(SampleMeta.getSDWISOriginalSampleNumber());
-        addScreenHandler(sDWISOriginalSampleNumber, new ScreenEventHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                sDWISOriginalSampleNumber.setValue(DO.getSDWISOriginalSampleNumber());
-            }
-
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                DO.setSDWISOriginalSampleNumber(event.getValue());
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                sDWISOriginalSampleNumber.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
-                sDWISOriginalSampleNumber.setQueryMode(event.getState() == State.QUERY);
-            }
-        });
-
         sDWISSamplePointId = (TextBox)def.getWidget(SampleMeta.getSDWISSamplePointId());
-        addScreenHandler(sDWISSamplePointId, new ScreenEventHandler<Integer>() {
+        addScreenHandler(sDWISSamplePointId, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                sDWISSamplePointId.setValue(DO.getSDWISSamplePointId());
+                sDWISSamplePointId.setValue(getSDWISManager().getSDWIS().getSamplePointId());
             }
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                DO.setSDWISSamplePointId(event.getValue());
+            public void onValueChange(ValueChangeEvent<String> event) {
+                getSDWISManager().getSDWIS().setSamplePointId(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sDWISSamplePointId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                sDWISSamplePointId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                                 .contains(event.getState()));
                 sDWISSamplePointId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -204,47 +202,34 @@ public class SDWISTab extends Screen {
         pointDesc = (TextBox)def.getWidget(SampleMeta.getSDWISLocation());
         addScreenHandler(pointDesc, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                pointDesc.setValue(POINTDESC_DO.pointDesc());
+                pointDesc.setValue(getSDWISManager().getSDWIS().getLocation());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                POINTDESC_DO.pointDesc(event.getValue());
+                getSDWISManager().getSDWIS().setLocation(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                pointDesc.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                pointDesc.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                        .contains(event.getState()));
                 pointDesc.setQueryMode(event.getState() == State.QUERY);
-            }
-        });
-
-        sDWISRepeatCodeId = (Dropdown)def.getWidget(SampleMeta.getSDWISRepeatCodeId());
-        addScreenHandler(sDWISRepeatCodeId, new ScreenEventHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                sDWISRepeatCodeId.setSelection(DO.getSDWISRepeatCodeId());
-            }
-
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                DO.setSDWISRepeatCodeId(event.getValue());
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                sDWISRepeatCodeId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
-                sDWISRepeatCodeId.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
         sDWISSampleCategoryId = (Dropdown)def.getWidget(SampleMeta.getSDWISSampleCategoryId());
         addScreenHandler(sDWISSampleCategoryId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                sDWISSampleCategoryId.setSelection(DO.getSDWISSampleCategoryId());
+                sDWISSampleCategoryId.setSelection(getSDWISManager().getSDWIS()
+                                                                    .getSampleCategoryId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                DO.setSDWISSampleCategoryId(event.getValue());
+                getSDWISManager().getSDWIS().setSampleCategoryId(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sDWISSampleCategoryId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                sDWISSampleCategoryId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                                    .contains(event.getState()));
                 sDWISSampleCategoryId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -252,97 +237,285 @@ public class SDWISTab extends Screen {
         sDWISCollector = (TextBox)def.getWidget(SampleMeta.getSDWISCollector());
         addScreenHandler(sDWISCollector, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                sDWISCollector.setValue(DO.getSDWISCollector());
+                sDWISCollector.setValue(getSDWISManager().getSDWIS().getCollector());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                DO.setSDWISCollector(event.getValue());
+                getSDWISManager().getSDWIS().setCollector(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sDWISCollector.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                sDWISCollector.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                             .contains(event.getState()));
                 sDWISCollector.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        sDWISPbSampleTypeId = (Dropdown)def.getWidget(SampleMeta.getSDWISPbSampleTypeId());
-        addScreenHandler(sDWISPbSampleTypeId, new ScreenEventHandler<Integer>() {
+        reportTo = (AutoComplete<Integer>)def.getWidget(SampleMeta.getOrgName());
+        addScreenHandler(reportTo, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                sDWISPbSampleTypeId.setSelection(DO.getSDWISPbSampleTypeId());
-            }
+                try {
+                    SampleOrganizationViewDO reportToOrg = manager.getOrganizations()
+                                                                  .getFirstReportTo();
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                DO.setSDWISPbSampleTypeId(event.getValue());
-            }
+                    if (reportToOrg != null)
+                        reportTo.setSelection(reportToOrg.getOrganizationId(),
+                                              reportToOrg.getOrganizationName());
+                    else
+                        reportTo.setSelection(null, "");
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                sDWISPbSampleTypeId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
-                sDWISPbSampleTypeId.setQueryMode(event.getState() == State.QUERY);
-            }
-        });
-        
-        sDWISCompositeIndicator = (CheckBox)def.getWidget(SampleMeta.getSDWISCompositeIndicator());
-        addScreenHandler(sDWISCompositeIndicator, new ScreenEventHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                sDWISCompositeIndicator.setValue(DO.getSDWISCompositeIndicator());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                DO.setSDWISCompositeIndicator(event.getValue());
+                TableDataRow selectedRow = reportTo.getSelection();
+                SampleOrganizationViewDO reportToOrg = null;
+                try {
+                    if (selectedRow.key != null) {
+                        reportToOrg = new SampleOrganizationViewDO();
+                        reportToOrg.setOrganizationId((Integer)selectedRow.key);
+                        reportToOrg.setOrganizationName((String)selectedRow.cells.get(0).value);
+                        reportToOrg.setOrganizationCity((String)selectedRow.cells.get(2).value);
+                        reportToOrg.setOrganizationState((String)selectedRow.cells.get(3).value);
+                    }
+
+                    manager.getOrganizations().setReportTo(reportToOrg);
+
+                    reportToOrg = manager.getOrganizations().getFirstReportTo();
+
+                    if (reportToOrg != null)
+                        reportTo.setSelection(reportToOrg.getOrganizationId(),
+                                              reportToOrg.getOrganizationName());
+                    else
+                        reportTo.setSelection(null, "");
+
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sDWISCompositeIndicator.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
-                sDWISCompositeIndicator.setQueryMode(event.getState() == State.QUERY);
+                reportTo.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                       .contains(event.getState()));
+                reportTo.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        sequence = (TextBox)def.getWidget(SampleMeta.getSDWISCompositeSequence());
-        addScreenHandler(sequence, new ScreenEventHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                sequence.setValue(SEQUENCE_DO.sequence());
-            }
+        reportTo.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                getOrganizationMatches(event.getMatch(), reportTo);
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                SEQUENCE_DO.sequence(event.getValue());
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                sequence.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
-                sequence.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        sDWISCompositeSampleNumber = (TextBox)def.getWidget(SampleMeta.getSDWISCompositeSampleNumber());
-        addScreenHandler(sDWISCompositeSampleNumber, new ScreenEventHandler<Integer>() {
+        billTo = (AutoComplete<Integer>)def.getWidget(SampleMeta.getBillTo());
+        addScreenHandler(billTo, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                sDWISCompositeSampleNumber.setValue(DO.getSDWISCompositeSampleNumber());
+                try {
+                    SampleOrganizationViewDO billToOrg = manager.getOrganizations()
+                                                                .getFirstBillTo();
+
+                    if (billToOrg != null)
+                        billTo.setSelection(billToOrg.getOrganizationId(),
+                                            billToOrg.getOrganizationName());
+                    else
+                        billTo.setSelection(null, "");
+
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
             }
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                DO.setSDWISCompositeSampleNumber(event.getValue());
+            public void onValueChange(ValueChangeEvent<String> event) {
+                TableDataRow selectedRow = billTo.getSelection();
+                SampleOrganizationViewDO billToOrg = null;
+                try {
+                    if (selectedRow.key != null) {
+                        billToOrg = new SampleOrganizationViewDO();
+                        billToOrg.setOrganizationId((Integer)selectedRow.key);
+                        billToOrg.setOrganizationName((String)selectedRow.cells.get(0).value);
+                        billToOrg.setOrganizationCity((String)selectedRow.cells.get(2).value);
+                        billToOrg.setOrganizationState((String)selectedRow.cells.get(3).value);
+                    }
+
+                    manager.getOrganizations().setBillTo(billToOrg);
+
+                    billToOrg = manager.getOrganizations().getFirstBillTo();
+
+                    if (billToOrg != null)
+                        billTo.setSelection(billToOrg.getOrganizationId(),
+                                            billToOrg.getOrganizationName());
+                    else
+                        billTo.setSelection(null, "");
+
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sDWISCompositeSampleNumber.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
-                sDWISCompositeSampleNumber.setQueryMode(event.getState() == State.QUERY);
+                billTo.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                billTo.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        sDWISCompositeDate = (CalendarLookUp)def.getWidget(SampleMeta.getSDWISCompositeDate());
-        addScreenHandler(sDWISCompositeDate, new ScreenEventHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
-                sDWISCompositeDate.setValue(DO.getSDWISCompositeDate());
-            }
+        billTo.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                getOrganizationMatches(event.getMatch(), billTo);
 
-            public void onValueChange(ValueChangeEvent<Datetime> event) {
-                DO.setSDWISCompositeDate(event.getValue());
+            }
+        });
+
+        billToLookup = (AppButton)def.getWidget("billToLookup");
+        addScreenHandler(billToLookup, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                onOrganizationLookupClick();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sDWISCompositeDate.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
-                sDWISCompositeDate.setQueryMode(event.getState() == State.QUERY);
+                billToLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
+                                           .contains(event.getState()));
             }
-        });*/
+        });
+
+        reportToLookup = (AppButton)def.getWidget("reportToLookup");
+        addScreenHandler(reportToLookup, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                onOrganizationLookupClick();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                reportToLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
+                                             .contains(event.getState()));
+            }
+        });
+    }
+
+    private void getOrganizationMatches(String match, AutoComplete widget) {
+        QueryFieldUtil parser;
+        TableDataRow row;
+        OrganizationDO data;
+        ArrayList<OrganizationDO> list;
+        ArrayList<TableDataRow> model;
+
+        parser = new QueryFieldUtil();
+        parser.parse(match);
+
+        window.setBusy();
+        try {
+            list = orgService.callList("fetchByIdOrName", parser.getParameter().get(0));
+            model = new ArrayList<TableDataRow>();
+            for (int i = 0; i < list.size(); i++ ) {
+                row = new TableDataRow(4);
+                data = list.get(i);
+
+                row.key = data.getId();
+                row.cells.get(0).value = data.getName();
+                row.cells.get(1).value = data.getAddress().getStreetAddress();
+                row.cells.get(2).value = data.getAddress().getCity();
+                row.cells.get(3).value = data.getAddress().getState();
+
+                model.add(row);
+            }
+            widget.showAutoMatches(model);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+        }
+        window.clearStatus();
+    }
+
+    private void onOrganizationLookupClick() {
+        try {
+            if (organizationScreen == null) {
+                final SDWISTab env = this;
+                organizationScreen = new SampleOrganizationLookupScreen();
+
+                organizationScreen.addActionHandler(new ActionHandler<SampleOrganizationLookupScreen.Action>() {
+                    public void onAction(ActionEvent<SampleOrganizationLookupScreen.Action> event) {
+                        if (event.getAction() == SampleOrganizationLookupScreen.Action.OK) {
+                            DataChangeEvent.fire(env, reportTo);
+                            DataChangeEvent.fire(env, billTo);
+                        }
+                    }
+                });
+            }
+
+            ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+            modal.setName(consts.get("sampleOrganization"));
+            modal.setContent(organizationScreen);
+
+            organizationScreen.setScreenState(state);
+            organizationScreen.setManager(manager.getOrganizations());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+    }
+    
+    private void initializeDropdowns() {
+        ArrayList<TableDataRow> model;
+
+        // sample type dropdown
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("sdwis_sample_type"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+
+        sDWISSampleTypeId.setModel(model);
+        
+        // sample category dropdown
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("sdwis_sample_category"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+
+        sDWISSampleCategoryId.setModel(model);
+    }
+
+    private SamplePrivateWellManager getWellManager() {
+        SamplePrivateWellManager wellManager;
+
+        try {
+            wellManager = (SamplePrivateWellManager)manager.getDomainManager();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            wellManager = SamplePrivateWellManager.getInstance();
+            manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
+        }
+
+        return wellManager;
+    }
+
+    private SampleSDWISManager getSDWISManager() {
+        SampleSDWISManager sdwisManager;
+
+        try {
+            sdwisManager = (SampleSDWISManager)manager.getDomainManager();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            sdwisManager = SampleSDWISManager.getInstance();
+            manager.getSample().setDomain(SampleManager.SDWIS_DOMAIN_FLAG);
+        }
+
+        return sdwisManager;
+    }
+
+    public void setData(SampleManager manager) {
+        this.manager = manager;
+        loaded = false;
+    }
+
+    public void draw() {
+        if ( !loaded)
+            DataChangeEvent.fire(this);
+
+        loaded = true;
     }
 }

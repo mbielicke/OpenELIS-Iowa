@@ -49,6 +49,7 @@ import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SamplePrivateWellManager;
 import org.openelis.manager.SampleProjectManager;
 import org.openelis.manager.SampleQaEventManager;
+import org.openelis.manager.SampleSDWISManager;
 import org.openelis.manager.StorageManager;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
@@ -105,6 +106,24 @@ public abstract class SampleHistoryUtility {
         }catch(Exception e){
             window.clearStatus();
             Window.alert("historySamplePrivateWell: "+e.getMessage());
+        }
+        
+        window.clearStatus();
+    }
+    
+    public void historySampleSDWIS(){
+        IdNameVO hist;
+        SampleSDWISManager sdwisMan;
+        
+        window.setBusy();
+        try{
+        sdwisMan = (SampleSDWISManager)manager.getDomainManager();
+        hist = new IdNameVO(sdwisMan.getSDWIS().getId(), sdwisMan.getSDWIS().getLocation());
+        HistoryScreen.showHistory(OpenELIS.consts.get("historySampleSDWIS"),
+                                  ReferenceTable.SAMPLE_SDWIS, hist);
+        }catch(Exception e){
+            window.clearStatus();
+            Window.alert("historySampleSDWIS: "+e.getMessage());
         }
         
         window.clearStatus();

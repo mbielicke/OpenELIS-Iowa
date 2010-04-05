@@ -83,8 +83,7 @@ UIRF Software License are applicable instead of those above.
                 </menuDisplay>
                 <menuPanel layout="vertical" position="below" style="topMenuContainer">
                   <menuItem key="historySample" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySample')}" />
-                  <menuItem key="historySampleEnvironmental" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleEnvironmental')}" />
-                  <menuItem key="historySampleProject" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleProject')}" />
+                  <menuItem key="historySampleSDWIS" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleSDWIS')}" />
                   <menuItem key="historySampleOrganization" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleOrganization')}" />
                   <menuItem key="historySampleItem" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleItem')}" />
                   <menuItem key="historyAnalysis" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyAnalysis')}" />
@@ -148,7 +147,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'pwsId')" />:
                 </text>
                 <HorizontalPanel>
-                  <textbox key="{meta:getSDWISPwsId()}" width="75" tab="pwsName,{meta:getClientReference()}" field="Integer" />
+                  <textbox key="{meta:getSDWISPwsId()}" width="75" tab="pwsName,{meta:getClientReference()}" field="String" />
                   <appButton key="pwsButton" style="LookupButton">
                     <AbsolutePanel style="LookupButtonImage" />
                   </appButton>
@@ -160,9 +159,10 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'stateLabNo')" />:
                 </text>
-                <textbox key="{meta:getSDWISStateLabId()}" width="75" tab="{meta:getSDWISFacilityId()},pwsName" field="Integer" />
+                <textbox key="{meta:getSDWISStateLabId()}" width="102" tab="{meta:getSDWISFacilityId()},pwsName" field="Integer" />
               </row>
               <row>
+              
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'facilityId')" />:
                 </text>
@@ -170,39 +170,21 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'sampleType')" />:
                 </text>
-                <dropdown key="{meta:getSDWISSampleTypeId()}" width="70" tab="{meta:getSDWISOriginalSampleNumber()},{meta:getSDWISFacilityId()}" field="Integer" />
+                <dropdown key="{meta:getSDWISSampleTypeId()}" width="70" tab="{meta:getSDWISSampleCategoryId()},{meta:getSDWISFacilityId()}" field="Integer" />
                 <text style="Prompt">
-                  <xsl:value-of select="resource:getString($constants,'originalSampleNo')" />:
+                  <xsl:value-of select="resource:getString($constants,'sampleCat')" />:
                 </text>
-                <textbox key="{meta:getSDWISOriginalSampleNumber()}" width="75" tab="{meta:getSDWISSamplePointId()},{meta:getSDWISSampleTypeId()}" field="Integer" />
+                <dropdown key="{meta:getSDWISSampleCategoryId()}" width="108" tab="{meta:getSDWISSamplePointId()},{meta:getSDWISSampleTypeId()}" field="Integer" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'samplePtId')" />:
                 </text>
-                <textbox key="{meta:getSDWISSamplePointId()}" width="75" tab="{meta:getSDWISLocation()},{meta:getSDWISOriginalSampleNumber()}" field="Integer" />
+                <textbox key="{meta:getSDWISSamplePointId()}" width="75" tab="{meta:getSDWISLocation()},{meta:getSDWISSampleCategoryId()}" field="String" />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'pointDesc')" />:
                 </text>
-                <textbox key="{meta:getSDWISLocation()}" width="250" tab="{meta:getSDWISRepeatCodeId()},{meta:getSDWISSamplePointId()}" field="String" />
-                <text style="Prompt">
-                  <xsl:value-of select="resource:getString($constants,'repeat')" />:
-                </text>
-                <dropdown key="{meta:getSDWISRepeatCodeId()}" width="75" tab="{meta:getSDWISSampleCategoryId()},{meta:getSDWISLocation()}" field="Integer" />
-              </row>
-              <row>
-                <text style="Prompt">
-                  <xsl:value-of select="resource:getString($constants,'sampleCat')" />:
-                </text>
-                <dropdown key="{meta:getSDWISSampleCategoryId()}" width="80" tab="{meta:getSDWISCollector()},{meta:getSDWISRepeatCodeId()}" field="Integer" />
-                <text style="Prompt">
-                  <xsl:value-of select="resource:getString($constants,'collector')" />:
-                </text>
-                <textbox key="{meta:getSDWISCollector()}" width="130" tab="{meta:getSDWISPbSampleTypeId()},{meta:getSDWISSampleCategoryId()}" field="String" />
-                <text style="Prompt">
-                  <xsl:value-of select="resource:getString($constants,'leadSampleType')" />:
-                </text>
-                <dropdown key="{meta:getSDWISPbSampleTypeId()}" width="75" tab="itemsTestsTree,{meta:getSDWISCollector()}" field="Integer" />
+                <textbox key="{meta:getSDWISLocation()}" width="250" tab="itemsTestsTree,{meta:getSDWISSamplePointId()}" field="String" />
               </row>
             </TablePanel>
           </VerticalPanel>
@@ -213,7 +195,7 @@ UIRF Software License are applicable instead of those above.
               </text>
               <TablePanel padding="0" spacing="0">
                 <row>
-                  <tree key="itemsTestsTree" width="auto" maxRows="4" showScroll="ALWAYS" tab="{meta:getSDWISCompositeIndicator()},{meta:getSDWISPbSampleTypeId()}">
+                  <tree key="itemsTestsTree" width="auto" maxRows="4" showScroll="ALWAYS" tab="{meta:getSDWISCollector()},{meta:getSDWISLocation()}">
                     <header>
                       <col width="280" header="{resource:getString($constants,'itemAnalyses')}" />
                       <col width="130" header="{resource:getString($constants,'typeStatus')}" />
@@ -278,34 +260,14 @@ UIRF Software License are applicable instead of those above.
             </VerticalPanel>
             <VerticalPanel style="subform">
               <text style="FormTitle">
-                <xsl:value-of select="resource:getString($constants,'compositeOrgInfo')" />
+                <xsl:value-of select="resource:getString($constants,'collectorOrgInfo')" />
               </text>
               <TablePanel style="Form">
                 <row>
-                  <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'indicator')" />:
-                  </text>
-                  <check key="{meta:getSDWISCompositeIndicator()}" tab="{meta:getSDWISCompositeSequence()},itemsTestsTree" />
-                  <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'sequence')" />:
-                  </text>
-                  <textbox key="{meta:getSDWISCompositeSequence()}" width="78" field="Integer" tab="{meta:getSDWISCompositeSampleNumber()},{meta:getSDWISCompositeIndicator()}"/>
-                </row>
-                <row>
-                  <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'compSampleNo')" />:
-                  </text>
-                  <widget colspan="3">
-                    <textbox key="{meta:getSDWISCompositeSampleNumber()}" width="75" tab="{meta:getSDWISCompositeDate()},{meta:getSDWISCompositeSequence()}" field="Integer" />
-                  </widget>
-                </row>
-                <row>
-                  <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'compDate')" />:
-                  </text>
-                  <widget colspan="3">
-                    <calendar key="{meta:getSDWISCompositeDate()}" begin="0" end="2" width="110" tab="{meta:getOrgName()},{meta:getSDWISCompositeSampleNumber()}" />
-                  </widget>
+                <text style="Prompt">
+                  <xsl:value-of select="resource:getString($constants,'collector')" />:
+                </text>
+                <textbox key="{meta:getSDWISCollector()}" width="162" tab="{meta:getOrgName()},itemsTestsTree" field="String" />
                 </row>
                 <row>
                   <text style="Prompt">
@@ -313,7 +275,7 @@ UIRF Software License are applicable instead of those above.
                   </text>
                   <widget colspan="3">
                     <HorizontalPanel>
-                      <autoComplete key="{meta:getOrgName()}" width="148" case="UPPER" popWidth="auto" tab="{meta:getBillTo()},{meta:getSDWISCompositeDate()}" field="Integer">
+                      <autoComplete key="{meta:getOrgName()}" width="179" case="UPPER" popWidth="auto" tab="{meta:getBillTo()},{meta:getSDWISCollector()}" field="Integer">
                         <col width="180" header="{resource:getString($constants,'name')}" />
                         <col width="110" header="{resource:getString($constants,'street')}" />
                         <col width="100" header="{resource:getString($constants,'city')}" />
@@ -331,7 +293,7 @@ UIRF Software License are applicable instead of those above.
                   </text>
                   <widget colspan="3">
                     <HorizontalPanel>
-                      <autoComplete key="{meta:getBillTo()}" width="148" case="UPPER" popWidth="auto" tab="sampleItemTabPanel,{meta:getOrgName()}" field="Integer">
+                      <autoComplete key="{meta:getBillTo()}" width="179" case="UPPER" popWidth="auto" tab="sampleItemTabPanel,{meta:getOrgName()}" field="Integer">
                         <col width="180" header="{resource:getString($constants,'name')}" />
                         <col width="110" header="{resource:getString($constants,'street')}" />
                         <col width="100" header="{resource:getString($constants,'city')}" />
