@@ -125,9 +125,10 @@ public class SDWISTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                pwsName.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                      .contains(event.getState()));
-                pwsName.setQueryMode(event.getState() == State.QUERY);
+                pwsName.enable(false);
+                //pwsName.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                      //.contains(event.getState()));
+                //pwsName.setQueryMode(event.getState() == State.QUERY);
             }
         });
 

@@ -147,7 +147,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'pwsId')" />:
                 </text>
                 <HorizontalPanel>
-                  <textbox key="{meta:getSDWISPwsId()}" width="75" tab="pwsName,{meta:getClientReference()}" field="String" />
+                  <textbox key="{meta:getSDWISPwsId()}" width="75" case="UPPER" tab="pwsName,{meta:getClientReference()}" field="String" />
                   <appButton key="pwsButton" style="LookupButton">
                     <AbsolutePanel style="LookupButtonImage" />
                   </appButton>
@@ -170,7 +170,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'sampleType')" />:
                 </text>
-                <dropdown key="{meta:getSDWISSampleTypeId()}" width="70" tab="{meta:getSDWISSampleCategoryId()},{meta:getSDWISFacilityId()}" field="Integer" />
+                <dropdown key="{meta:getSDWISSampleTypeId()}" width="120" tab="{meta:getSDWISSampleCategoryId()},{meta:getSDWISFacilityId()}" field="Integer" />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'sampleCat')" />:
                 </text>
