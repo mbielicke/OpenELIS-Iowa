@@ -25,32 +25,14 @@
 */
 package org.openelis.domain;
 
-import java.util.Date;
-
-import org.openelis.gwt.common.Datetime;
 import org.openelis.utilcommon.DataBaseUtil;
 
 public class SampleSDWISDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
     
-    protected Integer id;
-    protected Integer sampleId;
-    protected String pwsId;
-    protected Integer stateLabId;
-    protected Integer facilityId;
-    protected Integer sampleTypeId;
-    protected Integer sampleCategoryId;
-    protected Integer leadSampleTypeId;
-    protected String samplePointId;
-    protected String location;
-    protected String collector;
-    protected String originalSampleNumber;
-    protected Integer repeatCodeId;
-    protected String compositeIndicator;
-    protected String compositeSampleNumber;
-    protected Datetime compositeDate;
-    protected Integer compositeSequence;
+    protected Integer id, sampleId, stateLabId, facilityId, sampleTypeId, sampleCategoryId;
+    protected String pwsId, samplePointId, location, collector;
     
     public SampleSDWISDO() {
         
@@ -58,11 +40,8 @@ public class SampleSDWISDO extends DataObject {
         
     public SampleSDWISDO(Integer id, Integer sampleId, String pwsId,
                          Integer stateLabId, Integer facilityId, Integer sampleTypeId,
-                         Integer sampleCategoryId, Integer leadSampleTypeId, 
-                         String samplePointId, String location, String collector,
-                         String originalSampleNumber, Integer repeatCodeId,
-                         String compositeIndicator, String compositeSampleNumber,
-                         Date compositeDate, Integer compositeSequence){
+                         Integer sampleCategoryId,  
+                         String samplePointId, String location, String collector){
         setId(id);
         setSampleId(sampleId);
         setPwsId(pwsId);
@@ -70,16 +49,9 @@ public class SampleSDWISDO extends DataObject {
         setFacilityId(facilityId);
         setSampleTypeId(sampleTypeId);
         setSampleCategoryId(sampleCategoryId);
-        setLeadSampleTypeId(leadSampleTypeId);
         setSamplePointId(samplePointId);
         setLocation(location);
         setCollector(collector);
-        setOriginalSampleNumber(originalSampleNumber);
-        setRepeatCodeId(repeatCodeId);
-        setCompositeIndicator(compositeIndicator);
-        setCompositeSampleNumber(compositeSampleNumber);
-        setCompositeDate(DataBaseUtil.toYD(compositeDate));
-        setCompositeSequence(compositeSequence);
         _changed = false;
     }
 
@@ -146,15 +118,6 @@ public class SampleSDWISDO extends DataObject {
         _changed = true;
     }
 
-    public Integer getLeadSampleTypeId() {
-        return leadSampleTypeId;
-    }
-
-    public void setLeadSampleTypeId(Integer leadSampleTypeId) {
-        this.leadSampleTypeId = leadSampleTypeId;
-        _changed = true;
-    }
-
     public String getSamplePointId() {
         return samplePointId;
     }
@@ -179,60 +142,6 @@ public class SampleSDWISDO extends DataObject {
 
     public void setCollector(String collector) {
         this.collector = DataBaseUtil.trim(collector);
-        _changed = true;
-    }
-
-    public String getOriginalSampleNumber() {
-        return originalSampleNumber;
-    }
-
-    public void setOriginalSampleNumber(String originalSampleNumber) {
-        this.originalSampleNumber = DataBaseUtil.trim(originalSampleNumber);
-        _changed = true;
-    }
-
-    public Integer getRepeatCodeId() {
-        return repeatCodeId;
-    }
-
-    public void setRepeatCodeId(Integer repeatCodeId) {
-        this.repeatCodeId = repeatCodeId;
-        _changed = true;
-    }
-
-    public String getCompositeIndicator() {
-        return compositeIndicator;
-    }
-
-    public void setCompositeIndicator(String compositeIndicator) {
-        this.compositeIndicator = DataBaseUtil.trim(compositeIndicator);
-        _changed = true;
-    }
-
-    public String getCompositeSampleNumber() {
-        return compositeSampleNumber;
-    }
-
-    public void setCompositeSampleNumber(String compositeSampleNumber) {
-        this.compositeSampleNumber = DataBaseUtil.trim(compositeSampleNumber);
-        _changed = true;
-    }
-
-    public Datetime getCompositeDate() {
-        return compositeDate;
-    }
-
-    public void setCompositeDate(Datetime compositeDate) {
-        this.compositeDate = DataBaseUtil.toYD(compositeDate);
-        _changed = true;
-    }
-
-    public Integer getCompositeSequence() {
-        return compositeSequence;
-    }
-
-    public void setCompositeSequence(Integer compositeSequence) {
-        this.compositeSequence = compositeSequence;
         _changed = true;
     }
 }

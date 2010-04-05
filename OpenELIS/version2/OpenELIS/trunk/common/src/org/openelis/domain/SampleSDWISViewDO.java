@@ -25,8 +25,6 @@
 */
 package org.openelis.domain;
 
-import java.util.Date;
-
 import org.openelis.utilcommon.DataBaseUtil;
 
 public class SampleSDWISViewDO extends SampleSDWISDO {
@@ -41,16 +39,11 @@ public class SampleSDWISViewDO extends SampleSDWISDO {
     
     public SampleSDWISViewDO(Integer id, Integer sampleId, String pwsId,
                          Integer stateLabId, Integer facilityId, Integer sampleTypeId,
-                         Integer sampleCategoryId, Integer leadSampleTypeId, 
-                         String samplePointId, String location, String collector,
-                         String originalSampleNumber, Integer repeatCodeId,
-                         String compositeIndicator, String compositeSampleNumber,
-                         Date compositeDate, Integer compositeSequence, 
-                         String pwsName){
+                         Integer sampleCategoryId, String samplePointId, 
+                         String location, String collector, String pwsName){
         
         super(id, sampleId, pwsId, stateLabId, facilityId, sampleTypeId, sampleCategoryId, 
-              leadSampleTypeId, samplePointId, location, collector, originalSampleNumber, 
-              repeatCodeId, compositeIndicator, compositeSampleNumber, compositeDate, compositeSequence);
+              samplePointId, location, collector);
         
         setPwsName(pwsName);
     }
@@ -62,5 +55,4 @@ public class SampleSDWISViewDO extends SampleSDWISDO {
     public void setPwsName(String pwsName) {
         this.pwsName = DataBaseUtil.trim(pwsName);
     }
-
 }
