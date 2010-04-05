@@ -117,7 +117,7 @@ public class WorksheetCompletionScreen extends Screen {
     private SecurityModule                        security;
     private WorksheetManager                      manager;
 
-    private AppButton                             browseButton, exitButton, insertQCLookupButton,
+    private AppButton                             /*browseButton,*/ exitButton, insertQCLookupButton,
                                                   insertQCWorksheetButton, loadButton,
                                                   lookupWorksheetButton, printButton,
                                                   removeRowButton;
@@ -136,12 +136,12 @@ public class WorksheetCompletionScreen extends Screen {
     protected Confirm                             worksheetRemoveQCConfirm, worksheetRemoveLastOfQCConfirm,
                                                   worksheetSaveConfirm, worksheetExitConfirm;
     protected Dropdown<Integer>                   statusId;
-//    protected FileUpload                          loadFile;
+    protected FileUpload                          loadFile;
     protected QcLookupScreen                      qcLookupScreen;
     protected TableDataRow                        qcItems[];
     protected TableWidget                         worksheetItemTable;
     protected TextBox<Integer>                    worksheetId, relatedWorksheetId;
-    protected TextBox<String>                     loadFile, defaultInitials;
+    protected TextBox<String>                     /*loadFile,*/ defaultInitials;
     protected TestWorksheetDO                     testWorksheetDO;
     protected TestWorksheetManager                twManager;
     protected WorksheetLookupScreen               wLookupScreen;
@@ -309,8 +309,8 @@ public class WorksheetCompletionScreen extends Screen {
             } 
         });
 
-        loadFile = (TextBox)def.getWidget("loadFile");
-//        loadFile = (FileUpload)def.getWidget("loadFile");
+//        loadFile = (TextBox)def.getWidget("loadFile");
+        loadFile = (FileUpload)def.getWidget("loadFile");
         addScreenHandler(loadFile, new ScreenEventHandler<String>() {
             public void onValueChange(ValueChangeEvent event) {
                 String value;
@@ -324,10 +324,10 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                loadFile.enable(true);
+//                loadFile.enable(true);
             }
         });
-
+/*
         browseButton = (AppButton)def.getWidget("browseButton");
         addScreenHandler(browseButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -337,7 +337,7 @@ public class WorksheetCompletionScreen extends Screen {
                 browseButton.enable(true);
             }
         });
-
+*/
         loadButton = (AppButton)def.getWidget("loadButton");
         addScreenHandler(loadButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {

@@ -85,9 +85,8 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'loadFrom')" />:
               </text>
+			  <fileUpload key="loadFile" action="file" service="org.openelis.modules.worksheet.server.WorksheetService" method="loadFile"/>
 <!--
-			  <fu key="loadFile" action="loadFile" service="org.openelis.modules.worksheet.server.WorksheetService" method="loadFile"/>
--->
 	          <HorizontalPanel>
                 <textbox key="loadFile" width="200" case="LOWER" tab="browseButton,instrumentId" field="String"/>
                 <appButton key="browseButton" style="Button" action="browse" tab="loadButton,loadFile">
@@ -99,6 +98,7 @@ UIRF Software License are applicable instead of those above.
                   </HorizontalPanel>
                 </appButton>
               </HorizontalPanel>
+-->
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'started')" />:
               </text>

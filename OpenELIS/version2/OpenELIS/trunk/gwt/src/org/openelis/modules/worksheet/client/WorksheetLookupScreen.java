@@ -39,6 +39,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import org.openelis.cache.DictionaryCache;
 //import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SecuritySystemUserDO;
 import org.openelis.domain.WorksheetViewDO;
@@ -301,10 +302,11 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
     }
 
     private void setQueryResult(ArrayList<WorksheetViewDO> list) {
-        int                       i;//, j;
-//        ArrayList<AnalysisViewDO> testList;
+        int                       i, j;
+        ArrayList<AnalysisViewDO> testList;
         ArrayList<TableDataRow>   model;
         TableDataRow              row;
+        AnalysisViewDO            aVDO;
         WorksheetViewDO           worksheetRow;
         
         window.setDone(consts.get("queryingComplete"));
@@ -326,18 +328,28 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
                 row.cells.get(1).value = worksheetRow.getSystemUser();
                 row.cells.get(2).value = worksheetRow.getCreatedDate();
                 row.cells.get(3).value = worksheetRow.getStatusId();
-/*                
-                testList = worksheetRow.getTestList();
-                if (testList != null) {
-                    for (j = 0; j < testList.size(); j++) { 
-                        row.cells.get(4).value = worksheetRow.getTestName();
-                        row.cells.get(5).value = worksheetRow.getMethodName();
-                    }
-                }
-*/
-                row.data = worksheetRow;
 
-                model.add(row);
+                testList = worksheetRow.getTestList();
+                if (testList != null && testList.size() > 0) {
+                    for (j = 0; j < testList.size(); j++) {
+                        aVDO = testList.get(j);
+                        if (j != 0) {
+                            row.cells.get(0).value = null;
+                            row.cells.get(1).value = null;
+                            row.cells.get(2).value = null;
+                            row.cells.get(3).value = null;
+                        }
+                        row.cells.get(4).value = aVDO.getTestName();
+                        row.cells.get(5).value = aVDO.getMethodName();
+                        row.data = worksheetRow;
+                        model.add(row);
+                    }
+                } else {
+                    row.cells.get(4).value = null;
+                    row.cells.get(5).value = null;
+                    row.data = worksheetRow;
+                    model.add(row);
+                }
             }
 
             worksheetTable.load(model);
