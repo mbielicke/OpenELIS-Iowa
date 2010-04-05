@@ -436,7 +436,7 @@ public class ReportToBillToTab extends Screen {
             }
         });
 
-        billToAddressZipCode = (TextBox)def.getWidget(OrderMeta.getReportToAddressZipCode());
+        billToAddressZipCode = (TextBox)def.getWidget(OrderMeta.getBillToAddressZipCode());
         addScreenHandler(reportToAddressZipCode, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 OrderViewDO data;
