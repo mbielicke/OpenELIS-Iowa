@@ -525,7 +525,7 @@ public class WorksheetCreationLookupScreen extends Screen
         
         editable = false;
         if (analysisRow != null) {
-            editable = //canAddTest(analysisRow) &&
+            editable = canAddTest(analysisRow) &&
                        (!statusReleased.equals(analysisRow.getStatusId()) ||
                         !statusCancelled.equals(analysisRow.getStatusId()));
         }

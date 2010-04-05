@@ -26,11 +26,7 @@
 package org.openelis.modules.worksheet.client;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 
-import org.openelis.cache.DictionaryCache;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.QaEventVO;
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.gwt.event.ActionEvent;
@@ -43,7 +39,6 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -78,11 +73,10 @@ public class WorksheetQcAnalysisSelectionScreen extends Screen implements HasAct
         super((ScreenDefInt)GWT.create(WorksheetQcAnalysisSelectionDef.class));
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheet.server.WorksheetService");
         qcService = new ScreenService("OpenELISServlet?service=org.openelis.modules.qc.server.QcService");
+
         // Setup link between Screen and widget Handlers
         initialize();
         
-//        initializeDropdowns();
-
         // Initialize Screen
         setState(State.DEFAULT);
     }
@@ -214,22 +208,7 @@ public class WorksheetQcAnalysisSelectionScreen extends Screen implements HasAct
             Window.alert(e.getMessage());
         }
     }
-/*    
-    private void initializeDropdowns() {
-        ArrayList<DictionaryDO> dictList;
-        ArrayList<TableDataRow> model;
 
-        //
-        // load analysis status dropdown model
-        //
-        dictList  = DictionaryCache.getListByCategorySystemName("analysis_status");
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for (DictionaryDO resultDO : dictList)
-            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
-        ((Dropdown<Integer>)worksheetQcAnalysisTable.getColumns().get(6).getColumnWidget()).setModel(model);
-    }
-*/    
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
         return addHandler(handler, ActionEvent.getType());
     }

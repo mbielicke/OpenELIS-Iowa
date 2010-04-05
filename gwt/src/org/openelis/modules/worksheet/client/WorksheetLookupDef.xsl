@@ -92,14 +92,12 @@ UIRF Software License are applicable instead of those above.
             <col key="{meta:getStatusId()}" width="100" sort="true" header="{resource:getString($constants,'status')}">
               <dropdown width="80" field="Integer" />
             </col>
-<!-- 
-            <col key="{meta:getTestName()}" width="100" header="{resource:getString($constants,'test')}" sort="true">
-              <label />
+            <col key="{meta:getAnalysisTestName()}" width="100" header="{resource:getString($constants,'test')}" sort="true">
+              <label field="String"/>
             </col>
-            <col key="{meta:getMethodName()}" width="75" header="{resource:getString($constants,'method')}" sort="true">
-              <label />
+            <col key="{meta:getAnalysisTestMethodName()}" width="75" header="{resource:getString($constants,'method')}" sort="true">
+              <label field="String"/>
             </col>
--->
           </table>
         </VerticalPanel>
 
