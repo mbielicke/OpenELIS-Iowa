@@ -163,7 +163,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"externalId")' />:
                 </text>
-                <textbox key="{meta:getExternalId()}" width="150" max="20" tab="{meta:getIsActive()},{meta:getParentAnalyteName()}" field="Integer" />
+                <textbox key="{meta:getExternalId()}" width="150" max="20" tab="{meta:getIsActive()},{meta:getParentAnalyteName()}" field="String" />
               </row>
               <row>
                 <text style="Prompt">
