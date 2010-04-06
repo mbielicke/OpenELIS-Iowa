@@ -42,7 +42,7 @@ import org.openelis.gwt.widget.DateField;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SamplePrivateWellManager;
 
-public class SamplePrivateWellImportOrder {
+public class SamplePrivateWellImportOrder extends ImportOrder {
     protected static final String AUX_DATA_SERVICE_URL = "org.openelis.modules.auxData.server.AuxDataService";
     protected static final String PROJECT_SERVICE_URL = "org.openelis.modules.project.server.ProjectService";
     protected ScreenService auxDataService, projectService;
@@ -60,16 +60,17 @@ public class SamplePrivateWellImportOrder {
         ArrayList<AuxDataViewDO> auxDataList;
         Integer auxGroupId;
         
+        orderMan = null;
         auxDataList = auxDataService.callList("fetchByRefId", auxData);
         
         // grab aux group id from sys variable ish
         auxGroupId = ((IdVO)auxDataService.call("getAuxGroupIdFromSystemVariable", "sample_well_aux_data")).getId();
 
-        //grab order report to
-        
-        //grab order bill to
+        //load order report to/bill to
+        //FIXME not sure what we want here loadReportToBillTo(orderId, manager);
         
         //grab order tests including number of bottles
+        loadSampleItems(orderId, manager);
         
         //inject the data into the manager
         importData(auxDataList, auxGroupId, manager);

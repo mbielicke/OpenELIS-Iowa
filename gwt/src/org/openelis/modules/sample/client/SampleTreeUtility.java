@@ -3,6 +3,7 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
@@ -205,6 +206,32 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
 
         } catch (Exception e) {
             Window.alert("analysisTestChanged: " + e.getMessage());
+        }
+    }
+    
+    public void importOrderTestList(ArrayList<OrderTestViewDO> list) {
+        SampleDataBundle analysisBundle;
+        TestPrepUtility.Type type;
+
+        if (testLookup == null) {
+            testLookup = new TestPrepUtility();
+            testLookup.setScreen(parentScreen);
+            
+            testLookup.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {
+                public void onAction(ActionEvent<org.openelis.modules.sample.client.TestPrepUtility.Action> event) {
+                    testLookupFinished((ArrayList<SampleDataBundle>)event.getData());
+                }
+            });
+        }
+
+        testLookup.setManager(manager);
+        analysisBundle = (SampleDataBundle)itemsTree.getSelection().data;
+
+        try {
+            testLookup.lookup(analysisBundle, list);
+
+        } catch (Exception e) {
+            Window.alert("importOrderTestList: " + e.getMessage());
         }
     }
     

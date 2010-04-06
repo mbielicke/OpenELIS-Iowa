@@ -180,7 +180,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                         fieldDO = (AuxFieldViewDO)adb.fieldDO;
                         data.setValue(getCorrectManValueByType(val, fieldDO.getTypeId()));
 
-                        if (rv != null) {
+                        if (rv != null && getCorrectManValueByType(val, fieldDO.getTypeId()) != null) {
                             try {
                                 auxValsTable.clearCellExceptions(r, c);
                                 rv.validate(null,
@@ -517,14 +517,14 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             df.setEnd(Datetime.DAY);
             df.setFormat(consts.get("datePattern"));
             df.setValue( ((Datetime)value));
-            return df.toString();
+            return df.toString().replaceAll("-", "/");
         } else if (dateTimeId.equals(typeId)) {
             df = new DateField();
             df.setBegin(Datetime.YEAR);
             df.setEnd(Datetime.MINUTE);
             df.setFormat(consts.get("dateTimePattern"));
             df.setValue( ((Datetime)value));
-            return df.toString();
+            return  df.toString().replaceAll("-", "/");
         } else if (dictionaryId.equals(typeId))
             return ((TableDataRow)value).key.toString();
 

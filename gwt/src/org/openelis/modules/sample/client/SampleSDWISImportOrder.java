@@ -37,7 +37,7 @@ import org.openelis.gwt.services.ScreenService;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleSDWISManager;
 
-public class SampleSDWISImportOrder {
+public class SampleSDWISImportOrder extends ImportOrder {
     protected static final String AUX_DATA_SERVICE_URL = "org.openelis.modules.auxData.server.AuxDataService";
     
     protected ScreenService auxDataService;
@@ -54,14 +54,17 @@ public class SampleSDWISImportOrder {
         ArrayList<AuxDataViewDO> auxDataList;
         Integer auxGroupId;
         
+        orderMan = null;
         auxDataList = auxDataService.callList("fetchByRefId", auxData);
         
         // grab aux group id from sys variable ish
         auxGroupId = ((IdVO)auxDataService.call("getAuxGroupIdFromSystemVariable", "sample_sdwis_aux_data")).getId();
 
         //grab order for report to/bill to
+        loadReportToBillTo(orderId, manager);
         
         //grab order tests including number of bottles
+        loadSampleItems(orderId, manager);
         
         //inject the data into the manager
         importData(auxDataList, auxGroupId, manager);

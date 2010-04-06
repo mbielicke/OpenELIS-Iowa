@@ -31,6 +31,7 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
@@ -500,14 +501,24 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 manager.getSample().setOrderId(event.getValue());
 
-                if (envOrderImport == null)
-                    envOrderImport = new SampleEnvironmentalImportOrder();
-
-                try {
-                    envOrderImport.importOrderInfo(event.getValue(), manager);
-                    DataChangeEvent.fire(envScreen);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                if(event.getValue() != null){
+                    if (envOrderImport == null)
+                        envOrderImport = new SampleEnvironmentalImportOrder();
+                    
+                    try {
+                        envOrderImport.importOrderInfo(event.getValue(), manager);
+                        DataChangeEvent.fire(envScreen);
+                        
+                        ArrayList<OrderTestViewDO> orderTests = envOrderImport.getTestsFromOrder(event.getValue());
+                        
+                        if(orderTests != null && orderTests.size() > 0)
+                            ActionEvent.fire(envScreen, AnalysisTab.Action.ORDER_LIST_ADDED, orderTests);
+                        
+                    } catch (NotFoundException e) {
+                        //ignore
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                    }
                 }
             }
 

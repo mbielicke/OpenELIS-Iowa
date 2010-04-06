@@ -33,6 +33,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleItemViewDO;
@@ -329,6 +330,10 @@ public class SampleItemAnalysisTreeTab extends Screen
                     treeUtil.analysisTestChanged((Integer)event.getData(), false);
                 } else if (event.getAction() == AnalysisTab.Action.PANEL_ADDED) {
                     treeUtil.analysisTestChanged((Integer)event.getData(), true);
+                } else if(event.getAction() == AnalysisTab.Action.ORDER_LIST_ADDED) {
+                    itemsTree.select(0);
+                    treeUtil.onAddAnalysisButtonClick();
+                    treeUtil.importOrderTestList((ArrayList<OrderTestViewDO>)event.getData());
                 } else if (event.getAction() == AnalysisTab.Action.CHANGED_DONT_CHECK_PREPS) {
                     selected = itemsTree.getSelection();
                     treeUtil.updateAnalysisRow(selected);
