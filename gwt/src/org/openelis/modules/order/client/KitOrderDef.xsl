@@ -526,7 +526,7 @@ UIRF Software License are applicable instead of those above.
                           <dropdown width="300" popWidth="320" field="Integer" required="true" />
                         </col>
                         <col key="{meta:getContainerNumberOfContainers()}" width="78" align="left" header="{resource:getString($constants,'quantity')}">
-                          <textbox field="Integer" />
+                          <textbox field="Integer" required="true"/>
                         </col>
                         <col key="{meta:getContainerTypeOfSampleId()}" width="200" align="left" header="{resource:getString($constants,'sampleType')}">
                           <dropdown width="200" popWidth="200" field="Integer" />
