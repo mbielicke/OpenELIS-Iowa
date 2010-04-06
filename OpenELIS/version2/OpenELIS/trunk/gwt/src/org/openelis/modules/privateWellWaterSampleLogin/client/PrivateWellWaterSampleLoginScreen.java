@@ -31,6 +31,7 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
@@ -487,14 +488,24 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 manager.getSample().setOrderId(event.getValue());
 
-                if (wellOrderImport == null)
-                    wellOrderImport = new SamplePrivateWellImportOrder();
-
-                try {
-                    wellOrderImport.importOrderInfo(event.getValue(), manager);
-                    DataChangeEvent.fire(wellScreen);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                if(event.getValue() != null){
+                    if (wellOrderImport == null)
+                        wellOrderImport = new SamplePrivateWellImportOrder();
+    
+                    try {
+                        wellOrderImport.importOrderInfo(event.getValue(), manager);
+                        DataChangeEvent.fire(wellScreen);
+                        
+                        ArrayList<OrderTestViewDO> orderTests = wellOrderImport.getTestsFromOrder(event.getValue());
+                        
+                        if(orderTests != null && orderTests.size() > 0)
+                            ActionEvent.fire(wellScreen, AnalysisTab.Action.ORDER_LIST_ADDED, orderTests);
+                        
+                    } catch (NotFoundException e) {
+                        //ignore
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                    }
                 }
             }
 

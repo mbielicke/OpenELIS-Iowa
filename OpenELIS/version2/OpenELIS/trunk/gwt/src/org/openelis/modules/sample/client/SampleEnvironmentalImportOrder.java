@@ -42,7 +42,7 @@ import org.openelis.gwt.widget.DateField;
 import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleManager;
 
-public class SampleEnvironmentalImportOrder {
+public class SampleEnvironmentalImportOrder extends ImportOrder {
     protected static final String AUX_DATA_SERVICE_URL = "org.openelis.modules.auxData.server.AuxDataService";
     protected static final String PROJECT_SERVICE_URL = "org.openelis.modules.project.server.ProjectService";
     
@@ -61,14 +61,20 @@ public class SampleEnvironmentalImportOrder {
         ArrayList<AuxDataViewDO> auxDataList;
         Integer auxGroupId;
         
+        if(orderId == null)
+            return;
+        
+        orderMan = null;
         auxDataList = auxDataService.callList("fetchByRefId", auxData);
         
         // grab aux group id from sys variable ish
         auxGroupId = ((IdVO)auxDataService.call("getAuxGroupIdFromSystemVariable", "sample_env_aux_data")).getId();
 
         //grab order for report to/bill to
+        loadReportToBillTo(orderId, manager);
         
         //grab order tests including number of bottles
+        loadSampleItems(orderId, manager);
         
         //inject the data into the manager
         importData(auxDataList, auxGroupId, manager);

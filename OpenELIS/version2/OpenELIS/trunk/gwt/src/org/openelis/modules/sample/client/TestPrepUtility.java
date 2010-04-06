@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.IdVO;
+import org.openelis.domain.OrderTestViewDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestPrepViewDO;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -113,6 +115,33 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         else {
             testIds = new ArrayList<IdVO>();
             testIds.add(new IdVO(id));
+        }
+
+        processTestListAndCheckPrepTests(testIds);
+    }
+    
+    public void lookup(SampleDataBundle analysisDataBundle, ArrayList<OrderTestViewDO> orderTestList) throws Exception {
+        ArrayList<IdVO> testIds, panelIds;
+        OrderTestViewDO testDO;
+
+        assert manager != null : "manager is null";
+        assert screen != null : "screen is null";
+
+        errorsList = new ValidationErrorsList();
+        this.analysisDataBundle = analysisDataBundle;
+        bundles = new ArrayList<SampleDataBundle>();
+        numberOfPrepScreensDrawn = 0;
+
+        testIds = new ArrayList<IdVO>();
+        for(int i=0; i<orderTestList.size(); i++){
+            testDO = orderTestList.get(i);
+            
+            // we need to expand a panel to test ids
+            if (testDO.getReferenceTableId().equals(ReferenceTable.PANEL)){
+                panelIds = panelService.callList("fetchTestIdsByPanelId", testDO.getReferenceId());
+                testIds.addAll(panelIds);
+            } else 
+                testIds.add(new IdVO(testDO.getReferenceId()));
         }
 
         processTestListAndCheckPrepTests(testIds);

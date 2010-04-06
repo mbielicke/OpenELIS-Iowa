@@ -76,7 +76,7 @@ import com.google.gwt.user.client.Window;
 
 public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab.Action> {
     public enum Action {
-        ANALYSIS_ADDED, PANEL_ADDED, CHANGED_DONT_CHECK_PREPS, ITEM_CHANGED
+        ANALYSIS_ADDED, PANEL_ADDED, ORDER_LIST_ADDED, CHANGED_DONT_CHECK_PREPS, ITEM_CHANGED
     };
 
     private boolean loaded;

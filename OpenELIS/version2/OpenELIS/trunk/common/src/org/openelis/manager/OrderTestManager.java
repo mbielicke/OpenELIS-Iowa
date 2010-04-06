@@ -85,6 +85,10 @@ public class OrderTestManager implements RPC {
         }
     }
     
+    public ArrayList<OrderTestViewDO> getTests(){
+        return tests;
+    }
+    
     public int count() {
         if (tests == null)
             return 0;
@@ -116,10 +120,6 @@ public class OrderTestManager implements RPC {
 
     void setOrderId(Integer id) {
         orderId = id;
-    }
-    
-    ArrayList<OrderTestViewDO> getTests(){
-        return tests;
     }
     
     void setTests(ArrayList<OrderTestViewDO> tests) {

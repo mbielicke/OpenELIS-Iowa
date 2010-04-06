@@ -496,6 +496,9 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 try {
                     envOrderImport.importOrderInfo(event.getValue(), manager);
                     DataChangeEvent.fire(envScreen);
+                
+                } catch (NotFoundException e) {
+                    //ignore
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }*/
