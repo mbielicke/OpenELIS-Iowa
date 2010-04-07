@@ -25,7 +25,17 @@
 */
 package org.openelis.manager;
 
+import org.openelis.domain.PwsDO;
+import org.openelis.gwt.services.ScreenService;
+
 public class SampleSDWISManagerProxy {
+    protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.sample.server.SampleService";
+    protected ScreenService service;
+    
+    public SampleSDWISManagerProxy(){
+        service = new ScreenService("OpenELISServlet?service="+SAMPLE_SERVICE_URL);
+    }
+    
     public SampleSDWISManager add(SampleSDWISManager man) throws Exception {
         assert false : "not supported";
         return null;
@@ -39,5 +49,9 @@ public class SampleSDWISManagerProxy {
     public SampleSDWISManager fetch(Integer sampleId) throws Exception {
         assert false : "not supported";
         return null;
+    }
+    
+    public PwsDO fetchPwsByPwsId(String pwsId) throws Exception {
+        return service.call("fetchPwsByPwsId", pwsId);
     }
 }
