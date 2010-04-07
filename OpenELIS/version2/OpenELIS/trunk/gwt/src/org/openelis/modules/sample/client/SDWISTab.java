@@ -60,9 +60,9 @@ import com.google.gwt.user.client.Window;
 
 public class SDWISTab extends Screen {
     private Dropdown<Integer>              sDWISSampleTypeId, sDWISSampleCategoryId;
-    private TextBox                        sDWISPwsId, pwsName,
+    private TextBox                        sDWISPwsId, pwsName, sDWISFacilityId,
                                            sDWISSamplePointId, pointDesc, sDWISCollector;
-    private TextBox<Integer>               sDWISStateLabId, sDWISFacilityId;
+    private TextBox<Integer>               sDWISStateLabId;
     private AutoComplete<Integer>          reportTo, billTo;
     private AppButton                      pwsButton, reportToLookup, billToLookup;
 
@@ -149,13 +149,13 @@ public class SDWISTab extends Screen {
             }
         });
 
-        sDWISFacilityId = (TextBox<Integer>)def.getWidget(SampleMeta.getSDWISFacilityId());
-        addScreenHandler(sDWISFacilityId, new ScreenEventHandler<Integer>() {
+        sDWISFacilityId = (TextBox)def.getWidget(SampleMeta.getSDWISFacilityId());
+        addScreenHandler(sDWISFacilityId, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 sDWISFacilityId.setValue(getSDWISManager().getSDWIS().getFacilityId());
             }
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {
+            public void onValueChange(ValueChangeEvent<String> event) {
                 getSDWISManager().getSDWIS().setFacilityId(event.getValue());
             }
 
