@@ -27,6 +27,7 @@ package org.openelis.manager;
 
 import javax.naming.InitialContext;
 
+import org.openelis.domain.PwsDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.local.SampleSDWISLocal;
 
@@ -55,6 +56,11 @@ public class SampleSDWISManagerProxy {
         sm.setSDWIS(sdwisDO);
         
         return sm;
+    }
+    
+    public PwsDO fetchPwsByPwsId(String pwsId) throws Exception {
+        assert false : "not supported";
+        return null;
     }
     
     private SampleSDWISLocal local(){

@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
@@ -18,11 +19,18 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.AuditUtil;
 
-@NamedQuery(name = "Pws.FetchByTinwsysIsNumber",
+@NamedQueries( {
+    @NamedQuery(name = "Pws.FetchByTinwsysIsNumber",
            query = "select new org.openelis.domain.PwsDO(p.id, p.tinwsysIsNumber, p.number0, p.alternateStNum, p.name," +
             	   "p.activityStatusCd, p.dPrinCitySvdNm, p.dPrinCntySvdNm,p.dPopulationCount, p.dPwsStTypeCd," +
              	   "p.activityRsnTxt, p.startDay, p.startMonth, p.endDay, p.endMonth, p.effBeginDt, p.effEndDt)"
-                 + " from Pws p where p.tinwsysIsNumber = :tinwsysIsNumber")
+                 + " from Pws p where p.tinwsysIsNumber = :tinwsysIsNumber"),
+    @NamedQuery(name = "Pws.FetchByNumber0",
+           query = "select new org.openelis.domain.PwsDO(p.id, p.tinwsysIsNumber, p.number0, p.alternateStNum, p.name," +
+                   " p.activityStatusCd, p.dPrinCitySvdNm, p.dPrinCntySvdNm,p.dPopulationCount, p.dPwsStTypeCd," +
+                   " p.activityRsnTxt, p.startDay, p.startMonth, p.endDay, p.endMonth, p.effBeginDt, p.effEndDt)" +
+                   " from Pws p where p.number0 = :number0")})
+                 
 
 @Entity
 @Table(name = "pws")

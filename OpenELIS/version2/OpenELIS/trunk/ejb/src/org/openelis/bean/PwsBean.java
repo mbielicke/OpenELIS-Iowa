@@ -76,6 +76,22 @@ public class PwsBean implements PwsLocal, PwsRemote{
         return data; 
     }
     
+    public PwsDO fetchByNumber0(String number0) throws Exception {
+        Query query;
+        PwsDO data;
+        
+        query = manager.createNamedQuery("Pws.FetchByNumber0");
+        query.setParameter("number0", number0);
+        try {
+            data = (PwsDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data; 
+    }
+    
     @SuppressWarnings("unchecked")
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
