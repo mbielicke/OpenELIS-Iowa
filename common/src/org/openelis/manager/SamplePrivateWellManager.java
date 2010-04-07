@@ -3,6 +3,7 @@ package org.openelis.manager;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.ValidationErrorsList;
 
 public class SamplePrivateWellManager implements RPC, SampleDomainInt {
 
@@ -105,6 +106,14 @@ public class SamplePrivateWellManager implements RPC, SampleDomainInt {
     
     public SamplePrivateWellManager update() throws Exception {
         return proxy().update(this);
+    }
+    
+    public void validate() throws Exception {
+        
+    }
+    
+    public void validate(ValidationErrorsList errorsList) throws Exception {
+        
     }
 
     private static SamplePrivateWellManagerProxy proxy(){

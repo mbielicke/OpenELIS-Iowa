@@ -75,7 +75,20 @@ public class SampleSDWISManager implements RPC, SampleDomainInt {
         
         return pwsDO;
     }
+    
+    public void validate() throws Exception {
+        ValidationErrorsList errorsList = new ValidationErrorsList();
 
+        proxy().validate(this, errorsList);
+
+        if (errorsList.size() > 0)
+            throw errorsList;
+    }
+
+    public void validate(ValidationErrorsList errorsList) throws Exception {
+        proxy().validate(this, errorsList);
+    }
+    
     private static SampleSDWISManagerProxy proxy() {
         if (proxy == null)
             proxy = new SampleSDWISManagerProxy();

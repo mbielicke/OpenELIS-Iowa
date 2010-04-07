@@ -27,6 +27,7 @@ package org.openelis.manager;
 
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.ValidationErrorsList;
 
 public class SampleEnvironmentalManager implements RPC, SampleDomainInt {
 
@@ -76,6 +77,14 @@ public class SampleEnvironmentalManager implements RPC, SampleDomainInt {
     
     public SampleEnvironmentalManager update() throws Exception {
         return proxy().update(this);
+    }
+    
+    public void validate() throws Exception {
+        
+    }
+    
+    public void validate(ValidationErrorsList errorsList) throws Exception {
+        
     }
 
     private static SampleEnvironmentalManagerProxy proxy(){

@@ -29,7 +29,12 @@ import javax.naming.InitialContext;
 
 import org.openelis.domain.PwsDO;
 import org.openelis.domain.SampleSDWISViewDO;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.PwsLocal;
 import org.openelis.local.SampleSDWISLocal;
+import org.openelis.meta.SampleMeta;
 
 public class SampleSDWISManagerProxy {
     public SampleSDWISManager add(SampleSDWISManager man) throws Exception {
@@ -59,14 +64,35 @@ public class SampleSDWISManagerProxy {
     }
     
     public PwsDO fetchPwsByPwsId(String pwsId) throws Exception {
-        assert false : "not supported";
-        return null;
+        return pwsLocal().fetchByNumber0(pwsId);
+    }
+    
+    public void validate(SampleSDWISManager man, ValidationErrorsList errorsList) throws Exception {
+        //validate that the pwsid is valid
+        try{
+            fetchPwsByPwsId(man.getSDWIS().getPwsId());
+            
+        }catch(NotFoundException e){
+            errorsList.add(new FieldErrorException("invalidPwsException", SampleMeta.getSDWISPwsId()));
+        }catch(Exception e){
+            
+        }
     }
     
     private SampleSDWISLocal local(){
         try{
             InitialContext ctx = new InitialContext();
             return (SampleSDWISLocal)ctx.lookup("openelis/SampleSDWISBean/local");
+        }catch(Exception e){
+             System.out.println(e.getMessage());
+             return null;
+        }
+    }
+    
+    private PwsLocal pwsLocal(){
+        try{
+            InitialContext ctx = new InitialContext();
+            return (PwsLocal)ctx.lookup("openelis/PwsBean/local");
         }catch(Exception e){
              System.out.println(e.getMessage());
              return null;
