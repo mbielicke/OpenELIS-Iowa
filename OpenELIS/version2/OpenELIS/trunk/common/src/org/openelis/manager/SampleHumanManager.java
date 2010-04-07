@@ -29,6 +29,7 @@ import org.openelis.domain.PatientDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.SampleHumanDO;
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.ValidationErrorsList;
 
 public class SampleHumanManager implements RPC, SampleDomainInt {
 
@@ -121,5 +122,12 @@ public class SampleHumanManager implements RPC, SampleDomainInt {
     
     public SampleHumanManager update() throws Exception {
         return null;
+    }
+    
+    public void validate() throws Exception {
+    }
+
+    public void validate(ValidationErrorsList errorsList) throws Exception {
+
     }
 }

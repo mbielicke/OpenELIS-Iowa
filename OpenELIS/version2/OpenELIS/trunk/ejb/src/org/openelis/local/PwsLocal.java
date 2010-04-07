@@ -32,8 +32,8 @@ import org.openelis.domain.PwsDO;
 @Local
 public interface PwsLocal {
     public PwsDO fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception;
+    public PwsDO fetchByNumber0(String number0) throws Exception;
     
     public PwsDO add(PwsDO data) throws Exception;
-    
     public PwsDO update(PwsDO data) throws Exception;
 }
