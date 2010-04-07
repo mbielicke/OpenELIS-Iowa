@@ -69,7 +69,7 @@ public class SampleSDWIS implements Auditable, Cloneable {
     private Integer stateLabId;
     
     @Column(name = "facility_id")
-    private Integer facilityId;
+    private String facilityId;
     
     @Column(name = "sample_type_id")
     private Integer sampleTypeId;
@@ -125,11 +125,11 @@ public class SampleSDWIS implements Auditable, Cloneable {
             this.stateLabId = stateLabId;
     }
 
-    public Integer getFacilityId() {
+    public String getFacilityId() {
         return facilityId;
     }
 
-    public void setFacilityId(Integer facilityId) {
+    public void setFacilityId(String facilityId) {
         if (DataBaseUtil.isDifferent(facilityId, this.facilityId))
             this.facilityId = facilityId;
     }
