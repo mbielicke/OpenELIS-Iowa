@@ -30,11 +30,13 @@ import java.util.ArrayList;
 import javax.ejb.Remote;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.PwsDO;
 import org.openelis.gwt.common.data.QueryData;
 
 @Remote
 public interface PwsRemote {
 
    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
+   public PwsDO fetchByNumber0(String number0) throws Exception;
 
 }

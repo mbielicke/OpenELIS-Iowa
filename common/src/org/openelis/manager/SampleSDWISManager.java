@@ -1,15 +1,21 @@
 package org.openelis.manager;
 
+import org.openelis.domain.PwsDO;
 import org.openelis.domain.SampleSDWISViewDO;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.meta.SampleMeta;
 
 public class SampleSDWISManager implements RPC, SampleDomainInt {
-    private static final long                           serialVersionUID = 1L;
-    protected Integer sampleId;
-    protected SampleSDWISViewDO                     sdwis;
+    private static final long                          serialVersionUID = 1L;
+    protected Integer                                  sampleId;
+    protected SampleSDWISViewDO                        sdwis;
 
     protected transient static SampleSDWISManagerProxy proxy;
-    
+
     /**
      * Creates a new instance of this object.
      */
@@ -25,16 +31,16 @@ public class SampleSDWISManager implements RPC, SampleDomainInt {
     public static SampleSDWISManager fetchBySampleId(Integer sampleId) throws Exception {
         return proxy().fetch(sampleId);
     }
-    
+
     // setters/getters
     public SampleSDWISViewDO getSDWIS() {
         return sdwis;
     }
-    
+
     public void setSDWIS(SampleSDWISViewDO sdwisDO) {
         sdwis = sdwisDO;
     }
-    
+
     public Integer getSampleId() {
         return sampleId;
     }
@@ -42,20 +48,38 @@ public class SampleSDWISManager implements RPC, SampleDomainInt {
     public void setSampleId(Integer sampleId) {
         this.sampleId = sampleId;
     }
-    
+
     // manager methods
     public SampleSDWISManager add() throws Exception {
         return proxy().add(this);
     }
-    
+
     public SampleSDWISManager update() throws Exception {
         return proxy().update(this);
     }
 
-    private static SampleSDWISManagerProxy proxy(){
-        if(proxy == null) 
-            proxy = new SampleSDWISManagerProxy();
+    public PwsDO validatePwsId(String pwsId) throws Exception {
+        PwsDO pwsDO;
         
+        try{
+            pwsDO = proxy().fetchPwsByPwsId(pwsId);
+            
+        }catch(NotFoundException e){
+            ValidationErrorsList el = new ValidationErrorsList();
+            el.add(new FieldErrorException("invalidPwsException", SampleMeta.getSDWISPwsId()));
+            throw el;
+            
+        }catch(Exception e){
+            throw e;
+        }
+        
+        return pwsDO;
+    }
+
+    private static SampleSDWISManagerProxy proxy() {
+        if (proxy == null)
+            proxy = new SampleSDWISManagerProxy();
+
         return proxy;
-    }    
+    }
 }
