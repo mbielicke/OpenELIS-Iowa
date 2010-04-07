@@ -26,7 +26,11 @@
 package org.openelis.manager;
 
 import org.openelis.domain.PwsDO;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.meta.SampleMeta;
 
 public class SampleSDWISManagerProxy {
     protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.sample.server.SampleService";
@@ -49,6 +53,18 @@ public class SampleSDWISManagerProxy {
     public SampleSDWISManager fetch(Integer sampleId) throws Exception {
         assert false : "not supported";
         return null;
+    }
+    
+    public void validate(SampleSDWISManager man, ValidationErrorsList errorsList) throws Exception {
+        //validate that the pwsid is valid
+        try{
+            fetchPwsByPwsId(man.getSDWIS().getPwsId());
+            
+        }catch(NotFoundException e){
+            errorsList.add(new FieldErrorException("invalidPwsException", SampleMeta.getSDWISPwsId()));
+        }catch(Exception e){
+            
+        }
     }
     
     public PwsDO fetchPwsByPwsId(String pwsId) throws Exception {

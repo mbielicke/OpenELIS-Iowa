@@ -115,6 +115,8 @@ public class SampleManagerProxy {
                 errorsList.add(new FieldErrorException("collectedDateInvalidError", SampleMeta.getReceivedDate()));
        }
         
+       man.getDomainManager().validate(errorsList);
+       
        if(man.sampleItems != null)
            man.getSampleItems().validate(errorsList);
        
