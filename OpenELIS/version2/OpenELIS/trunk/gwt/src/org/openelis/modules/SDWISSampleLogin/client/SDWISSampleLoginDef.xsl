@@ -147,7 +147,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'pwsId')" />:
                 </text>
                 <HorizontalPanel>
-                  <textbox key="{meta:getSDWISPwsId()}" width="75" case="UPPER" tab="pwsName,{meta:getClientReference()}" field="String" />
+                  <textbox key="{meta:getSDWISPwsId()}" width="75" max="9" case="UPPER" tab="pwsName,{meta:getClientReference()}" field="String" required="true"/>
                   <appButton key="pwsButton" style="LookupButton">
                     <AbsolutePanel style="LookupButtonImage" />
                   </appButton>
@@ -159,32 +159,32 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'stateLabNo')" />:
                 </text>
-                <textbox key="{meta:getSDWISStateLabId()}" width="102" tab="{meta:getSDWISFacilityId()},pwsName" field="Integer" />
+                <textbox key="{meta:getSDWISStateLabId()}" width="102" tab="{meta:getSDWISFacilityId()},pwsName" field="Integer" required="true"/>
               </row>
               <row>
               
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'facilityId')" />:
                 </text>
-                <textbox key="{meta:getSDWISFacilityId()}" width="75" tab="{meta:getSDWISSampleTypeId()},{meta:getSDWISStateLabId()}" field="String" />
+                <textbox key="{meta:getSDWISFacilityId()}" width="75" max="12" tab="{meta:getSDWISSampleTypeId()},{meta:getSDWISStateLabId()}" field="String" />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'sampleType')" />:
                 </text>
-                <dropdown key="{meta:getSDWISSampleTypeId()}" width="120" tab="{meta:getSDWISSampleCategoryId()},{meta:getSDWISFacilityId()}" field="Integer" />
+                <dropdown key="{meta:getSDWISSampleTypeId()}" width="120" tab="{meta:getSDWISSampleCategoryId()},{meta:getSDWISFacilityId()}" field="Integer" required="true"/>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'sampleCat')" />:
                 </text>
-                <dropdown key="{meta:getSDWISSampleCategoryId()}" width="108" tab="{meta:getSDWISSamplePointId()},{meta:getSDWISSampleTypeId()}" field="Integer" />
+                <dropdown key="{meta:getSDWISSampleCategoryId()}" width="108" tab="{meta:getSDWISSamplePointId()},{meta:getSDWISSampleTypeId()}" field="Integer" required="true"/>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'samplePtId')" />:
                 </text>
-                <textbox key="{meta:getSDWISSamplePointId()}" width="75" tab="{meta:getSDWISLocation()},{meta:getSDWISSampleCategoryId()}" field="String" />
+                <textbox key="{meta:getSDWISSamplePointId()}" width="75" max="11" tab="{meta:getSDWISLocation()},{meta:getSDWISSampleCategoryId()}" field="String" required="true"/>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'pointDesc')" />:
                 </text>
-                <textbox key="{meta:getSDWISLocation()}" width="250" tab="itemsTestsTree,{meta:getSDWISSamplePointId()}" field="String" />
+                <textbox key="{meta:getSDWISLocation()}" width="250" max="20" tab="itemsTestsTree,{meta:getSDWISSamplePointId()}" field="String" />
               </row>
             </TablePanel>
           </VerticalPanel>
@@ -267,7 +267,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'collector')" />:
                 </text>
-                <textbox key="{meta:getSDWISCollector()}" width="162" tab="{meta:getOrgName()},itemsTestsTree" field="String" />
+                <textbox key="{meta:getSDWISCollector()}" width="162" max="20" tab="{meta:getOrgName()},itemsTestsTree" field="String" />
                 </row>
                 <row>
                   <text style="Prompt">
