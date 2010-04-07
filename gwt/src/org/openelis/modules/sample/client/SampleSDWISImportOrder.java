@@ -86,7 +86,7 @@ public class SampleSDWISImportOrder extends ImportOrder {
                     else if(analyteId.equals("state_lab_num"))
                         ((SampleSDWISManager)manager.getDomainManager()).getSDWIS().setStateLabId(new Integer(auxData.getValue()));
                     else if(analyteId.equals("facility_id"))
-                        ((SampleSDWISManager)manager.getDomainManager()).getSDWIS().setFacilityId(new Integer(auxData.getValue()));
+                        ((SampleSDWISManager)manager.getDomainManager()).getSDWIS().setFacilityId(auxData.getValue());
                     else if(analyteId.equals("sample_type")){
                         dictDO = validateDropdownValue(auxData.getValue(), "sdwis_sample_type");
                         if(dictDO != null)
