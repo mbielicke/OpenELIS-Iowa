@@ -37,9 +37,12 @@ import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeCloseEvent;
 import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
@@ -58,19 +61,25 @@ import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.PwsManager;
 import org.openelis.meta.PwsMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.modules.sample.client.SampleLocationLookupScreen.Action;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class PwsScreen extends Screen {
+public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Action> {
 
+    public enum Action {
+        SELECT
+    };
+    
     private PwsManager      manager;
     protected Tabs          tab;
     private SecurityModule  security;
@@ -78,24 +87,32 @@ public class PwsScreen extends Screen {
     private ScreenNavigator nav;
 
     private CalendarLookUp  effBeginDt, effEndDt;
-    private TextBox         tinwsysIsNumber, alternateStNum, name, dPrinCitySvdNm, dPrinCntySvdNm,
-                            dPwsStTypeCd, activityStatusCd, dPopulationCount, startDay, startMonth, endDay,
-                            endMonth;
+    private TextBox         number0, alternateStNum, name, dPrinCitySvdNm, dPrinCntySvdNm,
+                    dPwsStTypeCd, activityStatusCd, dPopulationCount, startDay, startMonth, endDay,
+                    endMonth;
     private TextArea        activityRsnTxt;
-    private AppButton       queryButton, previousButton, nextButton, commitButton, abortButton;    
+    private AppButton       queryButton, previousButton, nextButton, commitButton, abortButton,
+                    selectButton;
     private TabPanel        tabPanel;
     private ButtonGroup     atoz;
     private MonitorTab      monitorTab;
     private FacilityTab     facilityTab;
     private AddressTab      addressTab;
+    private String         pwsId;
 
     private enum Tabs {
         FACILITY, ADDRESS, MONITOR
     };
 
     public PwsScreen() throws Exception {
+        this(null);
+    }
+
+    public PwsScreen(String pwsId) throws Exception {
         super((ScreenDefInt)GWT.create(PwsDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.pws.server.PwsService");
+
+        this.pwsId = pwsId;
 
         security = OpenELIS.security.getModule("pws");
         if (security == null)
@@ -119,6 +136,9 @@ public class PwsScreen extends Screen {
         initialize();
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
+        
+        if(pwsId != null)
+            queryByPwsId();
     }
 
     private void initialize() {
@@ -129,8 +149,9 @@ public class PwsScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && security.hasSelectPermission());
+                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                          .contains(event.getState()) &&
+                                   security.hasSelectPermission());
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -180,10 +201,24 @@ public class PwsScreen extends Screen {
             }
         });
 
-        tinwsysIsNumber = (TextBox)def.getWidget(PwsMeta.getNumber0());
-        addScreenHandler(tinwsysIsNumber, new ScreenEventHandler<Integer>() {
+        selectButton = (AppButton)def.getWidget("select");
+        if (pwsId != null) {
+            addScreenHandler(selectButton, new ScreenEventHandler<Object>() {
+                public void onClick(ClickEvent event) {
+                    select();
+                }
+
+                public void onStateChange(StateChangeEvent<State> event) {
+                    selectButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                }
+            });
+        } else
+            selectButton.setVisible(false);
+
+        number0 = (TextBox)def.getWidget(PwsMeta.getNumber0());
+        addScreenHandler(number0, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                tinwsysIsNumber.setValue(manager.getPws().getNumber0());
+                number0.setValue(manager.getPws().getNumber0());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -191,8 +226,8 @@ public class PwsScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                tinwsysIsNumber.enable(EnumSet.of(State.QUERY).contains(event.getState()));
-                tinwsysIsNumber.setQueryMode(event.getState() == State.QUERY);
+                number0.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                number0.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -415,10 +450,11 @@ public class PwsScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                effEndDt.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                effEndDt.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                       .contains(event.getState()));
                 effEndDt.setQueryMode(event.getState() == State.QUERY);
             }
-        });      
+        });
 
         tabPanel = (TabPanel)def.getWidget("tabPanel");
         tabPanel.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
@@ -474,7 +510,7 @@ public class PwsScreen extends Screen {
                 monitorTab.setState(event.getState());
             }
         });
-        
+
         //
         // left hand navigation panel
         //
@@ -503,7 +539,7 @@ public class PwsScreen extends Screen {
             }
 
             public boolean fetch(RPC entry) {
-                return fetchByTinwsysIsNumber((entry == null)?null:((IdNameVO)entry).getId());
+                return fetchByTinwsysIsNumber( (entry == null) ? null : ((IdNameVO)entry).getId());
             }
 
             public ArrayList<TableDataRow> getModel() {
@@ -545,9 +581,9 @@ public class PwsScreen extends Screen {
                 nav.setQuery(query);
             }
         });
-        
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
@@ -555,13 +591,13 @@ public class PwsScreen extends Screen {
             }
         });
     }
-    
+
     /*
      * basic button methods
      */
     protected void query() {
         manager = PwsManager.getInstance();
-        
+
         setState(State.QUERY);
         DataChangeEvent.fire(this);
 
@@ -569,11 +605,11 @@ public class PwsScreen extends Screen {
         facilityTab.draw();
         addressTab.draw();
         monitorTab.draw();
-        
-        setFocus(tinwsysIsNumber);
+
+        setFocus(number0);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
-    
+
     protected void previous() {
         nav.previous();
     }
@@ -581,7 +617,7 @@ public class PwsScreen extends Screen {
     protected void next() {
         nav.next();
     }
-    
+
     public void commit() {
         Query query;
 
@@ -597,7 +633,7 @@ public class PwsScreen extends Screen {
         nav.setQuery(query);
 
     }
-    
+
     protected void abort() {
         setFocus(null);
         clearErrors();
@@ -606,7 +642,12 @@ public class PwsScreen extends Screen {
         fetchByTinwsysIsNumber(null);
         window.setDone(consts.get("queryAborted"));
     }
-    
+
+    protected void select() {
+        ActionEvent.fire(this, Action.SELECT, manager.getPws());
+        window.close();
+    }
+
     protected boolean fetchByTinwsysIsNumber(Integer tinwsysIsNumber) {
         if (tinwsysIsNumber == null) {
             manager = PwsManager.getInstance();
@@ -614,16 +655,16 @@ public class PwsScreen extends Screen {
         } else {
             window.setBusy(consts.get("fetching"));
             try {
-                switch (tab) {                                   
-                    case FACILITY: 
+                switch (tab) {
+                    case FACILITY:
                         manager = PwsManager.fetchWithFacilities(tinwsysIsNumber);
                         break;
-                    case ADDRESS: 
+                    case ADDRESS:
                         manager = PwsManager.fetchWithAddresses(tinwsysIsNumber);
                         break;
                     case MONITOR:
                         manager = PwsManager.fetchWithMonitors(tinwsysIsNumber);
-                        break;               
+                        break;
                 }
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
@@ -636,12 +677,18 @@ public class PwsScreen extends Screen {
                 Window.alert(consts.get("fetchFailed") + e.getMessage());
                 return false;
             }
-            
+
         }
         DataChangeEvent.fire(this);
         window.clearStatus();
 
         return true;
+    }
+
+    private void queryByPwsId() {
+        query();
+        number0.setValue(pwsId);
+        commit();
     }
     
     private void drawTabs() {
@@ -654,8 +701,11 @@ public class PwsScreen extends Screen {
                 break;
             case MONITOR:
                 monitorTab.draw();
-                break;    
+                break;
         }
     }
 
+    public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
+        return addHandler(handler, ActionEvent.getType());
+    }
 }

@@ -31,7 +31,9 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrganizationDO;
+import org.openelis.domain.PwsDO;
 import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -53,6 +55,7 @@ import org.openelis.manager.SampleManager;
 import org.openelis.manager.SamplePrivateWellManager;
 import org.openelis.manager.SampleSDWISManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.pws.client.PwsScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -93,7 +96,28 @@ public class SDWISTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
+                PwsDO pwsDO;
+                
                 getSDWISManager().getSDWIS().setPwsId(event.getValue());
+                
+                if(getSDWISManager().getSDWIS().getPwsId() != null){
+                    try{
+                        pwsDO = getSDWISManager().validatePwsId(event.getValue());
+                        getSDWISManager().getSDWIS().setPwsName(pwsDO.getName());
+                        pwsName.setValue(pwsDO.getName());
+                        
+                    }catch(ValidationErrorsList e){
+                        showErrors(e);
+                        getSDWISManager().getSDWIS().setPwsName(null);
+                        pwsName.setValue(null);
+                        
+                    }catch(Exception e){
+                        Window.alert("pwsId valueChange: " + e.getMessage());
+                    }
+                }else{
+                    getSDWISManager().getSDWIS().setPwsName(null);
+                    pwsName.setValue(null);
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -106,11 +130,11 @@ public class SDWISTab extends Screen {
         pwsButton = (AppButton)def.getWidget("pwsButton");
         addScreenHandler(pwsButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                // FIXME add on click handler
+                openPwsScreen();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                pwsButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                pwsButton.enable(EnumSet.of(State.DISPLAY, State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -392,6 +416,40 @@ public class SDWISTab extends Screen {
                                              .contains(event.getState()));
             }
         });
+    }
+    
+    private void openPwsScreen(){
+        PwsScreen pwsScreen;
+        
+        try{
+            final SDWISTab sdwis = this;
+            pwsScreen = new PwsScreen(sDWISPwsId.getValue());
+    
+            pwsScreen.addActionHandler(new ActionHandler<PwsScreen.Action>() {
+                public void onAction(ActionEvent<PwsScreen.Action> event) {
+                    PwsDO pwsDO;
+                    if(state == State.ADD || state == State.UPDATE){
+                        if (event.getAction() == PwsScreen.Action.SELECT) {
+                            pwsDO = (PwsDO)event.getData();
+                            getSDWISManager().getSDWIS().setPwsId(pwsDO.getNumber0());
+                            getSDWISManager().getSDWIS().setPwsName(pwsDO.getName());
+                            
+                            sDWISPwsId.clearExceptions();
+                            DataChangeEvent.fire(sdwis);
+                            setFocus(sDWISPwsId);
+                            
+                        }
+                    }
+                }
+            });
+            
+            ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+            modal.setName(consts.get("pwsInformation"));
+            modal.setContent(pwsScreen);
+
+        }catch(Exception e){
+            Window.alert("openPWSScreen: "+e.getMessage());
+        }
     }
 
     private void getOrganizationMatches(String match, AutoComplete widget) {

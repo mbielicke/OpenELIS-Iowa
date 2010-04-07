@@ -28,6 +28,7 @@ package org.openelis.modules.sample.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.PwsDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.data.Query;
@@ -37,6 +38,7 @@ import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SampleProjectManager;
 import org.openelis.manager.SampleQaEventManager;
 import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.PwsRemote;
 import org.openelis.remote.SampleManagerRemote;
 import org.openelis.remote.SampleQAEventManagerRemote;
 import org.openelis.remote.SampleRemote;
@@ -127,6 +129,10 @@ public class SampleService {
 
         return value;
     }
+    
+    public PwsDO fetchPwsByPwsId(String number0) throws Exception {
+        return pwsRemote().fetchByNumber0(number0);
+    }
 
     private SampleRemote remote() {
         return (SampleRemote)EJBFactory.lookup("openelis/SampleBean/remote");
@@ -142,5 +148,9 @@ public class SampleService {
 
     private SystemVariableRemote sysVarRemote() {
         return (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
+    }
+    
+    private PwsRemote pwsRemote() {
+        return (PwsRemote)EJBFactory.lookup("openelis/PwsBean/remote");
     }
 }
