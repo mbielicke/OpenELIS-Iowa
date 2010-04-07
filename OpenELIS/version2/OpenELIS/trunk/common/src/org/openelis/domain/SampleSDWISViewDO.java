@@ -38,7 +38,7 @@ public class SampleSDWISViewDO extends SampleSDWISDO {
     }
     
     public SampleSDWISViewDO(Integer id, Integer sampleId, String pwsId,
-                         Integer stateLabId, Integer facilityId, Integer sampleTypeId,
+                         Integer stateLabId, String facilityId, Integer sampleTypeId,
                          Integer sampleCategoryId, String samplePointId, 
                          String location, String collector, String pwsName){
         

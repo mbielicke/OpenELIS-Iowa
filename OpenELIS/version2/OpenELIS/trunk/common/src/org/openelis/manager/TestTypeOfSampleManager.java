@@ -104,11 +104,13 @@ public class TestTypeOfSampleManager implements RPC {
         
         returnList = new ArrayList<TestTypeOfSampleDO>();
         
-        for(int i=0; i<count(); i++){
-            typeDO = types.get(i); 
-    
-            if (type.equals(typeDO.getTypeOfSampleId()))
-                returnList.add(typeDO);
+        if(type != null){
+            for(int i=0; i<count(); i++){
+                typeDO = types.get(i); 
+        
+                if (type.equals(typeDO.getTypeOfSampleId()))
+                    returnList.add(typeDO);
+            }
         }
         
         return returnList;
