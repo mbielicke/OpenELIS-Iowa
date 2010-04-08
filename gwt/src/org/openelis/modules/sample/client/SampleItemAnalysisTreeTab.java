@@ -316,16 +316,24 @@ public class SampleItemAnalysisTreeTab extends Screen
         parentScreen.addActionHandler(new ActionHandler() {
             public void onAction(ActionEvent event) {
                 TreeDataItem selected;
+                SampleDataBundle data;
                 if (event.getAction() == SampleItemTab.Action.CHANGED) {
                     selected = itemsTree.getSelection();
-
+                    data = (SampleDataBundle)selected.data;
+                    
                     // make sure it is a sample item row
                     if ("analysis".equals(selected.leafType))
                         selected = selected.parent;
 
                     treeUtil.updateSampleItemRow(selected);
                     itemsTree.refreshRow(selected);
-
+                    
+                    //if the user changes the sample type then the analysis
+                    //tab needs to be refreshed to load the new units dropdown model.
+                    //This only needs to happen if they have the analysis row selected
+                    if ("analysis".equals(itemsTree.getSelection().leafType))
+                        ActionEvent.fire(treeTab, Action.REFRESH_TABS, data);
+                    
                 } else if (event.getAction() == AnalysisTab.Action.ANALYSIS_ADDED) {
                     treeUtil.analysisTestChanged((Integer)event.getData(), false);
                 } else if (event.getAction() == AnalysisTab.Action.PANEL_ADDED) {
