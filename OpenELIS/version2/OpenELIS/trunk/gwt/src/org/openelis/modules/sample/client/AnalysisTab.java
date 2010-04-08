@@ -88,7 +88,8 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     protected CalendarLookUp        startedDate, completedDate, releasedDate, printedDate;
 
     protected ArrayList<TableDataRow> fullSectionModel, fullUnitModel;
-    protected HashMap<Integer, ArrayList<TableDataRow>> sectionModel, unitModel;
+    protected HashMap<Integer, ArrayList<TableDataRow>> sectionModel; 
+    protected HashMap<String, ArrayList<TableDataRow>> unitModel;
 
     protected boolean                                   fullSectionShown, fullUnitShown;
     protected int                                       analysisIndex = -1;
@@ -347,7 +348,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                     units = null;
 
                     if (analysis.getTestId() != null) {
-                        units = unitModel.get(analysis.getTestId());
+                        units = unitModel.get(analysis.getTestId()+"|"+sampleItem.getTypeOfSampleId());
 
                         if (units == null) {
                             try {
@@ -358,7 +359,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                                 units = null;
                             }
 
-                            unitModel.put(analysis.getTestId(), units);
+                            unitModel.put(analysis.getTestId()+"|"+sampleItem.getTypeOfSampleId(), units);
                         }
                     }
                     unitOfMeasureId.setModel(units);
@@ -588,7 +589,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
         fullUnitModel = model;
         unitOfMeasureId.setModel(model);
-        unitModel = new HashMap<Integer, ArrayList<TableDataRow>>();
+        unitModel = new HashMap<String, ArrayList<TableDataRow>>();
         fullUnitShown = true;
     }
 

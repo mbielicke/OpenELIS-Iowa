@@ -129,6 +129,18 @@ public class TestTypeOfSampleManager implements RPC {
         return false;
     }
     
+    public boolean hasUnit(Integer unitId, Integer typeId){
+        TestTypeOfSampleDO typeDO;
+        for(int i=0; i<count(); i++){
+            typeDO = getTypeAt(i);
+            
+            if(typeDO.getTypeOfSampleId().equals(typeId) && typeDO.getUnitOfMeasureId().equals(unitId))
+                return true;
+        }
+        
+        return false;
+    }
+    
     public static TestTypeOfSampleManager fetchByTestId(Integer testId) throws Exception {
         return proxy().fetchByTestId(testId);
     }

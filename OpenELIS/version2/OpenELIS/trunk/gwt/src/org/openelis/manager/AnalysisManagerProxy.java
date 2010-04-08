@@ -90,10 +90,12 @@ public class AnalysisManagerProxy {
             if(analysisDO.getTestId() != null && analysisDO.getSectionId() == null)
                 errorsList.add(new FormErrorException("analysisSectionIdMissing", analysisDO.getTestName(), analysisDO.getMethodName()));
             
-            //per dari clinical wont use units so the validation is being removed
-            //if(analysisDO.getTestId() != null && analysisDO.getUnitOfMeasureId() == null)
-            //    errorsList.add(new FormErrorWarning("analysisUnitIdMissing", analysisDO.getTestName(), analysisDO.getMethodName()));
-            
+            //if unit is not null, it needs to be validated
+            //ignore the unit check if its cancelled
+            if(analysisDO.getTestId() != null && !cancelledStatusId.equals(analysisDO.getStatusId()) && analysisDO.getUnitOfMeasureId() != null 
+                            && !testMan.getSampleTypes().hasUnit(analysisDO.getUnitOfMeasureId(), sampleTypeId))
+                errorsList.add(new FormErrorWarning("analysisUnitInvalid", analysisDO.getTestName(), analysisDO.getMethodName()));
+
             //ignore the sample type check if analysis is cancelled.  This is the only
             //way they can fix this error in some cases.
             if(analysisDO.getTestId() != null && !cancelledStatusId.equals(analysisDO.getStatusId()) && 
