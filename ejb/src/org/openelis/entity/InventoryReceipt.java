@@ -40,7 +40,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -136,7 +135,7 @@ public class InventoryReceipt implements Auditable, Cloneable {
     @JoinColumn(name = "inventory_receipt_id", insertable = false, updatable = false)
     private Collection<InventoryXPut> transReceiptLocations;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "inventory_receipt_order_item", joinColumns = {@JoinColumn(name = "inventory_receipt_id")}, inverseJoinColumns = {@JoinColumn(name = "order_item_id")})
     private Collection<OrderItem>     orderItems;
 

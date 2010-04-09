@@ -117,9 +117,12 @@ public class OrderContainerBean implements OrderContainerLocal {
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
-        if (DataBaseUtil.isEmpty(data.getContainerId()))
+        if (data.getContainerId() == null)
             list.add(new FieldErrorException("fieldRequiredException",
-                                             OrderMeta.getContainerId()));        
+                                             OrderMeta.getContainerContainerId()));
+        if (data.getNumberOfContainers() == null)
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             OrderMeta.getContainerNumberOfContainers()));   
         
         if (list.size() > 0)
             throw list;

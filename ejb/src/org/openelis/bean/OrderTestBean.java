@@ -160,7 +160,7 @@ public class OrderTestBean implements OrderTestLocal {
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
-        if (DataBaseUtil.isEmpty(data.getReferenceId()))
+        if (data.getReferenceId() == null)
             list.add(new FieldErrorException("fieldRequiredException",
                                              OrderMeta.getTestId()));        
         

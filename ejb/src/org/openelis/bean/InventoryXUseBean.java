@@ -89,4 +89,14 @@ public class InventoryXUseBean implements InventoryXUseLocal {
 
         return data;
     }
+    
+    public void delete(InventoryXUseViewDO data) throws Exception {
+        InventoryXUse entity;
+        
+        manager.setFlushMode(FlushModeType.COMMIT);
+        entity = manager.find(InventoryXUse.class, data.getId());     
+        if (entity != null)
+            manager.remove(entity);
+    }
+
 }

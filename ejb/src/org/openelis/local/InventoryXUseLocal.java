@@ -39,4 +39,7 @@ public interface InventoryXUseLocal {
     public InventoryXUseViewDO add(InventoryXUseViewDO data) throws Exception;
 
     public InventoryXUseViewDO update(InventoryXUseViewDO data) throws Exception;
+
+    public void delete(InventoryXUseViewDO data) throws Exception;
+    
 }

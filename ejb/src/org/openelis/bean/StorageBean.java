@@ -27,6 +27,7 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -36,7 +37,6 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
@@ -50,17 +50,16 @@ import org.openelis.local.LoginLocal;
 import org.openelis.local.SampleItemLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.StorageLocal;
-import org.openelis.meta.StorageMeta;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
-import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")
+@RolesAllowed("storage-select")
 public class StorageBean implements StorageLocal {
     @PersistenceContext(name = "openelis")
-    private EntityManager manager;
+    private EntityManager            manager;
 
     @EJB
     private SystemUserUtilLocal      sysUser;
@@ -196,18 +195,6 @@ public class StorageBean implements StorageLocal {
                 if (user != null)
                     data.setUserName(user.getLoginName());
             }
-
-            /*if (sampleItemId.equals(refTableId)) {
-                itemDO = sampleItem.fetchById(data.getReferenceId()); 
-                sampleDO = sample.fetchById(itemDO.getSampleId());
-                data.setItemDescription(sampleDO.getAccessionNumber()+","+itemDO.getItemSequence());
-            } else if (analysisId.equals(refTableId)) {
-                anaDO = analysis.fetchById(data.getReferenceId());
-                itemDO = sampleItem.fetchById(anaDO.getSampleItemId()); 
-                sampleDO = sample.fetchById(itemDO.getSampleId());
-                data.setItemDescription(sampleDO.getAccessionNumber()+","+
-                                        anaDO.getTestName()+":"+anaDO.getMethodName());
-            }*/
             
             if (sampleItemId.equals(refTableId)) {
                 itemDO = sampleItem.fetchById(data.getReferenceId()); 
