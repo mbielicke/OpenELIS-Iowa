@@ -42,8 +42,10 @@ public class InventoryXUseViewDO extends InventoryXUseDO {
     private static final long serialVersionUID = 1L;
 
     protected String          storageLocationName, storageLocationUnitDescription,
-                              storageLocationLocation, inventoryItemName, lotNumber;
-    protected Datetime        expirationDate;
+                              storageLocationLocation, inventoryItemName, lotNumber,
+                              inventoryReceiptExternalReference;
+    protected Datetime        expirationDate, inventoryReceiptReceivedDate;
+    protected Double          inventoryReceiptUnitCost;
 
     public InventoryXUseViewDO() {
     }
@@ -51,7 +53,9 @@ public class InventoryXUseViewDO extends InventoryXUseDO {
     public InventoryXUseViewDO(Integer id, Integer inventoryLocationId, Integer orderItemId,
                                Integer quantity, String lotNumber, Date expirationDate,
                                String storageLocationName, String storageLocationUnitDescription,
-                               String storageLocationLocation, String inventoryItemName) {
+                               String storageLocationLocation, String inventoryItemName, 
+                               Date inventoryReceiptReceivedDate, Double inventoryReceiptUnitCost,
+                               String inventoryReceiptExternalReference) {
         super(id, inventoryLocationId, orderItemId, quantity);
         setLotNumber(lotNumber);
         setExpirationDate(DataBaseUtil.toYD(expirationDate));
@@ -59,6 +63,9 @@ public class InventoryXUseViewDO extends InventoryXUseDO {
         setStorageLocationUnitDescription(storageLocationUnitDescription);
         setStorageLocationLocation(storageLocationLocation);
         setInventoryItemName(inventoryItemName);
+        setInventoryReceiptReceivedDate(DataBaseUtil.toYM(inventoryReceiptReceivedDate));
+        setInventoryReceiptUnitCost(inventoryReceiptUnitCost);
+        setInventoryReceiptExternalReference(inventoryReceiptExternalReference);
     }
 
     public String getLotNumber() {
@@ -107,5 +114,29 @@ public class InventoryXUseViewDO extends InventoryXUseDO {
 
     public void setInventoryItemName(String inventoryItemName) {
         this.inventoryItemName = DataBaseUtil.trim(inventoryItemName);
+    }
+    
+    public Datetime getInventoryReceiptReceivedDate() {
+        return inventoryReceiptReceivedDate;
+    }
+
+    public void setInventoryReceiptReceivedDate(Datetime receivedDate) {
+        this.inventoryReceiptReceivedDate = DataBaseUtil.toYM(receivedDate);
+    }
+    
+    public Double getInventoryReceiptUnitCost() {
+        return inventoryReceiptUnitCost;
+    }
+
+    public void setInventoryReceiptUnitCost(Double unitCost) {
+        this.inventoryReceiptUnitCost = unitCost;
+    }
+    
+    public String getInventoryReceiptExternalReference() {
+        return inventoryReceiptExternalReference;
+    }
+
+    public void setInventoryReceiptExternalReference(String externalReference) {
+        this.inventoryReceiptExternalReference = DataBaseUtil.trim(externalReference);
     }
 }

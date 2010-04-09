@@ -316,7 +316,7 @@ public class OrderMeta implements Meta, MetaMap {
         return RCPT_INVENTORY_ITEM_ID;
     }
 
-    public static String getInventoryReceiptorderItemId() {
+    public static String getInventoryReceiptOrderItemId() {
         return RCPT_ORDER_ITEM_ID;
     }
 
