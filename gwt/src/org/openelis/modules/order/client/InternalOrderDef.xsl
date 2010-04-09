@@ -175,13 +175,13 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"costCenter")' />:
                 </text>
-                <dropdown key="{meta:getCostCenterId()}" width="187" popWidth="auto" tab="{meta:getId()},{meta:getOrderedDate()}" field="Integer" />
+                <dropdown key="{meta:getCostCenterId()}" width="187" popWidth="auto" tab="tabPanel,{meta:getOrderedDate()}" field="Integer" />
               </row>
             </TablePanel>
 <!-- TAB PANEL -->
             <TabPanel key="tabPanel" width="605" height="285">
 <!-- TAB 1 (Items) -->
-              <tab key="itemTab" text="{resource:getString($constants,'items')}">
+              <tab key="itemTab" text="{resource:getString($constants,'items')}" tab="itemTable, itemTable">
                 <VerticalPanel padding="0" spacing="0">
                   <table key="itemTable" width="auto" maxRows="10" showScroll="ALWAYS">
                     <col key="{meta:getOrderItemQuantity()}" width="65" align="right" header="{resource:getString($constants,'quantity')}">
@@ -226,13 +226,13 @@ UIRF Software License are applicable instead of those above.
               <tab key="fillTab" text="{resource:getString($constants,'filled')}">
                 <VerticalPanel padding="0" spacing="0">
                   <table key="fillTable" width="auto" maxRows="10" showScroll="ALWAYS">
-                    <col key="" width="150" header="{resource:getString($constants,'inventoryItem')}">
+                    <col key="{meta:getInventoryReceiptOrderItemId()}" width="150" header="{resource:getString($constants,'inventoryItem')}">
                       <label field="String" />
                     </col>
-                    <col key="" width="180" header="{resource:getString($constants,'location')}">
+                    <col key="location" width="180" header="{resource:getString($constants,'location')}">
                       <label field="String" />
                     </col>
-                    <col key="" width="65" align="right" header="{resource:getString($constants,'quantity')}">
+                    <col key="{meta:getInventoryReceiptQuantityReceived()}" width="65" align="right" header="{resource:getString($constants,'quantity')}">
                       <label field="String" />
                     </col>
                     <col key="" width="85" header="{resource:getString($constants,'lotNum')}">
@@ -245,7 +245,7 @@ UIRF Software License are applicable instead of those above.
                 </VerticalPanel>
               </tab>
 <!-- TAB 3 (order notes) -->
-              <tab key="noteTab" text="{resource:getString($constants,'orderShippingNotes')}">
+              <tab key="noteTab" text="{resource:getString($constants,'orderShippingNotes')}" tab="notesPanel, notesPanel">
                 <VerticalPanel padding="0" spacing="0">
                   <notes key="notesPanel" width="604" height="247" />
                   <appButton key="standardNoteButton" style="Button">

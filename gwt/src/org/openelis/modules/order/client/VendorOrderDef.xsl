@@ -1,4 +1,5 @@
 
+
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -215,7 +216,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"extOrderNum")' />:
                 </text>
-                <textbox key="{meta:getExternalOrderNumber()}" width="203" case="MIXED" max="20" tab="{meta:getId()},{meta:getCostCenterId()}" field="String" />
+                <textbox key="{meta:getExternalOrderNumber()}" width="203" case="MIXED" max="20" tab="tabPanel,{meta:getCostCenterId()}" field="String" />
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"state")' />:
                 </text>
@@ -240,7 +241,7 @@ UIRF Software License are applicable instead of those above.
 
 <!-- TAB 1 (items) -->
 
-              <tab key="itemTab" text="{resource:getString($constants,'items')}">
+              <tab key="itemTab" text="{resource:getString($constants,'items')}" tab="itemTable, itemTable">
                 <VerticalPanel padding="0" spacing="0">
                   <widget>
                     <table key="itemTable" width="auto" maxRows="10" showScroll="ALWAYS" title="">
@@ -292,24 +293,30 @@ UIRF Software License are applicable instead of those above.
 
 <!-- TAB 2 (receipts) -->
 
-              <tab key="receiptTab" text="{resource:getString($constants,'receipt')}">
-                <table key="receiptsTable" width="auto" maxRows="11" showScroll="ALWAYS" title="">
-                  <col width="80" header="{resource:getString($constants,'dateRec')}">
+              <tab key="fillTab" text="{resource:getString($constants,'filled')}">
+                <table key="fillTable" width="573" maxRows="11" showScroll="ALWAYS" title="">
+                  <col key="{meta:getInventoryReceiptOrderItemId()}" width="150" header="{resource:getString($constants,'inventoryItem')}">
                     <label field="String" />
                   </col>
-                  <col width="155" header="{resource:getString($constants,'item')}">
+                  <col key="location" width="180" header="{resource:getString($constants,'location')}">
                     <label field="String" />
                   </col>
-                  <col width="95" header="{resource:getString($constants,'upc')}">
+                  <col key="{meta:getInventoryReceiptQuantityReceived()}" width="65" align="right" header="{resource:getString($constants,'quantity')}">
                     <label field="String" />
                   </col>
-                  <col width="40" header="{resource:getString($constants,'qty')}">
+                  <col key="" width="85" header="{resource:getString($constants,'lotNum')}">
                     <label field="String" />
                   </col>
-                  <col width="55" header="{resource:getString($constants,'cost')}">
+                  <col key="" width="92" header="{resource:getString($constants,'expDate')}">
+                    <label field="String" />
+                  </col>
+                  <col key="{meta:getInventoryReceiptReceivedDate()}" width="80" header="{resource:getString($constants,'dateRec')}">
+                    <textbox field="Date" begin = "0" end = "4" />
+                  </col>
+                  <col key="{meta:getInventoryReceiptUnitCost()}" width="55" header="{resource:getString($constants,'cost')}">
                     <textbox pattern="{resource:getString($constants,'displayCurrencyFormat')}" field="String" />
                   </col>
-                  <col width="130" header="{resource:getString($constants,'extReference')}">
+                  <col key="{meta:getInventoryReceiptExternalReference()}" width="130" header="{resource:getString($constants,'extReference')}">
                     <label field="String" />
                   </col>
                 </table>
@@ -317,7 +324,7 @@ UIRF Software License are applicable instead of those above.
 
 <!-- TAB 3 (order notes) -->
 
-              <tab key="noteTab" text="{resource:getString($constants,'orderShippingNotes')}">
+              <tab key="noteTab" text="{resource:getString($constants,'orderShippingNotes')}" tab="notesPanel, notesPanel">
                 <VerticalPanel padding="0" spacing="0">
                   <notes key="notesPanel" width="591" height="247" />
                   <appButton key="standardNoteButton" style="Button">

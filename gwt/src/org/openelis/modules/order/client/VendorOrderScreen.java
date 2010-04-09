@@ -92,20 +92,21 @@ public class VendorOrderScreen extends Screen {
     private TextBox           id, neededInDays, organizationAddressMultipleUnit, requestedBy,
                               organizationAddressStreetAddress, organizationAddressCity, externalOrderNumber,
                               organizationAddressState, organizationAddressZipCode;
-    private ItemTab     itemTab;
+    private ItemTab           itemTab;
+    private FillTab           fillTab;
     private ShipNoteTab       shipNoteTab;
     private Tabs              tab;
 
     private AutoComplete      organizationName;
     private AppButton         queryButton, previousButton, nextButton, addButton, updateButton,
-                              commitButton, abortButton, addItemButton, removeItemButton, standardNoteButton;
+                              commitButton, abortButton;
     private TabPanel          tabPanel;
     private Integer           status_pending;
     
     protected ScreenService   organizationService;
 
     private enum Tabs {
-        ITEM, RECEIPT, SHIP_NOTE
+        ITEM, FILL, SHIP_NOTE
     };
 
     public VendorOrderScreen() throws Exception {
@@ -571,18 +572,18 @@ public class VendorOrderScreen extends Screen {
             }
         });
 
-        /*receiptsTab = new ReceiptsTab(def, window);
-        addScreenHandler(receiptsTab, new ScreenEventHandler<Object>() {
+        fillTab = new FillTab(def, window);
+        addScreenHandler(fillTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                receiptsTab.setManager(manager);
-                if (tab == Tabs.RECEIPTS)
+                fillTab.setManager(manager);
+                if (tab == Tabs.FILL)
                     drawTabs();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                receiptsTab.setState(event.getState());
+                fillTab.setState(event.getState());
             }
-        });*/
+        });
 
         shipNoteTab = new ShipNoteTab(def, window, "notesPanel", "standardNoteButton");
         addScreenHandler(shipNoteTab, new ScreenEventHandler<Object>() {
@@ -873,6 +874,9 @@ public class VendorOrderScreen extends Screen {
                     case ITEM:
                       manager = OrderManager.fetchWithItems(id);
                       break;
+                    case FILL:
+                      manager = OrderManager.fetchWithFills(id);
+                      break;
                     case SHIP_NOTE: 
                       manager = OrderManager.fetchWithNotes(id);
                       break;                        
@@ -900,7 +904,10 @@ public class VendorOrderScreen extends Screen {
         switch (tab) {
             case ITEM:
                 itemTab.draw();
-                break;         
+                break;  
+            case FILL:
+                fillTab.draw();
+                break;    
             case SHIP_NOTE:
                 shipNoteTab.draw();
                 break;   
