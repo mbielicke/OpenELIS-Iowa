@@ -39,7 +39,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -127,17 +126,17 @@ public class InventoryReceipt implements Auditable, Cloneable {
     @JoinColumn(name = "organization_id", insertable = false, updatable = false)
     private Organization              organization;
 
-    // @OneToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "order_item_id", insertable = false, updatable = false)
-    // private OrderItem orderItem;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_item_id", insertable = false, updatable = false)
+    private OrderItem orderItem;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "inventory_receipt_id", insertable = false, updatable = false)
     private Collection<InventoryXPut> transReceiptLocations;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "inventory_receipt_order_item", joinColumns = {@JoinColumn(name = "inventory_receipt_id")}, inverseJoinColumns = {@JoinColumn(name = "order_item_id")})
-    private Collection<OrderItem>     orderItems;
+//    @OneToMany(fetch = FetchType.LAZY)
+//    @JoinTable(name = "inventory_receipt_order_item", joinColumns = {@JoinColumn(name = "inventory_receipt_id")}, inverseJoinColumns = {@JoinColumn(name = "order_item_id")})
+//    private Collection<OrderItem>     orderItems;
 
     @Transient
     private InventoryReceipt          original;
@@ -248,12 +247,12 @@ public class InventoryReceipt implements Auditable, Cloneable {
         return transReceiptLocations;
     }
 
-    public Collection<OrderItem> getOrderItems() {
-        return orderItems;
+    public OrderItem getOrderItem() {
+        return orderItem;
     }
 
-    public void setOrderItems(Collection<OrderItem> orderItems) {
-        this.orderItems = orderItems;
+    public void setOrderItem(OrderItem orderItem) {
+        this.orderItem = orderItem;
     }
 
     public void setClone() {
