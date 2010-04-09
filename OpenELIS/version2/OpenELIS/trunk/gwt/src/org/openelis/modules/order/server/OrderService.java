@@ -63,7 +63,7 @@ public class OrderService {
     
     public OrderManager fetchWithTestsAndContainers(Integer id) throws Exception {
         return remoteManager().fetchWithTestsAndContainers(id);
-    }
+    }   
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
         return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
@@ -86,7 +86,7 @@ public class OrderService {
     }
 
     //
-    // support for OrderItemManager
+    // support for OrderItemManager, OrderFillManager, OrderTestManager, OrderContainerManager
     //
     public OrderItemManager fetchItemByOrderId(Integer id) throws Exception {
         return remoteManager().fetchItemByOrderId(id);

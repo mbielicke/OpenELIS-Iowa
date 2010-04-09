@@ -302,13 +302,13 @@ UIRF Software License are applicable instead of those above.
               <tab key="fillTab" text="{resource:getString($constants,'filled')}" tab="fillTable, fillTable">
                 <VerticalPanel padding="0" spacing="0">
                   <table key="fillTable" width="auto" maxRows="11" showScroll="ALWAYS">
-                    <col key="" width="150" header="{resource:getString($constants,'inventoryItem')}">
+                    <col key="{meta:getInventoryReceiptOrderItemId()}" width="150" header="{resource:getString($constants,'inventoryItem')}">
                       <label field="String" />
                     </col>
-                    <col key="" width="180" header="{resource:getString($constants,'location')}">
+                    <col key="location" width="180" header="{resource:getString($constants,'location')}">
                       <label field="String" />
                     </col>
-                    <col key="" width="65" align="right" header="{resource:getString($constants,'quantity')}">
+                    <col key="{meta:getInventoryReceiptQuantityReceived()}" width="65" align="right" header="{resource:getString($constants,'quantity')}">
                       <label field="String" />
                     </col>
                     <col key="" width="85" header="{resource:getString($constants,'lotNum')}">
@@ -475,11 +475,11 @@ UIRF Software License are applicable instead of those above.
                   </VerticalPanel>
                 </HorizontalPanel>
               </tab>
-              <tab key="orderTestTab" text="{resource:getString($constants,'container')}">
+              <tab key="containerTab" text="{resource:getString($constants,'container')}" tab="orderTestTable, orderContainerTable">
                 <VerticalPanel>
                   <VerticalPanel padding="0" spacing="0">
                     <widget valign="top">
-                      <table key="orderTestTable" width="auto" maxRows="4" showScroll="ALWAYS" title="">
+                      <table key="orderTestTable" width="auto" maxRows="4" showScroll="ALWAYS" title="" tab="orderContainerTable, orderContainerTable">
                         <col key="{meta:getTestId()}" width="160" align="left" header="{resource:getString($constants,'test')}">
                           <autoComplete width="160" case="LOWER" popWidth="auto" field="Integer" required="true">
                             <col width="150" header="{resource:getString($constants,'test')}" />
@@ -521,7 +521,7 @@ UIRF Software License are applicable instead of those above.
                   <HorizontalPanel width="10" />
                   <VerticalPanel padding="0" spacing="0">
                     <widget valign="top">
-                      <table key="orderContainerTable" width="auto" maxRows="4" showScroll="ALWAYS" title="">
+                      <table key="orderContainerTable" width="auto" maxRows="4" showScroll="ALWAYS" title="" tab="orderTestTable, orderTestTable">
                         <col key="{meta:getContainerContainerId()}" width="300" align="left" header="{resource:getString($constants,'container')}">
                           <dropdown width="300" popWidth="320" field="Integer" required="true" />
                         </col>
