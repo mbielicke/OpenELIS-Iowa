@@ -45,12 +45,14 @@ import org.openelis.utilcommon.DataBaseUtil;
 
 @NamedQueries({
     @NamedQuery( name = "InventoryXUse.FetchByOrderId",
-                query = "select new org.openelis.domain.InventoryXUseViewDO(u.id,u.inventoryLocationId,u.orderItemId," +
-                        "u.quantity,l.lotNumber,l.expirationDate,s.name,s.storageUnit.description,s.location," +
-                        "u.orderItem.inventoryItem.name,r.receivedDate,r.unitCost,r.externalReference)"
-                      + " from InventoryXUse u left join u.inventoryLocation l left join l.storageLocation s"+
-                        " left join u.orderItem.inventoryReceipt r" +
-                        " where u.orderItem.order.id = :id order by u.id")})
+                query = "select new org.openelis.domain.InventoryXUseViewDO(i.id,i.inventoryLocationId,i.orderItemId," +
+                        "i.quantity,l.lotNumber,l.expirationDate,s.name,u.description,s.location," +
+                        "oi.name,r.receivedDate,r.unitCost,r.externalReference)"
+                      + " from InventoryXUse i left join i.inventoryLocation l left join l.storageLocation s"+
+                        " left join s.storageUnit u " +
+                        " left join i.orderItem o left join o.inventoryItem oi " +
+                        " left join o.inventoryReceipt r " + 
+                        " where o.order.id = :id order by i.id")})
 
 @Entity
 @Table(name = "inventory_x_use")
