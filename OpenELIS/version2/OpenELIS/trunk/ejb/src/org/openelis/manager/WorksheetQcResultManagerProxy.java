@@ -30,7 +30,7 @@ import java.util.ArrayList;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.WorksheetQcResultDO;
+import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.WorksheetQcResultLocal;
 import org.openelis.manager.WorksheetQcResultManager;
@@ -41,7 +41,7 @@ public class WorksheetQcResultManagerProxy {
     public WorksheetQcResultManager fetchByWorksheetAnalysisId(Integer id) throws Exception {
         int                            i;
         WorksheetQcResultManager       manager;
-        ArrayList<WorksheetQcResultDO> qcResults;
+        ArrayList<WorksheetQcResultViewDO> qcResults;
         
         qcResults = local().fetchByWorksheetAnalysisId(id);
         manager = WorksheetQcResultManager.getInstance();
@@ -55,7 +55,7 @@ public class WorksheetQcResultManagerProxy {
     public WorksheetQcResultManager add(WorksheetQcResultManager manager) throws Exception {
         int                    i;
         WorksheetQcResultLocal local;
-        WorksheetQcResultDO    qcResult;
+        WorksheetQcResultViewDO    qcResult;
         
         local = local();
         for (i = 0; i < manager.count(); i++) {
@@ -70,7 +70,7 @@ public class WorksheetQcResultManagerProxy {
     public WorksheetQcResultManager update(WorksheetQcResultManager manager) throws Exception {
         int                    i, j;
         WorksheetQcResultLocal local;
-        WorksheetQcResultDO    qcResult;
+        WorksheetQcResultViewDO    qcResult;
         
         local = local();
         for (j = 0; j < manager.deleteCount(); j++)

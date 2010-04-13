@@ -30,7 +30,7 @@ import java.util.ArrayList;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.WorksheetResultDO;
+import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.WorksheetResultLocal;
 import org.openelis.manager.WorksheetResultManager;
@@ -41,7 +41,7 @@ public class WorksheetResultManagerProxy {
     public WorksheetResultManager fetchByWorksheetAnalysisId(Integer id) throws Exception {
         int                            i;
         WorksheetResultManager       manager;
-        ArrayList<WorksheetResultDO> results;
+        ArrayList<WorksheetResultViewDO> results;
         
         results = local().fetchByWorksheetAnalysisId(id);
         manager = WorksheetResultManager.getInstance();
@@ -55,7 +55,7 @@ public class WorksheetResultManagerProxy {
     public WorksheetResultManager add(WorksheetResultManager manager) throws Exception {
         int                    i;
         WorksheetResultLocal local;
-        WorksheetResultDO    result;
+        WorksheetResultViewDO    result;
         
         local = local();
         for (i = 0; i < manager.count(); i++) {
@@ -70,7 +70,7 @@ public class WorksheetResultManagerProxy {
     public WorksheetResultManager update(WorksheetResultManager manager) throws Exception {
         int                    i, j;
         WorksheetResultLocal local;
-        WorksheetResultDO    result;
+        WorksheetResultViewDO    result;
         
         local = local();
         for (j = 0; j < manager.deleteCount(); j++)

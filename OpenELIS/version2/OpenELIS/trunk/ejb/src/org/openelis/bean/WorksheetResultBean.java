@@ -36,7 +36,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.WorksheetResultDO;
+import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.entity.WorksheetResult;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
@@ -54,7 +54,7 @@ public class WorksheetResultBean implements WorksheetResultLocal {
     private EntityManager manager;
 
     @SuppressWarnings("unchecked")
-    public ArrayList<WorksheetResultDO> fetchByWorksheetAnalysisId(Integer id) throws Exception {
+    public ArrayList<WorksheetResultViewDO> fetchByWorksheetAnalysisId(Integer id) throws Exception {
         Query query;
         List list;
 
@@ -68,7 +68,7 @@ public class WorksheetResultBean implements WorksheetResultLocal {
         return DataBaseUtil.toArrayList(list);
     }
 
-    public WorksheetResultDO add(WorksheetResultDO data) throws Exception {
+    public WorksheetResultViewDO add(WorksheetResultViewDO data) throws Exception {
         WorksheetResult entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -89,7 +89,7 @@ public class WorksheetResultBean implements WorksheetResultLocal {
         return data;
     }
 
-    public WorksheetResultDO update(WorksheetResultDO data) throws Exception {
+    public WorksheetResultViewDO update(WorksheetResultViewDO data) throws Exception {
         WorksheetResult entity;
 
         if ( !data.isChanged())
@@ -110,7 +110,7 @@ public class WorksheetResultBean implements WorksheetResultLocal {
         return data;
     }
 
-    public void delete(WorksheetResultDO data) throws Exception {
+    public void delete(WorksheetResultViewDO data) throws Exception {
         WorksheetResult entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -120,7 +120,7 @@ public class WorksheetResultBean implements WorksheetResultLocal {
             manager.remove(entity);
     }
 
-    public void validate(WorksheetResultDO data) throws Exception {
+    public void validate(WorksheetResultViewDO data) throws Exception {
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
