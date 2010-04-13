@@ -495,14 +495,14 @@ public class WorksheetCreationLookupScreen extends Screen
                 selections.remove(i);
                 
                 message.append(consts.get("accessionNum")).append(analysisRow.getAccessionNumber())
-                       .append("\t").append(analysisRow.getTestName().trim()).append(",")
+                       .append("\t").append(analysisRow.getTestName().trim()).append(", ")
                        .append(analysisRow.getMethodName().trim());
                 try {
                     sectionVDO = SectionCache.getSectionFromId(analysisRow.getSectionId());
-                    message.append("\t").append(sectionVDO.getName().trim());
+                    message.append("\t\t").append(sectionVDO.getName().trim());
                 } catch (Exception anyE) {
                     anyE.printStackTrace();
-                    message.append("\t").append("ERROR");
+                    message.append("\t\t").append("ERROR");
                 }
                 message.append("\n");
             } else {
@@ -525,7 +525,7 @@ public class WorksheetCreationLookupScreen extends Screen
         
         editable = false;
         if (analysisRow != null) {
-            editable = canAddTest(analysisRow) &&
+            editable = //canAddTest(analysisRow) &&
                        (!statusReleased.equals(analysisRow.getStatusId()) ||
                         !statusCancelled.equals(analysisRow.getStatusId()));
         }

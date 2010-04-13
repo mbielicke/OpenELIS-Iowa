@@ -32,6 +32,8 @@ import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
+import org.openelis.manager.WorksheetQcResultManager;
+import org.openelis.manager.WorksheetResultManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.WorksheetManagerRemote;
 import org.openelis.remote.WorksheetRemote;
@@ -71,6 +73,14 @@ public class WorksheetService {
 
     public WorksheetAnalysisManager fetchWorksheetAnalysisByWorksheetItemId(Integer id) throws Exception {
         return remoteManager().fetchWorksheetAnalysisByWorksheetItemId(id);
+    }
+
+    public WorksheetResultManager fetchWorksheeetResultByWorksheetAnalysisId(Integer id) throws Exception {
+        return remoteManager().fetchWorksheetResultByWorksheetAnalysisId(id);
+    }
+
+    public WorksheetQcResultManager fetchWorksheeetQcResultByWorksheetAnalysisId(Integer id) throws Exception {
+        return remoteManager().fetchWorksheetQcResultByWorksheetAnalysisId(id);
     }
 
     private WorksheetRemote remote() {
