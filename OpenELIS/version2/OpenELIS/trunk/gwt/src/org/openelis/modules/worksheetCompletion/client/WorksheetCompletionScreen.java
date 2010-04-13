@@ -26,7 +26,6 @@
 package org.openelis.modules.worksheetCompletion.client;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -35,7 +34,6 @@ import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
@@ -44,16 +42,9 @@ import com.google.gwt.user.client.ui.TabPanel;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InstrumentViewDO;
-import org.openelis.domain.QcDO;
 import org.openelis.domain.TestWorksheetDO;
-import org.openelis.domain.TestWorksheetItemDO;
-import org.openelis.domain.WorksheetAnalysisDO;
-import org.openelis.domain.WorksheetCreationVO;
-import org.openelis.domain.WorksheetDO;
-import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
@@ -65,7 +56,6 @@ import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
-import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
@@ -80,47 +70,25 @@ import org.openelis.gwt.widget.FileUpload;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.table.ColumnComparator;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
-import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.gwt.widget.table.event.RowAddedEvent;
-import org.openelis.gwt.widget.table.event.RowAddedHandler;
-import org.openelis.gwt.widget.table.event.SortEvent;
-import org.openelis.gwt.widget.table.event.SortHandler;
-import org.openelis.gwt.widget.table.event.UnselectionEvent;
-import org.openelis.gwt.widget.table.event.UnselectionHandler;
-import org.openelis.manager.QcManager;
 import org.openelis.manager.TestWorksheetManager;
-import org.openelis.manager.WorksheetAnalysisManager;
-import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.meta.WorksheetCompletionMeta;
-import org.openelis.meta.WorksheetCreationMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.note.client.NotesTab;
 import org.openelis.modules.qc.client.QcLookupScreen;
-import org.openelis.modules.worksheet.client.WorksheetQcAnalysisSelectionScreen;
 import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
 
 public class WorksheetCompletionScreen extends Screen {
 
-    private boolean                               isTemplateLoaded, isSaved, closeWindow;
-    private int                                   tempId, qcStartIndex;
-    private Integer                               formatBatch, formatTotal,
-                                                  qcDup, statusWorking, typeFixed,
-                                                  typeRand, typeLastWell, typeLastRun,
-                                                  typeLastBoth;
-    private ScreenService                         instrumentService, qcService;
+    private boolean                               isSaved, closeWindow;
+    private ScreenService                         instrumentService;
     private SecurityModule                        security;
     private WorksheetManager                      manager;
 
-    private AppButton                             /*browseButton,*/ exitButton, insertQCLookupButton,
-                                                  insertQCWorksheetButton, loadButton,
-                                                  lookupWorksheetButton, printButton,
-                                                  removeRowButton;
+    private AppButton                             /*browseButton,*/ loadButton,
+                                                  lookupWorksheetButton, printButton;
 
     private WorksheetTab                          worksheetTab;
     private NotesTab                              noteTab;
@@ -156,7 +124,6 @@ public class WorksheetCompletionScreen extends Screen {
 
         service           = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheetCompletion.server.WorksheetCompletionService");
         instrumentService = new ScreenService("OpenELISServlet?service=org.openelis.modules.instrument.server.InstrumentService");
-        qcService         = new ScreenService("OpenELISServlet?service=org.openelis.modules.qc.server.QcService");
 
         security = OpenELIS.security.getModule("worksheet");
         if (security == null)
@@ -177,7 +144,6 @@ public class WorksheetCompletionScreen extends Screen {
     private void postConstructor() {
         isSaved     = true;
         tab         = Tabs.WORKSHEET;
-        tempId      = -1;
         closeWindow = false;
 
         try {
@@ -439,13 +405,6 @@ public class WorksheetCompletionScreen extends Screen {
         ArrayList<DictionaryDO> dictList;
         ArrayList<TableDataRow> model;
 
-        try {
-            statusWorking = DictionaryCache.getIdFromSystemName("worksheet_working");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
-
         //
         // load worksheet status dropdown model
         //
@@ -518,6 +477,7 @@ public class WorksheetCompletionScreen extends Screen {
             if (wLookupScreen == null) {
                 wLookupScreen = new WorksheetLookupScreen();
                 wLookupScreen.addActionHandler(new ActionHandler<WorksheetLookupScreen.Action>() {
+                    @SuppressWarnings("unchecked")
                     public void onAction(ActionEvent<WorksheetLookupScreen.Action> event) {
                         ArrayList<TableDataRow> list;
                         WorksheetViewDO         wVDO;
@@ -677,6 +637,7 @@ public class WorksheetCompletionScreen extends Screen {
                 final WorksheetCompletionScreen wcs = this;
                 wLookupScreen = new WorksheetLookupScreen();
                 wLookupScreen.addActionHandler(new ActionHandler<WorksheetLookupScreen.Action>() {
+                    @SuppressWarnings("unchecked")
                     public void onAction(ActionEvent<WorksheetLookupScreen.Action> event) {
                         ArrayList<TableDataRow> list;
                         WorksheetViewDO         wVDO;
@@ -702,8 +663,4 @@ public class WorksheetCompletionScreen extends Screen {
             return;
         }
     }
-
-    private int getNextTempId() {
-       return --tempId;
-   }
 }

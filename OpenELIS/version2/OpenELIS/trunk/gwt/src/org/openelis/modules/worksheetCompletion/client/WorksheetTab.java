@@ -1,18 +1,21 @@
 package org.openelis.modules.worksheetCompletion.client;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
+import java.util.HashMap;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.OrganizationContactDO;
 import org.openelis.domain.QcAnalyteDO;
-import org.openelis.domain.QcDO;
+import org.openelis.domain.QcAnalyteViewDO;
+import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetItemDO;
-import org.openelis.domain.WorksheetQcResultDO;
+import org.openelis.domain.WorksheetQcResultViewDO;
+import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -28,19 +31,16 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
-import org.openelis.gwt.widget.table.event.RowAddedEvent;
-import org.openelis.gwt.widget.table.event.RowAddedHandler;
-import org.openelis.gwt.widget.table.event.RowDeletedEvent;
-import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.manager.AnalysisManager;
-import org.openelis.manager.OrganizationManager;
+import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.QcManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
+import org.openelis.manager.TestWorksheetManager;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetQcResultManager;
@@ -81,14 +81,14 @@ public class WorksheetTab extends Screen {
         });
 
         table.addSelectionHandler(new SelectionHandler<TableRow>() {
-            public void onSelection(SelectionEvent event) {
+            public void onSelection(SelectionEvent<TableRow> event) {
                 if (table.getSelectedRow() != -1)
                     editMultipleButton.enable(true);
             }
         });
         
         table.addUnselectionHandler(new UnselectionHandler<TableDataRow>() {
-            public void onUnselection(UnselectionEvent event) {
+            public void onUnselection(UnselectionEvent<TableDataRow> event) {
                 if (table.getSelectedRow() == -1)
                     editMultipleButton.enable(false);
             }
@@ -178,6 +178,7 @@ public class WorksheetTab extends Screen {
         });
     }
 
+    @SuppressWarnings("unchecked")
     private void initializeDropdowns() {
         ArrayList<DictionaryDO> dictList;
         ArrayList<TableDataRow> model;
@@ -206,6 +207,7 @@ public class WorksheetTab extends Screen {
         ArrayList<TableDataRow>  model;
         TableDataRow             row;
         AnalysisManager          aManager;
+        AnalysisResultManager    arManager;
         AnalysisViewDO           aVDO;
         AnalyteViewDO            atVDO;
         QcManager                qcManager;
@@ -215,8 +217,10 @@ public class WorksheetTab extends Screen {
         WorksheetAnalysisDO      waDO;
         WorksheetAnalysisManager waManager;
         WorksheetItemDO          wiDO;
-        WorksheetQcResultManager wqManager;
+        WorksheetQcResultManager wqrManager;
+        WorksheetQcResultViewDO  wqrVDO;
         WorksheetResultManager   wrManager;
+        WorksheetResultViewDO    wrVDO;
         
         model = new ArrayList<TableDataRow>();
         if (manager == null)
@@ -241,6 +245,7 @@ public class WorksheetTab extends Screen {
                         bundle = waManager.getBundleAt(j);
                         sManager = bundle.getSampleManager();
                         aManager = sManager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
+                        arManager = aManager.getAnalysisResultAt(bundle.getAnalysisIndex());
                         aVDO = aManager.getAnalysisAt(bundle.getAnalysisIndex());
 
                         row.cells.get(2).value = "";
@@ -248,22 +253,22 @@ public class WorksheetTab extends Screen {
                         row.cells.get(4).value = aVDO.getTestName();
                         row.cells.get(5).value = aVDO.getMethodName();
                         row.cells.get(6).value = aVDO.getStatusId();
-/*                        
+
                         wrManager = waManager.getWorksheetResultAt(j);
                         if (wrManager.count() == 0)
-                            initializeWorksheetResults(wrManager, aManager);
+                            initializeWorksheetResults(aVDO, arManager, wrManager);
                                                        
                         for (k = 0; k < wrManager.count(); k++) {
-*/
-                            row.cells.get(7).value = "";
+                            wrVDO = wrManager.getWorksheetResultAt(k);
+                            row.cells.get(7).value = wrVDO.getAnalyteName();
                             row.cells.get(8).value = "";
                             row.cells.get(9).value = "";
                             row.cells.get(10).value = "";
                             row.cells.get(11).value = "";
                             row.cells.get(12).value = "";
                             row.data = bundle;
-                            model.add(row);
-//                        }
+                            model.add((TableDataRow)row.clone());
+                        }
                     } else if (waDO.getQcId() != null) {
                         qcManager = QcManager.fetchById(waDO.getQcId());
                         
@@ -272,22 +277,22 @@ public class WorksheetTab extends Screen {
                         row.cells.get(4).value = "";
                         row.cells.get(5).value = "";
                         row.cells.get(6).value = 0;
-/*                        
-                        wqManager = waManager.getWorksheetQcResultAt(j);
-                        if (wqManager.count() == 0)
-                            initializeWorksheetQcResults(qcManager, wqManager);
+
+                        wqrManager = waManager.getWorksheetQcResultAt(j);
+                        if (wqrManager.count() == 0)
+                            initializeWorksheetQcResults(qcManager, wqrManager);
                                                        
-                        for (k = 0; k < wqManager.count(); k++) {
-*/
-                            row.cells.get(7).value = "";
+                        for (k = 0; k < wqrManager.count(); k++) {
+                            wqrVDO = wqrManager.getWorksheetQcResultAt(k);
+                            row.cells.get(7).value = wqrVDO.getAnalyteName();
                             row.cells.get(8).value = "";
                             row.cells.get(9).value = "";
                             row.cells.get(10).value = "";
-                            row.cells.get(11).value = "";
+                            row.cells.get(11).value = wqrVDO.getValue();
                             row.cells.get(12).value = "";
                             row.data = qcManager;
-                            model.add(row);
-//                        }
+                            model.add((TableDataRow)row.clone());
+                        }
                     }
                 }
             }
@@ -336,51 +341,92 @@ public class WorksheetTab extends Screen {
      * Parses the position number and returns the major number
      * for batch numbering.
      */
-   private int getPositionMajorNumber(int position) {
-       return (int) (position / (double)manager.getWorksheet().getBatchCapacity() + .99);
-   }
+    private int getPositionMajorNumber(int position) {
+        return (int) (position / (double)manager.getWorksheet().getBatchCapacity() + .99);
+    }
 
-   /**
-     * Parses the position number and returns the minor number
-     * for batch numbering.
+    /**
+      * Parses the position number and returns the minor number
+      * for batch numbering.
+      */
+    private int getPositionMinorNumber(int position) {
+        return position - (getPositionMajorNumber(position) - 1) * manager.getWorksheet().getBatchCapacity();
+    }
+
+    /**
+     * Loads the WorksheetResultManager from the provided AnalysisManager.  This method is
+     * called when we have never loaded this worksheet since it was created. 
      */
-   private int getPositionMinorNumber(int position) {
-       return position - (getPositionMajorNumber(position) - 1) * manager.getWorksheet().getBatchCapacity();
-   }
-   
-   /**
-    * Loads the WorksheetResultManager from the provided AnalysisManager.  This method is
-    * called when we have never loaded this worksheet since it was created. 
-    */
-   private void initializeWorksheetResults(WorksheetResultManager wrManager, AnalysisManager aManager) {
-       
-   }
+    private void initializeWorksheetResults(AnalysisViewDO aVDO, AnalysisResultManager arManager,
+                                            WorksheetResultManager wrManager) {
+        int                                         i, j;
+        ArrayList<ResultViewDO>                     resultRow;
+        ArrayList<ArrayList<ResultViewDO>>          results;
+        HashMap<Integer,TestWorksheetAnalyteViewDO> twAnalytes;
+        ResultViewDO                                result;
+        TestWorksheetAnalyteViewDO                  twaVDO;
+        TestWorksheetManager                        twManager;
+        WorksheetResultViewDO                       wrVDO;
 
-   /**
-    * Loads the WorksheetQcResultManager from the provided QcManager.  This method is
-    * called when we have never loaded this worksheet since it was created. 
-    */
-   private void initializeWorksheetQcResults(QcManager qcManager, WorksheetQcResultManager wqrManager) {
-       int                 i;
-       QcAnalyteDO         qcaDO;
-       QcAnalyteManager    qcaManager;
-       WorksheetQcResultDO wqrDO;
-       
-       try {
-           qcaManager = qcManager.getAnalytes();
-           for (i = 0; i < qcaManager.count(); i++) {
-               qcaDO = qcaManager.getAnalyteAt(i);
-               wqrDO = new WorksheetQcResultDO();
-               wqrDO.setSortOrder(i+1);
-               wqrDO.setQcAnalyteId(qcaDO.getId());
-               wqrDO.setTypeId(qcaDO.getTypeId());
-               wqrDO.setValue(qcaDO.getValue());
-               wqrManager.addWorksheetQcResult(wqrDO);
-           }
-       } catch (Exception anyE) {
-           // TODO - Code real exception handling
-           anyE.printStackTrace();
-           Window.alert(anyE.getMessage());
-       }
-   }
+        twAnalytes = new HashMap<Integer,TestWorksheetAnalyteViewDO>();
+        try {
+            twManager = TestWorksheetManager.fetchByTestId(aVDO.getTestId());
+            for (i = 0; i < twManager.analyteCount(); i++) {
+                twaVDO = twManager.getAnalyteAt(i);
+                twAnalytes.put(twaVDO.getTestAnalyteId(), twaVDO);
+            }
+        } catch (Exception anyE) {
+            // TODO - Code real exception handling
+            anyE.printStackTrace();
+            Window.alert(anyE.getMessage());
+            return;
+        }
+
+        results = arManager.getResults();
+        for (i = 0; i < results.size(); i++) {
+            resultRow = results.get(i);
+            result = resultRow.get(0);
+//            if (twAnalytes.containsKey(result.getTestAnalyteId())) {
+                for (j = 0; j < resultRow.size(); j++) {
+                    result = resultRow.get(j);
+                    wrVDO = new WorksheetResultViewDO();
+                    wrVDO.setTestAnalyteId(result.getTestAnalyteId());
+                    wrVDO.setSortOrder(i+1);
+                    wrVDO.setAnalyteId(result.getAnalyteId());
+                    wrVDO.setTypeId(result.getTypeId());
+                    wrVDO.setAnalyteName(result.getAnalyte());
+                    wrManager.addWorksheetResult(wrVDO);
+                }
+//            }           
+        }
+    }
+
+    /**
+     * Loads the WorksheetQcResultManager from the provided QcManager.  This method is
+     * called when we have never loaded this worksheet since it was created. 
+     */
+    private void initializeWorksheetQcResults(QcManager qcManager, WorksheetQcResultManager wqrManager) {
+        int                     i;
+        QcAnalyteViewDO         qcaVDO;
+        QcAnalyteManager        qcaManager;
+        WorksheetQcResultViewDO wqrVDO;
+
+        try {
+            qcaManager = qcManager.getAnalytes();
+            for (i = 0; i < qcaManager.count(); i++) {
+                qcaVDO = qcaManager.getAnalyteAt(i);
+                wqrVDO = new WorksheetQcResultViewDO();
+                wqrVDO.setSortOrder(i+1);
+                wqrVDO.setQcAnalyteId(qcaVDO.getId());
+                wqrVDO.setAnalyteName(qcaVDO.getAnalyteName());
+                wqrVDO.setTypeId(qcaVDO.getTypeId());
+                wqrVDO.setValue(qcaVDO.getValue());
+                wqrManager.addWorksheetQcResult(wqrVDO);
+            }
+        } catch (Exception anyE) {
+            // TODO - Code real exception handling
+            anyE.printStackTrace();
+            Window.alert(anyE.getMessage());
+        }
+    }
 }

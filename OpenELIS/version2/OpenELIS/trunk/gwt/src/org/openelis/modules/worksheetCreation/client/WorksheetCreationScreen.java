@@ -449,6 +449,7 @@ public class WorksheetCreationScreen extends Screen {
             try {
                 wcLookupScreen = new WorksheetCreationLookupScreen();
                 wcLookupScreen.addActionHandler(new ActionHandler<WorksheetCreationLookupScreen.Action>() {
+                    @SuppressWarnings("unchecked")
                     public void onAction(ActionEvent<WorksheetCreationLookupScreen.Action> event) {
                         Integer                 testId;
                         ArrayList<TableDataRow> list;
@@ -508,6 +509,7 @@ public class WorksheetCreationScreen extends Screen {
         }
     }
     
+    @SuppressWarnings("unchecked")
     protected void save() {
         int                      i;
         TableDataRow             row;
@@ -697,6 +699,7 @@ public class WorksheetCreationScreen extends Screen {
         isTemplateLoaded = true;
     }
     
+    @SuppressWarnings("unchecked")
     private void buildQCWorksheet() {
         int                      i, j, posNum, randSize, numBatches, startIndex;
         String                   accessionNumber;
@@ -903,6 +906,7 @@ public class WorksheetCreationScreen extends Screen {
             if (wLookupScreen == null) {
                 wLookupScreen = new WorksheetLookupScreen();
                 wLookupScreen.addActionHandler(new ActionHandler<WorksheetLookupScreen.Action>() {
+                    @SuppressWarnings("unchecked")
                     public void onAction(ActionEvent<WorksheetLookupScreen.Action> event) {
                         ArrayList<TableDataRow> list;
                         WorksheetViewDO         wVDO;
@@ -935,6 +939,7 @@ public class WorksheetCreationScreen extends Screen {
             if (wQCLookupScreen == null) {
                 wQCLookupScreen = new WorksheetLookupScreen();
                 wQCLookupScreen.addActionHandler(new ActionHandler<WorksheetLookupScreen.Action>() {
+                    @SuppressWarnings("unchecked")
                     public void onAction(ActionEvent<WorksheetLookupScreen.Action> event) {
                         ArrayList<TableDataRow> list;
                         ScreenWindow            modal2;
@@ -1033,6 +1038,7 @@ public class WorksheetCreationScreen extends Screen {
             if (qcLookupScreen == null) {
                 qcLookupScreen = new QcLookupScreen();
                 qcLookupScreen.addActionHandler(new ActionHandler<QcLookupScreen.Action>() {
+                    @SuppressWarnings("unchecked")
                     public void onAction(ActionEvent<QcLookupScreen.Action> event) {
                         int                 i, r;
                         ArrayList<Object>   dataList;
