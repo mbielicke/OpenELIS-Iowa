@@ -5,6 +5,8 @@ import javax.ejb.Remote;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
+import org.openelis.manager.WorksheetQcResultManager;
+import org.openelis.manager.WorksheetResultManager;
 
 @Remote
 public interface WorksheetManagerRemote {
@@ -26,4 +28,8 @@ public interface WorksheetManagerRemote {
     public WorksheetItemManager fetchWorksheetItemByWorksheetId(Integer id) throws Exception;
 
     public WorksheetAnalysisManager fetchWorksheetAnalysisByWorksheetItemId(Integer id) throws Exception;
+
+    public WorksheetResultManager fetchWorksheetResultByWorksheetAnalysisId(Integer id) throws Exception;
+
+    public WorksheetQcResultManager fetchWorksheetQcResultByWorksheetAnalysisId(Integer id) throws Exception;
 }

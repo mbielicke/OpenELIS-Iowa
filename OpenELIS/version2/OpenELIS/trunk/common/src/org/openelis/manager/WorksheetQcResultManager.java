@@ -27,14 +27,14 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.WorksheetQcResultDO;
+import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.gwt.common.RPC;
 
 public class WorksheetQcResultManager implements RPC {
     
-    private static final long                serialVersionUID = 1L;
-    protected Integer                        worksheetAnalysisId;
-    protected ArrayList<WorksheetQcResultDO> qcResults, deleted;
+    private static final long                    serialVersionUID = 1L;
+    protected Integer                            worksheetAnalysisId;
+    protected ArrayList<WorksheetQcResultViewDO> qcResults, deleted;
     
     protected transient static WorksheetQcResultManagerProxy proxy;
     
@@ -52,30 +52,30 @@ public class WorksheetQcResultManager implements RPC {
         return qcResults.size();
     }
     
-    public WorksheetQcResultDO getWorksheetQcResultAt(int i) {
+    public WorksheetQcResultViewDO getWorksheetQcResultAt(int i) {
         return qcResults.get(i);
     }
     
-    public void setWorksheetQcResultAt(WorksheetQcResultDO qcResult, int i) {
+    public void setWorksheetQcResultAt(WorksheetQcResultViewDO qcResult, int i) {
         if (qcResults == null)
-            qcResults = new ArrayList<WorksheetQcResultDO>();
+            qcResults = new ArrayList<WorksheetQcResultViewDO>();
         qcResults.set(i, qcResult);
     }
     
-    public void addWorksheetQcResult(WorksheetQcResultDO qcResult) {
+    public void addWorksheetQcResult(WorksheetQcResultViewDO qcResult) {
         if (qcResults == null)
-            qcResults = new ArrayList<WorksheetQcResultDO>();
+            qcResults = new ArrayList<WorksheetQcResultViewDO>();
         qcResults.add(qcResult);
     }
     
-    public void addWorksheetQcResultAt(WorksheetQcResultDO qcResult, int i) {
+    public void addWorksheetQcResultAt(WorksheetQcResultViewDO qcResult, int i) {
         if (qcResults == null)
-            qcResults = new ArrayList<WorksheetQcResultDO>();
+            qcResults = new ArrayList<WorksheetQcResultViewDO>();
         qcResults.add(i, qcResult);
     }
     
     public void removeItemAt(int i) {
-        WorksheetQcResultDO tmp;
+        WorksheetQcResultViewDO tmp;
         
         if (qcResults == null || i >= qcResults.size())
             return;
@@ -83,7 +83,7 @@ public class WorksheetQcResultManager implements RPC {
         tmp = qcResults.remove(i);
         if (tmp.getId() != null) {
             if (deleted == null)
-                deleted = new ArrayList<WorksheetQcResultDO>();
+                deleted = new ArrayList<WorksheetQcResultViewDO>();
             deleted.add(tmp);
         }
     }
@@ -114,11 +114,11 @@ public class WorksheetQcResultManager implements RPC {
         worksheetAnalysisId = id;
     }
     
-    ArrayList<WorksheetQcResultDO> getWorksheetQcResults() {
+    ArrayList<WorksheetQcResultViewDO> getWorksheetQcResults() {
         return qcResults;
     }
     
-    void setWorksheetQcResults(ArrayList<WorksheetQcResultDO> qcResults) {
+    void setWorksheetQcResults(ArrayList<WorksheetQcResultViewDO> qcResults) {
         this.qcResults = qcResults;
     }
     
@@ -128,7 +128,7 @@ public class WorksheetQcResultManager implements RPC {
         return deleted.size();
     }
     
-    WorksheetQcResultDO getDeletedAt(int i) {
+    WorksheetQcResultViewDO getDeletedAt(int i) {
         return deleted.get(i);
     }
     

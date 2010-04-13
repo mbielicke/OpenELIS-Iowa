@@ -27,14 +27,14 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.WorksheetResultDO;
+import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.gwt.common.RPC;
 
 public class WorksheetResultManager implements RPC {
     
-    private static final long              serialVersionUID = 1L;
-    protected Integer                      worksheetAnalysisId;
-    protected ArrayList<WorksheetResultDO> results, deleted;
+    private static final long                  serialVersionUID = 1L;
+    protected Integer                          worksheetAnalysisId;
+    protected ArrayList<WorksheetResultViewDO> results, deleted;
     
     protected transient static WorksheetResultManagerProxy proxy;
     
@@ -52,30 +52,30 @@ public class WorksheetResultManager implements RPC {
         return results.size();
     }
     
-    public WorksheetResultDO getWorksheetResultAt(int i) {
+    public WorksheetResultViewDO getWorksheetResultAt(int i) {
         return results.get(i);
     }
     
-    public void setWorksheetResultAt(WorksheetResultDO result, int i) {
+    public void setWorksheetResultAt(WorksheetResultViewDO result, int i) {
         if (results == null)
-            results = new ArrayList<WorksheetResultDO>();
+            results = new ArrayList<WorksheetResultViewDO>();
         results.set(i, result);
     }
     
-    public void addWorksheetResult(WorksheetResultDO result) {
+    public void addWorksheetResult(WorksheetResultViewDO result) {
         if (results == null)
-            results = new ArrayList<WorksheetResultDO>();
+            results = new ArrayList<WorksheetResultViewDO>();
         results.add(result);
     }
     
-    public void addWorksheetResultAt(WorksheetResultDO result, int i) {
+    public void addWorksheetResultAt(WorksheetResultViewDO result, int i) {
         if (results == null)
-            results = new ArrayList<WorksheetResultDO>();
+            results = new ArrayList<WorksheetResultViewDO>();
         results.add(i, result);
     }
     
     public void removeItemAt(int i) {
-        WorksheetResultDO tmp;
+        WorksheetResultViewDO tmp;
         
         if (results == null || i >= results.size())
             return;
@@ -83,7 +83,7 @@ public class WorksheetResultManager implements RPC {
         tmp = results.remove(i);
         if (tmp.getId() != null) {
             if (deleted == null)
-                deleted = new ArrayList<WorksheetResultDO>();
+                deleted = new ArrayList<WorksheetResultViewDO>();
             deleted.add(tmp);
         }
     }
@@ -114,11 +114,11 @@ public class WorksheetResultManager implements RPC {
         worksheetAnalysisId = id;
     }
     
-    ArrayList<WorksheetResultDO> getWorksheetResults() {
+    ArrayList<WorksheetResultViewDO> getWorksheetResults() {
         return results;
     }
     
-    void setWorksheetResults(ArrayList<WorksheetResultDO> results) {
+    void setWorksheetResults(ArrayList<WorksheetResultViewDO> results) {
         this.results = results;
     }
     
@@ -128,7 +128,7 @@ public class WorksheetResultManager implements RPC {
         return deleted.size();
     }
     
-    WorksheetResultDO getDeletedAt(int i) {
+    WorksheetResultViewDO getDeletedAt(int i) {
         return deleted.get(i);
     }
     
