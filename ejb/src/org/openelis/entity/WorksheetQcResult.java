@@ -7,10 +7,13 @@ package org.openelis.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -22,8 +25,9 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "WorksheetQcResult.FetchByWorksheetAnalysisId",
-                query = "select new org.openelis.domain.WorksheetQcResultDO(wqr.id,wqr.worksheetAnalysisId,wqr.sortOrder,wqr.qcAnalyteId,wqr.typeId,wqr.value) "+
-                        "from WorksheetQcResult wqr where wqr.worksheetAnalysisId = :id")})
+                query = "select new org.openelis.domain.WorksheetQcResultViewDO(wqr.id,wqr.worksheetAnalysisId,wqr.sortOrder,wqr.qcAnalyteId,wqr.typeId,wqr.value,a.name) "+
+                        "from WorksheetQcResult wqr LEFT JOIN wqr.qcAnalyte qca LEFT JOIN qca.analyte a "+
+                        "where wqr.worksheetAnalysisId = :id order by wqr.sortOrder")})
 @Entity
 @Table(name = "worksheet_qc_result")
 @EntityListeners( {AuditUtil.class})
@@ -49,6 +53,10 @@ public class WorksheetQcResult implements Auditable, Cloneable {
     @Column(name = "value")
     private String           value;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "qc_analyte_id", insertable = false, updatable = false)
+    private QcAnalyte qcAnalyte;
+    
     @Transient
     private WorksheetQcResult original;
 
@@ -104,6 +112,14 @@ public class WorksheetQcResult implements Auditable, Cloneable {
     public void setValue(String value) {
         if (DataBaseUtil.isDifferent(value, this.value))
             this.value = value;
+    }
+
+    public QcAnalyte getQcAnalyte() {
+        return qcAnalyte;
+    }
+    
+    public void setQcAnalyte(QcAnalyte qcAnalyte) {
+        this.qcAnalyte = qcAnalyte;
     }
 
     public void setClone() {

@@ -36,7 +36,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.WorksheetQcResultDO;
+import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.entity.WorksheetQcResult;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
@@ -54,7 +54,7 @@ public class WorksheetQcResultBean implements WorksheetQcResultLocal {
     private EntityManager manager;
 
     @SuppressWarnings("unchecked")
-    public ArrayList<WorksheetQcResultDO> fetchByWorksheetAnalysisId(Integer id) throws Exception {
+    public ArrayList<WorksheetQcResultViewDO> fetchByWorksheetAnalysisId(Integer id) throws Exception {
         Query query;
         List list;
 
@@ -68,7 +68,7 @@ public class WorksheetQcResultBean implements WorksheetQcResultLocal {
         return DataBaseUtil.toArrayList(list);
     }
 
-    public WorksheetQcResultDO add(WorksheetQcResultDO data) throws Exception {
+    public WorksheetQcResultViewDO add(WorksheetQcResultViewDO data) throws Exception {
         WorksheetQcResult entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -86,7 +86,7 @@ public class WorksheetQcResultBean implements WorksheetQcResultLocal {
         return data;
     }
 
-    public WorksheetQcResultDO update(WorksheetQcResultDO data) throws Exception {
+    public WorksheetQcResultViewDO update(WorksheetQcResultViewDO data) throws Exception {
         WorksheetQcResult entity;
 
         if ( !data.isChanged())
@@ -104,7 +104,7 @@ public class WorksheetQcResultBean implements WorksheetQcResultLocal {
         return data;
     }
 
-    public void delete(WorksheetQcResultDO data) throws Exception {
+    public void delete(WorksheetQcResultViewDO data) throws Exception {
         WorksheetQcResult entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -114,7 +114,7 @@ public class WorksheetQcResultBean implements WorksheetQcResultLocal {
             manager.remove(entity);
     }
 
-    public void validate(WorksheetQcResultDO data) throws Exception {
+    public void validate(WorksheetQcResultViewDO data) throws Exception {
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();

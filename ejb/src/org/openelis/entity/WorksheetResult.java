@@ -7,10 +7,13 @@ package org.openelis.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -22,8 +25,9 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "WorksheetResult.FetchByWorksheetAnalysisId",
-                query = "select new org.openelis.domain.WorksheetResultDO(wr.id,wr.worksheetAnalysisId,wr.testAnalyteId,wr.testResultId,wr.isColumn,wr.sortOrder,wr.analyteId,wr.typeId,wr.value) "+
-                        "from WorksheetResult wr where wr.worksheetAnalysisId = :id")})
+                query = "select new org.openelis.domain.WorksheetResultViewDO(wr.id,wr.worksheetAnalysisId,wr.testAnalyteId,wr.testResultId,wr.isColumn,wr.sortOrder,wr.analyteId,wr.typeId,wr.value,a.name) "+
+                        "from WorksheetResult wr LEFT JOIN wr.analyte a "+
+                        "where wr.worksheetAnalysisId = :id order by wr.sortOrder")})
 @Entity
 @Table(name = "worksheet_result")
 @EntityListeners( {AuditUtil.class})
@@ -58,6 +62,10 @@ public class WorksheetResult implements Auditable, Cloneable {
     @Column(name = "value")
     private String           value;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "analyte_id", insertable = false, updatable = false)
+    private Analyte analyte;
+    
     @Transient
     private WorksheetResult original;
 
@@ -140,6 +148,14 @@ public class WorksheetResult implements Auditable, Cloneable {
     public void setValue(String value) {
         if (DataBaseUtil.isDifferent(value, this.value))
             this.value = value;
+    }
+
+    public Analyte getAnalyte() {
+        return analyte;
+    }
+
+    public void setAnalyte(Analyte analyte) {
+        this.analyte = analyte;
     }
 
     public void setClone() {

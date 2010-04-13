@@ -41,6 +41,8 @@ import org.openelis.local.LockLocal;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
+import org.openelis.manager.WorksheetQcResultManager;
+import org.openelis.manager.WorksheetResultManager;
 import org.openelis.remote.WorksheetManagerRemote;
 import org.openelis.utils.SecurityInterceptor;
 
@@ -130,6 +132,14 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
     
     public WorksheetAnalysisManager fetchWorksheetAnalysisByWorksheetItemId(Integer id) throws Exception {
         return WorksheetAnalysisManager.fetchByWorksheetItemId(id);
+    }
+    
+    public WorksheetResultManager fetchWorksheetResultByWorksheetAnalysisId(Integer id) throws Exception {
+        return WorksheetResultManager.fetchByWorksheetAnalysisId(id);
+    }
+    
+    public WorksheetQcResultManager fetchWorksheetQcResultByWorksheetAnalysisId(Integer id) throws Exception {
+        return WorksheetQcResultManager.fetchByWorksheetAnalysisId(id);
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
