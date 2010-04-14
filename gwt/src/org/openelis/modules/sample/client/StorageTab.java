@@ -189,6 +189,7 @@ public class StorageTab extends Screen {
                     storageDO.setUserName(userName);
 
                     manager.addStorage(storageDO);
+                    removeStorageButton.enable(true);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }

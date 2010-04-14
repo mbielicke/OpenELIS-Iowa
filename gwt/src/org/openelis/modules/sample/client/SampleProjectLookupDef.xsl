@@ -49,7 +49,7 @@
           <row>
             <table key="sampleProjectTable" width="auto" maxRows="10" showScroll="ALWAYS" tab="sampleProjectTable,sampleProjectTable" title="">
               <col width="120" header="Name">
-                <autoComplete width="130" case="UPPER" field="Integer">
+                <autoComplete width="130" case="LOWER" field="Integer" required="true">
                   <col width="115" header="Name" />
                   <col width="190" header="Desc" />
                 </autoComplete>

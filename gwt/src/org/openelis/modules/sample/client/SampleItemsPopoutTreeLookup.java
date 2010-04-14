@@ -150,7 +150,6 @@ public class SampleItemsPopoutTreeLookup extends Screen {
                     if(anDO.getPreAnalysisId() != null)
                         manager.getSampleItems().getAnalysisAt(dragKey.getSampleItemIndex()).unlinkPrepTest(dragKey.getAnalysisIndex());
                     
-                    treeUtil.cleanupTestsWithPrep(dragItem);
                     manager.getSampleItems().moveAnalysis(dragKey,dropKey);
                     
                     //reset the dropped row data bundle
