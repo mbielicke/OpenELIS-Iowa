@@ -48,15 +48,15 @@ public class ResultService {
 
     public AnalysisResultManager fetchByAnalysisId(AnalysisDO anDO) throws Exception {
         try{
-            return remote().fetchByAnalysisId(anDO.getId(), anDO.getTestId());
+            return remote().fetchForUpdateWithAnalysisId(anDO.getId(), anDO.getTestId());
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
     }
 
-    public AnalysisResultManager fetchByTestId(Integer testId) throws Exception {
+    public AnalysisResultManager fetchByTestId(AnalysisDO anDO) throws Exception {
         try {
-            return remote().fetchByTestId(testId);
+            return remote().fetchForUpdateWithTestId(anDO.getTestId(), anDO.getUnitOfMeasureId());
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
