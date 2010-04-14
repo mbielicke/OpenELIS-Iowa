@@ -46,7 +46,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -82,16 +81,16 @@ import com.google.gwt.user.client.Window;
 public class PrepTestAndReflexTestTab extends Screen implements
                                                     ActionHandler<AnalyteAndResultTab.Action> {
 
-    private TestManager        manager;
-    private TestAnalyteManager testAnalyteManager;
-    private TestResultManager  testResultManager;
+    private TestManager           manager;
+    private TestAnalyteManager    testAnalyteManager;
+    private TestResultManager     testResultManager;
 
-    private boolean            loaded;
-    private Integer            typeDict;
+    private boolean               loaded;
+    private Integer               typeDict, typeDefault;
 
-    private TableWidget        testPrepTable, testReflexTable;
-    private AppButton          addPrepTestButton, removePrepTestButton, addReflexTestButton,
-                               removeReflexTestButton;
+    private TableWidget           testPrepTable, testReflexTable;
+    private AppButton             addPrepTestButton, removePrepTestButton, addReflexTestButton,
+                                  removeReflexTestButton;
     private AutoComplete<Integer> prepTestAuto, reflexTestAuto, analyteAuto, resultAuto;
     private Label<String>         prepMethodName, reflexMethodName;
 
@@ -118,12 +117,12 @@ public class PrepTestAndReflexTestTab extends Screen implements
                 testPrepTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
+
         testPrepTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
-            public void onBeforeCellEdited(BeforeCellEditedEvent event) {                
-                if(state != State.ADD && state != State.UPDATE && state != State.QUERY)  
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                if (state != State.ADD && state != State.UPDATE && state != State.QUERY)
                     event.cancel();
-            }            
+            }
         });
 
         testPrepTable.addCellEditedHandler(new CellEditedHandler() {
@@ -159,7 +158,7 @@ public class PrepTestAndReflexTestTab extends Screen implements
 
             }
         });
-        
+
         testPrepTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 int r;
@@ -224,7 +223,7 @@ public class PrepTestAndReflexTestTab extends Screen implements
                 String value;
                 int r;
 
-                selectedRow = event.getSelectedItem().row;                
+                selectedRow = event.getSelectedItem().row;
                 r = testPrepTable.getSelectedRow();
 
                 // set the method
@@ -289,11 +288,11 @@ public class PrepTestAndReflexTestTab extends Screen implements
         testReflexTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 int r, c;
-                TableDataRow val;                
-                            
-                if(state != State.ADD && state != State.UPDATE && state != State.QUERY)  
+                TableDataRow val;
+
+                if (state != State.ADD && state != State.UPDATE && state != State.QUERY)
                     event.cancel();
-                
+
                 r = event.getRow();
                 c = event.getCol();
 
@@ -407,12 +406,12 @@ public class PrepTestAndReflexTestTab extends Screen implements
                 String value;
                 int index;
 
-                selectedRow = event.getSelectedItem().row;                
+                selectedRow = event.getSelectedItem().row;
                 index = testReflexTable.getSelectedRow();
 
                 // set the method
                 if (selectedRow != null && selectedRow.key != null) {
-                    value = (String)selectedRow.cells.get(1).getValue();                    
+                    value = (String)selectedRow.cells.get(1).getValue();
                     testReflexTable.setCell(index, 1, value);
                 } else {
                     testReflexTable.setCell(index, 1, null);
@@ -424,7 +423,6 @@ public class PrepTestAndReflexTestTab extends Screen implements
 
         analyteAuto = (AutoComplete<Integer>)testReflexTable.getColumnWidget(TestMeta.getReflexTestAnalyteName());
         analyteAuto.addGetMatchesHandler(new GetMatchesHandler() {
-
             public void onGetMatches(GetMatchesEvent event) {
                 TestAnalyteViewDO data;
                 ArrayList<TableDataRow> model;
@@ -451,11 +449,10 @@ public class PrepTestAndReflexTestTab extends Screen implements
 
         resultAuto = (AutoComplete<Integer>)testReflexTable.getColumnWidget(TestMeta.getReflexTestResultValue());
         resultAuto.addGetMatchesHandler(new GetMatchesHandler() {
-
             public void onGetMatches(GetMatchesEvent event) {
                 TestResultViewDO data;
                 ArrayList<TableDataRow> model;
-                TableDataRow row, trow, arow;
+                TableDataRow trow, arow;
                 Integer rg;
                 int r, size;
                 String value;
@@ -484,16 +481,13 @@ public class PrepTestAndReflexTestTab extends Screen implements
 
                 for (int i = 0; i < size; i++ ) {
                     data = testResultManager.getResultAt(rg, i);
-                    row = new TableDataRow(1);
                     if (DataBaseUtil.isSame(typeDict, data.getTypeId()))
                         value = data.getDictionary();
                     else
                         value = data.getValue();
-                    if ( !DataBaseUtil.isEmpty(value)) {
-                        row.key = data.getId();
-                        row.cells.get(0).setValue(value);
-                        model.add(row);
-                    }
+                    
+                    if (!typeDefault.equals(data.getTypeId()) && value != null) 
+                        model.add(new TableDataRow(data.getId(), value));                    
                 }
 
                 if (model.size() == 0)
@@ -626,8 +620,7 @@ public class PrepTestAndReflexTestTab extends Screen implements
                 row = new TableDataRow(3);
                 row.key = data.getId();
 
-                row.cells.get(0).setValue(
-                                          new TableDataRow(data.getPrepTestId(),
+                row.cells.get(0).setValue(new TableDataRow(data.getPrepTestId(),
                                                            data.getPrepTestName()));
                 row.cells.get(1).setValue(data.getMethodName());
                 row.cells.get(2).setValue(data.getIsOptional());
@@ -659,15 +652,12 @@ public class PrepTestAndReflexTestTab extends Screen implements
                 row = new TableDataRow(5);
                 row.key = data.getId();
 
-                row.cells.get(0).setValue(
-                                          new TableDataRow(data.getAddTestId(),
+                row.cells.get(0).setValue(new TableDataRow(data.getAddTestId(),
                                                            data.getAddTestName()));
                 row.cells.get(1).setValue(data.getAddMethodName());
-                row.cells.get(2).setValue(
-                                          new TableDataRow(data.getTestAnalyteId(),
+                row.cells.get(2).setValue(new TableDataRow(data.getTestAnalyteId(),
                                                            data.getTestAnalyteName()));
-                row.cells.get(3).setValue(
-                                          new TableDataRow(data.getTestResultId(),
+                row.cells.get(3).setValue(new TableDataRow(data.getTestResultId(),
                                                            data.getTestResultValue()));
                 row.cells.get(4).setValue(data.getFlagsId());
 
@@ -696,6 +686,7 @@ public class PrepTestAndReflexTestTab extends Screen implements
 
         try {
             typeDict = DictionaryCache.getIdFromSystemName("test_res_type_dictionary");
+            typeDefault = DictionaryCache.getIdFromSystemName("test_res_type_default");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();

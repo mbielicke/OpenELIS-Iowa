@@ -35,6 +35,7 @@ import org.openelis.meta.OrderMeta;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Widget;
 
 public class ItemTab extends Screen {
 
@@ -237,6 +238,7 @@ public class ItemTab extends Screen {
         OrderItemViewDO data;
         ArrayList<TableDataRow> model;
         TableDataRow row;
+        Widget widget;
 
         model = new ArrayList<TableDataRow>();
         if (manager == null)
@@ -252,10 +254,18 @@ public class ItemTab extends Screen {
                                                            data.getInventoryItemName()));
                 row.cells.get(2).setValue(data.getStoreId());
 
-                if(numColumns > 3) {
+                /*if(numColumns > 3) {
                     row.cells.get(3).setValue(data.getUnitCost());
                     row.cells.get(4).setValue(data.getCatalogNumber());
-                }
+                }*/
+                
+                widget = table.getColumnWidget(OrderMeta.getOrderItemUnitCost());                
+                if(widget != null) 
+                    row.cells.get(3).setValue(data.getUnitCost());
+                
+                widget = table.getColumnWidget(OrderMeta.getOrderItemCatalogNumber());                
+                if(widget != null) 
+                    row.cells.get(4).setValue(data.getCatalogNumber());
                 
                 model.add(row);
             }
