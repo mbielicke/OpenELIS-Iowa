@@ -125,10 +125,13 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
         sampleOrganizationTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int row,col;
+                Object val;
+                
                 row = event.getRow();
                 col = event.getCol();
+                
                 SampleOrganizationViewDO orgDO;
-                TableDataRow tableRow = sampleOrganizationTable.getRow(row);
+                
                 try{
                     orgDO = manager.getOrganizationAt(row);
                 }catch(Exception e){
@@ -136,7 +139,7 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
                     return;
                 }
                     
-                Object val = tableRow.cells.get(col).value;
+                val = sampleOrganizationTable.getObject(row, col);
                 
                 switch (col) {
                     case 0:
@@ -221,6 +224,7 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
         sampleOrganizationTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 manager.addOrganization(new SampleOrganizationViewDO());
+                organizationRemoveButton.enable(true);
             }
         });
 
@@ -376,6 +380,9 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
             Window.alert(e.getMessage());
             return false;
         }
+        
+        if (!superValue)
+            window.setError(consts.get("correctErrors"));
         
         return superValue;
     }

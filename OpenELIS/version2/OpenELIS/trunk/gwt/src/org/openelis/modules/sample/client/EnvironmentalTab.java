@@ -198,7 +198,7 @@ public class EnvironmentalTab extends Screen {
                                                            .getFirstPermanentProject();
 
                     if (projectDO != null)
-                        project.setSelection(projectDO.getId(), projectDO.getProjectName());
+                        project.setSelection(projectDO.getProjectId(), projectDO.getProjectName());
                     else
                         project.setSelection(null, "");
 

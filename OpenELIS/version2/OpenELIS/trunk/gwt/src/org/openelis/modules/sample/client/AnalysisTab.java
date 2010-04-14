@@ -64,6 +64,7 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleDataBundle;
+import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.TestSectionManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.SampleMeta;
@@ -458,16 +459,26 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 SampleDataBundle anBundle;
-                if (event.getValue() == null) {
-                    manager.unlinkPrepTest(bundle.getAnalysisIndex());
-
-                } else {
-                    anBundle = (SampleDataBundle)samplePrep.getSelection().data;
-                    manager.linkPrepTest(bundle.getAnalysisIndex(), anBundle.getAnalysisIndex());
+                SampleItemManager itemMan;
+                
+                try{
+                    if (event.getValue() == null) {
+                        manager.unlinkPrepTest(bundle.getAnalysisIndex());
+    
+                    } else {
+                        anBundle = (SampleDataBundle)samplePrep.getSelection().data;
+                        itemMan = bundle.getSampleManager().getSampleItems();
+                        
+                        itemMan.linkPrepTest(bundle.getSampleItemIndex(), bundle.getAnalysisIndex(), 
+                                             anBundle.getSampleItemIndex(), anBundle.getAnalysisIndex());
+                    }
+    
+                    ActionEvent.fire(anTab, Action.CHANGED_DONT_CHECK_PREPS, null);
+                    DataChangeEvent.fire(anTab, statusId);
+                    
+                }catch(Exception e){
+                    Window.alert("samplePrep valueChange: "+e.getMessage());
                 }
-
-                ActionEvent.fire(anTab, Action.CHANGED_DONT_CHECK_PREPS, null);
-                DataChangeEvent.fire(anTab, statusId);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -482,26 +493,46 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 ArrayList<TableDataRow> model;
                 TableDataRow row;
                 AnalysisViewDO anDO;
-                SampleDataBundle anBundle;
+                SampleItemViewDO itemDO;
+                SampleItemManager itemMan;
+                AnalysisManager anMan;
                 Integer currentId;
                 String match;
+                int numOfRows, i, j;
 
-                currentId = analysis.getId();
-                match = event.getMatch();
-                model = new ArrayList<TableDataRow>();
-
-                for (int i = 0; i < manager.count(); i++ ) {
-                    anDO = manager.getAnalysisAt(i);
-
-                    if ( !currentId.equals(anDO.getId()) && anDO.getTestName().startsWith(match)) {
-                        row = new TableDataRow(anDO.getId(), anDO.getTestName() + " : " +
-                                                             anDO.getMethodName());
-                        row.data = manager.getBundleAt(i);
-                        model.add(row);
+                try{
+                    currentId = analysis.getId();
+                    match = event.getMatch();
+                    model = new ArrayList<TableDataRow>();
+                    itemMan = bundle.getSampleManager().getSampleItems();
+                    
+                    numOfRows = 0;
+                    for(i=0; i<itemMan.count(); i++){
+                        if(numOfRows > 9)
+                            break;
+                        
+                        itemDO = itemMan.getSampleItemAt(i);
+                        anMan = itemMan.getAnalysisAt(i);
+                        
+                        for (j = 0; j < anMan.count(); j++ ) {
+                            if(numOfRows > 9)
+                                break;
+                            
+                            anDO = anMan.getAnalysisAt(j);
+                            
+                            if ( !currentId.equals(anDO.getId()) && anDO.getTestName() != null && anDO.getTestName().startsWith(match)) {
+                                row = new TableDataRow(anDO.getId(), anDO.getTestName() + " : " +
+                                                                     anDO.getMethodName() + " | " + formatTreeString(itemDO.getTypeOfSample()));
+                                row.data = anMan.getBundleAt(j);
+                                model.add(row);
+                            }
+                        }
                     }
+    
+                    samplePrep.showAutoMatches(model);
+                }catch(Exception e){
+                    Window.alert("prep getMatches: "+e.getMessage());
                 }
-
-                samplePrep.showAutoMatches(model);
             }
         });
     }
@@ -620,6 +651,13 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         return (analysis != null && !analysisCancelledId.equals(analysis.getStatusId()) && !analysisReleasedId.equals(analysis.getStatusId()));
     }
 
+    private String formatTreeString(String val) {
+        if (val == null || "".equals(val))
+            return "<>";
+
+        return val.trim();
+    }
+    
     public void setData(SampleDataBundle data) {
         try {
             if (data != null && SampleDataBundle.Type.ANALYSIS.equals(data.getType())) {

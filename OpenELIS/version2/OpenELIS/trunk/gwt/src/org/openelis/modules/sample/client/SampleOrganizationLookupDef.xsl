@@ -49,13 +49,13 @@
           <row>
             <table key="sampleOrganizationTable" width="auto" maxRows="10" showScroll="ALWAYS" tab="sampleOrganizationTable,sampleOrganizationTable" title="">
               <col width="125" header="Type">
-                <dropdown width="110" field="Integer" />
+                <dropdown width="110" field="Integer" required="true"/>
               </col>
               <col width="70" header="Id">
                 <label field="Integer" />
               </col>
               <col width="220" header="Name">
-                <autoComplete width="130px" case="UPPER" field="Integer">
+                <autoComplete width="130px" case="UPPER" field="Integer" required="true">
                   <col width="180" header="Name" />
                   <col width="110" header="Street" />
                   <col width="100" header="City" />

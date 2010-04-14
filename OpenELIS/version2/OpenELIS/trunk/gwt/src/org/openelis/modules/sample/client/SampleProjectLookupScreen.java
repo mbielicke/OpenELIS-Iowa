@@ -193,6 +193,7 @@ public class SampleProjectLookupScreen extends Screen implements HasActionHandle
         sampleProjectTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 manager.addProject(new SampleProjectViewDO());
+                projectRemoveButton.enable(true);
             }
         });
 
@@ -246,6 +247,12 @@ public class SampleProjectLookupScreen extends Screen implements HasActionHandle
     
     public void ok() {
         sampleProjectTable.finishEditing();
+        
+        if ( !validate()) {
+            window.setError(consts.get("correctErrors"));
+            return;
+        }
+        
         ActionEvent.fire(this, Action.OK, null);
         window.close();
     }

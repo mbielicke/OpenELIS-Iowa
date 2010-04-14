@@ -370,7 +370,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'project')" />:
                   </text>
                   <HorizontalPanel>
-                    <autoComplete key="{meta:getProjectName()}" width="182" case="UPPER" popWidth="auto" tab="sampleItemTabPanel,{meta:getWellWellNumber()}" field="Integer">
+                    <autoComplete key="{meta:getProjectName()}" width="182" case="LOWER" popWidth="auto" tab="sampleItemTabPanel,{meta:getWellWellNumber()}" field="Integer">
                       <col width="115" header="{resource:getString($constants,'name')}" />
                       <col width="190" header="{resource:getString($constants,'desc')}" />
                     </autoComplete>

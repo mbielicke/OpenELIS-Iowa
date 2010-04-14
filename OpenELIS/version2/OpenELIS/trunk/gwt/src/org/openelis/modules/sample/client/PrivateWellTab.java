@@ -516,7 +516,7 @@ public class PrivateWellTab extends Screen {
                                                            .getFirstPermanentProject();
 
                     if (projectDO != null)
-                        projectName.setSelection(projectDO.getId(), projectDO.getProjectName());
+                        projectName.setSelection(projectDO.getProjectId(), projectDO.getProjectName());
                     else
                         projectName.setSelection(null, "");
 
