@@ -26,13 +26,16 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.naming.InitialContext;
 
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.local.SampleItemLocal;
 import org.openelis.manager.SampleItemManager.SampleItemListItem;
 
@@ -64,16 +67,18 @@ public class SampleItemManagerProxy {
             itemDO.setSampleId(man.getSampleId());
             l.add(itemDO);
             item = man.getItemAt(i);
+            
             if(item.storage != null){
                 man.getStorageAt(i).setReferenceId(itemDO.getId());
                 man.getStorageAt(i).setReferenceTableId(sampleItemRefTableId);
                 man.getStorageAt(i).add();
             }
-            if(item.analysis != null){
+            
+            if(item.analysis != null)
                 man.getAnalysisAt(i).setSampleItemId(itemDO.getId());
-                man.getAnalysisAt(i).add();
-            }
         }
+        
+        addAnalyses(man);
         
         return man;
     }
@@ -106,13 +111,19 @@ public class SampleItemManagerProxy {
                 man.getStorageAt(i).update();
             }
             
-            if(item.analysis != null){
+            if(item.analysis != null)
                 man.getAnalysisAt(i).setSampleItemId(itemDO.getId());
-                man.getAnalysisAt(i).update();
-            }
         }
+        
+        updateAnalyses(man);
 
         return man;
+    }
+    
+    public Integer getIdFromSystemName(String systemName) throws Exception{
+        DictionaryDO dictDO = dictionaryLocal().fetchBySystemName(systemName);
+        
+        return dictDO.getId();
     }
     
     public void validate(SampleItemManager man, ValidationErrorsList errorsList) throws Exception {
@@ -138,10 +149,46 @@ public class SampleItemManagerProxy {
         }
     }
     
+    private void addAnalyses(SampleItemManager man) throws Exception {
+        HashMap<Integer, Integer> idHash;
+        int numOfUnresolved;
+        
+        idHash = new HashMap<Integer, Integer>();
+        numOfUnresolved = 0;
+        do{
+            for(int i=0; i < man.count(); i++)
+                numOfUnresolved = numOfUnresolved + man.getAnalysisAt(i).add(idHash);
+            
+        }while(numOfUnresolved != 0);
+    }
+    
+    private void updateAnalyses(SampleItemManager man) throws Exception {
+        HashMap<Integer, Integer> idHash;
+        int numOfUnresolved;
+        
+        idHash = new HashMap<Integer, Integer>();
+        numOfUnresolved = 0;
+        do{
+            for(int i=0; i < man.count(); i++)
+                numOfUnresolved = numOfUnresolved + man.getAnalysisAt(i).update(idHash);
+            
+        }while(numOfUnresolved != 0);
+    }
+    
     private SampleItemLocal local(){
         try{
             InitialContext ctx = new InitialContext();
             return (SampleItemLocal)ctx.lookup("openelis/SampleItemBean/local");
+        }catch(Exception e){
+             System.out.println(e.getMessage());
+             return null;
+        }
+    }
+    
+    private static DictionaryLocal dictionaryLocal(){
+        try{
+            InitialContext ctx = new InitialContext();
+            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
         }catch(Exception e){
              System.out.println(e.getMessage());
              return null;

@@ -26,6 +26,7 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.openelis.cache.SectionCache;
 import org.openelis.domain.AnalysisViewDO;
@@ -146,23 +147,7 @@ public class AnalysisManager implements RPC {
         }
     }
     
-    /**
-     * Links the actual analysis with the prep analysis with the right indexes.
-     * The actual analysis is updated with status 'In prep' and available date is cleared.
-     * @param index
-     * @param prepTestIndex
-     */
-    public void linkPrepTest(int index, int prepTestIndex) {
-        AnalysisViewDO anDO, prepDO;
-
-        anDO = getItemAt(index).analysis;
-        prepDO = getItemAt(prepTestIndex).analysis;
-        anDO.setPreAnalysisId(prepDO.getId());
-        anDO.setPreAnalysisTest(prepDO.getTestName());
-        anDO.setPreAnalysisMethod(prepDO.getMethodName());
-        anDO.setStatusId(anInPrepId);
-        anDO.setAvailableDate(null);
-    }
+    
 
     public void removeAnalysisAt(int index) {
         AnalysisListItem tmpList;
@@ -305,12 +290,12 @@ public class AnalysisManager implements RPC {
     }
 
     // service methods
-    public AnalysisManager add() throws Exception {
-        return proxy().add(this);
+    public int add(HashMap<Integer, Integer> idHash) throws Exception {
+        return proxy().add(this, idHash);
     }
 
-    public AnalysisManager update() throws Exception {
-        return proxy().update(this);
+    public int update(HashMap<Integer, Integer> idHash) throws Exception {
+        return proxy().update(this, idHash);
     }
 
     public void validate() throws Exception {

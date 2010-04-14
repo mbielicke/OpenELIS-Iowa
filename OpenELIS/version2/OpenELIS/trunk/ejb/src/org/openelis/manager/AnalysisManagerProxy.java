@@ -36,7 +36,6 @@ import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.SecurityUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalysisLocal;
@@ -63,113 +62,117 @@ public class AnalysisManagerProxy {
         return man;
     }
     
-    public AnalysisManager add(AnalysisManager man) throws Exception {
-        HashMap<Integer, Integer> idHash = new HashMap<Integer, Integer>();
+    public int add(AnalysisManager man, HashMap<Integer, Integer> idHash) throws Exception {
+        int numOfUnresolved;
         AnalysisViewDO analysisDO;
         
-        boolean notDone = false;
-        do{
-            notDone = false;
-            for(int i=0; i<man.count(); i++){
-                analysisDO = man.getAnalysisAt(i);
+        numOfUnresolved = 0;
+        for(int i=0; i<man.count(); i++){
+            analysisDO = man.getAnalysisAt(i);
 
-                if(analysisDO.getPreAnalysisId() == null){
-                    if(!idHash.containsKey(analysisDO.getId())){
-                        Integer oldId = analysisDO.getId();
-                        add(man, analysisDO, i);
+            if(analysisDO.getPreAnalysisId() == null){
+                if(!idHash.containsKey(analysisDO.getId())){
+                    Integer oldId = analysisDO.getId();
+                    add(man, analysisDO, i);
 
-                        idHash.put(oldId, analysisDO.getId());
-                        idHash.put(analysisDO.getId(), null);
-                    }
-                }else if(analysisDO.getPreAnalysisId() < 0){
-                    Integer prepId = idHash.get(analysisDO.getPreAnalysisId());
-                    
-                    if(prepId != null){
-                        Integer oldId = analysisDO.getId();
-                        analysisDO.setPreAnalysisId(prepId);
-                        add(man, analysisDO, i);
-                        
-                        idHash.put(oldId, analysisDO.getId());
-                        idHash.put(analysisDO.getId(), null);
-                    }else
-                        notDone = true;
-                }else if(!idHash.containsKey(analysisDO.getId())){
-                    Integer prepId = idHash.get(analysisDO.getPreAnalysisId());
-                    if(prepId == null){
-                        Integer oldId = analysisDO.getId();
-                        
-                        add(man, analysisDO, i);
-                        
-                        idHash.put(oldId, analysisDO.getId());
-                        
-                        if(!oldId.equals(analysisDO.getId()))
-                            idHash.put(analysisDO.getId(), null);
-                   }
+                    idHash.put(oldId, analysisDO.getId());
+                    idHash.put(analysisDO.getId(), null);
                 }
+            }else if(analysisDO.getPreAnalysisId() < 0){
+                Integer prepId = idHash.get(analysisDO.getPreAnalysisId());
+                
+                if(prepId != null){
+                    Integer oldId = analysisDO.getId();
+                    analysisDO.setPreAnalysisId(prepId);
+                    add(man, analysisDO, i);
+                    
+                    if(idHash.containsKey(oldId))
+                        numOfUnresolved--;    
+                    
+                    idHash.put(oldId, analysisDO.getId());
+                    idHash.put(analysisDO.getId(), null);
+                }else{
+                    idHash.put(analysisDO.getId(), null);
+                    numOfUnresolved++;
+                }
+            }else if(!idHash.containsKey(analysisDO.getId())){
+                Integer prepId = idHash.get(analysisDO.getPreAnalysisId());
+                if(prepId == null){
+                    Integer oldId = analysisDO.getId();
+                    
+                    add(man, analysisDO, i);
+                    
+                    idHash.put(oldId, analysisDO.getId());
+                    
+                    if(!oldId.equals(analysisDO.getId()))
+                        idHash.put(analysisDO.getId(), null);
+               }
             }
-        }while(notDone);
+        }
         
-        return man;
+        return numOfUnresolved;
     }
     
-    public AnalysisManager update(AnalysisManager man) throws Exception {
-        HashMap<Integer, Integer> idHash = new HashMap<Integer, Integer>();
+    public int update(AnalysisManager man, HashMap<Integer, Integer> idHash) throws Exception {
+        int numOfUnresolved;
         AnalysisViewDO analysisDO;
         
-        boolean notDone = false;
-        do{
-            notDone = false;
-            for(int i=0; i<man.count(); i++){
-                analysisDO = man.getAnalysisAt(i);
+        numOfUnresolved = 0;
+        for(int i=0; i<man.count(); i++){
+            analysisDO = man.getAnalysisAt(i);
 
-                if(analysisDO.getPreAnalysisId() == null){
-                    if(!idHash.containsKey(analysisDO.getId())){
-                        Integer oldId = analysisDO.getId();
-                        
-                        if(oldId != null && oldId > 0)
-                            update(man, analysisDO, i);
-                        else
-                            add(man, analysisDO, i);
-                        
-                        idHash.put(oldId, analysisDO.getId());
-                        idHash.put(analysisDO.getId(), null);
-                    }
-                }else if(analysisDO.getPreAnalysisId() < 0){
-                    Integer prepId = idHash.get(analysisDO.getPreAnalysisId());
+            if(analysisDO.getPreAnalysisId() == null){
+                if(!idHash.containsKey(analysisDO.getId())){
+                    Integer oldId = analysisDO.getId();
                     
-                    if(prepId != null){
-                        Integer oldId = analysisDO.getId();
-                        analysisDO.setPreAnalysisId(prepId);
-                        
-                        if(oldId != null && oldId > 0)
-                            update(man, analysisDO, i);
-                        else
-                            add(man, analysisDO, i);
-                        
-                        idHash.put(oldId, analysisDO.getId());
-                        idHash.put(analysisDO.getId(), null);
-                    }else
-                        notDone = true;
-                }else if(!idHash.containsKey(analysisDO.getId())){
-                    Integer prepId = idHash.get(analysisDO.getPreAnalysisId());
-                    if(prepId == null){
-                        Integer oldId = analysisDO.getId();
-                        
-                        if(oldId != null && oldId > 0)
-                            update(man, analysisDO, i);
-                        else
-                            add(man, analysisDO, i);
-                        
-                        idHash.put(oldId, analysisDO.getId());
-                        
-                        if(!oldId.equals(analysisDO.getId()))
-                            idHash.put(analysisDO.getId(), null);
-                   }
+                    if(oldId != null && oldId > 0)
+                        update(man, analysisDO, i);
+                    else
+                        add(man, analysisDO, i);
+                    
+                    idHash.put(oldId, analysisDO.getId());
+                    idHash.put(analysisDO.getId(), null);
                 }
+            }else if(analysisDO.getPreAnalysisId() < 0){
+                Integer prepId = idHash.get(analysisDO.getPreAnalysisId());
+                
+                if(prepId != null){
+                    Integer oldId = analysisDO.getId();
+                    analysisDO.setPreAnalysisId(prepId);
+                    
+                    if(oldId != null && oldId > 0)
+                        update(man, analysisDO, i);
+                    else
+                        add(man, analysisDO, i);
+                    
+                    if(idHash.containsKey(oldId))
+                        numOfUnresolved--;    
+                    
+                    idHash.put(oldId, analysisDO.getId());
+                    idHash.put(analysisDO.getId(), null);
+                }else{
+                    idHash.put(analysisDO.getId(), null);
+                    numOfUnresolved++;
+                }
+            }else if(!idHash.containsKey(analysisDO.getId())){
+                Integer prepId = idHash.get(analysisDO.getPreAnalysisId());
+                if(prepId == null){
+                    Integer oldId = analysisDO.getId();
+                    
+                    if(oldId != null && oldId > 0)
+                        update(man, analysisDO, i);
+                    else
+                        add(man, analysisDO, i);
+                    
+                    idHash.put(oldId, analysisDO.getId());
+                    
+                    if(!oldId.equals(analysisDO.getId()))
+                        idHash.put(analysisDO.getId(), null);
+               }
             }
-       }while(notDone);
+        }
         
-        return man;
+        return numOfUnresolved;
     }
     
     private void add(AnalysisManager man, AnalysisViewDO analysisDO, int i) throws Exception {
@@ -253,7 +256,7 @@ public class AnalysisManagerProxy {
             man.getStorageAt(i).update();
         }
     }
-        
+
     public Datetime getCurrentDatetime(byte begin, byte end) throws Exception {
         return Datetime.getInstance(begin, end);
     }
