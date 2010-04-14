@@ -26,77 +26,162 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.ejb.EJBs;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.ReferenceTable;
-import org.openelis.domain.ShippingAddAutoFillDO;
-import org.openelis.domain.ShippingDO;
-import org.openelis.domain.ShippingItemDO;
-import org.openelis.domain.ShippingTrackingDO;
-import org.openelis.entity.Note;
+import org.openelis.domain.IdNameVO;
+import org.openelis.domain.OrganizationViewDO;
+import org.openelis.domain.ShippingViewDO;
 import org.openelis.entity.Shipping;
-import org.openelis.entity.ShippingItem;
-import org.openelis.entity.ShippingTracking;
-import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.LockLocal;
+import org.openelis.gwt.common.data.QueryData;
+import org.openelis.local.OrganizationLocal;
+import org.openelis.local.ShippingLocal;
 import org.openelis.meta.ShippingMeta;
 import org.openelis.remote.ShippingRemote;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
+import org.openelis.util.QueryBuilderV2;
+import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
-@EJBs({
-    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
-    @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
-})
 @SecurityDomain("openelis")
 @RolesAllowed("shipping-select")
-public class ShippingBean implements ShippingRemote{
+public class ShippingBean implements ShippingRemote, ShippingLocal{
 
     @PersistenceContext(name = "openelis")
-    private EntityManager manager;
-    
-    @Resource
-    private SessionContext ctx;
-    
-    private LockLocal lockBean;
-    private SystemUserUtilLocal sysUser;
-    
-    private static int shippingRefTableId, orderItemRefTableId, sampleItemRefTableId;    
+    private EntityManager             manager;
 
-    public ShippingBean(){
-        shippingRefTableId = ReferenceTable.SHIPPING;
-        orderItemRefTableId = ReferenceTable.ORDER_ITEM;
-        sampleItemRefTableId = ReferenceTable.SAMPLE_ITEM;
+    @EJB
+    private OrganizationLocal         organizationBean;   
+
+    private static final ShippingMeta meta = new ShippingMeta();
+
+    public ShippingViewDO fetchById(Integer id) throws Exception {
+        Query query;
+        ShippingViewDO data;
+        OrganizationViewDO organization;
+        
+        query = manager.createNamedQuery("Shipping.FetchById");
+        query.setParameter("id", id);
+        try {
+            data = (ShippingViewDO)query.getSingleResult();
+            organization = organizationBean.fetchById(data.getShippedToId());           
+            data.setShippedTo(organization);
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
     }
     
-    @PostConstruct
-    private void init()
-    {
-        lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
-        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
+    @SuppressWarnings("unchecked")
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+        Query query;
+        QueryBuilderV2 builder;
+        List list;
+
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + 
+                          ShippingMeta.getId() + ",'') ");
+        builder.constructWhere(fields);
+        builder.setOrderBy(ShippingMeta.getId() + " DESC");
+
+        query = manager.createQuery(builder.getEJBQL());
+        query.setMaxResults(first + max);
+        builder.setQueryParams(query, fields);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+        list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
+        if (list == null)
+            throw new LastPageException();
+
+        return (ArrayList<IdNameVO>)list;
     }
 
-    public ShippingAddAutoFillDO getAddAutoFillValues() throws Exception {
+    public ShippingViewDO add(ShippingViewDO data) throws Exception {
+        Shipping entity;
+        
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        entity = new Shipping();
+        entity.setStatusId(data.getStatusId());
+        entity.setShippedFromId(data.getShippedFromId());
+        entity.setShippedToId(data.getShippedToId());
+        entity.setProcessedBy(data.getProcessedBy());
+        entity.setProcessedDate(data.getProcessedDate());
+        entity.setShippedMethodId(data.getShippedMethodId());
+        entity.setShippedDate(data.getShippedDate());
+        entity.setNumberOfPackages(data.getNumberOfPackages());
+        entity.setCost(data.getCost());
+
+        manager.persist(entity);
+        data.setId(entity.getId());
+        
+        return data;
+    }
+
+    public ShippingViewDO update(ShippingViewDO data) throws Exception {
+        Shipping entity;
+        
+        if (!data.isChanged())
+            return data;
+        
+        manager.setFlushMode(FlushModeType.COMMIT);
+        entity = manager.find(Shipping.class, data.getId());
+        entity.setStatusId(data.getStatusId());
+        entity.setShippedFromId(data.getShippedFromId());
+        entity.setShippedToId(data.getShippedToId());
+        entity.setProcessedBy(data.getProcessedBy());
+        entity.setProcessedDate(data.getProcessedDate());
+        entity.setShippedMethodId(data.getShippedMethodId());
+        entity.setShippedDate(data.getShippedDate());
+        entity.setNumberOfPackages(data.getNumberOfPackages());
+        entity.setCost(data.getCost());
+        
+        return data;
+    }
+
+    public void validate(ShippingViewDO data) throws Exception {
+        ValidationErrorsList list;
+        
+        list = new ValidationErrorsList();
+       
+        if(data.getStatusId() == null)
+            list.add(new FieldErrorException("fieldRequiredException",ShippingMeta.getStatusId()));        
+                
+        if(data.getNumberOfPackages() == null)
+            list.add(new FieldErrorException("fieldRequiredException",ShippingMeta.getNumberOfPackages()));        
+                
+        if(data.getShippedFromId() == null)
+            list.add(new FieldErrorException("fieldRequiredException",ShippingMeta.getShippedFromId()));        
+                
+        if(data.getShippedToId() == null)
+            list.add(new FieldErrorException("fieldRequiredException",ShippingMeta.getShippedToName()));        
+                
+        if(data.getCost() != null && data.getCost().doubleValue() <= 0)
+            list.add(new FieldErrorException("invalidCostException",ShippingMeta.getCost()));
+        
+        if(list.size() > 0)
+            throw list;
+    }
+
+    /* public ShippingAddAutoFillDO getAddAutoFillValues() throws Exception {
         ShippingAddAutoFillDO autoFillDO = new ShippingAddAutoFillDO();       
         //status integer
         Query query = manager.createNamedQuery("Dictionary.FetchBySystemName");
@@ -117,38 +202,7 @@ public class ShippingBean implements ShippingRemote{
         
         return autoFillDO;
     }
-/*
-    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
-        StringBuffer sb = new StringBuffer();
-        QueryBuilder qb = new QueryBuilder();
-
-        qb.setMeta(ShippingMeta);
-        
-        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+ShippingMeta.getId()+") ");
-       
-        //this method is going to throw an exception if a column doesnt match
-        qb.addWhere(fields);      
-
-        qb.setOrderBy(ShippingMeta.getId());
-       
-        sb.append(qb.getEJBQL());
-
-        Query query = manager.createQuery(sb.toString());
-        
-        if(first > -1 && max > -1)
-         query.setMaxResults(first+max);
-        
-//      ***set the parameters in the query
-        qb.setQueryParams(query);
-        
-        List returnList = GetPage.getPage(query.getResultList(), first, max);
-        
-        if(returnList == null)
-         throw new LastPageException();
-        else
-         return returnList;
-    }
-*/
+    
     @RolesAllowed("shipping-update")
  public Integer updateShipment(ShippingDO shippingDO, List<ShippingItemDO> shippingItems, List<ShippingTrackingDO> trackingNumbers, NoteViewDO shippingNote) throws Exception {
         validateShipping(shippingDO, shippingItems);
@@ -359,5 +413,5 @@ public class ShippingBean implements ShippingRemote{
         
         if(list.size() > 0)
             throw list;
-    }
+    } */
 }

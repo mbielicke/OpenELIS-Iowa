@@ -41,7 +41,7 @@ public class ShippingMeta implements Meta, MetaMap {
                                 STATUS_ID = "_shipping.statusId",
                                 SHIPPED_FROM_ID = "_shipping.shippedFromId",
                                 SHIPPED_TO_ID = "_shipping.shippedToId",
-                                PROCESSED_BY_ID	= "_shipping.processedById",
+                                PROCESSED_BY	= "_shipping.processedBy",
                                 PROCESSED_DATE = "_shipping.processedDate",
                                 SHIPPED_METHOD_ID = "_shipping.shippedMethodId",
                                 SHIPPED_DATE = "_shipping.shippedDate",
@@ -61,6 +61,13 @@ public class ShippingMeta implements Meta, MetaMap {
                                 SHIPPED_TO_ADDRESS_EMAIL = "_shippedTo.address.email",
                                 SHIPPED_TO_ADDRESS_COUNTRY = "_shippedTo.address.country",
                                 
+                                ITEM_ID = "_shippingItem.id",
+                                ITEM_SHIPPING_ID = "_shippingItem.shippingId",
+                                ITEM_REFERENCE_TABLE_ID = "_shippingItem.referenceTableId",
+                                ITEM_REFERENCE_ID = "_shippingItem.referenceId",
+                                ITEM_QUANTITY = "_shippingItem.quantity",
+                                ITEM_DESCRIPTION = "_shippingItem.description",
+                                
                                 TRACKING_ID = "_shippingTracking.id",
                                 TRACKING_SHIPPING_ID = "_shippingTracking.shippingId",
                                 TRACKING_TRACKING_NUMBER = "_shippingTracking.trackingNumber",
@@ -71,7 +78,7 @@ public class ShippingMeta implements Meta, MetaMap {
     
     static {
         names = new HashSet<String>(Arrays.asList(ID, STATUS_ID, SHIPPED_FROM_ID, SHIPPED_TO_ID,
-                                                  PROCESSED_BY_ID, PROCESSED_DATE, SHIPPED_METHOD_ID,
+                                                  PROCESSED_BY, PROCESSED_DATE, SHIPPED_METHOD_ID,
                                                   SHIPPED_DATE, NUMBER_OF_PACKAGES,COST,
                                                   SHIPPED_TO_ADDRESS_ID, SHIPPED_TO_ADDRESS_MULTIPLE_UNIT,
                                                   SHIPPED_TO_ADDRESS_STREET_ADDRESS, SHIPPED_TO_ADDRESS_CITY,
@@ -79,6 +86,8 @@ public class ShippingMeta implements Meta, MetaMap {
                                                   SHIPPED_TO_ADDRESS_WORK_PHONE, SHIPPED_TO_ADDRESS_HOME_PHONE,
                                                   SHIPPED_TO_ADDRESS_CELL_PHONE, SHIPPED_TO_ADDRESS_FAX_PHONE,
                                                   SHIPPED_TO_ADDRESS_EMAIL, SHIPPED_TO_ADDRESS_COUNTRY,
+                                                  ITEM_ID, ITEM_SHIPPING_ID, ITEM_REFERENCE_TABLE_ID,
+                                                  ITEM_REFERENCE_ID, ITEM_QUANTITY, ITEM_DESCRIPTION,
                                                   TRACKING_ID, TRACKING_SHIPPING_ID, TRACKING_TRACKING_NUMBER,
                                                   SHIPPED_TO_NAME));
     }
@@ -99,8 +108,8 @@ public class ShippingMeta implements Meta, MetaMap {
         return SHIPPED_TO_ID;
     }
 
-    public static String getProcessedById() {
-        return PROCESSED_BY_ID;
+    public static String getProcessedBy() {
+        return PROCESSED_BY;
     } 
 
     public static String getProcessedDate() {
@@ -171,15 +180,39 @@ public class ShippingMeta implements Meta, MetaMap {
         return SHIPPED_TO_ADDRESS_COUNTRY;
     }
     
-    public String getTrackingId() {
+    public static String getItemId() {
+        return ITEM_ID;
+    } 
+    
+    public static String getItemShippingId() {
+        return ITEM_SHIPPING_ID;
+    } 
+    
+    public static String getItemReferenceTableId() {
+        return ITEM_REFERENCE_TABLE_ID;
+    }
+    
+    public static String getItemReferenceId() {
+        return ITEM_REFERENCE_ID; 
+    }
+    
+    public static String getItemQuantity() {
+        return ITEM_QUANTITY; 
+    } 
+    
+    public static String getItemDescription() {
+        return ITEM_DESCRIPTION;
+    }
+    
+    public static String getTrackingId() {
         return TRACKING_ID;
     } 
 
-    public String getTrackingShippingId() {
+    public static String getTrackingShippingId() {
         return TRACKING_SHIPPING_ID;
     } 
 
-    public String getTrackingTrackingNumber() {
+    public static String getTrackingTrackingNumber() {
         return TRACKING_TRACKING_NUMBER;
     }
     
@@ -193,10 +226,12 @@ public class ShippingMeta implements Meta, MetaMap {
     
     public String buildFrom(String where) {
         String from = "Shipping _shipping ";
+        if(where.indexOf("shippingItem.") > -1)
+            from += ", IN (_shipping.shippingItem) _shippingItem ";
         if(where.indexOf("shippingTracking.") > -1)
             from += ", IN (_shipping.shippingTracking) _shippingTracking ";
         if(where.indexOf("shippedTo.") > -1)
-            from += ", (_shipping.shippedTo) _shippedTo ";
+            from += ", IN (_shipping.shippedTo) _shippedTo ";
 
         return from;
     } 

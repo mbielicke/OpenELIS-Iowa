@@ -25,41 +25,29 @@
 */
 package org.openelis.domain;
 
-import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class ShippingItemDO implements RPC {
+public class ShippingItemDO extends DataObject{
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id;
-    protected Integer         shippingId;
-    protected Integer         referenceTableId;
-    protected Integer         referenceId;
-    protected String          itemDescription;
-    protected Integer         quantity;
+    protected Integer         id, shippingId, referenceTableId, referenceId,
+                              quantity;
     protected String          description;
-    protected Integer         inventoryLocationId;
-    protected Integer         transId;
 
     public ShippingItemDO() {
 
     }
 
-    public ShippingItemDO(Integer id,
-                          Integer shippingId,
-                          Integer referenceTableId,
-                          Integer referenceId,
-                          Integer quantity,
-                          Integer inventoryLocationId,
-                          Integer transId) {
+    public ShippingItemDO(Integer id, Integer shippingId, Integer referenceTableId,
+                          Integer referenceId, Integer quantity, String description) {
         setId(id);
         setShippingId(shippingId);
         setReferenceTableId(referenceTableId);
         setReferenceId(referenceId);
         setQuantity(quantity);
-        setInventoryLocationId(inventoryLocationId);
-        setTransId(transId);
+        setDescription(description);
+        _changed = false;
     }
 
     public Integer getId() {
@@ -76,6 +64,7 @@ public class ShippingItemDO implements RPC {
 
     public void setReferenceId(Integer referenceId) {
         this.referenceId = referenceId;
+        _changed = true;
     }
 
     public Integer getReferenceTableId() {
@@ -84,6 +73,7 @@ public class ShippingItemDO implements RPC {
 
     public void setReferenceTableId(Integer referenceTableId) {
         this.referenceTableId = referenceTableId;
+        _changed = true;
     }
 
     public Integer getShippingId() {
@@ -92,14 +82,7 @@ public class ShippingItemDO implements RPC {
 
     public void setShippingId(Integer shippingId) {
         this.shippingId = shippingId;
-    }
-
-    public String getItemDescription() {
-        return itemDescription;
-    }
-
-    public void setItemDescription(String itemDescription) {
-        this.itemDescription = DataBaseUtil.trim(itemDescription);
+        _changed = true;
     }
 
     public Integer getQuantity() {
@@ -108,22 +91,7 @@ public class ShippingItemDO implements RPC {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
-    }
-
-    public Integer getInventoryLocationId() {
-        return inventoryLocationId;
-    }
-
-    public void setInventoryLocationId(Integer inventoryLocationId) {
-        this.inventoryLocationId = inventoryLocationId;
-    }
-
-    public Integer getTransId() {
-        return transId;
-    }
-
-    public void setTransId(Integer transId) {
-        this.transId = transId;
+        _changed = true;
     }
 
     public String getDescription() {
@@ -132,5 +100,6 @@ public class ShippingItemDO implements RPC {
 
     public void setDescription(String description) {
         this.description = DataBaseUtil.trim(description);
+        _changed = true;
     }
 }

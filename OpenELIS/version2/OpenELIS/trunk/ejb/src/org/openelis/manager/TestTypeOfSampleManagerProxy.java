@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.TestTypeOfSampleDO;
+import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.TestTypeOfSampleLocal;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -38,35 +39,35 @@ public class TestTypeOfSampleManagerProxy {
     
     public TestTypeOfSampleManager fetchByTestId(Integer testId) throws Exception {
         ArrayList<TestTypeOfSampleDO> sampleTypes;
-        TestTypeOfSampleManager ttsm;
+        TestTypeOfSampleManager man;
                        
         sampleTypes = local().fetchByTestId(testId);
-        ttsm = TestTypeOfSampleManager.getInstance();
-        ttsm.setTypes(sampleTypes);
-        ttsm.setTestId(testId);
+        man = TestTypeOfSampleManager.getInstance();
+        man.setTypes(sampleTypes);
+        man.setTestId(testId);
         
-        return ttsm;       
+        return man;       
     }
     
     public TestTypeOfSampleManager add(TestTypeOfSampleManager man) throws Exception {
         TestTypeOfSampleLocal tl; 
-        TestTypeOfSampleDO sampleType;
+        TestTypeOfSampleDO data;
         int i;
         
         tl = local();         
         
         for(i = 0; i < man.count(); i++){
-            sampleType = man.getTypeAt(i);
+            data = man.getTypeAt(i);
             
-            sampleType.setTestId(man.getTestId());
-            tl.add(sampleType);            
+            data.setTestId(man.getTestId());
+            tl.add(data);            
         }
         return man;
     }
     
     public TestTypeOfSampleManager update(TestTypeOfSampleManager man) throws Exception {
         TestTypeOfSampleLocal tl; 
-        TestTypeOfSampleDO sampleType;
+        TestTypeOfSampleDO data;
         int i;
         
         tl = local(); 
@@ -75,13 +76,13 @@ public class TestTypeOfSampleManagerProxy {
         }
         
         for(i = 0; i < man.count(); i++){
-            sampleType = man.getTypeAt(i);
+            data = man.getTypeAt(i);
             
-            if(sampleType.getId() == null){
-                sampleType.setTestId(man.getTestId());
-                tl.add(sampleType);
+            if(data.getId() == null){
+                data.setTestId(man.getTestId());
+                tl.add(data);
             }else
-                tl.update(sampleType);
+                tl.update(data);
         }
 
         return man;
@@ -89,21 +90,29 @@ public class TestTypeOfSampleManagerProxy {
     
     public void validate(TestTypeOfSampleManager man) throws Exception {
         ValidationErrorsList list;
-        TestTypeOfSampleDO typeDO;        
+        TestTypeOfSampleDO data;
         TestTypeOfSampleLocal sl;
+        int count;
 
         list = new ValidationErrorsList();
         sl = local();
-        for (int i = 0; i < man.count(); i++ ) {
-            typeDO = man.getTypeAt(i);
-            
-            try {
-                sl.validate(typeDO);
-            } catch (Exception e) {
-                DataBaseUtil.mergeException(list, e, "sampleTypeTable", i);
-            }
+        count = man.count();
+        if (count == 0) {
+            list.add(new FieldErrorException("atleastOneSampleTypeException", null));
+        } else {
+            for (int i = 0; i < count; i++ ) {
+                data = man.getTypeAt(i);
 
+                try {
+                    sl.validate(data);
+                } catch (Exception e) {
+                    DataBaseUtil.mergeException(list, e, "sampleTypeTable", i);
+                }
+            }
         }
+        
+        if(list.size() > 0)
+            throw list;
     }
     
     private TestTypeOfSampleLocal local(){

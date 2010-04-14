@@ -28,100 +28,39 @@ package org.openelis.domain;
 import java.util.Date;
 
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class ShippingDO implements RPC {
+/**
+ * Class represents the fields in database table shipping.
+ */
+public class ShippingDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id;
-    protected Integer         statusId;
-    protected Integer         shippedFromId;
-    protected Integer         shippedToId;
-    protected String          shippedTo;
-    protected Integer         processedById;
+    protected Integer         id, statusId, shippedFromId, shippedToId,
+                              shippedMethodId, numberOfPackages;
     protected String          processedBy;
-    protected Datetime        processedDate;
-    protected Integer         shippedMethodId;
-    protected Datetime        shippedDate;
-    protected Integer         numberOfPackages;
+    protected Datetime        processedDate, shippedDate;
     protected Double          cost;
 
-    public AddressDO          addressDO        = new AddressDO();
-
     public ShippingDO() {
-
     }
 
-    // without address info
-    public ShippingDO(Integer id,
-                      Integer statusId,
-                      Integer shippedFromId,
-                      Integer shippedToId,
-                      String shippedTo,
-                      Integer processedById,
-                      Date processedDate,
-                      Integer shippedMethodId,
-                      Date shippedDate,
-                      Integer numberOfPackages,
-                      Double cost) {
+    public ShippingDO(Integer id, Integer statusId, Integer shippedFromId,
+                      Integer shippedToId,  String processedBy,
+                      Date processedDate, Integer shippedMethodId, Date shippedDate,
+                      Integer numberOfPackages, Double cost) {
         setId(id);
         setStatusId(statusId);
         setShippedFromId(shippedFromId);
         setShippedToId(shippedToId);
-        setShippedTo(shippedTo);
-        setProcessedById(processedById);
-        setProcessedDate(processedDate);
+        setProcessedBy(processedBy);
+        setProcessedDate(DataBaseUtil.toYD(processedDate));
         setShippedMethodId(shippedMethodId);
-        setShippedDate(shippedDate);
+        setShippedDate(DataBaseUtil.toYD(shippedDate));
         setNumberOfPackages(numberOfPackages);
         setCost(cost);
-    }
-
-    // with address info
-    public ShippingDO(Integer id,
-                      Integer statusId,
-                      Integer shippedFromId,
-                      Integer shippedToId,
-                      String shippedTo,
-                      Integer processedById,
-                      Date processedDate,
-                      Integer shippedMethodId,
-                      Date shippedDate,
-                      Integer numberOfPackages,
-                      Double cost,
-                      String multUnit,
-                      String streetAddress,
-                      String city,
-                      String state,
-                      String zipCode) {
-        setId(id);
-        setStatusId(statusId);
-        setShippedFromId(shippedFromId);
-        setShippedToId(shippedToId);
-        setShippedTo(shippedTo);
-        setProcessedById(processedById);
-        setProcessedDate(processedDate);
-        setShippedMethodId(shippedMethodId);
-        setShippedDate(shippedDate);
-        setNumberOfPackages(numberOfPackages);
-        setCost(cost);
-
-        // address info
-        addressDO.setMultipleUnit(multUnit);
-        addressDO.setStreetAddress(streetAddress);
-        addressDO.setCity(city);
-        addressDO.setState(state);
-        addressDO.setZipCode(zipCode);
-    }
-
-    public Double getCost() {
-        return cost;
-    }
-
-    public void setCost(Double cost) {
-        this.cost = cost;
+        _changed = false;
     }
 
     public Integer getId() {
@@ -130,89 +69,87 @@ public class ShippingDO implements RPC {
 
     public void setId(Integer id) {
         this.id = id;
+        _changed = true;
     }
-
-    public Integer getNumberOfPackages() {
-        return numberOfPackages;
-    }
-
-    public void setNumberOfPackages(Integer numberOfPackages) {
-        this.numberOfPackages = numberOfPackages;
-    }
-
-    public Integer getProcessedById() {
-        return processedById;
-    }
-
-    public void setProcessedById(Integer processedById) {
-        this.processedById = processedById;
-    }
-
-    public Datetime getProcessedDate() {
-        return processedDate;
-    }
-
-    public void setProcessedDate(Date processedDate) {
-        this.processedDate = new Datetime(Datetime.YEAR,
-                                          Datetime.DAY,
-                                          processedDate);
-    }
-
-    public Datetime getShippedDate() {
-        return shippedDate;
-    }
-
-    public void setShippedDate(Date shippedDate) {
-        this.shippedDate = new Datetime(Datetime.YEAR,
-                                        Datetime.DAY,
-                                        shippedDate);
-    }
-
-    public Integer getShippedFromId() {
-        return shippedFromId;
-    }
-
-    public void setShippedFromId(Integer shippedFromId) {
-        this.shippedFromId = shippedFromId;
-    }
-
-    public Integer getShippedMethodId() {
-        return shippedMethodId;
-    }
-
-    public void setShippedMethodId(Integer shippedMethodId) {
-        this.shippedMethodId = shippedMethodId;
-    }
-
-    public Integer getShippedToId() {
-        return shippedToId;
-    }
-
-    public void setShippedToId(Integer shippedToId) {
-        this.shippedToId = shippedToId;
-    }
-
-    public String getShippedTo() {
-        return shippedTo;
-    }
-
-    public void setShippedTo(String shippedTo) {
-        this.shippedTo = shippedTo;
-    }
-
+    
     public Integer getStatusId() {
         return statusId;
     }
 
     public void setStatusId(Integer statusId) {
         this.statusId = statusId;
+        _changed = true;
+    }
+    
+    public Integer getShippedFromId() {
+        return shippedFromId;
     }
 
+    public void setShippedFromId(Integer shippedFromId) {
+        this.shippedFromId = shippedFromId;
+        _changed = true;
+    }
+    
+    public Integer getShippedToId() {
+        return shippedToId;
+    }
+
+    public void setShippedToId(Integer shippedToId) {
+        this.shippedToId = shippedToId;
+        _changed = true;
+    }  
+    
     public String getProcessedBy() {
         return processedBy;
     }
 
     public void setProcessedBy(String processedBy) {
         this.processedBy = DataBaseUtil.trim(processedBy);
+        _changed = true;
+    }
+    
+    public Datetime getProcessedDate() {
+        return processedDate;
+    }
+
+    public void setProcessedDate(Datetime processedDate) {
+        this.processedDate = DataBaseUtil.toYD(processedDate);
+        _changed = true;
+    }
+    
+    public Integer getShippedMethodId() {
+        return shippedMethodId;
+    }
+
+    public void setShippedMethodId(Integer shippedMethodId) {
+        this.shippedMethodId = shippedMethodId;
+        _changed = true;
+    }
+    
+    public Datetime getShippedDate() {
+        return shippedDate;
+    }
+
+    public void setShippedDate(Datetime shippedDate) {
+        this.shippedDate = DataBaseUtil.toYD(shippedDate);
+        _changed = true;
+    }
+    
+    public Integer getNumberOfPackages() {
+        return numberOfPackages;
+    }
+
+    public void setNumberOfPackages(Integer numberOfPackages) {
+        this.numberOfPackages = numberOfPackages;
+        _changed = true;
+    }
+    
+    public Double getCost() {
+        return cost;
+    }
+
+    public void setCost(Double cost) {
+        this.cost = cost;
+        _changed = true;
     }
 }

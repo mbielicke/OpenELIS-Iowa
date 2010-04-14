@@ -25,20 +25,19 @@
 */
 package org.openelis.remote;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.ShippingAddAutoFillDO;
-import org.openelis.domain.ShippingDO;
-import org.openelis.domain.ShippingItemDO;
-import org.openelis.domain.ShippingTrackingDO;
+import org.openelis.domain.IdNameVO;
+import org.openelis.gwt.common.data.QueryData;
 
 @Remote
 public interface ShippingRemote {
 
-    //method to return shipping record
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int i, int rowPP) throws Exception;
+
+    /*//method to return shipping record
     public ShippingDO getShipment(Integer shippingId);
     
     //method to unlock entity and return shipping record
@@ -59,5 +58,5 @@ public interface ShippingRemote {
      
     public ShippingAddAutoFillDO getAddAutoFillValues() throws Exception;
     
-    public NoteViewDO getShippingNote(Integer shippingId);
+    public NoteViewDO getShippingNote(Integer shippingId);*/
 }

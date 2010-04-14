@@ -46,7 +46,7 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-    @NamedQuery( name = "ShippingTracking.Tracking",
+    @NamedQuery( name = "ShippingTracking.FetchByShippingId",
                 query = "select new org.openelis.domain.ShippingTrackingDO(s.id, s.shippingId, s.trackingNumber) "
                       + " from ShippingTracking s where s.shippingId = :id")})
 @Entity
