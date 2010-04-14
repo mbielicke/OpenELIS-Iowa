@@ -558,6 +558,8 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
         for (int i = 0; i < numOfCols; i++ ) {
             col = resultTableCols.get(i);
+            col.enable(testResultsTable.isEnabled());
+            
             if (i == 0)
                 col.setCurrentWidth(65);
             else
