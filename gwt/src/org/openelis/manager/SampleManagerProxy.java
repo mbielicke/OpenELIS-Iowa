@@ -101,12 +101,9 @@ public class SampleManagerProxy {
             //recieved cant be more than 30 days before entered
             errorsList.add(new FieldErrorWarning("receivedTooOldWarning", SampleMeta.getReceivedDate()));
             
-       if(sampleDO.getEnteredDate() != null && sampleDO.getCollectionDate() != null){
-           if(sampleDO.getCollectionDate().before(sampleDO.getEnteredDate().add(-364)))
+       if(sampleDO.getEnteredDate() != null && sampleDO.getCollectionDate() != null && 
+                       sampleDO.getCollectionDate().before(sampleDO.getEnteredDate().add(-364)))
                errorsList.add(new FieldErrorException("collectedTooOldException", SampleMeta.getCollectionDate()));
-           else if(sampleDO.getCollectionDate().before(sampleDO.getEnteredDate().add(-30)))
-               errorsList.add(new FieldErrorWarning("collectedTooOldWarning", SampleMeta.getCollectionDate()));
-       }
         
        if(sampleDO.getCollectionDate() == null)
            errorsList.add(new FieldErrorWarning("collectedDateMissingWarning", SampleMeta.getCollectionDate()));
