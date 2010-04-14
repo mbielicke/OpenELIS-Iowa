@@ -38,6 +38,7 @@ public class SampleItemManager implements RPC {
     private static final long                         serialVersionUID = 1L;
 
     protected Integer                                 sampleId;
+    protected transient Integer                       anInPrepId;
     protected SampleManager                           sampleManager;
     private int                                       tempId;
     protected ArrayList<SampleItemListItem>           items;
@@ -56,7 +57,7 @@ public class SampleItemManager implements RPC {
 
         return sim;
     }
-    
+
     // sample item
     public SampleItemViewDO getSampleItemAt(int i) {
         return getItemAt(i).sampleItem;
@@ -72,13 +73,13 @@ public class SampleItemManager implements RPC {
         SampleItemViewDO si;
 
         assert sampleManager != null : "sampleManager is null";
-        
+
         item = new SampleItemListItem();
         si = new SampleItemViewDO();
         item.sampleItem = si;
 
         items.add(item);
-        setDefaultsAt(count()-1);
+        setDefaultsAt(count() - 1);
 
         return count() - 1;
     }
@@ -157,11 +158,11 @@ public class SampleItemManager implements RPC {
         proxy().validate(this, errorsList);
     }
 
-    public void setDefaultsAt(int index){
+    public void setDefaultsAt(int index) {
         SampleItemViewDO si;
-        
+
         assert sampleManager != null : "sampleManager is null";
-        
+
         si = getItemAt(index).sampleItem;
         si.setItemSequence(sampleManager.getNextSequence());
     }
@@ -223,30 +224,34 @@ public class SampleItemManager implements RPC {
     }
 
     /**
-     * This moves an analysis from one sample item to the end of another sample item
-     * @param fromAnalysisBundle bundle of the analysis row you want to move
-     * @param toSampleItemBundle bundle of the sample item row you want to move to
+     * This moves an analysis from one sample item to the end of another sample
+     * item
+     * 
+     * @param fromAnalysisBundle
+     *        bundle of the analysis row you want to move
+     * @param toSampleItemBundle
+     *        bundle of the sample item row you want to move to
      * @throws Exception
      */
-    public void moveAnalysis(SampleDataBundle fromAnalysisBundle,  SampleDataBundle toBundle) throws Exception {
-        int toItemIndex, fromItemIndex, fromAnalysisIndex; 
-        AnalysisManager fromMan, toMan; 
+    public void moveAnalysis(SampleDataBundle fromAnalysisBundle, SampleDataBundle toBundle)
+                                                                                            throws Exception {
+        int toItemIndex, fromItemIndex, fromAnalysisIndex;
+        AnalysisManager fromMan, toMan;
         AnalysisViewDO analysisDO;
-        
+
         assert fromAnalysisBundle.getType() == SampleDataBundle.Type.ANALYSIS : "from bundle needs to be analysis bundle";
-        
+
         toItemIndex = toBundle.getSampleItemIndex();
         fromItemIndex = fromAnalysisBundle.getSampleItemIndex();
         fromAnalysisIndex = fromAnalysisBundle.getAnalysisIndex();
-        
-        fromMan = getAnalysisAt(fromItemIndex); 
-        toMan = getAnalysisAt(toItemIndex); 
-        
+
+        fromMan = getAnalysisAt(fromItemIndex);
+        toMan = getAnalysisAt(toItemIndex);
+
         analysisDO = fromMan.getAnalysisAt(fromAnalysisIndex);
-        fromMan.removeAnalysisAtNoDelete(fromAnalysisIndex); 
+        fromMan.removeAnalysisAtNoDelete(fromAnalysisIndex);
         toMan.addAnalysis(analysisDO);
     }
-    
 
     public void setAnalysisAt(AnalysisManager analysis, int i) {
         getItemAt(i).analysis = analysis;
@@ -254,6 +259,31 @@ public class SampleItemManager implements RPC {
 
     public SampleItemListItem getItemAt(int i) {
         return (SampleItemListItem)items.get(i);
+    }
+
+    /**
+     * Links the actual analysis with the prep analysis with the right indexes.
+     * The actual analysis is updated with status 'In prep' and available date
+     * is cleared.
+     * 
+     * @param index
+     * @param prepTestIndex
+     */
+    public void linkPrepTest(int sampleItemIndex,
+                             int analysisIndex,
+                             int prepSampleItemIndex,
+                             int prepAnalysisIndex) throws Exception {
+        AnalysisViewDO anDO, prepDO;
+        
+        loadDictionaryEntries();
+
+        anDO = getAnalysisAt(sampleItemIndex).getAnalysisAt(analysisIndex);
+        prepDO = getAnalysisAt(prepSampleItemIndex).getAnalysisAt(prepAnalysisIndex);
+        anDO.setPreAnalysisId(prepDO.getId());
+        anDO.setPreAnalysisTest(prepDO.getTestName());
+        anDO.setPreAnalysisMethod(prepDO.getMethodName());
+        anDO.setStatusId(anInPrepId);
+        anDO.setAvailableDate(null);
     }
 
     // these are friendly methods so only managers and proxies can call this
@@ -317,6 +347,11 @@ public class SampleItemManager implements RPC {
 
         return released;
     }
+    
+    private void loadDictionaryEntries() throws Exception {
+        if (anInPrepId == null) 
+            anInPrepId = proxy().getIdFromSystemName("analysis_inprep");
+    }
 
     private static SampleItemManagerProxy proxy() {
         if (proxy == null)
@@ -328,11 +363,12 @@ public class SampleItemManager implements RPC {
     static class SampleItemListItem implements RPC {
         private static final long serialVersionUID = 1L;
 
-        public SampleItemListItem(){}
-        
-        SampleItemViewDO          sampleItem;
-        StorageManager            storage;
-        AnalysisManager           analysis;
-        SampleDataBundle          bundle;
+        public SampleItemListItem() {
+        }
+
+        SampleItemViewDO sampleItem;
+        StorageManager   storage;
+        AnalysisManager  analysis;
+        SampleDataBundle bundle;
     }
 }
