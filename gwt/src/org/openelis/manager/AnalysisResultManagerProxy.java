@@ -64,8 +64,14 @@ public class AnalysisResultManagerProxy {
         return service.call("fetchByAnalysisId", anDO);
     }
 
-    public AnalysisResultManager fetchByTestId(Integer testId) throws Exception {
-        return service.call("fetchByTestId", testId);
+    public AnalysisResultManager fetchByTestId(Integer testId, Integer unitId) throws Exception {
+        AnalysisDO anDO;
+
+        anDO = new AnalysisDO();
+        anDO.setTestId(testId);
+        anDO.setUnitOfMeasureId(unitId);
+        
+        return service.call("fetchByTestId", anDO);
     }
 
     public AnalysisResultManager add(AnalysisResultManager man) throws Exception {

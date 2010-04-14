@@ -295,7 +295,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                     resultDO = displayManager.getObjectAt(index, i - 2);
                     row.key = resultDO.getId();
                     try {
-                        val = getResultValue(resultDO, anDO.getUnitOfMeasureId());
+                        val = getDefaultValue(resultDO, anDO.getUnitOfMeasureId());
                         testResultsTable.setCell(index, i, val);
 
                         if (val != null && !"".equals(val)) {
@@ -480,7 +480,8 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                         row.cells.get(1).setValue(resultDO.getAnalyte());
                     }
 
-                    val = getResultValue(resultDO, anDO.getUnitOfMeasureId());
+                    val = resultDO.getValue();
+                    //getResultValue(resultDO, anDO.getUnitOfMeasureId());
                     row.cells.get(c + 2).setValue(val);
 
                     if (validateResults && val != null && !"".equals(val)) {
@@ -509,7 +510,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         return model;
     }
 
-    private String getResultValue(ResultViewDO resultDO, Integer unitOfMeasureId) {
+    private String getDefaultValue(ResultViewDO resultDO, Integer unitOfMeasureId) {
         String val;
         if (resultDO.getValue() != null || resultDO.getId() != null)
             val = resultDO.getValue();
