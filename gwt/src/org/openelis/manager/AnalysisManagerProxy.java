@@ -25,6 +25,8 @@
 */
 package org.openelis.manager;
 
+import java.util.HashMap;
+
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.domain.AnalysisViewDO;
@@ -51,14 +53,14 @@ public class AnalysisManagerProxy {
         return service.call("fetchBySampleItemId", sampleItemId);
     }
    
-    public AnalysisManager add(AnalysisManager man) throws Exception {
+    public int add(AnalysisManager man, HashMap<Integer, Integer> idHash) throws Exception {
         assert false : "not supported";
-        return null;
+        return -1;
     }
     
-    public AnalysisManager update(AnalysisManager man) throws Exception{
+    public int update(AnalysisManager man, HashMap<Integer, Integer> idHash) throws Exception{
         assert false : "not supported";
-        return null;
+        return -1;
     }
     
     public Datetime getCurrentDatetime(byte begin, byte end) throws Exception {
