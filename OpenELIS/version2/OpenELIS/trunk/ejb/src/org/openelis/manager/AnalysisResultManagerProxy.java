@@ -84,7 +84,7 @@ public class AnalysisResultManagerProxy {
         return man;
     }
 
-    public AnalysisResultManager fetchByTestId(Integer testId) throws Exception {
+    public AnalysisResultManager fetchByTestId(Integer testId, Integer unitId) throws Exception {
         ArrayList<ArrayList<ResultViewDO>> results;
         HashMap<Integer, TestResultDO> testResultList;
         HashMap<Integer, AnalyteDO> analyteList;
@@ -98,7 +98,7 @@ public class AnalysisResultManagerProxy {
         testAnalyteList = new HashMap<Integer, TestAnalyteListItem>();
         resultValidators = new ArrayList<ResultValidator>();
 
-        local().fetchByTestIdNoResults(testId, results, testResultList, analyteList,
+        local().fetchByTestIdNoResults(testId, unitId, results, testResultList, analyteList,
                                        testAnalyteList, resultValidators);
         man = AnalysisResultManager.getInstance();
         man.setResults(results);
@@ -170,7 +170,7 @@ public class AnalysisResultManagerProxy {
     public AnalysisResultManager merge(AnalysisResultManager oldMan) throws Exception {
         AnalysisResultManager newMan;
 
-        newMan = fetchByTestId(oldMan.getMergeTestId());
+        newMan = fetchByTestId(oldMan.getMergeTestId(), oldMan.getMergeUnitId());
         newMan.setAnalysisId(oldMan.getAnalysisId());
         mergeResultGrid(oldMan.getResults(), newMan.getResults());
 

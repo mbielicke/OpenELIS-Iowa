@@ -38,12 +38,12 @@ public class ResultManagerBean implements ResultManagerRemote {
         return AnalysisResultManager.fetchByAnalysisId(analysisId);
     }
 
-    public AnalysisResultManager fetchByAnalysisId(Integer analysisId, Integer testId) throws Exception {
-        return AnalysisResultManager.fetchForUpdate(analysisId, testId);
+    public AnalysisResultManager fetchForUpdateWithAnalysisId(Integer analysisId, Integer testId) throws Exception {
+        return AnalysisResultManager.fetchForUpdateWithAnalysisId(analysisId, testId);
     }
 
-    public AnalysisResultManager fetchByTestId(Integer testId) throws Exception {
-        return AnalysisResultManager.fetchForUpdate(testId);
+    public AnalysisResultManager fetchForUpdateWithTestId(Integer testId, Integer UnitId) throws Exception {
+        return AnalysisResultManager.fetchForUpdateWithTestId(testId, UnitId);
     }
     
     public AnalysisResultManager merge(AnalysisResultManager man) throws Exception {
