@@ -25,37 +25,24 @@
 */
 package org.openelis.domain;
 
-import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class ShippingTrackingDO implements RPC {
+public class ShippingTrackingDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id;
-    protected Integer         shippingId;
+    protected Integer         id, shippingId;
     protected String          trackingNumber;
 
-    protected boolean         delete           = false;
-
-    public boolean isDelete() {
-        return delete;
-    }
-
-    public void setDelete(boolean delete) {
-        this.delete = delete;
-    }
-
     public ShippingTrackingDO() {
-
     }
 
-    public ShippingTrackingDO(Integer id,
-                              Integer shippingId,
+    public ShippingTrackingDO(Integer id, Integer shippingId,
                               String trackingNumber) {
         setId(id);
         setShippingId(shippingId);
         setTrackingNumber(trackingNumber);
+        _changed = false;
     }
 
     public Integer getId() {
@@ -72,6 +59,7 @@ public class ShippingTrackingDO implements RPC {
 
     public void setShippingId(Integer shippingId) {
         this.shippingId = shippingId;
+        _changed = true;
     }
 
     public String getTrackingNumber() {
@@ -80,5 +68,6 @@ public class ShippingTrackingDO implements RPC {
 
     public void setTrackingNumber(String trackingNumber) {
         this.trackingNumber = DataBaseUtil.trim(trackingNumber);
+        _changed = true;
     }
 }

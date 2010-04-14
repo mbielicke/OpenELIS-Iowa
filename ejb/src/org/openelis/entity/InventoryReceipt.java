@@ -178,11 +178,11 @@ public class InventoryReceipt implements Auditable, Cloneable {
     }
 
     public Datetime getReceivedDate() {
-        return DataBaseUtil.toYD(receivedDate);
+        return DataBaseUtil.toYM(receivedDate);
     }
 
     public void setReceivedDate(Datetime receivedDate) {
-        if (DataBaseUtil.isDifferentYD(receivedDate, this.receivedDate))
+        if (DataBaseUtil.isDifferentYM(receivedDate, this.receivedDate))
             this.receivedDate = DataBaseUtil.toDate(receivedDate);
     }
 

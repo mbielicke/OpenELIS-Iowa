@@ -54,11 +54,11 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-    @NamedQuery( name = "Shipping.Shipping",
-                query = "select new org.openelis.domain.ShippingDO(s.id, s.statusId, s.shippedFromId, s.shippedToId, shippedTo.name," +
-                        "s.processedById, s.processedDate, s.shippedMethodId, s.shippedDate, s.numberOfPackages, s.cost, shippedTo.address.multipleUnit, shippedTo.address.streetAddress," +
-                        "shippedTo.address.city, shippedTo.address.state, shippedTo.address.zipCode)" 
-                      + " from Shipping s LEFT JOIN s.shippedTo shippedTo where s.id = :id")})
+    @NamedQuery( name = "Shipping.FetchById",
+                query = "select new org.openelis.domain.ShippingViewDO(s.id,s.statusId," +
+                		"s.shippedFromId,s.shippedToId,s.processedBy,s.processedDate," +
+                		"s.shippedMethodId,s.shippedDate,s.numberOfPackages,s.cost)" 
+                      + " from Shipping s where s.id = :id")})
 @Entity
 @Table(name = "shipping")
 @EntityListeners( {AuditUtil.class})
@@ -78,8 +78,8 @@ public class Shipping implements Auditable, Cloneable {
     @Column(name = "shipped_to_id")
     private Integer                      shippedToId;
 
-    @Column(name = "processed_by_id")
-    private Integer                      processedById;
+    @Column(name = "processed_by")
+    private String                       processedBy;
 
     @Column(name = "processed_date")
     private Date                         processedDate;
@@ -100,6 +100,10 @@ public class Shipping implements Auditable, Cloneable {
     @JoinColumn(name = "shipped_to_id", insertable = false, updatable = false)
     private Organization                 shippedTo;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shipping_id", insertable = false, updatable = false)
+    private Collection<ShippingItem>     shippingItem;
+    
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "shipping_id", insertable = false, updatable = false)
     private Collection<ShippingTracking> shippingTracking;
@@ -143,13 +147,13 @@ public class Shipping implements Auditable, Cloneable {
             this.shippedToId = shippedToId;
     }
 
-    public Integer getProcessedById() {
-        return processedById;
+    public String getProcessedBy() {
+        return processedBy;
     }
 
-    public void setProcessedById(Integer processedById) {
-        if (DataBaseUtil.isDifferent(processedById, this.processedById))
-            this.processedById = processedById;
+    public void setProcessedBy(String processedBy) {
+        if (DataBaseUtil.isDifferent(processedBy, this.processedBy))
+            this.processedBy = processedBy;
     }
 
     public Datetime getProcessedDate() {
@@ -196,6 +200,14 @@ public class Shipping implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(cost, this.cost))
             this.cost = cost;
     }
+    
+    public Collection<ShippingItem> getShippingItem() {
+        return shippingItem;
+    }
+
+    public void setShippingItem(Collection<ShippingItem> shippingItem) {
+        this.shippingItem = shippingItem;
+    }
 
     public Collection<ShippingTracking> getShippingTracking() {
         return shippingTracking;
@@ -232,7 +244,7 @@ public class Shipping implements Auditable, Cloneable {
                  .setField("status_id", statusId, original.statusId)
                  .setField("shipped_from_id", shippedFromId, original.shippedFromId)
                  .setField("shipped_to_id", shippedToId, original.shippedToId)
-                 .setField("processed_by_id", processedById, original.processedById)
+                 .setField("processed_by", processedBy, original.processedBy)
                  .setField("processed_date", processedDate, original.processedDate)
                  .setField("shipped_method_id", shippedMethodId, original.shippedMethodId)
                  .setField("shipped_date", shippedDate, original.shippedDate)
