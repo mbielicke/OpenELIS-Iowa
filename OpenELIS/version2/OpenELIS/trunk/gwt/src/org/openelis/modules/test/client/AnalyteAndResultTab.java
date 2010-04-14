@@ -197,11 +197,12 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 
                 if(state != State.ADD  && state != State.UPDATE) 
                     return;
+                
                 //
                 // since this table supports multiple selection, we want to make
-                // sure that if the first row selected is an analyte row is selected than
+                // sure that if the first row selected is an analyte row  then
                 // all the subsequently selected rows are analyte rows and if the
-                // first row selected is a header row is selected than all the
+                // first row selected is a header row then all the
                 // subsequently selected rows are header rows, so through this
                 // code we prevent users from selecting the other kind of row 
                 //                
@@ -235,10 +236,12 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 anaSelCol = c;
 
                 if (state != State.ADD && state != State.UPDATE) {
+                    enableAnalyteWidgets(false);
                     event.cancel();
+                } else {
+                    enableAnalyteWidgets(true);
                 }
-
-                enableAnalyteWidgets(true);
+                
                 cancel = false;
                 auto = (AutoComplete<Integer>)analyteTable.getColumns().get(c).getColumnWidget();
 
@@ -656,14 +659,18 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                         if (data != null)
                             typeId.setSelection(data.getTypeId());
                         else
-                            typeId.setSelection(null);
-                        
-                        /*if (data == null || "Y".equals(data.getIsColumn()))
-                            typeId.setSelection(null);
-                        else
-                            typeId.setSelection(data.getTypeId());*/
+                            typeId.setSelection(null);                        
 
-                    }
+                } else {
+                    //
+                    // everytime the data on the screen changes, the model in the analyte
+                    // table gets refreshed; thus there are no rows and columns selected 
+                    // at that point and hence this widget needs to be cleared of any 
+                    // previous selection
+                    //
+                    if(typeId.getData() != null)
+                        typeId.setSelection(null);   
+                }
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {                
@@ -707,11 +714,16 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 }                
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                    typeId.getData() != null)
+            public void onStateChange(StateChangeEvent<State> event) {                
+                //
+                // everytime the state of the screen changes, the model in the analyte
+                // table gets refreshed; thus there are no rows and columns selected 
+                // at that point and hence this widget needs to be cleared of any 
+                // previous selection and disabled
+                //
+                if(typeId.getData() != null)
                     typeId.setSelection(null);
-
+                
                 typeId.enable(false);
             }
         });
@@ -733,13 +745,16 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                     if (data != null)
                         isReportable.setValue(data.getIsReportable());
                     else
-                        isReportable.setValue("N");
-                    
-                  /*if (data == null || "Y".equals(data.getIsColumn()))
-                        isReportable.setValue("N");
-                    else
-                        isReportable.setValue(data.getIsReportable());*/
+                        isReportable.setValue("N");                   
 
+                } else {            
+                    //
+                    // everytime the data on the screen changes, the model in the analyte
+                    // table gets refreshed; thus there are no rows and columns selected 
+                    // at that point and hence this widget needs to be cleared of any 
+                    // previous affirmative choices made
+                    //
+                    isReportable.setValue("N");    
                 }
 
             }
@@ -783,10 +798,14 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 } 
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()))
-                    isReportable.setValue("N");
-
+            public void onStateChange(StateChangeEvent<State> event) {                
+                //
+                // everytime state of the screen changes, the model in the analyte
+                // table gets refreshed; thus there are no rows and columns selected 
+                // at that point and hence this widget needs to be cleared of any 
+                // previous affirmative choice made and disabled
+                //
+                isReportable.setValue("N");                
                 isReportable.enable(false);
             }
         });
@@ -803,17 +822,20 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                     if (anaSelCol == 0)
                         data = displayManager.getObjectAt(r, anaSelCol);
                     else
-                        data = displayManager.getObjectAt(r, anaSelCol - 1);
-                    
-                    /*if (data == null || "Y".equals(data.getIsColumn()))
-                        scriptlet.setSelection(null, "");
-                    else
-                        scriptlet.setSelection(data.getScriptletId(), data.getScriptletName());*/
+                        data = displayManager.getObjectAt(r, anaSelCol - 1);                    
                                         
                     if (data != null)
                         scriptlet.setSelection(data.getScriptletId(), data.getScriptletName());
                     else
                         scriptlet.setSelection(null, "");
+                } else {
+                    //
+                    // everytime the data on the screen changes, the model in the analyte
+                    // table gets refreshed; thus there are no rows and columns selected 
+                    // at that point and hence this widget needs to be cleared of any 
+                    // previous selection and disabled
+                    //
+                    scriptlet.setSelection(null, "");
                 }
             }
 
@@ -859,10 +881,14 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 } 
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()))
-                    scriptlet.setSelection(null, "");
-
+            public void onStateChange(StateChangeEvent<State> event) {                
+                //
+                // everytime the state of the screen changes, the model in the analyte
+                // table gets refreshed; thus there are no rows and columns selected 
+                // at that point and hence this widget needs to be cleared of any 
+                // previous selection and disabled
+                //
+                scriptlet.setSelection(null, "");
                 scriptlet.enable(false);
             }
         });

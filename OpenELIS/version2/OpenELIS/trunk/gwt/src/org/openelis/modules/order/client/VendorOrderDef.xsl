@@ -262,8 +262,8 @@ UIRF Software License are applicable instead of those above.
                       <col key="{meta:getOrderItemInventoryItemStoreId()}" width="163" header="{resource:getString($constants,'store')}">
                         <dropdown width="163" field="Integer" />
                       </col>
-                      <col key="{meta:getOrderItemUnitCost()}" width="70" header="{resource:getString($constants,'unitCost')}">
-                        <textbox pattern="{resource:getString($constants,'displayCurrencyFormat')}" field="Double" />
+                      <col key="{meta:getOrderItemUnitCost()}" width="70" header="{resource:getString($constants,'unitCost')}" align = "right">
+                        <textbox field="Double" />
                       </col>
                       <col key="{meta:getOrderItemCatalogNumber()}" width="87" header="{resource:getString($constants,'catalogNum')}">
                         <textbox field="String" />
@@ -294,7 +294,7 @@ UIRF Software License are applicable instead of those above.
 <!-- TAB 2 (receipts) -->
 
               <tab key="fillTab" text="{resource:getString($constants,'filled')}">
-                <table key="fillTable" width="573" maxRows="11" showScroll="ALWAYS" title="">
+                <table key="fillTable" width="573" maxRows="10" showScroll="ALWAYS" title="">
                   <col key="{meta:getInventoryReceiptOrderItemId()}" width="150" header="{resource:getString($constants,'inventoryItem')}">
                     <label field="String" />
                   </col>
@@ -311,10 +311,10 @@ UIRF Software License are applicable instead of those above.
                     <label field="String" />
                   </col>
                   <col key="{meta:getInventoryReceiptReceivedDate()}" width="80" header="{resource:getString($constants,'dateRec')}">
-                    <textbox field="Date" begin = "0" end = "4" />
+                    <textbox pattern="{resource:getString($constants,'dateTimePattern')}" field="Date" begin = "0" end = "4" />
                   </col>
-                  <col key="{meta:getInventoryReceiptUnitCost()}" width="55" header="{resource:getString($constants,'cost')}">
-                    <textbox pattern="{resource:getString($constants,'displayCurrencyFormat')}" field="String" />
+                  <col key="{meta:getInventoryReceiptUnitCost()}" width="55" header="{resource:getString($constants,'cost')}" align = "right">
+                    <textbox field="String" />
                   </col>
                   <col key="{meta:getInventoryReceiptExternalReference()}" width="130" header="{resource:getString($constants,'extReference')}">
                     <label field="String" />

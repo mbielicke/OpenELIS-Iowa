@@ -469,7 +469,7 @@ UIRF Software License are applicable instead of those above.
                           <text style="Prompt">
                             <xsl:value-of select="resource:getString($constants,'type')" />:
                           </text>
-                          <dropdown key="{meta:getAnalyteTypeId()}" width="75" popWidth="90" field="Integer" />
+                          <dropdown key="{meta:getAnalyteTypeId()}" width="80" popWidth="80" field="Integer" />
                           <text style="Prompt">
                             <xsl:value-of select="resource:getString($constants,'reportable')" />:
                           </text>

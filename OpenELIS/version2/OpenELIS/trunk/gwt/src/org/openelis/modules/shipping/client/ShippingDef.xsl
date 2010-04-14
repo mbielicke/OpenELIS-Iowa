@@ -1,3 +1,4 @@
+
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -24,6 +25,7 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
+
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -43,7 +45,9 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Shipping" name="{resource:getString($constants,'shipping')}">
       <VerticalPanel padding="0" spacing="0">
+
 <!--button panel code-->
+
         <AbsolutePanel spacing="0" style="ButtonPanelContainer">
           <HorizontalPanel>
             <xsl:call-template name="queryButton">
@@ -83,28 +87,50 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select="language" />
               </xsl:with-param>
             </xsl:call-template>
+            <xsl:call-template name="buttonPanelDivider" />
+              <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
+                <menuItem>
+                  <menuDisplay>
+                    <appButton style="ButtonPanelButton" action="option">
+                      <HorizontalPanel>
+                        <text>
+                          <xsl:value-of select='resource:getString($constants,"options")' />
+                        </text>
+                        <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
+                      </HorizontalPanel>
+                    </appButton>
+                  </menuDisplay>
+                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                    <menuItem key="shippingHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'shippingHistory')}" />
+                    <menuItem key="itemHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'shippingItemHistory')}" />
+                    <menuItem key="trackingHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'shippingTrackingHistory')}" />
+                  </menuPanel>
+                </menuItem>
+              </menuPanel>
           </HorizontalPanel>
         </AbsolutePanel>
+
 <!--end button panel-->
+
         <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
           <TablePanel style="Form">
             <row>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'status')" />:
               </text>
-              <dropdown key="{meta:getStatusId()}" width="90" popWidth="auto" tab="{meta:getShippedDate()},{meta:getShippedMethodId()}" field="Integer" />
+              <dropdown key="{meta:getStatusId()}" width="90" popWidth="auto" tab="{meta:getShippedDate()},{meta:getShippedMethodId()}" field="Integer" required = "true"/>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'shippedDate')" />:
               </text>
               <widget colspan="5">
-                <calendar key="{meta:getShippedDate()}" begin="0" end="2" width="80" tab="{meta:getNumberOfPackages()},{meta:getStatusId()}" />
+                <calendar key="{meta:getShippedDate()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getNumberOfPackages()},{meta:getStatusId()}" />
               </widget>
             </row>
             <row>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'numPackages')" />:
               </text>
-              <textbox key="{meta:getNumberOfPackages()}" width="60" tab="{meta:getCost()},{meta:getShippedDate()}" field="Integer" />
+              <textbox key="{meta:getNumberOfPackages()}" width="60" tab="{meta:getCost()},{meta:getShippedDate()}" field="Integer" required = "true"/>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'cost')" />:
               </text>
@@ -116,12 +142,12 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'shippedFrom')" />:
               </text>
-              <dropdown key="{meta:getShippedFromId()}" width="172" popWidth="auto" tab="{meta:getShippedToName()},{meta:getCost()}" field="Integer" />
+              <dropdown key="{meta:getShippedFromId()}" width="172" popWidth="auto" tab="{meta:getShippedToName()},{meta:getCost()}" field="Integer" required = "true"/>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'shippedTo')" />:
               </text>
               <widget colspan="5">
-                <autoComplete key="{meta:getShippedToName()}" width="199" case="UPPER" tab="{meta:getProcessedDate()},{meta:getShippedFromId()}" field="Integer">
+                <autoComplete key="{meta:getShippedToName()}" width="199" case="UPPER" tab="{meta:getProcessedDate()},{meta:getShippedFromId()}" field="Integer" required = "true">
                   <col width="180" header="{resource:getString($constants,'name')}" />
                   <col width="110" header="{resource:getString($constants,'street')}" />
                   <col width="100" header="{resource:getString($constants,'city')}" />
@@ -133,7 +159,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'processedDate')" />:
               </text>
-              <calendar key="{meta:getProcessedDate()}" begin="0" end="2" width="80" tab="{meta:getProcessedById()},{meta:getShippedToName()}" />
+              <calendar key="{meta:getProcessedDate()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getProcessedBy()},{meta:getShippedToName()}" />
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"aptSuite")' />:
               </text>
@@ -145,7 +171,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'processedBy')" />:
               </text>
-              <textbox key="{meta:getProcessedById()}" width="203" tab="{meta:getShippedMethodId()},{meta:getProcessedDate()}" field="Integer" />
+              <textbox key="{meta:getProcessedBy()}" width="203" tab="{meta:getShippedMethodId()},{meta:getProcessedDate()}" field="String" />
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"address")' />:
               </text>
@@ -157,7 +183,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'shippedMethod')" />:
               </text>
-              <dropdown key="{meta:getShippedMethodId()}" width="140" popWidth="auto" tab="{meta:getStatusId()},{meta:getProcessedById()}" field="Integer" />
+              <dropdown key="{meta:getShippedMethodId()}" width="140" popWidth="auto" tab="{meta:getStatusId()},{meta:getProcessedBy()}" field="Integer" />
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"city")' />:
               </text>
@@ -176,7 +202,7 @@ UIRF Software License are applicable instead of those above.
                 <textbox key="{meta:getShippedToAddressState()}" width="35" max="30" style="ScreenTextboxDisplayOnly" field="String" />
               </widget>
               <widget>
-              	<HorizontalPanel width="28" />
+                <HorizontalPanel width="28" />
               </widget>
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"zipcode")' />:
@@ -186,30 +212,30 @@ UIRF Software License are applicable instead of those above.
               </widget>
             </row>
           </TablePanel>
-          <TabPanel key="shippingTabPanel" width="625" height="220">
-            <tab key="itemsTab" text="{resource:getString($constants,'items')}">
-              <HorizontalPanel width="625" height="200">
-                <widget>
-                  <table key="itemsTable" width="auto" maxRows="8" showScroll="ALWAYS" title="">
-                    <col width="65" header="{resource:getString($constants,'qty')}">
-                      <label field="Integer" />
-                    </col>
-                    <col width="325" header="{resource:getString($constants,'item')}">
-                      <label field="String" />
-                    </col>
-                  </table>
-                </widget>
-                <HorizontalPanel width="9" />
+          <TabPanel key="tabPanel" width="635" height="233">
+            <tab key="itemTab" text="{resource:getString($constants,'items')}">
+              <HorizontalPanel>
                 <VerticalPanel>
                   <widget>
-                    <table key="trackingNumbersTable" width="auto" maxRows="7" showScroll="ALWAYS" title="">
-                      <col key="{meta:getTrackingTrackingNumber()}" width="180" header="{resource:getString($constants,'trackingNums')}">
-                        <textbox max="30" field="String" />
+                    <table key="itemTable" width="auto" maxRows="8" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
+                      <col width="65" key="{meta:getItemQuantity()}" header="{resource:getString($constants,'qty')}">
+                        <textbox field="Integer" required = "true"/>
+                      </col>
+                      <col width="325" key="{meta:getItemDescription()}" header="{resource:getString($constants,'item')}">
+                        <textbox field="String" required = "true" />
                       </col>
                     </table>
                   </widget>
-                  <widget style="TableButtonFooter">
-                    <appButton key="removeRowButton" style="Button" action="removeRow">
+                  <HorizontalPanel>
+                    <appButton key="addItemButton" style="Button">
+                      <HorizontalPanel>
+                        <AbsolutePanel style="AddRowButtonImage" />
+                        <text>
+                          <xsl:value-of select="resource:getString($constants,'addRow')" />
+                        </text>
+                      </HorizontalPanel>
+                    </appButton>
+                    <appButton key="removeItemButton" style="Button">
                       <HorizontalPanel>
                         <AbsolutePanel style="RemoveRowButtonImage" />
                         <text>
@@ -217,34 +243,51 @@ UIRF Software License are applicable instead of those above.
                         </text>
                       </HorizontalPanel>
                     </appButton>
+                  </HorizontalPanel>
+                </VerticalPanel>
+                <HorizontalPanel width="16" style="Divider" />
+                <VerticalPanel>
+                  <widget>
+                    <table key="trackingTable" width="auto" maxRows="8" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
+                      <col key="{meta:getTrackingTrackingNumber()}" width="180" header="{resource:getString($constants,'trackingNums')}">
+                        <textbox max="30" field="String" required = "true" />
+                      </col>
+                    </table>
                   </widget>
+                  <HorizontalPanel>
+                    <appButton key="addTrackingButton" style="Button">
+                      <HorizontalPanel>
+                        <AbsolutePanel style="AddRowButtonImage" />
+                        <text>
+                          <xsl:value-of select="resource:getString($constants,'addRow')" />
+                        </text>
+                      </HorizontalPanel>
+                    </appButton>
+                    <appButton key="removeTrackingButton" style="Button">
+                      <HorizontalPanel>
+                        <AbsolutePanel style="RemoveRowButtonImage" />
+                        <text>
+                          <xsl:value-of select="resource:getString($constants,'removeRow')" />
+                        </text>
+                      </HorizontalPanel>
+                    </appButton>
+                  </HorizontalPanel>
                 </VerticalPanel>
               </HorizontalPanel>
             </tab>
-            <!-- <tab key="orderNotesTab" text="{resource:getString($constants,'orderShippingNotes')}">
-              <VerticalPanel width="625" height="200" padding="0" spacing="0">
-                <TablePanel key="noteFormPanel" padding="0" spacing="0" style="Form">
-                  <row>
-                    <widget>
-                      <textarea width="625" height="155" key="{noteMeta:getText()}" />
-                    </widget>
-                  </row>
-                </TablePanel>
+            <tab key="noteTab" text="{resource:getString($constants,'shippingNotes')}">
+              <VerticalPanel padding="0" spacing="0">
+                <notes key="notesPanel" width="635" height="205" />
+                <appButton key="standardNoteButton" style="Button">
+                  <HorizontalPanel>
+                    <AbsolutePanel style="StandardNoteButtonImage" />
+                    <text>
+                      <xsl:value-of select="resource:getString($constants,'addNote')" />
+                    </text>
+                  </HorizontalPanel>
+                </appButton>
               </VerticalPanel>
-            </tab> -->
-            <tab key="noteTab" text="{resource:getString($constants,'orderShippingNotes')}">
-                <VerticalPanel padding="0" spacing="0">
-                  <notes key="notesPanel" width="625" height="187" />
-                  <appButton key="standardNoteButton" style="Button">
-                    <HorizontalPanel>
-                      <AbsolutePanel style="StandardNoteButtonImage" />
-                      <text>
-                        <xsl:value-of select="resource:getString($constants,'addNote')" />
-                      </text>
-                    </HorizontalPanel>
-                  </appButton>
-                </VerticalPanel>
-             </tab>
+            </tab>
           </TabPanel>
         </VerticalPanel>
       </VerticalPanel>

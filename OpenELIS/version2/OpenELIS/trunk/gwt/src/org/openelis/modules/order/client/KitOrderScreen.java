@@ -31,7 +31,9 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.OrderContainerDO;
 import org.openelis.domain.OrderItemViewDO;
+import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ReferenceTable;
@@ -68,8 +70,10 @@ import org.openelis.gwt.widget.TabPanel;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
+import org.openelis.manager.OrderTestManager;
 import org.openelis.meta.OrderMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
@@ -104,7 +108,7 @@ public class KitOrderScreen extends Screen {
 
     private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
                                   commitButton, abortButton;
-    private MenuItem              orderHistory, itemHistory;
+    private MenuItem              orderHistory, itemHistory, testHistory, containerHistory;
     private TextBox               id, neededInDays, requestedBy, organizationAddressMultipleUnit,
                                   organizationAddressStreetAddress, organizationAddressCity,
                                   organizationAddressState, organizationAddressZipCode;
@@ -270,6 +274,28 @@ public class KitOrderScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 itemHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        testHistory = (MenuItem)def.getWidget("testHistory");
+        addScreenHandler(testHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                testHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                testHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        containerHistory = (MenuItem)def.getWidget("containerHistory");
+        addScreenHandler(containerHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                containerHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                containerHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -636,9 +662,7 @@ public class KitOrderScreen extends Screen {
                         
                         if(list.size() == 0)
                             descQuery = match;
-                    } /* else {
-                        descQuery = match;
-                    } */                                                                                               
+                    }                                                                                    
                     
                     description.showAutoMatches(model);
                 } catch (Throwable e) {
@@ -1067,6 +1091,58 @@ public class KitOrderScreen extends Screen {
 
         HistoryScreen.showHistory(consts.get("orderItemHistory"),
                                   ReferenceTable.ORDER_ITEM, refVoList);
+    }
+    
+    protected void testHistory() {
+        int i, count;
+        IdNameVO refVoList[];
+        OrderTestManager man;
+        OrderTestViewDO data;
+
+        try {
+            man = manager.getTests();
+            count = man.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = man.getTestAt(i);
+                refVoList[i] = new IdNameVO(data.getId(), data.getReferenceName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("orderTestHistory"),
+                                  ReferenceTable.ORDER_TEST, refVoList);
+        
+    }
+    
+    protected void containerHistory() {
+        int i, count;
+        IdNameVO refVoList[];
+        OrderContainerManager man;
+        OrderContainerDO data;
+        DictionaryDO dict;
+
+        try {
+            man = manager.getContainers();
+            count = man.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = man.getContainerAt(i);
+                dict = DictionaryCache.getEntryFromId(data.getContainerId());
+                refVoList[i] = new IdNameVO(data.getId(), dict.getEntry());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("orderContainerHistory"),
+                                  ReferenceTable.ORDER_CONTAINER, refVoList);
+        
     }
 
     protected boolean fetchById(Integer id) {

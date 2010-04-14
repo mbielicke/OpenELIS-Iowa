@@ -25,8 +25,72 @@
  */
 package org.openelis.modules.shipping.server;
 
+import java.util.ArrayList;
 
-public class ShippingService {//implements AppScreenFormServiceInt<ShippingForm, Query<TableDataRow<Integer>>>, AutoCompleteServiceInt {
+import org.openelis.domain.IdNameVO;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.manager.ShippingItemManager;
+import org.openelis.manager.ShippingManager;
+import org.openelis.manager.ShippingTrackingManager;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.ShippingManagerRemote;
+import org.openelis.remote.ShippingRemote;
+
+public class ShippingService {
+    
+    private static final int rowPP = 12;
+    
+    public ShippingManager fetchById(Integer id) throws Exception {
+        return remoteManager().fetchById(id);
+    }
+    
+    public ShippingManager fetchWithItemsAndTrackings (Integer id) throws Exception {
+        return remoteManager().fetchWithItemsAndTracking(id);
+    }
+    
+    public ShippingManager fetchWithNotes(Integer id) throws Exception {
+        return remoteManager().fetchWithNotes(id);
+    }
+    
+    public ArrayList<IdNameVO> query(Query query) throws Exception {
+        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+    }
+    
+    public ShippingManager add(ShippingManager man) throws Exception {
+        return remoteManager().add(man);
+    }
+    
+    public ShippingManager update(ShippingManager man) throws Exception {
+        return remoteManager().update(man);
+    }
+    
+    public ShippingManager fetchForUpdate(Integer id) throws Exception {
+        return remoteManager().fetchForUpdate(id);
+    }
+    
+    public ShippingManager abortUpdate(Integer id) throws Exception {
+        return remoteManager().abortUpdate(id);
+    }
+    
+    public ShippingItemManager fetchItemByShippingId(Integer id) throws Exception {
+        return remoteManager().fetchItemByShippingId(id);
+    }
+    
+    public ShippingTrackingManager fetchTrackingByShippingId(Integer id) throws Exception {
+        return remoteManager().fetchTrackingByShippingId(id);
+    }
+    
+    private ShippingRemote remote() {
+        return (ShippingRemote)EJBFactory.lookup("openelis/ShippingBean/remote"); 
+    }
+    
+    private ShippingManagerRemote remoteManager() {
+        return (ShippingManagerRemote)EJBFactory.lookup("openelis/ShippingManagerBean/remote"); 
+    }
+    
+}
+    
+    //implements AppScreenFormServiceInt<ShippingForm, Query<TableDataRow<Integer>>>, AutoCompleteServiceInt {
    /*
 	private UTFResource openElisConstants = UTFResource.getBundle((String) SessionManager.getSession().getAttribute("locale"));
 
@@ -670,4 +734,3 @@ System.out.println("after shipping items");
 	        form.status = Form.Status.invalid;
 	    }
 	    */
-}

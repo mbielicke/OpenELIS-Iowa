@@ -141,6 +141,8 @@ UIRF Software License are applicable instead of those above.
                   <menuPanel layout="vertical" position="below" style="topMenuContainer">
                     <menuItem key="orderHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'orderHistory')}" />
                     <menuItem key="itemHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'orderItemHistory')}" />
+                    <menuItem key="testHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'orderTestHistory')}" />
+                    <menuItem key="containerHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'orderContainerHistory')}" />
                   </menuPanel>
                 </menuItem>
               </menuPanel>
