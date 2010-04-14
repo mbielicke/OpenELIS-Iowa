@@ -98,7 +98,7 @@ public class ResultBean implements ResultLocal {
         }
     }
 
-    public void fetchByTestIdNoResults(Integer testId,
+    public void fetchByTestIdNoResults(Integer testId, Integer unitId,
                                        ArrayList<ArrayList<ResultViewDO>> results,
                                        HashMap<Integer, TestResultDO> testResultList,
                                        HashMap<Integer, AnalyteDO> analyteList,
@@ -163,7 +163,7 @@ public class ResultBean implements ResultLocal {
 
         createTestResultHash(testResults, resultValidators);
 
-        // build the gridR
+        // build the grid
         j = -1;
         ar = null;
         results.clear();
@@ -196,6 +196,9 @@ public class ResultBean implements ResultLocal {
                 
                 rg = tado.getRowGroup();
                 resultDO.setRowGroup(rg);
+                
+                //we need to set the default
+                resultDO.setValue(resultValidators.get(resultDO.getResultGroup() - 1).getDefault(unitId));
                 
                 if (j != rg) {
                     ar = new ArrayList<ResultViewDO>(1);
