@@ -457,9 +457,9 @@ public class AnalysisManager implements RPC {
 
         if (item.analysisResult == null) {
             if (item.analysis != null) {
-                if (item.analysis.getId() != null && item.analysis.getId() > -1) {
+                if (item.analysis.getId() != null && item.analysis.getId() > 0) {
                     try {
-                        item.analysisResult = AnalysisResultManager.fetchForUpdate(
+                        item.analysisResult = AnalysisResultManager.fetchForUpdateWithAnalysisId(
                                                                                    item.analysis.getId(),
                                                                                    item.analysis.getTestId());
                     } catch (NotFoundException e) {
@@ -469,7 +469,7 @@ public class AnalysisManager implements RPC {
                     }
                 } else if (item.analysis.getTestId() != null) {
                     try {
-                        item.analysisResult = AnalysisResultManager.fetchForUpdate(item.analysis.getTestId());
+                        item.analysisResult = AnalysisResultManager.fetchForUpdateWithTestId(item.analysis.getTestId(), item.analysis.getUnitOfMeasureId());
                     } catch (NotFoundException e) {
                         // ignore
                     } catch (Exception e) {
@@ -668,10 +668,6 @@ public class AnalysisManager implements RPC {
         if ( !testMan.getSampleTypes().hasType(sampleTypeId))
             error = true;
 
-        // unit needs filled out
-        if (anDO.getUnitOfMeasureId() == null)
-            error = true;
-
         if (error) {
             if (currentStatus.equals(anLoggedInId))
                 anDO.setStatusId(anErrorLoggedInId);
@@ -782,6 +778,7 @@ public class AnalysisManager implements RPC {
         item = getItemAt(index);
         resultMan = getAnalysisResultAt(index);
         resultMan.setMergeTestId(testId);
+        resultMan.setMergeUnitId(item.analysis.getUnitOfMeasureId());
         
         try {
             item.analysisResult = AnalysisResultManager.merge(resultMan);

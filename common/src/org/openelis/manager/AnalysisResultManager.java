@@ -16,7 +16,7 @@ import org.openelis.utilcommon.ResultValidator;
 public class AnalysisResultManager implements RPC {
     private static final long                             serialVersionUID = 1L;
 
-    protected Integer                                     analysisId, mergeTestId;
+    protected Integer                                     analysisId, mergeTestId, mergeUnitId;
     protected ArrayList<ArrayList<ResultViewDO>>          results;
     protected ArrayList<ResultViewDO>                     deletedResults;
     protected HashMap<Integer, AnalyteDO>                 analyteList;
@@ -117,13 +117,13 @@ public class AnalysisResultManager implements RPC {
      * Creates a new instance of this object with the specified analysis id. Use
      * this function to load an instance of this object from database.
      */
-    public static AnalysisResultManager fetchForUpdate(Integer analysisId, Integer testId)
+    public static AnalysisResultManager fetchForUpdateWithAnalysisId(Integer analysisId, Integer testId)
                                                                                           throws Exception {
         return proxy().fetchByAnalysisId(analysisId, testId);
     }
 
-    public static AnalysisResultManager fetchForUpdate(Integer testId) throws Exception {
-        return proxy().fetchByTestId(testId);
+    public static AnalysisResultManager fetchForUpdateWithTestId(Integer testId, Integer unitId) throws Exception {
+        return proxy().fetchByTestId(testId, unitId);
     }
 
     public AnalysisResultManager add() throws Exception {
@@ -335,6 +335,14 @@ public class AnalysisResultManager implements RPC {
 
     void setMergeTestId(Integer mergeTestId) {
         this.mergeTestId = mergeTestId;
+    }
+    
+    Integer getMergeUnitId() {
+        return mergeUnitId;
+    }
+
+    void setMergeUnitId(Integer mergeUnitId) {
+        this.mergeUnitId = mergeUnitId;
     }
 
     boolean isDefaultsLoaded() {
