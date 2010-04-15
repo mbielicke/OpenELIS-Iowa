@@ -45,9 +45,9 @@ UIRF Software License are applicable instead of those above.
             <xsl:value-of select="resource:getString($constants,'test')" />:
           </text>
           <autoComplete key="{meta:getAnalysisTestName()}" width="150" case="LOWER" popWidth="auto" field="Integer">
-            <col width="150" header="{resource:getString($constants,'test')}" />
+            <col width="170" header="{resource:getString($constants,'test')}" />
             <col width="150" header="{resource:getString($constants,'method')}" />
-            <col width="200" header="{resource:getString($constants,'description')}" />
+            <col width="290" header="{resource:getString($constants,'description')}" />
           </autoComplete>
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'method')" />:

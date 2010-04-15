@@ -276,9 +276,9 @@ UIRF Software License are applicable instead of those above.
                   <widget colspan="3">
                     <HorizontalPanel>
                       <autoComplete key="{meta:getOrgName()}" width="179" case="UPPER" popWidth="auto" tab="{meta:getBillTo()},{meta:getSDWISCollector()}" field="Integer">
-                        <col width="180" header="{resource:getString($constants,'name')}" />
-                        <col width="110" header="{resource:getString($constants,'street')}" />
-                        <col width="100" header="{resource:getString($constants,'city')}" />
+                        <col width="200" header="{resource:getString($constants,'name')}" />
+                        <col width="130" header="{resource:getString($constants,'street')}" />
+                        <col width="120" header="{resource:getString($constants,'city')}" />
                         <col width="20" header="{resource:getString($constants,'st')}" />
                       </autoComplete>
                       <appButton key="reportToLookup" style="LookupButton">
@@ -294,9 +294,9 @@ UIRF Software License are applicable instead of those above.
                   <widget colspan="3">
                     <HorizontalPanel>
                       <autoComplete key="{meta:getBillTo()}" width="179" case="UPPER" popWidth="auto" tab="sampleItemTabPanel,{meta:getOrgName()}" field="Integer">
-                        <col width="180" header="{resource:getString($constants,'name')}" />
-                        <col width="110" header="{resource:getString($constants,'street')}" />
-                        <col width="100" header="{resource:getString($constants,'city')}" />
+                        <col width="200" header="{resource:getString($constants,'name')}" />
+                        <col width="130" header="{resource:getString($constants,'street')}" />
+                        <col width="120" header="{resource:getString($constants,'city')}" />
                         <col width="20" header="{resource:getString($constants,'st')}" />
                       </autoComplete>
                       <appButton key="billToLookup" style="LookupButton">

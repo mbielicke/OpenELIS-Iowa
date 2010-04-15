@@ -171,9 +171,9 @@ UIRF Software License are applicable instead of those above.
                   </text>
                   <widget colspan="3">
                     <autoComplete key="{meta:getWellOrganizationName()}" width="180" case="UPPER" max="30" popWidth="auto" tab="{meta:getWellOrganizationId()},{meta:getClientReference()}" field="String">
-                      <col width="180" header="Name" />
-                      <col width="110" header="Street" />
-                      <col width="100" header="City" />
+                      <col width="200" header="Name" />
+                      <col width="130" header="Street" />
+                      <col width="120" header="City" />
                       <col width="20" header="St" />
                     </autoComplete>
                   </widget>
@@ -371,8 +371,8 @@ UIRF Software License are applicable instead of those above.
                   </text>
                   <HorizontalPanel>
                     <autoComplete key="{meta:getProjectName()}" width="182" case="LOWER" popWidth="auto" tab="sampleItemTabPanel,{meta:getWellWellNumber()}" field="Integer">
-                      <col width="115" header="{resource:getString($constants,'name')}" />
-                      <col width="190" header="{resource:getString($constants,'desc')}" />
+                      <col width="150" header="{resource:getString($constants,'name')}" />
+                      <col width="275" header="{resource:getString($constants,'description')}" />
                     </autoComplete>
                     <appButton key="projectLookup" style="LookupButton">
                       <AbsolutePanel style="LookupButtonImage" />
