@@ -26,6 +26,7 @@
 package org.openelis.modules.worksheetCompletion.client;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -82,7 +83,7 @@ import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
 
 public class WorksheetCompletionScreen extends Screen {
 
-    private boolean                               isSaved, closeWindow;
+    private boolean                               isSaved, closeWindow, isReadOnly;
     private ScreenService                         instrumentService;
     private SecurityModule                        security;
     private WorksheetManager                      manager;
@@ -112,16 +113,27 @@ public class WorksheetCompletionScreen extends Screen {
     protected TextBox<String>                     /*loadFile,*/ defaultInitials;
     protected TestWorksheetDO                     testWorksheetDO;
     protected TestWorksheetManager                twManager;
-    protected WorksheetLookupScreen               wLookupScreen;
+    protected WorksheetLookupScreen               wLookupScreen, wrLookupScreen;
     protected ValidationErrorsList                qcErrors;
     
     private enum Tabs {
         WORKSHEET, NOTE
     };
 
+    public WorksheetCompletionScreen(final Integer worksheetId) throws Exception {
+        this();
+        isReadOnly = true;
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                fetchById(worksheetId);
+            }
+        });
+    }
+    
     public WorksheetCompletionScreen() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetCompletionDef.class));
 
+        isReadOnly        = false;
         service           = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheetCompletion.server.WorksheetCompletionService");
         instrumentService = new ScreenService("OpenELISServlet?service=org.openelis.modules.instrument.server.InstrumentService");
 
@@ -160,10 +172,9 @@ public class WorksheetCompletionScreen extends Screen {
         initialize();
 
         setState(State.DEFAULT);
-        openLookupWindow();
+        if (!isReadOnly)
+            openLookupWindow();
         initializeDropdowns();
-
-//        DataChangeEvent.fire(this);
     }
 
     /**
@@ -204,7 +215,7 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                statusId.enable(true);
+                statusId.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -226,7 +237,7 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                lookupWorksheetButton.enable(true);
+                lookupWorksheetButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -236,7 +247,7 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                instrumentId.enable(true);
+                instrumentId.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -283,7 +294,7 @@ public class WorksheetCompletionScreen extends Screen {
                 
                 value = (String) event.getValue();
                 if (value != null && value.length() > 0)
-                    loadButton.enable(true);
+                    loadButton.enable(true && !isReadOnly);
                 else
                     loadButton.enable(false);
                 
@@ -321,7 +332,7 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                defaultInitials.enable(true);
+                defaultInitials.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -331,7 +342,7 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                defaultStartedDate.enable(true);
+                defaultStartedDate.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -341,7 +352,7 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                defaultCompletedDate.enable(true);
+                defaultCompletedDate.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -441,7 +452,10 @@ public class WorksheetCompletionScreen extends Screen {
                         manager = WorksheetManager.fetchWithNotes(id);
                         break;
                 }
-                setState(State.DISPLAY);
+                if (isReadOnly)
+                    setState(State.DISPLAY);
+                else
+                    setState(State.UPDATE);
             } catch (NotFoundException e) {
                 fetchById(null);
                 window.setDone(consts.get("noRecordsFound"));
@@ -605,7 +619,7 @@ public class WorksheetCompletionScreen extends Screen {
     }
 
     protected void exit() {
-        if (!isSaved) {
+        if (!isSaved && !isReadOnly) {
             if (worksheetExitConfirm == null) {
                 worksheetExitConfirm = new Confirm(Confirm.Type.QUESTION, "",
                                                    consts.get("worksheetSaveExitConfirm"),
@@ -625,7 +639,12 @@ public class WorksheetCompletionScreen extends Screen {
             
             worksheetExitConfirm.show();
         } else {
-            openLookupWindow();
+            if (!isReadOnly) {
+                openLookupWindow();
+            } else {
+                closeWindow = true;
+                window.close();
+            }
         }
     }
 
@@ -633,10 +652,10 @@ public class WorksheetCompletionScreen extends Screen {
         ScreenWindow modal;
         
         try {
-            if (wLookupScreen == null) {
+            if (wrLookupScreen == null) {
                 final WorksheetCompletionScreen wcs = this;
-                wLookupScreen = new WorksheetLookupScreen();
-                wLookupScreen.addActionHandler(new ActionHandler<WorksheetLookupScreen.Action>() {
+                wrLookupScreen = new WorksheetLookupScreen();
+                wrLookupScreen.addActionHandler(new ActionHandler<WorksheetLookupScreen.Action>() {
                     @SuppressWarnings("unchecked")
                     public void onAction(ActionEvent<WorksheetLookupScreen.Action> event) {
                         ArrayList<TableDataRow> list;
@@ -656,7 +675,7 @@ public class WorksheetCompletionScreen extends Screen {
             
             modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
             modal.setName(consts.get("worksheetLookup"));
-            modal.setContent(wLookupScreen);
+            modal.setContent(wrLookupScreen);
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert("error: " + e.getMessage());

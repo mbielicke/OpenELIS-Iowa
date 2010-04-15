@@ -259,6 +259,15 @@ public class WorksheetTab extends Screen {
                             initializeWorksheetResults(aVDO, arManager, wrManager);
                                                        
                         for (k = 0; k < wrManager.count(); k++) {
+                            if (k != 0) {
+                                row.cells.get(0).value = null;
+                                row.cells.get(1).value = null;
+                                row.cells.get(2).value = "";
+                                row.cells.get(3).value = "";
+                                row.cells.get(4).value = "";
+                                row.cells.get(5).value = "";
+                                row.cells.get(6).value = 0;
+                            }
                             wrVDO = wrManager.getWorksheetResultAt(k);
                             row.cells.get(7).value = wrVDO.getAnalyteName();
                             row.cells.get(8).value = "";
@@ -266,6 +275,15 @@ public class WorksheetTab extends Screen {
                             row.cells.get(10).value = "";
                             row.cells.get(11).value = "";
                             row.cells.get(12).value = "";
+                            row.data = bundle;
+                            model.add((TableDataRow)row.clone());
+                        }
+                        
+                        //
+                        // Add the row if there were no analytes
+                        //
+                        if (k == 0) {
+                            row.cells.get(7).value = "NO ANALYTES FOUND";
                             row.data = bundle;
                             model.add((TableDataRow)row.clone());
                         }
@@ -283,6 +301,15 @@ public class WorksheetTab extends Screen {
                             initializeWorksheetQcResults(qcManager, wqrManager);
                                                        
                         for (k = 0; k < wqrManager.count(); k++) {
+                            if (k != 0) {
+                                row.cells.get(0).value = null;
+                                row.cells.get(1).value = null;
+                                row.cells.get(2).value = "";
+                                row.cells.get(3).value = "";
+                                row.cells.get(4).value = "";
+                                row.cells.get(5).value = "";
+                                row.cells.get(6).value = 0;
+                            }
                             wqrVDO = wqrManager.getWorksheetQcResultAt(k);
                             row.cells.get(7).value = wqrVDO.getAnalyteName();
                             row.cells.get(8).value = "";
@@ -290,6 +317,15 @@ public class WorksheetTab extends Screen {
                             row.cells.get(10).value = "";
                             row.cells.get(11).value = wqrVDO.getValue();
                             row.cells.get(12).value = "";
+                            row.data = qcManager;
+                            model.add((TableDataRow)row.clone());
+                        }
+                        
+                        //
+                        // Add the row if there were no analytes
+                        //
+                        if (k == 0) {
+                            row.cells.get(7).value = "NO ANALYTES FOUND";
                             row.data = qcManager;
                             model.add((TableDataRow)row.clone());
                         }
@@ -327,11 +363,11 @@ public class WorksheetTab extends Screen {
         
         positionNumber = "";
         if (formatBatch.equals(manager.getWorksheet().getFormatId())) {
-            major = getPositionMajorNumber(position+1);
-            minor = getPositionMinorNumber(position+1);
+            major = getPositionMajorNumber(position);
+            minor = getPositionMinorNumber(position);
             positionNumber = major+"-"+minor;
         } else if (formatTotal.equals(manager.getWorksheet().getFormatId())) {
-            positionNumber = position + 1;
+            positionNumber = position;
         }
         
         return positionNumber;
