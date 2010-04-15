@@ -357,8 +357,9 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
     }
     
     private void select() {
-        ArrayList<TableDataRow> selections = worksheetTable.getSelections();
+        ArrayList<TableDataRow> selections;
         
+        selections = worksheetTable.getSelections();
         if (selections.size() > 0)
             ActionEvent.fire(this, Action.SELECT, selections);
         
