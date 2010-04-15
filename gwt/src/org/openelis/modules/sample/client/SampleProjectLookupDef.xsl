@@ -50,8 +50,8 @@
             <table key="sampleProjectTable" width="auto" maxRows="10" showScroll="ALWAYS" tab="sampleProjectTable,sampleProjectTable" title="">
               <col width="120" header="Name">
                 <autoComplete width="130" case="LOWER" field="Integer" required="true">
-                  <col width="115" header="Name" />
-                  <col width="190" header="Desc" />
+                  <col width="150" header="{resource:getString($constants,'name')}" />
+                      <col width="275" header="{resource:getString($constants,'description')}" />
                 </autoComplete>
               </col>
               <col width="240" header="Description">

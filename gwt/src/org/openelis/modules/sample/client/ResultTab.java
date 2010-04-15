@@ -108,7 +108,6 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         setWindow(window);
 
         initialize();
-
         initializeDropdowns();
     }
 
@@ -601,6 +600,15 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
             modal.setName(consts.get("testResults"));
 
+            //having problems with losing the last cell edited.  This will tell the table
+            //to save all values before closing
+            modal.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+                public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+                    if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) 
+                        resultPopoutScreen.testResultsTable.finishEditing();
+                }
+            });
+            
             modal.setContent(resultPopoutScreen);
             resultPopoutScreen.setData(bundle);
             resultPopoutScreen.setScreenState(state);
@@ -608,6 +616,10 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             
             modal.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>(){
                 public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+                    //having problems with losing the last cell edited.  This will tell the table
+                    //to save all values before closing
+                    resultPopoutScreen.testResultsTable.finishEditing();
+                    
                     loaded = false;
                     draw();                    
                 }

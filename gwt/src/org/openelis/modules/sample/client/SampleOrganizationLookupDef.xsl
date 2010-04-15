@@ -56,9 +56,9 @@
               </col>
               <col width="220" header="Name">
                 <autoComplete width="130px" case="UPPER" field="Integer" required="true">
-                  <col width="180" header="Name" />
-                  <col width="110" header="Street" />
-                  <col width="100" header="City" />
+                  <col width="200" header="Name" />
+                  <col width="130" header="Street" />
+                  <col width="120" header="City" />
                   <col width="20" header="St" />
                 </autoComplete>
               </col>

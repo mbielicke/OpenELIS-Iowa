@@ -170,7 +170,9 @@ public class PrivateWellTab extends Screen {
                 OrganizationDO data;
                 ArrayList<OrganizationDO> list;
                 ArrayList<TableDataRow> model;
-
+                int i, maxRows;
+                
+                maxRows = 10;
                 parser = new QueryFieldUtil();
                 parser.parse(event.getMatch());
 
@@ -180,7 +182,8 @@ public class PrivateWellTab extends Screen {
                     model = new ArrayList<TableDataRow>();
                     model.add(row = new TableDataRow(null, event.getMatch(), null, null, null));
 
-                    for (int i = 0; i < list.size(); i++ ) {
+                    i=0;
+                    while(i < maxRows && i < list.size()){
                         row = new TableDataRow(4);
                         data = list.get(i);
 
@@ -192,6 +195,7 @@ public class PrivateWellTab extends Screen {
                         row.data = data;
 
                         model.add(row);
+                        i++;
                     }
                     orgName.showAutoMatches(model);
                 } catch (Throwable e) {

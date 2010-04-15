@@ -255,8 +255,8 @@ UIRF Software License are applicable instead of those above.
                   </text>
                   <HorizontalPanel>
                     <autoComplete key="{meta:getProjectName()}" width="175" case="LOWER" popWidth="auto" tab="{meta:getOrgName()},itemsTestsTree" field="Integer">
-                      <col width="115" header="{resource:getString($constants,'name')}" />
-                      <col width="190" header="{resource:getString($constants,'desc')}" />
+                      <col width="150" header="{resource:getString($constants,'name')}" />
+                      <col width="275" header="{resource:getString($constants,'description')}" />
                     </autoComplete>
                     <appButton key="projectLookup" style="LookupButton">
                       <AbsolutePanel style="LookupButtonImage" />
@@ -269,9 +269,9 @@ UIRF Software License are applicable instead of those above.
                   </text>
                   <HorizontalPanel>
                     <autoComplete key="{meta:getOrgName()}" width="175" case="UPPER" popWidth="auto" tab="{meta:getBillTo()},{meta:getProjectName()}" field="Integer">
-                      <col width="180" header="{resource:getString($constants,'name')}" />
-                      <col width="110" header="{resource:getString($constants,'street')}" />
-                      <col width="100" header="{resource:getString($constants,'city')}" />
+                      <col width="200" header="{resource:getString($constants,'name')}" />
+                      <col width="130" header="{resource:getString($constants,'street')}" />
+                      <col width="120" header="{resource:getString($constants,'city')}" />
                       <col width="20" header="{resource:getString($constants,'st')}" />
                     </autoComplete>
                     <appButton key="reportToLookup" style="LookupButton">
@@ -285,9 +285,9 @@ UIRF Software License are applicable instead of those above.
                   </text>
                   <HorizontalPanel>
                     <autoComplete key="{meta:getBillTo()}" width="175" case="UPPER" popWidth="auto" tab="sampleItemTabPanel,{meta:getOrgName()}" field="Integer">
-                      <col width="180" header="{resource:getString($constants,'name')}" />
-                      <col width="110" header="{resource:getString($constants,'street')}" />
-                      <col width="100" header="{resource:getString($constants,'city')}" />
+                      <col width="200" header="{resource:getString($constants,'name')}" />
+                      <col width="130" header="{resource:getString($constants,'street')}" />
+                      <col width="120" header="{resource:getString($constants,'city')}" />
                       <col width="20" header="{resource:getString($constants,'st')}" />
                     </autoComplete>
                     <appButton key="billToLookup" style="LookupButton">
