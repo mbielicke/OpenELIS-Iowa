@@ -1,4 +1,3 @@
-
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -52,63 +51,122 @@ UIRF Software License are applicable instead of those above.
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'method')" />:
           </text>
-          <autoComplete key="{meta:getAnalysisMethodName()}" width="150" case="LOWER" popWidth="auto" field="Integer">
+          <widget colspan="3">
+          <autoComplete key="{meta:getAnalysisMethodName()}" width="125" case="LOWER" popWidth="auto" field="Integer">
             <col width="150" header="{resource:getString($constants,'method')}" />
           </autoComplete>
-        </row>
-        <row>
+          </widget>
           <text style="Prompt">
+            <xsl:value-of select="resource:getString($constants,'started')" />:
+          </text>
+          <calendar key="{meta:getAnalysisStartedDate()}" width="125" begin="0" end="2" pattern="{resource:getString($constants,'dateTimePattern')}" />
+          </row>
+        <row>
+        <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'status')" />:
           </text>
           <dropdown key="{meta:getAnalysisStatusId()}" width="150" popWidth="150" field="Integer" />
-          <text style="Prompt">
-            <xsl:value-of select="resource:getString($constants,'revision')" />:
-          </text>
-          <textbox key="{meta:getAnalysisRevision()}" width="60" field="Integer" />
-        </row>
-        <row>
-          <text style="Prompt">
-            <xsl:value-of select="resource:getString($constants,'testReportable')" />:
-          </text>
-          <check key="{meta:getAnalysisIsReportable()}" />
-          <text style="Prompt">
+        <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'section')" />:
           </text>
-          <dropdown key="{meta:getAnalysisSectionId()}" width="150" case="LOWER" popWidth="150" field="Integer" />
-        </row>
-        <row>
+          <widget colspan="3">
+          <dropdown key="{meta:getAnalysisSectionId()}" width="125" case="LOWER" popWidth="150" field="Integer" />
+          </widget>
+           <text style="Prompt">
+            <xsl:value-of select="resource:getString($constants,'completed')" />:
+          </text>
+          <calendar key="{meta:getAnalysisCompletedDate()}" width="125" begin="0" end="2" pattern="{resource:getString($constants,'dateTimePattern')}" />
+          </row>
+          <row>
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'unit')" />:
           </text>
           <dropdown key="{meta:getAnalysisUnitOfMeasureId()}" width="150" popWidth="150" field="Integer" />
           <text style="Prompt">
-            <xsl:value-of select="resource:getString($constants,'samplePrep')" />:
+            <xsl:value-of select="resource:getString($constants,'revision')" />:
           </text>
-          <autoComplete key="{meta:getAnalysisSamplePrep()}" width="350" popWidth="auto" field="Integer">
-            <col width="350" header="Name" />
-          </autoComplete>
-        </row>
-        <row>
+          <textbox key="{meta:getAnalysisRevision()}" width="60" field="Integer" />
           <text style="Prompt">
-            <xsl:value-of select="resource:getString($constants,'started')" />:
+            <xsl:value-of select="resource:getString($constants,'testReportable')" />:
           </text>
-          <calendar key="{meta:getAnalysisStartedDate()}" begin="0" end="2" pattern="{resource:getString($constants,'dateTimePattern')}" />
-          <text style="Prompt">
-            <xsl:value-of select="resource:getString($constants,'completed')" />:
-          </text>
-          <calendar key="{meta:getAnalysisCompletedDate()}" begin="0" end="2" pattern="{resource:getString($constants,'dateTimePattern')}" />
-        </row>
-        <row>
+          <check key="{meta:getAnalysisIsReportable()}" />
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'released')" />:
           </text>
-          <calendar key="{meta:getAnalysisReleasedDate()}" begin="0" end="2" pattern="{resource:getString($constants,'dateTimePattern')}" />
+          <calendar key="{meta:getAnalysisReleasedDate()}" width="125" begin="0" end="2" pattern="{resource:getString($constants,'dateTimePattern')}" />
+       </row>
+       <row>
+          <text style="Prompt">
+            <xsl:value-of select="resource:getString($constants,'samplePrep')" />:
+          </text>
+          <widget colspan="5">
+          <autoComplete key="{meta:getAnalysisSamplePrep()}" width="350" popWidth="auto" field="Integer">
+            <col width="350" header="Name" />
+          </autoComplete>
+          </widget>
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'printed')" />:
           </text>
-          <calendar key="{meta:getAnalysisPrintedDate()}" begin="0" end="2" pattern="{resource:getString($constants,'dateTimePattern')}" />
-        </row>
+          <calendar key="{meta:getAnalysisPrintedDate()}" width="125" begin="0" end="2" pattern="{resource:getString($constants,'dateTimePattern')}" />
+          </row>
       </TablePanel>
+      <HorizontalPanel spacing="0" padding="0">
+                   <VerticalPanel spacing="0" padding="0">
+            <table key="worksheetTable" style="ScreenTableWithSides" width="auto" maxRows="3" showScroll="ALWAYS" title="">
+            	<col width="75" header="Worksheet">
+              		<label field="String"/>
+            	</col>
+            	<col width="115" header="Created">
+              		<label field="String"/>
+            	</col>
+            	<col width="115" header="Status">
+              		<label field="String"/>
+            	</col>
+            	<col width="115" header="User">
+              		<label field="String"/>
+            	</col>
+            </table>
+	            <HorizontalPanel style="TableFooterPanel">
+                 <appButton key="selectWkshtButton" style="Button">
+                   <HorizontalPanel>
+                     <AbsolutePanel style="CommitButtonImage" />
+                     <text>
+                       <xsl:value-of select='resource:getString($constants,"select")' />
+                     </text>
+                   </HorizontalPanel>
+                 </appButton>
+                  </HorizontalPanel>
+                  </VerticalPanel>
+            <AbsolutePanel style="Divider" />
+                  <VerticalPanel spacing="0" padding="0">
+      		<table key="analysisUserTable" style="ScreenTableWithSides" width="auto" maxRows="3" showScroll="ALWAYS" title="">
+            	<col width="115" header="User">
+              		<label field="String"/>
+            	</col>
+            	<col width="110" header="Action">
+              		<label field="String"/>
+            	</col>
+            </table>
+            <HorizontalPanel style="TableFooterPanel">
+               <appButton key="addActionButton" style="Button">
+                        <HorizontalPanel>
+                          <AbsolutePanel style="AddRowButtonImage" />
+                          <text>
+                            <xsl:value-of select="resource:getString($constants,'addRow')" />
+                          </text>
+                        </HorizontalPanel>
+                      </appButton>
+                      <appButton key="removeActionButton" style="Button">
+                        <HorizontalPanel>
+                          <AbsolutePanel style="RemoveRowButtonImage" />
+                          <text>
+                            <xsl:value-of select="resource:getString($constants,'removeRow')" />
+                          </text>
+                        </HorizontalPanel>
+                      </appButton>
+                  </HorizontalPanel>
+                  </VerticalPanel>
+      </HorizontalPanel>
     </VerticalPanel>
   </xsl:template>
 </xsl:stylesheet>
