@@ -5,10 +5,8 @@ import java.util.HashMap;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.QcAnalyteDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
@@ -209,11 +207,9 @@ public class WorksheetTab extends Screen {
         AnalysisManager          aManager;
         AnalysisResultManager    arManager;
         AnalysisViewDO           aVDO;
-        AnalyteViewDO            atVDO;
         QcManager                qcManager;
         SampleDataBundle         bundle;
         SampleManager            sManager;
-        SampleItemManager        siManager;
         WorksheetAnalysisDO      waDO;
         WorksheetAnalysisManager waManager;
         WorksheetItemDO          wiDO;
@@ -346,7 +342,7 @@ public class WorksheetTab extends Screen {
     }
 
     public void draw() {
-        if ( !loaded)
+        if (!loaded)
             DataChangeEvent.fire(this);
 
         loaded = true;

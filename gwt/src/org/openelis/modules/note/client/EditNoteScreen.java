@@ -307,10 +307,18 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
     }
 
     public void ok() {
+        String trimText;
+        
         clearErrors();
         if (validate()) {
             note.setSubject(subject.getText());
-            note.setText(text.getText());
+            //
+            // Convert all spaces and carriage returns to single spaces
+            //
+            trimText = text.getText();
+            trimText = trimText.replaceAll("\n+"," ");
+            trimText = trimText.replaceAll(" +"," ");
+            note.setText(trimText);
             setState(State.DEFAULT);
             ActionEvent.fire(this, Action.OK, null);
             clearErrors();
