@@ -31,6 +31,7 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.ReferenceTable;
@@ -63,6 +64,7 @@ import org.openelis.gwt.widget.TabPanel;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.manager.NoteManager;
 import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.meta.OrderMeta;
@@ -80,25 +82,25 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class InternalOrderScreen extends Screen {
-    private OrderManager    manager;
-    private SecurityModule  security;
+    private OrderManager      manager;
+    private SecurityModule    security;
 
-    private ButtonGroup     atoz;
-    private ScreenNavigator nav;
+    private ButtonGroup       atoz;
+    private ScreenNavigator   nav;
 
-    private ItemTab         itemTab;
-    private FillTab         fillTab;
-    private ShipNoteTab     shipNoteTab;
-    private Tabs            tab;
+    private ItemTab           itemTab;
+    private FillTab           fillTab;
+    private ShipNoteTab       shipNoteTab;
+    private Tabs              tab;
 
-    private AppButton       queryButton, previousButton, nextButton, addButton, updateButton,
-                            commitButton, abortButton;
-    private MenuItem        orderHistory, itemHistory;
-    private TextBox         id, neededInDays, requestedBy;
-    private CalendarLookUp  orderedDate;
+    private AppButton         queryButton, previousButton, nextButton, addButton, updateButton,
+                              commitButton, abortButton;
+    private MenuItem          duplicate, orderHistory, itemHistory;
+    private TextBox           id, neededInDays, requestedBy;
+    private CalendarLookUp    orderedDate;
     private Dropdown<Integer> statusId, costCenterId;
     private TabPanel          tabPanel;
-    private Integer         status_pending;
+    private Integer           status_pending;
 
     private enum Tabs {
         ITEM, FILL, SHIPNOTE
@@ -213,7 +215,7 @@ public class InternalOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                commitButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -224,7 +226,18 @@ public class InternalOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+            }
+        });
+        
+        duplicate = (MenuItem)def.getWidget("duplicateRecord");
+        addScreenHandler(duplicate, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                duplicate();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -498,7 +511,6 @@ public class InternalOrderScreen extends Screen {
     }
     
     private void initializeDropdowns() {
-        DictionaryDO dict;
         ArrayList<TableDataRow> model;
 
         // order status dropdown
@@ -674,6 +686,50 @@ public class InternalOrderScreen extends Screen {
         }
     }
     
+    protected void duplicate() {
+        Datetime now;
+        OrderViewDO data;
+        
+        try {
+            manager = OrderManager.fetchById(manager.getOrder().getId());
+
+            try {
+                now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
+            } catch (Exception e) {
+                Window.alert("OrderAdd Datetime: " +e.getMessage());
+                return;
+            }
+            
+            data = manager.getOrder();
+            data.setStatusId(status_pending);
+            data.setOrderedDate(now);
+            data.setRequestedBy(OpenELIS.security.getSystemUserName());
+            data.setType(OrderManager.TYPE_INTERNAL);           
+            
+            itemTab.setManager(manager);            
+            //fillTab.setManager(manager);
+            shipNoteTab.setManager(manager);
+            
+            manager.getItems();
+            //manager.getFills();
+            manager.getShippingNotes();            
+            
+            clearKeys();
+            
+            itemTab.draw();
+            //fillTab.draw();
+            shipNoteTab.draw();
+            
+            setState(State.ADD);
+            DataChangeEvent.fire(this);
+
+            setFocus(neededInDays);
+            window.setDone(consts.get("enterInformationPressCommit"));
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+        }                  
+    }   
+
     protected void orderHistory() {
         IdNameVO hist;
         
@@ -754,5 +810,39 @@ public class InternalOrderScreen extends Screen {
                 shipNoteTab.draw();
                 break;
         }
+    }
+    
+    private void clearKeys() {
+        OrderItemManager iman;
+        OrderItemViewDO item;
+        NoteViewDO note;
+        NoteManager nman;
+        int i, count;
+        
+        manager.getOrder().setId(null);
+        
+        try {
+            iman = manager.getItems();
+            count = iman.count();
+            
+            for(i = 0; i < count; i++) {
+                item = iman.getItemAt(i);
+                item.setId(null);
+                item.setOrderId(null);
+            } 
+            
+            nman = manager.getShippingNotes();
+            count = nman.count();
+            
+            for(i = 0; i < count; i++) {
+                note = nman.getNoteAt(i);
+                note.setId(null);
+                note.setReferenceId(null);
+                note.setReferenceTableId(null);
+            } 
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }      
     }
 }

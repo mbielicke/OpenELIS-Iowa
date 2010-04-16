@@ -59,4 +59,5 @@ public class ShipNoteTab extends NotesTab {
             }
         }
     }
+    
 }

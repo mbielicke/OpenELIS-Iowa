@@ -14,6 +14,7 @@ import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
+import org.openelis.manager.OrderFillManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.OrderMeta;
@@ -61,20 +62,23 @@ public class FillTab extends Screen {
     }
 
     private ArrayList<TableDataRow> getTableModel() {
-        int i;
+        int i, count;
         String location;
         InventoryXUseViewDO data;
         ArrayList<TableDataRow> model;
         TableDataRow row;
         Widget widget;
+        OrderFillManager man;
 
         model = new ArrayList<TableDataRow>();
         if (manager == null)
             return model;
 
         try {
-            for (i = 0; i < manager.getFills().count(); i++ ) {
-                data = (InventoryXUseViewDO)manager.getFills().getFillAt(i);
+            man = manager.getFills();
+            count = man.count();
+            for (i = 0; i < count; i++ ) {
+                data = (InventoryXUseViewDO)man.getFillAt(i);
                 row = new TableDataRow(numColumns);
                 location = StorageLocationManager.getLocationForDisplay(data.getStorageLocationName(),
                                                                         data.getStorageLocationUnitDescription(),

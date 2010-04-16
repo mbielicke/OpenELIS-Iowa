@@ -30,6 +30,7 @@ import org.openelis.gwt.widget.table.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
+import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.meta.OrderMeta;
 
@@ -253,11 +254,6 @@ public class ItemTab extends Screen {
                 row.cells.get(1).setValue(new TableDataRow(data.getInventoryItemId(),
                                                            data.getInventoryItemName()));
                 row.cells.get(2).setValue(data.getStoreId());
-
-                /*if(numColumns > 3) {
-                    row.cells.get(3).setValue(data.getUnitCost());
-                    row.cells.get(4).setValue(data.getCatalogNumber());
-                }*/
                 
                 widget = table.getColumnWidget(OrderMeta.getOrderItemUnitCost());                
                 if(widget != null) 
@@ -287,4 +283,5 @@ public class ItemTab extends Screen {
 
         loaded = true;
     }
+    
 }

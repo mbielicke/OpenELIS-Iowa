@@ -28,6 +28,7 @@ package org.openelis.manager;
 import java.util.HashMap;
 import java.util.List;
 
+import org.openelis.domain.TestResultViewDO;
 import org.openelis.gwt.services.ScreenService;
 
 public class TestReflexManagerProxy {
@@ -58,9 +59,8 @@ public class TestReflexManagerProxy {
     }
 
     public void validate(TestReflexManager trm,
-                         boolean analyteValid,
-                         boolean resultValid,
+                         boolean anaListValid,boolean resListValid,
                          HashMap<Integer, Integer> anaResGrpMap,
-                         HashMap<Integer, List<Integer>> resGrpRsltMap) throws Exception {
+                         HashMap<Integer, List<TestResultViewDO>> resGrpRsltMap) throws Exception {
     }
 }
