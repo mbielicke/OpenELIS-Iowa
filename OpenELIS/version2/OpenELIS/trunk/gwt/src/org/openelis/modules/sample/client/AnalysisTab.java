@@ -53,6 +53,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
@@ -62,6 +63,7 @@ import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
@@ -69,6 +71,7 @@ import org.openelis.manager.TestSectionManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.SampleMeta;
 
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -87,6 +90,8 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     protected CheckBox              isReportable;
     protected TextBox               revision;
     protected CalendarLookUp        startedDate, completedDate, releasedDate, printedDate;
+    protected TableWidget worksheetTable, analysisUserTable;
+    protected AppButton selectWkshtButton, addActionButton, removeActionButton;
 
     protected ArrayList<TableDataRow> fullSectionModel, fullUnitModel;
     protected HashMap<Integer, ArrayList<TableDataRow>> sectionModel; 
@@ -487,7 +492,67 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 samplePrep.setQueryMode(event.getState() == State.QUERY);
             }
         });
+        
+        worksheetTable= (TableWidget)def.getWidget("worksheetTable");
+        addScreenHandler(worksheetTable, new ScreenEventHandler<TableDataRow>() {
+            public void onDataChange(DataChangeEvent event) {
 
+            }
+
+            public void onValueChange(ValueChangeEvent<TableDataRow> event) {
+
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                worksheetTable.enable(false);
+            }
+        });
+        
+        analysisUserTable = (TableWidget)def.getWidget("analysisUserTable");
+        addScreenHandler(analysisUserTable, new ScreenEventHandler<TableDataRow>() {
+            public void onDataChange(DataChangeEvent event) {
+
+            }
+
+            public void onValueChange(ValueChangeEvent<TableDataRow> event) {
+
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                analysisUserTable.enable(false);
+            }
+        });
+        
+        selectWkshtButton = (AppButton)def.getWidget("selectWkshtButton");
+        addScreenHandler(selectWkshtButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                selectWkshtButton.enable(false);
+            }
+        });
+
+        addActionButton = (AppButton)def.getWidget("addActionButton");
+        addScreenHandler(addActionButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                addActionButton.enable(false);
+            }
+        });
+        
+        removeActionButton = (AppButton)def.getWidget("removeActionButton");
+        addScreenHandler(removeActionButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                removeActionButton.enable(false);
+            }
+        });
+        
         samplePrep.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 ArrayList<TableDataRow> model;
