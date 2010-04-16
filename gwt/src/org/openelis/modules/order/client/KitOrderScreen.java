@@ -29,8 +29,10 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrderContainerDO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderTestViewDO;
@@ -57,6 +59,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -70,6 +73,8 @@ import org.openelis.gwt.widget.TabPanel;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.manager.AuxDataManager;
+import org.openelis.manager.NoteManager;
 import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
@@ -108,7 +113,7 @@ public class KitOrderScreen extends Screen {
 
     private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
                                   commitButton, abortButton;
-    private MenuItem              orderHistory, itemHistory, testHistory, containerHistory;
+    private MenuItem              duplicate, orderHistory, itemHistory, testHistory, containerHistory;
     private TextBox               id, neededInDays, requestedBy, organizationAddressMultipleUnit,
                                   organizationAddressStreetAddress, organizationAddressCity,
                                   organizationAddressState, organizationAddressZipCode;
@@ -252,6 +257,17 @@ public class KitOrderScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+            }
+        });
+        
+        duplicate = (MenuItem)def.getWidget("duplicateRecord");
+        addScreenHandler(duplicate, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                duplicate();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -1061,6 +1077,63 @@ public class KitOrderScreen extends Screen {
         }
     }
     
+    protected void duplicate() {
+        Datetime now;
+        OrderViewDO data;
+        
+        try {
+            manager = OrderManager.fetchById(manager.getOrder().getId());
+
+            try {
+                now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
+            } catch (Exception e) {
+                Window.alert("OrderAdd Datetime: " +e.getMessage());
+                return;
+            }
+            
+            data = manager.getOrder();
+            data.setStatusId(status_pending);
+            data.setOrderedDate(now);
+            data.setRequestedBy(OpenELIS.security.getSystemUserName());
+            data.setType(OrderManager.TYPE_KIT);           
+            
+            itemTab.setManager(manager);            
+            //fillTab.setManager(manager);
+            shipNoteTab.setManager(manager);
+            custNoteTab.setManager(manager);
+            reportToBillToTab.setManager(manager);  
+            containerTab.setManager(manager);      
+            auxDataTab.setManager(manager);            
+            
+            
+            manager.getItems();
+            //manager.getFills();
+            manager.getShippingNotes();       
+            manager.getCustomerNotes();
+            manager.getTests();
+            manager.getContainers();
+            manager.getAuxData();
+            
+            clearKeys();
+            
+            itemTab.draw();
+            //fillTab.draw();
+            shipNoteTab.draw();
+            custNoteTab.draw();
+            reportToBillToTab.draw();  
+            containerTab.draw();
+            auxDataTab.draw();
+            
+            setState(State.ADD);
+            DataChangeEvent.fire(this);
+
+            setFocus(neededInDays);
+            window.setDone(consts.get("enterInformationPressCommit"));
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+        }                  
+    }
+    
     protected void orderHistory() {
         IdNameVO hist;
         
@@ -1258,5 +1331,84 @@ public class KitOrderScreen extends Screen {
                 auxDataTab.draw();
                 break;    
         }
+    }
+    
+    private void clearKeys() {
+        OrderItemManager iman;
+        NoteManager snman, cnman;
+        OrderTestManager otman;
+        OrderContainerManager ocman;
+        AuxDataManager adman;
+        OrderItemViewDO item;
+        NoteViewDO snote, cnote;
+        OrderTestViewDO test;
+        OrderContainerDO container;
+        AuxDataViewDO aux;
+        int i, count;
+        
+        manager.getOrder().setId(null);
+        
+        try {
+            iman = manager.getItems();
+            count = iman.count();
+            
+            for(i = 0; i < count; i++) {
+                item = iman.getItemAt(i);
+                item.setId(null);
+                item.setOrderId(null);
+            } 
+            
+            snman = manager.getShippingNotes();
+            count = snman.count();
+            
+            for(i = 0; i < count; i++) {
+                snote = snman.getNoteAt(i);
+                snote.setId(null);
+                snote.setReferenceId(null);
+                snote.setReferenceTableId(null);
+            } 
+            
+            cnman = manager.getCustomerNotes();
+            count = cnman.count();
+            
+            for(i = 0; i < count; i++) {
+                cnote = cnman.getNoteAt(i);
+                cnote.setId(null);
+                cnote.setReferenceId(null);
+                cnote.setReferenceTableId(null);
+            } 
+            
+            otman = manager.getTests();
+            count = otman.count();
+            
+            for(i = 0; i < count; i++) {
+                test = otman.getTestAt(i);
+                test.setId(null);
+                test.setOrderId(null);
+            }
+            
+            ocman = manager.getContainers();
+            count = ocman.count();
+            
+            for(i = 0; i < count; i++) {
+                container = ocman.getContainerAt(i);
+                container.setId(null);
+                container.setOrderId(null);
+            }
+            
+            adman = manager.getAuxData();
+            count = adman.count();
+            
+            for(i = 0; i < count; i++) {
+                aux = adman.getAuxDataAt(i);
+                aux.setId(null);
+                aux.setReferenceId(null);
+                aux.setReferenceTableId(null);
+            }
+            
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }      
     }
 }

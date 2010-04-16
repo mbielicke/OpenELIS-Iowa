@@ -31,8 +31,11 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.NoteViewDO;
+import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
@@ -53,20 +56,25 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TabPanel;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.manager.NoteManager;
+import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.meta.OrderMeta;
+import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -100,6 +108,7 @@ public class VendorOrderScreen extends Screen {
     private AutoComplete      organizationName;
     private AppButton         queryButton, previousButton, nextButton, addButton, updateButton,
                               commitButton, abortButton;
+    private MenuItem          duplicate, orderHistory, itemHistory;
     private TabPanel          tabPanel;
     private Integer           status_pending;
     
@@ -230,6 +239,39 @@ public class VendorOrderScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+            }
+        });
+        
+        duplicate = (MenuItem)def.getWidget("duplicateRecord");
+        addScreenHandler(duplicate, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                duplicate();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        orderHistory = (MenuItem)def.getWidget("orderHistory");
+        addScreenHandler(orderHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                orderHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                orderHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        itemHistory = (MenuItem)def.getWidget("itemHistory");
+        addScreenHandler(itemHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                itemHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                itemHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -863,6 +905,82 @@ public class VendorOrderScreen extends Screen {
         }
     }
     
+    protected void duplicate() {
+        Datetime now;
+        OrderViewDO data;
+        
+        try {
+            manager = OrderManager.fetchById(manager.getOrder().getId());
+
+            try {
+                now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
+            } catch (Exception e) {
+                Window.alert("OrderAdd Datetime: " +e.getMessage());
+                return;
+            }
+            
+            data = manager.getOrder();
+            data.setStatusId(status_pending);
+            data.setOrderedDate(now);
+            data.setRequestedBy(OpenELIS.security.getSystemUserName());
+            data.setType(OrderManager.TYPE_VENDOR);           
+            
+            itemTab.setManager(manager);            
+            //fillTab.setManager(manager);
+            shipNoteTab.setManager(manager);
+            
+            manager.getItems();
+            //manager.getFills();
+            manager.getShippingNotes();            
+            
+            clearKeys();
+            
+            itemTab.draw();
+            //fillTab.draw();
+            shipNoteTab.draw();
+            
+            setState(State.ADD);
+            DataChangeEvent.fire(this);
+
+            setFocus(neededInDays);
+            window.setDone(consts.get("enterInformationPressCommit"));
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+        }                  
+    }   
+
+    protected void orderHistory() {
+        IdNameVO hist;
+        
+        hist = new IdNameVO(manager.getOrder().getId(), manager.getOrder().getId().toString());
+        HistoryScreen.showHistory(consts.get("orderHistory"),
+                                  ReferenceTable.ORDER, hist);                
+    }
+    
+    protected void itemHistory() {
+        int i, count;
+        IdNameVO refVoList[];
+        OrderItemManager man;
+        OrderItemViewDO data;
+
+        try {
+            man = manager.getItems();
+            count = man.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = man.getItemAt(i);
+                refVoList[i] = new IdNameVO(data.getId(), data.getInventoryItemName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("orderItemHistory"),
+                                  ReferenceTable.ORDER_ITEM, refVoList);
+    }
+    
     protected boolean fetchById(Integer id) {
         if (id == null) {
             manager = OrderManager.getInstance();
@@ -912,5 +1030,39 @@ public class VendorOrderScreen extends Screen {
                 shipNoteTab.draw();
                 break;   
         }
+    }
+    
+    private void clearKeys() {
+        OrderItemManager iman;
+        OrderItemViewDO item;
+        NoteViewDO note;
+        NoteManager nman;
+        int i, count;
+        
+        manager.getOrder().setId(null);
+        
+        try {
+            iman = manager.getItems();
+            count = iman.count();
+            
+            for(i = 0; i < count; i++) {
+                item = iman.getItemAt(i);
+                item.setId(null);
+                item.setOrderId(null);
+            } 
+            
+            nman = manager.getShippingNotes();
+            count = nman.count();
+            
+            for(i = 0; i < count; i++) {
+                note = nman.getNoteAt(i);
+                note.setId(null);
+                note.setReferenceId(null);
+                note.setReferenceTableId(null);
+            } 
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }      
     }
 }

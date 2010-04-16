@@ -1777,8 +1777,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
             if (data.getDictionary() == null) {
                 row.cells.get(2).setValue(data.getValue());
             } else {
-                row.cells.get(2).setValue(data.getDictionary());
-                row.data = data.getValue();
+                row.cells.get(2).setValue(data.getDictionary());                
             }
 
             row.cells.get(3).setValue(data.getFlagsId());
