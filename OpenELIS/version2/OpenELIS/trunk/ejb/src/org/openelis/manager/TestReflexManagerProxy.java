@@ -28,18 +28,43 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.naming.InitialContext;
 
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestReflexViewDO;
+import org.openelis.domain.TestResultViewDO;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestReflexLocal;
 import org.openelis.meta.TestMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 public class TestReflexManagerProxy {
+    
+    private static int               typeDefault; 
+    
+    private static final Logger      log  = Logger.getLogger(TestReflexManagerProxy.class.getName());
+    
+    public TestReflexManagerProxy() {
+        DictionaryDO data;
+        DictionaryLocal dl;
+        
+        dl = dictLocal();        
+        
+        try {
+            data = dl.fetchBySystemName("test_res_type_default");
+            typeDefault = data.getId();
+        } catch (Throwable e) {
+            typeDefault = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='test_res_type_default'", e);
+        }
+    }
     
     public TestReflexManager fetchByTestId(Integer testId) throws Exception {
         TestReflexManager trm;        
@@ -118,15 +143,18 @@ public class TestReflexManagerProxy {
     public void validate(TestReflexManager trm,
                          boolean anaListValid,boolean resListValid,
                          HashMap<Integer, Integer> anaResGrpMap,
-                         HashMap<Integer, List<Integer>> resGrpRsltMap) throws Exception{
-        TestReflexViewDO refDO;
+                         HashMap<Integer, List<TestResultViewDO>> resGrpRsltMap) throws Exception{
+        TestReflexViewDO data;
+        TestResultViewDO result;
         List<List<Integer>> idsList;
         List<Integer> ids;
-        int i;
+        List<TestResultViewDO> resList;
+        int i, j;
         String fieldName;
         ArrayList<TestReflexViewDO> testReflexDOList;
         ValidationErrorsList list;
         TestReflexLocal rl;
+        Integer testId, anaId, resultId, typeId;
 
         fieldName = null;
         idsList = new ArrayList<List<Integer>>();
@@ -138,19 +166,22 @@ public class TestReflexManagerProxy {
             return;
         
         for (i = 0; i < testReflexDOList.size(); i++ ) {
-            refDO = testReflexDOList.get(i);
+            data = testReflexDOList.get(i);
 
             ids = new ArrayList<Integer>();
 
-            if (refDO.getAddTestId() != null && refDO.getTestAnalyteId() != null &&
-                refDO.getTestResultId() != null) {
-                ids.add(refDO.getAddTestId());
-                ids.add(refDO.getTestAnalyteId());
-                ids.add(refDO.getTestResultId());
+            testId = data.getAddTestId();            
+            anaId = data.getTestAnalyteId();
+            resultId = data.getTestResultId();
+            
+            if (testId != null &&  anaId != null && resultId != null) {
+                ids.add(testId);
+                ids.add(anaId);
+                ids.add(resultId);
             }
                     
             try {
-                rl.validate(refDO);                        
+                rl.validate(data);                        
             
                 if (!idsList.contains(ids)) {
                     idsList.add(ids);
@@ -161,7 +192,14 @@ public class TestReflexManagerProxy {
                 
                 fieldName = TestMeta.getReflexTestResultValue();
                 validateAnalyteResultMapping(anaListValid, resListValid, anaResGrpMap,
-                                             resGrpRsltMap, refDO);
+                                             resGrpRsltMap, data);
+                
+                typeId = getResultTypeForReflexId(anaResGrpMap, resGrpRsltMap, data);
+                    
+                if(DataBaseUtil.isSame(typeDefault, typeId))                             
+                    throw new InconsistencyException("resultDefaultReflexTestException");
+                        
+
             } catch (InconsistencyException ex) {
                 list.add(new TableFieldErrorException(ex.getMessage(),i,
                                                       fieldName,"testReflexTable"));
@@ -196,13 +234,13 @@ public class TestReflexManagerProxy {
     private void validateAnalyteResultMapping(boolean anaListValid,
                                               boolean resListValid,
                                               HashMap<Integer, Integer> anaResGrpMap,
-                                              HashMap<Integer, List<Integer>> resGrpRsltMap,
-                                              TestReflexViewDO refDO) throws InconsistencyException {
+                                              HashMap<Integer, List<TestResultViewDO>> resGrpRsltMap,
+                                              TestReflexViewDO data) throws InconsistencyException {
         Integer rg, resId, anaId;
-        List<Integer> resIdList;
+        List<TestResultViewDO> resList;
 
-        resId = refDO.getTestResultId();
-        anaId = refDO.getTestAnalyteId();
+        resId = data.getTestResultId();
+        anaId = data.getTestAnalyteId();
 
         if (!anaListValid || !resListValid)
             return;
@@ -219,12 +257,62 @@ public class TestReflexManagerProxy {
             // doesn't belong to the result group selected for the test analyte
             // and thus an exception is thrown containing this message.
             //
-            resIdList = resGrpRsltMap.get(rg);
-            if (resIdList == null)
+            resList = resGrpRsltMap.get(rg);
+            if (resList == null) {
                 throw new InconsistencyException("resultDoesntBelongToAnalyteException");
-            else if ( !resIdList.contains(resId))
+            } else if (!listContainsId(resList, resId)) {
                 throw new InconsistencyException("resultDoesntBelongToAnalyteException");
+            }
         }
     }
     
+    private Integer getResultTypeForReflexId(HashMap<Integer, Integer> anaResGrpMap,
+                                              HashMap<Integer, List<TestResultViewDO>> resGrpRsltMap,
+                                              TestReflexViewDO data) {
+        Integer rg, anaId;
+        List<TestResultViewDO> resList;
+        TestResultViewDO result;
+
+        anaId = data.getTestAnalyteId();
+
+        //
+        // find the result group selected for the test analyte from anaResGrpMap
+        // using its id set in data,
+        //        
+        rg = anaResGrpMap.get(anaId);
+        if (rg != null) {
+            resList = resGrpRsltMap.get(rg);
+            if (resList != null) {
+                for(int j = 0; j < resList.size(); j++) {
+                    result = resList.get(j);
+                    if(DataBaseUtil.isSame(data.getTestResultId(), result.getId())) {                            
+                        return result.getTypeId();
+                    }
+                }
+            } 
+        }   
+        
+        return null;
+    }
+    
+    private boolean listContainsId(List<TestResultViewDO> resList, Integer resId) {
+        TestResultViewDO data;
+        
+        for(int i = 0; i < resList.size(); i++) {
+            data = resList.get(i);
+            if(DataBaseUtil.isSame(resId, data.getId()))
+                return true;
+        }
+        return false;
+    }       
+    
+    private DictionaryLocal dictLocal() {
+        try {
+            InitialContext ctx = new InitialContext();
+            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
 }

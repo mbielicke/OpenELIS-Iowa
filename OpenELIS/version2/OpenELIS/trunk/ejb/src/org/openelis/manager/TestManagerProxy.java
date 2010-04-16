@@ -31,6 +31,7 @@ import java.util.List;
 
 import javax.naming.InitialContext;
 
+import org.openelis.domain.TestResultViewDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -217,13 +218,13 @@ public class TestManagerProxy {
     public void validate(TestManager man) throws Exception {
         ValidationErrorsList list;
         HashMap<Integer, Integer> anaResGrpMap;
-        HashMap<Integer, List<Integer>> resGrpRsltMap;
+        HashMap<Integer, List<TestResultViewDO>> resGrpRsltMap;
         boolean anaListValid, resListValid;
         
         list = new ValidationErrorsList();
 
         anaResGrpMap = new HashMap<Integer, Integer>();
-        resGrpRsltMap = new HashMap<Integer, List<Integer>>();        
+        resGrpRsltMap = new HashMap<Integer, List<TestResultViewDO>>();        
         anaListValid = true;
         resListValid = true;
         

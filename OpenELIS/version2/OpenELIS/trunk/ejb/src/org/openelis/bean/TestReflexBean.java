@@ -34,7 +34,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
@@ -61,7 +60,7 @@ public class TestReflexBean implements TestReflexLocal {
     private EntityManager            manager;
     
     @EJB
-    private DictionaryLocal          dictionary;
+    private DictionaryLocal          dictionary;    
     
     private static int               typeDict;
     
@@ -73,7 +72,7 @@ public class TestReflexBean implements TestReflexLocal {
 
         try {
             data = dictionary.fetchBySystemName("test_res_type_dictionary");
-            typeDict = data.getId();
+            typeDict = data.getId();                       
         } catch (Throwable e) {
             typeDict = 0;
             log.log(Level.SEVERE,
@@ -179,7 +178,7 @@ public class TestReflexBean implements TestReflexLocal {
         if (data.getTestResultId() == null) {            
             list.add(new FieldErrorException("fieldRequiredException",
                                              TestMeta.getReflexTestResultValue()));
-        }
+        } 
 
         if (data.getFlagsId() == null) {
             list.add(new FieldErrorException("fieldRequiredException",
@@ -189,16 +188,6 @@ public class TestReflexBean implements TestReflexLocal {
         if(list.size() > 0)
             throw list;
 
-    }
-    
-    private DictionaryLocal dictLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
+    }   
 
 }
