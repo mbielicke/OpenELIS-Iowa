@@ -133,14 +133,18 @@ public class SampleItemsPopoutTreeLookup extends Screen {
                 TreeDataItem treeItem;
                 Label label;
                 
-                treeItem = event.getDragObject().item;
-                if(!treeItem.leafType.equals("analysis"))
-                    event.cancel();
-                else{
-                    label = new Label(treeItem.cells.get(0).value + " | " + 
-                                      treeItem.cells.get(1).value);
-                    label.setStyleName("ScreenLabel");
-                    event.setProxy(label);
+                try{
+                    treeItem = event.getDragObject().item;
+                    if(!treeItem.leafType.equals("analysis"))
+                        event.cancel();
+                    else{
+                        label = new Label(treeItem.cells.get(0).value + " | " + 
+                                          DictionaryCache.getEntryFromId((Integer)treeItem.cells.get(1).value).getEntry());
+                        label.setStyleName("ScreenLabel");
+                        event.setProxy(label);
+                    }
+                }catch(Exception e){
+                    Window.alert("tree beforeDragStart: "+e.getMessage());
                 }
             };
         });
