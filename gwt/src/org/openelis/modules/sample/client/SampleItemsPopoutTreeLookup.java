@@ -42,10 +42,12 @@ import org.openelis.gwt.event.DropEnterEvent;
 import org.openelis.gwt.event.DropEnterHandler;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.event.StateChangeHandler;
+import org.openelis.gwt.event.DropEnterEvent.DropPosition;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
@@ -79,7 +81,6 @@ public class SampleItemsPopoutTreeLookup extends Screen {
     }
 
     private void initialize() {
-        final SampleItemsPopoutTreeLookup popScreen = this;
         sampleTreePopout = (TreeWidget)def.getWidget("itemsTestsTree");
         sampleTreePopout.enableDrag(true);
         sampleTreePopout.enableDrop(true);
@@ -129,8 +130,18 @@ public class SampleItemsPopoutTreeLookup extends Screen {
         
         sampleTreePopout.addBeforeDragStartHandler(new BeforeDragStartHandler<TreeRow>() {
             public void onBeforeDragStart(BeforeDragStartEvent<TreeRow> event) {
-                if(!event.getDragObject().item.leafType.equals("analysis"))
+                TreeDataItem treeItem;
+                Label label;
+                
+                treeItem = event.getDragObject().item;
+                if(!treeItem.leafType.equals("analysis"))
                     event.cancel();
+                else{
+                    label = new Label(treeItem.cells.get(0).value + " | " + 
+                                      treeItem.cells.get(1).value);
+                    label.setStyleName("ScreenLabel");
+                    event.setProxy(label);
+                }
             };
         });
         
@@ -168,15 +179,19 @@ public class SampleItemsPopoutTreeLookup extends Screen {
                 TreeDataItem dropTarget = ((TreeRow)event.getDropTarget()).item;
                 TreeDataItem dragItem = event.getDragObject().dragItem;
                 
-                if((dropTarget.leafType.equals("sampleItem") && dropTarget.hasChildren()) || 
+                if((dropTarget.leafType.equals("sampleItem") && (dropTarget.hasChildren() || event.getDropPosition() != DropPosition.ON)) || 
                                 (dropTarget.leafType.equals("analysis") && 
-                                                (!dropTarget.equals(dropTarget.parent.getLastChild()) || dropTarget.parent.equals(dragItem.parent))))
+                                                (!dropTarget.equals(dropTarget.parent.getLastChild()) || dropTarget.parent.equals(dragItem.parent) || event.getDropPosition() == DropPosition.ON || 
+                                                                event.getDropPosition() == DropPosition.ABOVE)))
+                    
                     event.cancel();
             }
         });
         
         sampleTreePopout.addTarget(sampleTreePopout);
     }
+    
+    
     
     private ArrayList<TreeDataItem> getTreeModel() {
         int i, j;

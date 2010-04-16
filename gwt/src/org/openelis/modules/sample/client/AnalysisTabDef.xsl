@@ -52,7 +52,7 @@ UIRF Software License are applicable instead of those above.
             <xsl:value-of select="resource:getString($constants,'method')" />:
           </text>
           <widget colspan="3">
-          <autoComplete key="{meta:getAnalysisMethodName()}" width="125" case="LOWER" popWidth="auto" field="Integer">
+          <autoComplete key="{meta:getAnalysisMethodName()}" width="151" case="LOWER" popWidth="auto" field="Integer">
             <col width="150" header="{resource:getString($constants,'method')}" />
           </autoComplete>
           </widget>
@@ -70,7 +70,7 @@ UIRF Software License are applicable instead of those above.
             <xsl:value-of select="resource:getString($constants,'section')" />:
           </text>
           <widget colspan="3">
-          <dropdown key="{meta:getAnalysisSectionId()}" width="125" case="LOWER" popWidth="150" field="Integer" />
+          <dropdown key="{meta:getAnalysisSectionId()}" width="151" case="LOWER" popWidth="150" field="Integer" />
           </widget>
            <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'completed')" />:
@@ -100,7 +100,7 @@ UIRF Software License are applicable instead of those above.
             <xsl:value-of select="resource:getString($constants,'samplePrep')" />:
           </text>
           <widget colspan="5">
-          <autoComplete key="{meta:getAnalysisSamplePrep()}" width="350" popWidth="auto" field="Integer">
+          <autoComplete key="{meta:getAnalysisSamplePrep()}" width="365" popWidth="auto" field="Integer">
             <col width="350" header="Name" />
           </autoComplete>
           </widget>
@@ -113,7 +113,7 @@ UIRF Software License are applicable instead of those above.
       <HorizontalPanel spacing="0" padding="0">
                    <VerticalPanel spacing="0" padding="0">
             <table key="worksheetTable" style="ScreenTableWithSides" width="auto" maxRows="3" showScroll="ALWAYS" title="">
-            	<col width="75" header="Worksheet">
+            	<col width="70" header="Worksheet">
               		<label field="String"/>
             	</col>
             	<col width="115" header="Created">
@@ -122,7 +122,7 @@ UIRF Software License are applicable instead of those above.
             	<col width="115" header="Status">
               		<label field="String"/>
             	</col>
-            	<col width="115" header="User">
+            	<col width="120" header="User">
               		<label field="String"/>
             	</col>
             </table>
@@ -143,7 +143,7 @@ UIRF Software License are applicable instead of those above.
             	<col width="115" header="User">
               		<label field="String"/>
             	</col>
-            	<col width="110" header="Action">
+            	<col width="114" header="Action">
               		<label field="String"/>
             	</col>
             </table>
