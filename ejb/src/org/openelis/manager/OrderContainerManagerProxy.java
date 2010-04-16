@@ -30,7 +30,10 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.OrderContainerDO;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.OrderContainerLocal;
+import org.openelis.local.OrderTestLocal;
+import org.openelis.utilcommon.DataBaseUtil;
 
 public class OrderContainerManagerProxy {
     
@@ -83,6 +86,22 @@ public class OrderContainerManagerProxy {
     }
     
     public void validate(OrderContainerManager man) throws Exception {
+        ValidationErrorsList list;
+        OrderContainerLocal cl;
+
+        cl = local();
+        list = new ValidationErrorsList();
+        
+        for (int i = 0; i < man.count(); i++ ) {
+            try {
+                cl.validate(man.getContainerAt(i));
+            } catch (Exception e) {
+                DataBaseUtil.mergeException(list, e, "orderContainerTable", i);
+            }
+        }
+        
+        if (list.size() > 0)
+            throw list;
     }
     
     private OrderContainerLocal local() {

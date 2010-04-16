@@ -188,12 +188,30 @@ public class OrderManagerProxy {
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
+        
         try {
             if (man.items != null)
                 man.getItems().validate();
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
+        
+        try {
+            if (man.tests != null)
+                man.getTests().validate();
+        } catch (Exception e) {
+            DataBaseUtil.mergeException(list, e);
+        }
+        
+        try {
+            if (man.containers != null)
+                man.getContainers().validate();
+        } catch (Exception e) {
+            DataBaseUtil.mergeException(list, e);
+        }
+        
+        if(man.auxData != null)
+            man.getAuxData().validate(list);
         
         if (list.size() > 0)
             throw list;

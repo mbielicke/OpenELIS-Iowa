@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.openelis.domain.TestReflexViewDO;
+import org.openelis.domain.TestResultViewDO;
 import org.openelis.gwt.common.RPC;
 
 public class TestReflexManager implements RPC {
@@ -111,7 +112,7 @@ public class TestReflexManager implements RPC {
     
     public void validate(boolean analyteValid,boolean resultValid,
                          HashMap<Integer, Integer> anaResGrpMap,
-                         HashMap<Integer, List<Integer>> resGrpRsltMap) throws Exception{        
+                         HashMap<Integer, List<TestResultViewDO>> resGrpRsltMap) throws Exception{        
         proxy().validate(this,analyteValid,resultValid,anaResGrpMap,resGrpRsltMap);        
     }
     

@@ -192,7 +192,7 @@ public class TestResultManager implements RPC {
     }
     
     public void validate(TestTypeOfSampleManager ttsm,HashMap<Integer,
-                         List<Integer>> resGrpRsltMap) throws Exception {
+                         List<TestResultViewDO>> resGrpRsltMap) throws Exception {
         proxy().validate(this,ttsm,resGrpRsltMap);
     }
 

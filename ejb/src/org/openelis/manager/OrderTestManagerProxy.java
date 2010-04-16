@@ -30,7 +30,9 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.OrderTestViewDO;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.OrderTestLocal;
+import org.openelis.utilcommon.DataBaseUtil;
 
 public class OrderTestManagerProxy {
     
@@ -84,6 +86,21 @@ public class OrderTestManagerProxy {
     }
     
     public void validate(OrderTestManager man) throws Exception {
+        ValidationErrorsList list;
+        OrderTestLocal tl;
+
+        tl = local();
+        list = new ValidationErrorsList();
+        for (int i = 0; i < man.count(); i++ ) {
+            try {
+                tl.validate(man.getTestAt(i));
+            } catch (Exception e) {
+                DataBaseUtil.mergeException(list, e, "orderTestTable", i);
+            }
+        }
+        
+        if (list.size() > 0)
+            throw list;
     }
     
     private OrderTestLocal local() {

@@ -165,7 +165,7 @@ public class TestResultManagerProxy {
     }
     
     public void validate(TestResultManager trm,TestTypeOfSampleManager ttsm,
-                         HashMap<Integer, List<Integer>> resGrpRsltMap) throws Exception{
+                         HashMap<Integer, List<TestResultViewDO>> resGrpRsltMap) throws Exception{
         ValidationErrorsList list;
         TestResultViewDO data;
         Integer typeId, unitId, entryId;
@@ -176,7 +176,7 @@ public class TestResultManagerProxy {
         HashMap<Integer, List<ResultRangeTiter>> trMap;
         HashMap<Integer, List<ResultRangeNumeric>> nrMap;
         List<Integer> dictList, unitsWithDefault;
-        List<Integer> resIdList;
+        List<TestResultViewDO> resIdList;
         DictionaryLocal dl;
         TestResultLocal rl;
         
@@ -195,7 +195,7 @@ public class TestResultManagerProxy {
             nrMap.clear();
             dictList.clear();
             unitsWithDefault.clear();
-            resIdList = new ArrayList<Integer>();        
+            resIdList = new ArrayList<TestResultViewDO>();        
             resGrpRsltMap.put(i+1, resIdList);
             
             for (j = 0; j < trm.getResultGroupSize(i+1); j++ ) {
@@ -204,7 +204,7 @@ public class TestResultManagerProxy {
                 typeId = data.getTypeId();
                 unitId = data.getUnitOfMeasureId();    
                 
-                resIdList.add(data.getId());
+                resIdList.add(data);
                 
                 //
                 // units need to be valid for every result type because
