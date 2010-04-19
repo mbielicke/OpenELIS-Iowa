@@ -55,6 +55,7 @@ import org.openelis.modules.sample.client.EnvironmentalTab;
 import org.openelis.modules.sample.client.PrivateWellTab;
 import org.openelis.modules.sample.client.QAEventsTab;
 import org.openelis.modules.sample.client.ResultTab;
+import org.openelis.modules.sample.client.SDWISTab;
 import org.openelis.modules.sample.client.SampleHistoryUtility;
 import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleNotesTab;
@@ -79,7 +80,7 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
     analysisReleasedId, analysisInPrep, sampleLoggedInId, sampleErrorStatusId,
     sampleReleasedId, userId;
     
-    public enum Tabs {BLANK,SAMPLE,ENVIRONMENT,PRIVATE_WELL,
+    public enum Tabs {BLANK,SAMPLE,ENVIRONMENT,PRIVATE_WELL,SDWIS,
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
         AUX_DATA
     };
@@ -109,6 +110,7 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
 	private SampleTab                      sampleTab;
 	private EnvironmentalTab               environmentalTab;
 	private PrivateWellTab			       wellTab;
+	private SDWISTab                       sdwisTab;
 	private SampleItemTab                  sampleItemTab;
 	private AnalysisTab                    analysisTab;
 	private QAEventsTab                    qaEventsTab;
@@ -119,7 +121,7 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
 	private ResultTab      				   testResultsTab;
 	private TableWidget                    atozTable;
 	
-    protected MenuItem                     historySample, historySampleEnvironmental,historySamplePrivateWell,
+    protected MenuItem                     historySample, historySampleEnvironmental,historySamplePrivateWell,historySampleSDWIS,
     historySampleProject, historySampleOrganization, historySampleItem,
     historyAnalysis, historyCurrentResult, historyStorage, historySampleQA,
     historyAnalysisQA, historyAuxData;
@@ -334,6 +336,20 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
             		historySamplePrivateWell.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             	else
             		historySamplePrivateWell.enable(false);
+            }
+        });
+        
+        historySampleSDWIS = (MenuItem)def.getWidget("historySampleSDWIS");
+        addScreenHandler(historySampleSDWIS, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySampleSDWIS();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+            	if(manager.getSample().getDomain().equals(SampleManager.SDWIS_DOMAIN_FLAG))
+            		historySampleSDWIS.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            	else
+            		historySampleSDWIS.enable(false);
             }
         });
         
@@ -559,6 +575,26 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
         	}
         });
         
+        sdwisTab = new SDWISTab(def,window);
+        
+        addScreenHandler(sdwisTab, new ScreenEventHandler<Object>() {
+        	public void onDataChange(DataChangeEvent event) {
+        		if(manager.getSample().getDomain().equals(SampleManager.SDWIS_DOMAIN_FLAG))
+        			sdwisTab.setData(manager);
+        		else {
+           			SampleManager newManager = SampleManager.getInstance();
+        			newManager.getSample().setDomain(SampleManager.SDWIS_DOMAIN_FLAG);
+        			sdwisTab.setData(newManager);
+        		}
+        		
+        		if(tab == Tabs.SDWIS)
+        			sdwisTab.draw();
+        	}
+        	public void onStateChange(StateChangeEvent<State> event) {
+        		sdwisTab.setState(event.getState());
+        	}
+        }); 
+        
         sampleItemTab = new SampleItemTab(def, window);
 
         addScreenHandler(sampleItemTab, new ScreenEventHandler<Object>() {
@@ -691,6 +727,7 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
     		sampleTab.draw();
     		environmentalTab.draw();
     		wellTab.draw();
+    		sdwisTab.draw();
             sampleItemTab.draw();
             analysisTab.draw();
             testResultsTab.draw();
@@ -872,6 +909,9 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
         
         if(manager.getSample().getDomain().equals(SampleManager.WELL_DOMAIN_FLAG))
         	showTabs(Tabs.SAMPLE,Tabs.PRIVATE_WELL,Tabs.SAMPLE_ITEM,Tabs.ANALYSIS,Tabs.TEST_RESULT,Tabs.ANALYSIS_NOTES,Tabs.SAMPLE_NOTES,Tabs.STORAGE,Tabs.QA_EVENTS,Tabs.AUX_DATA);
+        
+        if(manager.getSample().getDomain().equals(SampleManager.SDWIS_DOMAIN_FLAG))
+        	showTabs(Tabs.SAMPLE,Tabs.SDWIS,Tabs.SAMPLE_ITEM,Tabs.ANALYSIS,Tabs.TEST_RESULT,Tabs.ANALYSIS_NOTES,Tabs.SAMPLE_NOTES,Tabs.STORAGE,Tabs.QA_EVENTS,Tabs.AUX_DATA);
 
         DataChangeEvent.fire(this);
         window.clearStatus();
@@ -961,6 +1001,9 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
         		break;
         	case PRIVATE_WELL:
         		wellTab.draw();
+        		break;
+        	case SDWIS:
+        		sdwisTab.draw();
         		break;
         	case SAMPLE :
         		sampleTab.draw();

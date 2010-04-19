@@ -71,6 +71,7 @@ import org.openelis.modules.sample.client.EnvironmentalTab;
 import org.openelis.modules.sample.client.PrivateWellTab;
 import org.openelis.modules.sample.client.QAEventsTab;
 import org.openelis.modules.sample.client.ResultTab;
+import org.openelis.modules.sample.client.SDWISTab;
 import org.openelis.modules.sample.client.SampleHistoryUtility;
 import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleNotesTab;
@@ -97,7 +98,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     analysisReleasedId, analysisInPrep, sampleLoggedInId, sampleErrorStatusId,
     sampleReleasedId, userId;
     
-    public enum Tabs {BLANK,ENVIRONMENT,PRIVATE_WELL,
+    public enum Tabs {BLANK,ENVIRONMENT,PRIVATE_WELL,SDWIS,
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
         AUX_DATA
     };
@@ -127,6 +128,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 	
 	private EnvironmentalTab               environmentalTab;
 	private PrivateWellTab			       wellTab;
+	private SDWISTab					   sdwisTab;
 	private SampleItemTab                  sampleItemTab;
 	private AnalysisTab                    analysisTab;
 	private QAEventsTab                    qaEventsTab;
@@ -139,7 +141,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 	private int                            tempId;
 	private SampleTreeUtility			   treeUtil;	
 	
-    protected MenuItem                     historySample, historySampleEnvironmental,historySamplePrivateWell,
+    protected MenuItem                     historySample, historySampleEnvironmental,historySamplePrivateWell,historySampleSDWIS,
     historySampleProject, historySampleOrganization, historySampleItem,
     historyAnalysis, historyCurrentResult, historyStorage, historySampleQA,
     historyAnalysisQA, historyAuxData;
@@ -209,6 +211,16 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         		manager = SampleManager.getInstance();
         		manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
         		showTabs(Tabs.PRIVATE_WELL,Tabs.SAMPLE_ITEM,Tabs.ANALYSIS,Tabs.TEST_RESULT,Tabs.STORAGE,Tabs.QA_EVENTS,Tabs.AUX_DATA);
+        		query();
+        	}
+        });
+        
+        final MenuItem sdwisMenuQuery = (MenuItem)def.getWidget("sdwisSample");
+        sdwisMenuQuery.addClickHandler(new ClickHandler() {
+        	public void onClick(ClickEvent event) {
+        		manager = SampleManager.getInstance();
+        		manager.getSample().setDomain(SampleManager.SDWIS_DOMAIN_FLAG);
+        		showTabs(Tabs.SDWIS,Tabs.SAMPLE_ITEM,Tabs.ANALYSIS,Tabs.TEST_RESULT,Tabs.STORAGE,Tabs.QA_EVENTS,Tabs.AUX_DATA);
         		query();
         	}
         });
@@ -423,6 +435,20 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             		historySamplePrivateWell.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             	else
             		historySamplePrivateWell.enable(false);
+            }
+        });
+        
+        historySampleSDWIS = (MenuItem)def.getWidget("historySampleSDWIS");
+        addScreenHandler(historySampleSDWIS, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                historyUtility.historySampleSDWIS();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+            	if(manager.getSample().getDomain().equals(SampleManager.SDWIS_DOMAIN_FLAG))
+            		historySampleSDWIS.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            	else
+            		historySampleSDWIS.enable(false);
             }
         });
         
@@ -1027,6 +1053,26 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         	}
         });
         
+        sdwisTab = new SDWISTab(def,window);
+        
+        addScreenHandler(sdwisTab, new ScreenEventHandler<Object>() {
+        	public void onDataChange(DataChangeEvent event) {
+        		if(manager.getSample().getDomain().equals(SampleManager.SDWIS_DOMAIN_FLAG))
+        			sdwisTab.setData(manager);
+        		else {
+           			SampleManager newManager = SampleManager.getInstance();
+        			newManager.getSample().setDomain(SampleManager.SDWIS_DOMAIN_FLAG);
+        			sdwisTab.setData(newManager);
+        		}
+        		
+        		if(tab == Tabs.SDWIS)
+        			sdwisTab.draw();
+        	}
+        	public void onStateChange(StateChangeEvent<State> event) {
+        		sdwisTab.setState(event.getState());
+        	}
+        });
+        
         sampleItemTab = new SampleItemTab(def, window);
 
         addScreenHandler(sampleItemTab, new ScreenEventHandler<Object>() {
@@ -1085,7 +1131,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             }
         };
         
-        //FIXME couldnt find refresh tabs so this may not be needed
         treeUtil.addActionHandler(new ActionHandler(){
             public void onAction(ActionEvent event) {
                 ActionEvent.fire(null, event.getAction(), event.getData());
@@ -1331,6 +1376,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     		environmentalTab.draw();
     		wellTab.draw();
             sampleItemTab.draw();
+            sdwisTab.draw();
             analysisTab.draw();
             testResultsTab.draw();
             analysisNotesTab.draw();
@@ -1486,6 +1532,9 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         if(manager.getSample().getDomain().equals(SampleManager.WELL_DOMAIN_FLAG))
         	showTabs(Tabs.PRIVATE_WELL);
         
+        if(manager.getSample().getDomain().equals(SampleManager.SDWIS_DOMAIN_FLAG))
+        	showTabs(Tabs.SDWIS);
+        
         DataChangeEvent.fire(this);
         window.clearStatus();
     }
@@ -1540,6 +1589,9 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         		break;
         	case PRIVATE_WELL:
         		wellTab.draw();
+        		break;
+        	case SDWIS:
+        		sdwisTab.draw();
         		break;
             case SAMPLE_ITEM:
                 sampleItemTab.draw();

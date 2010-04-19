@@ -108,6 +108,7 @@ UIRF Software License are applicable instead of those above.
                   <menuItem key="historySample" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySample')}" />
                   <menuItem key="historySampleEnvironmental" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleEnvironmental')}" />
                   <menuItem key="historySamplePrivateWell" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySamplePrivateWell')}" />
+                  <menuItem key="historySampleSDWIS" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleSDWIS')}" />
                   <menuItem key="historySampleProject" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleProject')}" />
                   <menuItem key="historySampleOrganization" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleOrganization')}" />
                   <menuItem key="historySampleItem" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleItem')}" />
@@ -418,6 +419,94 @@ UIRF Software License are applicable instead of those above.
              </VerticalPanel>
                   </VerticalPanel>
           </tab>
+<!--     SDWISS Tab -->
+                <tab text="SDWIS" visible="false">
+                  <VerticalPanel width="98%">
+                   	<TablePanel style="Form">
+              		  <row>
+                		<text style="Prompt">
+                  			<xsl:value-of select="resource:getString($constants,'pwsId')" />:
+                		</text>
+                	    <HorizontalPanel>
+                  		  <textbox key="{meta:getSDWISPwsId()}" width="75" max="9" case="UPPER" tab="pwsName,{meta:getClientReference()}" field="String" required="true"/>
+                  			<appButton key="pwsButton" style="LookupButton">
+                    		  <AbsolutePanel style="LookupButtonImage" />
+                            </appButton>
+                       </HorizontalPanel>
+                       <text style="Prompt">
+                          <xsl:value-of select="resource:getString($constants,'pwsName')" />:
+                       </text>
+                       <textbox key="pwsName" width="250" tab="{meta:getSDWISStateLabId()},{meta:getSDWISPwsId()}" field="String" />
+                     </row>
+                     <row>
+                        <text style="Prompt">
+                           <xsl:value-of select="resource:getString($constants,'stateLabNo')" />:
+                        </text>
+                        <textbox key="{meta:getSDWISStateLabId()}" width="102" tab="{meta:getSDWISFacilityId()},pwsName" field="Integer" required="true"/>
+                        <text style="Prompt">
+                           <xsl:value-of select="resource:getString($constants,'facilityId')" />:
+                        </text>
+                        <textbox key="{meta:getSDWISFacilityId()}" width="75" max="12" tab="{meta:getSDWISSampleTypeId()},{meta:getSDWISStateLabId()}" field="String" />
+                     </row>
+                     <row>
+                        <text style="Prompt">
+                           <xsl:value-of select="resource:getString($constants,'sampleType')" />:
+                        </text>
+                        <dropdown key="{meta:getSDWISSampleTypeId()}" width="120" tab="{meta:getSDWISSampleCategoryId()},{meta:getSDWISFacilityId()}" field="Integer" required="true"/>
+                        <text style="Prompt">
+                          <xsl:value-of select="resource:getString($constants,'sampleCat')" />:
+                        </text>
+                        <dropdown key="{meta:getSDWISSampleCategoryId()}" width="108" tab="{meta:getSDWISSamplePointId()},{meta:getSDWISSampleTypeId()}" field="Integer" required="true"/>
+                     </row>
+                     <row>
+                       <text style="Prompt">
+                         <xsl:value-of select="resource:getString($constants,'samplePtId')" />:
+                       </text>
+                       <textbox key="{meta:getSDWISSamplePointId()}" width="75" max="11" tab="{meta:getSDWISLocation()},{meta:getSDWISSampleCategoryId()}" field="String" required="true"/>
+                       <text style="Prompt">
+                         <xsl:value-of select="resource:getString($constants,'pointDesc')" />:
+                       </text>
+                       <textbox key="{meta:getSDWISLocation()}" width="250" max="20" tab="itemsTestsTree,{meta:getSDWISSamplePointId()}" field="String" />
+                     </row>
+                     <row>
+                       <text style="Prompt">
+                         <xsl:value-of select="resource:getString($constants,'collector')" />:
+                       </text>
+                       <textbox key="{meta:getSDWISCollector()}" width="162" max="20" tab="{meta:getOrgName()},itemsTestsTree" field="String" />
+                       <text style="Prompt">
+                         <xsl:value-of select="resource:getString($constants,'reportTo')" />:
+                       </text>
+                       <HorizontalPanel>
+                         <autoComplete key="{meta:getOrgName()}" width="179" case="UPPER" popWidth="auto" tab="{meta:getBillTo()},{meta:getSDWISCollector()}" field="Integer">
+                           <col width="180" header="{resource:getString($constants,'name')}" />
+                           <col width="110" header="{resource:getString($constants,'street')}" />
+                           <col width="100" header="{resource:getString($constants,'city')}" />
+                           <col width="20" header="{resource:getString($constants,'st')}" />
+                         </autoComplete>
+                         <appButton key="reportToLookup" style="LookupButton">
+                           <AbsolutePanel style="LookupButtonImage" />
+                         </appButton>
+                       </HorizontalPanel>
+                     </row>
+                     <row>
+                       <text style="Prompt">
+                         <xsl:value-of select="resource:getString($constants,'billTo')" />:
+                       </text>
+                       <HorizontalPanel>
+                        <autoComplete key="{meta:getBillTo()}" width="179" case="UPPER" popWidth="auto" tab="sampleItemTabPanel,{meta:getOrgName()}" field="Integer">
+                          <col width="180" header="{resource:getString($constants,'name')}" />
+                          <col width="110" header="{resource:getString($constants,'street')}" />
+                          <col width="100" header="{resource:getString($constants,'city')}" />
+                          <col width="20" header="{resource:getString($constants,'st')}" />
+                        </autoComplete>
+                        <appButton key="billToLookup" style="LookupButton">
+                          <AbsolutePanel style="LookupButtonImage" />
+                        </appButton>
+                       </HorizontalPanel>
+                     </row>
+                   </TablePanel>
+                  </VerticalPanel>
+                </tab>           
 <!-- Sample Item deck -->
           <tab tab="{meta:getItemTypeOfSampleId()},{meta:getItemUnitOfMeasureId()}" visible="false" text="{resource:getString($constants,'sampleItem')}">
             <xsl:call-template name="SampleItemTab" />
