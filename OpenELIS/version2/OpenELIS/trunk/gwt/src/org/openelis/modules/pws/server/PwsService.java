@@ -28,6 +28,7 @@ package org.openelis.modules.pws.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.PwsDO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.PwsAddressManager;
@@ -107,6 +108,10 @@ public class PwsService {
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
+    }
+    
+    public PwsDO fetchByPwsId(String pwsId) throws Exception {
+        return remote().fetchByNumber0(pwsId);
     }
     
     private PwsRemote remote() {

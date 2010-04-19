@@ -33,10 +33,12 @@ import org.openelis.domain.AuxDataDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdVO;
-import org.openelis.domain.ProjectViewDO;
+import org.openelis.domain.ProjectDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.DateField;
 import org.openelis.manager.SampleManager;
@@ -52,7 +54,7 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
         projectService = new ScreenService("controller?service="+PROJECT_SERVICE_URL);
     }
     
-    public void importOrderInfo(Integer orderId, SampleManager manager) throws Exception {
+    public ValidationErrorsList importOrderInfo(Integer orderId, SampleManager manager) throws Exception {
         //grab order aux data
         AuxDataDO auxData = new AuxDataDO();
         auxData.setReferenceId(orderId);
@@ -73,12 +75,15 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
         loadSampleItems(orderId, manager);
         
         //inject the data into the manager
-        importData(auxDataList, auxGroupId, manager);
+        return importData(auxDataList, auxGroupId, manager);
     }
     
-    private void importData(ArrayList<AuxDataViewDO> auxDataList, Integer envAuxGroupId, SampleManager manager) throws Exception {
+    private ValidationErrorsList importData(ArrayList<AuxDataViewDO> auxDataList, Integer envAuxGroupId, SampleManager manager) throws Exception {
         AuxDataViewDO auxData;
         String analyteId;
+        ValidationErrorsList errorsList;
+        
+        errorsList = new ValidationErrorsList();
         //aux data
         for(int i=0; i<auxDataList.size(); i++){
             auxData = auxDataList.get(i);
@@ -113,6 +118,8 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                         if(validateDropdownValue(auxData.getValue(), "state"))
                             ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().
                                 getLocationAddressDO().setState(auxData.getValue());
+                        else if(auxData.getValue() != null)
+                            errorsList.add(new FormErrorException("orderImportError", "state", auxData.getValue()));
                     }else if(analyteId.equals("loc_zip_code")){
                         ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().
                         getLocationAddressDO().setZipCode(auxData.getValue());
@@ -122,11 +129,11 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                         ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().setCollector(auxData.getValue());
                     }else if(analyteId.equals("well_number")){
                         ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().setWellNumber(new Integer(auxData.getValue()));
-                    }else if(analyteId.equals("project_id")){
-                        ProjectViewDO proj;
+                    }else if(analyteId.equals("project_name") && auxData.getValue() != null){
+                        ProjectDO proj;
                         SampleProjectViewDO projectDO;
                         
-                        proj = projectService.call("fetchDOById", new Integer(auxData.getValue()));
+                        proj = projectService.call("fetchSingleByName", auxData.getValue());
                         
                         if(proj != null){
                             projectDO = new SampleProjectViewDO();
@@ -136,7 +143,9 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                             projectDO.setProjectDescription(proj.getDescription());
                                 
                             manager.getProjects().addFirstPermanentProject(projectDO);
-                        }
+                             
+                        }else
+                            errorsList.add(new FormErrorException("orderImportError", "project", auxData.getValue()));
                     }
                         
                 }else{
@@ -146,6 +155,11 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                 //problem with aux input, ignore
             }
         }
+        
+        if(errorsList.size() > 0)
+            return errorsList;
+        
+        return null;
     }
     
     private boolean validateDropdownValue(String entry, String dictSystemName){
