@@ -26,27 +26,36 @@
 package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AuxDataDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdVO;
+import org.openelis.domain.PwsDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.widget.DateField;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleSDWISManager;
 
 public class SampleSDWISImportOrder extends ImportOrder {
     protected static final String AUX_DATA_SERVICE_URL = "org.openelis.modules.auxData.server.AuxDataService";
+    protected static final String PWS_SERVICE_URL = "org.openelis.modules.pws.server.PwsService";
     
-    protected ScreenService auxDataService;
+    protected ScreenService auxDataService, pwsService;
 
     public SampleSDWISImportOrder(){
         auxDataService = new ScreenService("controller?service="+AUX_DATA_SERVICE_URL);
+        pwsService = new ScreenService("controller?service="+PWS_SERVICE_URL);
     }
     
-    public void importOrderInfo(Integer orderId, SampleManager manager) throws Exception {
+    public ValidationErrorsList importOrderInfo(Integer orderId, SampleManager manager) throws Exception {
         //grab order aux data
         AuxDataDO auxData = new AuxDataDO();
         auxData.setReferenceId(orderId);
@@ -67,40 +76,68 @@ public class SampleSDWISImportOrder extends ImportOrder {
         loadSampleItems(orderId, manager);
         
         //inject the data into the manager
-        importData(auxDataList, auxGroupId, manager);
+        return importData(auxDataList, auxGroupId, manager);
     }
     
-    private void importData(ArrayList<AuxDataViewDO> auxDataList, Integer envAuxGroupId, SampleManager manager) throws Exception {
+    private ValidationErrorsList importData(ArrayList<AuxDataViewDO> auxDataList, Integer envAuxGroupId, SampleManager manager) throws Exception {
         AuxDataViewDO auxData;
         String analyteId;
         DictionaryDO dictDO;
         Integer value;
+        PwsDO pwsDo;
+        ValidationErrorsList errorsList;
+        
+        errorsList = new ValidationErrorsList();
         //aux data
         for(int i=0; i<auxDataList.size(); i++){
             auxData = auxDataList.get(i);
             try{
                 if(auxData.getGroupId().equals(envAuxGroupId)){
                     analyteId = auxData.getAnalyteExternalId();
-                    if(analyteId.equals("pws_id"))
-                        ((SampleSDWISManager)manager.getDomainManager()).getSDWIS().setPwsId(auxData.getValue());
-                    else if(analyteId.equals("state_lab_num"))
+                    
+                    if(analyteId.equals("smpl_collected_date"))
+                        manager.getSample().setCollectionDate(
+                                            Datetime.getInstance(Datetime.YEAR, Datetime.DAY, new Date(auxData.getValue())));
+                    else if(analyteId.equals("smpl_collected_time")){
+                        DateField df = new DateField();
+                        df.setBegin(Datetime.HOUR);
+                        df.setEnd(Datetime.MINUTE);
+                        df.setStringValue(auxData.getValue());
+                        manager.getSample().setCollectionTime(df.getValue());
+                    }else if(analyteId.equals("smpl_client_ref"))
+                        manager.getSample().setClientReference(auxData.getValue());
+                    else if(analyteId.equals("pws_id")){
+                        if(auxData.getValue() != null){
+                            try{
+                                pwsDo = pwsService.call("fetchByPwsId", auxData.getValue());
+                                ((SampleSDWISManager)manager.getDomainManager()).getSDWIS().setPwsId(auxData.getValue());
+                                ((SampleSDWISManager)manager.getDomainManager()).getSDWIS().setPwsName(pwsDo.getName());
+                            }catch(NotFoundException e){
+                                errorsList.add(new FormErrorException("orderImportError", "pws id", auxData.getValue()));
+                            }
+                        }
+                    }else if(analyteId.equals("state_lab_num"))
                         ((SampleSDWISManager)manager.getDomainManager()).getSDWIS().setStateLabId(new Integer(auxData.getValue()));
                     else if(analyteId.equals("facility_id"))
                         ((SampleSDWISManager)manager.getDomainManager()).getSDWIS().setFacilityId(auxData.getValue());
                     else if(analyteId.equals("sample_type")){
+                        value = null;
                         dictDO = validateDropdownValue(auxData.getValue(), "sdwis_sample_type");
                         if(dictDO != null)
                             value = dictDO.getId();
-                        else
-                            value = null;
+                        else if(auxData.getValue() != null)
+                            errorsList.add(new FormErrorException("orderImportError", "sample type", auxData.getValue()));
+                        
                         ((SampleSDWISManager)manager.getDomainManager()).getSDWIS().setSampleTypeId(value);
                         
                     }else if(analyteId.equals("sample_cat")){
+                        value = null;
                         dictDO = validateDropdownValue(auxData.getValue(), "sdwis_sample_category");
                         if(dictDO != null)
                             value = dictDO.getId();
-                        else
-                            value = null;
+                        else if(auxData.getValue() != null)
+                            errorsList.add(new FormErrorException("orderImportError", "sample category", auxData.getValue()));
+                        
                         ((SampleSDWISManager)manager.getDomainManager()).getSDWIS().setSampleCategoryId(value);
                         
                     }else if(analyteId.equals("sample_pt_id"))
@@ -117,11 +154,19 @@ public class SampleSDWISImportOrder extends ImportOrder {
                 //problem with aux input, ignore
             }
         }
+        
+        if(errorsList.size() > 0)
+            return errorsList;
+        
+        return null;
     }
     
     private DictionaryDO validateDropdownValue(String entry, String dictSystemName){
         ArrayList<DictionaryDO> entries;
         DictionaryDO dictDO;
+        
+        if(entry == null)
+            return null;
         
         entries = DictionaryCache.getListByCategorySystemName(dictSystemName);
         

@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.SDWISSampleLogin.client;
 
 import java.util.ArrayList;
@@ -31,6 +31,7 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
@@ -78,6 +79,7 @@ import org.openelis.modules.sample.client.SampleHistoryUtility;
 import org.openelis.modules.sample.client.SampleItemAnalysisTreeTab;
 import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleNotesTab;
+import org.openelis.modules.sample.client.SampleSDWISImportOrder;
 import org.openelis.modules.sample.client.StorageTab;
 
 import com.google.gwt.core.client.GWT;
@@ -92,56 +94,54 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
 
-
 public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers {
     public enum Tabs {
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
         AUX_DATA
     };
 
-    protected Tabs                         tab;
-    private Integer                        sampleLoggedInId, sampleErrorStatusId, sampleReleasedId,
-                                           userId;
+    protected Tabs                    tab;
+    private Integer                   sampleLoggedInId, sampleErrorStatusId, sampleReleasedId,
+                    userId;
 
-    private SampleItemAnalysisTreeTab      treeTab;
-    private SDWISTab                       sdwisTab;
-    private SampleItemTab                  sampleItemTab;
-    private AnalysisTab                    analysisTab;
-    private ResultTab                      testResultsTab;
-    private AnalysisNotesTab               analysisNotesTab;
-    private SampleNotesTab                 sampleNotesTab;
-    private StorageTab                     storageTab;
-    private QAEventsTab                    qaEventsTab;
-    private AuxDataTab                     auxDataTab;
+    private SampleItemAnalysisTreeTab treeTab;
+    private SDWISTab                  sdwisTab;
+    private SampleItemTab             sampleItemTab;
+    private AnalysisTab               analysisTab;
+    private ResultTab                 testResultsTab;
+    private AnalysisNotesTab          analysisNotesTab;
+    private SampleNotesTab            sampleNotesTab;
+    private StorageTab                storageTab;
+    private QAEventsTab               qaEventsTab;
+    private AuxDataTab                auxDataTab;
 
-    protected AccessionNumberUtility       accessionNumUtil;
-    protected SampleHistoryUtility         historyUtility;
+    protected AccessionNumberUtility  accessionNumUtil;
+    protected SampleHistoryUtility    historyUtility;
 
-    protected TextBox                      clientReference;
-    protected TextBox<Integer>             accessionNumber, orderNumber;
-    protected TextBox<Datetime>            collectedTime;
-    protected Dropdown<Integer>            statusId;
-    protected CalendarLookUp               collectedDate, receivedDate;
-    protected MenuItem                     historySample, historySampleSdwis,
-                    historySampleOrganization, historySampleItem,
-                    historyAnalysis, historyCurrentResult, historyStorage, historySampleQA,
-                    historyAnalysisQA, historyAuxData;
+    protected TextBox                 clientReference;
+    protected TextBox<Integer>        accessionNumber, orderNumber;
+    protected TextBox<Datetime>       collectedTime;
+    protected Dropdown<Integer>       statusId;
+    protected CalendarLookUp          collectedDate, receivedDate;
+    protected MenuItem                historySample, historySampleSdwis, historySampleOrganization,
+                    historySampleItem, historyAnalysis, historyCurrentResult, historyStorage,
+                    historySampleQA, historyAnalysisQA, historyAuxData;
 
-    protected AppButton                    queryButton, addButton, updateButton, nextButton,
-                    prevButton, commitButton, abortButton;
-    protected TabPanel                     tabs;
+    protected AppButton               queryButton, addButton, updateButton, nextButton, prevButton,
+                    commitButton, abortButton;
+    protected TabPanel                tabs;
 
-    ScreenNavigator                        nav;
-    private SecurityModule                 security;
+    ScreenNavigator                   nav;
+    private SecurityModule            security;
 
-    //FIXME add this later private SampleEnvironmentalImportOrder envOrderImport;
-    private SampleManager                  manager;
+    private SampleSDWISImportOrder    sdwisOrderImport;
+    private SampleManager             manager;
 
-    
     public SDWISSampleLoginScreen() throws Exception {
         // Call base to get ScreenDef and draw screen
         super((ScreenDefInt)GWT.create(SDWISSampleLoginDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.sample.server.SampleService");
+        service = new ScreenService(
+                                    "controller?service=org.openelis.modules.sample.server.SampleService");
 
         security = OpenELIS.security.getModule("samplesdwis");
 
@@ -172,8 +172,10 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                                                          "type_of_sample", "source_of_sample",
                                                          "sample_container", "unit_of_measure",
                                                          "qaevent_type", "aux_field_value_type",
-                                                         "organization_type", "sdwis_lead_sample_type", 
-                                                         "sdwis_repeat_code", "sdwis_sample_category", 
+                                                         "organization_type",
+                                                         "sdwis_lead_sample_type",
+                                                         "sdwis_repeat_code",
+                                                         "sdwis_sample_category",
                                                          "sdwis_sample_type");
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -185,8 +187,8 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
     }
-    
-    private void initialize(){
+
+    private void initialize() {
         final SDWISSampleLoginScreen sdwisScreen = this;
         //
         // button panel buttons
@@ -324,8 +326,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historySampleSdwis.enable(EnumSet.of(State.DISPLAY)
-                                                         .contains(event.getState()));
+                historySampleSdwis.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -438,10 +439,10 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
             public void onValueChange(final ValueChangeEvent<Integer> event) {
                 SampleManager quickEntryMan;
-                
+
                 try {
                     manager.getSample().setAccessionNumber(event.getValue());
-                    
+
                     if (accessionNumUtil == null)
                         accessionNumUtil = new AccessionNumberUtility();
 
@@ -453,10 +454,10 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                         manager.createEmptyDomainManager();
                         DeferredCommand.addCommand(new Command() {
                             public void execute() {
-                                 setFocus(null);
-                                 setState(State.UPDATE);
-                                 DataChangeEvent.fire(sdwisScreen);
-                                 window.clearStatus();
+                                setFocus(null);
+                                setState(State.UPDATE);
+                                DataChangeEvent.fire(sdwisScreen);
+                                window.clearStatus();
                             }
                         });
                     }
@@ -488,26 +489,37 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                manager.getSample().setOrderId(event.getValue());
-                //FIXME add this later
-                /*if (envOrderImport == null)
-                    envOrderImport = new SampleEnvironmentalImportOrder();
-
-                try {
-                    envOrderImport.importOrderInfo(event.getValue(), manager);
-                    DataChangeEvent.fire(envScreen);
+                ValidationErrorsList errors;
                 
-                } catch (NotFoundException e) {
-                    //ignore
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                }*/
+                manager.getSample().setOrderId(event.getValue());
+                
+                 if (sdwisOrderImport == null) 
+                     sdwisOrderImport = new SampleSDWISImportOrder(); 
+                 
+                 try {
+                     errors = sdwisOrderImport.importOrderInfo(event.getValue(), manager);
+                     DataChangeEvent.fire(sdwisScreen); 
+                     
+                     ArrayList<OrderTestViewDO> orderTests = sdwisOrderImport.getTestsFromOrder(event.getValue());
+                     
+                     if(orderTests != null && orderTests.size() > 0)
+                         ActionEvent.fire(sdwisScreen, AnalysisTab.Action.ORDER_LIST_ADDED, orderTests);
+                     
+                     if(errors != null)
+                         showErrors(errors);
+                     
+                 } catch (NotFoundException e) { 
+                     //ignore 
+                 } catch (Exception e) {
+                     Window.alert(e.getMessage()); 
+                 }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orderNumber.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY).contains(event.getState()));
+                orderNumber.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                          .contains(event.getState()));
                 orderNumber.setQueryMode(event.getState() == State.QUERY);
-                
+
                 if (EnumSet.of(State.UPDATE).contains(event.getState()))
                     setFocus(orderNumber);
             }
@@ -542,8 +554,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collectedTime.enable(EnumSet.of(State.ADD, State.UPDATE)
-                                            .contains(event.getState()));
+                collectedTime.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -834,7 +845,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
         };
     }
-    
+
     protected void query() {
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.SDWIS_DOMAIN_FLAG);
@@ -872,8 +883,8 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             manager.setDefaults();
 
             manager.getSample().setReceivedById(userId);
-            //((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
-              //                                                      .setIsHazardous("N");
+            // ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
+            // .setIsHazardous("N");
 
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -905,7 +916,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     protected void commit() {
         setFocus(null);
         clearErrors();
-        
+
         if ( !validate()) {
             window.setError(consts.get("correctErrors"));
             return;
@@ -1027,17 +1038,17 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         } else if (state == State.UPDATE) {
             try {
                 manager = manager.abortUpdate();
-                
-                if(SampleManager.QUICK_ENTRY.equals(manager.getSample().getDomain())){
+
+                if (SampleManager.QUICK_ENTRY.equals(manager.getSample().getDomain())) {
                     setState(State.DEFAULT);
                     manager = SampleManager.getInstance();
                     manager.getSample().setDomain(SampleManager.SDWIS_DOMAIN_FLAG);
-                    
-                }else{
+
+                } else {
                     historyUtility.setManager(manager);
                     setState(State.DISPLAY);
                 }
-                
+
                 DataChangeEvent.fire(this);
                 window.clearStatus();
 
@@ -1078,38 +1089,38 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
         return true;
     }
-    
+
     public ArrayList<QueryData> getQueryFields() {
         ArrayList<QueryData> returnList;
         ArrayList<IdNameVO> auxFields;
         QueryData queryData;
         IdNameVO idName;
-        
+
         returnList = super.getQueryFields();
-        
-        //add aux data values if necessary
+
+        // add aux data values if necessary
         auxFields = auxDataTab.getAuxQueryFields();
-        
-        if(auxFields.size() > 0){
-            //add ref table
+
+        if (auxFields.size() > 0) {
+            // add ref table
             queryData = new QueryData();
             queryData.key = SampleMeta.getAuxDataReferenceTableId();
             queryData.type = QueryData.Type.INTEGER;
             queryData.query = String.valueOf(ReferenceTable.SAMPLE);
             returnList.add(queryData);
-            
-            //add aux fields
-            for(int i=0; i<auxFields.size(); i++){
+
+            // add aux fields
+            for (int i = 0; i < auxFields.size(); i++ ) {
                 idName = auxFields.get(i);
-                
-                //aux data id
+
+                // aux data id
                 queryData = new QueryData();
                 queryData.key = SampleMeta.getAuxDataAuxFieldId();
                 queryData.type = QueryData.Type.INTEGER;
                 queryData.query = String.valueOf(idName.getId());
                 returnList.add(queryData);
-                
-                //aux data value
+
+                // aux data value
                 queryData = new QueryData();
                 queryData.key = SampleMeta.getAuxDataValue();
                 queryData.type = QueryData.Type.STRING;
@@ -1117,11 +1128,11 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 returnList.add(queryData);
             }
         }
-        
+
         return returnList;
     }
-    
-    private void initializeDropdowns(){
+
+    private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         // preload dictionary models and single entries, close the window if an
         // error is found
@@ -1146,7 +1157,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             window.close();
         }
     }
-    
+
     private void drawTabs() {
         switch (tab) {
             case SAMPLE_ITEM:

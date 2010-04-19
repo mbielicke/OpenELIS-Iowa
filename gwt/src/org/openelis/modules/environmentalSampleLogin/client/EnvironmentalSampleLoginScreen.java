@@ -499,6 +499,8 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
+                ValidationErrorsList errors;
+                
                 manager.getSample().setOrderId(event.getValue());
 
                 if(event.getValue() != null){
@@ -506,13 +508,17 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                         envOrderImport = new SampleEnvironmentalImportOrder();
                     
                     try {
-                        envOrderImport.importOrderInfo(event.getValue(), manager);
+                        errors = envOrderImport.importOrderInfo(event.getValue(), manager);
+                        
                         DataChangeEvent.fire(envScreen);
                         
                         ArrayList<OrderTestViewDO> orderTests = envOrderImport.getTestsFromOrder(event.getValue());
                         
                         if(orderTests != null && orderTests.size() > 0)
                             ActionEvent.fire(envScreen, AnalysisTab.Action.ORDER_LIST_ADDED, orderTests);
+                        
+                        if(errors != null)
+                            showErrors(errors);
                         
                     } catch (NotFoundException e) {
                         //ignore

@@ -141,6 +141,7 @@ public class SampleItemsPopoutTreeLookup extends Screen {
                         label = new Label(treeItem.cells.get(0).value + " | " + 
                                           DictionaryCache.getEntryFromId((Integer)treeItem.cells.get(1).value).getEntry());
                         label.setStyleName("ScreenLabel");
+                        label.setWordWrap(false);
                         event.setProxy(label);
                     }
                 }catch(Exception e){

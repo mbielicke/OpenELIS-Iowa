@@ -71,6 +71,17 @@ public class ProjectService {
         }
         return list;
     }
+    
+    public ProjectDO fetchSingleByName(String name) throws Exception {
+        ArrayList<ProjectDO> list;
+        
+        list = remote().fetchActiveByName(name, 1);
+        
+        if(list.size() > 0)
+            return list.get(0);
+        
+        return null;
+    }
 
     public ProjectManager add(ProjectManager man) throws Exception {
         return remoteManager().add(man);

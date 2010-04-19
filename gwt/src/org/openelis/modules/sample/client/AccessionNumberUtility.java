@@ -41,7 +41,10 @@ public class AccessionNumberUtility {
     }
     
     public SampleManager accessionNumberEntered(SampleDO sampleDO) throws Exception {
-        return service.call("validateAccessionNumber", sampleDO);
+        if(sampleDO.getAccessionNumber() != null)
+            return service.call("validateAccessionNumber", sampleDO);
+       
+        return null;
     }
     
     public Integer getNewAccessionNumber() throws Exception {

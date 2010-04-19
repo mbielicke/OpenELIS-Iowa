@@ -486,6 +486,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
+                ValidationErrorsList errors;
+                
                 manager.getSample().setOrderId(event.getValue());
 
                 if(event.getValue() != null){
@@ -493,13 +495,16 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                         wellOrderImport = new SamplePrivateWellImportOrder();
     
                     try {
-                        wellOrderImport.importOrderInfo(event.getValue(), manager);
+                        errors = wellOrderImport.importOrderInfo(event.getValue(), manager);
                         DataChangeEvent.fire(wellScreen);
                         
                         ArrayList<OrderTestViewDO> orderTests = wellOrderImport.getTestsFromOrder(event.getValue());
                         
                         if(orderTests != null && orderTests.size() > 0)
                             ActionEvent.fire(wellScreen, AnalysisTab.Action.ORDER_LIST_ADDED, orderTests);
+                        
+                        if(errors != null)
+                            showErrors(errors);
                         
                     } catch (NotFoundException e) {
                         //ignore
