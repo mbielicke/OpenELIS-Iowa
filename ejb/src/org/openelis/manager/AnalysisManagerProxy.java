@@ -186,6 +186,11 @@ public class AnalysisManagerProxy {
         
         item = man.getItemAt(i);
         
+        if(item.analysisUsers != null){
+            man.getAnalysisUserAt(i).setAnalysisId(analysisDO.getId());
+            man.getAnalysisUserAt(i).add();
+        }
+        
         if(item.analysisResult != null){
             man.getAnalysisResultAt(i).setAnalysisId(analysisDO.getId());
             man.getAnalysisResultAt(i).add();
@@ -228,6 +233,12 @@ public class AnalysisManagerProxy {
             analysisLocal().update(analysisDO);
         
         item = man.getItemAt(i);
+        
+        if(item.analysisUsers != null){
+            man.getAnalysisUserAt(i).setAnalysisId(analysisDO.getId());
+            man.getAnalysisUserAt(i).update();
+        }
+        
         if(item.analysisResult != null){
             man.getAnalysisResultAt(i).setAnalysisId(analysisDO.getId());
             man.getAnalysisResultAt(i).update();

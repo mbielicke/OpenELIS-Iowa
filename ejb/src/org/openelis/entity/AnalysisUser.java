@@ -34,6 +34,8 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -41,6 +43,13 @@ import org.openelis.domain.ReferenceTable;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+
+@NamedQueries( {
+    @NamedQuery(name = "AnalysisUser.FetchById", query = "select new org.openelis.domain.AnalysisUserViewDO(a.id, a.analysisId, a.systemUserId," +
+    		           " a.actionId, '') from AnalysisUser a where a.id = :id"),
+    @NamedQuery(name = "AnalysisUser.FetchByAnalysisId", query = "select new org.openelis.domain.AnalysisUserViewDO(a.id, a.analysisId, a.systemUserId," +
+                       " a.actionId, '') from AnalysisUser a where a.analysisId = :id "),
+    })
 
 @Entity
 @Table(name="analysis_user")
@@ -61,10 +70,8 @@ public class AnalysisUser implements Auditable, Cloneable {
   @Column(name="action_id")
   private Integer actionId;             
 
-
   @Transient
   private AnalysisUser original;
-
   
   public Integer getId() {
     return id;
