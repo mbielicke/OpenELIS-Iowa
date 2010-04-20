@@ -48,7 +48,7 @@ public class WorksheetService {
         return remoteManager().fetchById(id);
     }
     
-    public ArrayList<WorksheetDO> fetchByAnalysisId(Integer id) throws Exception {
+    public ArrayList<WorksheetViewDO> fetchByAnalysisId(Integer id) throws Exception {
         return remote().fetchByAnalysisId(id);
     }
 
