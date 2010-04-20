@@ -29,12 +29,11 @@ import java.util.ArrayList;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.WorksheetDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.data.QueryData;
 
 @Remote
 public interface WorksheetRemote {
     public ArrayList<WorksheetViewDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
-    public ArrayList<WorksheetDO> fetchByAnalysisId(Integer id) throws Exception; 
+    public ArrayList<WorksheetViewDO> fetchByAnalysisId(Integer id) throws Exception; 
 }
