@@ -168,10 +168,11 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
 
         try {
-            DictionaryCache.preloadByCategorySystemNames("sample_status", "analysis_status",
-                                                         "type_of_sample", "source_of_sample",
-                                                         "sample_container", "unit_of_measure",
-                                                         "qaevent_type", "aux_field_value_type");
+            DictionaryCache.preloadByCategorySystemNames("sample_status", "user_action", 
+                                                         "analysis_status", "type_of_sample", 
+                                                         "source_of_sample", "sample_container", 
+                                                         "unit_of_measure", "qaevent_type", 
+                                                         "aux_field_value_type", "worksheet_status");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();

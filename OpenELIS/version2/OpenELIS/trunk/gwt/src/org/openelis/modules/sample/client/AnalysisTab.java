@@ -31,13 +31,16 @@ import java.util.HashMap;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
+import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SectionDO;
+import org.openelis.domain.SecuritySystemUserDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
+import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.data.Query;
@@ -63,15 +66,26 @@ import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.CellEditedEvent;
+import org.openelis.gwt.widget.table.event.CellEditedHandler;
+import org.openelis.gwt.widget.table.event.RowAddedEvent;
+import org.openelis.gwt.widget.table.event.RowAddedHandler;
+import org.openelis.gwt.widget.table.event.RowDeletedEvent;
+import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.AnalysisManager;
+import org.openelis.manager.AnalysisUserManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.TestSectionManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -108,13 +122,17 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                     analysisReleasedId, analysisInPrepId, changedTestId;
     
     private Confirm                                     changeTestConfirm;
-    protected ScreenService                             panelService;
+    protected ScreenService                             panelService, userService, worksheetService;
 
     public AnalysisTab(ScreenDefInt def, ScreenWindow window) {
         service = new ScreenService(
                                     "OpenELISServlet?service=org.openelis.modules.analysis.server.AnalysisService");
         panelService = new ScreenService(
                                          "controller?service=org.openelis.modules.panel.server.PanelService");
+        
+        userService = new ScreenService("controller?service=org.openelis.server.SystemUserService");
+        
+        worksheetService = new ScreenService("controller?service=org.openelis.modules.worksheet.server.WorksheetService");
 
         setDefinition(def);
         setWindow(window);
@@ -496,6 +514,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         worksheetTable= (TableWidget)def.getWidget("worksheetTable");
         addScreenHandler(worksheetTable, new ScreenEventHandler<TableDataRow>() {
             public void onDataChange(DataChangeEvent event) {
+                worksheetTable.load(getWorksheetTableModel());
 
             }
 
@@ -508,10 +527,22 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
         });
         
+        worksheetTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
+            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+                //always allow selection
+            }
+        });
+
+        worksheetTable.addSelectionHandler(new SelectionHandler<TableRow>() {
+            public void onSelection(SelectionEvent<TableRow> event) {
+                selectWkshtButton.enable(true);
+            }
+        });
+        
         analysisUserTable = (TableWidget)def.getWidget("analysisUserTable");
         addScreenHandler(analysisUserTable, new ScreenEventHandler<TableDataRow>() {
             public void onDataChange(DataChangeEvent event) {
-
+                analysisUserTable.load(getAnalysisUserTableModel());
             }
 
             public void onValueChange(ValueChangeEvent<TableDataRow> event) {
@@ -520,12 +551,123 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
             public void onStateChange(StateChangeEvent<State> event) {
                 analysisUserTable.enable(false);
+                                         //canEdit() &&
+                                    //EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                //analysisUserTable.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        final AutoComplete<Integer> userName = ((AutoComplete<Integer>)analysisUserTable.getColumns().get(0).colWidget);
+        analysisUserTable.addCellEditedHandler(new CellEditedHandler() {
+            public void onCellUpdated(CellEditedEvent event) {
+                int r, c;
+                Object val;
+                AnalysisUserViewDO data;
+
+                r = event.getRow();
+                c = event.getCol();
+                val = analysisUserTable.getObject(r,c);
+
+                try {
+                    data = manager.getAnalysisUserAt(bundle.getAnalysisIndex()).getAnalysisUserAt(r);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    return;
+                }
+
+                switch (c) {
+                    case 0:
+                        TableDataRow selectedRow = userName.getSelection();
+                        
+                        if(selectedRow != null){
+                            data.setSystemUserId((Integer)selectedRow.key);
+                            data.setSystemUser((String)selectedRow.cells.get(0).value);
+                        }else{
+                            data.setSystemUserId(null);
+                            data.setSystemUser(null);
+                        }
+                        break;
+                    case 1:
+                        data.setActionId((Integer)val);
+                        break;
+                }
+            }
+        });
+        
+        analysisUserTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
+            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+                //always allow selection
+            }
+        });
+
+        analysisUserTable.addSelectionHandler(new SelectionHandler<TableRow>() {
+            public void onSelection(SelectionEvent<TableRow> event) {
+               // if(EnumSet.of(State.ADD, State.UPDATE).contains(state))
+               //     removeActionButton.enable(true);
+            }
+        });
+        
+        analysisUserTable.addRowAddedHandler(new RowAddedHandler() {
+            public void onRowAdded(RowAddedEvent event) {
+                try {
+                    manager.getAnalysisUserAt(bundle.getAnalysisIndex()).addAnalysisUser(new AnalysisUserViewDO());
+                    removeActionButton.enable(true);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+            }
+        });
+        
+        analysisUserTable.addRowDeletedHandler(new RowDeletedHandler() {
+            public void onRowDeleted(RowDeletedEvent event) {
+                try {
+                    manager.getAnalysisUserAt(bundle.getAnalysisIndex()).removeAnalysisUserAt(event.getIndex());
+                    removeActionButton.enable(false);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+                
+            }
+        });
+        
+        userName.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                QueryFieldUtil parser;
+                ArrayList<SecuritySystemUserDO> users;
+                ArrayList<TableDataRow> model;
+                
+                parser = new QueryFieldUtil();
+                parser.parse(event.getMatch());
+
+                try {
+                    users = userService.callList("fetchByLogin", parser.getParameter().get(0));
+                    model = new ArrayList<TableDataRow>();
+                    for (SecuritySystemUserDO user : users)
+                        model.add(new TableDataRow(user.getId(), user.getLoginName()));
+                    userName.showAutoMatches(model);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Window.alert(e.toString());
+                }
             }
         });
         
         selectWkshtButton = (AppButton)def.getWidget("selectWkshtButton");
         addScreenHandler(selectWkshtButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                WorksheetCompletionScreen worksheetScreen;
+                TableDataRow row;
+                try{
+                    row = worksheetTable.getSelection();
+                    worksheetScreen = new WorksheetCompletionScreen((Integer)row.key);
+                    
+                    ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+                    modal.setName(consts.get("worksheetCompletion"));
+                    modal.setContent(worksheetScreen);
+
+                }catch(Exception e){
+                    Window.alert("openCompletionScreen: "+e.getMessage());
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -536,16 +678,31 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         addActionButton = (AppButton)def.getWidget("addActionButton");
         addScreenHandler(addActionButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                int n;
+                
+                analysisUserTable.addRow();
+                n = analysisUserTable.numRows() - 1;
+                analysisUserTable.selectRow(n);
+                analysisUserTable.scrollToSelection();
+                analysisUserTable.startEditing(n, 0);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 addActionButton.enable(false);
+                                       //canEdit() &&
+                                       //EnumSet.of(State.ADD, State.UPDATE)
+                                       //.contains(event.getState()));
             }
         });
         
         removeActionButton = (AppButton)def.getWidget("removeActionButton");
         addScreenHandler(removeActionButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                int r;
+                
+                r = analysisUserTable.getSelectedRow();
+                if (r > -1 && analysisUserTable.numRows() > 0)
+                    analysisUserTable.deleteRow(r);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -682,6 +839,20 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("unit_of_measure"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
+        
+        //analysis user action
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("user_action"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        ((Dropdown<Integer>)analysisUserTable.getColumns().get(1).getColumnWidget()).setModel(model);
+        
+        //worksheet status
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("worksheet_status"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        ((Dropdown<Integer>)worksheetTable.getColumns().get(2).getColumnWidget()).setModel(model);
 
         fullUnitModel = model;
         unitOfMeasureId.setModel(model);
@@ -712,6 +883,76 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         }
     }
 
+    private ArrayList<TableDataRow> getWorksheetTableModel() {
+        ArrayList<TableDataRow> model;
+        ArrayList<WorksheetViewDO> worksheets;
+        WorksheetViewDO wksht;
+        AnalysisViewDO anDO;
+        TableDataRow row;
+        
+        model = new ArrayList<TableDataRow>();
+        
+        if (manager == null)
+            return model;
+        
+        anDO = manager.getAnalysisAt(bundle.getAnalysisIndex());
+        
+        if(anDO.getId() > 0){
+            try{
+            worksheets = worksheetService.callList("fetchByAnalysisId", anDO.getId());
+            
+            for(int i=0; i<worksheets.size(); i++){
+                wksht = worksheets.get(i);
+                
+                row = new TableDataRow(4);
+                row.key = wksht.getId();
+                row.cells.get(0).value = wksht.getId();
+                row.cells.get(1).value = wksht.getCreatedDate();
+                row.cells.get(2).value = wksht.getStatusId();
+                row.cells.get(3).value = wksht.getSystemUser();
+                model.add(row);
+                
+            }
+            }catch(Exception e){
+                Window.alert("getWorksheetTableModel: "+e.getMessage());
+            }
+        }
+        
+        return model;
+    }
+    
+    private ArrayList<TableDataRow> getAnalysisUserTableModel() {
+        ArrayList<TableDataRow> model;
+        AnalysisUserManager userMan;
+        AnalysisUserViewDO userDO;
+        
+        model = new ArrayList<TableDataRow>();
+
+        if (manager == null)
+            return model;
+        
+        try {
+            userMan = manager.getAnalysisUserAt(bundle.getAnalysisIndex());
+
+            for (int iter = 0; iter < userMan.count(); iter++ ) {
+                userDO = userMan.getAnalysisUserAt(iter);
+
+                TableDataRow row = new TableDataRow(2);
+                row.key = userDO.getId();
+
+                row.cells.get(0).value = new TableDataRow(userDO.getSystemUserId(), userDO.getSystemUser());
+                row.cells.get(1).value = userDO.getActionId();
+                
+                model.add(row);
+            }
+        } catch (Exception e) {
+            Window.alert("getAnalysisUserTableModel: "+e.getMessage());
+            return null;
+        }
+
+        return model;
+    }
+    
     private boolean canEdit() {
         return (analysis != null && !analysisCancelledId.equals(analysis.getStatusId()) && !analysisReleasedId.equals(analysis.getStatusId()));
     }
