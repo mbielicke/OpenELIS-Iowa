@@ -450,7 +450,33 @@ public class AnalysisManager implements RPC {
     public void setStorageAt(StorageManager storage, int i) {
         getItemAt(i).storages = storage;
     }
+    
+    //analysis user
+    public AnalysisUserManager getAnalysisUserAt(int i) throws Exception {
+        AnalysisListItem item = getItemAt(i);
 
+        if (item.analysisUsers == null) {
+            if (item.analysis != null && item.analysis.getId() != null) {
+                try {
+                    item.analysisUsers = AnalysisUserManager.fetchByAnalysisId(item.analysis.getId());
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+
+            if (item.analysisUsers == null)
+                item.analysisUsers = AnalysisUserManager.getInstance();
+        }
+
+        return item.analysisUsers;
+    }
+
+    public void setAnalysisUserAt(AnalysisUserManager analysisUser, int i) {
+        getItemAt(i).analysisUsers = analysisUser;
+    }
+    
     // analysis test result
     public AnalysisResultManager getAnalysisResultAt(int i) throws Exception {
         AnalysisListItem item = getItemAt(i);
@@ -836,6 +862,7 @@ public class AnalysisManager implements RPC {
         AnalysisQaEventManager    qaEvents;
         NoteManager               analysisInternalNotes, analysisExternalNote;
         StorageManager            storages;
+        AnalysisUserManager       analysisUsers;
         TestManager               tests;
         SampleDataBundle          bundle;
     }
