@@ -27,6 +27,7 @@ package org.openelis.modules.worksheet.server;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.WorksheetDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.WorksheetAnalysisManager;
@@ -47,6 +48,10 @@ public class WorksheetService {
         return remoteManager().fetchById(id);
     }
     
+    public ArrayList<WorksheetDO> fetchByAnalysisId(Integer id) throws Exception {
+        return remote().fetchByAnalysisId(id);
+    }
+
     public WorksheetManager fetchWithItems(Integer id) throws Exception {
         return remoteManager().fetchWithItems(id);
     }
