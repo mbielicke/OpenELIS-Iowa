@@ -11,7 +11,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindow;

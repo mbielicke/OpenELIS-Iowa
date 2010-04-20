@@ -66,22 +66,6 @@ UIRF Software License are applicable instead of those above.
             <xsl:value-of select="resource:getString($constants,'status')" />:
           </text>
           <dropdown key="{meta:getAnalysisStatusId()}" width="150" popWidth="150" field="Integer" />
-        <text style="Prompt">
-            <xsl:value-of select="resource:getString($constants,'section')" />:
-          </text>
-          <widget colspan="3">
-          <dropdown key="{meta:getAnalysisSectionId()}" width="151" case="LOWER" popWidth="150" field="Integer" />
-          </widget>
-           <text style="Prompt">
-            <xsl:value-of select="resource:getString($constants,'completed')" />:
-          </text>
-          <calendar key="{meta:getAnalysisCompletedDate()}" width="125" begin="0" end="2" pattern="{resource:getString($constants,'dateTimePattern')}" />
-          </row>
-          <row>
-          <text style="Prompt">
-            <xsl:value-of select="resource:getString($constants,'unit')" />:
-          </text>
-          <dropdown key="{meta:getAnalysisUnitOfMeasureId()}" width="150" popWidth="150" field="Integer" />
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'revision')" />:
           </text>
@@ -90,6 +74,22 @@ UIRF Software License are applicable instead of those above.
             <xsl:value-of select="resource:getString($constants,'testReportable')" />:
           </text>
           <check key="{meta:getAnalysisIsReportable()}" />
+           <text style="Prompt">
+            <xsl:value-of select="resource:getString($constants,'completed')" />:
+          </text>
+          <calendar key="{meta:getAnalysisCompletedDate()}" width="125" begin="0" end="2" pattern="{resource:getString($constants,'dateTimePattern')}" />
+          </row>
+          <row>
+          <text style="Prompt">
+            <xsl:value-of select="resource:getString($constants,'section')" />:
+          </text>
+          <dropdown key="{meta:getAnalysisSectionId()}" width="151" case="LOWER" popWidth="150" field="Integer" />
+          <text style="Prompt">
+            <xsl:value-of select="resource:getString($constants,'unit')" />:
+          </text>
+          <widget colspan="3">
+          <dropdown key="{meta:getAnalysisUnitOfMeasureId()}" width="150" popWidth="150" field="Integer" />
+          </widget>
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'released')" />:
           </text>
@@ -114,13 +114,13 @@ UIRF Software License are applicable instead of those above.
                    <VerticalPanel spacing="0" padding="0">
             <table key="worksheetTable" style="ScreenTableWithSides" width="auto" maxRows="3" showScroll="ALWAYS" title="">
             	<col width="70" header="Worksheet">
-              		<label field="String"/>
+              		<label field="Integer"/>
             	</col>
             	<col width="115" header="Created">
-              		<label field="String"/>
+              		<calendar width="115" begin="0" end="2" pattern="{resource:getString($constants,'dateTimePattern')}" />
             	</col>
             	<col width="115" header="Status">
-              		<label field="String"/>
+              		<dropdown width="100" field="Integer" />
             	</col>
             	<col width="120" header="User">
               		<label field="String"/>
@@ -141,10 +141,10 @@ UIRF Software License are applicable instead of those above.
                   <VerticalPanel spacing="0" padding="0">
       		<table key="analysisUserTable" style="ScreenTableWithSides" width="auto" maxRows="3" showScroll="ALWAYS" title="">
             	<col width="115" header="User">
-              		<label field="String"/>
+              		<autoComplete width="100" case="LOWER" field="Integer"/>
             	</col>
             	<col width="114" header="Action">
-              		<label field="String"/>
+              		<dropdown width="100" field="Integer" />
             	</col>
             </table>
             <HorizontalPanel style="TableFooterPanel">

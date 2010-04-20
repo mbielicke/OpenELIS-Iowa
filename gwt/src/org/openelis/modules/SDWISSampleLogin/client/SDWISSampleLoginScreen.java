@@ -66,7 +66,6 @@ import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
-import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSampleLoginDef;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
@@ -172,8 +171,8 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                                                          "type_of_sample", "source_of_sample",
                                                          "sample_container", "unit_of_measure",
                                                          "qaevent_type", "aux_field_value_type",
-                                                         "organization_type",
-                                                         "sdwis_lead_sample_type",
+                                                         "organization_type", "user_action",
+                                                         "sdwis_lead_sample_type", "worksheet_status",
                                                          "sdwis_repeat_code",
                                                          "sdwis_sample_category",
                                                          "sdwis_sample_type");
