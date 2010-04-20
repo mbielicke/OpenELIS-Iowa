@@ -45,7 +45,7 @@ import org.openelis.remote.StorageManagerRemote;
 
 @SecurityDomain("openelis")
 @RolesAllowed("storage-select")
-public class StorageManagerBean implements StorageManagerRemote{
+public class StorageManagerBean implements StorageManagerRemote {
     
     @PersistenceContext(name = "openelis")
     
