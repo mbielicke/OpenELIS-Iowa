@@ -91,6 +91,23 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
         return data;
 	}
 
+    @SuppressWarnings("unchecked")
+    public ArrayList<WorksheetDO> fetchByAnalysisId(Integer id) throws Exception {     
+        Query                  query;
+        ArrayList<WorksheetDO> data;
+        
+        query = manager.createNamedQuery("Worksheet.FetchByAnalysisId");
+        query.setParameter("id", id);
+        try {
+            data = (ArrayList<WorksheetDO>) query.getResultList();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
+    }
+
     @SuppressWarnings({"unchecked", "static-access"})
     public ArrayList<WorksheetViewDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         int                             i, j, k;

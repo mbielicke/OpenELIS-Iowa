@@ -30,7 +30,10 @@ import org.openelis.utils.Auditable;
 @NamedQueries({
     @NamedQuery( name = "Worksheet.FetchById",
                 query = "select new org.openelis.domain.WorksheetDO(w.id,w.createdDate,w.systemUserId,w.statusId,w.formatId,w.batchCapacity,w.relatedWorksheetId) "+
-                        "from Worksheet w where w.id = :id")})
+                        "from Worksheet w where w.id = :id"),
+    @NamedQuery( name = "Worksheet.FetchByAnalysisId",
+                query = "select distinct new org.openelis.domain.WorksheetDO(w.id,w.createdDate,w.systemUserId,w.statusId,w.formatId,w.batchCapacity,w.relatedWorksheetId) "+
+                        "from Worksheet w left join w.worksheetItem wi left join wi.worksheetAnalysis wa where wa.analysisId = :id")})
 
 @Entity
 @Table(name = "worksheet")
