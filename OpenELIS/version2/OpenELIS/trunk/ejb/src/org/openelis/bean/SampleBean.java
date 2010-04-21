@@ -80,9 +80,9 @@ public class SampleBean implements SampleLocal, SampleRemote {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + SampleMeta.getId() + ",'') ");
+        builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" + SampleMeta.getId() + ","+SampleMeta.getAccessionNumber()+") ");
         builder.constructWhere(fields);
-        builder.setOrderBy(SampleMeta.getId());
+        builder.setOrderBy(SampleMeta.getAccessionNumber());
         
         whereForFrom = builder.getWhereClause();
         
