@@ -30,6 +30,7 @@ import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.ReferenceTable;
@@ -806,8 +807,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
-                    public void onSuccess(ArrayList<IdNameVO> result) {
+                service.callList("query", query, new AsyncCallback<ArrayList<IdAccessionVO>>() {
+                    public void onSuccess(ArrayList<IdAccessionVO> result) {
                         setQueryResult(result);
                     }
 
@@ -828,18 +829,18 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             }
 
             public boolean fetch(RPC entry) {
-                return fetchById( (entry == null) ? null : ((IdNameVO)entry).getId());
+                return fetchById( (entry == null) ? null : ((IdAccessionVO)entry).getId());
             }
 
             public ArrayList<TableDataRow> getModel() {
-                ArrayList<IdNameVO> result;
+                ArrayList<IdAccessionVO> result;
                 ArrayList<TableDataRow> model;
 
                 result = nav.getQueryResult();
                 model = new ArrayList<TableDataRow>();
                 if (result != null) {
-                    for (IdNameVO entry : result)
-                        model.add(new TableDataRow(entry.getId(), entry.getName()));
+                    for (IdAccessionVO entry : result)
+                        model.add(new TableDataRow(entry.getId(), entry.getAccessionNumber()));
                 }
                 return model;
             }
