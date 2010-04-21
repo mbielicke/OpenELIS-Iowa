@@ -129,7 +129,7 @@ UIRF Software License are applicable instead of those above.
 	            <HorizontalPanel style="TableFooterPanel">
                  <appButton key="selectWkshtButton" style="Button">
                    <HorizontalPanel>
-                     <AbsolutePanel style="CommitButtonImage" />
+                     <AbsolutePanel style="selectIcon" />
                      <text>
                        <xsl:value-of select='resource:getString($constants,"select")' />
                      </text>

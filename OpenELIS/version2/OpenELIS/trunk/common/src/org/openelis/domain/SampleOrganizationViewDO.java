@@ -42,9 +42,10 @@ public class SampleOrganizationViewDO extends SampleOrganizationDO {
     }
 
     public SampleOrganizationViewDO(Integer id, Integer sampleId, Integer organizationId,
+                                    String organizationAttention,
                                     Integer typeId, String organizationName,
                                     String organizationCity, String organizationState) {
-        super(id, sampleId, organizationId, typeId);
+        super(id, sampleId, organizationId, organizationAttention, typeId);
         setOrganizationName(organizationName);
         setOrganizationCity(organizationCity);
         setOrganizationState(organizationState);

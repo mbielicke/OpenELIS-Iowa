@@ -146,7 +146,7 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
                         orgDO.setTypeId((Integer)val);
                         break;
                     case 1:
-                        orgDO.setOrganizationId((Integer)val);
+                        orgDO.setOrganizationAttention((String)val);
                         break;
                     case 2:
                         TableDataRow selectedRow = organization.getSelection();
@@ -160,9 +160,6 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
                             state = (String)selectedRow.cells.get(3).value;
                         }
 
-                        sampleOrganizationTable.setCell(sampleOrganizationTable.getSelectedRow(),
-                                                        1,
-                                                        id);
                         sampleOrganizationTable.setCell(sampleOrganizationTable.getSelectedRow(),
                                                         3,
                                                         city);
@@ -299,7 +296,7 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
                row.key = orgDO.getId();
                
                row.cells.get(0).value = orgDO.getTypeId();
-               row.cells.get(1).value = orgDO.getOrganizationId();
+               row.cells.get(1).value = orgDO.getOrganizationAttention();
                row.cells.get(2).value = new TableDataRow(orgDO.getOrganizationId(), orgDO.getOrganizationName());
                row.cells.get(3).value = orgDO.getOrganizationCity();
                row.cells.get(4).value = orgDO.getOrganizationState();
