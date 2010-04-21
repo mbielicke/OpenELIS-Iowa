@@ -25,6 +25,8 @@
  */
 package org.openelis.domain;
 
+import org.openelis.utilcommon.DataBaseUtil;
+
 /**
  * Class represents the fields in database table sample_organization.
  */
@@ -34,14 +36,16 @@ public class SampleOrganizationDO extends DataObject {
     private static final long serialVersionUID = 1L;
 
     protected Integer         id, sampleId, organizationId, typeId;
+    protected String organizationAttention;
 
     public SampleOrganizationDO() {
     }
 
-    public SampleOrganizationDO(Integer id, Integer sampleId, Integer organizationId, Integer typeId) {
+    public SampleOrganizationDO(Integer id, Integer sampleId, Integer organizationId, String organizationAttention, Integer typeId) {
         setId(id);
         setSampleId(sampleId);
         setOrganizationId(organizationId);
+        setOrganizationAttention(organizationAttention);
         setTypeId(typeId);
         _changed = false;
     }
@@ -79,6 +83,15 @@ public class SampleOrganizationDO extends DataObject {
 
     public void setTypeId(Integer typeId) {
         this.typeId = typeId;
+        _changed = true;
+    }
+
+    public String getOrganizationAttention() {
+        return organizationAttention;
+    }
+
+    public void setOrganizationAttention(String organizationAttention) {
+        this.organizationAttention = DataBaseUtil.trim(organizationAttention);
         _changed = true;
     }
 }

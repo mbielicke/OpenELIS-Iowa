@@ -70,6 +70,7 @@ public class SampleOrganizationBean implements SampleOrganizationLocal {
         entity = new SampleOrganization();
         entity.setSampleId(data.getSampleId());
         entity.setOrganizationId(data.getOrganizationId());
+        entity.setOrganizationAttention(data.getOrganizationAttention());
         entity.setTypeId(data.getTypeId());
         
         manager.persist(entity);
@@ -89,6 +90,7 @@ public class SampleOrganizationBean implements SampleOrganizationLocal {
         entity = manager.find(SampleOrganization.class, data.getId());
         entity.setSampleId(data.getSampleId());
         entity.setOrganizationId(data.getOrganizationId());
+        entity.setOrganizationAttention(data.getOrganizationAttention());
         entity.setTypeId(data.getTypeId());
         
         return data;

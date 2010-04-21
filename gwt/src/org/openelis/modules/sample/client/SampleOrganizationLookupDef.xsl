@@ -51,8 +51,8 @@
               <col width="125" header="Type">
                 <dropdown width="110" field="Integer" required="true"/>
               </col>
-              <col width="70" header="Id">
-                <label field="Integer" />
+              <col width="180" header="Attention">
+              	<textbox field="String"/>
               </col>
               <col width="220" header="Name">
                 <autoComplete width="130px" case="UPPER" field="Integer" required="true">
