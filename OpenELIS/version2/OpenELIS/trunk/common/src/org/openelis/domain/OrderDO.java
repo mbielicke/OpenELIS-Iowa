@@ -40,7 +40,7 @@ public class OrderDO extends DataObject {
 
     protected Integer         id, statusId, neededInDays, costCenterId, organizationId, reportToId,
                               billToId, shipFromId;
-    protected String          description, requestedBy, type, externalOrderNumber;
+    protected String          description, requestedBy, type, externalOrderNumber, organizationAttention, reportToAttention, billToAttention;
     protected Datetime        orderedDate;
 
     public OrderDO() {
@@ -180,6 +180,33 @@ public class OrderDO extends DataObject {
 
     public void setShipFromId(Integer shipFromId) {
         this.shipFromId = shipFromId;
+        _changed = true;
+    }
+
+    public String getOrganizationAttention() {
+        return organizationAttention;
+    }
+
+    public void setOrganizationAttention(String organizationAttention) {
+        this.organizationAttention = DataBaseUtil.trim(organizationAttention);
+        _changed = true;
+    }
+
+    public String getReportToAttention() {
+        return reportToAttention;
+    }
+
+    public void setReportToAttention(String reportToAttention) {
+        this.reportToAttention = DataBaseUtil.trim(reportToAttention);
+        _changed = true;
+    }
+
+    public String getBillToAttention() {
+        return billToAttention;
+    }
+
+    public void setBillToAttention(String billToAttention) {
+        this.billToAttention = DataBaseUtil.trim(billToAttention);
         _changed = true;
     }
 }
