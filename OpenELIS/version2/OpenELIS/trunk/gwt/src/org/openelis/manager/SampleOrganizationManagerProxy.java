@@ -68,7 +68,7 @@ public class SampleOrganizationManagerProxy {
         return null;
     }
     
-    public void validate(SampleOrganizationManager man, ValidationErrorsList errorsList) throws Exception {
+    public void validate(SampleOrganizationManager man, boolean validateReportTo, ValidationErrorsList errorsList) throws Exception {
         int numBillTo, numReportTo;
         
         numBillTo = 0;
@@ -88,7 +88,7 @@ public class SampleOrganizationManagerProxy {
         if(numReportTo > 1)
             errorsList.add(new FormErrorException("multipleReportToException"));
         
-        if(numReportTo == 0)
+        if(validateReportTo && numReportTo == 0)
             errorsList.add(new FieldErrorWarning("reportToMissingWarning", SampleMeta.getOrgName()));
             
         if(numBillTo == 0)

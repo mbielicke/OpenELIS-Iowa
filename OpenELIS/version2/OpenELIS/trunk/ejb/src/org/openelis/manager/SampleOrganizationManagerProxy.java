@@ -92,7 +92,7 @@ public class SampleOrganizationManagerProxy {
         return null;
     }
     
-    public void validate(SampleOrganizationManager man, ValidationErrorsList errorsList) throws Exception {
+    public void validate(SampleOrganizationManager man, boolean validateReportTo, ValidationErrorsList errorsList) throws Exception {
         int numBillTo, numReportTo;
         Integer orgBillToId, orgReportToId;
         

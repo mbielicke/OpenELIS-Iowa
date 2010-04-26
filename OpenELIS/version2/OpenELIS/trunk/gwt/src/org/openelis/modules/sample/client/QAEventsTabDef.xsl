@@ -46,7 +46,7 @@ UIRF Software License are applicable instead of those above.
               <textbox field="String" />
             </col>
             <col key="{meta:getSampleQaTypeId()}" width="90" header="{resource:getString($constants,'type')}">
-              <dropdown width="75" popWidth="75" field="Integer" />
+              <dropdown width="90" field="Integer" />
             </col>
             <col key="{meta:getSampleQaIsBillable()}" width="61" header="{resource:getString($constants,'billable')}">
               <check />
@@ -60,7 +60,7 @@ UIRF Software License are applicable instead of those above.
               <textbox field="String" />
             </col>
             <col key="{meta:getAnalysisQaTypeId()}" width="90" header="{resource:getString($constants,'type')}">
-              <dropdown width="75" popWidth="75" field="Integer" />
+              <dropdown width="90" field="Integer" />
             </col>
             <col key="{meta:getAnalysisQaIsBillable()}" width="60" header="{resource:getString($constants,'billable')}">
               <check />

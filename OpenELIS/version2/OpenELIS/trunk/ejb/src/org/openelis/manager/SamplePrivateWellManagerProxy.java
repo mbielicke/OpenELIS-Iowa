@@ -29,10 +29,31 @@ import javax.naming.InitialContext;
 
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AddressLocal;
 import org.openelis.local.SamplePrivateWellLocal;
 
 public class SamplePrivateWellManagerProxy {
+    public SamplePrivateWellManager fetch(Integer sampleId) throws Exception {
+        SamplePrivateWellViewDO wellDO;
+        AddressDO addressDO;
+        
+        wellDO = local().fetchBySampleId(sampleId);
+        
+        SamplePrivateWellManager pwm = SamplePrivateWellManager.getInstance();
+        pwm.setPrivateWell(wellDO);
+        
+        if(wellDO.getOrganizationId() != null){
+            addressDO = addressLocal().fetchById(wellDO.getOrgAddressId());
+            pwm.setOrganizationAddress(addressDO);
+        }else{
+            addressDO = addressLocal().fetchById(wellDO.getReportToAddressId());
+            pwm.setReportToAddress(addressDO);
+        }
+        
+        return pwm;
+    }
+
     public SamplePrivateWellManager add(SamplePrivateWellManager man) throws Exception {
         AddressDO adDO;
         
@@ -56,9 +77,13 @@ public class SamplePrivateWellManagerProxy {
             addressLocal().delete(man.getDeletedAddress());
         
         //add the report to address if necessary
-        if(man.getReportToAddress() != null && man.getReportToAddress().getId() == null){
-            adDO = addressLocal().add(man.getReportToAddress());
-            man.getPrivateWell().setReportToAddressId(adDO.getId());
+        if(man.getReportToAddress() != null){
+           if(man.getReportToAddress().getId() == null)
+                adDO = addressLocal().add(man.getReportToAddress());
+           else
+               adDO = addressLocal().update(man.getReportToAddress());
+           
+           man.getPrivateWell().setReportToAddressId(adDO.getId());
         }
         
         man.getPrivateWell().setSampleId(man.getSampleId());
@@ -67,24 +92,8 @@ public class SamplePrivateWellManagerProxy {
         return man;
     }
     
-    public SamplePrivateWellManager fetch(Integer sampleId) throws Exception {
-        SamplePrivateWellViewDO wellDO;
-        AddressDO addressDO;
+    public void validate(SamplePrivateWellManager man, ValidationErrorsList errorsList) throws Exception {
         
-        wellDO = local().fetchBySampleId(sampleId);
-        
-        SamplePrivateWellManager pwm = SamplePrivateWellManager.getInstance();
-        pwm.setPrivateWell(wellDO);
-        
-        if(wellDO.getOrganizationId() != null){
-            addressDO = addressLocal().fetchById(wellDO.getOrgAddressId());
-            pwm.setOrganizationAddress(addressDO);
-        }else{
-            addressDO = addressLocal().fetchById(wellDO.getReportToAddressId());
-            pwm.setReportToAddress(addressDO);
-        }
-        
-        return pwm;
     }
     
     private SamplePrivateWellLocal local(){

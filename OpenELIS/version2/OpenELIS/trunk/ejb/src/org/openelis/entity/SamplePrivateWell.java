@@ -47,8 +47,8 @@ import org.openelis.utils.Auditable;
 @NamedQueries({
     @NamedQuery( name = "SamplePrivateWell.FetchBySampleId",
                 query = "select new org.openelis.domain.SamplePrivateWellViewDO(s.id,s.sampleId,s.organizationId, s.reportToName, "+
-                        "s.reportToAddressId, s.location, s.locationAddressId, a.multipleUnit," +
-                        "a.streetAddress,a.city,a.state,a.zipCode,s.owner, s.collector, s.wellNumber, o.name, o.addressId)"
+                        " s.reportToAttention, s.reportToAddressId, s.location, s.locationAddressId, a.multipleUnit, " +
+                        " a.streetAddress,a.city,a.state,a.zipCode,s.owner, s.collector, s.wellNumber, o.name, o.addressId) "
                       + " from SamplePrivateWell s LEFT JOIN s.locationAddress a LEFT JOIN s.organization o where s.sampleId = :id")})
 
 @Entity
@@ -69,6 +69,9 @@ public class SamplePrivateWell implements Auditable, Cloneable {
     
     @Column(name = "report_to_name")
     private String              reportToName;
+    
+    @Column(name = "report_to_attention")
+    private String              reportToAttention;
 
     @Column(name = "report_to_address_id")
     private Integer             reportToAddressId;
@@ -141,6 +144,15 @@ public class SamplePrivateWell implements Auditable, Cloneable {
     public void setReportToName(String reportToName) {
         if (DataBaseUtil.isDifferent(reportToName, this.reportToName))
             this.reportToName = reportToName;
+    }
+    
+    public String getReportToAttention() {
+        return reportToAttention;
+    }
+
+    public void setReportToAttention(String reportToAttention) {
+        if (DataBaseUtil.isDifferent(reportToAttention, this.reportToAttention))
+            this.reportToAttention = reportToAttention;
     }
 
     public Integer getReportToAddressId() {
@@ -232,6 +244,7 @@ public class SamplePrivateWell implements Auditable, Cloneable {
                  .setField("sample_id", sampleId, original.sampleId)
                  .setField("organization_id", organizationId, original.organizationId)
                  .setField("report_to_name", reportToName, original.reportToName)
+                 .setField("report_to_attention", reportToAttention, original.reportToAttention)
                  .setField("report_to_address_id", reportToAddressId, original.reportToAddressId)
                  .setField("location", location, original.location)
                  .setField("location_address_id", locationAddressId, original.locationAddressId)

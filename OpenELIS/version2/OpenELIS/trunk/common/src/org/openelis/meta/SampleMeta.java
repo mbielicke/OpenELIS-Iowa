@@ -68,6 +68,7 @@ public class SampleMeta implements Meta, MetaMap {
                     WELL_SAMPLE_ID = "_samplePrivateWell.sampleId",
                     WELL_ORGANIZATION_ID = "_samplePrivateWell.organizationId",
                     WELL_REPORT_TO_NAME = "_samplePrivateWell.reportToName",
+                    WELL_REPORT_TO_ATTENTION = "_samplePrivateWell.reportToAttention",
                     WELL_REPORT_TO_ADDRESS_ID = "_samplePrivateWell.reportToAddressId",
                     WELL_LOCATION = "_samplePrivateWell.location",
                     WELL_LOCATION_ADDRESS_ID = "_samplePrivateWell.locationAddressId",
@@ -254,7 +255,7 @@ public class SampleMeta implements Meta, MetaMap {
                                                   LOCATION_ADDR_HOME_PHONE, LOCATION_ADDR_CELL_PHONE, 
                                                   LOCATION_ADDR_FAX_PHONE, LOCATION_ADDR_EMAIL,
                                                   LOCATION_ADDR_COUNTRY, WELL_ID, WELL_SAMPLE_ID,
-                                                  WELL_ORGANIZATION_ID, WELL_REPORT_TO_NAME,
+                                                  WELL_ORGANIZATION_ID, WELL_REPORT_TO_NAME, WELL_REPORT_TO_ATTENTION,
                                                   WELL_REPORT_TO_ADDRESS_ID, WELL_LOCATION,
                                                   WELL_LOCATION_ADDRESS_ID, WELL_OWNER,
                                                   WELL_COLLECTOR, WELL_WELL_NUMBER, WELL_ORGANIZATION_NAME,
@@ -484,6 +485,10 @@ public class SampleMeta implements Meta, MetaMap {
 
     public static String getWellReportToName() {
         return WELL_REPORT_TO_NAME;
+    }
+    
+    public static String getWellReportToAttention(){
+       return WELL_REPORT_TO_ATTENTION;
     }
 
     public static String getWellReportToAddressId() {

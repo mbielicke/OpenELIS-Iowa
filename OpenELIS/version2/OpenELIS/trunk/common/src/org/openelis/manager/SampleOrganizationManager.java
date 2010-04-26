@@ -139,17 +139,17 @@ public class SampleOrganizationManager implements RPC {
         return organizations.size();
     }
 
-    public void validate() throws Exception {
+    public void validate(String domain) throws Exception {
         ValidationErrorsList errorsList = new ValidationErrorsList();
 
-        proxy().validate(this, errorsList);
+        proxy().validate(this, !domain.equals(SampleManager.WELL_DOMAIN_FLAG), errorsList);
 
         if (errorsList.size() > 0)
             throw errorsList;
     }
 
-    public void validate(ValidationErrorsList errorsList) throws Exception {
-        proxy().validate(this, errorsList);
+    public void validate(String domain, ValidationErrorsList errorsList) throws Exception {
+        proxy().validate(this, !domain.equals(SampleManager.WELL_DOMAIN_FLAG), errorsList);
     }
 
     // these are friendly methods so only managers and proxies can call this

@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.OrderContainerDO;
 import org.openelis.domain.OrderTestViewDO;
+import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
@@ -43,6 +44,7 @@ public class ImportOrder {
     protected OrderManager orderMan;
     
     protected void loadReportToBillTo(Integer orderId, SampleManager man) throws Exception {
+        OrderViewDO orderDO;
         OrganizationDO orgDO;
         SampleOrganizationViewDO reportToDO, billToDO;
 
@@ -50,11 +52,13 @@ public class ImportOrder {
             orderMan = OrderManager.fetchById(orderId);
         
         //report to
+        orderDO = orderMan.getOrder();
+        orgDO = orderDO.getReportTo();
         reportToDO = new SampleOrganizationViewDO();
-        orgDO = orderMan.getOrder().getReportTo();
         
         if(orgDO != null){
             reportToDO.setOrganizationId(orgDO.getId());
+            reportToDO.setOrganizationAttention(orderDO.getReportToAttention());
             reportToDO.setTypeId(DictionaryCache.getIdFromSystemName("org_report_to"));
             reportToDO.setOrganizationName(orgDO.getName());
             reportToDO.setOrganizationCity(orgDO.getAddress().getCity());
@@ -68,6 +72,7 @@ public class ImportOrder {
         
         if(orgDO != null){
             billToDO.setOrganizationId(orgDO.getId());
+            billToDO.setOrganizationAttention(orderDO.getBillToAttention());
             billToDO.setTypeId(DictionaryCache.getIdFromSystemName("org_bill_to"));
             billToDO.setOrganizationName(orgDO.getName());
             billToDO.setOrganizationCity(orgDO.getAddress().getCity());
