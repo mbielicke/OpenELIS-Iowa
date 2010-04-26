@@ -144,15 +144,8 @@ public class SDWISTab extends Screen {
                 pwsName.setValue(getSDWISManager().getSDWIS().getPwsName());
             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                getSDWISManager().getSDWIS().setPwsName(event.getValue());  //FIXME probabaly not needed
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 pwsName.enable(false);
-                //pwsName.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                      //.contains(event.getState()));
-                //pwsName.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
