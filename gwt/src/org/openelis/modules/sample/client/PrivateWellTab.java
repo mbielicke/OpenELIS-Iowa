@@ -102,11 +102,16 @@ public class PrivateWellTab extends Screen {
         orgName = (AutoComplete<String>)def.getWidget(SampleMeta.getWellOrganizationName());
         addScreenHandler(orgName, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                if (getWellManager().getPrivateWell().getOrganizationId() == null)
+                if (getWellManager().getPrivateWell().getOrganizationId() == null){
                     orgName.setSelection(getWellManager().getPrivateWell().getReportToName(), getWellManager().getPrivateWell().getReportToName());
-                else
+                    enableReportToFields(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                         .contains(state));
+                    
+                }else{
                     orgName.setSelection(getWellManager().getPrivateWell().getOrgName(),
                                          getWellManager().getPrivateWell().getOrgName());
+                    enableReportToFields(false);
+                }
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -181,13 +186,7 @@ public class PrivateWellTab extends Screen {
                     enableAddressValues = true;
                 }
 
-                addressMultipleUnit.enable(enableAddressValues);
-                addressStreetAddress.enable(enableAddressValues);
-                addressCity.enable(enableAddressValues);
-                addressState.enable(enableAddressValues);
-                addressZipCode.enable(enableAddressValues);
-                addressWorkPhone.enable(enableAddressValues);
-                addressFaxPhone.enable(enableAddressValues);
+                enableReportToFields(enableAddressValues);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -823,6 +822,16 @@ public class PrivateWellTab extends Screen {
             Window.alert(e.getMessage());
             return;
         }
+    }
+    
+    private void enableReportToFields(boolean enable){
+        addressMultipleUnit.enable(enable);
+        addressStreetAddress.enable(enable);
+        addressCity.enable(enable);
+        addressState.enable(enable);
+        addressZipCode.enable(enable);
+        addressWorkPhone.enable(enable);
+        addressFaxPhone.enable(enable);
     }
 
     private void initializeDropdowns() {
