@@ -40,6 +40,8 @@ import org.openelis.gwt.event.BeforeDropHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.DropEnterEvent;
 import org.openelis.gwt.event.DropEnterHandler;
+import org.openelis.gwt.event.DropEvent;
+import org.openelis.gwt.event.DropHandler;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.event.StateChangeHandler;
 import org.openelis.gwt.event.DropEnterEvent.DropPosition;
@@ -184,19 +186,14 @@ public class SampleItemsPopoutTreeLookup extends Screen {
                 TreeDataItem dropTarget = ((TreeRow)event.getDropTarget()).item;
                 TreeDataItem dragItem = event.getDragObject().dragItem;
                 
-                if((dropTarget.leafType.equals("sampleItem") && (dropTarget.hasChildren() || event.getDropPosition() != DropPosition.ON)) || 
-                                (dropTarget.leafType.equals("analysis") && 
-                                                (!dropTarget.equals(dropTarget.parent.getLastChild()) || dropTarget.parent.equals(dragItem.parent) || event.getDropPosition() == DropPosition.ON || 
-                                                                event.getDropPosition() == DropPosition.ABOVE)))
-                    
+                if(!dropTarget.leafType.equals("sampleItem") || event.getDropPosition() != DropPosition.ON || 
+                                (dropTarget.leafType.equals("sampleItem") && dropTarget.equals(dragItem.parent)))
                     event.cancel();
             }
         });
         
         sampleTreePopout.addTarget(sampleTreePopout);
     }
-    
-    
     
     private ArrayList<TreeDataItem> getTreeModel() {
         int i, j;
