@@ -26,15 +26,21 @@
 package org.openelis.bean;
 
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.PwsDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.entity.SampleSDWIS;
+import org.openelis.gwt.common.DatabaseException;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.local.PwsLocal;
 import org.openelis.local.SampleSDWISLocal;
 
 @Stateless
@@ -46,13 +52,28 @@ public class SampleSDWISBean implements SampleSDWISLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
     
+    @EJB private PwsLocal pwsBean;
+    
     public SampleSDWISViewDO fetchBySampleId(Integer sampleId) throws Exception {
         Query query;
+        SampleSDWISViewDO sdwisDO;
+        PwsDO pwsDO;
         
         query = manager.createNamedQuery("SampleSDWIS.FetchBySampleId");
         query.setParameter("id", sampleId);
 
-        return (SampleSDWISViewDO) query.getSingleResult();
+        try{
+            sdwisDO = (SampleSDWISViewDO) query.getSingleResult();
+            pwsDO = pwsBean.fetchByNumber0(sdwisDO.getPwsId());
+            sdwisDO.setPwsName(pwsDO.getName());
+            
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        
+        return sdwisDO;
     }
     
     public void add(SampleSDWISViewDO data) throws Exception {
