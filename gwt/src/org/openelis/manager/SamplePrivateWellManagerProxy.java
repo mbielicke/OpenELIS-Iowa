@@ -25,6 +25,11 @@
 */
 package org.openelis.manager;
 
+import org.openelis.domain.SamplePrivateWellViewDO;
+import org.openelis.gwt.common.FieldErrorWarning;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.meta.SampleMeta;
+
 public class SamplePrivateWellManagerProxy {
     public SamplePrivateWellManager add(SamplePrivateWellManager man) throws Exception {
         assert false : "not supported";
@@ -39,5 +44,14 @@ public class SamplePrivateWellManagerProxy {
     public SamplePrivateWellManager fetch(Integer sampleId) throws Exception {
         assert false : "not supported";
         return null;
+    }
+    
+    public void validate(SamplePrivateWellManager man, ValidationErrorsList errorsList) throws Exception {
+        SamplePrivateWellViewDO wellDO;
+        
+        wellDO = man.getPrivateWell();
+        
+        if(wellDO.getOrganizationId() == null && wellDO.getReportToName() == null)
+            errorsList.add(new FieldErrorWarning("reportToMissingWarning", SampleMeta.getWellOrganizationName()));
     }
 }

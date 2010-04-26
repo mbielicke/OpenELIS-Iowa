@@ -13,11 +13,11 @@ public class SamplePrivateWellViewDO extends SamplePrivateWellDO {
         
     }
     
-    public SamplePrivateWellViewDO(Integer id, Integer sampleId, Integer organizationId, String reportToName, Integer reportToAddressId, 
+    public SamplePrivateWellViewDO(Integer id, Integer sampleId, Integer organizationId, String reportToName, String reportToAttention, Integer reportToAddressId, 
                                    String location, Integer locationAddressId, String locationMultipleUnit, String locationStreetAddress, 
                                    String locationCity, String locationState, String locationZipCode, String owner, String collector, 
                                    Integer wellNumber, String orgName, Integer orgAddressId){
-        super(id, sampleId, organizationId, reportToName, reportToAddressId, location, locationAddressId, locationMultipleUnit,
+        super(id, sampleId, organizationId, reportToName, reportToAttention, reportToAddressId, location, locationAddressId, locationMultipleUnit,
               locationStreetAddress, locationCity, locationState, locationZipCode, owner, collector, wellNumber);
         setOrgName(orgName);
         setOrgAddressId(orgAddressId);

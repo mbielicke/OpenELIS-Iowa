@@ -69,7 +69,7 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
         auxGroupId = ((IdVO)auxDataService.call("getAuxGroupIdFromSystemVariable", "sample_well_aux_data")).getId();
 
         //load order report to/bill to
-        //FIXME not sure what we want here loadReportToBillTo(orderId, manager);
+        loadReportToBillTo(orderId, manager);
         
         //grab order tests including number of bottles
         loadSampleItems(orderId, manager);
@@ -103,6 +103,23 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                         manager.getSample().setCollectionTime(df.getValue());
                     }else if(analyteId.equals("smpl_client_ref")){
                         manager.getSample().setClientReference(auxData.getValue());
+                    }else if(analyteId.equals("report_to")){
+                        ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().setReportToName(auxData.getValue());
+/*                    }else if(analyteId.equals("report_to_mult_unit")){
+                        ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().getasetReportToName(auxData.getValue());
+                        report_to_mult_unit
+                    }else if(analyteId.equals("report_to_street_add")){
+                        report_to_street_add
+                    }else if(analyteId.equals("report_to_city")){
+                        report_to_city
+                    }else if(analyteId.equals("report_to_state")){
+                        report_to_state
+                    }else if(analyteId.equals("report_to_zip_code")){
+                        report_to_zip_code
+                    }else if(analyteId.equals("report_to_phone_num")){
+                        report_to_phone_num
+                    }else if(analyteId.equals("report_to_fax_num")){
+                        report_to_fax_num*/
                     }else if(analyteId.equals("location")){
                         ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().setLocation(auxData.getValue());
                     }else if(analyteId.equals("loc_mult_unit")){

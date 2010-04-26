@@ -33,6 +33,7 @@ import org.openelis.domain.AddressDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ProjectDO;
+import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.gwt.common.Util;
@@ -63,18 +64,20 @@ import com.google.gwt.user.client.Window;
 
 public class PrivateWellTab extends Screen {
 
-    private TextBox                   addressMultipleUnit, addressStreetAddress, addressCity,
+    private TextBox                   addressMultipleUnit, reportToAttn, addressStreetAddress, addressCity,
                     addressWorkPhone, addressZipCode, addressFaxPhone, wellLocation,
                     locationAddrMultipleUnit, locationAddrStreetAddress, locationAddrCity,
                     locationAddrZipCode, wellOwner, wellCollector;
     private TextBox<Integer>          wellOrganizationId, wellWellNumber;
     private AutoComplete<String>      orgName;
+    private AutoComplete<Integer>     billTo;
     private Dropdown<String>          addressState, locationAddrState;
     private AutoComplete<Integer>     projectName;
-    private AppButton                 projectLookup;
+    private AppButton                 projectLookup, billToLookup;
 
     private SampleProjectLookupScreen projectScreen;
-
+    private SampleOrganizationLookupScreen organizationScreen;
+    
     protected ScreenService           orgService;
     protected ScreenService           projectService;
 
@@ -100,7 +103,7 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(orgName, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 if (getWellManager().getPrivateWell().getOrganizationId() == null)
-                    orgName.setSelection(null, getWellManager().getPrivateWell().getReportToName());
+                    orgName.setSelection(getWellManager().getPrivateWell().getReportToName(), getWellManager().getPrivateWell().getReportToName());
                 else
                     orgName.setSelection(getWellManager().getPrivateWell().getOrgName(),
                                          getWellManager().getPrivateWell().getOrgName());
@@ -109,11 +112,17 @@ public class PrivateWellTab extends Screen {
             public void onValueChange(ValueChangeEvent<String> event) {
                 OrganizationDO orgDO;
                 SamplePrivateWellViewDO wellDO;
+                TableDataRow selectedRow;
                 boolean enableAddressValues = false;
 
+                selectedRow = orgName.getSelection();
+                if(selectedRow != null)
+                    orgDO = (OrganizationDO)selectedRow.data;
+                else
+                    orgDO = null;
+                
                 wellDO = getWellManager().getPrivateWell();
-                if (event.getValue() != null) {
-                    orgDO = (OrganizationDO)orgName.getSelection().data;
+                if (orgDO != null) {  //its an org record
                     wellOrganizationId.setValue(Util.toString(event.getValue()));
                     addressMultipleUnit.setValue(orgDO.getAddress().getMultipleUnit());
                     addressStreetAddress.setValue(orgDO.getAddress().getStreetAddress());
@@ -128,9 +137,32 @@ public class PrivateWellTab extends Screen {
                     wellDO.setOrgName(orgDO.getName());
                     wellDO.setReportToName(null);
                     wellDO.setReportToAddressId(null);
+                    
+                    getWellManager().removeAddress();
                     getWellManager().setOrganizationAddress(orgDO.getAddress());
-                } else {
-                    wellOrganizationId.setValue(Util.toString(event.getValue()));
+                    
+                }else if(selectedRow != null){ //its a free text entry
+                    //we only want to clear out the address values if it was an org before
+                    if(getWellManager().getReportToAddress() == null){
+                        addressMultipleUnit.setValue(null);
+                        addressStreetAddress.setValue(null);
+                        addressCity.setValue(null);
+                        addressState.setValue(null);
+                        addressZipCode.setValue(null);
+                        addressWorkPhone.setValue(null);
+                        addressFaxPhone.setValue(null);
+                        
+                        getWellManager().removeAddress();
+                        getWellManager().setReportToAddress(new AddressDO());
+                    }
+                    wellOrganizationId.setValue(Util.toString(null));
+                    
+                    wellDO.setReportToName(event.getValue());
+                    wellDO.setOrganizationId(null);
+                    
+                    enableAddressValues = true;                    
+                } else { //its a clear out
+                    wellOrganizationId.setValue(Util.toString(null));
                     addressMultipleUnit.setValue(null);
                     addressStreetAddress.setValue(null);
                     addressCity.setValue(null);
@@ -138,13 +170,15 @@ public class PrivateWellTab extends Screen {
                     addressZipCode.setValue(null);
                     addressWorkPhone.setValue(null);
                     addressFaxPhone.setValue(null);
-                    enableAddressValues = true;
 
-                    wellDO.setReportToName((String)orgName.getSelection().getCells().get(0));
+                    wellDO.setReportToName(event.getValue());
                     wellDO.setReportToAddressId(null);
                     wellDO.setOrganizationId(null);
                     wellDO.setOrgName(null);
+                    
+                    getWellManager().removeAddress();
                     getWellManager().setReportToAddress(new AddressDO());
+                    enableAddressValues = true;
                 }
 
                 addressMultipleUnit.enable(enableAddressValues);
@@ -171,7 +205,7 @@ public class PrivateWellTab extends Screen {
                 ArrayList<OrganizationDO> list;
                 ArrayList<TableDataRow> model;
                 int i, maxRows;
-                
+
                 maxRows = 10;
                 parser = new QueryFieldUtil();
                 parser.parse(event.getMatch());
@@ -180,10 +214,10 @@ public class PrivateWellTab extends Screen {
                 try {
                     list = orgService.callList("fetchByIdOrName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
-                    model.add(row = new TableDataRow(null, event.getMatch(), null, null, null));
+                    model.add(row = new TableDataRow(event.getMatch(), event.getMatch(), null, null, null));
 
-                    i=0;
-                    while(i < maxRows && i < list.size()){
+                    i = 0;
+                    while (i < maxRows && i < list.size()) {
                         row = new TableDataRow(4);
                         data = list.get(i);
 
@@ -195,7 +229,7 @@ public class PrivateWellTab extends Screen {
                         row.data = data;
 
                         model.add(row);
-                        i++;
+                        i++ ;
                     }
                     orgName.showAutoMatches(model);
                 } catch (Throwable e) {
@@ -237,6 +271,23 @@ public class PrivateWellTab extends Screen {
                 addressMultipleUnit.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                                   .contains(event.getState()));
                 addressMultipleUnit.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        reportToAttn = (TextBox)def.getWidget(SampleMeta.getWellReportToAttention());
+        addScreenHandler(reportToAttn, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                reportToAttn.setValue(getWellManager().getPrivateWell().getReportToAttention());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                getWellManager().getPrivateWell().setReportToAttention(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                reportToAttn.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                                  .contains(event.getState()));
+                reportToAttn.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -520,7 +571,8 @@ public class PrivateWellTab extends Screen {
                                                            .getFirstPermanentProject();
 
                     if (projectDO != null)
-                        projectName.setSelection(projectDO.getProjectId(), projectDO.getProjectName());
+                        projectName.setSelection(projectDO.getProjectId(),
+                                                 projectDO.getProjectName());
                     else
                         projectName.setSelection(null, "");
 
@@ -609,6 +661,75 @@ public class PrivateWellTab extends Screen {
                                             .contains(event.getState()));
             }
         });
+
+        billTo = (AutoComplete<Integer>)def.getWidget(SampleMeta.getBillTo());
+        addScreenHandler(billTo, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                try {
+                    SampleOrganizationViewDO billToOrg = manager.getOrganizations().getFirstBillTo();
+
+                    if (billToOrg != null)
+                        billTo.setSelection(billToOrg.getOrganizationId(),
+                                            billToOrg.getOrganizationName());
+                    else
+                        billTo.setSelection(null, "");
+
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                TableDataRow selectedRow = billTo.getSelection();
+                SampleOrganizationViewDO billToOrg = null;
+                try {
+                    if (selectedRow.key != null) {
+                        billToOrg = new SampleOrganizationViewDO();
+                        billToOrg.setOrganizationId((Integer)selectedRow.key);
+                        billToOrg.setOrganizationName((String)selectedRow.cells.get(0).value);
+                        billToOrg.setOrganizationCity((String)selectedRow.cells.get(2).value);
+                        billToOrg.setOrganizationState((String)selectedRow.cells.get(3).value);
+                    }
+
+                    manager.getOrganizations().setBillTo(billToOrg);
+
+                    billToOrg = manager.getOrganizations().getFirstBillTo();
+
+                    if (billToOrg != null)
+                        billTo.setSelection(billToOrg.getOrganizationId(),
+                                            billToOrg.getOrganizationName());
+                    else
+                        billTo.setSelection(null, "");
+
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                billTo.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                billTo.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        billTo.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                getOrganizationMatches(event.getMatch(), billTo);
+
+            }
+        });
+
+        billToLookup = (AppButton)def.getWidget("billToLookup");
+        addScreenHandler(billToLookup, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                onOrganizationLookupClick();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                billToLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
+                                           .contains(event.getState()));
+            }
+        });
     }
 
     private void onProjectLookupClick() {
@@ -636,6 +757,70 @@ public class PrivateWellTab extends Screen {
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert("error: " + e.getMessage());
+            return;
+        }
+    }
+    
+    private void getOrganizationMatches(String match, AutoComplete widget) {
+        QueryFieldUtil parser;
+        TableDataRow row;
+        OrganizationDO data;
+        ArrayList<OrganizationDO> list;
+        ArrayList<TableDataRow> model;
+
+        parser = new QueryFieldUtil();
+        parser.parse(match);
+
+        window.setBusy();
+        try {
+            list = orgService.callList("fetchByIdOrName", parser.getParameter().get(0));
+            model = new ArrayList<TableDataRow>();
+            for (int i = 0; i < list.size(); i++ ) {
+                row = new TableDataRow(4);
+                data = list.get(i);
+
+                row.key = data.getId();
+                row.cells.get(0).value = data.getName();
+                row.cells.get(1).value = data.getAddress().getStreetAddress();
+                row.cells.get(2).value = data.getAddress().getCity();
+                row.cells.get(3).value = data.getAddress().getState();
+
+                model.add(row);
+            }
+            widget.showAutoMatches(model);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+        }
+        window.clearStatus();
+    }
+    
+    private void onOrganizationLookupClick() {
+        try {
+            if (organizationScreen == null) {
+                final PrivateWellTab well = this;
+                organizationScreen = new SampleOrganizationLookupScreen();
+                organizationScreen.setCanAddReportTo(false);
+
+                organizationScreen.addActionHandler(new ActionHandler<SampleOrganizationLookupScreen.Action>() {
+                    public void onAction(ActionEvent<SampleOrganizationLookupScreen.Action> event) {
+                        if (event.getAction() == SampleOrganizationLookupScreen.Action.OK) {
+                            DataChangeEvent.fire(well, billTo);
+                        }
+                    }
+                });
+            }
+
+            ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+            modal.setName(consts.get("sampleOrganization"));
+            modal.setContent(organizationScreen);
+
+            organizationScreen.setScreenState(state);
+            organizationScreen.setManager(manager.getOrganizations());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
             return;
         }
     }

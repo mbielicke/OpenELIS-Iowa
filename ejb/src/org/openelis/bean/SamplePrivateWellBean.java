@@ -82,6 +82,7 @@ public class SamplePrivateWellBean implements SamplePrivateWellLocal {
         entity.setOwner(data.getOwner());
         entity.setReportToAddressId(data.getReportToAddressId());
         entity.setReportToName(data.getReportToName());
+        entity.setReportToAttention(data.getReportToAttention());
         entity.setSampleId(data.getSampleId());
         entity.setWellNumber(data.getWellNumber());
         
@@ -110,6 +111,7 @@ public class SamplePrivateWellBean implements SamplePrivateWellLocal {
         entity.setOwner(data.getOwner());
         entity.setReportToAddressId(data.getReportToAddressId());
         entity.setReportToName(data.getReportToName());
+        entity.setReportToAttention(data.getReportToAttention());
         entity.setSampleId(data.getSampleId());
         entity.setWellNumber(data.getWellNumber());
     }

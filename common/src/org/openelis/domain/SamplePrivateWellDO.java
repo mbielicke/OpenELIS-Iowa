@@ -33,7 +33,7 @@ public class SamplePrivateWellDO extends DataObject {
     
     protected Integer id, sampleId, organizationId, reportToAddressId, 
                      locationAddressId, wellNumber;
-    protected String reportToName, location, owner, collector;
+    protected String reportToName, reportToAttention, location, owner, collector;
     
     protected AddressDO locationAddressDO;
     
@@ -41,13 +41,14 @@ public class SamplePrivateWellDO extends DataObject {
         locationAddressDO = new AddressDO();
     }
     
-    public SamplePrivateWellDO(Integer id, Integer sampleId, Integer organizationId, String reportToName, Integer reportToAddressId, 
+    public SamplePrivateWellDO(Integer id, Integer sampleId, Integer organizationId, String reportToName, String reportToAttention, Integer reportToAddressId, 
                                String location, Integer locationAddressId, String locationMultipleUnit, String locationStreetAddress, 
                                String locationCity, String locationState, String locationZipCode, String owner, String collector, Integer wellNumber){
         setId(id);
         setSampleId(sampleId);
         setOrganizationId(organizationId);
         setReportToName(reportToName);
+        setReportToAttention(reportToAttention);
         setReportToAddressId(reportToAddressId);
         setLocation(location);
         setLocationAddressId(locationAddressId);
@@ -113,6 +114,13 @@ public class SamplePrivateWellDO extends DataObject {
     public void setReportToName(String reportToName) {
         this.reportToName = DataBaseUtil.trim(reportToName);
         _changed = true;
+    }
+    public String getReportToAttention() {
+        return reportToAttention;
+    }
+
+    public void setReportToAttention(String reportToAttention) {
+        this.reportToAttention = DataBaseUtil.trim(reportToAttention);
     }
     public String getLocation() {
         return location;

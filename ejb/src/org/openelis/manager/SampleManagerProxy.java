@@ -340,7 +340,7 @@ public class SampleManagerProxy {
            man.getSampleItems().validate(errorsList);
        
        if(man.organizations != null)
-           man.getOrganizations().validate(errorsList);
+           man.getOrganizations().validate(man.getSample().getDomain(), errorsList);
        
        if(man.projects != null)
            man.getProjects().validate(errorsList);

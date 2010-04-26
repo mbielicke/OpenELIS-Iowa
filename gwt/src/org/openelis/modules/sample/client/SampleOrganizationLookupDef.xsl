@@ -49,7 +49,7 @@
           <row>
             <table key="sampleOrganizationTable" width="auto" maxRows="10" showScroll="ALWAYS" tab="sampleOrganizationTable,sampleOrganizationTable" title="">
               <col width="125" header="Type">
-                <dropdown width="110" field="Integer" required="true"/>
+                <dropdown width="125" field="Integer" required="true"/>
               </col>
               <col width="180" header="Attention">
               	<textbox field="String"/>

@@ -93,7 +93,7 @@ public class SamplePrivateWellManager implements RPC, SampleDomainInt {
     }
     
     private void removeReportToAddress() {
-        if (reportToAddress.getId() != null)
+        if (reportToAddress != null && reportToAddress.getId() != null)
             deletedAddress = reportToAddress;
         
         reportToAddress = null;
@@ -109,11 +109,16 @@ public class SamplePrivateWellManager implements RPC, SampleDomainInt {
     }
     
     public void validate() throws Exception {
-        
+        ValidationErrorsList errorsList = new ValidationErrorsList();
+
+        proxy().validate(this, errorsList);
+
+        if (errorsList.size() > 0)
+            throw errorsList;
     }
     
     public void validate(ValidationErrorsList errorsList) throws Exception {
-        
+        proxy().validate(this, errorsList);
     }
 
     private static SamplePrivateWellManagerProxy proxy(){

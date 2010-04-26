@@ -128,7 +128,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'accessionNum')" />:
               </text>
-              <textbox key="{meta:getAccessionNumber()}" width="75" tab="{meta:getOrderId()},billTo" field="Integer" required="true" />
+              <textbox key="{meta:getAccessionNumber()}" width="75" tab="{meta:getOrderId()},{meta:getBillTo()}" field="Integer" required="true" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'orderNum')" />:
               </text>
@@ -187,15 +187,19 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select='resource:getString($constants,"aptSuite")' />:
                   </text>
                   <widget colspan="3">
-                    <textbox key="{meta:getWellReportToAddressMultipleUnit()}" width="180" case="UPPER" max="30" tab="{meta:getWellReportToAddressStreetAddress()},{meta:getWellOrganizationId()}" field="String" />
+                  <textbox key="{meta:getWellReportToAddressMultipleUnit()}" width="180" case="UPPER" max="30" tab="{meta:getWellReportToAttention()},{meta:getWellOrganizationId()}" field="String" />
                   </widget>
+                  <text style="Prompt">
+                    <xsl:value-of select='resource:getString($constants,"attn")' />:
+                  </text>
+                  <textbox key="{meta:getWellReportToAttention()}" width="100" max="30" tab="{meta:getWellReportToAddressStreetAddress()},{meta:getWellReportToAddressMultipleUnit()}" field="String" />
                 </row>
                 <row>
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"address")' />:
                   </text>
                   <widget colspan="3">
-                    <textbox key="{meta:getWellReportToAddressStreetAddress()}" width="180" case="UPPER" max="30" tab="{meta:getWellReportToAddressCity()},{meta:getWellReportToAddressMultipleUnit()}" field="String" />
+                    <textbox key="{meta:getWellReportToAddressStreetAddress()}" width="180" case="UPPER" max="30" tab="{meta:getWellReportToAddressCity()},{meta:getWellReportToAttention()}" field="String" />
                   </widget>
                 </row>
                 <row>
@@ -370,11 +374,27 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'project')" />:
                   </text>
                   <HorizontalPanel>
-                    <autoComplete key="{meta:getProjectName()}" width="182" case="LOWER" popWidth="auto" tab="sampleItemTabPanel,{meta:getWellWellNumber()}" field="Integer">
+                    <autoComplete key="{meta:getProjectName()}" width="182" case="LOWER" popWidth="auto" tab="{meta:getBillTo()},{meta:getWellWellNumber()}" field="Integer">
                       <col width="150" header="{resource:getString($constants,'name')}" />
                       <col width="275" header="{resource:getString($constants,'description')}" />
                     </autoComplete>
                     <appButton key="projectLookup" style="LookupButton">
+                      <AbsolutePanel style="LookupButtonImage" />
+                    </appButton>
+                  </HorizontalPanel>
+                </row>
+                <row>
+                  <text style="Prompt">
+                    <xsl:value-of select="resource:getString($constants,'billTo')" />:
+                  </text>
+                  <HorizontalPanel>
+                    <autoComplete key="{meta:getBillTo()}" width="182" case="UPPER" popWidth="auto" tab="sampleItemTabPanel,{meta:getProjectName()}" field="Integer">
+                      <col width="200" header="{resource:getString($constants,'name')}" />
+                      <col width="130" header="{resource:getString($constants,'street')}" />
+                      <col width="120" header="{resource:getString($constants,'city')}" />
+                      <col width="20" header="{resource:getString($constants,'st')}" />
+                    </autoComplete>
+                    <appButton key="billToLookup" style="LookupButton">
                       <AbsolutePanel style="LookupButtonImage" />
                     </appButton>
                   </HorizontalPanel>

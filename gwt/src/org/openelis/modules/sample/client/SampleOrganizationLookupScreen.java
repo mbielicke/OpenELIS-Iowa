@@ -34,6 +34,7 @@ import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.SampleOrganizationDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -76,6 +77,9 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
 
     private SampleOrganizationManager manager;
     protected AppButton organizationRemoveButton;
+    private boolean canAddReportTo, canAddBillTo, canAddSecondReportTo;
+    private Integer reportToId, billToId, secondReportToId;
+    
     public enum Action {
         OK
     };
@@ -86,13 +90,17 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
         super((ScreenDefInt)GWT.create(SampleOrganizationLookupDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
         
+        setCanAddReportTo(true);
+        setCanAddBillTo(true);
+        setCanAddSecondReportTo(true);
+        
         // Setup link between Screen and widget Handlers
         initialize();
 
         // Initialize Screen
         setState(State.DEFAULT);
         
-        setOrganizationTypes(DictionaryCache.getListByCategorySystemName("organization_type"));
+        initializeDropdowns();
     }
     
     private void initialize(){
@@ -143,6 +151,16 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
                 
                 switch (col) {
                     case 0:
+                        sampleOrganizationTable.clearCellExceptions(row, col);
+                        if(reportToId.equals((Integer)val) && !canAddReportTo)
+                            sampleOrganizationTable.setCellException(row, col, new LocalizedException("cantAddReportToException"));
+                        
+                        else if(billToId.equals((Integer)val) && !canAddBillTo)
+                            sampleOrganizationTable.setCellException(row, col, new LocalizedException("cantAddBillToException"));
+                        
+                        else if(secondReportToId.equals((Integer)val) && !canAddSecondReportTo)
+                            sampleOrganizationTable.setCellException(row, col, new LocalizedException("cantAddSecondReortToException"));
+                        
                         orgDO.setTypeId((Integer)val);
                         break;
                     case 1:
@@ -313,13 +331,40 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
         return model;
     }
     
-    private void setOrganizationTypes(ArrayList<DictionaryDO> list) {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+    public void setCanAddReportTo(boolean canAddReportTo){
+        this.canAddReportTo = canAddReportTo;
+    }
+    
+    public void setCanAddBillTo(boolean canAddBillTo){
+        this.canAddBillTo = canAddBillTo;
+    }
+    
+    public void setCanAddSecondReportTo(boolean canAddSecondReportTo){
+        this.canAddSecondReportTo = canAddSecondReportTo;
+    }
+    
+    private void initializeDropdowns() {
+        ArrayList<DictionaryDO> list;
+        ArrayList<TableDataRow> model;
+        
+        model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for(DictionaryDO resultDO :  list){
-            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
-        } 
-        ((Dropdown<Integer>)sampleOrganizationTable.getColumns().get(0).getColumnWidget()).setModel(model);
+        
+        try{
+            list = DictionaryCache.getListByCategorySystemName("organization_type");
+            for(DictionaryDO resultDO :  list){
+                model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
+            } 
+            ((Dropdown<Integer>)sampleOrganizationTable.getColumns().get(0).getColumnWidget()).setModel(model);
+            
+            //load the type ids
+            reportToId = DictionaryCache.getIdFromSystemName("org_report_to");
+            billToId = DictionaryCache.getIdFromSystemName("org_bill_to");
+            secondReportToId = DictionaryCache.getIdFromSystemName("org_second_report_to");
+        
+        }catch(Exception e){
+            Window.alert("initializedropdowns: "+e.getMessage());
+        }
     }
     
     public void setManager(SampleOrganizationManager man){
