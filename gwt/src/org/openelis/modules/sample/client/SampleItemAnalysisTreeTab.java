@@ -367,7 +367,8 @@ public class SampleItemAnalysisTreeTab extends Screen
             
             modal.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>(){
                public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
-                   DataChangeEvent.fire(treeTab, itemsTree);                    
+                   DataChangeEvent.fire(treeTab, itemsTree);
+                   ActionEvent.fire(treeTab, Action.REFRESH_TABS, null);
                 } 
             });
 
