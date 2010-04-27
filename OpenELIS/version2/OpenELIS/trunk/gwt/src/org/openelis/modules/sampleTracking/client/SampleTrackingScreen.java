@@ -62,7 +62,6 @@ import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
-import org.openelis.modules.reviewRelease.client.ReviewReleaseScreen.Tabs;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
@@ -91,6 +90,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.AbsolutePanel;
 
 public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     
@@ -1013,7 +1013,14 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 clientReference.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        environmentalTab = new EnvironmentalTab(def,window);
+        try{
+            environmentalTab = new EnvironmentalTab(window);
+            AbsolutePanel envTabPanel = (AbsolutePanel)def.getWidget("envDomainPanel");
+            envTabPanel.add(environmentalTab);
+        
+        }catch(Exception e){
+            Window.alert("env tab initialize: "+e.getMessage());
+        }
         
         addScreenHandler(environmentalTab, new ScreenEventHandler<Object>() {
         	public void onDataChange(DataChangeEvent event) {
@@ -1033,7 +1040,14 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         	}
         });
         
-        wellTab = new PrivateWellTab(def,window);
+        try{
+            wellTab = new PrivateWellTab(window);
+            AbsolutePanel wellTabPanel = (AbsolutePanel)def.getWidget("privateWellDomainPanel");
+            wellTabPanel.add(wellTab);
+        
+        }catch(Exception e){
+            Window.alert("well tab initialize: "+e.getMessage());
+        }
         
         addScreenHandler(wellTab, new ScreenEventHandler<Object>() {
         	public void onDataChange(DataChangeEvent event) {
@@ -1053,7 +1067,15 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         	}
         });
         
-        sdwisTab = new SDWISTab(def,window);
+        try{
+            sdwisTab = new SDWISTab(window);
+            AbsolutePanel sdwisTabPanel = (AbsolutePanel)def.getWidget("sdwisDomainPanel");
+            sdwisTabPanel.add(sdwisTab);
+        
+        }catch(Exception e){
+            Window.alert("sdwis tab initialize: "+e.getMessage());
+        }
+        
         
         addScreenHandler(sdwisTab, new ScreenEventHandler<Object>() {
         	public void onDataChange(DataChangeEvent event) {
