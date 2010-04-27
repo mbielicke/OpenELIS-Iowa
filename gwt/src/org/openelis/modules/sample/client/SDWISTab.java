@@ -57,6 +57,7 @@ import org.openelis.manager.SampleSDWISManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.pws.client.PwsScreen;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Window;
@@ -83,6 +84,16 @@ public class SDWISTab extends Screen {
 
         orgService = new ScreenService(
                                        "controller?service=org.openelis.modules.organization.server.OrganizationService");
+
+        initialize();
+        initializeDropdowns();
+    }
+    
+    public SDWISTab(ScreenWindow window) throws Exception {
+        drawScreen((ScreenDefInt)GWT.create(SDWISTabDef.class));
+        setWindow(window);
+
+        orgService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
 
         initialize();
         initializeDropdowns();

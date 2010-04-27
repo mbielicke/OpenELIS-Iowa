@@ -54,6 +54,7 @@ import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Window;
@@ -81,6 +82,16 @@ public class EnvironmentalTab extends Screen {
         setDefinition(def);
         setWindow(window);
 
+        orgService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
+        projectService = new ScreenService("controller?service=org.openelis.modules.project.server.ProjectService");
+
+        initialize();
+    }
+    
+    public EnvironmentalTab(ScreenWindow window) throws Exception {
+        drawScreen((ScreenDefInt)GWT.create(EnvironmentalTabDef.class));
+        setWindow(window);
+        
         orgService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
         projectService = new ScreenService("controller?service=org.openelis.modules.project.server.ProjectService");
 
