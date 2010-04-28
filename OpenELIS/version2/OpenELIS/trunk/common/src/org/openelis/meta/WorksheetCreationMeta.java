@@ -53,6 +53,10 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
                                 SAMP_ENV_DESCRIPTION = "_sampleEnvironmental.description",
                                 SAMP_ENV_PRIORITY = "_sampleEnvironmental.priority",
                                 
+                                SAMP_SDWIS_LOCATION = "_sampleSDWIS.location",
+
+                                SAMP_PRIVATE_WELL_LOCATION = "_samplePrivateWell.location",
+
 //                                  PATIENT_LAST_NAME = "_patient.lastName",
 //                                  PATIENT_FIRST_NAME = "_patient.firstName",
                                 
@@ -139,8 +143,12 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
         return SAMP_ENV_PRIORITY;
     }
 
-    public static String getSampleItemTypeOfSampleId() {
-        return SAMP_ITEM_TYPE_OF_SAMPLE_ID;
+    public static String getSampleSDWISLocation() {
+        return SAMP_SDWIS_LOCATION;
+    }
+
+    public static String getSamplePrivateWellLocation() {
+        return SAMP_PRIVATE_WELL_LOCATION;
     }
 /*
     public static String getPatientLastName() {
@@ -151,6 +159,10 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
         return PATIENT_FIRST_NAME;
     }
 */
+    public static String getSampleItemTypeOfSampleId() {
+        return SAMP_ITEM_TYPE_OF_SAMPLE_ID;
+    }
+
     public static String getAnalysisId() {
         return ANA_ID;
     }
@@ -208,6 +220,8 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
         
         from = "Sample _sample "+
                " LEFT JOIN _sample.sampleEnvironmental _sampleEnvironmental "+
+               " LEFT JOIN _sample.samplePrivateWell _samplePrivateWell "+
+               " LEFT JOIN _sample.sampleSDWIS _sampleSDWIS "+
 //               " LEFT JOIN _sample.sampleHuman _sampleHuman "+
 //               ", IN (_sampleHuman.patient) _patient "+
                ", IN (_sample.sampleItem) _sampleItem "+
