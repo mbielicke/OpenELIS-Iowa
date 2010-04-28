@@ -78,6 +78,8 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
                           WorksheetCreationMeta.getSampleReceivedDate()+", "+
                           WorksheetCreationMeta.getSampleEnvironmentalDescription()+", "+
                           WorksheetCreationMeta.getSampleEnvironmentalPriority()+", "+
+                          WorksheetCreationMeta.getSampleSDWISLocation()+", "+
+                          WorksheetCreationMeta.getSamplePrivateWellLocation()+", "+
 //                          WorksheetCreationMeta.getPatientLastName()+", "+
 //                          WorksheetCreationMeta.getPatientFirstName()+", "+
                           WorksheetCreationMeta.getAnalysisTestId()+", " +
