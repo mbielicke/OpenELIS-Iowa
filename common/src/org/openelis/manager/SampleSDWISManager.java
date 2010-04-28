@@ -49,6 +49,10 @@ public class SampleSDWISManager implements RPC, SampleDomainInt {
         this.sampleId = sampleId;
     }
 
+    public String getDomainDescription() {
+        return sdwis.getPwsId();
+    }
+    
     // manager methods
     public SampleSDWISManager add() throws Exception {
         return proxy().add(this);

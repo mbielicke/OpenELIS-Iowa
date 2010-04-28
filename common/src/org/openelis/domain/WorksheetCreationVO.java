@@ -29,6 +29,7 @@ import java.util.Date;
 
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.RPC;
+import org.openelis.manager.SampleManager;
 import org.openelis.utilcommon.DataBaseUtil;
 
 public class WorksheetCreationVO implements RPC {
@@ -37,7 +38,8 @@ public class WorksheetCreationVO implements RPC {
     protected Integer  analysisId, accessionNumber, priority, testId, timeHolding,
                        timeTaAverage, preAnalysisId, sectionId, statusId;
     protected Long     dueDays;
-    protected String   domain, envDescription, /*projectName,*/ testName, methodName;
+    protected String   domain, envDescription, sdwisLocation, privateWellLocation,
+                       testName, methodName;
     protected Datetime collectionDate, collectionTime, receivedDate, expireDate;
 
     public WorksheetCreationVO() {
@@ -47,9 +49,9 @@ public class WorksheetCreationVO implements RPC {
     // analysis, accession number, test, method, section, status and received
     public WorksheetCreationVO(Integer analysisId, String domain, Integer accessionNumber,
                                Date collectionDate, Date collectionTime, Date receivedDate,
-                               String description, Integer priority, /*String projectName,*/
-                               Integer testId, String testName, String methodName,
-                               Integer timeHolding, Integer timeTaAverage,
+                               String envDescription, Integer priority, String sdwisLocation,
+                               String privateWellLocation, Integer testId, String testName,
+                               String methodName, Integer timeHolding, Integer timeTaAverage,
                                Integer sectionId, Integer preAnalysisId, Integer statusId) {
         setAnalysisId(analysisId);
         setDomain(domain);
@@ -57,9 +59,10 @@ public class WorksheetCreationVO implements RPC {
         setCollectionDate(DataBaseUtil.toYD(collectionDate));
         setCollectionTime(DataBaseUtil.toHM(collectionTime));
         setReceivedDate(DataBaseUtil.toYM(receivedDate));
-        setEnvDescription(description);
+        setEnvDescription(envDescription);
         setPriority(priority);
-//        setProjectName(projectName);
+        setSDWISLocation(sdwisLocation);
+        setPrivateWellLocation(privateWellLocation);
         setTestId(testId);
         setTestName(testName);
         setMethodName(methodName);
@@ -126,14 +129,32 @@ public class WorksheetCreationVO implements RPC {
         this.envDescription = description;
     }
 
+    public String getSDWISLocation() {
+        return sdwisLocation;
+    }
+
+    public void setSDWISLocation(String sdwisLocation) {
+        this.sdwisLocation = sdwisLocation;
+    }
+
+    public String getPrivateWellLocation() {
+        return privateWellLocation;
+    }
+
+    public void setPrivateWellLocation(String privateWellLocation) {
+        this.privateWellLocation = privateWellLocation;
+    }
+
     public String getDescription() {
         String description;
         
         description = "";
-        if ("E".equals(getDomain()))
+        if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(getDomain()))
             description = getEnvDescription();
-//        else if ("C".equals(getDomain()))
-//            description = getLastName()+", "+getFirstName();
+        else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(getDomain()))
+            description = getSDWISLocation();
+        else if (SampleManager.WELL_DOMAIN_FLAG.equals(getDomain()))
+            description = getPrivateWellLocation();
         
         return description;
     }

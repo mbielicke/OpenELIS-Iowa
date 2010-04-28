@@ -69,6 +69,10 @@ public class SampleEnvironmentalManager implements RPC, SampleDomainInt {
     public void setSampleId(Integer sampleId) {
         this.sampleId = sampleId;
     }
+
+    public String getDomainDescription() {
+        return environmental.getDescription();
+    }
     
     // manager methods
     public SampleEnvironmentalManager add() throws Exception {
