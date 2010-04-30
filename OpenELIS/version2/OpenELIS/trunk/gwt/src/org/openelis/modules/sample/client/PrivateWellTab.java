@@ -37,6 +37,7 @@ import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.gwt.common.Util;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -741,6 +742,35 @@ public class PrivateWellTab extends Screen {
         });
     }
 
+    public ArrayList<QueryData> getQueryFields() {
+        QueryData domain;
+        ArrayList<QueryData> fields;
+        
+        fields = super.getQueryFields();
+        
+        if(fields.size() > 0){
+            domain = new QueryData();
+            domain.key = SampleMeta.getDomain();
+            domain.query = SampleManager.WELL_DOMAIN_FLAG;
+            domain.type = QueryData.Type.STRING;
+            fields.add(domain);
+        }
+        
+        return fields;
+    }
+    
+    public void setData(SampleManager manager) {
+        this.manager = manager;
+        loaded = false;
+    }
+
+    public void draw() {
+        if ( !loaded)
+            DataChangeEvent.fire(this);
+    
+        loaded = true;
+    }
+
     private void onProjectLookupClick() {
         try {
             if (projectScreen == null) {
@@ -870,17 +900,5 @@ public class PrivateWellTab extends Screen {
         }
 
         return wellManager;
-    }
-
-    public void setData(SampleManager manager) {
-        this.manager = manager;
-        loaded = false;
-    }
-
-    public void draw() {
-        if ( !loaded)
-            DataChangeEvent.fire(this);
-
-        loaded = true;
     }
 }

@@ -34,6 +34,7 @@ import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.PwsDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -422,6 +423,35 @@ public class SDWISTab extends Screen {
         });
     }
     
+    public ArrayList<QueryData> getQueryFields() {
+        QueryData domain;
+        ArrayList<QueryData> fields;
+        
+        fields = super.getQueryFields();
+        
+        if(fields.size() > 0){
+            domain = new QueryData();
+            domain.key = SampleMeta.getDomain();
+            domain.query = SampleManager.SDWIS_DOMAIN_FLAG;
+            domain.type = QueryData.Type.STRING;
+            fields.add(domain);
+        }
+        
+        return fields;
+    }
+
+    public void setData(SampleManager manager) {
+        this.manager = manager;
+        loaded = false;
+    }
+
+    public void draw() {
+        if ( !loaded)
+            DataChangeEvent.fire(this);
+    
+        loaded = true;
+    }
+
     private void openPwsScreen(){
         PwsScreen pwsScreen;
         
@@ -540,21 +570,6 @@ public class SDWISTab extends Screen {
         sDWISSampleCategoryId.setModel(model);
     }
 
-    private SamplePrivateWellManager getWellManager() {
-        SamplePrivateWellManager wellManager;
-
-        try {
-            wellManager = (SamplePrivateWellManager)manager.getDomainManager();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Window.alert(e.getMessage());
-            wellManager = SamplePrivateWellManager.getInstance();
-            manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
-        }
-
-        return wellManager;
-    }
-
     private SampleSDWISManager getSDWISManager() {
         SampleSDWISManager sdwisManager;
 
@@ -568,17 +583,5 @@ public class SDWISTab extends Screen {
         }
 
         return sdwisManager;
-    }
-
-    public void setData(SampleManager manager) {
-        this.manager = manager;
-        loaded = false;
-    }
-
-    public void draw() {
-        if ( !loaded)
-            DataChangeEvent.fire(this);
-
-        loaded = true;
     }
 }
