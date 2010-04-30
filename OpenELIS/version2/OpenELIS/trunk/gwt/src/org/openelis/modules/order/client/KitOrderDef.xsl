@@ -187,7 +187,19 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"status")' />:
                 </text>
-                <dropdown key="{meta:getStatusId()}" width="90" case="MIXED" popWidth="auto" tab="{meta:getOrderedDate()},{meta:getOrganizationName()}" field="Integer" />
+                <dropdown key="{meta:getStatusId()}" width="90" case="MIXED" popWidth="auto" tab="{meta:getOrganizationAttention()},{meta:getOrganizationName()}" field="Integer" />
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"attention")' />:
+                </text>
+                <widget colspan="5">
+                  <textbox key="{meta:getOrganizationAttention()}" tab="{meta:getOrderedDate()},{meta:getStatusId()}" width="188" max="30" field="String" />
+                </widget>
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"orderDate")' />:
+                </text>
+                <calendar key="{meta:getOrderedDate()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getRequestedBy()},{meta:getOrganizationAttention()}" />
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"aptSuite")' />:
                 </text>
@@ -197,9 +209,9 @@ UIRF Software License are applicable instead of those above.
               </row>
               <row>
                 <text style="Prompt">
-                  <xsl:value-of select='resource:getString($constants,"orderDate")' />:
+                  <xsl:value-of select='resource:getString($constants,"requestedBy")' />:
                 </text>
-                <calendar key="{meta:getOrderedDate()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getRequestedBy()},{meta:getOrganizationName()}" />
+                <textbox key="{meta:getRequestedBy()}" width="203" tab="{meta:getCostCenterId()},{meta:getOrderedDate()}" field="String" />
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"address")' />:
                 </text>
@@ -209,9 +221,9 @@ UIRF Software License are applicable instead of those above.
               </row>
               <row>
                 <text style="Prompt">
-                  <xsl:value-of select='resource:getString($constants,"requestedBy")' />:
+                  <xsl:value-of select='resource:getString($constants,"costCenter")' />:
                 </text>
-                <textbox key="{meta:getRequestedBy()}" width="203" tab="{meta:getCostCenterId()},{meta:getOrderedDate()}" field="String" />
+                <dropdown key="{meta:getCostCenterId()}" width="203" case="MIXED" popWidth="auto" tab="{meta:getDescription()},{meta:getRequestedBy()}" field="Integer" />
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"city")' />:
                 </text>
@@ -221,9 +233,13 @@ UIRF Software License are applicable instead of those above.
               </row>
               <row>
                 <text style="Prompt">
-                  <xsl:value-of select='resource:getString($constants,"costCenter")' />:
+                  <xsl:value-of select='resource:getString($constants,"description")' />:
                 </text>
-                <dropdown key="{meta:getCostCenterId()}" width="203" case="MIXED" popWidth="auto" tab="{meta:getDescription()},{meta:getRequestedBy()}" field="Integer" />
+                <widget>
+                  <autoComplete key="{meta:getDescription()}" width="203" case="MIXED" tab="tabPanel,{meta:getCostCenterId()}" field="String">
+                    <col width="310" header="{resource:getString($constants,'description')}" />
+                  </autoComplete>
+                </widget>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"state")' />:
                 </text>
@@ -240,16 +256,6 @@ UIRF Software License are applicable instead of those above.
                   <textbox key="{meta:getOrganizationAddressZipCode()}" width="65" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
               </row>
-              <row>
-                <text style="Prompt">
-                  <xsl:value-of select='resource:getString($constants,"description")' />:
-                </text>
-                <widget colspan="3">
-                  <autoComplete key="{meta:getDescription()}" width="300" case="MIXED" tab="tabPanel,{meta:getCostCenterId()}" field="String">
-                    <col width="310" header="{resource:getString($constants,'description')}" />
-                  </autoComplete>
-                </widget>
-              </row>
             </TablePanel>
 
 <!-- TAB PANEL -->
@@ -258,7 +264,7 @@ UIRF Software License are applicable instead of those above.
 
 <!-- TAB 1 (items) -->
 
-              <tab key="itemTab" text="{resource:getString($constants,'items')}" tab="itemTable, itemTable">
+              <tab key="itemTab" tab="itemTable, itemTable" text="{resource:getString($constants,'items')}">
                 <VerticalPanel padding="0" spacing="0">
                   <table key="itemTable" width="auto" maxRows="11" showScroll="ALWAYS">
                     <col key="{meta:getOrderItemQuantity()}" width="65" align="right" header="{resource:getString($constants,'quantity')}">
@@ -302,7 +308,7 @@ UIRF Software License are applicable instead of those above.
 
 <!-- TAB 2 (receipts) -->
 
-              <tab key="fillTab" text="{resource:getString($constants,'filled')}" tab="fillTable, fillTable">
+              <tab key="fillTab" tab="fillTable, fillTable" text="{resource:getString($constants,'filled')}">
                 <VerticalPanel padding="0" spacing="0">
                   <table key="fillTable" width="auto" maxRows="11" showScroll="ALWAYS">
                     <col key="{meta:getInventoryReceiptOrderItemId()}" width="150" header="{resource:getString($constants,'inventoryItem')}">
@@ -326,7 +332,7 @@ UIRF Software License are applicable instead of those above.
 
 <!-- TAB 4 (order notes) -->
 
-              <tab key="noteTab" text="{resource:getString($constants,'orderShippingNotes')}" tab="notesPanel, notesPanel">
+              <tab key="noteTab" tab="notesPanel, notesPanel" text="{resource:getString($constants,'orderShippingNotes')}">
                 <VerticalPanel padding="0" spacing="0">
                   <notes key="notesPanel" width="604" height="257" />
                   <appButton key="standardNoteButton" style="Button">
@@ -342,7 +348,7 @@ UIRF Software License are applicable instead of those above.
 
 <!-- TAB 3 (customer notes)-->
 
-              <tab key="customerNote" text="{resource:getString($constants,'customerNotes')}" tab="customerNotesPanel, customerNotesPanel">
+              <tab key="customerNote" tab="customerNotesPanel, customerNotesPanel" text="{resource:getString($constants,'customerNotes')}">
                 <VerticalPanel padding="0" spacing="0">
                   <notes key="customerNotesPanel" width="604" height="257" />
                   <appButton key="editNoteButton" style="Button">
@@ -358,7 +364,7 @@ UIRF Software License are applicable instead of those above.
 
 <!-- TAB 5 (report to/bill to)-->
 
-              <tab key="reportToBillToTab" text="{resource:getString($constants,'reportToBillTo')}" tab="{meta:getReportToName()}, {meta:getBillToName()}">
+              <tab key="reportToBillToTab" tab="{meta:getReportToName()}, {meta:getBillToName()}" text="{resource:getString($constants,'reportToBillTo')}">
                 <HorizontalPanel height="247" padding="0" spacing="0">
                   <VerticalPanel>
                     <TablePanel style="Form">
@@ -367,12 +373,20 @@ UIRF Software License are applicable instead of those above.
                           <xsl:value-of select='resource:getString($constants,"reportTo")' />:
                         </text>
                         <widget colspan="5">
-                          <autoComplete key="{meta:getReportToName()}" width="188" case="UPPER" tab="{meta:getBillToName()},{meta:getBillToName()}" field="Integer">
+                          <autoComplete key="{meta:getReportToName()}" width="188" case="UPPER" tab="{meta:getBillToName()},{meta:getBillToAttention()}" field="Integer">
                             <col width="180" header="{resource:getString($constants,'name')}" />
                             <col width="110" header="{resource:getString($constants,'street')}" />
                             <col width="100" header="{resource:getString($constants,'city')}" />
                             <col width="20" header="{resource:getString($constants,'st')}" />
                           </autoComplete>
+                        </widget>
+                      </row>
+                      <row>
+                        <text style="Prompt">
+                          <xsl:value-of select='resource:getString($constants,"attention")' />:
+                        </text>
+                        <widget colspan="5">
+                          <textbox key="{meta:getReportToAttention()}" tab="{meta:getBillToAttention()},{meta:getReportToName()}" width="188" max = "30" field="String" />
                         </widget>
                       </row>
                       <row>
@@ -425,12 +439,20 @@ UIRF Software License are applicable instead of those above.
                           <xsl:value-of select='resource:getString($constants,"billTo")' />:
                         </text>
                         <widget colspan="5">
-                          <autoComplete key="{meta:getBillToName()}" width="188" case="UPPER" tab="{meta:getReportToName()},{meta:getReportToName()}" field="Integer">
+                          <autoComplete key="{meta:getBillToName()}" width="188" case="UPPER" tab="{meta:getReportToAttention()},{meta:getReportToName()}" field="Integer">
                             <col width="180" header="{resource:getString($constants,'name')}" />
                             <col width="110" header="{resource:getString($constants,'street')}" />
                             <col width="100" header="{resource:getString($constants,'city')}" />
                             <col width="20" header="{resource:getString($constants,'st')}" />
                           </autoComplete>
+                        </widget>
+                      </row>
+                      <row>
+                        <text style="Prompt">
+                          <xsl:value-of select='resource:getString($constants,"attention")' />:
+                        </text>
+                        <widget colspan="5">
+                          <textbox key="{meta:getBillToAttention()}" tab="{meta:getReportToName()},{meta:getReportToAttention()}" width="188" max = "30" field="String" />
                         </widget>
                       </row>
                       <row>
@@ -478,11 +500,11 @@ UIRF Software License are applicable instead of those above.
                   </VerticalPanel>
                 </HorizontalPanel>
               </tab>
-              <tab key="containerTab" text="{resource:getString($constants,'container')}" tab="orderTestTable, orderContainerTable">
+              <tab key="containerTab" tab="orderTestTable, orderContainerTable" text="{resource:getString($constants,'container')}">
                 <VerticalPanel>
                   <VerticalPanel padding="0" spacing="0">
                     <widget valign="top">
-                      <table key="orderTestTable" width="auto" maxRows="4" showScroll="ALWAYS" title="" tab="orderContainerTable, orderContainerTable">
+                      <table key="orderTestTable" width="auto" maxRows="4" showScroll="ALWAYS" tab="orderContainerTable, orderContainerTable" title="">
                         <col key="{meta:getTestId()}" width="160" align="left" header="{resource:getString($constants,'test')}">
                           <autoComplete width="160" case="LOWER" popWidth="auto" field="Integer" required="true">
                             <col width="150" header="{resource:getString($constants,'test')}" />
@@ -524,12 +546,12 @@ UIRF Software License are applicable instead of those above.
                   <HorizontalPanel width="10" />
                   <VerticalPanel padding="0" spacing="0">
                     <widget valign="top">
-                      <table key="orderContainerTable" width="auto" maxRows="4" showScroll="ALWAYS" title="" tab="orderTestTable, orderTestTable">
+                      <table key="orderContainerTable" width="auto" maxRows="4" showScroll="ALWAYS" tab="orderTestTable, orderTestTable" title="">
                         <col key="{meta:getContainerContainerId()}" width="300" align="left" header="{resource:getString($constants,'container')}">
                           <dropdown width="300" popWidth="320" field="Integer" required="true" />
                         </col>
                         <col key="{meta:getContainerNumberOfContainers()}" width="78" align="left" header="{resource:getString($constants,'quantity')}">
-                          <textbox field="Integer" required="true"/>
+                          <textbox field="Integer" required="true" />
                         </col>
                         <col key="{meta:getContainerTypeOfSampleId()}" width="200" align="left" header="{resource:getString($constants,'sampleType')}">
                           <dropdown width="200" popWidth="200" field="Integer" />
@@ -560,12 +582,12 @@ UIRF Software License are applicable instead of those above.
                 </VerticalPanel>
               </tab>
               <tab key="tab7" text="{resource:getString($constants,'auxData')}">
-                <xsl:call-template name="AuxDataTab" >
-                 <xsl:with-param name="maxRows">8</xsl:with-param>
-                 <xsl:with-param name="col2Width">246</xsl:with-param>
-                 <xsl:with-param name="col3Width">247</xsl:with-param>
-                 <xsl:with-param name="showTwoInfoRows">true</xsl:with-param>
-				</xsl:call-template> 
+                <xsl:call-template name="AuxDataTab">
+                  <xsl:with-param name="maxRows">8</xsl:with-param>
+                  <xsl:with-param name="col2Width">246</xsl:with-param>
+                  <xsl:with-param name="col3Width">247</xsl:with-param>
+                  <xsl:with-param name="showTwoInfoRows">true</xsl:with-param>
+                </xsl:call-template>
               </tab>
             </TabPanel>
           </VerticalPanel>

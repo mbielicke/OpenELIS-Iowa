@@ -64,7 +64,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -73,6 +72,7 @@ import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.HasField;
+import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
@@ -390,6 +390,7 @@ public class AuxiliaryScreen extends Screen {
         analyte = (AutoComplete<Integer>)auxFieldTable.getColumnWidget(AuxFieldGroupMeta.getFieldAnalyteName());
         method = (AutoComplete<Integer>)auxFieldTable.getColumnWidget(AuxFieldGroupMeta.getFieldMethodName());
         scriptlet = (AutoComplete<Integer>)auxFieldTable.getColumnWidget(AuxFieldGroupMeta.getFieldScriptletName());        
+       
         addScreenHandler(auxFieldTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
                 if (state != State.QUERY)
@@ -402,11 +403,14 @@ public class AuxiliaryScreen extends Screen {
                 auxFieldTable.enable(true);
                 auxFieldTable.setQueryMode(event.getState() == State.QUERY);
 
-                enable = EnumSet.of(State.ADD, State.UPDATE).contains(event.getState());
+                /*enable = EnumSet.of(State.ADD, State.UPDATE).contains(event.getState());
                 auxFieldTable.enableDrag(enable);
-                auxFieldTable.enableDrop(enable);
+                auxFieldTable.enableDrop(enable);*/
             }
         });
+        
+        auxFieldTable.enableDrag(true);
+        auxFieldTable.enableDrop(true);
         
         rangeNumeric = new ResultRangeNumeric();     
         
@@ -509,6 +513,32 @@ public class AuxiliaryScreen extends Screen {
                   }
               } 
           });
+        
+        auxFieldTable.addBeforeDragStartHandler(new BeforeDragStartHandler<TableRow>(){
+            public void onBeforeDragStart(BeforeDragStartEvent<TableRow> event) {
+                TableDataRow row;
+                Label label;
+                TableDataRow value;
+                String display;
+                                
+                try {
+                    row = event.getDragObject().row;
+                    value = (TableDataRow)row.cells.get(0).value;
+                    if(value == null) 
+                        display = "";
+                    else 
+                        display = (String)value.cells.get(0).value;                    
+                        
+                    label = new Label(display);
+                    label.setStyleName("ScreenLabel");
+                    label.setWordWrap(false);
+                    event.setProxy(label);
+                } catch(Exception e){
+                    Window.alert("table beforeDragStart: "+e.getMessage());
+                }
+            }
+            
+        });
          
         
         // Screens now must implement AutoCompleteCallInt and set themselves as

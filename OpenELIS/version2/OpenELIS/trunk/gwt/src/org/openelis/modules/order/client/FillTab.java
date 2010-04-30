@@ -86,8 +86,8 @@ public class FillTab extends Screen {
                 row.cells.get(0).setValue(data.getInventoryItemName());
                 row.cells.get(1).setValue(location);
                 row.cells.get(2).setValue(data.getQuantity());
-                row.cells.get(3).setValue(data.getLotNumber());
-                row.cells.get(4).setValue(data.getExpirationDate());
+                row.cells.get(3).setValue(data.getInventoryLocationLotNumber());
+                row.cells.get(4).setValue(data.getInventoryLocationExpirationDate());
                 
                 widget = table.getColumnWidget(OrderMeta.getInventoryReceiptReceivedDate());                
                 if(widget != null) 

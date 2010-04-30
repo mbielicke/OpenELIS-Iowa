@@ -37,6 +37,7 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.QueryFieldUtil;
@@ -52,9 +53,9 @@ import com.google.gwt.user.client.Window;
 public class ReportToBillToTab extends Screen {
     
     private OrderManager          manager;    
-    private TextBox               reportToAddressMultipleUnit, reportToAddressStreetAddress,
+    private TextBox               reportToAttention, reportToAddressMultipleUnit, reportToAddressStreetAddress,
                                   reportToAddressCity, reportToAddressState, reportToAddressZipCode,
-                                  billToAddressMultipleUnit, billToAddressStreetAddress,
+                                  billToAttention,billToAddressMultipleUnit, billToAddressStreetAddress,
                                   billToAddressCity, billToAddressState, billToAddressZipCode;
     private AutoComplete<Integer> reportToName, billToName;    
     private boolean               loaded;
@@ -71,6 +72,22 @@ public class ReportToBillToTab extends Screen {
     }
 
     private void initialize() {
+        reportToAttention = (TextBox)def.getWidget(OrderMeta.getReportToAttention());
+        addScreenHandler(reportToAttention, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                reportToAttention.setValue(manager.getOrder().getReportToAttention());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getOrder().setReportToAttention(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                reportToAttention.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                reportToAttention.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
         reportToName = (AutoComplete)def.getWidget(OrderMeta.getReportToName());
         addScreenHandler(reportToName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -263,6 +280,22 @@ public class ReportToBillToTab extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 reportToAddressZipCode.enable(false);
                 reportToAddressZipCode.setQueryMode(false);
+            }
+        });
+        
+        billToAttention = (TextBox)def.getWidget(OrderMeta.getBillToAttention());
+        addScreenHandler(billToAttention, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                billToAttention.setValue(manager.getOrder().getBillToAttention());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getOrder().setBillToAttention(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                billToAttention.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                billToAttention.setQueryMode(event.getState() == State.QUERY);
             }
         });
 

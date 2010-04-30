@@ -28,6 +28,7 @@ package org.openelis.modules.order.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.OrderViewDO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderFillManager;
@@ -67,6 +68,10 @@ public class OrderService {
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
         return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+    }
+    
+    public ArrayList<OrderViewDO> queryOrderFill(Query query) throws Exception {
+        return remote().queryOrderFill(query.getFields());
     }
 
     public OrderManager add(OrderManager man) throws Exception {

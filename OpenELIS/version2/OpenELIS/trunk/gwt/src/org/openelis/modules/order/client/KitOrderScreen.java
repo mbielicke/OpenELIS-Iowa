@@ -59,7 +59,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -114,7 +113,7 @@ public class KitOrderScreen extends Screen {
     private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
                                   commitButton, abortButton;
     private MenuItem              duplicate, orderHistory, itemHistory, testHistory, containerHistory;
-    private TextBox               id, neededInDays, requestedBy, organizationAddressMultipleUnit,
+    private TextBox               id, neededInDays, requestedBy, organizationAttention,organizationAddressMultipleUnit,
                                   organizationAddressStreetAddress, organizationAddressCity,
                                   organizationAddressState, organizationAddressZipCode;
     private CalendarLookUp        orderedDate;
@@ -363,6 +362,22 @@ public class KitOrderScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 shipFromId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 shipFromId.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        organizationAttention = (TextBox)def.getWidget(OrderMeta.getOrganizationAttention());
+        addScreenHandler(organizationAttention, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                organizationAttention.setValue(manager.getOrder().getOrganizationAttention());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getOrder().setOrganizationAttention(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                organizationAttention.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                organizationAttention.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
