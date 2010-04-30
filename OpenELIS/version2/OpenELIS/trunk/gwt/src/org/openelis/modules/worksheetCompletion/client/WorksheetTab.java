@@ -4,16 +4,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.SectionCache;
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SectionDO;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.domain.WorksheetResultViewDO;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -36,6 +38,7 @@ import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.QcManager;
 import org.openelis.manager.SampleDataBundle;
+import org.openelis.manager.SampleDomainInt;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.TestWorksheetManager;
@@ -51,11 +54,12 @@ import com.google.gwt.user.client.Window;
 
 public class WorksheetTab extends Screen {
 
-    private boolean          loaded;
-    private Integer          formatBatch, formatTotal;
-    private AppButton        editMultipleButton;
-    private TableWidget      table;
-    private WorksheetManager manager;
+    private boolean              loaded;
+    private Integer              formatBatch, formatTotal;
+    private AppButton            editMultipleButton;
+    private ArrayList<SectionDO> sections;
+    private TableWidget          table;
+    private WorksheetManager     manager;
 
     public WorksheetTab(ScreenDefInt def, ScreenWindow window) {
         setDefinition(def);
@@ -94,32 +98,43 @@ public class WorksheetTab extends Screen {
         
         table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                event.cancel();
+//                if (event.getCol() != 6)
+                    event.cancel();
             }
         });
 
         table.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
-/*
-                int r, c;
-                Object val;
-                OrganizationContactDO data;
-
-                if (state == State.QUERY)
-                    return;
+                int               r, c;
+                Object            val;
+                TableDataRow      row;
+                AnalysisManager   aManager;
+                AnalysisViewDO    aVDO;
+                SampleDataBundle  data;
+                SampleItemManager siManager;
+                SampleManager     sManager;
 
                 r = event.getRow();
                 c = event.getCol();
                 val = table.getObject(r,c);
 
+                row = table.getRow(r);
+                if (!(row.data instanceof SampleDataBundle))
+                    return;
+                
+                data = (SampleDataBundle) row.data;
+                sManager = data.getSampleManager();
                 try {
-                    data = manager.getContacts().getContactAt(r);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    siManager = sManager.getSampleItems();
+                    aManager = siManager.getAnalysisAt(data.getSampleItemIndex());
+                    aVDO = aManager.getAnalysisAt(data.getAnalysisIndex());
+                } catch (Exception anyE) {
+                    Window.alert("Table Edit: "+anyE.getMessage());
                     return;
                 }
 
                 switch (c) {
+/*
                     case 0:
                         data.setContactTypeId((Integer)val);
                         break;
@@ -138,9 +153,11 @@ public class WorksheetTab extends Screen {
                     case 5:
                         data.getAddressDO().setState((String)val);
                         break;
+*/
                     case 6:
-                        data.getAddressDO().setZipCode((String)val);
+                        aVDO.setStatusId((Integer)val);
                         break;
+/*
                     case 7:
                         data.getAddressDO().setCountry((String)val);
                         break;
@@ -159,8 +176,8 @@ public class WorksheetTab extends Screen {
                     case 12:
                         data.getAddressDO().setEmail((String)val);
                         break;
-                }
 */
+                }
             }
         });
 
@@ -209,7 +226,9 @@ public class WorksheetTab extends Screen {
         AnalysisViewDO           aVDO;
         QcManager                qcManager;
         SampleDataBundle         bundle;
+        SampleDomainInt          sDomain;
         SampleManager            sManager;
+        SectionDO                sectionDO;
         WorksheetAnalysisDO      waDO;
         WorksheetAnalysisManager waManager;
         WorksheetItemDO          wiDO;
@@ -240,11 +259,22 @@ public class WorksheetTab extends Screen {
                     if (waDO.getAnalysisId() != null) {
                         bundle = waManager.getBundleAt(j);
                         sManager = bundle.getSampleManager();
+                        sDomain = sManager.getDomainManager();
                         aManager = sManager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
                         arManager = aManager.getAnalysisResultAt(bundle.getAnalysisIndex());
                         aVDO = aManager.getAnalysisAt(bundle.getAnalysisIndex());
 
-                        row.cells.get(2).value = "";
+                        if (sections == null)
+                            sections = new ArrayList<SectionDO>();
+                        sectionDO = SectionCache.getSectionFromId(aVDO.getSectionId());
+                        if (!sections.contains(sectionDO))
+                            sections.add(sectionDO);
+                        
+                        if (sDomain != null)
+                            row.cells.get(2).value = sDomain.getDomainDescription();
+                        else
+                            row.cells.get(2).value = "";
+                        
                         row.cells.get(3).value = "";
                         row.cells.get(4).value = aVDO.getTestName();
                         row.cells.get(5).value = aVDO.getMethodName();
@@ -348,11 +378,40 @@ public class WorksheetTab extends Screen {
         loaded = true;
     }
     
+    /*
+     * Call the update method on SampleManagers attached to analysis data rows
+     */
+    public void save() throws Exception {
+        int                     i;
+        ArrayList<TableDataRow> model;
+        SampleDataBundle        bundle;
+        SampleManager           manager;
+        
+        model = table.getData();
+        for (i = 0; i < model.size(); i++) {
+            if (model.get(i).data instanceof SampleDataBundle) {
+                bundle = (SampleDataBundle) model.get(i).data;
+                manager = bundle.getSampleManager();
+                try {
+                    manager.update();
+                } catch (ValidationErrorsList e) {
+                    throw e;
+                } catch (Exception anyE) {
+                    throw new Exception("WorksheetTable Row "+(i+1)+": "+anyE.getMessage());
+                }
+            }
+        }
+    }
+    
     protected void editMultiple() {
         // TODO - Add edit multiple code
         Window.alert("Edit Multiple Popup");
     }
 
+    public ArrayList<SectionDO> getSections() {
+        return sections;
+    }
+    
     private Object getPositionNumber(int position) {
         int    major, minor;
         Object positionNumber;
