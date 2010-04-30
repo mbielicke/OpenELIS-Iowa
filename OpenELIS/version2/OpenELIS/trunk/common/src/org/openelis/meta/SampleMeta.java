@@ -1087,6 +1087,11 @@ public class SampleMeta implements Meta, MetaMap {
             from += ", IN (_sample.sampleProject) _sampleProject ";
             from += ", IN (_sampleProject.project) _project ";
         }
+        
+        if(where.indexOf("_organization.") > -1){
+            from += ", IN (_sample.sampleOrganization) _sampleOrganization ";
+            from += ", IN (_sampleOrganization.organization) _organization ";
+        }
 
         if (where.indexOf("sampleItem.") > -1 || where.indexOf("analysis.") > -1 || where.indexOf("test.") > -1 || 
                         where.indexOf("method.") > -1|| where.indexOf("analysisQaevent.") > -1 || 
