@@ -44,6 +44,8 @@ import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.event.BeforeCloseEvent;
+import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -60,6 +62,7 @@ import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -124,7 +127,8 @@ public class ShippingScreen extends Screen {
                 postConstructor();
             }
         });
-    }
+    }   
+    
 
     /**
      * This method is called to set the initial state of widgets after the
@@ -682,7 +686,20 @@ public class ShippingScreen extends Screen {
                 return model;
             }
         };
+        
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+                if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
+                    event.cancel();
+                    window.setError(consts.get("mustCommitOrAbort"));
+                }
+            }
+        });
     }    
+    
+    public void setManager(ShippingManager manager) {
+        this.manager = manager;
+    }
     
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
@@ -742,7 +759,7 @@ public class ShippingScreen extends Screen {
         nav.next();
     }
 
-    protected void add() { 
+    public void add() { 
         ShippingViewDO data;
         Datetime now;
         
@@ -780,7 +797,7 @@ public class ShippingScreen extends Screen {
         window.clearStatus();
     }
 
-    public void commit() {
+    protected void commit() {
         setFocus(null);
 
         if ( !validate()) {

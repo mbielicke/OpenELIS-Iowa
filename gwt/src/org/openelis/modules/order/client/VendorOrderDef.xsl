@@ -181,19 +181,31 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"orderDate")' />:
                 </text>
-                <calendar key="{meta:getOrderedDate()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getRequestedBy()},{meta:getOrganizationName()}" />
+                <calendar key="{meta:getOrderedDate()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getOrganizationAttention()},{meta:getOrganizationName()}" />
                 <text style="Prompt">
-                  <xsl:value-of select='resource:getString($constants,"aptSuite")' />:
+                  <xsl:value-of select='resource:getString($constants,"attention")' />:
                 </text>
                 <widget colspan="5">
-                  <textbox key="{meta:getOrganizationAddressMultipleUnit()}" width="188" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+                  <textbox key="{meta:getOrganizationAttention()}" tab="{meta:getRequestedBy()},{meta:getOrderedDate()}" width="188" max = "30" field="String" />
                 </widget>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"requestedBy")' />:
                 </text>
-                <textbox key="{meta:getRequestedBy()}" width="203" tab="{meta:getCostCenterId()},{meta:getOrderedDate()}" field="String" />
+                <textbox key="{meta:getRequestedBy()}" width="203" tab="{meta:getCostCenterId()},{meta:getOrganizationAttention()}" field="String" />
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"aptSuite")' />:
+                </text>
+                <widget colspan="5">
+                  <textbox key="{meta:getOrganizationAddressMultipleUnit()}" width="188" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+                </widget>                
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"costCenter")' />:
+                </text>
+                <dropdown key="{meta:getCostCenterId()}" width="203" case="MIXED" popWidth="auto" tab="{meta:getExternalOrderNumber()},{meta:getRequestedBy()}" field="Integer" />
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"address")' />:
                 </text>
@@ -203,22 +215,21 @@ UIRF Software License are applicable instead of those above.
               </row>
               <row>
                 <text style="Prompt">
-                  <xsl:value-of select='resource:getString($constants,"costCenter")' />:
+                  <xsl:value-of select='resource:getString($constants,"extOrderNum")' />:
                 </text>
-                <dropdown key="{meta:getCostCenterId()}" width="203" case="MIXED" popWidth="auto" tab="{meta:getExternalOrderNumber()},{meta:getRequestedBy()}" field="Integer" />
+                <textbox key="{meta:getExternalOrderNumber()}" width="203" case="MIXED" max="20" tab="tabPanel,{meta:getCostCenterId()}" field="String" />
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"city")' />:
                 </text>
                 <widget colspan="5">
                   <textbox key="{meta:getOrganizationAddressCity()}" width="188" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
-              </row>
+              </row>              
               <row>
-                <text style="Prompt">
-                  <xsl:value-of select='resource:getString($constants,"extOrderNum")' />:
-                </text>
-                <textbox key="{meta:getExternalOrderNumber()}" width="203" case="MIXED" max="20" tab="tabPanel,{meta:getCostCenterId()}" field="String" />
-                <text style="Prompt">
+                <widget colspan = "2">
+                  <HorizontalPanel width="188" />
+                </widget>
+               	<text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"state")' />:
                 </text>
                 <widget>

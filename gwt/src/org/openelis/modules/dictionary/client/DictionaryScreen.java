@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 
+import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
@@ -47,6 +48,8 @@ import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.BeforeCloseEvent;
 import org.openelis.gwt.event.BeforeCloseHandler;
+import org.openelis.gwt.event.BeforeDragStartEvent;
+import org.openelis.gwt.event.BeforeDragStartHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -62,12 +65,14 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
@@ -510,6 +515,28 @@ public class DictionaryScreen extends Screen {
         dictTable.enableDrag(true);
         dictTable.enableDrop(true);
         dictTable.addTarget(dictTable);
+        
+        dictTable.addBeforeDragStartHandler(new BeforeDragStartHandler<TableRow>(){
+            public void onBeforeDragStart(BeforeDragStartEvent<TableRow> event) {
+                TableDataRow row;
+                Label label;
+                String value;
+                
+                try {
+                    row = event.getDragObject().row;
+                    value = (String)row.cells.get(3).value;
+                    if(value == null)
+                        value = "";
+                    label = new Label(value);
+                    label.setStyleName("ScreenLabel");
+                    label.setWordWrap(false);
+                    event.setProxy(label);
+                } catch(Exception e){
+                    Window.alert("table beforeDragStart: "+e.getMessage());
+                }
+            }
+            
+        });
                 
         relatedEntry.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
