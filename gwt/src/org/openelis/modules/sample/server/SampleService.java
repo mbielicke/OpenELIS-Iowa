@@ -27,7 +27,7 @@ package org.openelis.modules.sample.server;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.IdNameVO;
+import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.PwsDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SystemVariableDO;
@@ -60,7 +60,7 @@ public class SampleService {
     }
 
     // sample methods
-    public ArrayList<IdNameVO> query(Query query) throws Exception {
+    public ArrayList<IdAccessionVO> query(Query query) throws Exception {
         return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
     }
 

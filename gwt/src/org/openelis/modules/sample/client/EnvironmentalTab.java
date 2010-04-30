@@ -33,6 +33,7 @@ import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -452,6 +453,35 @@ public class EnvironmentalTab extends Screen {
         });
     }
 
+    public ArrayList<QueryData> getQueryFields() {
+        QueryData domain;
+        ArrayList<QueryData> fields;
+        
+        fields = super.getQueryFields();
+        
+        if(fields.size() > 0){
+            domain = new QueryData();
+            domain.key = SampleMeta.getDomain();
+            domain.query = SampleManager.ENVIRONMENTAL_DOMAIN_FLAG;
+            domain.type = QueryData.Type.STRING;
+            fields.add(domain);
+        }
+        
+        return fields;
+    }
+
+    public void setData(SampleManager manager) {
+        this.manager = manager;
+        loaded = false;
+    }
+
+    public void draw() {
+        if ( !loaded)
+            DataChangeEvent.fire(this);
+    
+        loaded = true;
+    }
+
     private void getOrganizationMatches(String match, AutoComplete widget) {
         QueryFieldUtil parser;
         TableDataRow row;
@@ -575,7 +605,7 @@ public class EnvironmentalTab extends Screen {
             return;
         }
     }
-
+    
     private SampleEnvironmentalManager getEnvManager() {
         SampleEnvironmentalManager envManager;
 
@@ -589,17 +619,5 @@ public class EnvironmentalTab extends Screen {
         }
 
         return envManager;
-    }
-
-    public void setData(SampleManager manager) {
-        this.manager = manager;
-        loaded = false;
-    }
-
-    public void draw() {
-        if ( !loaded)
-            DataChangeEvent.fire(this);
-
-        loaded = true;
     }
 }
