@@ -27,11 +27,13 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
 import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.entity.InventoryXUse;
 import org.openelis.gwt.common.NotFoundException;
@@ -39,7 +41,7 @@ import org.openelis.local.InventoryXUseLocal;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
-public class InventoryXUseBean implements InventoryXUseLocal {
+public class InventoryXUseBean implements InventoryXUseLocal{
 
     @PersistenceContext(unitName = "openelis")
     EntityManager manager;
@@ -56,7 +58,7 @@ public class InventoryXUseBean implements InventoryXUseLocal {
             throw new NotFoundException();
 
         return DataBaseUtil.toArrayList(list);
-    }
+    }    
 
     public InventoryXUseViewDO add(InventoryXUseViewDO data) throws Exception {
         InventoryXUse entity;

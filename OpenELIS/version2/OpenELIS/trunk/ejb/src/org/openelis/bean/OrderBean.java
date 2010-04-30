@@ -50,7 +50,6 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.OrderLocal;
 import org.openelis.local.OrganizationLocal;
-import org.openelis.manager.OrderManager;
 import org.openelis.meta.OrderMeta;
 import org.openelis.remote.OrderRemote;
 import org.openelis.util.QueryBuilderV2;
@@ -62,26 +61,22 @@ import org.openelis.utilcommon.DataBaseUtil;
 public class OrderBean implements OrderRemote, OrderLocal {
 
     @PersistenceContext(name = "openelis")
-    private EntityManager          manager;
+    private EntityManager            manager;
     
     @EJB
-    private  OrganizationLocal     organizationBean;
+    private  OrganizationLocal       organizationBean;
 
     private static final OrderMeta meta = new OrderMeta();
-
+    
     public OrderViewDO fetchById(Integer id) throws Exception {
-        int i;
-        Integer ids[];
         Query query;
         OrderViewDO data;
-        List<OrganizationViewDO> list;
-        OrganizationViewDO organization;
         
         query = manager.createNamedQuery("Order.FetchById");
         query.setParameter("id", id);
         try {
             data = (OrderViewDO)query.getSingleResult();
-            ids = new Integer[3];
+            /*ids = new Integer[3];
             i = 0;
             if (data.getOrganizationId() != null)
                 ids[i++] = data.getOrganizationId();
@@ -100,7 +95,9 @@ public class OrderBean implements OrderRemote, OrderLocal {
                     if (organization.getId().equals(data.getBillToId()) && data.getBillTo() == null)
                         data.setBillTo(organization);
                 }
-            }
+            }*/
+            
+            setOrganizationReportToBillTo(data);
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -147,6 +144,102 @@ public class OrderBean implements OrderRemote, OrderLocal {
         return (ArrayList<IdNameVO>)list;
     }
 
+    @SuppressWarnings("unchecked")
+    public ArrayList<OrderViewDO> queryOrderFill(ArrayList<QueryData> fields) throws Exception {
+        Query query;
+        QueryBuilderV2 builder;
+        List list;
+        OrderViewDO data;
+
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+        builder.setSelect("distinct new org.openelis.domain.OrderViewDO(" +
+                          OrderMeta.getId()+", " +
+                          OrderMeta.getDescription()+", " +                          
+                          OrderMeta.getStatusId()+", " +
+                          OrderMeta.getOrderedDate()+", " +
+                          OrderMeta.getNeededInDays()+", " +
+                          OrderMeta.getRequestedBy()+", " +
+                          OrderMeta.getCostCenterId()+", " +
+                          OrderMeta.getOrganizationId()+", " +
+                          OrderMeta.getOrganizationAttention()+", " +
+                          OrderMeta.getType()+", " +
+                          OrderMeta.getExternalOrderNumber()+", " +
+                          OrderMeta.getReportToId()+", " +
+                          OrderMeta.getReportToAttention()+", " +
+                          OrderMeta.getBillToId()+", " +
+                          OrderMeta.getBillToAttention()+", " +
+                          OrderMeta.getShipFromId() + ") ");
+        builder.constructWhere(fields);       
+        builder.addWhere(OrderMeta.getType()+" <> 'V'");        
+        
+        builder.setOrderBy(OrderMeta.getId() + " DESC");       
+
+        query = manager.createQuery(builder.getEJBQL());
+        builder.setQueryParams(query, fields);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+        //list = (ArrayList<OrderViewDO>)DataBaseUtil.subList(list, first, max);
+        if (list == null)
+            throw new LastPageException();        
+        
+        try {
+            for (int i = 0; i < list.size(); i++ ) {
+                data = (OrderViewDO)list.get(i);
+                setOrganizationReportToBillTo(data);
+            }
+            return DataBaseUtil.toArrayList(list);
+        } catch (NoResultException e) {            
+            throw new NotFoundException();
+        } catch (Exception e) {            
+            throw new DatabaseException(e);
+        }
+    }
+    
+    /*    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        QueryBuilder qb = new QueryBuilder();
+
+        qb.setMeta(OrderMap);
+
+        qb.setSelect("distinct new org.openelis.domain.FillOrderDO(" +
+                     OrderMap.getId()+", " +
+                     OrderMap.getStatusId()+", " +
+                     OrderMap.getOrderedDate()+", " +
+                     OrderMap.getShipFromId()+", " +
+                     OrderMap.ORDER_ORGANIZATION_META.getId()+", " +
+                     OrderMap.ORDER_ORGANIZATION_META.getName()+", " +
+                     OrderMap.getDescription()+", " +
+                     OrderMap.getNeededInDays()+") ");
+
+        //this method is going to throw an exception if a column doesnt match
+        qb.addWhere(fields); 
+
+        qb.addWhere(OrderMap.ORDER_ITEM_META.getOrderId() + " = " + OrderMap.getId());
+        //qb.addWhere(OrderMap.ORDER_ORGANIZATION_META.getId() + " = " + OrderMap.getOrganizationId());
+        qb.addWhere(OrderMap.getIsExternal()+"='N'");
+        
+        qb.setOrderBy(OrderMap.ORDER_ORGANIZATION_META.getName()+" DESC, "+OrderMap.getId());
+
+        sb.append(qb.getEJBQL());
+
+        Query query = manager.createQuery(sb.toString());
+    
+        if(first > -1 && max > -1)
+         query.setMaxResults(first+max);
+        
+        //set the parameters in the query
+        qb.setQueryParams(query);
+        
+        List returnList = GetPage.getPage(query.getResultList(), first, max);
+        
+        if(returnList == null)
+         throw new LastPageException();
+        else
+         return returnList;
+    }*/
 
     public OrderViewDO add(OrderViewDO data) throws Exception {
         Order entity;
@@ -161,10 +254,13 @@ public class OrderBean implements OrderRemote, OrderLocal {
         entity.setRequestedBy(data.getRequestedBy());
         entity.setCostCenterId(data.getCostCenterId());
         entity.setOrganizationId(data.getOrganizationId());
+        entity.setOrganizationAttention(data.getOrganizationAttention());
         entity.setType(data.getType());
         entity.setExternalOrderNumber(data.getExternalOrderNumber());
         entity.setReportToId(data.getReportToId());
+        entity.setReportToAttention(data.getReportToAttention());
         entity.setBillToId(data.getBillToId());
+        entity.setBillToAttention(data.getBillToAttention());
         entity.setShipFromId(data.getShipFromId());
 
         manager.persist(entity);
@@ -188,10 +284,13 @@ public class OrderBean implements OrderRemote, OrderLocal {
         entity.setRequestedBy(data.getRequestedBy());
         entity.setCostCenterId(data.getCostCenterId());
         entity.setOrganizationId(data.getOrganizationId());
+        entity.setOrganizationAttention(data.getOrganizationAttention());
         entity.setType(data.getType());
         entity.setExternalOrderNumber(data.getExternalOrderNumber());
         entity.setReportToId(data.getReportToId());
+        entity.setReportToAttention(data.getReportToAttention());
         entity.setBillToId(data.getBillToId());
+        entity.setBillToAttention(data.getBillToAttention());
         entity.setShipFromId(data.getShipFromId());
 
         return data;
@@ -209,6 +308,34 @@ public class OrderBean implements OrderRemote, OrderLocal {
 
         if (list.size() > 0)
             throw list;
+    }
+    
+    private void setOrganizationReportToBillTo(OrderViewDO data) throws Exception {
+        int i;
+        Integer ids[];   
+        List<OrganizationViewDO> list;
+        OrganizationViewDO organization;
+        
+        ids = new Integer[3];
+        i = 0;
+        if (data.getOrganizationId() != null)
+            ids[i++] = data.getOrganizationId();
+        if (data.getReportToId() != null) 
+            ids[i++] = data.getReportToId();
+        if (data.getBillToId() != null) 
+            ids[i++] = data.getBillToId();
+        if (i != 0) {
+            list = organizationBean.fetchByIds(ids);
+            for (i = 0; i < list.size(); i++) {
+                organization = list.get(i);
+                if (organization.getId().equals(data.getOrganizationId()) && data.getOrganization() == null)
+                    data.setOrganization(organization);
+                if (organization.getId().equals(data.getReportToId()) && data.getReportTo() == null)
+                    data.setReportTo(organization);
+                if (organization.getId().equals(data.getBillToId()) && data.getBillTo() == null)
+                    data.setBillTo(organization);
+            }
+        }
     }
 }
 
