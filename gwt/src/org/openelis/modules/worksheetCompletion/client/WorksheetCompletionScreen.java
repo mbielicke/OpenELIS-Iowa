@@ -43,12 +43,13 @@ import com.google.gwt.user.client.ui.TabPanel;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InstrumentViewDO;
-import org.openelis.domain.TestWorksheetDO;
+import org.openelis.domain.SectionDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.SecuritySection;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -72,49 +73,34 @@ import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.manager.TestWorksheetManager;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.meta.WorksheetCompletionMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.note.client.NotesTab;
-import org.openelis.modules.qc.client.QcLookupScreen;
 import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
 
 public class WorksheetCompletionScreen extends Screen {
 
-    private boolean                               isSaved, closeWindow, isReadOnly;
-    private ScreenService                         instrumentService;
-    private SecurityModule                        security;
-    private WorksheetManager                      manager;
+    private boolean                 isSaved, closeWindow, isPopup;
+    private ScreenService           instrumentService;
+    private SecurityModule          security;
+    private WorksheetManager        manager;
 
-    private AppButton                             /*browseButton,*/ loadButton,
-                                                  lookupWorksheetButton, printButton;
+    private AppButton               loadButton, lookupWorksheetButton, printButton;
 
-    private WorksheetTab                          worksheetTab;
-    private NotesTab                              noteTab;
-    private Tabs                                  tab;
-    private TabPanel                              tabPanel;
+    private WorksheetTab            worksheetTab;
+    private NotesTab                noteTab;
+    private Tabs                    tab;
+    private TabPanel                tabPanel;
 
-    protected AutoComplete<Integer>               instrumentId;
-    protected ArrayList<Integer>                  testIds;
-    protected ArrayList<TableDataRow>             analysisItems, qcLastRunList,
-                                                  qcLastBothList, qcLinkModel,
-                                                  testWorksheetItems;
-    protected CalendarLookUp                      defaultStartedDate, defaultCompletedDate;
-    protected Confirm                             worksheetRemoveQCConfirm, worksheetRemoveLastOfQCConfirm,
-                                                  worksheetSaveConfirm, worksheetExitConfirm;
-    protected Dropdown<Integer>                   statusId;
-    protected FileUpload                          loadFile;
-    protected QcLookupScreen                      qcLookupScreen;
-    protected TableDataRow                        qcItems[];
-    protected TableWidget                         worksheetItemTable;
-    protected TextBox<Integer>                    worksheetId, relatedWorksheetId;
-    protected TextBox<String>                     /*loadFile,*/ defaultInitials;
-    protected TestWorksheetDO                     testWorksheetDO;
-    protected TestWorksheetManager                twManager;
-    protected WorksheetLookupScreen               wLookupScreen, wrLookupScreen;
-    protected ValidationErrorsList                qcErrors;
+    protected AutoComplete<Integer> instrumentId;
+    protected CalendarLookUp        defaultStartedDate, defaultCompletedDate;
+    protected Confirm               worksheetExitConfirm;
+    protected Dropdown<Integer>     statusId;
+    protected FileUpload            loadFile;
+    protected TextBox<Integer>      worksheetId, relatedWorksheetId;
+    protected TextBox<String>       defaultInitials;
+    protected WorksheetLookupScreen wLookupScreen, wrLookupScreen;
     
     private enum Tabs {
         WORKSHEET, NOTE
@@ -122,7 +108,7 @@ public class WorksheetCompletionScreen extends Screen {
 
     public WorksheetCompletionScreen(final Integer worksheetId) throws Exception {
         this();
-        isReadOnly = true;
+        isPopup = true;
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 fetchById(worksheetId);
@@ -133,7 +119,7 @@ public class WorksheetCompletionScreen extends Screen {
     public WorksheetCompletionScreen() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetCompletionDef.class));
 
-        isReadOnly        = false;
+        isPopup           = false;
         service           = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheetCompletion.server.WorksheetCompletionService");
         instrumentService = new ScreenService("OpenELISServlet?service=org.openelis.modules.instrument.server.InstrumentService");
 
@@ -172,7 +158,7 @@ public class WorksheetCompletionScreen extends Screen {
         initialize();
 
         setState(State.DEFAULT);
-        if (!isReadOnly)
+        if (!isPopup)
             openLookupWindow();
         initializeDropdowns();
     }
@@ -195,10 +181,6 @@ public class WorksheetCompletionScreen extends Screen {
 
         worksheetId = (TextBox)def.getWidget(WorksheetCompletionMeta.getId());
         addScreenHandler(worksheetId, new ScreenEventHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                worksheetId.setValue(manager.getWorksheet().getId());
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 worksheetId.enable(false);
             }
@@ -215,7 +197,8 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                statusId.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
+                statusId.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
+                                canEditAny());
             }
         });
 
@@ -237,7 +220,8 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                lookupWorksheetButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
+                lookupWorksheetButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
+                                             canEditAny());
             }
         });
 
@@ -247,7 +231,8 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                instrumentId.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
+                instrumentId.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
+                                    canEditAny());
             }
         });
 
@@ -286,7 +271,6 @@ public class WorksheetCompletionScreen extends Screen {
             } 
         });
 
-//        loadFile = (TextBox)def.getWidget("loadFile");
         loadFile = (FileUpload)def.getWidget("loadFile");
         addScreenHandler(loadFile, new ScreenEventHandler<String>() {
             public void onValueChange(ValueChangeEvent event) {
@@ -294,7 +278,7 @@ public class WorksheetCompletionScreen extends Screen {
                 
                 value = (String) event.getValue();
                 if (value != null && value.length() > 0)
-                    loadButton.enable(true && !isReadOnly);
+                    loadButton.enable(true);
                 else
                     loadButton.enable(false);
                 
@@ -304,17 +288,7 @@ public class WorksheetCompletionScreen extends Screen {
 //                loadFile.enable(true);
             }
         });
-/*
-        browseButton = (AppButton)def.getWidget("browseButton");
-        addScreenHandler(browseButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-            }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                browseButton.enable(true);
-            }
-        });
-*/
         loadButton = (AppButton)def.getWidget("loadButton");
         addScreenHandler(loadButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -332,7 +306,8 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                defaultInitials.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
+                defaultInitials.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
+                                       canEditAny());
             }
         });
 
@@ -342,7 +317,8 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                defaultStartedDate.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
+                defaultStartedDate.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
+                                          canEditAny());
             }
         });
 
@@ -352,7 +328,8 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                defaultCompletedDate.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
+                defaultCompletedDate.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
+                                            canEditAny());
             }
         });
 
@@ -452,10 +429,7 @@ public class WorksheetCompletionScreen extends Screen {
                         manager = WorksheetManager.fetchWithNotes(id);
                         break;
                 }
-                if (isReadOnly)
-                    setState(State.DISPLAY);
-                else
-                    setState(State.UPDATE);
+                setState(State.UPDATE);
             } catch (NotFoundException e) {
                 fetchById(null);
                 window.setDone(consts.get("noRecordsFound"));
@@ -521,9 +495,8 @@ public class WorksheetCompletionScreen extends Screen {
     }
     
     protected void load() {
-//        Window.alert("Worksheet loaded from '"+loadFile.getValue()+"'");
         Window.alert("Worksheet loaded from '<loadFilename>'");
-        isSaved = false;
+//        isSaved = false;
     }
     
     protected void print() {
@@ -531,95 +504,25 @@ public class WorksheetCompletionScreen extends Screen {
     }
     
     protected void save() {
-        Window.alert("Worksheet saved!!!");
-/*
-        int                      i;
-        TableDataRow             row;
-        WorksheetDO              wDO;
-        WorksheetAnalysisDO      waDO;
-        WorksheetAnalysisManager waManager = null;
-        WorksheetItemDO          wiDO;
-        WorksheetItemManager     wiManager = null;
-        
-        setFocus(null);
-        
-        if (worksheetItemTable.numRows() == 0) {
-            Window.alert(consts.get("worksheetNotSaveEmpty"));
-            return;
-        }
-        
-        if (qcErrors.size() > 0) {
-            Window.alert("Please fix errors on worksheet before saving");
-            return;
-        }
-        
         window.setBusy(consts.get("saving"));
-
-        wDO = manager.getWorksheet();
-        wDO.setCreatedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-        wDO.setSystemUserId(OpenELIS.security.getSystemUserId());
-        wDO.setStatusId(statusWorking);
-        wDO.setFormatId(testWorksheetDO.getFormatId());
-        if (relatedWorksheetId.getFieldValue() != null)
-            wDO.setRelatedWorksheetId(relatedWorksheetId.getFieldValue());
-        
         try {
-            wiManager = manager.getItems();
-        } catch (Exception ignE) {
-            // ignoring not found exception because it will never get thrown
-            // in this situation
-        }
-        
-        for (i = 0; i < worksheetItemTable.numRows(); i++) {
-            row = worksheetItemTable.getRow(i);
-            
-            wiDO = new WorksheetItemDO();
-            wiDO.setPosition((Integer)row.cells.get(0).value);
-            wiManager.addWorksheetItem(wiDO);
-            
-            waDO = new WorksheetAnalysisDO();
-            waDO.setId((Integer)row.key);
-            waDO.setAccessionNumber(row.cells.get(1).value.toString());
-            if (row.data instanceof ArrayList) {
-                waDO.setQcId(((QcDO)((ArrayList<Object>)row.data).get(1)).getId());
-            } else {
-                waDO.setAnalysisId(((WorksheetCreationVO)row.data).getAnalysisId());
-            }
-            waDO.setWorksheetAnalysisId((Integer)row.cells.get(3).value);
-            try {
-                waManager = wiManager.getWorksheetAnalysisAt(i);
-                waManager.addWorksheetAnalysis(waDO);
-            } catch (Exception anyE) {
-                Window.alert("save(): " + anyE.getMessage());
-                window.clearStatus();
-            }
-        }
-        
-        try {
-            manager = manager.add();
+            manager = manager.update();
+            worksheetTab.save();
 
             setState(State.DISPLAY);
             DataChangeEvent.fire(this);
             window.setDone(consts.get("savingComplete"));
-            
             isSaved = true;
-            printButton.enable(false);
-            insertQCWorksheetButton.enable(false);
-            insertQCLookupButton.enable(false);
-            lookupWorksheetButton.enable(false);
-            removeRowButton.enable(false);
-            worksheetItemTable.enable(false);
         } catch (ValidationErrorsList e) {
             showErrors(e);
         } catch (Exception e) {
             Window.alert("save(): " + e.getMessage());
             window.clearStatus();
         }
-*/
     }
 
     protected void exit() {
-        if (!isSaved && !isReadOnly) {
+        if (!isSaved) {
             if (worksheetExitConfirm == null) {
                 worksheetExitConfirm = new Confirm(Confirm.Type.QUESTION, "",
                                                    consts.get("worksheetSaveExitConfirm"),
@@ -630,7 +533,12 @@ public class WorksheetCompletionScreen extends Screen {
                             case 1:
                                 save();
                             case 2:
-                                openLookupWindow();
+                                if (!isPopup) {
+                                    openLookupWindow();
+                                } else {
+                                    closeWindow = true;
+                                    window.close();
+                                }
                                 break;
                         }
                     }
@@ -639,7 +547,7 @@ public class WorksheetCompletionScreen extends Screen {
             
             worksheetExitConfirm.show();
         } else {
-            if (!isReadOnly) {
+            if (!isPopup) {
                 openLookupWindow();
             } else {
                 closeWindow = true;
@@ -681,5 +589,23 @@ public class WorksheetCompletionScreen extends Screen {
             Window.alert("error: " + e.getMessage());
             return;
         }
+    }
+    
+    private boolean canEditAny() {
+        int                  i;
+        ArrayList<SectionDO> sections;
+        SectionDO            section;
+        SecuritySection      secSection;
+/*        
+        sections = worksheetTab.getSections();
+        for (i = 0; i < sections.size(); i++) {
+            section = sections.get(i);
+            secSection = OpenELIS.security.getSection(section.getName());
+            if (secSection.hasCompletePermission())
+                return true;
+        }
+*/        
+        return true;
+//        return false;
     }
 }
