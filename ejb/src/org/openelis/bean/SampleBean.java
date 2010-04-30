@@ -36,6 +36,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
@@ -71,7 +72,7 @@ public class SampleBean implements SampleLocal, SampleRemote {
         sampleRefTableId = ReferenceTable.SAMPLE;
     }
     
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+    public ArrayList<IdAccessionVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         String queryString, whereForFrom, where;
         Query query;
         QueryBuilderV2 builder;
@@ -108,11 +109,12 @@ public class SampleBean implements SampleLocal, SampleRemote {
         
         if (list.isEmpty())
             throw new NotFoundException();
-        list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
+        
+        list = (ArrayList<IdAccessionVO>)DataBaseUtil.subList(list, first, max);
         if (list == null)
             throw new LastPageException();
 
-        return (ArrayList<IdNameVO>)list;
+        return (ArrayList<IdAccessionVO>)list;
     }
     
     public SampleDO fetchById(Integer sampleId) throws Exception {
