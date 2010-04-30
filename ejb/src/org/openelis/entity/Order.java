@@ -56,8 +56,8 @@ import org.openelis.utils.Auditable;
 @NamedQueries({
     @NamedQuery( name = "Order.FetchById",
                 query = "select new org.openelis.domain.OrderViewDO(o.id,o.description,o.statusId,o.orderedDate," +
-                		"o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.type,o.externalOrderNumber," +
-                		"o.reportToId,o.billToId,o.shipFromId)"
+                		"o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention," +
+                		"o.type,o.externalOrderNumber,o.reportToId,o.reportToAttention,o.billToId,o.billToAttention,o.shipFromId)"
                 	  + " from Order o where o.id = :id"),
     @NamedQuery( name = "Order.FetchByDescription",
                 query = "select new org.openelis.domain.IdNameVO(o.id,o.description)"
@@ -113,6 +113,9 @@ public class Order implements Auditable, Cloneable {
 
     @Column(name = "organization_id")
     private Integer               organizationId;
+    
+    @Column(name = "organization_attention")
+    private String               organizationAttention;
 
     @Column(name = "type")
     private String                type;
@@ -122,9 +125,15 @@ public class Order implements Auditable, Cloneable {
 
     @Column(name = "report_to_id")
     private Integer               reportToId;
+    
+    @Column(name = "report_to_attention")
+    private String               reportToAttention;
 
     @Column(name = "bill_to_id")
     private Integer               billToId;
+    
+    @Column(name = "bill_to_attention")
+    private String               billToAttention;
 
     @Column(name = "ship_from_id")
     private Integer               shipFromId;
@@ -231,6 +240,16 @@ public class Order implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(organizationId, this.organizationId))
             this.organizationId = organizationId;
     }
+    
+    
+    public String getOrganizationAttention() {        
+        return organizationAttention;
+    }
+
+    public void setOrganizationAttention(String organizationAttention) {
+        if (DataBaseUtil.isDifferent(organizationAttention, this.organizationAttention))
+        this.organizationAttention = organizationAttention;
+    }
 
     public String getType() {
         return type;
@@ -259,6 +278,15 @@ public class Order implements Auditable, Cloneable {
             this.reportToId = reportToId;
     }
 
+    public String getReportToAttention() {
+        return reportToAttention;
+    }
+
+    public void setReportToAttention(String reportToAttention) {
+        if (DataBaseUtil.isDifferent(reportToAttention, this.reportToAttention))
+            this.reportToAttention = reportToAttention;
+    }
+
     public Integer getBillToId() {
         return billToId;
     }
@@ -266,6 +294,15 @@ public class Order implements Auditable, Cloneable {
     public void setBillToId(Integer billToId) {
         if (DataBaseUtil.isDifferent(billToId, this.billToId))
             this.billToId = billToId;
+    }    
+
+    public String getBillToAttention() {
+        return billToAttention;
+    }
+
+    public void setBillToAttention(String billToAttention) {
+        if (DataBaseUtil.isDifferent(billToAttention, this.billToAttention))
+            this.billToAttention = billToAttention;
     }
 
     public Integer getShipFromId() {

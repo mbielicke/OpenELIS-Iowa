@@ -42,48 +42,71 @@ public class InventoryXUseViewDO extends InventoryXUseDO {
     private static final long serialVersionUID = 1L;
 
     protected String          storageLocationName, storageLocationUnitDescription,
-                              storageLocationLocation, inventoryItemName, lotNumber,
+                              storageLocationLocation, inventoryItemName, inventoryLocationLotNumber,
                               inventoryReceiptExternalReference;
-    protected Datetime        expirationDate, inventoryReceiptReceivedDate;
+    protected Datetime        inventoryLocationExpirationDate, inventoryReceiptReceivedDate;
     protected Double          inventoryReceiptUnitCost;
+    protected Integer         storageLocationId,inventoryItemId, inventoryLocationQuantityOnhand, orderItemOrderId;  
 
     public InventoryXUseViewDO() {
     }
 
     public InventoryXUseViewDO(Integer id, Integer inventoryLocationId, Integer orderItemId,
-                               Integer quantity, String lotNumber, Date expirationDate,
-                               String storageLocationName, String storageLocationUnitDescription,
-                               String storageLocationLocation, String inventoryItemName, 
+                               Integer quantity, String inventoryLocationLotNumber,
+                               Date inventoryLocationExpirationDate, Integer inventoryLocationQuantityOnhand,
+                               Integer storageLocationId,String storageLocationName,
+                               String storageLocationUnitDescription, String storageLocationLocation,
+                               Integer inventoryItemId, String inventoryItemName,
                                Date inventoryReceiptReceivedDate, Double inventoryReceiptUnitCost,
-                               String inventoryReceiptExternalReference) {
+                               String inventoryReceiptExternalReference, Integer orderItemOrderId) {
         super(id, inventoryLocationId, orderItemId, quantity);
-        setLotNumber(lotNumber);
-        setExpirationDate(DataBaseUtil.toYD(expirationDate));
+        setInventoryLocationLotNumber(inventoryLocationLotNumber);
+        setInventoryLocationExpirationDate(DataBaseUtil.toYD(inventoryLocationExpirationDate));
+        setInventoryLocationQuantityOnhand(inventoryLocationQuantityOnhand);
+        setStorageLocationId(storageLocationId);
         setStorageLocationName(storageLocationName);
         setStorageLocationUnitDescription(storageLocationUnitDescription);
         setStorageLocationLocation(storageLocationLocation);
+        setInventoryItemId(inventoryItemId);
         setInventoryItemName(inventoryItemName);
         setInventoryReceiptReceivedDate(DataBaseUtil.toYM(inventoryReceiptReceivedDate));
         setInventoryReceiptUnitCost(inventoryReceiptUnitCost);
         setInventoryReceiptExternalReference(inventoryReceiptExternalReference);
+        setOrderItemOrderId(orderItemOrderId);
     }
 
-    public String getLotNumber() {
-        return lotNumber;
+    public String getInventoryLocationLotNumber() {
+        return inventoryLocationLotNumber;
     }
 
-    public void setLotNumber(String lotNumber) {
-        this.lotNumber = DataBaseUtil.trim(lotNumber);
+    public void setInventoryLocationLotNumber(String inventoryLocationLotNumber) {
+        this.inventoryLocationLotNumber = DataBaseUtil.trim(inventoryLocationLotNumber);
     }
 
-    public Datetime getExpirationDate() {
-        return expirationDate;
+    public Datetime getInventoryLocationExpirationDate() {
+        return inventoryLocationExpirationDate;
     }
 
-    public void setExpirationDate(Datetime expirationDate) {
-        this.expirationDate = DataBaseUtil.toYD(expirationDate);
+    public void setInventoryLocationExpirationDate(Datetime inventoryLocationExpirationDate) {
+        this.inventoryLocationExpirationDate = DataBaseUtil.toYD(inventoryLocationExpirationDate);
+    }
+    
+    public Integer getInventoryLocationQuantityOnhand() {
+        return inventoryLocationQuantityOnhand;
     }
 
+    public void setInventoryLocationQuantityOnhand(Integer inventoryLocationQuantityOnhand) {
+        this.inventoryLocationQuantityOnhand = inventoryLocationQuantityOnhand;
+    }
+    
+    public Integer getStorageLocationId() {
+        return storageLocationId;
+    }
+
+    public void setStorageLocationId(Integer storageLocationId) {
+        this.storageLocationId = storageLocationId;
+    }
+    
     public String getStorageLocationName() {
         return storageLocationName;
     }
@@ -110,6 +133,14 @@ public class InventoryXUseViewDO extends InventoryXUseDO {
 
     public String getInventoryItemName() {
         return inventoryItemName;
+    }
+    
+    public Integer getInventoryItemId() {
+        return inventoryItemId;
+    }
+
+    public void setInventoryItemId(Integer inventoryItemId) {
+        this.inventoryItemId = inventoryItemId;
     }
 
     public void setInventoryItemName(String inventoryItemName) {
@@ -138,5 +169,13 @@ public class InventoryXUseViewDO extends InventoryXUseDO {
 
     public void setInventoryReceiptExternalReference(String externalReference) {
         this.inventoryReceiptExternalReference = DataBaseUtil.trim(externalReference);
+    }
+
+    public Integer getOrderItemOrderId() {
+        return orderItemOrderId;
+    }
+
+    public void setOrderItemOrderId(Integer orderItemOrderId) {
+        this.orderItemOrderId = orderItemOrderId;
     }
 }

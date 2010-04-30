@@ -44,12 +44,14 @@ public class OrderViewDO extends OrderDO {
     }
 
     public OrderViewDO(Integer id, String description, Integer statusId, Date orderedDate, 
-                   Integer neededInDays, String requestedBy, Integer costCenterId, 
-                   Integer organizationId, String type, String externalOrderNumber,
-                   Integer reportToId, Integer billToId, Integer shipFromId) {
-        super(id, description, statusId, orderedDate, neededInDays, requestedBy, costCenterId, 
-              organizationId, type, externalOrderNumber,
-              reportToId, billToId, shipFromId);
+                       Integer neededInDays, String requestedBy, Integer costCenterId, 
+                       Integer organizationId,String organizationAttention, 
+                       String type, String externalOrderNumber,
+                       Integer reportToId, String reportToAttention,
+                       Integer billToId, String billToAttention, Integer shipFromId) {
+        super(id, description, statusId, orderedDate,neededInDays, requestedBy,
+              costCenterId, organizationId, organizationAttention, type, externalOrderNumber,
+              reportToId, reportToAttention, billToId, billToAttention, shipFromId);
     }
 
     public OrganizationDO getOrganization() {

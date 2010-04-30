@@ -48,8 +48,10 @@ public class OrderDO extends DataObject {
 
     public OrderDO(Integer id, String description, Integer statusId, Date orderedDate, 
                    Integer neededInDays, String requestedBy, Integer costCenterId, 
-                   Integer organizationId, String type, String externalOrderNumber,
-                   Integer reportToId, Integer billToId, Integer shipFromId) {
+                   Integer organizationId,String organizationAttention, 
+                   String type, String externalOrderNumber,
+                   Integer reportToId, String reportToAttention,
+                   Integer billToId, String billToAttention, Integer shipFromId) {
         setId(id);
         setDescription(description);
         setStatusId(statusId);
@@ -58,10 +60,13 @@ public class OrderDO extends DataObject {
         setRequestedBy(requestedBy);
         setCostCenterId(costCenterId);
         setOrganizationId(organizationId);
+        setOrganizationAttention(organizationAttention);                
         setType(type);
         setExternalOrderNumber(externalOrderNumber);
         setReportToId(reportToId);
+        setReportToAttention(reportToAttention);
         setBillToId(billToId);
+        setBillToAttention(billToAttention);
         setShipFromId(shipFromId);
         _changed = false;
     }

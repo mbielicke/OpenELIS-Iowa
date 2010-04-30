@@ -44,10 +44,13 @@ public class OrderMeta implements Meta, MetaMap {
 	                               REQUESTED_BY = "_order.requestedBy",
 	                               COST_CENTER_ID = "_order.costCenterId",
 	                               ORGANIZATION_ID = "_order.organizationId",
+	                               ORGANIZATION_ATTENTION = "_order.organizationAttention",
 	                               TYPE = "_order.type",
 	                               EXTERNAL_ORDER_NUMBER = "_order.externalOrderNumber",
 	                               REPORT_TO_ID = "_order.reportToId",
+	                               REPORT_TO_ATTENTION = "_order.reportToAttention",
 	                               BILL_TO_ID = "_order.billToId",
+	                               BILL_TO_ATTENTION = "_order.billToAttention",
 	                               SHIP_FROM_ID = "_order.shipFromId",
 	                               
 	                               ORGANIZATION_ADDRESS_ID = "_organization.address.id",
@@ -138,8 +141,9 @@ public class OrderMeta implements Meta, MetaMap {
     static {
         names = new HashSet<String>(Arrays.asList(ID, DESCRIPTION, STATUS_ID, ORDERED_DATE,
                                                   NEEDED_IN_DAYS, REQUESTED_BY, COST_CENTER_ID,
-                                                  ORGANIZATION_ID, TYPE, EXTERNAL_ORDER_NUMBER,
-                                                  REPORT_TO_ID, BILL_TO_ID, SHIP_FROM_ID,
+                                                  ORGANIZATION_ID,ORGANIZATION_ATTENTION, TYPE,
+                                                  EXTERNAL_ORDER_NUMBER, REPORT_TO_ID, REPORT_TO_ATTENTION,
+                                                  BILL_TO_ID, BILL_TO_ATTENTION, SHIP_FROM_ID,
                                                   
                                                   ORGANIZATION_ADDRESS_ID, ORGANIZATION_ADDRESS_MULTIPLE_UNIT,
                                                   ORGANIZATION_ADDRESS_STREET_ADDRESS, ORGANIZATION_ADDRESS_CITY,
@@ -215,6 +219,10 @@ public class OrderMeta implements Meta, MetaMap {
     public static String getOrganizationId() {
         return ORGANIZATION_ID;
     }
+    
+    public static String getOrganizationAttention() {
+        return ORGANIZATION_ATTENTION;
+    }
 
     public static String getType() {
         return TYPE;
@@ -227,9 +235,17 @@ public class OrderMeta implements Meta, MetaMap {
     public static String getReportToId() {
         return REPORT_TO_ID;
     }
+    
+    public static String getReportToAttention() {
+        return REPORT_TO_ATTENTION;
+    }
 
     public static String getBillToId() {
         return BILL_TO_ID;
+    }
+    
+    public static String getBillToAttention() {
+        return BILL_TO_ATTENTION;
     }
 
     public static String getShipFromId() {
