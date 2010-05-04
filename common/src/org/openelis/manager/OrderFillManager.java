@@ -26,16 +26,18 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.gwt.common.RPC;
 
 public class OrderFillManager implements RPC {
 
-    private static final long                        serialVersionUID = 1L;
+    private static final long                                  serialVersionUID = 1L;
 
-    protected Integer                                orderId;
-    protected ArrayList<InventoryXUseViewDO>         fills;
+    protected Integer                                          orderId;
+    protected ArrayList<InventoryXUseViewDO>                   fills, deleted;
+    protected HashMap<Integer, ArrayList<InventoryXUseViewDO>> itemIdFillsMap;
 
     protected transient static OrderFillManagerProxy proxy;
 
@@ -51,6 +53,34 @@ public class OrderFillManager implements RPC {
 
     public InventoryXUseViewDO getFillAt(int i) {
         return fills.get(i);
+    }
+    
+    public ArrayList<InventoryXUseViewDO> getFillsByItemId(Integer orderItemId) {
+        ArrayList<InventoryXUseViewDO> list;     
+        InventoryXUseViewDO data;
+        Integer itemId;
+        
+        list = null;
+        if(fills == null)
+            return list;
+        
+        if (itemIdFillsMap == null) {            
+            itemIdFillsMap = new HashMap<Integer, ArrayList<InventoryXUseViewDO>>();            
+
+            for (int i = 0; i < fills.size(); i++ ) {                
+                data = fills.get(i);
+                itemId = data.getOrderItemId();
+                list = itemIdFillsMap.get(itemId);
+                
+                if(list == null) { 
+                    list = new ArrayList<InventoryXUseViewDO>();
+                    itemIdFillsMap.put(itemId, list);
+                }                
+                list.add(data);                    
+            }
+        }
+        
+        return itemIdFillsMap.get(orderItemId);
     }
 
     public void setFillAt(InventoryXUseViewDO item, int i) {
@@ -82,7 +112,23 @@ public class OrderFillManager implements RPC {
             return;
 
         tmp = fills.remove(i);
-        assert tmp.getId() == null : "Remove is not supported";
+        if (tmp.getId() != null) {
+            if (deleted == null)
+                deleted = new ArrayList<InventoryXUseViewDO>();
+            deleted.add(tmp);
+        }
+    }
+    
+    public void removeFill(InventoryXUseViewDO data) {
+        int index;
+        
+        if (fills == null || fills.size() == 0 || data == null)
+            return;
+        
+        index = fills.indexOf(data);
+        
+        if(index >= 0)
+            removeFillAt(index);
     }
 
     public int count() {

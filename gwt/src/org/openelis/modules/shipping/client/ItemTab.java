@@ -56,12 +56,12 @@ import com.google.gwt.user.client.Window;
 
 public class ItemTab extends Screen {
     
-    private ShippingManager       manager;
-    private TableWidget           itemTable, trackingTable;
-    private AppButton             addItemButton, removeItemButton, addTrackingButton,
-                                  removeTrackingButton;
-    
-    private boolean               loaded;
+    private ShippingManager                manager;
+    private TableWidget                    itemTable, trackingTable;
+    private AppButton                      addItemButton, removeItemButton, addTrackingButton,
+                                           removeTrackingButton;
+
+    private boolean                        loaded;
 
     public ItemTab(ScreenDefInt def, ScreenWindow window) {
         setDefinition(def);
@@ -269,34 +269,7 @@ public class ItemTab extends Screen {
             }
         });
         
-    }
-    
-    private ArrayList<TableDataRow> getItemTableModel() {
-        int i;
-        ShippingItemDO data;
-        ArrayList<TableDataRow> model;
-        TableDataRow row;
-        ShippingItemManager man;
-
-        model = new ArrayList<TableDataRow>();
-        if (manager == null)
-            return model;
-         
-        try {
-            man = manager.getItems();
-            for(i = 0; i < man.count(); i++) {
-                data = man.getItemAt(i);
-                row = new TableDataRow(null, data.getQuantity(), data.getDescription());  
-                
-                model.add(row);
-            }
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            e.printStackTrace();
-        }
-        
-        return model;  
-    }
+    }    
     
     private ArrayList<TableDataRow> getTrackingNumbersTableModel() {
         int i;
@@ -325,7 +298,7 @@ public class ItemTab extends Screen {
         return model;
     }
 
-    public void setManager(ShippingManager manager) {
+    public void setManager(ShippingManager manager) {        
         this.manager = manager;
         loaded = false;        
     }
@@ -335,5 +308,45 @@ public class ItemTab extends Screen {
             DataChangeEvent.fire(this);
 
         loaded = true;        
+    }
+    
+    private ArrayList<TableDataRow> getItemTableModel(){
+        ArrayList<TableDataRow> model;
+        ShippingItemManager man;
+        ShippingItemDO data;
+        /*
+         * OrderManager man; OrderFillManager fills; InventoryXUseViewDO data;
+         * Set<Integer> set; Iterator<Integer> iter;
+         */
+        TableDataRow row;
+
+        int count, i;
+
+        model = new ArrayList<TableDataRow>();
+
+        try {
+            // set = combinedMap.keySet();
+            // iter = set.iterator();
+            man = manager.getItems();
+            // while (iter.hasNext()) {
+            // man = combinedMap.get(iter.next());
+            // fills = man.getFills();
+            count = man.count();
+
+            for (i = 0; i < count; i++ ) {
+                data = man.getItemAt(i);
+                row = new TableDataRow(2);
+                row.cells.get(0).setValue(data.getQuantity());
+                row.cells.get(1).setValue(data.getDescription());
+                row.data = data;
+                model.add(row);
+            }
+            // }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.toString());
+        }
+
+        return model;
     }
 }
