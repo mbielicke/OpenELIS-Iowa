@@ -25,8 +25,28 @@
 */
 package org.openelis.modules.orderFill.server;
 
+import java.util.ArrayList;
+
+import org.openelis.domain.InventoryLocationViewDO;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.InventoryLocationRemote;
+
 
 public class OrderFillService {
+    
+    public ArrayList<InventoryLocationViewDO> fetchByLocationNameInventoryItemId(Query query) throws Exception {
+        Integer id;
+        String search;
+        
+        search = query.getFields().get(0).query;
+        id = new Integer(query.getFields().get(1).query);
+        return invLocRemote().fetchByLocationNameInventoryItemId(search + "%", id,10);
+    }   
+    
+    private InventoryLocationRemote invLocRemote() {
+       return (InventoryLocationRemote)EJBFactory.lookup("openelis/InventoryLocationBean/remote");
+    }
 }
 /*
     private static Node subRpcNode;

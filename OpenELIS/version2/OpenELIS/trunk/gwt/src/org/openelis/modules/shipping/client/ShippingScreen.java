@@ -27,10 +27,14 @@ package org.openelis.modules.shipping.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ShippingItemDO;
@@ -66,6 +70,8 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.manager.OrderFillManager;
+import org.openelis.manager.OrderManager;
 import org.openelis.manager.ShippingItemManager;
 import org.openelis.manager.ShippingManager;
 import org.openelis.manager.ShippingTrackingManager;
@@ -86,28 +92,31 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
 
 public class ShippingScreen extends Screen {
-    private ShippingManager       manager;
-    private SecurityModule        security;
+    private ShippingManager                manager;
+    private SecurityModule                 security;
 
-    private ScreenNavigator       nav;
-    
-    private NotesTab              noteTab;
-    private ItemTab               itemTab;
-    private Tabs                  tab;
+    private ScreenNavigator                nav;
 
-    private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
-                                  commitButton, abortButton;
-    protected MenuItem            shippingHistory, shippingItemHistory, shippingTrackingHistory; 
-    private TextBox               numberOfPackages, cost, shippedToAddressMultipleUnit,
-                                  processedById, shippedToAddressStreetAddress, shippedToAddressCity,
-                                  shippedToAddressState, shippedToAddressZipCode;
-    private CalendarLookUp        shippedDate, processedDate;
-    private Dropdown<Integer>     statusId, shippedFromId, shippedMethodId;
-    private AutoComplete<Integer> shippedToName;
-    private TabPanel              tabPanel;
-    private Integer               status_processed;
+    private NotesTab                       noteTab;
+    private ItemTab                        itemTab;
+    private Tabs                           tab;
+
+    private AppButton                      queryButton, previousButton, nextButton, addButton,
+                                           updateButton, commitButton, abortButton;
+    protected MenuItem                     shippingHistory, shippingItemHistory,
+                                           shippingTrackingHistory;
+    private TextBox                        numberOfPackages, cost, shippedToAddressMultipleUnit,
+                                           processedById, shippedToAddressStreetAddress, shippedToAddressCity,
+                                           shippedToAddressState, shippedToAddressZipCode;
+    private CalendarLookUp                 shippedDate, processedDate;
+    private Dropdown<Integer>              statusId, shippedFromId, shippedMethodId;
+    private AutoComplete<Integer>          shippedToName;
+    private TabPanel                       tabPanel;
+    private Integer                        status_processed;
+    //private HashMap<Integer, OrderManager> combinedMap;
     
-    protected ScreenService       organizationService;
+    protected ScreenService                organizationService;
+    
     
     private enum Tabs {
         ITEM, SHIP_NOTE
@@ -196,7 +205,7 @@ public class ShippingScreen extends Screen {
         addButton = (AppButton)def.getWidget("add");
         addScreenHandler(addButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                add();
+                add(null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -423,10 +432,10 @@ public class ShippingScreen extends Screen {
                         data = list.get(i);
 
                         row.key = data.getId();
-                        row.cells.get(0).value = data.getName();
-                        row.cells.get(1).value = data.getAddress().getStreetAddress();
-                        row.cells.get(2).value = data.getAddress().getCity();
-                        row.cells.get(3).value = data.getAddress().getState();
+                        row.cells.get(0).setValue(data.getName());
+                        row.cells.get(1).setValue(data.getAddress().getStreetAddress());
+                        row.cells.get(2).setValue(data.getAddress().getCity());
+                        row.cells.get(3).setValue(data.getAddress().getState());
                         
                         row.data = data;
                         
@@ -697,8 +706,9 @@ public class ShippingScreen extends Screen {
         });
     }    
     
-    public void setManager(ShippingManager manager) {
-        this.manager = manager;
+    
+    public void setManager(ShippingManager manager) {               
+        add(manager);        
     }
     
     private void initializeDropdowns() {
@@ -759,7 +769,7 @@ public class ShippingScreen extends Screen {
         nav.next();
     }
 
-    public void add() { 
+    protected void add(ShippingManager manager) { 
         ShippingViewDO data;
         Datetime now;
         
@@ -770,8 +780,12 @@ public class ShippingScreen extends Screen {
             return;
         }
         
-        manager = ShippingManager.getInstance();
-        data = manager.getShipping();
+        if(manager == null)
+            this.manager = ShippingManager.getInstance();
+        else 
+            this.manager = manager;
+        
+        data = this.manager.getShipping();
         data.setStatusId(status_processed);
         data.setProcessedDate(now);
         data.setProcessedBy(OpenELIS.security.getSystemUserName());
@@ -973,6 +987,47 @@ public class ShippingScreen extends Screen {
                 noteTab.draw();
                 break;   
         }
+    }
+    
+    private ShippingItemManager getItemsFromOrderData(HashMap<Integer, OrderManager> combinedMap) {
+        ShippingItemManager man;
+        OrderManager order;
+        OrderFillManager fills;
+        InventoryXUseViewDO data;
+        ShippingItemDO item;
+        Set<Integer> set; 
+        Iterator<Integer> iter;
+        int count, i;
+        
+        if(combinedMap == null)
+            return null;
+       
+        man = ShippingItemManager.getInstance();
+        
+        try {                    
+            set = combinedMap.keySet();
+            iter = set.iterator();            
+            
+            while (iter.hasNext())  {                                                                        
+                order = combinedMap.get(iter.next());
+                fills = order.getFills();
+                count = fills.count();                
+
+                for (i = 0; i < count; i++) {
+                    data = fills.getFillAt(i);
+                    item = man.getItemAt(man.addItem());
+                    item.setQuantity(data.getQuantity());
+                    item.setDescription(data.getInventoryItemName());
+                    item.setReferenceId(data.getOrderItemId());
+                    item.setReferenceTableId(ReferenceTable.ORDER_ITEM);
+                }
+            } 
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.toString());
+        }
+
+        return man;
     }
 }
 

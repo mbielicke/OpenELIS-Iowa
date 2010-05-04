@@ -44,12 +44,13 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.InventoryLocationLocal;
 import org.openelis.meta.InventoryItemMeta;
+import org.openelis.remote.InventoryLocationRemote;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")
 @RolesAllowed("inventoryitem-select")
-public class InventoryLocationBean implements InventoryLocationLocal {
+public class InventoryLocationBean implements InventoryLocationLocal, InventoryLocationRemote {
 
     @PersistenceContext(name = "openelis")
     private EntityManager                    manager;
@@ -67,6 +68,17 @@ public class InventoryLocationBean implements InventoryLocationLocal {
             throw new NotFoundException();
 
         return DataBaseUtil.toArrayList(list);
+    }
+    
+    public ArrayList<InventoryLocationViewDO> fetchByLocationNameInventoryItemId(String match,Integer id, int maxResults) throws Exception {
+        Query query;
+        
+        query = manager.createNamedQuery("InventoryLocation.FetchByStorageLocationName");
+        query.setParameter("name", match);
+        query.setParameter("id", id);
+        query.setMaxResults(maxResults);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
 
     public InventoryLocationViewDO add(InventoryLocationViewDO data) throws Exception {
