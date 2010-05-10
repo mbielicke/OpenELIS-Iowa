@@ -122,6 +122,11 @@ public class SampleItemAnalysisTreeTab extends Screen
 
                 return row;
             }
+            
+            public void selectNewRowFromBundle(TreeDataItem row) {
+                itemsTree.select(row);
+                itemsTree.scrollToVisible();
+            }
         };
 
         treeUtil.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {

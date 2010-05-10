@@ -53,7 +53,6 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.SampleManager;
-import org.openelis.manager.SamplePrivateWellManager;
 import org.openelis.manager.SampleSDWISManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.pws.client.PwsScreen;
@@ -66,7 +65,7 @@ import com.google.gwt.user.client.Window;
 public class SDWISTab extends Screen {
     private Dropdown<Integer>              sDWISSampleTypeId, sDWISSampleCategoryId;
     private TextBox                        sDWISPwsId, pwsName, sDWISFacilityId,
-                                           sDWISSamplePointId, pointDesc, sDWISCollector;
+                    sDWISSamplePointId, pointDesc, sDWISCollector;
     private TextBox<Integer>               sDWISStateLabId;
     private AutoComplete<Integer>          reportTo, billTo;
     private AppButton                      pwsButton, reportToLookup, billToLookup;
@@ -76,6 +75,7 @@ public class SDWISTab extends Screen {
     protected ScreenService                orgService;
 
     private SampleManager                  manager;
+    private SampleSDWISManager             sdwisManager;
 
     protected boolean                      loaded = false;
 
@@ -89,12 +89,13 @@ public class SDWISTab extends Screen {
         initialize();
         initializeDropdowns();
     }
-    
+
     public SDWISTab(ScreenWindow window) throws Exception {
         drawScreen((ScreenDefInt)GWT.create(SDWISTabDef.class));
         setWindow(window);
 
-        orgService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
+        orgService = new ScreenService(
+                                       "controller?service=org.openelis.modules.organization.server.OrganizationService");
 
         initialize();
         initializeDropdowns();
@@ -109,24 +110,24 @@ public class SDWISTab extends Screen {
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 PwsDO pwsDO;
-                
+
                 getSDWISManager().getSDWIS().setPwsId(event.getValue());
-                
-                if(getSDWISManager().getSDWIS().getPwsId() != null){
-                    try{
+
+                if (getSDWISManager().getSDWIS().getPwsId() != null) {
+                    try {
                         pwsDO = getSDWISManager().validatePwsId(event.getValue());
                         getSDWISManager().getSDWIS().setPwsName(pwsDO.getName());
                         pwsName.setValue(pwsDO.getName());
-                        
-                    }catch(ValidationErrorsList e){
+
+                    } catch (ValidationErrorsList e) {
                         showErrors(e);
                         getSDWISManager().getSDWIS().setPwsName(null);
                         pwsName.setValue(null);
-                        
-                    }catch(Exception e){
+
+                    } catch (Exception e) {
                         Window.alert("pwsId valueChange: " + e.getMessage());
                     }
-                }else{
+                } else {
                     getSDWISManager().getSDWIS().setPwsName(null);
                     pwsName.setValue(null);
                 }
@@ -146,7 +147,8 @@ public class SDWISTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                pwsButton.enable(EnumSet.of(State.DISPLAY, State.ADD, State.UPDATE).contains(event.getState()));
+                pwsButton.enable(EnumSet.of(State.DISPLAY, State.ADD, State.UPDATE)
+                                        .contains(event.getState()));
             }
         });
 
@@ -422,67 +424,68 @@ public class SDWISTab extends Screen {
             }
         });
     }
-    
+
     public ArrayList<QueryData> getQueryFields() {
         QueryData domain;
         ArrayList<QueryData> fields;
-        
+
         fields = super.getQueryFields();
-        
-        if(fields.size() > 0){
+
+        if (fields.size() > 0) {
             domain = new QueryData();
             domain.key = SampleMeta.getDomain();
             domain.query = SampleManager.SDWIS_DOMAIN_FLAG;
             domain.type = QueryData.Type.STRING;
             fields.add(domain);
         }
-        
+
         return fields;
     }
 
     public void setData(SampleManager manager) {
         this.manager = manager;
+        sdwisManager = null;
         loaded = false;
     }
 
     public void draw() {
         if ( !loaded)
             DataChangeEvent.fire(this);
-    
+
         loaded = true;
     }
 
-    private void openPwsScreen(){
+    private void openPwsScreen() {
         PwsScreen pwsScreen;
-        
-        try{
+
+        try {
             final SDWISTab sdwis = this;
             pwsScreen = new PwsScreen(sDWISPwsId.getValue());
-    
+
             pwsScreen.addActionHandler(new ActionHandler<PwsScreen.Action>() {
                 public void onAction(ActionEvent<PwsScreen.Action> event) {
                     PwsDO pwsDO;
-                    if(state == State.ADD || state == State.UPDATE){
+                    if (state == State.ADD || state == State.UPDATE) {
                         if (event.getAction() == PwsScreen.Action.SELECT) {
                             pwsDO = (PwsDO)event.getData();
                             getSDWISManager().getSDWIS().setPwsId(pwsDO.getNumber0());
                             getSDWISManager().getSDWIS().setPwsName(pwsDO.getName());
-                            
+
                             sDWISPwsId.clearExceptions();
                             DataChangeEvent.fire(sdwis);
                             setFocus(sDWISPwsId);
-                            
+
                         }
                     }
                 }
             });
-            
+
             ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
             modal.setName(consts.get("pwsInformation"));
             modal.setContent(pwsScreen);
 
-        }catch(Exception e){
-            Window.alert("openPWSScreen: "+e.getMessage());
+        } catch (Exception e) {
+            Window.alert("openPWSScreen: " + e.getMessage());
         }
     }
 
@@ -549,7 +552,7 @@ public class SDWISTab extends Screen {
             return;
         }
     }
-    
+
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
 
@@ -560,7 +563,7 @@ public class SDWISTab extends Screen {
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
         sDWISSampleTypeId.setModel(model);
-        
+
         // sample category dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
@@ -571,15 +574,14 @@ public class SDWISTab extends Screen {
     }
 
     private SampleSDWISManager getSDWISManager() {
-        SampleSDWISManager sdwisManager;
-
-        try {
-            sdwisManager = (SampleSDWISManager)manager.getDomainManager();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Window.alert(e.getMessage());
-            sdwisManager = SampleSDWISManager.getInstance();
-            manager.getSample().setDomain(SampleManager.SDWIS_DOMAIN_FLAG);
+        if (sdwisManager == null) {
+            try {
+                sdwisManager = (SampleSDWISManager)manager.getDomainManager();
+            } catch (Exception e) {
+                sdwisManager = SampleSDWISManager.getInstance();
+                manager = SampleManager.getInstance();
+                manager.getSample().setDomain(SampleManager.SDWIS_DOMAIN_FLAG);
+            }
         }
 
         return sdwisManager;

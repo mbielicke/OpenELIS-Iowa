@@ -106,6 +106,11 @@ public class SampleItemsPopoutTreeLookup extends Screen {
                 
                 return row;
             }
+            
+            public void selectNewRowFromBundle(TreeDataItem row) {
+                sampleTreePopout.select(row);
+                sampleTreePopout.scrollToVisible();
+            }
         };
         
         addScreenHandler(sampleTreePopout, new ScreenEventHandler<String>() {
@@ -149,7 +154,7 @@ public class SampleItemsPopoutTreeLookup extends Screen {
                 }catch(Exception e){
                     Window.alert("tree beforeDragStart: "+e.getMessage());
                 }
-            };
+            }
         });
         
         sampleTreePopout.addBeforeDropHandler(new BeforeDropHandler<TreeRow>() {

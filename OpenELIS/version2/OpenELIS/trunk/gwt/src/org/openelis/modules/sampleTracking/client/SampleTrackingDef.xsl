@@ -106,8 +106,6 @@ UIRF Software License are applicable instead of those above.
                 <menuItem description="" enable="false" icon="ptSampleLoginIcon" key="ptSample" label="{resource:getString($constants,'ptSample')}" style="TopMenuRowContainer" />
               </menuPanel>
             </menuItem>
-            <xsl:call-template name="previousButton" />
-            <xsl:call-template name="nextButton" />
             <xsl:call-template name="buttonPanelDivider" />
             <xsl:call-template name="updateButton" />
             <xsl:call-template name="buttonPanelDivider" />
@@ -145,9 +143,7 @@ UIRF Software License are applicable instead of those above.
                 </menuDisplay>
                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
                   <menuItem key="historySample" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySample')}" />
-                  <menuItem key="historySampleEnvironmental" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleEnvironmental')}" />
-                  <menuItem key="historySamplePrivateWell" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySamplePrivateWell')}" />
-                  <menuItem key="historySampleSDWIS" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleSDWIS')}" />
+                  <menuItem key="historySampleSpec" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleSpec')}" />
                   <menuItem key="historySampleProject" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleProject')}" />
                   <menuItem key="historySampleOrganization" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleOrganization')}" />
                   <menuItem key="historySampleItem" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleItem')}" />
@@ -166,7 +162,7 @@ UIRF Software License are applicable instead of those above.
           <AbsolutePanel key="collapsePanel" style="LeftSidePanel">
             <HorizontalPanel width="225">
               <VerticalPanel>
-                <tree key="atozTable" maxRows="15" width="auto">
+                <tree key="trackingTree" maxRows="15" width="auto">
                   <header>
                     <col header="Sample" width="200" />
                     <col header="Type/Status" width="100" />
@@ -179,7 +175,7 @@ UIRF Software License are applicable instead of those above.
                        <label />
                     </col>
                   </leaf>
-                  <leaf key="item">
+                  <leaf key="sampleItem">
                     <col>
                       <label />
                     </col>
@@ -223,10 +219,10 @@ UIRF Software License are applicable instead of those above.
                 </tree>
                 <widget halign="center">
                   <HorizontalPanel>
-                    <appButton enable="false" key="atozPrev" style="Button">
+                    <appButton enable="false" key="prevPage" style="Button">
                       <AbsolutePanel style="prevNavIndex" />
                     </appButton>
-                    <appButton enable="false" key="atozNext" style="Button">
+                    <appButton enable="false" key="nextPage" style="Button">
                       <AbsolutePanel style="nextNavIndex" />
                     </appButton>
                   </HorizontalPanel>
@@ -242,7 +238,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'accessionNum')" />:
               </text>
-              <textbox key="{meta:getAccessionNumber()}" width="75" tab="{meta:getOrderId()},SampleContent" field="Integer" required="true" />
+              <textbox key="{meta:getAccessionNumber()}" width="75" tab="{meta:getOrderId()},tabPanel" field="Integer" required="true" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'orderNum')" />:
               </text>
@@ -269,11 +265,11 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select="resource:getString($constants,'clntRef')" />:
               </text>
               <widget colspan="3">
-                <textbox key="{meta:getClientReference()}" width="196" max="20" tab="SampleContent,{meta:getStatusId()},{meta:getStatusId()}" field="String" />
+                <textbox key="{meta:getClientReference()}" width="196" max="20" tab="tabPanel,{meta:getStatusId()},{meta:getStatusId()}" field="String" />
               </widget>
             </row>
               </TablePanel>
-              <TabPanel height="266" key="SampleContent" width="724">
+              <TabPanel height="266" key="tabPanel" width="724">
 <!-- Blank Default deck -->
                 <tab text="" visible="false">
                   <AbsolutePanel />
