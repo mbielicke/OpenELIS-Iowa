@@ -311,6 +311,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         historySample = (MenuItem)def.getWidget("historySample");
         addScreenHandler(historySample, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                historyUtility.setManager(manager);
                 historyUtility.historySample();
             }
 
@@ -322,6 +323,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         historySampleSdwis = (MenuItem)def.getWidget("historySampleSDWIS");
         addScreenHandler(historySampleSdwis, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                historyUtility.setManager(manager);
                 historyUtility.historySampleSDWIS();
             }
 
@@ -333,6 +335,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         historySampleOrganization = (MenuItem)def.getWidget("historySampleOrganization");
         addScreenHandler(historySampleOrganization, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                historyUtility.setManager(manager);
                 historyUtility.historySampleOrganization();
             }
 
@@ -345,6 +348,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         historySampleItem = (MenuItem)def.getWidget("historySampleItem");
         addScreenHandler(historySampleItem, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                historyUtility.setManager(manager);
                 historyUtility.historySampleItem();
             }
 
@@ -356,6 +360,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         historyAnalysis = (MenuItem)def.getWidget("historyAnalysis");
         addScreenHandler(historyAnalysis, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                historyUtility.setManager(manager);
                 historyUtility.historyAnalysis();
             }
 
@@ -367,6 +372,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         historyCurrentResult = (MenuItem)def.getWidget("historyCurrentResult");
         addScreenHandler(historyCurrentResult, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                historyUtility.setManager(manager);
                 historyUtility.historyCurrentResult();
             }
 
@@ -378,6 +384,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         historyStorage = (MenuItem)def.getWidget("historyStorage");
         addScreenHandler(historyStorage, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                historyUtility.setManager(manager);
                 historyUtility.historyStorage();
             }
 
@@ -389,6 +396,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         historySampleQA = (MenuItem)def.getWidget("historySampleQA");
         addScreenHandler(historySampleQA, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                historyUtility.setManager(manager);
                 historyUtility.historySampleQA();
             }
 
@@ -400,6 +408,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         historyAnalysisQA = (MenuItem)def.getWidget("historyAnalysisQA");
         addScreenHandler(historyAnalysisQA, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                historyUtility.setManager(manager);
                 historyUtility.historyAnalysisQA();
             }
 
@@ -411,6 +420,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         historyAuxData = (MenuItem)def.getWidget("historyAuxData");
         addScreenHandler(historyAuxData, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                historyUtility.setManager(manager);
                 historyUtility.historyAuxData();
             }
 
@@ -944,7 +954,6 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 manager.validate();
                 manager.getSample().setStatusId(sampleLoggedInId);
                 manager = manager.add();
-                historyUtility.setManager(manager);
 
                 setState(Screen.State.DISPLAY);
                 DataChangeEvent.fire(this);
@@ -964,7 +973,6 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 manager.validate();
                 manager.getSample().setStatusId(sampleLoggedInId);
                 manager = manager.update();
-                historyUtility.setManager(manager);
 
                 setState(Screen.State.DISPLAY);
                 DataChangeEvent.fire(this);
@@ -988,7 +996,6 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             window.setBusy(consts.get("adding"));
             try {
                 manager = manager.add();
-                historyUtility.setManager(manager);
 
                 setState(Screen.State.DISPLAY);
                 DataChangeEvent.fire(this);
@@ -1003,7 +1010,6 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             window.setBusy(consts.get("updating"));
             try {
                 manager = manager.update();
-                historyUtility.setManager(manager);
 
                 setState(Screen.State.DISPLAY);
                 DataChangeEvent.fire(this);
@@ -1045,7 +1051,6 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                     manager.getSample().setDomain(SampleManager.SDWIS_DOMAIN_FLAG);
 
                 } else {
-                    historyUtility.setManager(manager);
                     setState(State.DISPLAY);
                 }
 
@@ -1081,7 +1086,6 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 window.clearStatus();
                 return false;
             }
-            historyUtility.setManager(manager);
             setState(Screen.State.DISPLAY);
         }
         DataChangeEvent.fire(this);
