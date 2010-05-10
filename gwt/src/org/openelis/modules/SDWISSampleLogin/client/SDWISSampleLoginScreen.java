@@ -234,12 +234,6 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
         addButton = (AppButton)def.getWidget("add");
         addScreenHandler(addButton, new ScreenEventHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(state) &&
-                    security.hasAddPermission())
-                    addButton.enable(canEdit());
-            }
-
             public void onClick(ClickEvent event) {
                 add();
             }
@@ -259,11 +253,6 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 update();
-            }
-
-            public void onDataChange(DataChangeEvent event) {
-                if (EnumSet.of(State.DISPLAY).contains(state) && security.hasUpdatePermission())
-                    updateButton.enable(canEdit());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -486,9 +475,6 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 accessionNumber.enable(EnumSet.of(State.ADD, State.QUERY)
                                               .contains(event.getState()));
                 accessionNumber.setQueryMode(event.getState() == State.QUERY);
-
-                if (EnumSet.of(State.ADD, State.QUERY).contains(event.getState()))
-                    setFocus(accessionNumber);
             }
         });
 
@@ -529,9 +515,6 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 orderNumber.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                           .contains(event.getState()));
                 orderNumber.setQueryMode(event.getState() == State.QUERY);
-
-                if (EnumSet.of(State.UPDATE).contains(event.getState()))
-                    setFocus(orderNumber);
             }
         });
 
@@ -873,6 +856,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         qaEventsTab.draw();
         auxDataTab.draw();
 
+        setFocus(accessionNumber);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
 
@@ -891,10 +875,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         // default the form
         try {
             manager.setDefaults();
-
             manager.getSample().setReceivedById(userId);
-            // ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
-            // .setIsHazardous("N");
 
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -903,6 +884,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
         setState(Screen.State.ADD);
         DataChangeEvent.fire(this);
+        setFocus(accessionNumber);
         window.setDone(consts.get("enterInformationPressCommit"));
     }
 
@@ -911,9 +893,16 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
         try {
             manager = manager.fetchForUpdate();
-
             setState(State.UPDATE);
+            
+            if (!canEdit()){
+                abort();
+                window.setError(consts.get("cantUpdateReleasedException"));
+                return;
+            }
+            
             DataChangeEvent.fire(this);
+            setFocus(orderNumber);
             window.clearStatus();
 
         } catch (Exception e) {
@@ -1194,7 +1183,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     private boolean canEdit() {
         return ( !sampleReleasedId.equals(manager.getSample().getStatusId()));
     }
-
+    
     public boolean validate() {
         return super.validate() & storageTab.validate();
     }

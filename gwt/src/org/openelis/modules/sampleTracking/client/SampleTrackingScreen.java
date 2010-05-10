@@ -135,8 +135,9 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     private SampleTreeUtility    treeUtil;
     private SampleHistoryUtility historyUtility;
 
-    private Integer              analysisLoggedInId, sampleLoggedInId, sampleErrorStatusId;
-    private Query query;
+    private Integer              analysisLoggedInId, sampleLoggedInId, sampleErrorStatusId, 
+                                 sampleReleasedId;
+    private Query                query;
 
     public enum Tabs {
         BLANK, ENVIRONMENT, PRIVATE_WELL, SDWIS, SAMPLE_ITEM, ANALYSIS, TEST_RESULT,
@@ -195,7 +196,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 TreeDataItem row;
                 for (int i = 0; i < trackingTree.getData().size(); i++ ) {
                     row = trackingTree.getData().get(i);
-                    
+
                     if ( !row.isLoaded()) {
                         try {
                             man = ((SampleDataBundle)row.data).getSampleManager();
@@ -499,7 +500,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                         loadSampleItem(manager, event.getItem());
                         event.getItem().checkForChildren(false);
                     } catch (Exception e) {
-                        Window.alert("leafOpened: "+e.getMessage());
+                        Window.alert("leafOpened: " + e.getMessage());
                     }
                 }
             }
@@ -514,25 +515,29 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
         trackingTree.enableDrag(true);
         trackingTree.enableDrop(true);
-        
+
         trackingTree.addBeforeDragStartHandler(new BeforeDragStartHandler<TreeRow>() {
             public void onBeforeDragStart(BeforeDragStartEvent<TreeRow> event) {
                 TreeDataItem treeItem;
                 Label label;
-                
-                try{
+
+                try {
                     treeItem = event.getDragObject().item;
-                    if(!treeItem.leafType.equals("analysis"))
+                    if ( !treeItem.leafType.equals("analysis"))
                         event.cancel();
-                    else{
-                        label = new Label(treeItem.cells.get(0).value + " | " + 
-                                          DictionaryCache.getEntryFromId((Integer)treeItem.cells.get(1).value).getEntry());
+                    else {
+                        label = new Label(
+                                          treeItem.cells.get(0).value +
+                                                          " | " +
+                                                          DictionaryCache.getEntryFromId(
+                                                                                         (Integer)treeItem.cells.get(1).value)
+                                                                         .getEntry());
                         label.setStyleName("ScreenLabel");
                         label.setWordWrap(false);
                         event.setProxy(label);
                     }
-                }catch(Exception e){
-                    Window.alert("tree beforeDragStart: "+e.getMessage());
+                } catch (Exception e) {
+                    Window.alert("tree beforeDragStart: " + e.getMessage());
                 }
             }
         });
@@ -544,36 +549,39 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 AnalysisManager am;
                 TreeDataItem dragItem, dropTarget;
                 SampleDataBundle dragKey, dropKey;
-                
+
                 dragItem = event.getDragObject().dragItem;
                 dragKey = (SampleDataBundle)dragItem.data;
                 dropTarget = ((TreeRow)event.getDropTarget()).item;
                 dropKey = (SampleDataBundle)dropTarget.data;
-                
+
                 try {
                     anDO = manager.getSampleItems()
                                   .getAnalysisAt(dragKey.getSampleItemIndex())
                                   .getAnalysisAt(dragKey.getAnalysisIndex());
-                    
-                    manager.getSampleItems().moveAnalysis(dragKey,dropKey);
-                    
-                    //reset the dropped row data bundle
-                    //am = manager.getSampleItems().getAnalysisAt(dropKey.getSampleItemIndex());
-                    //dragItem.data = am.getBundleAt(am.count()-1);
-                    
-                    //trackingTree.deleteRow(dragItem);
-                    //trackingTree.addChildItem(dropTarget, dragItem, dropTarget.getItems().size() - 1);
-                    //trackingTree.select(dragItem);
 
-                    sampleRow = trackingTree.getData().get(getTopLevelIndex(trackingTree.getSelection()));
+                    manager.getSampleItems().moveAnalysis(dragKey, dropKey);
+
+                    // reset the dropped row data bundle
+                    // am =
+                    // manager.getSampleItems().getAnalysisAt(dropKey.getSampleItemIndex());
+                    // dragItem.data = am.getBundleAt(am.count()-1);
+
+                    // trackingTree.deleteRow(dragItem);
+                    // trackingTree.addChildItem(dropTarget, dragItem,
+                    // dropTarget.getItems().size() - 1);
+                    // trackingTree.select(dragItem);
+
+                    sampleRow = trackingTree.getData()
+                                            .get(getTopLevelIndex(trackingTree.getSelection()));
                     trackingTree.unselect(trackingTree.getSelectedRowIndex());
                     checkNode(sampleRow);
 
-                    //FIXME need to find a way to select row
-                    //trackingTree.select(dragItem);
-                }catch(Exception e) {
+                    // FIXME need to find a way to select row
+                    // trackingTree.select(dragItem);
+                } catch (Exception e) {
                     e.printStackTrace();
-                    Window.alert("Move failed: "+e.getMessage());
+                    Window.alert("Move failed: " + e.getMessage());
                 }
                 event.cancel();
             }
@@ -582,51 +590,54 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         trackingTree.addDropEnterHandler(new DropEnterHandler<TreeRow>() {
             public void onDropEnter(DropEnterEvent<TreeRow> event) {
                 TreeDataItem dropTarget, dragItem;
-                
+
                 dragItem = event.getDragObject().dragItem;
                 dropTarget = ((TreeRow)event.getDropTarget()).item;
-                
-                if(!dropTarget.leafType.equals("sampleItem") || event.getDropPosition() != DropPosition.ON || 
-                                (dropTarget.leafType.equals("sampleItem") && dropTarget.equals(dragItem.parent)))
+
+                if ( !dropTarget.leafType.equals("sampleItem") ||
+                    event.getDropPosition() != DropPosition.ON ||
+                    (dropTarget.leafType.equals("sampleItem") && dropTarget.equals(dragItem.parent)))
                     event.cancel();
             }
         });
-        
+
         trackingTree.addTarget(trackingTree);
         trackingTree.enableDrag(false);
         trackingTree.enableDrop(false);
-        
-        trackingTree.addUnselectionHandler(new UnselectionHandler<TreeDataItem>(){
-           public void onUnselection(UnselectionEvent<TreeDataItem> event) {
-             SampleDataBundle key;
-             
-             if (state == State.UPDATE && event.getProposedSelect() != null) {
-                 key = (SampleDataBundle)event.getProposedSelect().data;
-                 
-                 if (!key.getSampleManager().getSample().getId().equals(manager.getSample().getId())){
-                     event.cancel();
-                     return;
-                 }
-             }
-           
-             if(event.getProposedSelect() == null){
-                 manager = SampleManager.getInstance();
-                 showTabs(Tabs.BLANK);
-                 DataChangeEvent.fire(trackingScreen);
-             }
-           } 
+
+        trackingTree.addUnselectionHandler(new UnselectionHandler<TreeDataItem>() {
+            public void onUnselection(UnselectionEvent<TreeDataItem> event) {
+                SampleDataBundle key;
+
+                if (state == State.UPDATE && event.getProposedSelect() != null) {
+                    key = (SampleDataBundle)event.getProposedSelect().data;
+
+                    if ( !key.getSampleManager().getSample().getId().equals(
+                                                                            manager.getSample()
+                                                                                   .getId())) {
+                        event.cancel();
+                        return;
+                    }
+                }
+
+                if (event.getProposedSelect() == null) {
+                    manager = SampleManager.getInstance();
+                    showTabs(Tabs.BLANK);
+                    DataChangeEvent.fire(trackingScreen);
+                }
+            }
         });
 
         trackingTree.addSelectionHandler(new SelectionHandler<TreeDataItem>() {
             public void onSelection(SelectionEvent<TreeDataItem> event) {
                 SampleDataBundle bundle;
                 SampleManager man;
-                
+
                 bundle = (SampleDataBundle)event.getSelectedItem().data;
                 man = bundle.getSampleManager();
                 if (manager == null || !man.getSample().getId().equals(manager.getSample().getId()))
                     manager = man;
-                
+
                 DataChangeEvent.fire(trackingScreen);
                 window.clearStatus();
             }
@@ -793,18 +804,18 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         addScreenHandler(environmentalTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 TreeDataItem selectedRow;
-                
+
                 selectedRow = trackingTree.getSelection();
-                
-                if(selectedRow != null && "sample".equals(selectedRow.leafType) && 
-                                SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(manager.getSample().getDomain())){
+
+                if (selectedRow != null && "sample".equals(selectedRow.leafType) &&
+                    SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(manager.getSample().getDomain())) {
                     environmentalTab.setData(manager);
                     environmentalTab.draw();
                     showTabs(Tabs.ENVIRONMENT);
-                    
+
                     addTestButton.enable(false);
                     cancelTestButton.enable(false);
-                }else
+                } else
                     environmentalTab.setData(null);
             }
 
@@ -825,18 +836,18 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         addScreenHandler(wellTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 TreeDataItem selectedRow;
-                
+
                 selectedRow = trackingTree.getSelection();
-                
-                if(selectedRow != null && "sample".equals(selectedRow.leafType) && 
-                                SampleManager.WELL_DOMAIN_FLAG.equals(manager.getSample().getDomain())){
-                    wellTab.setData(manager);    
+
+                if (selectedRow != null && "sample".equals(selectedRow.leafType) &&
+                    SampleManager.WELL_DOMAIN_FLAG.equals(manager.getSample().getDomain())) {
+                    wellTab.setData(manager);
                     wellTab.draw();
                     showTabs(Tabs.PRIVATE_WELL);
-                    
+
                     addTestButton.enable(false);
                     cancelTestButton.enable(false);
-                }else
+                } else
                     wellTab.setData(null);
             }
 
@@ -857,18 +868,18 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         addScreenHandler(sdwisTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 TreeDataItem selectedRow;
-                
+
                 selectedRow = trackingTree.getSelection();
-                
-                if(selectedRow != null && "sample".equals(selectedRow.leafType) && 
-                                SampleManager.SDWIS_DOMAIN_FLAG.equals(manager.getSample().getDomain())){
+
+                if (selectedRow != null && "sample".equals(selectedRow.leafType) &&
+                    SampleManager.SDWIS_DOMAIN_FLAG.equals(manager.getSample().getDomain())) {
                     sdwisTab.setData(manager);
                     sdwisTab.draw();
                     showTabs(Tabs.SDWIS);
-                    
+
                     addTestButton.enable(false);
                     cancelTestButton.enable(false);
-                }else
+                } else
                     sdwisTab.setData(null);
             }
 
@@ -882,19 +893,19 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             public void onDataChange(DataChangeEvent event) {
                 TreeDataItem selectedRow;
                 SampleDataBundle bundle;
-                
+
                 selectedRow = trackingTree.getSelection();
-                
-                if(selectedRow != null && "sampleItem".equals(selectedRow.leafType)){
+
+                if (selectedRow != null && "sampleItem".equals(selectedRow.leafType)) {
                     bundle = (SampleDataBundle)selectedRow.data;
                     sampleItemTab.setData(bundle);
                     sampleItemTab.draw();
                     showTabs(Tabs.SAMPLE_ITEM);
                     addTestButton.enable(state == State.UPDATE);
                     cancelTestButton.enable(false);
-                }else
+                } else
                     sampleItemTab.setData(null);
-                
+
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -908,19 +919,19 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             public void onDataChange(DataChangeEvent event) {
                 TreeDataItem selectedRow;
                 SampleDataBundle bundle;
-                
+
                 selectedRow = trackingTree.getSelection();
-                
-                if(selectedRow != null && "result".equals(selectedRow.leafType)){
+
+                if (selectedRow != null && "result".equals(selectedRow.leafType)) {
                     bundle = (SampleDataBundle)selectedRow.data;
                     analysisTab.setData(bundle);
                     analysisTab.draw();
                     showTabs(Tabs.ANALYSIS);
                     addTestButton.enable(state == State.UPDATE);
                     cancelTestButton.enable(state == State.UPDATE);
-                }else
+                } else
                     analysisTab.setData(null);
-                    
+
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -951,8 +962,9 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     treeUtil.analysisTestChanged((Integer)event.getData(), true);
                 } else if (event.getAction() == AnalysisTab.Action.CHANGED_DONT_CHECK_PREPS) {
                     selected = trackingTree.getSelection();
-                    
-                    //we want to update the result tab instead of the analysis tab
+
+                    // we want to update the result tab instead of the analysis
+                    // tab
                     treeUtil.updateAnalysisRow(selected.parent);
                     trackingTree.refreshRow(selected.parent);
                 }
@@ -964,18 +976,18 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             public void onDataChange(DataChangeEvent event) {
                 TreeDataItem selectedRow;
                 SampleDataBundle bundle;
-                
+
                 selectedRow = trackingTree.getSelection();
-                
-                if(selectedRow != null && "analysis".equals(selectedRow.leafType)){
+
+                if (selectedRow != null && "analysis".equals(selectedRow.leafType)) {
                     bundle = (SampleDataBundle)selectedRow.data;
-                    
+
                     testResultsTab.setData(bundle);
                     testResultsTab.draw();
                     showTabs(Tabs.TEST_RESULT);
                     addTestButton.enable(state == State.UPDATE);
                     cancelTestButton.enable(state == State.UPDATE);
-                }else
+                } else
                     testResultsTab.setData(null);
             }
 
@@ -990,21 +1002,21 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             public void onDataChange(DataChangeEvent event) {
                 TreeDataItem selectedRow;
                 SampleDataBundle bundle;
-                
+
                 selectedRow = trackingTree.getSelection();
                 bundle = null;
-                
-                if(selectedRow != null)
+
+                if (selectedRow != null)
                     bundle = (SampleDataBundle)selectedRow.data;
-                
-                if(selectedRow != null && bundle != null && "note".equals(selectedRow.leafType) && 
-                                SampleDataBundle.Type.ANALYSIS.equals(bundle.getType())){
+
+                if (selectedRow != null && bundle != null && "note".equals(selectedRow.leafType) &&
+                    SampleDataBundle.Type.ANALYSIS.equals(bundle.getType())) {
                     analysisNotesTab.setData(bundle);
                     analysisNotesTab.draw();
                     showTabs(Tabs.ANALYSIS_NOTES);
                     addTestButton.enable(state == State.UPDATE);
                     cancelTestButton.enable(state == State.UPDATE);
-                }else
+                } else
                     analysisNotesTab.setData(null);
             }
 
@@ -1020,21 +1032,21 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             public void onDataChange(DataChangeEvent event) {
                 TreeDataItem selectedRow;
                 SampleDataBundle bundle;
-                
+
                 selectedRow = trackingTree.getSelection();
                 bundle = null;
-                
-                if(selectedRow != null)
+
+                if (selectedRow != null)
                     bundle = (SampleDataBundle)selectedRow.data;
-                
-                if(selectedRow != null && bundle != null && "note".equals(selectedRow.leafType) && 
-                                SampleDataBundle.Type.SAMPLE.equals(bundle.getType())){
+
+                if (selectedRow != null && bundle != null && "note".equals(selectedRow.leafType) &&
+                    SampleDataBundle.Type.SAMPLE.equals(bundle.getType())) {
                     sampleNotesTab.setManager(manager);
                     sampleNotesTab.draw();
                     showTabs(Tabs.SAMPLE_NOTES);
                     addTestButton.enable(false);
                     cancelTestButton.enable(false);
-                }else
+                } else
                     sampleNotesTab.setManager(manager);
             }
 
@@ -1048,19 +1060,21 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             public void onDataChange(DataChangeEvent event) {
                 TreeDataItem selectedRow;
                 SampleDataBundle bundle;
-                
+
                 selectedRow = trackingTree.getSelection();
-                
-                if(selectedRow != null && "storage".equals(selectedRow.leafType)){
+
+                if (selectedRow != null && "storage".equals(selectedRow.leafType)) {
                     bundle = (SampleDataBundle)selectedRow.data;
-                    
+
                     storageTab.setData(bundle);
                     storageTab.draw();
                     showTabs(Tabs.STORAGE);
-                    
-                    addTestButton.enable(state == State.UPDATE && "analysis".equals(selectedRow.parent.leafType));
-                    cancelTestButton.enable(state == State.UPDATE && "analysis".equals(selectedRow.parent.leafType));
-                }else
+
+                    addTestButton.enable(state == State.UPDATE &&
+                                         "analysis".equals(selectedRow.parent.leafType));
+                    cancelTestButton.enable(state == State.UPDATE &&
+                                            "analysis".equals(selectedRow.parent.leafType));
+                } else
                     storageTab.setData(null);
             }
 
@@ -1074,21 +1088,23 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             public void onDataChange(DataChangeEvent event) {
                 TreeDataItem selectedRow;
                 SampleDataBundle bundle;
-                
+
                 selectedRow = trackingTree.getSelection();
-                
-                if(selectedRow != null && "qaevent".equals(selectedRow.leafType)){
+
+                if (selectedRow != null && "qaevent".equals(selectedRow.leafType)) {
                     bundle = (SampleDataBundle)selectedRow.data;
-                    
+
                     if (SampleDataBundle.Type.ANALYSIS.equals(bundle.getType()))
                         qaEventsTab.setData(bundle);
-                    
+
                     qaEventsTab.setManager(manager);
                     qaEventsTab.draw();
                     showTabs(Tabs.QA_EVENTS);
-                    addTestButton.enable(state == State.UPDATE && "analysis".equals(selectedRow.parent.leafType));
-                    cancelTestButton.enable(state == State.UPDATE && "analysis".equals(selectedRow.parent.leafType));
-                }else{
+                    addTestButton.enable(state == State.UPDATE &&
+                                         "analysis".equals(selectedRow.parent.leafType));
+                    cancelTestButton.enable(state == State.UPDATE &&
+                                            "analysis".equals(selectedRow.parent.leafType));
+                } else {
                     qaEventsTab.setData(null);
                     qaEventsTab.setManager(manager);
                 }
@@ -1103,16 +1119,16 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         addScreenHandler(auxDataTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 TreeDataItem selectedRow;
-                
+
                 selectedRow = trackingTree.getSelection();
-                
-                if(selectedRow != null && "auxdata".equals(selectedRow.leafType)){
+
+                if (selectedRow != null && "auxdata".equals(selectedRow.leafType)) {
                     auxDataTab.setManager(manager);
                     auxDataTab.draw();
                     showTabs(Tabs.AUX_DATA);
                     addTestButton.enable(false);
                     cancelTestButton.enable(false);
-                }else
+                } else
                     auxDataTab.setManager(manager);
             }
 
@@ -1122,31 +1138,32 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         });
 
         treeUtil = new SampleTreeUtility(window, trackingTree, this) {
-            public TreeDataItem addNewTreeRowFromBundle(TreeDataItem parentRow, SampleDataBundle bundle) {
+            public TreeDataItem addNewTreeRowFromBundle(TreeDataItem parentRow,
+                                                        SampleDataBundle bundle) {
                 TreeDataItem results, analysis, storage, qaevent, note;
 
                 results = new TreeDataItem(2);
                 results.leafType = "analysis";
                 results.data = bundle;
-                
+
                 analysis = new TreeDataItem();
                 analysis.leafType = "result";
                 analysis.data = bundle;
                 analysis.cells.add(new TableDataCell(consts.get("analysis")));
                 results.addItem(analysis);
-                
+
                 note = new TreeDataItem();
                 note.leafType = "note";
                 note.data = bundle;
                 note.cells.add(new TableDataCell(consts.get("notes")));
                 results.addItem(note);
-                
+
                 storage = new TreeDataItem();
                 storage.leafType = "storage";
                 storage.data = bundle;
                 storage.cells.add(new TableDataCell(consts.get("storage")));
                 results.addItem(storage);
-                
+
                 qaevent = new TreeDataItem();
                 qaevent.leafType = "qaevent";
                 qaevent.data = bundle;
@@ -1156,7 +1173,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
                 return results;
             }
-            
+
             public void selectNewRowFromBundle(TreeDataItem row) {
                 trackingTree.select(row.getFirstChild());
                 trackingTree.scrollToVisible();
@@ -1188,7 +1205,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             analysisLoggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
             sampleLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
             sampleErrorStatusId = DictionaryCache.getIdFromSystemName("sample_error");
-
+            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -1217,7 +1234,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         manager = SampleManager.getInstance();
         trackingTree.clear();
         tab = null;
-        
+
         manager.getSample().setDomain(domain);
         if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(domain))
             tab = Tabs.ENVIRONMENT;
@@ -1252,25 +1269,29 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     }
 
     protected void update() {
-        // FIXME fix canEdit
-        
-        if(trackingTree.getSelectedRow() == -1){
+        if (trackingTree.getSelectedRow() == -1) {
             window.setError(consts.get("selectRecordToUpdate"));
             return;
         }
-        
+
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
             manager = manager.fetchForUpdate();
             treeUtil.setManager(manager);
             setState(State.UPDATE);
+            
+            if (!canEdit()){
+                abort();
+                window.setError(consts.get("cantUpdateReleasedException"));
+                return;
+            }
+            
             DataChangeEvent.fire(this);
             setFocus(collectedDate);
             window.clearStatus();
             if (trackingTree.getSelection() != null)
                 SelectionEvent.fire(trackingTree, trackingTree.getSelection());
-
         } catch (EntityLockedException e) {
             window.clearStatus();
             Window.alert(e.getMessage());
@@ -1285,49 +1306,49 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         TreeDataItem sampleItem;
         int analysisIndex;
         TreeDataItem results, analysis, storage, qaevent, note;
-        
+
         sampleItem = trackingTree.getSelection();
-        while(!"sampleItem".equals(sampleItem.leafType))
+        while ( !"sampleItem".equals(sampleItem.leafType))
             sampleItem = sampleItem.parent;
-        
+
         bundle = (SampleDataBundle)sampleItem.data;
-         
+
         try {
             anMan = manager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
             analysisIndex = anMan.addAnalysis();
             analysisBundle = anMan.getBundleAt(analysisIndex);
-            
+
             results = new TreeDataItem();
             results.open = true;
             results.leafType = "analysis";
             results.data = analysisBundle;
             results.cells.add(new TableDataCell("<> : <>"));
-            results.cells.add(new TableDataCell(DictionaryCache.getEntryFromId(analysisLoggedInId).getEntry()));
-            
+            results.cells.add(new TableDataCell(DictionaryCache.getEntryFromId(analysisLoggedInId)
+                                                               .getEntry()));
+
             analysis = new TreeDataItem();
             analysis.leafType = "result";
             analysis.data = analysisBundle;
             analysis.cells.add(new TableDataCell(consts.get("analysis")));
             results.addItem(analysis);
-            
+
             note = new TreeDataItem();
             note.leafType = "note";
             note.data = analysisBundle;
             note.cells.add(new TableDataCell(consts.get("notes")));
             results.addItem(note);
-            
+
             storage = new TreeDataItem();
             storage.leafType = "storage";
             storage.data = analysisBundle;
             storage.cells.add(new TableDataCell(consts.get("storage")));
             results.addItem(storage);
-            
+
             qaevent = new TreeDataItem();
             qaevent.leafType = "qaevent";
             qaevent.data = analysisBundle;
             qaevent.cells.add(new TableDataCell(consts.get("qaEvents")));
             results.addItem(qaevent);
-            
 
             trackingTree.addChildItem(sampleItem, results, analysisIndex);
             trackingTree.select(analysis);
@@ -1455,24 +1476,24 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
     protected void previousPage() {
         int page;
-        
+
         page = query.getPage();
-        
-        if(page == 0){
+
+        if (page == 0) {
             window.clearStatus();
             return;
         }
-        
-        query.setPage(page-1);
+
+        query.setPage(page - 1);
         executeQuery(query);
     }
 
     protected void nextPage() {
         int page;
-        
+
         page = query.getPage();
-        
-        query.setPage(page+1);
+
+        query.setPage(page + 1);
         executeQuery(query);
     }
 
@@ -1542,14 +1563,14 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
             public void onFailure(Throwable error) {
                 int page;
-                
+
                 if (error instanceof NotFoundException) {
                     window.setDone(consts.get("noRecordsFound"));
                     trackingTree.clear();
                     setState(State.DEFAULT);
                 } else if (error instanceof LastPageException) {
                     page = query.getPage();
-                    query.setPage(page-1);
+                    query.setPage(page - 1);
                     window.setError(consts.get("noMoreRecordInDir"));
                 } else {
                     trackingTree.clear();
@@ -1590,7 +1611,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         }
         return model;
     }
-    
+
     private void showTabs(Tabs... tabs) {
         List<Tabs> tabList = Arrays.asList(tabs);
 
@@ -1621,46 +1642,50 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             for (int i = 0; i < siMan.count(); i++ ) {
                 itemDO = siMan.getSampleItemAt(i);
                 siBundle = siMan.getBundleAt(i);
-                
+
                 item = new TreeDataItem();
                 item.open = true;
                 item.leafType = "sampleItem";
                 item.key = itemDO.getId();
                 item.data = siBundle;
-                item.cells.add(new TableDataCell(itemDO.getItemSequence() +" - " +treeUtil.formatTreeString(itemDO.getContainer())));
+                item.cells.add(new TableDataCell(itemDO.getItemSequence() + " - " +
+                                                 treeUtil.formatTreeString(itemDO.getContainer())));
                 item.cells.add(new TableDataCell(itemDO.getTypeOfSample()));
-                
+
                 anMan = sm.getSampleItems().getAnalysisAt(i);
                 if (anMan != null) {
                     for (int j = 0; j < anMan.count(); j++ ) {
                         anDO = anMan.getAnalysisAt(j);
                         anBundle = anMan.getBundleAt(j);
-                        
+
                         results = new TreeDataItem();
                         results.leafType = "analysis";
                         results.key = anDO.getId();
                         results.data = anBundle;
-                        results.cells.add(new TableDataCell(treeUtil.formatTreeString(anDO.getTestName()) +" : " +treeUtil.formatTreeString(anDO.getMethodName())));
+                        results.cells.add(new TableDataCell(
+                                                            treeUtil.formatTreeString(anDO.getTestName()) +
+                                                                            " : " +
+                                                                            treeUtil.formatTreeString(anDO.getMethodName())));
                         results.cells.add(new TableDataCell(anDO.getStatusId()));
-                        
+
                         analysis = new TreeDataItem();
                         analysis.leafType = "result";
                         analysis.data = anBundle;
                         analysis.cells.add(new TableDataCell(consts.get("analysis")));
                         results.addItem(analysis);
-                        
+
                         storage = new TreeDataItem();
                         storage.leafType = "storage";
                         storage.data = anBundle;
                         storage.cells.add(new TableDataCell(consts.get("storage")));
-                        
+
                         results.addItem(storage);
                         qaevent = new TreeDataItem();
                         qaevent.leafType = "qaevent";
                         qaevent.data = anBundle;
                         qaevent.cells.add(new TableDataCell(consts.get("qaEvents")));
                         results.addItem(qaevent);
-                        
+
                         note = new TreeDataItem();
                         note.leafType = "note";
                         note.data = anBundle;
@@ -1681,13 +1706,13 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             note.data = sBundle;
             note.cells.add(new TableDataCell(consts.get("notes")));
             row.addItem(note);
-            
+
             qaevent = new TreeDataItem();
             qaevent.leafType = "qaevent";
             qaevent.data = sBundle;
             qaevent.cells.add(new TableDataCell(consts.get("qaEvents")));
             row.addItem(qaevent);
-            
+
             aux = new TreeDataItem();
             aux.leafType = "auxdata";
             aux.data = sBundle;
@@ -1749,63 +1774,66 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             sdwisTab.showErrors(errors);
     }
     
+    private boolean canEdit() {
+        return ( !sampleReleasedId.equals(manager.getSample().getStatusId()));
+    }
+
     private void checkNode(TreeDataItem item) {
         ArrayList<SampleDataBundle> openItems;
-        
-        if(!item.open){
+
+        if ( !item.open) {
             item.getItems().clear();
             item.checkForChildren(true);
             return;
         }
-        
+
         openItems = new ArrayList<SampleDataBundle>();
-        for(TreeDataItem child : item.getItems()) {
-            checkChildOpen(child,openItems);
+        for (TreeDataItem child : item.getItems()) {
+            checkChildOpen(child, openItems);
         }
-        item.getItems().clear();        
+        item.getItems().clear();
         try {
-            loadSampleItem(manager,item);
-            while(openItems.size() > 0) {
+            loadSampleItem(manager, item);
+            while (openItems.size() > 0) {
                 SampleDataBundle openKey = openItems.remove(0);
-                searchForKey(openKey,item);
+                searchForKey(openKey, item);
             }
             trackingTree.refreshRow(item);
-        }catch(Exception e) {
-            Window.alert("checkNode: "+e.getMessage());
+        } catch (Exception e) {
+            Window.alert("checkNode: " + e.getMessage());
         }
     }
-    
+
     private boolean searchForKey(SampleDataBundle bundle, TreeDataItem item) {
-        if(bundle.getType() == ((SampleDataBundle)item.data).getType() &&
-           bundle.getSampleItemIndex() == ((SampleDataBundle)item.data).getSampleItemIndex() &&
-           bundle.getAnalysisIndex() == ((SampleDataBundle)item.data).getAnalysisIndex()){
-            if(!item.open)
+        if (bundle.getType() == ((SampleDataBundle)item.data).getType() &&
+            bundle.getSampleItemIndex() == ((SampleDataBundle)item.data).getSampleItemIndex() &&
+            bundle.getAnalysisIndex() == ((SampleDataBundle)item.data).getAnalysisIndex()) {
+            if ( !item.open)
                 item.toggle();
             return true;
         }
-        for(TreeDataItem child : item.getItems()) {
-            if(searchForKey(bundle,child))
+        for (TreeDataItem child : item.getItems()) {
+            if (searchForKey(bundle, child))
                 break;
         }
         return false;
     }
-    
+
     private void checkChildOpen(TreeDataItem item, ArrayList<SampleDataBundle> openItems) {
-        if(item.open) {
+        if (item.open) {
             openItems.add((SampleDataBundle)item.data);
-            for(TreeDataItem child : item.getItems()) {
-                checkChildOpen(child,openItems);
+            for (TreeDataItem child : item.getItems()) {
+                checkChildOpen(child, openItems);
             }
         }
     }
-    
+
     private int getTopLevelIndex(TreeDataItem node) {
-        if(node.parent != null)
+        if (node.parent != null)
             return getTopLevelIndex(node.parent);
 
         return trackingTree.getData().indexOf(node);
     }
-
 
     public HandlerRegistration addActionHandler(ActionHandler handler) {
         return addHandler(handler, ActionEvent.getType());

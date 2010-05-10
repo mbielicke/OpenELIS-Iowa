@@ -232,12 +232,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
 
         addButton = (AppButton)def.getWidget("add");
         addScreenHandler(addButton, new ScreenEventHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(state) &&
-                    security.hasAddPermission())
-                    addButton.enable(canEdit());
-            }
-
             public void onClick(ClickEvent event) {
                 add();
             }
@@ -257,11 +251,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 update();
-            }
-
-            public void onDataChange(DataChangeEvent event) {
-                if (EnumSet.of(State.DISPLAY).contains(state) && security.hasUpdatePermission())
-                    updateButton.enable(canEdit());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -485,9 +474,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 accessionNumber.enable(EnumSet.of(State.ADD, State.QUERY)
                                        .contains(event.getState()));
                 accessionNumber.setQueryMode(event.getState() == State.QUERY);
-
-                if (EnumSet.of(State.ADD, State.QUERY).contains(event.getState()))
-                    setFocus(accessionNumber);
             }
         });
 
@@ -529,9 +515,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             public void onStateChange(StateChangeEvent<State> event) {
                 orderNumber.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY).contains(event.getState()));
                 orderNumber.setQueryMode(event.getState() == State.QUERY);
-                
-                if (EnumSet.of(State.UPDATE).contains(event.getState()))
-                    setFocus(orderNumber);
             }
         });
 
@@ -874,6 +857,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         qaEventsTab.draw();
         auxDataTab.draw();
 
+        setFocus(accessionNumber);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
 
@@ -895,6 +879,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
 
         setState(Screen.State.ADD);
         DataChangeEvent.fire(this);
+        setFocus(accessionNumber);
         window.setDone(consts.get("enterInformationPressCommit"));
     }
 
@@ -903,9 +888,16 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
 
         try {
             manager = manager.fetchForUpdate();
-
             setState(State.UPDATE);
+            
+            if (!canEdit()){
+                abort();
+                window.setError(consts.get("cantUpdateReleasedException"));
+                return;
+            }
+            
             DataChangeEvent.fire(this);
+            setFocus(orderNumber);
             window.clearStatus();
 
         } catch (EntityLockedException e) {
@@ -1189,7 +1181,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
     private boolean canEdit() {
         return ( !sampleReleasedId.equals(manager.getSample().getStatusId()));
     }
-
+    
     public boolean validate() {
         return super.validate() & storageTab.validate();
     }
