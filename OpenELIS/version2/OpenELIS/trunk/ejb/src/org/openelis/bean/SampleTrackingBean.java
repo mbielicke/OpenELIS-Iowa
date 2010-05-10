@@ -18,7 +18,7 @@ import org.openelis.remote.SampleTrackingRemote;
 @Stateless
 
 @SecurityDomain("openelis")
-@RolesAllowed("sample-select")
+@RolesAllowed("sampletracking-select")
 public class SampleTrackingBean implements SampleTrackingRemote {
 
 	@PersistenceContext(name = "openelis")
@@ -35,7 +35,7 @@ public class SampleTrackingBean implements SampleTrackingRemote {
 		list = sb.query(fields, first, max);
 		managers = new ArrayList<SampleManager>(max);
 		
-		for(int i = first; i < list.size(); i++) {
+		for(int i = 0; i < list.size(); i++) {
 			managers.add(SampleManager.fetchWithItemsAnalyses(list.get(i).getId()));
 		}
 
