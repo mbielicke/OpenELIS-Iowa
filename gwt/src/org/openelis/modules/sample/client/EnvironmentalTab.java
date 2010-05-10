@@ -76,6 +76,7 @@ public class EnvironmentalTab extends Screen {
     protected ScreenService                projectService;
 
     private SampleManager                  manager;
+    private SampleEnvironmentalManager     envManager;
 
     protected boolean                      loaded = false;
 
@@ -83,18 +84,22 @@ public class EnvironmentalTab extends Screen {
         setDefinition(def);
         setWindow(window);
 
-        orgService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
-        projectService = new ScreenService("controller?service=org.openelis.modules.project.server.ProjectService");
+        orgService = new ScreenService(
+                                       "controller?service=org.openelis.modules.organization.server.OrganizationService");
+        projectService = new ScreenService(
+                                           "controller?service=org.openelis.modules.project.server.ProjectService");
 
         initialize();
     }
-    
+
     public EnvironmentalTab(ScreenWindow window) throws Exception {
         drawScreen((ScreenDefInt)GWT.create(EnvironmentalTabDef.class));
         setWindow(window);
-        
-        orgService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
-        projectService = new ScreenService("controller?service=org.openelis.modules.project.server.ProjectService");
+
+        orgService = new ScreenService(
+                                       "controller?service=org.openelis.modules.organization.server.OrganizationService");
+        projectService = new ScreenService(
+                                           "controller?service=org.openelis.modules.project.server.ProjectService");
 
         initialize();
     }
@@ -103,11 +108,11 @@ public class EnvironmentalTab extends Screen {
         isHazardous = (CheckBox)def.getWidget(SampleMeta.getEnvIsHazardous());
         addScreenHandler(isHazardous, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                isHazardous.setValue(getEnvManager().getEnvironmental().getIsHazardous());
+                isHazardous.setValue(getManager().getEnvironmental().getIsHazardous());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getEnvManager().getEnvironmental().setIsHazardous(event.getValue());
+                getManager().getEnvironmental().setIsHazardous(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -120,11 +125,11 @@ public class EnvironmentalTab extends Screen {
         priority = (TextBox<Integer>)def.getWidget(SampleMeta.getEnvPriority());
         addScreenHandler(priority, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                priority.setValue(getEnvManager().getEnvironmental().getPriority());
+                priority.setValue(getManager().getEnvironmental().getPriority());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                getEnvManager().getEnvironmental().setPriority(event.getValue());
+                getManager().getEnvironmental().setPriority(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -137,11 +142,11 @@ public class EnvironmentalTab extends Screen {
         description = (TextBox)def.getWidget(SampleMeta.getEnvDescription());
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                description.setValue(getEnvManager().getEnvironmental().getDescription());
+                description.setValue(getManager().getEnvironmental().getDescription());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getEnvManager().getEnvironmental().setDescription(event.getValue());
+                getManager().getEnvironmental().setDescription(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -154,11 +159,11 @@ public class EnvironmentalTab extends Screen {
         collector = (TextBox)def.getWidget(SampleMeta.getEnvCollector());
         addScreenHandler(collector, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                collector.setValue(getEnvManager().getEnvironmental().getCollector());
+                collector.setValue(getManager().getEnvironmental().getCollector());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getEnvManager().getEnvironmental().setCollector(event.getValue());
+                getManager().getEnvironmental().setCollector(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -171,11 +176,11 @@ public class EnvironmentalTab extends Screen {
         collectorPhone = (TextBox)def.getWidget(SampleMeta.getEnvCollectorPhone());
         addScreenHandler(collectorPhone, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                collectorPhone.setValue(getEnvManager().getEnvironmental().getCollectorPhone());
+                collectorPhone.setValue(getManager().getEnvironmental().getCollectorPhone());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getEnvManager().getEnvironmental().setCollectorPhone(event.getValue());
+                getManager().getEnvironmental().setCollectorPhone(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -188,11 +193,11 @@ public class EnvironmentalTab extends Screen {
         location = (TextBox)def.getWidget(SampleMeta.getEnvLocation());
         addScreenHandler(location, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                location.setValue(getEnvManager().getEnvironmental().getLocation());
+                location.setValue(getManager().getEnvironmental().getLocation());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getEnvManager().getEnvironmental().setLocation(event.getValue());
+                getManager().getEnvironmental().setLocation(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -456,29 +461,30 @@ public class EnvironmentalTab extends Screen {
     public ArrayList<QueryData> getQueryFields() {
         QueryData domain;
         ArrayList<QueryData> fields;
-        
+
         fields = super.getQueryFields();
-        
-        if(fields.size() > 0){
+
+        if (fields.size() > 0) {
             domain = new QueryData();
             domain.key = SampleMeta.getDomain();
             domain.query = SampleManager.ENVIRONMENTAL_DOMAIN_FLAG;
             domain.type = QueryData.Type.STRING;
             fields.add(domain);
         }
-        
+
         return fields;
     }
 
     public void setData(SampleManager manager) {
         this.manager = manager;
+        envManager = null;
         loaded = false;
     }
 
     public void draw() {
         if ( !loaded)
             DataChangeEvent.fire(this);
-    
+
         loaded = true;
     }
 
@@ -598,26 +604,23 @@ public class EnvironmentalTab extends Screen {
 
             locationScreen.setScreenState(state);
             locationScreen.setEnvDO(envDO);
-
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert("error: " + e.getMessage());
             return;
         }
     }
-    
-    private SampleEnvironmentalManager getEnvManager() {
-        SampleEnvironmentalManager envManager;
 
-        try {
-            envManager = (SampleEnvironmentalManager)manager.getDomainManager();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Window.alert(e.getMessage());
-            envManager = SampleEnvironmentalManager.getInstance();
-            manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
+    private SampleEnvironmentalManager getManager() {
+        if (envManager == null) {
+            try {
+                envManager = (SampleEnvironmentalManager)manager.getDomainManager();
+            } catch (Exception e) {
+                envManager = SampleEnvironmentalManager.getInstance();
+                manager = SampleManager.getInstance();
+                manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
+            }
         }
-
         return envManager;
     }
 }

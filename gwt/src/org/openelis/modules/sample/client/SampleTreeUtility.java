@@ -71,11 +71,22 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
         itemsTree.select(newRow);
     }
 
+    public void cancelTestClick() {
+        TreeDataItem selectedTreeRow;
+
+        selectedTreeRow = itemsTree.getSelection();
+            
+        if(!"analysis".equals(selectedTreeRow.leafType))
+            selectedTreeRow = selectedTreeRow.parent;
+            
+        assert "analysis".equals(selectedTreeRow.leafType) : "can't find analysis tree row";
+        
+        itemsTree.select(selectedTreeRow);
+        onRemoveRowButtonClick();
+    }
+    
     public void onRemoveRowButtonClick() {
         final TreeDataItem selectedTreeRow;
-        SampleDataBundle bundle;
-        AnalysisViewDO anDO;
-        // int sampleItemIndex = -1;
 
         try {
             selectedTreeRow = itemsTree.getSelection();
@@ -116,11 +127,24 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
         TreeDataItem itemRow, newRow;
 
         itemRow = itemsTree.getSelection().parent;
+        
+        //try once to get an item row
+        if(!"sampleItem".equals(itemRow.leafType))
+            itemRow = itemRow.parent;
+        
+        assert "sampleItem".equals(itemRow.leafType) : "can't find item tree row";
+        
         newRow = null;
         itemsTree.fireEvents(false);
         for (int i = 0; i < bundles.size(); i++ ) {
             if (i == 0) {
                 newRow = itemsTree.getSelection();
+                
+                if(!"analysis".equals(newRow.leafType))
+                    newRow = newRow.parent;
+                
+                assert "analysis".equals(newRow.leafType) : "can't find analysis tree row";
+                
                 newRow.data = bundles.get(i);
             } else 
                 newRow = addNewTreeRowFromBundle(itemRow, bundles.get(i));
@@ -131,7 +155,7 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
 
         itemsTree.fireEvents(true);
         if (newRow != null)
-            itemsTree.select(newRow);
+            selectNewRowFromBundle(newRow);
         else if(bundles.size() == 0)
             ActionEvent.fire(this, Action.REFRESH_TABS, itemsTree.getSelection().data);
         
@@ -144,34 +168,55 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
         AnalysisManager anMan;
         AnalysisViewDO anDO;
         Integer analysisId;
+        int itemIndex, i;
         
         try {
             // grab the current analysis id
             bundle = (SampleDataBundle)selectedRow.data;
-            analysisId = manager.getSampleItems()
-                          .getAnalysisAt(bundle.getSampleItemIndex())
-                          .getAnalysisAt(bundle.getAnalysisIndex()).getId();
+            analysisId = manager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).getAnalysisAt(bundle.getAnalysisIndex()).getId();
             
             if ("analysis".equals(selectedRow.leafType))
                 selectedRow = selectedRow.parent;
-
+            
+            itemIndex = 0;
+            //get the first sample item row
+            if(selectedRow.parent == null)
+                selectedRow = itemsTree.getData().get(itemIndex);
+            else{
+                while(selectedRow.getPreviousSibling() != null)
+                    selectedRow = selectedRow.getPreviousSibling();
+            }
+            
             anMan = null;
             bundle = null;
-            // iterate through all the children
-            for (int i = 0; i < selectedRow.getItems().size(); i++ ) {
-                treeItem = selectedRow.getItem(i);
-                bundle = (SampleDataBundle)treeItem.data;
-
-                if (anMan == null)
-                    anMan = manager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
-
-                anDO = anMan.getAnalysisAt(bundle.getAnalysisIndex());
-
-                // this test points to the prep, we need to clean it up
-                if (analysisId.equals(anDO.getPreAnalysisId())){
-                    anMan.unlinkPrepTest(bundle.getAnalysisIndex());
-                    updateAnalysisRow(treeItem);
+            while(selectedRow != null && "sampleItem".equals(selectedRow.leafType)){
+                // iterate through all the children
+                for (i = 0; i < selectedRow.getItems().size(); i++ ) {
+                    treeItem = selectedRow.getItem(i);
+                    bundle = (SampleDataBundle)treeItem.data;
+    
+                    if(SampleDataBundle.Type.ANALYSIS.equals(bundle.getType())){
+                        if (i == 0)
+                            anMan = manager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
+        
+                        anDO = anMan.getAnalysisAt(bundle.getAnalysisIndex());
+        
+                        // this test points to the prep, we need to clean it up
+                        if (analysisId.equals(anDO.getPreAnalysisId())){
+                            anMan.unlinkPrepTest(bundle.getAnalysisIndex());
+                            updateAnalysisRow(treeItem);
+                            itemsTree.refreshRow(treeItem);
+                        }
+                    }
                 }
+                if(selectedRow.parent == null){
+                    itemIndex++;
+                    if(itemIndex < itemsTree.getData().size())
+                        selectedRow = itemsTree.getData().get(itemIndex);
+                    else
+                        selectedRow = null;
+                }else
+                    selectedRow = selectedRow.getNextSibling();
             }
         } catch (Exception e) {
             Window.alert("cleanupTestsWithPrep: " + e.getMessage());
@@ -180,6 +225,7 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
     
     public void analysisTestChanged(Integer id, boolean panel) {
         SampleDataBundle analysisBundle;
+        TreeDataItem selectedRow;
         TestPrepUtility.Type type;
 
         if (testLookup == null) {
@@ -199,9 +245,17 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
             type = TestPrepUtility.Type.TEST;
 
         testLookup.setManager(manager);
-        analysisBundle = (SampleDataBundle)itemsTree.getSelection().data;
-
+        
         try {
+            selectedRow = itemsTree.getSelection();
+            
+            if(!"analysis".equals(selectedRow.leafType)){
+                selectedRow = selectedRow.parent;
+                
+                assert "analysis".equals(selectedRow.leafType) : "can't find analysis tree row";
+            }
+            
+            analysisBundle = (SampleDataBundle)selectedRow.data;
             testLookup.lookup(analysisBundle, type, id);
 
         } catch (Exception e) {
@@ -315,6 +369,14 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
      * to the tree that the test prep util created.
      */
     public abstract TreeDataItem addNewTreeRowFromBundle(TreeDataItem parentRow, SampleDataBundle bundle);
+    
+    /**
+     * This method is called when the test prep util is done and the screen
+     * needs to rebuild the tree. This method is called to select the new 
+     * analysis row.  It is necessary because the tree structure is different between
+     * the login screens and the tracking screen
+     */
+    public abstract void selectNewRowFromBundle(TreeDataItem row);
 
     public HandlerRegistration addActionHandler(ActionHandler handler) {
         return addHandler(handler, ActionEvent.getType());
