@@ -700,7 +700,7 @@ public class OrganizationScreen extends Screen {
         window.clearStatus();
     }
 
-    public void commit() {
+    protected void commit() {
         setFocus(null);
 
         if ( !validate()) {
