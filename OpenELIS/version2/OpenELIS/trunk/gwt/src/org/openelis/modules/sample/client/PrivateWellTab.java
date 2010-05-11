@@ -36,7 +36,10 @@ import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.Util;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -51,10 +54,12 @@ import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.HasField;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SamplePrivateWellManager;
 import org.openelis.meta.SampleMeta;
@@ -892,6 +897,27 @@ public class PrivateWellTab extends Screen {
 
         addressState.setModel(model);
         locationAddrState.setModel(model);
+    }
+    
+    public void showErrors(ValidationErrorsList errors) {
+        TableFieldErrorException tableE;
+        FieldErrorException fieldE;
+        TableWidget tableWid;
+        HasField field;
+
+        for (Exception ex : errors.getErrorList()) {
+            if (ex instanceof TableFieldErrorException) {
+                tableE = (TableFieldErrorException) ex;
+                tableWid = (TableWidget)def.getWidget(tableE.getTableKey());
+                tableWid.setCellException(tableE.getRowIndex(), tableE.getFieldName(), tableE);
+            } else if (ex instanceof FieldErrorException) {
+                fieldE = (FieldErrorException)ex;
+                field = (HasField)def.getWidget(fieldE.getFieldName());
+                
+                if(field != null)
+                    field.addException(fieldE);
+            }
+        }
     }
 
     private SamplePrivateWellManager getManager() {
