@@ -56,13 +56,9 @@ public class SamplePrivateWellDO extends DataObject {
         setCollector(collector);
         setWellNumber(wellNumber);
         
-        locationAddressDO = new AddressDO();
-        locationAddressDO.setId(locationAddressId);
-        locationAddressDO.setMultipleUnit(locationMultipleUnit);
-        locationAddressDO.setStreetAddress(locationStreetAddress);
-        locationAddressDO.setCity(locationCity);
-        locationAddressDO.setState(locationState);
-        locationAddressDO.setZipCode(locationZipCode);
+        locationAddressDO = new AddressDO(locationAddressId, locationMultipleUnit, locationStreetAddress, 
+                                          locationCity, locationState, locationZipCode, null, null, null,
+                                          null, null, null);
         _changed = false;
     }
     
