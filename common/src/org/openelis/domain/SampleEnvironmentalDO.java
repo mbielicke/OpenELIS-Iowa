@@ -59,13 +59,8 @@ public class SampleEnvironmentalDO extends DataObject {
         setLocation(location);
         setLocationAddressId(locationAddressId);
 
-        locationAddressDO.setId(locationAddressId);
-        locationAddressDO.setMultipleUnit(multipleUnit);
-        locationAddressDO.setStreetAddress(streetAddress);
-        locationAddressDO.setCity(city);
-        locationAddressDO.setState(state);
-        locationAddressDO.setZipCode(zipCode);
-        locationAddressDO.setCountry(country);
+        locationAddressDO = new AddressDO(locationAddressId, multipleUnit, streetAddress, city,
+                                          state, zipCode, null, null, null, null, null, country);
         _changed = false;
     }
 
