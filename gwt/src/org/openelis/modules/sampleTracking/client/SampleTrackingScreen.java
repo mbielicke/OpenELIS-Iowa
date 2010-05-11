@@ -97,6 +97,7 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
@@ -544,11 +545,9 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
         trackingTree.addBeforeDropHandler(new BeforeDropHandler<TreeRow>() {
             public void onBeforeDrop(BeforeDropEvent<TreeRow> event) {
-                TreeDataItem sampleRow;
-                AnalysisViewDO anDO;
                 AnalysisManager am;
                 TreeDataItem dragItem, dropTarget;
-                SampleDataBundle dragKey, dropKey;
+                SampleDataBundle dragKey, dropKey, newBundle;
 
                 dragItem = event.getDragObject().dragItem;
                 dragKey = (SampleDataBundle)dragItem.data;
@@ -556,47 +555,44 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 dropKey = (SampleDataBundle)dropTarget.data;
 
                 try {
-                    anDO = manager.getSampleItems()
-                                  .getAnalysisAt(dragKey.getSampleItemIndex())
-                                  .getAnalysisAt(dragKey.getAnalysisIndex());
-
                     manager.getSampleItems().moveAnalysis(dragKey, dropKey);
 
-                    // reset the dropped row data bundle
-                    // am =
-                    // manager.getSampleItems().getAnalysisAt(dropKey.getSampleItemIndex());
-                    // dragItem.data = am.getBundleAt(am.count()-1);
-
-                    // trackingTree.deleteRow(dragItem);
-                    // trackingTree.addChildItem(dropTarget, dragItem,
-                    // dropTarget.getItems().size() - 1);
-                    // trackingTree.select(dragItem);
-
-                    sampleRow = trackingTree.getData()
-                                            .get(getTopLevelIndex(trackingTree.getSelection()));
-                    trackingTree.unselect(trackingTree.getSelectedRowIndex());
-                    checkNode(sampleRow);
-
-                    // FIXME need to find a way to select row
-                    // trackingTree.select(dragItem);
+                    // reset the dropped row data bundle, and its children
+                    am = manager.getSampleItems().getAnalysisAt(dropKey.getSampleItemIndex());
+                    newBundle = am.getBundleAt(am.count()-1);
+                    dragItem.data = newBundle;
+                    
+                    for(int i=0; i<dragItem.getItems().size(); i++)
+                        dragItem.getItem(i).data = newBundle;
+                                        
                 } catch (Exception e) {
                     e.printStackTrace();
                     Window.alert("Move failed: " + e.getMessage());
                 }
-                event.cancel();
             }
         });
 
         trackingTree.addDropEnterHandler(new DropEnterHandler<TreeRow>() {
             public void onDropEnter(DropEnterEvent<TreeRow> event) {
-                TreeDataItem dropTarget, dragItem;
+                TreeDataItem dropTarget, dropTargetParent, dragItem, dragItemParent;
 
                 dragItem = event.getDragObject().dragItem;
                 dropTarget = ((TreeRow)event.getDropTarget()).item;
-
-                if ( !dropTarget.leafType.equals("sampleItem") ||
-                    event.getDropPosition() != DropPosition.ON ||
-                    (dropTarget.leafType.equals("sampleItem") && dropTarget.equals(dragItem.parent)))
+                
+                dropTargetParent = dropTarget;
+                while(!"sampleItem".equals(dropTargetParent.leafType))
+                    dropTargetParent = dropTargetParent.parent;
+                
+                dragItemParent = dragItem;
+                while(!"sampleItem".equals(dragItemParent.leafType))
+                    dragItemParent = dragItemParent.parent;
+                
+                if (!dropTarget.leafType.equals("analysis") && !dropTarget.leafType.equals("storage")  ||
+                                (dropTarget.leafType.equals("storage") && "analysis".equals(dropTarget.parent.leafType)) || 
+                                (dropTarget.leafType.equals("analysis") && event.getDropPosition() == DropPosition.ON) ||
+                                (dropTarget.leafType.equals("storage") && (event.getDropPosition() == DropPosition.ON || event.getDropPosition() == DropPosition.BELOW)) || 
+                                dropTargetParent.equals(dragItemParent) || 
+                                !dropTargetParent.parent.equals(dragItemParent.parent))
                     event.cancel();
             }
         });
@@ -1323,8 +1319,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             results.leafType = "analysis";
             results.data = analysisBundle;
             results.cells.add(new TableDataCell("<> : <>"));
-            results.cells.add(new TableDataCell(DictionaryCache.getEntryFromId(analysisLoggedInId)
-                                                               .getEntry()));
+            results.cells.add(new TableDataCell(analysisLoggedInId));
 
             analysis = new TreeDataItem();
             analysis.leafType = "result";
@@ -1365,14 +1360,16 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         boolean addDomain;
 
         setFocus(null);
-        if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
-            return;
-        }
-
+        
         if (state == State.QUERY) {
             tmpFields = null;
             addDomain = true;
+            
+            if ( !validate()) {
+                window.setError(consts.get("correctErrors"));
+                return;
+            }
+            
             query = new Query();
             queryFields = getQueryFields();
 
@@ -1405,7 +1402,11 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         } else if (state == State.UPDATE) {
             window.setBusy(consts.get("updating"));
             try {
-                manager.validate();
+                if (!validateUpdate()) {
+                    window.setError(consts.get("correctErrors"));
+                    return;
+                }
+                
                 manager.getSample().setStatusId(sampleLoggedInId);
                 manager = manager.update();
                 setState(Screen.State.DISPLAY);
@@ -1772,6 +1773,22 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
         if (manager.getSample().getDomain().equals(SampleManager.SDWIS_DOMAIN_FLAG))
             sdwisTab.showErrors(errors);
+    }
+    
+    public boolean validateUpdate() throws Exception {
+        boolean valid = true;
+
+        for (Widget wid : def.getWidgets().values()) {
+            if (wid instanceof HasField) {
+                ((HasField)wid).checkValue();
+                if ( ((HasField)wid).getExceptions() != null)
+                    valid = false;
+            }
+        }
+        
+        manager.validate();
+        
+        return valid;
     }
     
     private boolean canEdit() {

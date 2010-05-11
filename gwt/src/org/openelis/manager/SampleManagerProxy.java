@@ -96,7 +96,7 @@ public class SampleManagerProxy {
         //validate the dates
         //recieved date required
         if(sampleDO.getReceivedDate() == null || sampleDO.getReceivedDate().getDate() == null)
-            errorsList.add(new FieldErrorWarning("fieldRequiredException", SampleMeta.getReceivedDate()));
+            errorsList.add(new FieldErrorWarning("receivedDateRequiredException", SampleMeta.getReceivedDate()));
         else if(sampleDO.getEnteredDate() != null && sampleDO.getReceivedDate().before(sampleDO.getEnteredDate().add(-30)))
             //recieved cant be more than 30 days before entered
             errorsList.add(new FieldErrorWarning("receivedTooOldWarning", SampleMeta.getReceivedDate()));
