@@ -124,9 +124,6 @@ public class WorksheetResultBean implements WorksheetResultLocal {
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
-        if (DataBaseUtil.isEmpty(data.getWorksheetAnalysisId()))
-            list.add(new FieldErrorException("fieldRequiredException",
-                                             WorksheetCompletionMeta.getWorksheetResultWorksheetAnalysisId()));
         if (DataBaseUtil.isEmpty(data.getTestAnalyteId()))
             list.add(new FieldErrorException("fieldRequiredException",
                                              WorksheetCompletionMeta.getWorksheetResultTestAnalyteId()));

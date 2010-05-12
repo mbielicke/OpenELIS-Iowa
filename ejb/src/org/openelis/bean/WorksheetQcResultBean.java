@@ -118,9 +118,6 @@ public class WorksheetQcResultBean implements WorksheetQcResultLocal {
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
-        if (DataBaseUtil.isEmpty(data.getWorksheetAnalysisId()))
-            list.add(new FieldErrorException("fieldRequiredException",
-                                             WorksheetCompletionMeta.getWorksheetQcResultWorksheetAnalysisId()));
         if (DataBaseUtil.isEmpty(data.getSortOrder()))
             list.add(new FieldErrorException("fieldRequiredException",
                                              WorksheetCompletionMeta.getWorksheetQcResultSortOrder()));

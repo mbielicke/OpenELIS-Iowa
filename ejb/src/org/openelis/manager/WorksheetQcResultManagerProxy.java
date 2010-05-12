@@ -90,22 +90,19 @@ public class WorksheetQcResultManagerProxy {
         return manager;
     }
 
-    public void validate(WorksheetQcResultManager manager) throws Exception {
+    public void validate(WorksheetQcResultManager manager, ValidationErrorsList errorList) {
         int                    i;
-        ValidationErrorsList   list;
         WorksheetQcResultLocal local;
 
         local = local();
-        list  = new ValidationErrorsList();
         for (i = 0; i < manager.count(); i++) {
             try {
                 local.validate(manager.getWorksheetQcResultAt(i));
             } catch (Exception e) {
-                DataBaseUtil.mergeException(list, e, "itemTable", i);
+//                DataBaseUtil.mergeException(errorList, e, "itemTable", i);
+                DataBaseUtil.mergeException(errorList, e);
             }
         }
-        if (list.size() > 0)
-            throw list;
     }
 
     private WorksheetQcResultLocal local() {
