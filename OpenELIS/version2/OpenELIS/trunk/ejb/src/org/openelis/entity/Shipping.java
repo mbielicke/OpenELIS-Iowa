@@ -58,7 +58,12 @@ import org.openelis.utils.Auditable;
                 query = "select new org.openelis.domain.ShippingViewDO(s.id,s.statusId," +
                 		"s.shippedFromId,s.shippedToId,s.processedBy,s.processedDate," +
                 		"s.shippedMethodId,s.shippedDate,s.numberOfPackages,s.cost)" 
-                      + " from Shipping s where s.id = :id")})
+                      + " from Shipping s where s.id = :id"),
+    @NamedQuery( name = "Shipping.FetchByReferenceTableAndReferenceId",
+               query = "select new org.openelis.domain.ShippingViewDO(s.id,s.statusId," +
+                       "s.shippedFromId,s.shippedToId,s.processedBy,s.processedDate," +
+                       "s.shippedMethodId,s.shippedDate,s.numberOfPackages,s.cost)" 
+                     + " from Shipping s left join s.shippingItem i where i.referenceTableId = :referenceTableId and i.referenceId = :referenceId")})
 @Entity
 @Table(name = "shipping")
 @EntityListeners( {AuditUtil.class})

@@ -75,28 +75,7 @@ public class OrderBean implements OrderRemote, OrderLocal {
         query = manager.createNamedQuery("Order.FetchById");
         query.setParameter("id", id);
         try {
-            data = (OrderViewDO)query.getSingleResult();
-            /*ids = new Integer[3];
-            i = 0;
-            if (data.getOrganizationId() != null)
-                ids[i++] = data.getOrganizationId();
-            if (data.getReportToId() != null) 
-                ids[i++] = data.getReportToId();
-            if (data.getBillToId() != null) 
-                ids[i++] = data.getBillToId();
-            if (i != 0) {
-                list = organizationBean.fetchByIds(ids);
-                for (i = 0; i < list.size(); i++) {
-                    organization = list.get(i);
-                    if (organization.getId().equals(data.getOrganizationId()) && data.getOrganization() == null)
-                        data.setOrganization(organization);
-                    if (organization.getId().equals(data.getReportToId()) && data.getReportTo() == null)
-                        data.setReportTo(organization);
-                    if (organization.getId().equals(data.getBillToId()) && data.getBillTo() == null)
-                        data.setBillTo(organization);
-                }
-            }*/
-            
+            data = (OrderViewDO)query.getSingleResult();          
             setOrganizationReportToBillTo(data);
         } catch (NoResultException e) {
             throw new NotFoundException();
@@ -196,50 +175,7 @@ public class OrderBean implements OrderRemote, OrderLocal {
         } catch (Exception e) {            
             throw new DatabaseException(e);
         }
-    }
-    
-    /*    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
-        StringBuffer sb = new StringBuffer();
-        QueryBuilder qb = new QueryBuilder();
-
-        qb.setMeta(OrderMap);
-
-        qb.setSelect("distinct new org.openelis.domain.FillOrderDO(" +
-                     OrderMap.getId()+", " +
-                     OrderMap.getStatusId()+", " +
-                     OrderMap.getOrderedDate()+", " +
-                     OrderMap.getShipFromId()+", " +
-                     OrderMap.ORDER_ORGANIZATION_META.getId()+", " +
-                     OrderMap.ORDER_ORGANIZATION_META.getName()+", " +
-                     OrderMap.getDescription()+", " +
-                     OrderMap.getNeededInDays()+") ");
-
-        //this method is going to throw an exception if a column doesnt match
-        qb.addWhere(fields); 
-
-        qb.addWhere(OrderMap.ORDER_ITEM_META.getOrderId() + " = " + OrderMap.getId());
-        //qb.addWhere(OrderMap.ORDER_ORGANIZATION_META.getId() + " = " + OrderMap.getOrganizationId());
-        qb.addWhere(OrderMap.getIsExternal()+"='N'");
-        
-        qb.setOrderBy(OrderMap.ORDER_ORGANIZATION_META.getName()+" DESC, "+OrderMap.getId());
-
-        sb.append(qb.getEJBQL());
-
-        Query query = manager.createQuery(sb.toString());
-    
-        if(first > -1 && max > -1)
-         query.setMaxResults(first+max);
-        
-        //set the parameters in the query
-        qb.setQueryParams(query);
-        
-        List returnList = GetPage.getPage(query.getResultList(), first, max);
-        
-        if(returnList == null)
-         throw new LastPageException();
-        else
-         return returnList;
-    }*/
+    }    
 
     public OrderViewDO add(OrderViewDO data) throws Exception {
         Order entity;

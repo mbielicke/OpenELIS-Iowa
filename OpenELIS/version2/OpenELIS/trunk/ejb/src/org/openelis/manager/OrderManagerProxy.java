@@ -96,6 +96,11 @@ public class OrderManagerProxy {
             man.getItems().add();
         }
         
+        if (man.fills != null) {
+            man.getFills().setOrderId(id);
+            man.getFills().add();
+        }
+        
         if (man.shipNotes != null) {
             man.getShippingNotes().setReferenceId(id);
             man.getShippingNotes().setReferenceTableId(ReferenceTable.ORDER);
@@ -136,6 +141,11 @@ public class OrderManagerProxy {
         if (man.items != null) {
             man.getItems().setOrderId(id);
             man.getItems().update();
+        }
+        
+        if (man.fills != null) {
+            man.getFills().setOrderId(id);
+            man.getFills().update();
         }
         
         if (man.shipNotes != null) {
@@ -192,6 +202,13 @@ public class OrderManagerProxy {
         try {
             if (man.items != null)
                 man.getItems().validate();
+        } catch (Exception e) {
+            DataBaseUtil.mergeException(list, e);
+        }
+        
+        try {
+            if (man.fills != null)
+                man.getFills().validate();
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }

@@ -34,7 +34,7 @@ import org.openelis.manager.ShippingTrackingManager;
 @Remote
 public interface ShippingManagerRemote {
 
-    public ShippingManager fetchById(Integer id) throws Exception;
+    public ShippingManager fetchById(Integer id) throws Exception;   
     
     public ShippingManager fetchWithItemsAndTracking (Integer id) throws Exception;
     

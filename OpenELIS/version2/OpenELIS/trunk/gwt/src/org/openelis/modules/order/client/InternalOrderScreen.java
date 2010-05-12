@@ -94,7 +94,7 @@ public class InternalOrderScreen extends Screen {
     private Tabs              tab;
 
     private AppButton         queryButton, previousButton, nextButton, addButton, updateButton,
-                              commitButton, abortButton;
+                              commitButton, abortButton, addNoteButton, editNoteButton;
     private MenuItem          duplicate, orderHistory, itemHistory;
     private TextBox           id, neededInDays, requestedBy;
     private CalendarLookUp    orderedDate;
@@ -597,10 +597,11 @@ public class InternalOrderScreen extends Screen {
                 Window.alert(consts.get("orderStatusNotPendingForUpdate"));
                 manager = manager.abortUpdate();
             } else {
-                setState(State.UPDATE);
-                DataChangeEvent.fire(this);
+                setState(State.UPDATE);                
                 setFocus(neededInDays);
             }
+            
+            DataChangeEvent.fire(this);
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }

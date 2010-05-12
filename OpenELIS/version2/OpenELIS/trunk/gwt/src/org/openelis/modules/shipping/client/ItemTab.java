@@ -59,7 +59,7 @@ public class ItemTab extends Screen {
     private ShippingManager                manager;
     private TableWidget                    itemTable, trackingTable;
     private AppButton                      addItemButton, removeItemButton, addTrackingButton,
-                                           removeTrackingButton;
+                                           removeTrackingButton, orderSampleButton;
 
     private boolean                        loaded;
 
@@ -167,6 +167,16 @@ public class ItemTab extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 removeItemButton.enable(false);
+            }
+        });
+        
+        orderSampleButton = (AppButton)def.getWidget("orderSampleButton");
+        addScreenHandler(orderSampleButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {                       
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                orderSampleButton.enable(false);
             }
         });
 

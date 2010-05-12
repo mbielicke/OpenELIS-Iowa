@@ -44,7 +44,7 @@ public class OrderManager implements RPC, HasAuxDataInt {
 
     public static final String   TYPE_INTERNAL = "I",
                                  TYPE_VENDOR   = "V",
-                                 TYPE_KIT      = "K";
+                                 TYPE_SEND_OUT = "S";
 
     protected transient static OrderManagerProxy proxy;
 

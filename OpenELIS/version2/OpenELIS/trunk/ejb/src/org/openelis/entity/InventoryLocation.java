@@ -62,7 +62,12 @@ import org.openelis.utils.Auditable;
                 query = "select new org.openelis.domain.InventoryLocationViewDO(i.id,i.inventoryItemId," +
                         "i.lotNumber,i.storageLocationId,i.quantityOnhand,i.expirationDate," +
                         "i.inventoryItem.name,s.name,s.storageUnit.description,s.location)"
-                      + " from InventoryLocation i left join i.storageLocation s where s.name like :name and i.inventoryItemId = :id and i.quantityOnhand > 0" )
+                      + " from InventoryLocation i left join i.storageLocation s where s.name like :name and i.inventoryItemId = :id and i.quantityOnhand > 0" ),
+   @NamedQuery( name = "InventoryLocation.FetchById",
+              query = "select new org.openelis.domain.InventoryLocationViewDO(i.id,i.inventoryItemId," +
+                      "i.lotNumber,i.storageLocationId,i.quantityOnhand,i.expirationDate," +
+                      "i.inventoryItem.name,s.name,s.storageUnit.description,s.location)"
+                    + " from InventoryLocation i left join i.storageLocation s where i.id = :id")                  
                      //" and s.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId = s.id)")                    
     })
 /*

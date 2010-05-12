@@ -42,7 +42,7 @@ public class ShippingService {
     
     public ShippingManager fetchById(Integer id) throws Exception {
         return remoteManager().fetchById(id);
-    }
+    }    
     
     public ShippingManager fetchWithItemsAndTrackings (Integer id) throws Exception {
         return remoteManager().fetchWithItemsAndTracking(id);

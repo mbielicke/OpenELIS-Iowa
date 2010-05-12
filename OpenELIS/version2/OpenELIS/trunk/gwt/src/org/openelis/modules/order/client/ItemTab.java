@@ -96,6 +96,7 @@ public class ItemTab extends Screen {
                 Object val;
                 OrderItemViewDO data;
                 InventoryItemDO row;
+                TableDataRow trow;
 
                 r = event.getRow();
                 c = event.getCol();
@@ -113,11 +114,19 @@ public class ItemTab extends Screen {
                         data.setQuantity((Integer)val);
                         break;
                     case 1:
-                        row = (InventoryItemDO) ((TableDataRow)val).data;
-                        data.setInventoryItemId(row.getId());
-                        data.setInventoryItemName(row.getName());
-                        data.setStoreId(row.getStoreId());
-                        table.setCell(r, 2, data.getStoreId());
+                        trow = ((TableDataRow)val);
+                        if(trow != null) {
+                            row = (InventoryItemDO)trow.data;
+                            data.setInventoryItemId(row.getId());
+                            data.setInventoryItemName(row.getName());
+                            data.setStoreId(row.getStoreId());
+                            table.setCell(r, 2, data.getStoreId());
+                        } else {
+                            data.setInventoryItemId(null);
+                            data.setInventoryItemName(null);
+                            data.setStoreId(null);
+                            table.setCell(r, 2, null);
+                        }
                         break;
                     case 3:
                         data.setUnitCost((Double)val);

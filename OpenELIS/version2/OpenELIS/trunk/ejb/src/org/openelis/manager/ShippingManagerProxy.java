@@ -45,7 +45,7 @@ public class ShippingManagerProxy {
         m.setShipping(data);
 
         return m;
-    }
+    }   
     
     public ShippingManager fetchWithItemsAndTrackings(Integer id) throws Exception {
         ShippingManager m;

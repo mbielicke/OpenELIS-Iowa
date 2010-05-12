@@ -110,7 +110,7 @@ public class OrderItemManager implements RPC {
     }
 
     public void validate() throws Exception {
-        // proxy().validate(this);
+        proxy().validate(this);
     }
 
     // friendly methods used by managers and proxies

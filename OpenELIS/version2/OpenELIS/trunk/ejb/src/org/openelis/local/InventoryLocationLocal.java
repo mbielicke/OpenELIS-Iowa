@@ -31,10 +31,13 @@ import javax.ejb.Local;
 
 import org.openelis.domain.InventoryLocationDO;
 import org.openelis.domain.InventoryLocationViewDO;
+import org.openelis.entity.InventoryLocation;
 
 @Local
 public interface InventoryLocationLocal {
     public ArrayList<InventoryLocationViewDO> fetchByInventoryItemId(Integer id) throws Exception;
+    
+    public InventoryLocationViewDO fetchById(Integer id) throws Exception;
 
     public InventoryLocationViewDO add(InventoryLocationViewDO data) throws Exception;
 
@@ -42,5 +45,5 @@ public interface InventoryLocationLocal {
 
     public void delete(InventoryLocationDO data) throws Exception;
 
-    public void validate(InventoryLocationDO data) throws Exception;
+    public void validate(InventoryLocationDO data) throws Exception;    
 }

@@ -32,6 +32,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -39,6 +40,7 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.InventoryLocationDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.entity.InventoryLocation;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -69,6 +71,23 @@ public class InventoryLocationBean implements InventoryLocationLocal, InventoryL
 
         return DataBaseUtil.toArrayList(list);
     }
+    
+    public InventoryLocationViewDO fetchById(Integer id) throws Exception {
+        Query query;
+        InventoryLocationViewDO data;
+
+        query = manager.createNamedQuery("InventoryLocation.FetchById");
+        query.setParameter("id", id);
+
+        try {
+            data = (InventoryLocationViewDO)query.getSingleResult();          
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
+    }       
     
     public ArrayList<InventoryLocationViewDO> fetchByLocationNameInventoryItemId(String match,Integer id, int maxResults) throws Exception {
         Query query;
@@ -140,5 +159,5 @@ public class InventoryLocationBean implements InventoryLocationLocal, InventoryL
         
         if (list.size() > 0)
             throw list;
-    }
+    }    
 }
