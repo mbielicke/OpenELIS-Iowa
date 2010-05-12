@@ -57,7 +57,7 @@ UIRF Software License are applicable instead of those above.
               </VerticalPanel>
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" width="auto" maxRows="19" style="atozTable">
+              <table key="atozTable" width="auto" maxRows="20" style="atozTable">
                 <col width="75" header="{resource:getString($constants,'orderNum')}">
                   <label field="Integer" />
                 </col>
@@ -180,11 +180,11 @@ UIRF Software License are applicable instead of those above.
               </row>
             </TablePanel>
 <!-- TAB PANEL -->
-            <TabPanel key="tabPanel" width="605" height="285">
+            <TabPanel key="tabPanel" width="605" height="305">
 <!-- TAB 1 (Items) -->
               <tab key="itemTab" text="{resource:getString($constants,'items')}" tab="itemTable, itemTable">
                 <VerticalPanel padding="0" spacing="0">
-                  <table key="itemTable" width="auto" maxRows="10" showScroll="ALWAYS">
+                  <table key="itemTable" width="auto" maxRows="11" showScroll="ALWAYS">
                     <col key="{meta:getOrderItemQuantity()}" width="65" align="right" header="{resource:getString($constants,'quantity')}">
                       <textbox field="Integer" required="true" />
                     </col>
@@ -226,7 +226,7 @@ UIRF Software License are applicable instead of those above.
 <!-- TAB 2 (receipts) -->
               <tab key="fillTab" text="{resource:getString($constants,'filled')}">
                 <VerticalPanel padding="0" spacing="0">
-                  <table key="fillTable" width="auto" maxRows="10" showScroll="ALWAYS">
+                  <table key="fillTable" width="auto" maxRows="11" showScroll="ALWAYS">
                     <col key="{meta:getInventoryReceiptOrderItemId()}" width="150" header="{resource:getString($constants,'inventoryItem')}">
                       <label field="String" />
                     </col>
@@ -248,7 +248,7 @@ UIRF Software License are applicable instead of those above.
 <!-- TAB 3 (order notes) -->
               <tab key="noteTab" text="{resource:getString($constants,'orderShippingNotes')}" tab="notesPanel, notesPanel">
                 <VerticalPanel padding="0" spacing="0">
-                  <notes key="notesPanel" width="604" height="247" />
+                  <notes key="notesPanel" width="604" height="267" />
                   <appButton key="standardNoteButton" style="Button">
                     <HorizontalPanel>
                       <AbsolutePanel style="StandardNoteButtonImage" />
