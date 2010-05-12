@@ -35,13 +35,11 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryXUse;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.InventoryLocationLocal;
 import org.openelis.local.InventoryXUseLocal;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -141,16 +139,14 @@ public class InventoryXUseBean implements InventoryXUseLocal {
     
     public void delete(InventoryXUseViewDO data) throws Exception {
         InventoryXUse entity;
-        InventoryLocationViewDO xuse;
+        InventoryLocation loc;
         
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(InventoryXUse.class, data.getId());
-        
-        xuse = inventoryLocation.fetchById(data.getInventoryLocationId());        
-        xuse.setQuantityOnhand(xuse.getQuantityOnhand() + data.getQuantity());
-        
-        if (entity != null) {
-            inventoryLocation.update(xuse);
+                                        
+        if (entity != null) {        
+            loc = manager.find(InventoryLocation.class, data.getInventoryLocationId());
+            loc.setQuantityOnhand(loc.getQuantityOnhand() + data.getQuantity());           
             manager.remove(entity);
         }
     }        
