@@ -183,10 +183,11 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                         if (rv != null && getCorrectManValueByType(val, fieldDO.getTypeId()) != null) {
                             try {
                                 auxValsTable.clearCellExceptions(r, c);
-                                rv.validate(null,
-                                            getCorrectManValueByType(val, fieldDO.getTypeId()));
+                                
+                                if(val != null && !"".equals(val))
+                                    rv.validate(null, getCorrectManValueByType(val, fieldDO.getTypeId()));
+                                
                             } catch (ParseException e) {
-                                // auxValsTable.clearCellExceptions(r, c);
                                 auxValsTable.setCellException(r, c, e);
                             } catch (Exception e) {
                                 Window.alert(e.getMessage());
