@@ -309,8 +309,9 @@ public class AnalysisManager implements RPC {
 
     public void validate(String sampleItemSequence,
                          Integer sampleTypeId,
+                         String sampleDomain,
                          ValidationErrorsList errorsList) throws Exception {
-        proxy().validate(this, sampleItemSequence, sampleTypeId, errorsList);
+        proxy().validate(this, sampleItemSequence, sampleTypeId, sampleDomain, errorsList);
     }
 
     public void setDefaultsAt(int index) {

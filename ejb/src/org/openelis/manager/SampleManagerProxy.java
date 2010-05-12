@@ -325,11 +325,14 @@ public class SampleManagerProxy {
     }
 
     public void validate(SampleManager man, ValidationErrorsList errorsList) throws Exception {
-      //revalidate accession number
+        boolean quickEntry;
+        SampleDO sampleDO;
+
+        //revalidate accession number
         validateAccessionNumber(man.getSample(), errorsList);
         
-        //sample validate code
-        SampleDO sampleDO = man.getSample();
+        sampleDO = man.getSample();
+        quickEntry = SampleManager.QUICK_ENTRY.equals(sampleDO.getDomain());
         
         if(sampleDO.getCollectionDate() != null && sampleDO.getReceivedDate() != null){
             if(sampleDO.getCollectionDate().compareTo(sampleDO.getReceivedDate()) == 1)
@@ -339,16 +342,16 @@ public class SampleManagerProxy {
        if(man.sampleItems != null)
            man.getSampleItems().validate(errorsList);
        
-       if(man.organizations != null)
+       if(!quickEntry && man.organizations != null)
            man.getOrganizations().validate(man.getSample().getDomain(), errorsList);
        
-       if(man.projects != null)
+       if(!quickEntry && man.projects != null)
            man.getProjects().validate(errorsList);
        
-       if(man.qaEvents != null)
+       if(!quickEntry && man.qaEvents != null)
            man.getQaEvents().validate(errorsList);
        
-       if(man.auxData != null)
+       if(!quickEntry && man.auxData != null)
            man.getAuxData().validate(errorsList);
     }
 
