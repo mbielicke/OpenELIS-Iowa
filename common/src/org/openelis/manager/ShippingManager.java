@@ -75,7 +75,6 @@ public class ShippingManager implements RPC, HasNotesInt {
         return proxy().fetchById(id);
     }
     
-
     public static ShippingManager fetchWithItemsAndTracking(Integer id) throws Exception {       
         return proxy().fetchWithItemsAndTrackings(id);
     } 

@@ -93,7 +93,7 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class KitOrderScreen extends Screen {
+public class SendoutOrderScreen extends Screen {
 
     private OrderManager          manager;
     private SecurityModule        security;
@@ -131,8 +131,8 @@ public class KitOrderScreen extends Screen {
     };
     
     
-    public KitOrderScreen() throws Exception {
-        super((ScreenDefInt)GWT.create(KitOrderDef.class));
+    public SendoutOrderScreen() throws Exception {
+        super((ScreenDefInt)GWT.create(SendoutOrderDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
         userService = new ScreenService("controller?service=org.openelis.server.SystemUserService");
         organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
@@ -265,7 +265,7 @@ public class KitOrderScreen extends Screen {
                 duplicate();
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
+               public void onStateChange(StateChangeEvent<State> event) {
                 duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
@@ -828,7 +828,7 @@ public class KitOrderScreen extends Screen {
                 // this screen should only query for kit orders
                 field = new QueryData();
                 field.key = OrderMeta.getType();
-                field.query = OrderManager.TYPE_KIT;
+                field.query = OrderManager.TYPE_SEND_OUT;
                 field.type = QueryData.Type.STRING;
                 query.setFields(field);
 
@@ -985,7 +985,7 @@ public class KitOrderScreen extends Screen {
         data.setStatusId(status_pending);
         data.setOrderedDate(now);
         data.setRequestedBy(OpenELIS.security.getSystemUserName());
-        data.setType(OrderManager.TYPE_KIT);
+        data.setType(OrderManager.TYPE_SEND_OUT);
 
         setState(State.ADD);
         DataChangeEvent.fire(this);
@@ -1004,9 +1004,10 @@ public class KitOrderScreen extends Screen {
                 manager = manager.abortUpdate();
             } else {
                 setState(State.UPDATE);
-                DataChangeEvent.fire(this);
                 setFocus(neededInDays);
             }
+            
+            DataChangeEvent.fire(this);
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
@@ -1028,7 +1029,7 @@ public class KitOrderScreen extends Screen {
             // this screen should only query for internal orders
             field = new QueryData();
             field.key = OrderMeta.getType();
-            field.query = OrderManager.TYPE_KIT;
+            field.query = OrderManager.TYPE_SEND_OUT;
             field.type = QueryData.Type.STRING;
 
             query = new Query();
@@ -1110,7 +1111,7 @@ public class KitOrderScreen extends Screen {
             data.setStatusId(status_pending);
             data.setOrderedDate(now);
             data.setRequestedBy(OpenELIS.security.getSystemUserName());
-            data.setType(OrderManager.TYPE_KIT);           
+            data.setType(OrderManager.TYPE_SEND_OUT);           
             
             itemTab.setManager(manager);            
             //fillTab.setManager(manager);

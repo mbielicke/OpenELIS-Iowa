@@ -28,23 +28,32 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryXUseViewDO;
+import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryXUse;
+import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.InventoryLocationLocal;
 import org.openelis.local.InventoryXUseLocal;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
-public class InventoryXUseBean implements InventoryXUseLocal{
+public class InventoryXUseBean implements InventoryXUseLocal {
 
     @PersistenceContext(unitName = "openelis")
-    EntityManager manager;
+    EntityManager          manager;
+    
+    @EJB
+    InventoryLocationLocal inventoryLocation;
 
     public ArrayList<InventoryXUseViewDO> fetchByOrderId(Integer id) throws Exception {
         Query query;
@@ -62,14 +71,22 @@ public class InventoryXUseBean implements InventoryXUseLocal{
 
     public InventoryXUseViewDO add(InventoryXUseViewDO data) throws Exception {
         InventoryXUse entity;
+        InventoryLocation loc; 
+        
 
-        manager.setFlushMode(FlushModeType.COMMIT);
+        manager.setFlushMode(FlushModeType.COMMIT);               
 
+        loc = manager.find(InventoryLocation.class, data.getInventoryLocationId());      
+        if(loc.getQuantityOnhand() <  data.getQuantity()) {
+            throw new FieldErrorException("qtyMoreThanQtyOnhandException", null);
+        }
+        loc.setQuantityOnhand(loc.getQuantityOnhand() - data.getQuantity());
+        
         entity = new InventoryXUse();
-
         entity.setInventoryLocationId(data.getInventoryLocationId());
         entity.setOrderItemId(data.getOrderItemId());
         entity.setQuantity(data.getQuantity());
+                        
         manager.persist(entity);
 
         data.setId(entity.getId());
@@ -78,27 +95,64 @@ public class InventoryXUseBean implements InventoryXUseLocal{
 
     public InventoryXUseViewDO update(InventoryXUseViewDO data) throws Exception {
         InventoryXUse entity;
+        InventoryLocation newLoc, prevLoc;
+        Integer newQty, oldQty; 
        
         if (! data.isChanged()) 
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
+        newLoc = manager.find(InventoryLocation.class, data.getInventoryLocationId());        
         entity = manager.find(InventoryXUse.class, data.getId());
+        oldQty = entity.getQuantity();
+        newQty = data.getQuantity();
+        
+        if(!newLoc.getId().equals(entity.getInventoryLocationId())) {
+            //
+            // if the inventory location that this inventory-x-use record refers
+            // to is not the same as the one that it was previously, then we
+            // need to add the quantity taken from the previous location back to it
+            //            
+            prevLoc = manager.find(InventoryLocation.class, entity.getInventoryLocationId());
+            prevLoc.setQuantityOnhand(prevLoc.getQuantityOnhand() + oldQty);
+        } else if(!oldQty.equals(newQty)) {
+            //
+            // even if the inventory location is the same as the one this inventory-x-use
+            // record was referring to, if the quantity taken from it is different 
+            // from before then we need to add the previous quantity to the location
+            // and subtract the new quantity from it        
+            //
+            newLoc.setQuantityOnhand(newLoc.getQuantityOnhand() + oldQty);                    
+        }
+        
+        if(newLoc.getQuantityOnhand() < newQty) {
+            throw new FieldErrorException("qtyMoreThanQtyOnhandException", null);
+        }
+        
+        newLoc.setQuantityOnhand(newLoc.getQuantityOnhand() - newQty);        
+        
         entity.setInventoryLocationId(data.getInventoryLocationId());
         entity.setOrderItemId(data.getOrderItemId());
-        entity.setQuantity(data.getQuantity());
+        entity.setQuantity(newQty);              
 
         return data;
     }
     
     public void delete(InventoryXUseViewDO data) throws Exception {
         InventoryXUse entity;
+        InventoryLocationViewDO xuse;
         
         manager.setFlushMode(FlushModeType.COMMIT);
-        entity = manager.find(InventoryXUse.class, data.getId());     
-        if (entity != null)
+        entity = manager.find(InventoryXUse.class, data.getId());
+        
+        xuse = inventoryLocation.fetchById(data.getInventoryLocationId());        
+        xuse.setQuantityOnhand(xuse.getQuantityOnhand() + data.getQuantity());
+        
+        if (entity != null) {
+            inventoryLocation.update(xuse);
             manager.remove(entity);
-    }
+        }
+    }        
 
 }

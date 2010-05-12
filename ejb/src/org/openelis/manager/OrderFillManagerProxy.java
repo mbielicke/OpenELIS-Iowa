@@ -26,10 +26,13 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.naming.InitialContext;
 
 import org.openelis.domain.InventoryXUseViewDO;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.InventoryXUseLocal;
 
 public class OrderFillManagerProxy {
@@ -49,18 +52,31 @@ public class OrderFillManagerProxy {
     }
 
     public OrderFillManager add(OrderFillManager man) throws Exception {
-        Integer id;
         InventoryXUseLocal ul;
+        InventoryXUseViewDO fill;        
 
-        // FIXME
+        ul = local();
+        for (int i = 0; i < man.count(); i++ ) {
+            fill = man.getFillAt(i);
+            ul.add(fill);
+        }
+
         return man;
     }
 
     public OrderFillManager update(OrderFillManager man) throws Exception {
-        Integer id;
         InventoryXUseLocal ul;
+        InventoryXUseViewDO fill;        
 
-        // FIXME
+        ul = local();
+        for (int i = 0; i < man.count(); i++ ) {
+            fill = man.getFillAt(i);
+            if(fill.getId() != null)
+                ul.update(fill);
+            else
+                ul.add(fill);
+        }
+
         return man;
     }
 
@@ -75,6 +91,47 @@ public class OrderFillManagerProxy {
     }
 
     public void validate(OrderFillManager man) throws Exception {
+        ValidationErrorsList list;
+        InventoryXUseViewDO data;
+        Integer sum, locationId;
+        HashMap<Integer, Integer> locationSumMap;
+        FieldErrorException exc;
+        ArrayList<String[]> names;
+        String[] name;
+        int j;
+
+        list = new ValidationErrorsList();
+        locationSumMap = new HashMap<Integer, Integer>();
+        names = new ArrayList<String[]>();
+        name = null;
+
+        for (j = 0; j < man.count(); j++ ) {
+            data = man.getFillAt(j);
+
+            locationId = data.getInventoryLocationId();
+            sum = locationSumMap.get(locationId);
+            if (sum == null)
+                sum = 0;
+
+            sum += data.getQuantity();
+
+            if (sum > data.getInventoryLocationQuantityOnhand()) {
+                name = new String[2];
+                name[0] = data.getInventoryItemName();
+                name[1] = data.getStorageLocationName();
+                names.add(name);
+            }
+            
+            locationSumMap.put(locationId, sum);
+        }
+
+        for (j = 0; j < names.size(); j++ ) {
+            exc = new FieldErrorException("totalItemsMoreThanQtyOnHandException", null, names.get(j));
+            list.add(exc);
+        }
+
+        if (list.size() > 0) 
+            throw list;        
     }
 
     private InventoryXUseLocal local() {

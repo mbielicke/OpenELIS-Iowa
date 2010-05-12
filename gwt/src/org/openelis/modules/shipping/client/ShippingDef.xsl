@@ -243,6 +243,14 @@ UIRF Software License are applicable instead of those above.
                         </text>
                       </HorizontalPanel>
                     </appButton>
+                    <appButton key="orderSampleButton" style="Button">
+                      <HorizontalPanel>
+                        <AbsolutePanel style="" />
+                        <text>
+                          <xsl:value-of select="resource:getString($constants,'orderSample')" />
+                        </text>
+                      </HorizontalPanel>
+                    </appButton>
                   </HorizontalPanel>
                 </VerticalPanel>
                 <HorizontalPanel width="16" style="Divider" />

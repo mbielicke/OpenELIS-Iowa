@@ -81,6 +81,23 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select="language" />
               </xsl:with-param>
             </xsl:call-template>
+            <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
+                <menuItem>
+                  <menuDisplay>
+                    <appButton style="ButtonPanelButton" action="option">
+                      <HorizontalPanel>
+                        <text>
+                          <xsl:value-of select='resource:getString($constants,"options")' />
+                        </text>
+                        <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
+                      </HorizontalPanel>
+                    </appButton>
+                  </menuDisplay>
+                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                    <menuItem key="shippingInfo" description="" enable="false" icon="shippingIcon" label="{resource:getString($constants,'shippingInfo')}" />
+                  </menuPanel>
+                </menuItem>
+              </menuPanel>
           </HorizontalPanel>
         </AbsolutePanel>
 
@@ -88,41 +105,44 @@ UIRF Software License are applicable instead of those above.
 
         <VerticalPanel padding="0" spacing="0">
           <widget valign="top">
-            <table key="orderTable" width="auto" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides">
+            <table key="orderTable" width="860" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides">
               <col key="process" width="20" header="">
                 <check />
               </col>
               <col key="{meta:getId()}" width="45" header="{resource:getString($constants,'ordNum')}" sort = "true">
                 <textbox field="Integer" />
               </col>
-              <col key="{meta:getStatusId()}" width="95" header="{resource:getString($constants,'status')}">
-                <dropdown width="70" field="Integer" />
+              <col key="{meta:getStatusId()}" width="80" header="{resource:getString($constants,'status')}">
+                <dropdown width="80" field="Integer" />
               </col>
               <col key="{meta:getOrderedDate()}" width="70" header="{resource:getString($constants,'orderDate')}" sort = "true">
                 <calendar begin="0" end="2" pattern="{resource:getString($constants,'datePattern')}" />
               </col>
-              <col key="{meta:getShipFromId()}" width="120" header="{resource:getString($constants,'shipFrom')}">
+              <col key="{meta:getShipFromId()}" width="65" header="{resource:getString($constants,'shipFrom')}">
                 <dropdown width="100" field="Integer" />
               </col>
-              <col key="{meta:getOrganizationName()}" width="160" header="{resource:getString($constants,'shipToRequestedBy')}">
+              <col key="{meta:getRequestedBy()}" width="85" header="{resource:getString($constants,'requestedBy')}">
+                <textbox width="120" field="String" />
+              </col>
+              <col key="{meta:getOrganizationName()}" width="160" header="{resource:getString($constants,'shipTo')}">
                 <textbox width="130" case="UPPER" field="String" />
               </col>
               <col key="{meta:getDescription()}" width="155" header="{resource:getString($constants,'description')}">
                 <textbox field="String" />
               </col>
-              <col key="{meta:getNeededInDays()}" width="60" header="{resource:getString($constants,'neededNumDays')}">
+              <col key="{meta:getNeededInDays()}" width="45" header="{resource:getString($constants,'neededNumDays')}" sort = "true">
                 <textbox field="Integer" />
               </col>
               <col key="daysLeft" width="60" header="{resource:getString($constants,'numDaysLeft')}" sort = "true">
                 <textbox field="Integer" />
               </col>
-              <col key="{meta:getType()}" width="50" header="{resource:getString($constants,'type')}">
-                <dropdown width="50" field="String" />
+              <col key="{meta:getType()}" width="60" header="{resource:getString($constants,'type')}">
+                <dropdown width="60" field="String" />
               </col>
             </table>
           </widget>
           <VerticalPanel style="WhiteContentPanel">
-            <TabPanel key="tabPanel" width="867" height="221">
+            <TabPanel key="tabPanel" width="867" height="200">
               <tab key="itemTab" text="{resource:getString($constants,'items')}">
                 <HorizontalPanel>
                   <VerticalPanel style="subform">
@@ -130,14 +150,14 @@ UIRF Software License are applicable instead of those above.
                       <xsl:value-of select='resource:getString($constants,"shipToAddress")' />
                     </text>
                     <TablePanel style="Form">
-                      <row>
+                      <!-- <row>
                         <text style="Prompt">
                           <xsl:value-of select='resource:getString($constants,"requestedBy")' />:
                         </text>
                         <widget colspan="5">
                           <textbox key="{meta:getRequestedBy()}" width="186" field="String" />
                         </widget>
-                      </row>
+                      </row> -->
                       <row>
                         <text style="Prompt">
                           <xsl:value-of select='resource:getString($constants,"costCenter")' />:
@@ -202,14 +222,14 @@ UIRF Software License are applicable instead of those above.
                       <xsl:value-of select='resource:getString($constants,"itemsOrdered")' />
                     </text>
                     <widget>
-                      <tree key="itemsTree" width="auto" maxRows="7" showScroll="ALWAYS">
+                      <tree key="itemsTree" width="auto" maxRows="6" showScroll="ALWAYS">
                         <header>
                           <col width="50" header="{resource:getString($constants,'ordNum')}" />
                           <col width="30" header="{resource:getString($constants,'qty')}" />
-                          <col width="165" header="{resource:getString($constants,'item')}" />
+                          <col width="170" header="{resource:getString($constants,'item')}" />
                           <col width="160" header="{resource:getString($constants,'location')}" />
                           <col width="60" header="{resource:getString($constants,'lotNum')}" />
-                          <col width="55" header="{resource:getString($constants,'expDate')}" />
+                          <col width="70" header="{resource:getString($constants,'expDate')}" />
                         </header>
                         <leaf key="top">
                           <col>
@@ -220,7 +240,7 @@ UIRF Software License are applicable instead of those above.
                           </col>
                           <col>
                             <autoComplete width="137" case="LOWER" field="Integer" required="true">
-                              <col width="118" />                              
+                              <col width="137" />                              
                             </autoComplete>
                           </col>
                         </leaf>
@@ -240,14 +260,17 @@ UIRF Software License are applicable instead of those above.
                             <autoComplete width="125" case="LOWER" field="Integer" required="true">
                               <col width="300" header="{resource:getString($constants,'description')}" />
                               <col width="65" header="{resource:getString($constants,'lotNum')}" />
-                              <col width="60" header="{resource:getString($constants,'expDate')}" />
+                              <col width="55" header="{resource:getString($constants,'qty')}" />
+                              <col width="65" header="{resource:getString($constants,'expDate')}">
+                              	<calendar begin="0" end="2" pattern="{resource:getString($constants,'datePattern')}" />
+                              </col>
                             </autoComplete>
                           </col>
                           <col>
                             <label field="String" />
                           </col>
                           <col>
-                            <label field="Integer" />
+                            <calendar begin="0" end="2" pattern="{resource:getString($constants,'datePattern')}" />
                           </col>
                         </leaf>
                       </tree>
@@ -275,7 +298,7 @@ UIRF Software License are applicable instead of those above.
               </tab>
               <tab key="noteTab" tab="notesPanel, notesPanel" text="{resource:getString($constants,'orderShippingNotes')}">
                 <VerticalPanel padding="0" spacing="0">
-                  <notes key="notesPanel" width="867" height="190" />
+                  <notes key="notesPanel" width="867" height="170" />
                   <appButton key="standardNoteButton" style="Button">
                     <HorizontalPanel>
                       <AbsolutePanel style="StandardNoteButtonImage" />
@@ -288,7 +311,7 @@ UIRF Software License are applicable instead of those above.
               </tab>
               <tab key="customerNote" tab="customerNotesPanel, customerNotesPanel" text="{resource:getString($constants,'customerNotes')}">
                 <VerticalPanel padding="0" spacing="0">
-                  <notes key="customerNotesPanel" width="867" height="190" />
+                  <notes key="customerNotesPanel" width="867" height="170" />
                   <appButton key="editNoteButton" style="Button">
                     <HorizontalPanel>
                       <AbsolutePanel style="StandardNoteButtonImage" />

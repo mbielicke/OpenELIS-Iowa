@@ -27,14 +27,10 @@ package org.openelis.modules.shipping.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ShippingItemDO;
@@ -48,11 +44,14 @@ import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeCloseEvent;
 import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
+import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.screen.Screen;
@@ -70,8 +69,6 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.manager.OrderFillManager;
-import org.openelis.manager.OrderManager;
 import org.openelis.manager.ShippingItemManager;
 import org.openelis.manager.ShippingManager;
 import org.openelis.manager.ShippingTrackingManager;
@@ -79,19 +76,21 @@ import org.openelis.meta.ShippingMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.note.client.NotesTab;
+import org.openelis.modules.orderFill.client.OrderFillScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
 
-public class ShippingScreen extends Screen {
+public class ShippingScreen extends Screen implements HasActionHandlers<ShippingScreen.Action>{
     private ShippingManager                manager;
     private SecurityModule                 security;
 
@@ -113,13 +112,18 @@ public class ShippingScreen extends Screen {
     private AutoComplete<Integer>          shippedToName;
     private TabPanel                       tabPanel;
     private Integer                        status_processed;
-    //private HashMap<Integer, OrderManager> combinedMap;
+    
+    private OrderFillScreen                orderFillScreen;      
     
     protected ScreenService                organizationService;
     
     
     private enum Tabs {
         ITEM, SHIP_NOTE
+    };
+    
+    public enum Action {
+        COMMIT, ABORT
     };
 
     public ShippingScreen() throws Exception {
@@ -707,8 +711,13 @@ public class ShippingScreen extends Screen {
     }    
     
     
-    public void setManager(ShippingManager manager) {               
+    public void setManager(ShippingManager manager, OrderFillScreen orderFillScreen) { 
         add(manager);        
+        this.orderFillScreen = orderFillScreen;
+    }
+    
+    public HandlerRegistration addActionHandler(ActionHandler<ShippingScreen.Action> handler) {
+        return addHandler(handler, ActionEvent.getType());
     }
     
     private void initializeDropdowns() {
@@ -833,6 +842,12 @@ public class ShippingScreen extends Screen {
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.setDone(consts.get("addingComplete"));
+                
+                if(orderFillScreen != null) {
+                    ActionEvent.fire(this, Action.COMMIT, null);
+                    window.close();
+                }
+                    
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -868,6 +883,11 @@ public class ShippingScreen extends Screen {
         } else if (state == State.ADD) {
             fetchById(null);
             window.setDone(consts.get("addAborted"));
+            
+            if(orderFillScreen != null) {
+                ActionEvent.fire(this, Action.ABORT, null);
+                window.close();
+            }
         } else if (state == State.UPDATE) {
             try {
                 manager = manager.abortUpdate();
@@ -942,7 +962,7 @@ public class ShippingScreen extends Screen {
         HistoryScreen.showHistory(consts.get("shippingTrackingHistory"),
                                   ReferenceTable.SHIPPING_TRACKING, refVoList);
         
-    }
+    }       
     
     protected boolean fetchById(Integer id) {
         if (id == null) {
@@ -987,48 +1007,25 @@ public class ShippingScreen extends Screen {
                 noteTab.draw();
                 break;   
         }
-    }
+    }   
     
-    private ShippingItemManager getItemsFromOrderData(HashMap<Integer, OrderManager> combinedMap) {
-        ShippingItemManager man;
-        OrderManager order;
-        OrderFillManager fills;
-        InventoryXUseViewDO data;
-        ShippingItemDO item;
-        Set<Integer> set; 
-        Iterator<Integer> iter;
-        int count, i;
-        
-        if(combinedMap == null)
-            return null;
-       
-        man = ShippingItemManager.getInstance();
-        
-        try {                    
-            set = combinedMap.keySet();
-            iter = set.iterator();            
-            
-            while (iter.hasNext())  {                                                                        
-                order = combinedMap.get(iter.next());
-                fills = order.getFills();
-                count = fills.count();                
-
-                for (i = 0; i < count; i++) {
-                    data = fills.getFillAt(i);
-                    item = man.getItemAt(man.addItem());
-                    item.setQuantity(data.getQuantity());
-                    item.setDescription(data.getInventoryItemName());
-                    item.setReferenceId(data.getOrderItemId());
-                    item.setReferenceTableId(ReferenceTable.ORDER_ITEM);
-                }
-            } 
+    /*private void setOrderData(Integer refTableId, Integer refId) { 
+        window.setBusy(consts.get("fetching"));
+        try {
+            //manager = ShippingManager.fetchByReferenceTableAndReferenceId(refTableId, refId);            
+            setState(State.DISPLAY);
+            DataChangeEvent.fire(this);            
+            drawTabs();
+        } catch (NotFoundException e) {
+            fetchById(null);
+            window.setDone(consts.get("noRecordsFound"));
         } catch (Exception e) {
+            fetchById(null);
             e.printStackTrace();
-            Window.alert(e.toString());
+            Window.alert(consts.get("fetchFailed") + e.getMessage());
         }
-
-        return man;
-    }
+        window.clearStatus();
+    }*/
 }
 
 //extends OpenELISScreenForm<ShippingForm, Query<TableDataRow<Integer>>> implements ClickListener, TableManager, ChangeListener, TabListener{

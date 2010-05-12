@@ -37,7 +37,6 @@ public class OrderFillManager implements RPC {
 
     protected Integer                                          orderId;
     protected ArrayList<InventoryXUseViewDO>                   fills, deleted;
-    protected HashMap<Integer, ArrayList<InventoryXUseViewDO>> itemIdFillsMap;
 
     protected transient static OrderFillManagerProxy proxy;
 
@@ -53,35 +52,7 @@ public class OrderFillManager implements RPC {
 
     public InventoryXUseViewDO getFillAt(int i) {
         return fills.get(i);
-    }
-    
-    public ArrayList<InventoryXUseViewDO> getFillsByItemId(Integer orderItemId) {
-        ArrayList<InventoryXUseViewDO> list;     
-        InventoryXUseViewDO data;
-        Integer itemId;
-        
-        list = null;
-        if(fills == null)
-            return list;
-        
-        if (itemIdFillsMap == null) {            
-            itemIdFillsMap = new HashMap<Integer, ArrayList<InventoryXUseViewDO>>();            
-
-            for (int i = 0; i < fills.size(); i++ ) {                
-                data = fills.get(i);
-                itemId = data.getOrderItemId();
-                list = itemIdFillsMap.get(itemId);
-                
-                if(list == null) { 
-                    list = new ArrayList<InventoryXUseViewDO>();
-                    itemIdFillsMap.put(itemId, list);
-                }                
-                list.add(data);                    
-            }
-        }
-        
-        return itemIdFillsMap.get(orderItemId);
-    }
+    }   
 
     public void setFillAt(InventoryXUseViewDO item, int i) {
         if (fills == null)
@@ -149,6 +120,10 @@ public class OrderFillManager implements RPC {
 
     public OrderFillManager update() throws Exception {
         return proxy().update(this);
+    }
+    
+    public void validate() throws Exception {
+        proxy().validate(this);
     }
 
     // friendly methods used by managers and proxies

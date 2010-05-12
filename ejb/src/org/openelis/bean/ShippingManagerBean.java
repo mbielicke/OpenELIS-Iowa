@@ -59,7 +59,7 @@ public class ShippingManagerBean implements ShippingManagerRemote {
 
     public ShippingManager fetchById(Integer id) throws Exception {
         return ShippingManager.fetchById(id);
-    }
+    }   
     
     public ShippingManager fetchWithItemsAndTracking(Integer id) throws Exception {
         return ShippingManager.fetchWithItemsAndTracking(id);

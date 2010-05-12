@@ -54,13 +54,10 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class DictionaryLookupScreen extends Screen
-                                                       implements
+public class DictionaryLookupScreen extends Screen implements
                                                        HasActionHandlers<DictionaryLookupScreen.Action> {
 
     protected TextBox               findTextBox;

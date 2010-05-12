@@ -386,11 +386,13 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 Integer key;
                 AutoComplete<Integer> auto;
 
+                key = null;
                 r = event.getRow();
                 c = event.getCol();
                 row = analyteTable.getRow(r);
                 val = (TableDataRow)analyteTable.getObject(r, c);
-                key = (Integer)val.key;
+                if(val != null)
+                    key = (Integer)val.key;
                 auto = (AutoComplete<Integer>)analyteTable.getColumns().get(c).getColumnWidget();
                 rows = analyteTable.getSelectedRows();
                 
@@ -400,12 +402,10 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                         if (numCol < c) {
                             if (key != null) {
                                 //
-                                // we need to add a new column to the data grid
-                                // if
+                                // we need to add a new column to the data grid if
                                 // this column in the table in a sub header was
-                                // edited
-                                // for the first time and the key set as its
-                                // value is not null
+                                // edited for the first time and the key set as
+                                // its value is not null
                                 //
                                 dindex = displayManager.getDataRowIndex(r);
                                 testAnalyteManager.addColumnAt(dindex, c - 1, key,

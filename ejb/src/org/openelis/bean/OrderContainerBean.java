@@ -52,6 +52,7 @@ public class OrderContainerBean implements OrderContainerLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager                    manager;
+    private static final Integer   MAX_QUANTITY = 50;
 
     @SuppressWarnings("unchecked")
     public ArrayList<OrderContainerDO> fetchByOrderId(Integer id) throws Exception {
@@ -115,14 +116,20 @@ public class OrderContainerBean implements OrderContainerLocal {
 
     public void validate(OrderContainerDO data) throws Exception {
         ValidationErrorsList list;
+        Integer num;
 
         list = new ValidationErrorsList();
         if (data.getContainerId() == null)
             list.add(new FieldErrorException("fieldRequiredException",
                                              OrderMeta.getContainerContainerId()));
-        if (data.getNumberOfContainers() == null)
+        num = data.getNumberOfContainers();
+        if (num == null) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                             OrderMeta.getContainerNumberOfContainers()));   
+                                             OrderMeta.getContainerNumberOfContainers()));
+        } else if(num > MAX_QUANTITY) {
+            list.add(new FieldErrorException("qtyNotMoreThanMaxException",
+                                             OrderMeta.getContainerNumberOfContainers(), MAX_QUANTITY.toString()));            
+        }
         
         if (list.size() > 0)
             throw list;

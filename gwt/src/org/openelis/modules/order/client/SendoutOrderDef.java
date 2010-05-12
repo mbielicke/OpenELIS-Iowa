@@ -28,5 +28,5 @@ package org.openelis.modules.order.client;
 
 import org.openelis.gwt.screen.ScreenDefInt;
 
-public interface KitOrderDef extends ScreenDefInt {
+public interface SendoutOrderDef extends ScreenDefInt {
 }

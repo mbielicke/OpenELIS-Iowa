@@ -85,7 +85,7 @@ public class ShippingBean implements ShippingRemote, ShippingLocal{
             throw new DatabaseException(e);
         }
         return data;
-    }
+    }   
     
     @SuppressWarnings("unchecked")
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
