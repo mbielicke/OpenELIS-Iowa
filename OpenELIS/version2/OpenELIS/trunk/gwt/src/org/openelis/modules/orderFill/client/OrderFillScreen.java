@@ -526,6 +526,13 @@ public class OrderFillScreen extends Screen {
                     return;
                 }
                 
+                try {                
+                    validateItemsTree();
+                } catch (ValidationErrorsList e) {
+                    showErrors(e);
+                    return;
+                }                
+                
                 if(OrderManager.TYPE_SEND_OUT.equals(data.getType())) {
                     shipping = new ShippingViewDO();
                     shipping.setShippedFromId(data.getShipFromId());
@@ -590,8 +597,7 @@ public class OrderFillScreen extends Screen {
             window.setBusy(consts.get("updating"));              
             set = combinedMap.keySet();
             iter = set.iterator();                    
-            try {
-                validateItemsTree();
+            try {                
                 while (iter.hasNext())  {                                                                        
                     man = combinedMap.get(iter.next());
                     man.getOrder().setStatusId(status_processed);
@@ -768,8 +774,8 @@ public class OrderFillScreen extends Screen {
         }
     }
     
-    public boolean validate() {
-        return super.validate() && itemTab.validate();             
+    public boolean validate() {        
+        return itemTab.validate() && super.validate();             
     }
     
     private void executeQuery(Query query) {                
