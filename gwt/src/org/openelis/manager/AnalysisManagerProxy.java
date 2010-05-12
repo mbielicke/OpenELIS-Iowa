@@ -68,15 +68,17 @@ public class AnalysisManagerProxy {
     }
     
     public void validate(AnalysisManager man, ValidationErrorsList errorsList) throws Exception {
-        validate(man, null, null, errorsList);
+        validate(man, null, null, null, errorsList);
     }
     
-    public void validate(AnalysisManager man, String sampleItemSequence, Integer sampleTypeId, ValidationErrorsList errorsList) throws Exception {
+    public void validate(AnalysisManager man, String sampleItemSequence, Integer sampleTypeId, String sampleDomain, ValidationErrorsList errorsList) throws Exception {
         AnalysisListItem item;
         Integer cancelledStatusId;
         AnalysisViewDO analysisDO;
         TestManager testMan;
+        boolean quickEntry;
         
+        quickEntry = SampleManager.QUICK_ENTRY.equals(sampleDomain);
         cancelledStatusId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
         
         if(man.count() == 0)
@@ -107,14 +109,15 @@ public class AnalysisManagerProxy {
             item = man.getItemAt(i);
             //validate the children
             
-            //we want to always run thorugh validate so it loads the data
+            //we want to always run through validate so it loads the data
             //if the user didnt click on the tab
-            man.getAnalysisResultAt(i).validate(analysisDO, errorsList);
+            if(!quickEntry)
+                man.getAnalysisResultAt(i).validate(analysisDO, errorsList);
             
-            if(item.qaEvents != null)
+            if(!quickEntry && item.qaEvents != null)
                 man.getQAEventAt(i).validate(errorsList);
             
-            if(item.storages != null)
+            if(!quickEntry && item.storages != null)
                 man.getStorageAt(i).validate(errorsList);
         }
     }

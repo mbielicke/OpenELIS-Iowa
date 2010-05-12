@@ -76,7 +76,7 @@ public class SampleItemManagerProxy {
                 man.getStorageAt(i).validate(errorsList);
             
             if(item.analysis != null)
-                man.getAnalysisAt(i).validate(sequenceNum, man.getSampleItemAt(i).getTypeOfSampleId(), errorsList);
+                man.getAnalysisAt(i).validate(sequenceNum, man.getSampleItemAt(i).getTypeOfSampleId(), man.getSampleManager().getSample().getDomain(), errorsList);
         }
     }
 }

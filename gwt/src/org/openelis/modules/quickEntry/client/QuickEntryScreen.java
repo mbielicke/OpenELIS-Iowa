@@ -388,7 +388,11 @@ public class QuickEntryScreen extends Screen {
             }
             
             managers.remove(manager.getSample().getAccessionNumber());
-            
+            }catch(ValidationErrorsList e){
+                errorsList.add(new FormErrorException("quickCommitError"));
+                for(int i=0; i<e.size(); i++)
+                    errorsList.add(new FormErrorException("rowError", 
+                               manager.getSample().getAccessionNumber().toString(), e.getErrorList().get(i).getLocalizedMessage()));
             }catch(Exception e){
                 errorsList.add(new FormErrorException("quickCommitError"));
                 errorsList.add(new FormErrorException("rowError", 
