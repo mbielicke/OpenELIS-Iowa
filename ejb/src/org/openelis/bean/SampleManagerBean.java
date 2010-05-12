@@ -44,6 +44,7 @@ import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.local.LockLocal;
@@ -193,7 +194,14 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
                         anMan = quickEntryMan.getSampleItems().getAnalysisAt(i);
                         for(int j=0; j<anMan.count(); j++){
                             anDO = anMan.getAnalysisAt(j);
-                            anMan.setAnalysisResultAt(AnalysisResultManager.fetchForUpdateWithTestId(anDO.getTestId(), anDO.getUnitOfMeasureId()), j);
+                            
+                            try {
+                                anMan.setAnalysisResultAt(AnalysisResultManager.fetchForUpdateWithTestId(anDO.getTestId(), anDO.getUnitOfMeasureId()), j);
+                            } catch (NotFoundException e) {
+                                anMan.setAnalysisResultAt(AnalysisResultManager.getInstance(), j);
+                            } catch (Exception e) {
+                                throw e;
+                            }
                         }
                     }
                     

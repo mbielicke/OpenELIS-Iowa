@@ -45,8 +45,15 @@ public class SampleSDWISManagerProxy {
     }
 
     public SampleSDWISManager update(SampleSDWISManager man) throws Exception {
-        man.getSDWIS().setSampleId(man.getSampleId());
-        local().update(man.getSDWIS());
+        SampleSDWISViewDO sdwisDO;
+        
+        sdwisDO = man.getSDWIS();
+        
+        if(sdwisDO.getId() == null){
+            sdwisDO.setSampleId(man.getSampleId());
+            local().add(sdwisDO);
+        }else
+            local().update(sdwisDO);
         
         return man;
     }
