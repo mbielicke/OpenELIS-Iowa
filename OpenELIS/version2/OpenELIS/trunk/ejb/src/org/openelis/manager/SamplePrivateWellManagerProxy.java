@@ -71,6 +71,9 @@ public class SamplePrivateWellManagerProxy {
 
     public SamplePrivateWellManager update(SamplePrivateWellManager man) throws Exception {
         AddressDO adDO;
+        SamplePrivateWellViewDO wellDO;
+        
+        wellDO = man.getPrivateWell();
         
         //delete the report to address if necessary
         if(man.getDeletedAddress() != null)
@@ -86,8 +89,11 @@ public class SamplePrivateWellManagerProxy {
            man.getPrivateWell().setReportToAddressId(adDO.getId());
         }
         
-        man.getPrivateWell().setSampleId(man.getSampleId());
-        local().update(man.getPrivateWell());
+        if(wellDO.getId() == null){
+            wellDO.setSampleId(man.getSampleId());
+            local().add(wellDO);
+        }else
+            local().update(wellDO);
         
         return man;
     }

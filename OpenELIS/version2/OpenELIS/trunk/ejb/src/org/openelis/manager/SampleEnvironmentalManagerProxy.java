@@ -39,8 +39,15 @@ public class SampleEnvironmentalManagerProxy {
     }
 
     public SampleEnvironmentalManager update(SampleEnvironmentalManager man) throws Exception {
-        man.getEnvironmental().setSampleId(man.getSampleId());
-        local().update(man.getEnvironmental());
+        SampleEnvironmentalDO envDO;
+        
+        envDO = man.getEnvironmental();
+        
+        if(envDO.getId() == null){
+            envDO.setSampleId(man.getSampleId());
+            local().add(envDO);
+        }else
+            local().update(envDO);
         
         return man;
     }
