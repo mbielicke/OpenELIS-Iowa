@@ -27,6 +27,7 @@ package org.openelis.manager;
 
 import java.util.HashMap;
 
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
 
 public class WorksheetAnalysisManagerProxy {
@@ -51,6 +52,6 @@ public class WorksheetAnalysisManagerProxy {
         return null;
     }
     
-    public void validate(WorksheetAnalysisManager manager) throws Exception {
+    public void validate(WorksheetAnalysisManager manager, ValidationErrorsList errorList) throws Exception {
     }
 }

@@ -25,6 +25,7 @@
 */
 package org.openelis.manager;
 
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
 
 
@@ -65,7 +66,7 @@ public class WorksheetManagerProxy {
         return service.call("abortUpdate", worksheetId);
     }
     
-    public void validate(WorksheetManager man) throws Exception {
+    public void validate(WorksheetManager man, ValidationErrorsList errorList) throws Exception {
         
     }
 }

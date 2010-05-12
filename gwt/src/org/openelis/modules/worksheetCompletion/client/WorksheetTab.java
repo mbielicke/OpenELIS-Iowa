@@ -1,16 +1,12 @@
 package org.openelis.modules.worksheetCompletion.client;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.QcAnalyteViewDO;
-import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SectionDO;
-import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
@@ -35,13 +31,11 @@ import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
-import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.QcManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleDomainInt;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
-import org.openelis.manager.TestWorksheetManager;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetQcResultManager;
@@ -281,9 +275,6 @@ public class WorksheetTab extends Screen {
                         row.cells.get(6).value = aVDO.getStatusId();
 
                         wrManager = waManager.getWorksheetResultAt(j);
-                        if (wrManager.count() == 0)
-                            initializeWorksheetResults(aVDO, arManager, wrManager);
-                                                       
                         for (k = 0; k < wrManager.count(); k++) {
                             if (k != 0) {
                                 row.cells.get(0).value = null;
@@ -323,9 +314,6 @@ public class WorksheetTab extends Screen {
                         row.cells.get(6).value = 0;
 
                         wqrManager = waManager.getWorksheetQcResultAt(j);
-                        if (wqrManager.count() == 0)
-                            initializeWorksheetQcResults(qcManager, wqrManager);
-                                                       
                         for (k = 0; k < wqrManager.count(); k++) {
                             if (k != 0) {
                                 row.cells.get(0).value = null;
@@ -442,82 +430,5 @@ public class WorksheetTab extends Screen {
       */
     private int getPositionMinorNumber(int position) {
         return position - (getPositionMajorNumber(position) - 1) * manager.getWorksheet().getBatchCapacity();
-    }
-
-    /**
-     * Loads the WorksheetResultManager from the provided AnalysisManager.  This method is
-     * called when we have never loaded this worksheet since it was created. 
-     */
-    private void initializeWorksheetResults(AnalysisViewDO aVDO, AnalysisResultManager arManager,
-                                            WorksheetResultManager wrManager) {
-        int                                         i, j;
-        ArrayList<ResultViewDO>                     resultRow;
-        ArrayList<ArrayList<ResultViewDO>>          results;
-        HashMap<Integer,TestWorksheetAnalyteViewDO> twAnalytes;
-        ResultViewDO                                result;
-        TestWorksheetAnalyteViewDO                  twaVDO;
-        TestWorksheetManager                        twManager;
-        WorksheetResultViewDO                       wrVDO;
-
-        twAnalytes = new HashMap<Integer,TestWorksheetAnalyteViewDO>();
-        try {
-            twManager = TestWorksheetManager.fetchByTestId(aVDO.getTestId());
-            for (i = 0; i < twManager.analyteCount(); i++) {
-                twaVDO = twManager.getAnalyteAt(i);
-                twAnalytes.put(twaVDO.getTestAnalyteId(), twaVDO);
-            }
-        } catch (Exception anyE) {
-            // TODO - Code real exception handling
-            anyE.printStackTrace();
-            Window.alert(anyE.getMessage());
-            return;
-        }
-
-        results = arManager.getResults();
-        for (i = 0; i < results.size(); i++) {
-            resultRow = results.get(i);
-            result = resultRow.get(0);
-//            if (twAnalytes.containsKey(result.getTestAnalyteId())) {
-                for (j = 0; j < resultRow.size(); j++) {
-                    result = resultRow.get(j);
-                    wrVDO = new WorksheetResultViewDO();
-                    wrVDO.setTestAnalyteId(result.getTestAnalyteId());
-                    wrVDO.setSortOrder(i+1);
-                    wrVDO.setAnalyteId(result.getAnalyteId());
-                    wrVDO.setTypeId(result.getTypeId());
-                    wrVDO.setAnalyteName(result.getAnalyte());
-                    wrManager.addWorksheetResult(wrVDO);
-                }
-//            }           
-        }
-    }
-
-    /**
-     * Loads the WorksheetQcResultManager from the provided QcManager.  This method is
-     * called when we have never loaded this worksheet since it was created. 
-     */
-    private void initializeWorksheetQcResults(QcManager qcManager, WorksheetQcResultManager wqrManager) {
-        int                     i;
-        QcAnalyteViewDO         qcaVDO;
-        QcAnalyteManager        qcaManager;
-        WorksheetQcResultViewDO wqrVDO;
-
-        try {
-            qcaManager = qcManager.getAnalytes();
-            for (i = 0; i < qcaManager.count(); i++) {
-                qcaVDO = qcaManager.getAnalyteAt(i);
-                wqrVDO = new WorksheetQcResultViewDO();
-                wqrVDO.setSortOrder(i+1);
-                wqrVDO.setQcAnalyteId(qcaVDO.getId());
-                wqrVDO.setAnalyteName(qcaVDO.getAnalyteName());
-                wqrVDO.setTypeId(qcaVDO.getTypeId());
-                wqrVDO.setValue(qcaVDO.getValue());
-                wqrManager.addWorksheetQcResult(wqrVDO);
-            }
-        } catch (Exception anyE) {
-            // TODO - Code real exception handling
-            anyE.printStackTrace();
-            Window.alert(anyE.getMessage());
-        }
     }
 }

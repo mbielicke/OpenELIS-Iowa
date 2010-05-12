@@ -25,6 +25,7 @@
 */
 package org.openelis.manager;
 
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
 
 public class WorksheetQcResultManagerProxy {
@@ -49,6 +50,6 @@ public class WorksheetQcResultManagerProxy {
         return null;
     }
     
-    public void validate(WorksheetQcResultManager manager) throws Exception {
+    public void validate(WorksheetQcResultManager manager, ValidationErrorsList errorList) {
     }
 }
