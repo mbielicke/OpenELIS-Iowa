@@ -1425,6 +1425,10 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
     protected void commitWithWarnings() {
         clearErrors();
+        environmentalTab.clearErrors();
+        wellTab.clearErrors();
+        sdwisTab.clearErrors();
+        
         manager.getSample().setStatusId(sampleErrorStatusId);
 
         if (state == State.UPDATE) {
@@ -1445,7 +1449,12 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     protected void abort() {
         int topLevelIndex;
         TreeDataItem sampleRow;
+        
+        setFocus(null);
         clearErrors();
+        environmentalTab.clearErrors();
+        wellTab.clearErrors();
+        sdwisTab.clearErrors();
         window.setBusy(consts.get("cancelChanges"));
 
         if (state == State.QUERY) {
