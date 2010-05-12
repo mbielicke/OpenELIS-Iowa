@@ -787,9 +787,8 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             try {
                 for (int i = 0; i < man.count(); i++ ) {
                     sampleType = man.getTypeAt(i);
-                    if (sampleTypeId.equals(sampleType.getTypeOfSampleId())) {
+                    if (sampleType.getUnitOfMeasureId() != null && sampleTypeId.equals(sampleType.getTypeOfSampleId())) {
                         entry = DictionaryCache.getEntryFromId(sampleType.getUnitOfMeasureId());
-
                         model.add(new TableDataRow(entry.getId(), entry.getEntry()));
                     }
                 }
