@@ -31,7 +31,6 @@ import java.util.HashMap;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.WorksheetItemLocal;
@@ -122,27 +121,24 @@ public class WorksheetItemManagerProxy {
         return manager;
     }
 
-    public void validate(WorksheetItemManager manager) throws Exception {
+    public void validate(WorksheetItemManager manager, ValidationErrorsList errorList) throws Exception {
         int                   i;
-        ValidationErrorsList  list;
         WorksheetItemListItem listItem;
         WorksheetItemLocal    local;
 
         local = local();
-        list  = new ValidationErrorsList();
         for (i = 0; i < manager.count(); i++) {
             try {
                 local.validate(manager.getWorksheetItemAt(i));
-                
-                listItem = manager.getItemAt(i);
-                if (listItem.analysis != null)
-                    manager.getWorksheetAnalysisAt(i).validate();
             } catch (Exception e) {
-                DataBaseUtil.mergeException(list, e, "itemTable", i);
+//                DataBaseUtil.mergeException(errorList, e, "itemTable", i);
+                DataBaseUtil.mergeException(errorList, e);
             }
+            
+            listItem = manager.getItemAt(i);
+            if (listItem.analysis != null)
+                manager.getWorksheetAnalysisAt(i).validate(errorList);
         }
-        if (list.size() > 0)
-            throw list;
     }
 
     private WorksheetItemLocal local() {

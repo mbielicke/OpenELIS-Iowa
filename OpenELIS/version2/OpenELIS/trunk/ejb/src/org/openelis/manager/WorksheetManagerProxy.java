@@ -121,23 +121,15 @@ public class WorksheetManagerProxy {
         return null;
     }
 
-    public void validate(WorksheetManager manager) throws Exception {
-        ValidationErrorsList list;
-        
-        list = new ValidationErrorsList();
+    public void validate(WorksheetManager manager, ValidationErrorsList errorList) throws Exception {
         try {
             local().validate(manager.getWorksheet());
         } catch (Exception e) {
-            DataBaseUtil.mergeException(list, e);
+            DataBaseUtil.mergeException(errorList, e);
         }
-        try {
-            manager.getItems().validate();
-        } catch (Exception e) {
-            DataBaseUtil.mergeException(list, e);
-        }
-        
-        if (list.size() > 0)
-            throw list;
+
+        if (manager.items != null)
+            manager.getItems().validate(errorList);
     }
 
     private WorksheetLocal local(){
