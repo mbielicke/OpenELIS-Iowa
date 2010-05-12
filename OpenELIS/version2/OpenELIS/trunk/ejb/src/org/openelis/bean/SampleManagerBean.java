@@ -39,6 +39,7 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SystemVariableDO;
@@ -49,6 +50,8 @@ import org.openelis.local.LockLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SampleManagerLocal;
 import org.openelis.local.SystemVariableLocal;
+import org.openelis.manager.AnalysisManager;
+import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
@@ -169,6 +172,10 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
         ArrayList<SystemVariableDO> sysVarList;
         SystemVariableDO sysVarDO;
         SampleDO checkSample;
+        SampleManager quickEntryMan;
+        AnalysisManager anMan;
+        AnalysisViewDO anDO;
+        
 
         errorsList = new ValidationErrorsList();
 
@@ -177,12 +184,24 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
             checkSample = sampleLocal.fetchByAccessionNumber(sampleDO.getAccessionNumber());
 
             if (checkSample != null && !checkSample.getId().equals(sampleDO.getId())){
-                if(SampleManager.QUICK_ENTRY.equals(checkSample.getDomain()))
-                    return fetchForUpdate(checkSample.getId());
-                else
+                if(SampleManager.QUICK_ENTRY.equals(checkSample.getDomain())){
+                    quickEntryMan = fetchForUpdate(checkSample.getId());
+                    
+                    //since the record is a quick entry it doesnt have result records at this point.
+                    //we need to add the result records for all the analyses on this sample at this point
+                    for(int i=0; i<quickEntryMan.getSampleItems().count(); i++){
+                        anMan = quickEntryMan.getSampleItems().getAnalysisAt(i);
+                        for(int j=0; j<anMan.count(); j++){
+                            anDO = anMan.getAnalysisAt(j);
+                            anMan.setAnalysisResultAt(AnalysisResultManager.fetchForUpdateWithTestId(anDO.getTestId(), anDO.getUnitOfMeasureId()), j);
+                        }
+                    }
+                    
+                    return quickEntryMan;
+                } else {
                     errorsList.add(new FieldErrorException("accessionNumberDuplicate", SampleMeta.getAccessionNumber()));
+                }
             }
-
         } catch (Exception e) {
             if(!(e.getCause() instanceof NoResultException))
                 throw e;
