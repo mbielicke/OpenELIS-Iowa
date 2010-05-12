@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.ValidationErrorsList;
 
 public class WorksheetResultManager implements RPC {
     
@@ -101,8 +102,8 @@ public class WorksheetResultManager implements RPC {
         return proxy().update(this);
     }
     
-    public void validate() throws Exception {
-        proxy().validate(this);
+    public void validate(ValidationErrorsList errorList) {
+        proxy().validate(this, errorList);
     }
        
     // friendly methods used by managers and proxies

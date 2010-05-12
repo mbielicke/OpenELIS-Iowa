@@ -32,6 +32,7 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.ValidationErrorsList;
 
 public class WorksheetAnalysisManager implements RPC {
     
@@ -195,8 +196,8 @@ public class WorksheetAnalysisManager implements RPC {
         return proxy().update(this, idHash);
     }
        
-    public void validate() throws Exception {
-        proxy().validate(this);
+    public void validate(ValidationErrorsList errorList) throws Exception {
+        proxy().validate(this, errorList);
     }
 
     // friendly methods used by managers and proxies

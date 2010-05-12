@@ -29,6 +29,7 @@ import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.WorksheetDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.ValidationErrorsList;
 
 public class WorksheetManager implements RPC, HasNotesInt {
 
@@ -103,7 +104,13 @@ public class WorksheetManager implements RPC, HasNotesInt {
     }
 
     public void validate() throws Exception {
-        proxy().validate(this);
+        ValidationErrorsList errorList;
+        
+        errorList = new ValidationErrorsList();
+        proxy().validate(this, errorList);
+        
+        if (errorList.size() > 0)
+            throw errorList;
     }
 
     //
