@@ -69,6 +69,10 @@ public class OrderFillManagerProxy {
         InventoryXUseViewDO fill;        
 
         ul = local();
+        
+        for (int j = 0; j < man.deleteCount(); j++ )
+            ul.delete(man.getDeletedAt(j));
+        
         for (int i = 0; i < man.count(); i++ ) {
             fill = man.getFillAt(i);
             if(fill.getId() != null)

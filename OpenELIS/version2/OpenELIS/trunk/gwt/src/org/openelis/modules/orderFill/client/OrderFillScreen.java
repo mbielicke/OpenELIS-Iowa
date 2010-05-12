@@ -521,6 +521,11 @@ public class OrderFillScreen extends Screen {
                     }                                                
                 }      
                 
+                if (!validate()) {
+                    window.setError(consts.get("correctErrors"));
+                    return;
+                }
+                
                 if(OrderManager.TYPE_SEND_OUT.equals(data.getType())) {
                     shipping = new ShippingViewDO();
                     shipping.setShippedFromId(data.getShipFromId());
@@ -567,10 +572,7 @@ public class OrderFillScreen extends Screen {
         Query query;
         Set<Integer> set; 
         Iterator<Integer> iter;
-        OrderManager man;
-        TreeDataItem parent; 
-        ArrayList<TreeDataItem> model, items;
-        int i;                     
+        OrderManager man;                    
         
         if (!validate()) {
             window.setError(consts.get("correctErrors"));
@@ -884,6 +886,7 @@ public class OrderFillScreen extends Screen {
     private void removeFromCombined(TableDataRow row, OrderViewDO data) {
         OrderManager man;       
         Datetime now;
+        
         try {
             man = (OrderManager)row.data;
             man = man.abortUpdate();            
@@ -894,8 +897,9 @@ public class OrderFillScreen extends Screen {
             custNoteTab.setManager(man);
             drawTabs();    
             try {
-                now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
+                now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);              
                 getOrderRowFromOrder(man.getOrder(), now, row);                
+                orderMap.put(row, man.getOrder());
             } catch (Exception e) {
                 Window.alert("OrderAdd Datetime: " +e.getMessage());
             }

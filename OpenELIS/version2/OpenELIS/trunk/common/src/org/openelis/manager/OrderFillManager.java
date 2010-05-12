@@ -142,6 +142,16 @@ public class OrderFillManager implements RPC {
     void setFills(ArrayList<InventoryXUseViewDO> receipts) {
         this.fills = receipts;
     }
+    
+    int deleteCount() {
+        if (deleted == null)
+            return 0;
+        return deleted.size();
+    }
+    
+    InventoryXUseViewDO getDeletedAt(int i) {
+        return deleted.get(i);
+    }
 
     private static OrderFillManagerProxy proxy() {
         if (proxy == null)
