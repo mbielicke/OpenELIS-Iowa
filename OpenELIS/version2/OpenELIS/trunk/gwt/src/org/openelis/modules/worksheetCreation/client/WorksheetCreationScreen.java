@@ -38,20 +38,14 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
 import org.openelis.cache.DictionaryCache;
-import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcDO;
-import org.openelis.domain.ResultViewDO;
-import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.TestWorksheetItemDO;
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.domain.WorksheetDO;
 import org.openelis.domain.WorksheetItemDO;
-import org.openelis.domain.WorksheetQcResultViewDO;
-import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
@@ -85,18 +79,11 @@ import org.openelis.gwt.widget.table.event.SortEvent;
 import org.openelis.gwt.widget.table.event.SortHandler;
 import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
-import org.openelis.manager.AnalysisManager;
-import org.openelis.manager.AnalysisResultManager;
-import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.QcManager;
-import org.openelis.manager.SampleDataBundle;
-import org.openelis.manager.SampleManager;
 import org.openelis.manager.TestWorksheetManager;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
-import org.openelis.manager.WorksheetQcResultManager;
-import org.openelis.manager.WorksheetResultManager;
 import org.openelis.meta.WorksheetCreationMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.qc.client.QcLookupScreen;
@@ -525,19 +512,11 @@ public class WorksheetCreationScreen extends Screen {
     protected void save() {
         int                      i;
         TableDataRow             row;
-        AnalysisManager          aManager;
-        AnalysisResultManager    arManager;
-        AnalysisViewDO           aVDO;
-        QcManager                qcManager;
-        SampleDataBundle         bundle;
-        SampleManager            sManager;
         WorksheetDO              wDO;
         WorksheetAnalysisDO      waDO;
         WorksheetAnalysisManager waManager = null;
         WorksheetItemDO          wiDO;
         WorksheetItemManager     wiManager = null;
-        WorksheetQcResultManager wqrManager;
-        WorksheetResultManager   wrManager;
         
         setFocus(null);
         
@@ -589,21 +568,6 @@ public class WorksheetCreationScreen extends Screen {
             try {
                 waManager = wiManager.getWorksheetAnalysisAt(i);
                 waManager.addWorksheetAnalysis(waDO);
-                
-                if (waDO.getAnalysisId() != null) {
-                    bundle = waManager.getBundleAt(0);
-                    sManager = bundle.getSampleManager();
-                    aManager = sManager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
-                    arManager = aManager.getAnalysisResultAt(bundle.getAnalysisIndex());
-                    aVDO = aManager.getAnalysisAt(bundle.getAnalysisIndex());
-                    wrManager = waManager.getWorksheetResultAt(0);
-                    initializeWorksheetResults(aVDO, arManager, wrManager);
-                    
-                } else if (waDO.getQcId() != null) {
-                    qcManager = QcManager.fetchById(waDO.getQcId());
-                    wqrManager = waManager.getWorksheetQcResultAt(0);
-                    initializeWorksheetQcResults(qcManager, wqrManager);
-                }
             } catch (Exception anyE) {
                 Window.alert("save(): " + anyE.getMessage());
                 window.clearStatus();
@@ -1210,80 +1174,5 @@ public class WorksheetCreationScreen extends Screen {
        testWorksheetItems.clear();
        buildQCWorksheet();
        isTemplateLoaded = false;
-   }
-
-   /**
-    * Loads the WorksheetResultManager from the provided AnalysisManager. 
-    */
-   private void initializeWorksheetResults(AnalysisViewDO aVDO, AnalysisResultManager arManager,
-                                           WorksheetResultManager wrManager) {
-       int                                         i, j;
-       ArrayList<ResultViewDO>                     resultRow;
-       ArrayList<ArrayList<ResultViewDO>>          results;
-       HashMap<Integer,TestWorksheetAnalyteViewDO> twAnalytes;
-       ResultViewDO                                result;
-       TestWorksheetAnalyteViewDO                  twaVDO;
-       TestWorksheetManager                        twManager;
-       WorksheetResultViewDO                       wrVDO;
-
-       twAnalytes = new HashMap<Integer,TestWorksheetAnalyteViewDO>();
-       try {
-           twManager = TestWorksheetManager.fetchByTestId(aVDO.getTestId());
-           for (i = 0; i < twManager.analyteCount(); i++) {
-               twaVDO = twManager.getAnalyteAt(i);
-               twAnalytes.put(twaVDO.getTestAnalyteId(), twaVDO);
-           }
-       } catch (Exception anyE) {
-           // TODO - Code real exception handling
-           anyE.printStackTrace();
-           Window.alert(anyE.getMessage());
-           return;
-       }
-
-       results = arManager.getResults();
-       for (i = 0; i < results.size(); i++) {
-           resultRow = results.get(i);
-           result = resultRow.get(0);
-//           if (twAnalytes.containsKey(result.getTestAnalyteId())) {
-               for (j = 0; j < resultRow.size(); j++) {
-                   result = resultRow.get(j);
-                   wrVDO = new WorksheetResultViewDO();
-                   wrVDO.setTestAnalyteId(result.getTestAnalyteId());
-                   wrVDO.setSortOrder(i+1);
-                   wrVDO.setAnalyteId(result.getAnalyteId());
-                   wrVDO.setTypeId(result.getTypeId());
-                   wrVDO.setAnalyteName(result.getAnalyte());
-                   wrManager.addWorksheetResult(wrVDO);
-               }
-//           }           
-       }
-   }
-
-   /**
-    * Loads the WorksheetQcResultManager from the provided QcManager. 
-    */
-   private void initializeWorksheetQcResults(QcManager qcManager, WorksheetQcResultManager wqrManager) {
-       int                     i;
-       QcAnalyteViewDO         qcaVDO;
-       QcAnalyteManager        qcaManager;
-       WorksheetQcResultViewDO wqrVDO;
-
-       try {
-           qcaManager = qcManager.getAnalytes();
-           for (i = 0; i < qcaManager.count(); i++) {
-               qcaVDO = qcaManager.getAnalyteAt(i);
-               wqrVDO = new WorksheetQcResultViewDO();
-               wqrVDO.setSortOrder(i+1);
-               wqrVDO.setQcAnalyteId(qcaVDO.getId());
-               wqrVDO.setAnalyteName(qcaVDO.getAnalyteName());
-               wqrVDO.setTypeId(qcaVDO.getTypeId());
-               wqrVDO.setValue(qcaVDO.getValue());
-               wqrManager.addWorksheetQcResult(wqrVDO);
-           }
-       } catch (Exception anyE) {
-           // TODO - Code real exception handling
-           anyE.printStackTrace();
-           Window.alert(anyE.getMessage());
-       }
    }
 }
