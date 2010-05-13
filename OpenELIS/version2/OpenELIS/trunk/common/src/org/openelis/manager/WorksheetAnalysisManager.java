@@ -188,12 +188,12 @@ public class WorksheetAnalysisManager implements RPC {
         return proxy().fetchByWorksheetItemId(id);
     }
 
-    public WorksheetAnalysisManager add(HashMap<Integer,Integer> idHash) throws Exception {
-        return proxy().add(this, idHash);
+    public WorksheetAnalysisManager add(HashMap<Integer,Integer> idHash, HashMap<Integer,SampleManager> sManagers) throws Exception {
+        return proxy().add(this, idHash, sManagers);
     }
     
-    public WorksheetAnalysisManager update(HashMap<Integer,Integer> idHash) throws Exception {
-        return proxy().update(this, idHash);
+    public WorksheetAnalysisManager update(HashMap<Integer,Integer> idHash, HashMap<Integer,SampleManager> sManagers) throws Exception {
+        return proxy().update(this, idHash, sManagers);
     }
        
     public void validate(ValidationErrorsList errorList) throws Exception {
