@@ -25,6 +25,8 @@
 */
 package org.openelis.manager;
 
+import java.util.HashMap;
+
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
 
@@ -39,12 +41,12 @@ public class WorksheetItemManagerProxy {
     public WorksheetItemManager fetchByWorksheetId(Integer worksheetId) throws Exception {
         return service.call("fetchWorksheetItemByWorksheetId", worksheetId);
     }
-    public WorksheetItemManager add(WorksheetItemManager manager) throws Exception {
+    public WorksheetItemManager add(WorksheetItemManager manager, HashMap<Integer,SampleManager> sManagers) throws Exception {
         assert false : "not supported";
         return null;
     }
 
-    public WorksheetItemManager update(WorksheetItemManager manager) throws Exception {
+    public WorksheetItemManager update(WorksheetItemManager manager, HashMap<Integer,SampleManager> sManagers) throws Exception {
         assert false : "not supported";
         return null;
     }
