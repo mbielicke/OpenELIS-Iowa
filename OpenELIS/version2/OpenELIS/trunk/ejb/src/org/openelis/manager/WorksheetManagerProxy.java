@@ -25,6 +25,9 @@
  */
 package org.openelis.manager;
 
+import java.util.HashMap;
+import java.util.Iterator;
+
 import javax.naming.InitialContext;
 
 import org.openelis.domain.ReferenceTable;
@@ -68,16 +71,29 @@ public class WorksheetManagerProxy {
     }
 
     public WorksheetManager add(WorksheetManager manager) throws Exception {
-        Integer        id;
-        WorksheetLocal local;
+        int                            i;
+        Integer                        id;
+        Iterator<SampleManager>        iter;
+        HashMap<Integer,SampleManager> sManagers;
+        SampleManager                  sManager;
+        WorksheetLocal                 local;
 
         local = local();
         local.add(manager.getWorksheet());
         id = manager.getWorksheet().getId();
 
         if (manager.items != null) {
+            sManagers = new HashMap<Integer,SampleManager>();
+
             manager.getItems().setWorksheetId(id);
-            manager.getItems().add();
+            manager.getItems().add(sManagers);
+            
+            iter = sManagers.values().iterator();
+            while (iter.hasNext()) {
+                sManager = (SampleManager) iter.next();
+                sManager.validate();
+                sManager.update();
+            }
         }
         
         if (manager.notes != null) {
@@ -90,16 +106,29 @@ public class WorksheetManagerProxy {
     }
 
     public WorksheetManager update(WorksheetManager manager) throws Exception {
-        Integer        id;
-        WorksheetLocal local;
+        int                            i;
+        Integer                        id;
+        Iterator<SampleManager>        iter;
+        HashMap<Integer,SampleManager> sManagers;
+        SampleManager                  sManager;
+        WorksheetLocal                 local;
 
         local = local();
         local.update(manager.getWorksheet());
         id = manager.getWorksheet().getId();
         
         if (manager.items != null) {
+            sManagers = new HashMap<Integer,SampleManager>();
+
             manager.getItems().setWorksheetId(id);
-            manager.getItems().update();
+            manager.getItems().update(sManagers);
+            
+            iter = sManagers.values().iterator();
+            while (iter.hasNext()) {
+                sManager = (SampleManager) iter.next();
+                sManager.validate();
+                sManager.update();
+            }
         }
         
         if (manager.notes != null) {
