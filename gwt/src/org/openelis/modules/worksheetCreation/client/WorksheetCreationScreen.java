@@ -836,22 +836,13 @@ public class WorksheetCreationScreen extends Screen {
         //
         // Append Last of Run QCItems
         //
-        if (i < testWorksheetDO.getTotalCapacity()) {
-            for (k = 0; k < lastOf.size() && i < testWorksheetDO.getTotalCapacity(); k++) {
-                row = lastOf.get(k);
-                row.cells.get(0).value = getPositionNumber(i);
-                row.cells.get(1).value = "X."+getPositionNumber(i);     // qc accession #
-                items.add(row);
-                i++;
-            }
+        for (k = 0; k < lastOf.size() && i < testWorksheetDO.getTotalCapacity(); k++) {
+            row = lastOf.get(k);
+            row.cells.get(0).value = getPositionNumber(i);
+            row.cells.get(1).value = "X."+getPositionNumber(i);     // qc accession #
+            items.add(row);
+            i++;
         }
-
-        //
-        // Correct i for the case where we incremented it before breaking out
-        // due to running out of analyses and didn't later add lastOf QCs
-        //
-        if (j >= analysisItems.size() && lastOf.size() <= 0)
-            i--;
 
         //
         // If last batch contains only QC items, remove it
