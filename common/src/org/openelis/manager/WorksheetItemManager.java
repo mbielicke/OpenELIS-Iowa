@@ -26,6 +26,7 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.gwt.common.NotFoundException;
@@ -122,12 +123,12 @@ public class WorksheetItemManager implements RPC {
         return proxy().fetchByWorksheetId(id);
     }
 
-    public WorksheetItemManager add() throws Exception {
-        return proxy().add(this);
+    public WorksheetItemManager add(HashMap<Integer,SampleManager> sManagers) throws Exception {
+        return proxy().add(this, sManagers);
     }
     
-    public WorksheetItemManager update() throws Exception {
-        return proxy().update(this);
+    public WorksheetItemManager update(HashMap<Integer,SampleManager> sManagers) throws Exception {
+        return proxy().update(this, sManagers);
     }
     
     public void validate(ValidationErrorsList errorList) throws Exception {
