@@ -126,22 +126,31 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
         COMMIT, ABORT
     };
 
+    public ShippingScreen(ScreenWindow window) throws Exception {
+    	 super((ScreenDefInt)GWT.create(ShippingDef.class));
+    	 init();
+    	 this.window = window;
+    	 postConstructor();
+    }
+    
     public ShippingScreen() throws Exception {
-        super((ScreenDefInt)GWT.create(ShippingDef.class));
+    	super((ScreenDefInt)GWT.create(ShippingDef.class));
+    	init();
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+               postConstructor();
+            }
+        });
+    }
+    
+    public void init() throws Exception {
         service = new ScreenService("controller?service=org.openelis.modules.shipping.server.ShippingService");
         organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
         
         security = OpenELIS.security.getModule("shipping");
         if (security == null)
             throw new SecurityException("screenPermException", "Shipping Screen");
-
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
     }   
-    
 
     /**
      * This method is called to set the initial state of widgets after the
