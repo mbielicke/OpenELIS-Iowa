@@ -39,6 +39,7 @@
         <pathelement location="../OpenELIS-Lib/src"/>
         <pathelement location="../OpenELIS-Common/src"/>
         <pathelement location="../OpenELIS-Lib/lib/gwt-dnd-3.0.0.jar"/>
+        <pathelement location="../OpenELIS-Lib/lib/gwtupload-0.6-SNAPSHOT.jar"/>
         <path refid="project.class.path"/>
       </classpath>
       <!-- add jvmarg -Xss16M or similar if you see a StackOverflowError -->
