@@ -136,9 +136,6 @@ public class WorksheetResultBean implements WorksheetResultLocal {
         if (DataBaseUtil.isEmpty(data.getAnalyteId()))
             list.add(new FieldErrorException("fieldRequiredException",
                                              WorksheetCompletionMeta.getWorksheetResultAnalyteId()));
-        if (DataBaseUtil.isEmpty(data.getTypeId()))
-            list.add(new FieldErrorException("fieldRequiredException",
-                                             WorksheetCompletionMeta.getWorksheetResultTypeId()));
         
         if (list.size() > 0)
             throw list;
