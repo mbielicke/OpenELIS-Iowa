@@ -26,6 +26,7 @@
 package org.openelis.modules.worksheetCreation.client;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -129,7 +130,6 @@ public class WorksheetCreationLookupScreen extends Screen
         }
 
         initialize();
-        setState(State.DEFAULT);
         setState(State.QUERY);
         initializeDropdowns();
         DataChangeEvent.fire(this);
@@ -137,7 +137,8 @@ public class WorksheetCreationLookupScreen extends Screen
     }
     
     /**
-     * Setup state and data change handles for every widget on the screen
+     * Setup state and data change handles for every widget on the screen.  This
+     * screen is query only, so most of the widgets do not need an onValueChange method.
      */
     @SuppressWarnings("unchecked")
     private void initialize() {
@@ -258,8 +259,8 @@ public class WorksheetCreationLookupScreen extends Screen
         addScreenHandler(searchButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 executeQuery();
-                addButton.enable(false);
-                selectAllButton.enable(true);
+                state = State.DEFAULT;
+                setState(State.QUERY);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -280,14 +281,13 @@ public class WorksheetCreationLookupScreen extends Screen
 
         analysesTable.addSelectionHandler(new SelectionHandler<TableRow>() {
             public void onSelection(SelectionEvent event) {
-                if (analysesTable.getSelectedRow() != -1)
-                    addButton.enable(true);
+                addButton.enable(true);
             }
         });
         
         analysesTable.addUnselectionHandler(new UnselectionHandler<TableDataRow>() {
             public void onUnselection(UnselectionEvent event) {
-                if (analysesTable.getSelectedRow() == -1)
+                if (analysesTable.getSelectedRows().length == 0)
                     addButton.enable(false);
             }
         });
@@ -315,11 +315,12 @@ public class WorksheetCreationLookupScreen extends Screen
         addScreenHandler(selectAllButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 analysesTable.selectAll();
-                addButton.enable(true);
+                if (analysesTable.getSelectedRows().length > 0)
+                    addButton.enable(true);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                selectAllButton.enable(false);
+                selectAllButton.enable(true);
             }
         });   
     }
@@ -525,7 +526,7 @@ public class WorksheetCreationLookupScreen extends Screen
         
         editable = false;
         if (analysisRow != null) {
-            editable = //canAddTest(analysisRow) &&
+            editable = canAddTest(analysisRow) &&
                        (!statusReleased.equals(analysisRow.getStatusId()) ||
                         !statusCancelled.equals(analysisRow.getStatusId()));
         }

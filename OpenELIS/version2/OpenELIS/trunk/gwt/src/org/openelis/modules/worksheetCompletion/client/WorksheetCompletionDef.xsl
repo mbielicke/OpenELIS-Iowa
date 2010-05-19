@@ -52,6 +52,22 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select="language" />
               </xsl:with-param>
             </xsl:call-template>
+            <xsl:call-template name="updateButton">
+              <xsl:with-param name="language">
+                <xsl:value-of select="language" />
+              </xsl:with-param>
+            </xsl:call-template>
+            <xsl:call-template name="buttonPanelDivider" />
+            <xsl:call-template name="commitButton">
+              <xsl:with-param name="language">
+                <xsl:value-of select="language" />
+              </xsl:with-param>
+            </xsl:call-template>
+            <xsl:call-template name="abortButton">
+              <xsl:with-param name="language">
+                <xsl:value-of select="language" />
+              </xsl:with-param>
+            </xsl:call-template>
           </HorizontalPanel>
         </AbsolutePanel>
         <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
@@ -85,7 +101,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'loadFrom')" />:
               </text>
-			  <fileUpload key="loadFile" action="file" service="org.openelis.modules.worksheet.server.WorksheetService" method="loadFile"/>
+			  <fileUpload key="loadFile" service="org.openelis.modules.worksheet.server.WorksheetService"/>
 <!--
 	          <HorizontalPanel>
                 <textbox key="loadFile" width="200" case="LOWER" tab="browseButton,instrumentId" field="String"/>
