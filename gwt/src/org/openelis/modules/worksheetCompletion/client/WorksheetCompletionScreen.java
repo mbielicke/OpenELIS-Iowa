@@ -32,8 +32,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -68,10 +66,11 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.FileUpload;
+import org.openelis.gwt.widget.FileUploadWidget;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.meta.WorksheetCompletionMeta;
@@ -81,12 +80,13 @@ import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
 
 public class WorksheetCompletionScreen extends Screen {
 
-    private boolean                 isSaved, closeWindow, isPopup;
+    private boolean                 closeWindow, isPopup;
     private ScreenService           instrumentService;
     private SecurityModule          security;
     private WorksheetManager        manager;
 
-    private AppButton               loadButton, lookupWorksheetButton, printButton;
+    private AppButton               lookupWorksheetButton, printButton,
+                                    updateButton, commitButton, abortButton;
 
     private WorksheetTab            worksheetTab;
     private NotesTab                noteTab;
@@ -97,7 +97,7 @@ public class WorksheetCompletionScreen extends Screen {
     protected CalendarLookUp        defaultStartedDate, defaultCompletedDate;
     protected Confirm               worksheetExitConfirm;
     protected Dropdown<Integer>     statusId;
-    protected FileUpload            loadFile;
+    protected FileUploadWidget      loadFile;
     protected TextBox<Integer>      worksheetId, relatedWorksheetId;
     protected TextBox<String>       defaultInitials;
     protected WorksheetLookupScreen wLookupScreen, wrLookupScreen;
@@ -140,9 +140,8 @@ public class WorksheetCompletionScreen extends Screen {
      * command.
      */
     private void postConstructor() {
-        isSaved     = true;
-        tab         = Tabs.WORKSHEET;
         closeWindow = false;
+        tab         = Tabs.WORKSHEET;
 
         try {
             DictionaryCache.preloadByCategorySystemNames("analysis_status",
@@ -175,12 +174,53 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                printButton.enable(true);
+                printButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+
+        updateButton = (AppButton)def.getWidget("update");
+        addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                update();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
+                                    security.hasUpdatePermission() &&
+                                    canEditAny());
+                if (event.getState() == State.UPDATE)
+                    updateButton.setState(ButtonState.LOCK_PRESSED);
+            }
+        });
+
+        commitButton = (AppButton)def.getWidget("commit");
+        addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                commit();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                commitButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
+            }
+        });
+
+        abortButton = (AppButton)def.getWidget("abort");
+        addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                abort();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                abortButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
             }
         });
 
         worksheetId = (TextBox)def.getWidget(WorksheetCompletionMeta.getId());
         addScreenHandler(worksheetId, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                worksheetId.setValue(manager.getWorksheet().getId());
+            }
+
             public void onStateChange(StateChangeEvent<State> event) {
                 worksheetId.enable(false);
             }
@@ -197,8 +237,7 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                statusId.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
-                                canEditAny());
+                statusId.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -220,8 +259,7 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                lookupWorksheetButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
-                                             canEditAny());
+                lookupWorksheetButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -231,8 +269,7 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                instrumentId.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
-                                    canEditAny());
+                instrumentId.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -271,32 +308,10 @@ public class WorksheetCompletionScreen extends Screen {
             } 
         });
 
-        loadFile = (FileUpload)def.getWidget("loadFile");
+        loadFile = (FileUploadWidget)def.getWidget("loadFile");
         addScreenHandler(loadFile, new ScreenEventHandler<String>() {
-            public void onValueChange(ValueChangeEvent event) {
-                String value;
-                
-                value = (String) event.getValue();
-                if (value != null && value.length() > 0)
-                    loadButton.enable(true);
-                else
-                    loadButton.enable(false);
-                
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
-//                loadFile.enable(true);
-            }
-        });
-
-        loadButton = (AppButton)def.getWidget("loadButton");
-        addScreenHandler(loadButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                load();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                loadButton.enable(false);
+                loadFile.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -306,8 +321,7 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                defaultInitials.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
-                                       canEditAny());
+                defaultInitials.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -317,8 +331,7 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                defaultStartedDate.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
-                                          canEditAny());
+                defaultStartedDate.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -328,8 +341,7 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                defaultCompletedDate.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
-                                            canEditAny());
+                defaultCompletedDate.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -380,9 +392,14 @@ public class WorksheetCompletionScreen extends Screen {
         
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
             public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
-                if (!closeWindow) {
+                if (EnumSet.of(State.UPDATE).contains(state)) {
                     event.cancel();
-                    exit();
+                    window.setError(consts.get("mustCommitOrAbort"));
+                } else {
+                    if (!isPopup && !closeWindow) {
+                        event.cancel();
+                        openLookupWindow();
+                    }
                 }
             }
         });
@@ -429,7 +446,7 @@ public class WorksheetCompletionScreen extends Screen {
                         manager = WorksheetManager.fetchWithNotes(id);
                         break;
                 }
-                setState(State.UPDATE);
+                setState(State.DISPLAY);
             } catch (NotFoundException e) {
                 fetchById(null);
                 window.setDone(consts.get("noRecordsFound"));
@@ -496,23 +513,35 @@ public class WorksheetCompletionScreen extends Screen {
     
     protected void load() {
         Window.alert("Worksheet loaded from '<loadFilename>'");
-//        isSaved = false;
     }
     
     protected void print() {
         Window.alert("Worksheet printed!!!");
     }
     
-    protected void save() {
-        window.setBusy(consts.get("saving"));
+    protected void update() {
+        window.setBusy(consts.get("lockForUpdate"));
+
+        try {
+            manager = manager.fetchForUpdate();
+
+            setState(State.UPDATE);
+            DataChangeEvent.fire(this);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+        }
+        window.clearStatus();
+    }
+
+    protected void commit() {
+        window.setBusy(consts.get("updating"));
         try {
             manager = manager.update();
             worksheetTab.save();
 
             setState(State.DISPLAY);
             DataChangeEvent.fire(this);
-            window.setDone(consts.get("savingComplete"));
-            isSaved = true;
+            window.setDone(consts.get("updatingComplete"));
         } catch (ValidationErrorsList e) {
             showErrors(e);
         } catch (Exception e) {
@@ -521,38 +550,23 @@ public class WorksheetCompletionScreen extends Screen {
         }
     }
 
-    protected void exit() {
-        if (!isSaved) {
-            if (worksheetExitConfirm == null) {
-                worksheetExitConfirm = new Confirm(Confirm.Type.QUESTION, "",
-                                                   consts.get("worksheetSaveExitConfirm"),
-                                                   "Don't Exit", "Save & Exit", "Exit Without Saving");
-                worksheetExitConfirm.addSelectionHandler(new SelectionHandler<Integer>(){
-                    public void onSelection(SelectionEvent<Integer> event) {
-                        switch(event.getSelectedItem().intValue()) {
-                            case 1:
-                                save();
-                            case 2:
-                                if (!isPopup) {
-                                    openLookupWindow();
-                                } else {
-                                    closeWindow = true;
-                                    window.close();
-                                }
-                                break;
-                        }
-                    }
-                });
+    protected void abort() {
+        setFocus(null);
+        clearErrors();
+        window.setBusy(consts.get("cancelChanges"));
+
+        if (state == State.UPDATE) {
+            try {
+                manager = manager.abortUpdate();
+                setState(State.DISPLAY);
+                DataChangeEvent.fire(this);
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                fetchById(null);
             }
-            
-            worksheetExitConfirm.show();
+            window.setDone(consts.get("updateAborted"));
         } else {
-            if (!isPopup) {
-                openLookupWindow();
-            } else {
-                closeWindow = true;
-                window.close();
-            }
+            window.clearStatus();
         }
     }
 
