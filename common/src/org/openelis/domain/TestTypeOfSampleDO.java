@@ -26,7 +26,7 @@
 package org.openelis.domain;
 
 /**
- * Class represents the fields in database table analysis.
+ * Class represents the fields in database table test_type_of_sample.
  */
 
 public class TestTypeOfSampleDO extends DataObject {
