@@ -1,8 +1,5 @@
 package org.openelis.bean;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,8 +10,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.ReviewReleaseVO;
-import org.openelis.gwt.common.ReportProgress;
+import org.openelis.domain.CompleteReleaseVO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.QueryData;
@@ -22,7 +18,6 @@ import org.openelis.meta.ReviewReleaseMeta;
 import org.openelis.meta.SampleMeta;
 import org.openelis.remote.ReviewReleaseRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.util.SessionManager;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
@@ -35,14 +30,14 @@ public class ReviewReleaseBean implements ReviewReleaseRemote {
 	private EntityManager manager;
 
 	@SuppressWarnings("unchecked")
-	public ArrayList<ReviewReleaseVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+	public ArrayList<CompleteReleaseVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
 		Query query;
 		QueryBuilderV2 builder;
 		List list;
 	
 		builder = new QueryBuilderV2();
 		builder.setMeta(new ReviewReleaseMeta());
-		builder.setSelect("distinct new org.openelis.domain.ReviewReleaseVO(" + SampleMeta.getId() + ", "+
+		builder.setSelect("distinct new org.openelis.domain.CompleteReleaseVO(" + SampleMeta.getId() + ", "+
 																				SampleMeta.getAnalysisId() +", " +
 																				SampleMeta.getAccessionNumber()+", " +
 																				SampleMeta.getAnalysisTestName()+"," +
@@ -50,10 +45,8 @@ public class ReviewReleaseBean implements ReviewReleaseRemote {
 																				SampleMeta.getAnalysisStatusId()+","+
 																				SampleMeta.getStatusId()+") ");
 		builder.constructWhere(fields);
-		builder.setOrderBy(SampleMeta.getAccessionNumber());
+		builder.setOrderBy(SampleMeta.getAccessionNumber() + ", " + SampleMeta.getAnalysisTestName() + ", "+ SampleMeta.getAnalysisMethodName());
 		query = manager.createQuery(builder.getEJBQL());  		
-				   					//	    "from Sample s, IN (s.sampleItem) si, IN (si.analysis) a LEFT JOIN a.test t "+
-				   					//	    "where s.accessionNumber = 1");
          																					   
 		query.setMaxResults(first + max);
 		builder.setQueryParams(query, fields);
@@ -62,11 +55,11 @@ public class ReviewReleaseBean implements ReviewReleaseRemote {
 
         if (list.isEmpty())
             throw new NotFoundException();
-        list = (ArrayList<ReviewReleaseVO>)DataBaseUtil.subList(list, first, max);
+        list = (ArrayList<CompleteReleaseVO>)DataBaseUtil.subList(list, first, max);
         if (list == null)
             throw new LastPageException();
 
-        return (ArrayList<ReviewReleaseVO>)list;
+        return (ArrayList<CompleteReleaseVO>)list;
 	}
 
 }
