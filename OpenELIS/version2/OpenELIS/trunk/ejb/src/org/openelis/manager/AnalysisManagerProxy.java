@@ -46,14 +46,14 @@ import org.openelis.manager.AnalysisManager.AnalysisListItem;
 public class AnalysisManagerProxy {
     public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
         AnalysisViewDO anDO;
-        ArrayList<AnalysisViewDO> items;
+        ArrayList<AnalysisViewDO> analyses;
         AnalysisManager man;
         
-        items = analysisLocal().fetchBySampleItemId(sampleItemId);
+        analyses = analysisLocal().fetchBySampleItemId(sampleItemId);
         man = AnalysisManager.getInstance();
         
-        for(int i=0; i<items.size(); i++){
-            anDO = items.get(i);
+        for(int i=0; i<analyses.size(); i++){
+            anDO = analyses.get(i);
             man.addAnalysis(anDO);
         }
         
