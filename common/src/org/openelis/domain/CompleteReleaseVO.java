@@ -2,7 +2,7 @@ package org.openelis.domain;
 
 import org.openelis.gwt.common.RPC;
 
-public class ReviewReleaseVO implements RPC {
+public class CompleteReleaseVO implements RPC {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -14,11 +14,11 @@ public class ReviewReleaseVO implements RPC {
 	protected Integer specimenStatus;
 	protected Integer analysisId;
 	
-	public ReviewReleaseVO() {
+	public CompleteReleaseVO() {
 		
 	}
 	
-	public ReviewReleaseVO(Integer sampleId, Integer analysisId, Integer accession,String test, String method,Integer analysisStatus,Integer specimenStatus) {
+	public CompleteReleaseVO(Integer sampleId, Integer analysisId, Integer accession,String test, String method,Integer analysisStatus,Integer specimenStatus) {
 		this.sampleId = sampleId;
 		this.analysisId = analysisId;
 		this.accession = accession;

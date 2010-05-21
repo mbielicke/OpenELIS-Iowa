@@ -147,6 +147,20 @@ public class AnalysisManager implements RPC {
         }
     }
     
+    public int addReflexAnalysis(Integer parentAnalysisId, Integer parentResultId) {
+        int addedIndex;
+        AnalysisViewDO reflex;
+
+        addedIndex = addAnalysis();
+        reflex = getAnalysisAt(addedIndex);
+
+        // set the reflex analysis parent values
+        reflex.setParentAnalysisId(parentAnalysisId);
+        reflex.setParentResultId(parentResultId);
+
+        return addedIndex;
+    }
+    
     
 
     public void removeAnalysisAt(int index) {

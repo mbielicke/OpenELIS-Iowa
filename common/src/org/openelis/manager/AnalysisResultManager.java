@@ -24,6 +24,8 @@ public class AnalysisResultManager implements RPC {
     protected HashMap<Integer, TestResultDO>              testResultList;
     protected ArrayList<ResultValidator>                  resultValidators;
     protected boolean                                     defaultsLoaded;
+    protected AnalysisManager                             analysisManager;
+    private int                                           nextTempId;
 
     protected transient TestManager                       testManager;
     protected transient static AnalysisResultManagerProxy proxy;
@@ -117,12 +119,14 @@ public class AnalysisResultManager implements RPC {
      * Creates a new instance of this object with the specified analysis id. Use
      * this function to load an instance of this object from database.
      */
-    public static AnalysisResultManager fetchForUpdateWithAnalysisId(Integer analysisId, Integer testId)
-                                                                                          throws Exception {
+    public static AnalysisResultManager fetchForUpdateWithAnalysisId(Integer analysisId,
+                                                                     Integer testId)
+                                                                                    throws Exception {
         return proxy().fetchByAnalysisId(analysisId, testId);
     }
 
-    public static AnalysisResultManager fetchForUpdateWithTestId(Integer testId, Integer unitId) throws Exception {
+    public static AnalysisResultManager fetchForUpdateWithTestId(Integer testId, Integer unitId)
+                                                                                                throws Exception {
         return proxy().fetchByTestId(testId, unitId);
     }
 
@@ -237,39 +241,39 @@ public class AnalysisResultManager implements RPC {
 
         noColList = new ArrayList<TestAnalyteViewDO>();
         // clean the list of column anaytes
-        for (int i = 0; i < origAnalyteList.size(); i++) {
+        for (int i = 0; i < origAnalyteList.size(); i++ ) {
             taDO = origAnalyteList.get(i);
             if ("N".equals(taDO.getIsColumn()))
                 noColList.add(origAnalyteList.get(i));
         }
 
         if ( !loaded) {
-            //get the aliases for all the non column analytes
+            // get the aliases for all the non column analytes
             everyAliasList = new ArrayList<AnalyteDO>();
             try {
                 everyAliasList = proxy().getAliasList(noColList);
             } catch (Exception e) {
                 everyAliasList = new ArrayList<AnalyteDO>();
             }
-            
-            //fill the alias hash for this row group record
+
+            // fill the alias hash for this row group record
             aliasList = new HashMap<Integer, ArrayList<TestAnalyteViewDO>>();
             aliasSubList = new ArrayList<TestAnalyteViewDO>();
             analyteId = -1;
-            int a=0;
-            for(int j=0; j<noColList.size(); j++){
+            int a = 0;
+            for (int j = 0; j < noColList.size(); j++ ) {
                 taDO = noColList.get(j);
                 newAnalyteId = true;
-                
+
                 while (a < everyAliasList.size() &&
-                                everyAliasList.get(a).getParentAnalyteId().equals(taDO.getAnalyteId())) {
+                       everyAliasList.get(a).getParentAnalyteId().equals(taDO.getAnalyteId())) {
                     anDO = everyAliasList.get(a);
-                    if(newAnalyteId){
+                    if (newAnalyteId) {
                         analyteId = anDO.getParentAnalyteId();
                         aliasSubList = new ArrayList<TestAnalyteViewDO>();
                         aliasList.put(analyteId, aliasSubList);
                     }
-                    
+
                     newAliasDo = new TestAnalyteViewDO();
                     newAliasDo.setId(taDO.getId());
                     newAliasDo.setAnalyteId(anDO.getId());
@@ -282,29 +286,29 @@ public class AnalysisResultManager implements RPC {
                     newAliasDo.setTypeId(taDO.getTypeId());
                     newAliasDo.setIsAlias("Y");
                     aliasSubList.add(newAliasDo);
-                    
-                    a++;
+
+                    a++ ;
                 }
             }
-            
+
             li.aliasList = aliasList;
         }
 
-        //create the return list
+        // create the return list
         returnList = new ArrayList<TestAnalyteViewDO>();
         for (int i = 0; i < noColList.size(); i++ ) {
             taDO = noColList.get(i);
             returnList.add(taDO);
-            
-            //check for analytes
+
+            // check for analytes
             aliasSubList = aliasList.get(taDO.getAnalyteId());
-            
-            if(aliasSubList != null){
-                for(int j=0; j<aliasSubList.size(); j++)
+
+            if (aliasSubList != null) {
+                for (int j = 0; j < aliasSubList.size(); j++ )
                     returnList.add(aliasSubList.get(j));
             }
         }
-        
+
         return returnList;
     }
 
@@ -336,7 +340,7 @@ public class AnalysisResultManager implements RPC {
     void setMergeTestId(Integer mergeTestId) {
         this.mergeTestId = mergeTestId;
     }
-    
+
     Integer getMergeUnitId() {
         return mergeUnitId;
     }
@@ -381,33 +385,33 @@ public class AnalysisResultManager implements RPC {
         TestAnalyteViewDO taDO;
         TestAnalyteListItem li;
         int index;
-        
+
         li = testAnalyteList.get(rowGroup);
         analyteList = li.testAnalytes;
-        
-        //find the analyte we want to add
+
+        // find the analyte we want to add
         taDO = null;
-        for(index=0; index<analyteList.size(); index++){
+        for (index = 0; index < analyteList.size(); index++ ) {
             taDO = analyteList.get(index);
-            
-            if("N".equals(taDO.getIsColumn()) && testAnalyteId.equals(taDO.getId()))
+
+            if ("N".equals(taDO.getIsColumn()) && testAnalyteId.equals(taDO.getId()))
                 break;
         }
-        
+
         currlist = new ArrayList<ResultViewDO>(1);
-        do{
-            if("N".equals(taDO.getIsColumn()))
+        do {
+            if ("N".equals(taDO.getIsColumn()))
                 currlist.add(createResultViewDO("N", taDO, analyteId, analyteName));
             else
                 currlist.add(createResultViewDO("Y", taDO, null, null));
-            
-            index++;
-            if(index < analyteList.size())
+
+            index++ ;
+            if (index < analyteList.size())
                 taDO = analyteList.get(index);
             else
                 taDO = null;
-        }while(taDO != null && !"N".equals(taDO.getIsColumn()));
-        
+        } while (taDO != null && !"N".equals(taDO.getIsColumn()));
+
         return currlist;
     }
 
