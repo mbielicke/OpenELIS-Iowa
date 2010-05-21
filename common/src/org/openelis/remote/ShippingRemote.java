@@ -30,12 +30,15 @@ import java.util.ArrayList;
 import javax.ejb.Remote;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.ShippingViewDO;
 import org.openelis.gwt.common.data.QueryData;
 
 @Remote
 public interface ShippingRemote {
 
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int i, int rowPP) throws Exception;
+
+    public ShippingViewDO fetchByOrderId(Integer id) throws Exception;
 
     /*//method to return shipping record
     public ShippingDO getShipment(Integer shippingId);

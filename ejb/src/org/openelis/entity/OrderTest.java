@@ -7,8 +7,11 @@ package org.openelis.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -21,7 +24,7 @@ import org.openelis.utils.Auditable;
 
 @NamedQuery( name = "OrderTest.FetchByOrderId",
             query = "select distinct new org.openelis.domain.OrderTestViewDO(o.id, o.orderId, o.sortOrder," +
-            		"o.referenceId, o.referenceTableId, '', '', '')"
+            		"o.testId, o.test.name, o.test.method.name, o.test.description)"
                   + " from OrderTest o where o.orderId = :id")
 
 @Entity
@@ -40,11 +43,12 @@ public class OrderTest implements Auditable, Cloneable {
     @Column(name = "sort_order")
     private Integer   sortOrder;
 
-    @Column(name = "reference_id")
-    private Integer   referenceId;
+    @Column(name = "test_id")
+    private Integer   testId;
 
-    @Column(name = "reference_table_id")
-    private Integer   referenceTableId;   
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "test_id", insertable = false, updatable = false)
+    private Test      test;
 
     @Transient
     private OrderTest original;
@@ -76,23 +80,22 @@ public class OrderTest implements Auditable, Cloneable {
             this.sortOrder = sequence;
     }
 
-    public Integer getReferenceId() {
-        return referenceId;
+    public Integer getTestId() {
+        return testId;
     }
 
-    public void setReferenceId(Integer referenceId) {
-        if (DataBaseUtil.isDifferent(referenceId, this.referenceId))
-            this.referenceId = referenceId;
+    public void setTestId(Integer testId) {
+        if (DataBaseUtil.isDifferent(testId, this.testId))
+            this.testId = testId;
+    }   
+    
+    public Test getTest() {
+        return test;
     }
 
-    public Integer getReferenceTableId() {
-        return referenceTableId;
+    public void setTest(Test test) {
+        this.test = test;
     }
-
-    public void setReferenceTableId(Integer referenceTableId) {
-        if (DataBaseUtil.isDifferent(referenceTableId, this.referenceTableId))
-            this.referenceTableId = referenceTableId;
-    }    
 
     public void setClone() {
         try {
@@ -112,8 +115,7 @@ public class OrderTest implements Auditable, Cloneable {
             audit.setField("id", id, original.id)
                  .setField("order_id", orderId, original.orderId)
                  .setField("sequence", sortOrder, original.sortOrder)
-                 .setField("reference_id", referenceId, original.referenceId)
-                 .setField("reference_table_id", referenceTableId, original.referenceTableId);
+                 .setField("test_id", testId, original.testId);
 
         return audit;
     }

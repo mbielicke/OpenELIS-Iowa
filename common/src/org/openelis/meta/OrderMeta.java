@@ -134,7 +134,9 @@ public class OrderMeta implements Meta, MetaMap {
 	                               REPORT_TO_NAME = "_reportTo.name",
                                    BILL_TO_NAME = "_billTo.name",
                                    ITEM_INVENTORY_ITEM_NAME = "_orderItem.inventoryItem.name",
-	                               ITEM_INVENTORY_ITEM_STORE_ID = "_orderItem.inventoryItem.storeId";
+	                               ITEM_INVENTORY_ITEM_STORE_ID = "_orderItem.inventoryItem.storeId",
+	                               TEST_NAME = "_orderTest.test.name";
+	                                                
 
     private static HashSet<String> names;
 
@@ -185,7 +187,8 @@ public class OrderMeta implements Meta, MetaMap {
                                                   AUX_DATA_TYPE_ID, AUX_DATA_VALUE,
                                                   
                                                   ORGANIZATION_NAME, REPORT_TO_NAME, BILL_TO_NAME,
-                                                  ITEM_INVENTORY_ITEM_NAME, ITEM_INVENTORY_ITEM_STORE_ID));
+                                                  ITEM_INVENTORY_ITEM_NAME, ITEM_INVENTORY_ITEM_STORE_ID,
+                                                  TEST_NAME));
     }
 
     public static String getId() {
@@ -546,6 +549,10 @@ public class OrderMeta implements Meta, MetaMap {
 
     public static String getOrderItemInventoryItemStoreId() {
         return ITEM_INVENTORY_ITEM_STORE_ID;
+    }
+    
+    public static String getTestName() {
+        return TEST_NAME;
     }
 
     public boolean hasColumn(String columnName) {

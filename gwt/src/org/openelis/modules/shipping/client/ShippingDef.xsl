@@ -243,11 +243,11 @@ UIRF Software License are applicable instead of those above.
                         </text>
                       </HorizontalPanel>
                     </appButton>
-                    <appButton key="orderSampleButton" style="Button">
+                    <appButton key="lookupItemButton" style="Button">
                       <HorizontalPanel>
                         <AbsolutePanel style="" />
                         <text>
-                          <xsl:value-of select="resource:getString($constants,'orderSample')" />
+                          <xsl:value-of select="resource:getString($constants,'lookupItem')" />
                         </text>
                       </HorizontalPanel>
                     </appButton>

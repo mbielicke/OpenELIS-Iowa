@@ -87,6 +87,26 @@ public class ShippingBean implements ShippingRemote, ShippingLocal{
         return data;
     }   
     
+    public ShippingViewDO fetchByOrderId(Integer orderId) throws Exception {
+        Query query;
+        ShippingViewDO data;
+        OrganizationViewDO organization;
+        List list;
+        
+        query = manager.createNamedQuery("Shipping.FetchByOrderId");
+        query.setParameter("orderId", orderId);
+        data = null;
+        
+        list = query.getResultList();
+        if(!list.isEmpty()) {
+            data = (ShippingViewDO)list.get(0);
+            organization = organizationBean.fetchById(data.getShippedToId());           
+            data.setShippedTo(organization);
+        }
+        
+        return data;
+    }
+    
     @SuppressWarnings("unchecked")
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
@@ -180,238 +200,4 @@ public class ShippingBean implements ShippingRemote, ShippingLocal{
         if(list.size() > 0)
             throw list;
     }
-
-    /* public ShippingAddAutoFillDO getAddAutoFillValues() throws Exception {
-        ShippingAddAutoFillDO autoFillDO = new ShippingAddAutoFillDO();       
-        //status integer
-        Query query = manager.createNamedQuery("Dictionary.FetchBySystemName");
-        query.setParameter("name", "shipping_status_processed");
-
-        //default to shipped status
-        DictionaryDO dictDO = (DictionaryDO)query.getSingleResult();
-        autoFillDO.setStatus(dictDO.getId());
-
-        //default to today
-        autoFillDO.setProcessedDate(new Date());
-
-        //default to current user
-        SystemUserDO systemUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal().getName());
-        autoFillDO.setProcessedBy(systemUserDO.getLoginName());
-        autoFillDO.setSystemUserId(systemUserDO.getId());
-        
-        
-        return autoFillDO;
-    }
-    
-    @RolesAllowed("shipping-update")
- public Integer updateShipment(ShippingDO shippingDO, List<ShippingItemDO> shippingItems, List<ShippingTrackingDO> trackingNumbers, NoteViewDO shippingNote) throws Exception {
-        validateShipping(shippingDO, shippingItems);
-        
-        if(shippingDO.getId() != null)
-            lockBean.validateLock(shippingRefTableId,shippingDO.getId());
-        
-         manager.setFlushMode(FlushModeType.COMMIT);
-         Shipping shipping = null;
-    
-         if (shippingDO.getId() == null)
-            shipping = new Shipping();
-        else
-            shipping = manager.find(Shipping.class, shippingDO.getId());
-
-        //update shipping record
-         shipping.setCost(shippingDO.getCost());
-         shipping.setNumberOfPackages(shippingDO.getNumberOfPackages());
-         shipping.setProcessedById(shippingDO.getProcessedById());
-         shipping.setProcessedDate(shippingDO.getProcessedDate());
-         shipping.setShippedDate(shippingDO.getShippedDate());
-         shipping.setShippedFromId(shippingDO.getShippedFromId());
-         shipping.setShippedMethodId(shippingDO.getShippedMethodId());
-         shipping.setShippedToId(shippingDO.getShippedToId());
-         shipping.setStatusId(shippingDO.getStatusId());
-                
-        if (shipping.getId() == null)
-            manager.persist(shipping);
-        
-        //update shipping note
-        Note note = null;
-        
-        if (shippingNote.getId() == null)
-            note = new Note();
-        else
-            note = manager.find(Note.class, shippingNote.getId());
-        
-        note.setIsExternal(shippingNote.getIsExternal());
-        note.setReferenceId(shipping.getId());
-        note.setReferenceTableId(shippingRefTableId);
-        note.setText(shippingNote.getText());
-        
-        if(note.getId() == null)
-            note.setSystemUserId(lockBean.getSystemUserId());
-
-        note.setTimestamp(Datetime.getInstance());
-        
-        if (note.getId() == null) {
-            manager.persist(note);
-        }
-        
-        //update tracking numbers
-        if(trackingNumbers != null) {
-            for (ShippingTrackingDO trackingDO : trackingNumbers) {
-                ShippingTracking shippingTracking = null;
-            
-                if (trackingDO.getId() == null)
-                    shippingTracking = new ShippingTracking();
-                else
-                    shippingTracking = manager.find(ShippingTracking.class, trackingDO.getId());
-
-                if(trackingDO.isDelete() && shippingTracking.getId() != null){
-                    //delete the tracking number record from the database
-                    manager.remove(shippingTracking);
-                
-                }else{
-                    shippingTracking.setShippingId(shipping.getId());
-                    shippingTracking.setTrackingNumber(trackingDO.getTrackingNumber());
-                    
-                    if (shippingTracking.getId() == null) {
-                        manager.persist(shippingTracking);
-                    }
-                }
-            }
-        }
-        
-       if(shippingItems != null) {
-           ArrayList listOfOrderIds = new ArrayList();
-            for (ShippingItemDO itemDO : shippingItems) {
-                //update shipping items
-                ShippingItem shippingItem = null;
-            
-                if (itemDO.getId() == null)
-                    shippingItem = new ShippingItem();
-                else
-                    shippingItem = manager.find(ShippingItem.class, itemDO.getId());
-
-                shippingItem.setReferenceId(itemDO.getReferenceId());
-                shippingItem.setReferenceTableId(itemDO.getReferenceTableId());
-                shippingItem.setShippingId(shipping.getId());
-                shippingItem.setQuantity(itemDO.getQuantity());
-                shippingItem.setDescription(itemDO.getDescription());
-                    
-                if (shippingItem.getId() == null) {
-                    manager.persist(shippingItem);
-                }
-            }
-        }
-       
-       if(shippingDO.getId() != null)
-           lockBean.giveUpLock(shippingRefTableId, shippingDO.getId());
-        
-        return shipping.getId();
-    }
-
-    public ShippingDO getShipment(Integer shippingId) {
-        Query query = manager.createNamedQuery("Shipping.Shipping");
-        query.setParameter("id", shippingId);
-        ShippingDO shippingDO = (ShippingDO) query.getResultList().get(0);// getting shipping record
-
-        SystemUserDO sysUserDO = sysUser.getSystemUser(shippingDO.getProcessedById());
-        shippingDO.setProcessedBy(sysUserDO.getLoginName());       
-        
-        return shippingDO;
-    }
-
-    @RolesAllowed("shipping-update")
-    public ShippingDO getShipmentAndLock(Integer shippingId) throws Exception {
-        lockBean.getLock(shippingRefTableId, shippingId);
-        
-        return getShipment(shippingId);
-    }
-
-    public ShippingDO getShipmentAndUnlock(Integer shippingId) {
-        //unlock the entity
-        lockBean.giveUpLock(shippingRefTableId, shippingId);
-        
-        return getShipment(shippingId);
-    }
-    
-    public NoteViewDO getShippingNote(Integer shippingId) {
-        Query query = manager.createNamedQuery("Note.Notes");
-        query.setParameter("referenceTable", shippingRefTableId);
-        query.setParameter("id", shippingId);
-        
-        List results = query.getResultList();
-        
-        if(results.size() > 0)
-            return (NoteViewDO)results.get(0);
-        else 
-            return null;
-    }
-    
-    public List getTrackingNumbers(Integer shippingId) {
-        Query query = manager.createNamedQuery("ShippingTracking.Tracking");
-        query.setParameter("id", shippingId);
-        return query.getResultList();
-
-    }
-    
-    public List getShippingItems(Integer shippingId) {
-        Query query = manager.createNamedQuery("ShippingItem.ShippingItem");
-        query.setParameter("id", shippingId);
-        
-        List resultList = query.getResultList();
-        
-        for(int i=0; i<resultList.size(); i++){
-            ShippingItemDO itemDO = (ShippingItemDO)resultList.get(i);
-
-            if(itemDO.getReferenceTableId().equals(orderItemRefTableId)){
-                query = manager.createNamedQuery("OrderItem.OrderItemName");
-                query.setParameter("id", itemDO.getReferenceId());
-                itemDO.setItemDescription((String)query.getSingleResult());
-            
-            }else if(itemDO.getReferenceTableId().equals(sampleItemRefTableId)){
-                
-            }
-        }
-        
-        return resultList;
-    }
-    
-    private void validateShipping(ShippingDO shippingDO, List shippingItems) throws Exception{
-        ValidationErrorsList list = new ValidationErrorsList();
-        //status required
-        if(shippingDO.getStatusId() == null){
-            list.add(new FieldErrorException("fieldRequiredException",ShippingMeta.getStatusId()));
-        }
-        
-        //num packages required
-        if(shippingDO.getNumberOfPackages() == null){
-            list.add(new FieldErrorException("fieldRequiredException",ShippingMeta.getNumberOfPackages()));
-        }
-        
-        //shipped from required
-        if(shippingDO.getShippedFromId() == null){
-            list.add(new FieldErrorException("fieldRequiredException",ShippingMeta.getShippedFromId()));
-        }
-        
-        //shipped to required
-        if(shippingDO.getShippedToId() == null){
-            list.add(new FieldErrorException("fieldRequiredException",ShippingMeta.getShippedToId()));
-        }
-        
-        //cost not below 0
-        if(shippingDO.getCost() != null && shippingDO.getCost().doubleValue() <= 0){
-            list.add(new FieldErrorException("invalidCostException",ShippingMeta.getCost()));
-        }
-        
-        //num of packages not below 1
-        if(shippingDO.getNumberOfPackages() != null && shippingDO.getNumberOfPackages().intValue() <= 0){
-            list.add(new FieldErrorException("invalidNumPackagesException",ShippingMeta.getNumberOfPackages()));
-        }
-        
-        //at least 1 item required
-        if(shippingItems.size() == 0)
-            list.add(new FormErrorException("noShippingItemsException"));
-        
-        if(list.size() > 0)
-            throw list;
-    } */
 }

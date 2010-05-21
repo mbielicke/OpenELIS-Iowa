@@ -81,9 +81,20 @@ public class TestBean implements TestRemote, TestLocal {
     }
 
     public ArrayList<TestMethodVO> fetchByName(String name, int max) throws Exception{
-        Query query = manager.createNamedQuery("Test.FetchWithMethodByName");
+        Query query;
+        
+        query = manager.createNamedQuery("Test.FetchWithMethodByName");
         query.setParameter("name", name);
         query.setMaxResults(max);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
+    public ArrayList<TestMethodVO> fetchByPanelId(Integer panelId) throws Exception {
+        Query query;
+        
+        query = manager.createNamedQuery("Test.FetchByPanelId");
+        query.setParameter("panelId", panelId);
 
         return DataBaseUtil.toArrayList(query.getResultList());
     }

@@ -38,26 +38,26 @@ public class OrderTestViewDO extends OrderTestDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String          referenceName, methodName, description;
+    protected String          testName, methodName, description;
     
     public OrderTestViewDO() {        
     }
     
-    public OrderTestViewDO(Integer  id, Integer orderId, Integer sequence,
-                           Integer referenceId, Integer referenceTableId,
-                           String referenceName, String methodName, String description) {
-        super(id, orderId, sequence, referenceId, referenceTableId);
-        setReferenceName(referenceName);
+    public OrderTestViewDO(Integer  id, Integer orderId, Integer sequence, 
+                           Integer testId, String testName,
+                           String methodName, String description) {
+        super(id, orderId, sequence, testId);
+        setTestName(testName);
         setMethodName(methodName);
         setDescription(description);
     }
 
-    public String getReferenceName() {
-        return referenceName;
+    public String getTestName() {
+        return testName;
     }
 
-    public void setReferenceName(String referenceName) {
-        this.referenceName = DataBaseUtil.trim(referenceName);
+    public void setTestName(String testName) {
+        this.testName = DataBaseUtil.trim(testName);
     }
 
     public String getMethodName() {

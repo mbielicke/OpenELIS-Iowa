@@ -373,7 +373,7 @@ UIRF Software License are applicable instead of those above.
                           <xsl:value-of select='resource:getString($constants,"reportTo")' />:
                         </text>
                         <widget colspan="5">
-                          <autoComplete key="{meta:getReportToName()}" width="188" case="UPPER" tab="{meta:getBillToName()},{meta:getBillToAttention()}" field="Integer">
+                          <autoComplete key="{meta:getReportToName()}" width="188" case="UPPER" tab="{meta:getReportToAttention()},{meta:getBillToAttention()}" field="Integer">
                             <col width="180" header="{resource:getString($constants,'name')}" />
                             <col width="110" header="{resource:getString($constants,'street')}" />
                             <col width="100" header="{resource:getString($constants,'city')}" />
@@ -386,7 +386,7 @@ UIRF Software License are applicable instead of those above.
                           <xsl:value-of select='resource:getString($constants,"attention")' />:
                         </text>
                         <widget colspan="5">
-                          <textbox key="{meta:getReportToAttention()}" tab="{meta:getBillToAttention()},{meta:getReportToName()}" width="188" max = "30" field="String" />
+                          <textbox key="{meta:getReportToAttention()}" tab="{meta:getBillToName()},{meta:getReportToName()}" width="188" max = "30" field="String" />
                         </widget>
                       </row>
                       <row>
@@ -439,7 +439,7 @@ UIRF Software License are applicable instead of those above.
                           <xsl:value-of select='resource:getString($constants,"billTo")' />:
                         </text>
                         <widget colspan="5">
-                          <autoComplete key="{meta:getBillToName()}" width="188" case="UPPER" tab="{meta:getReportToAttention()},{meta:getReportToName()}" field="Integer">
+                          <autoComplete key="{meta:getBillToName()}" width="188" case="UPPER" tab="{meta:getBillToAttention()},{meta:getReportToAttention()}" field="Integer">
                             <col width="180" header="{resource:getString($constants,'name')}" />
                             <col width="110" header="{resource:getString($constants,'street')}" />
                             <col width="100" header="{resource:getString($constants,'city')}" />
@@ -452,7 +452,7 @@ UIRF Software License are applicable instead of those above.
                           <xsl:value-of select='resource:getString($constants,"attention")' />:
                         </text>
                         <widget colspan="5">
-                          <textbox key="{meta:getBillToAttention()}" tab="{meta:getReportToName()},{meta:getReportToAttention()}" width="188" max = "30" field="String" />
+                          <textbox key="{meta:getBillToAttention()}" tab="{meta:getReportToName()},{meta:getBillToName()}" width="188" max = "30" field="String" />
                         </widget>
                       </row>
                       <row>
@@ -505,7 +505,7 @@ UIRF Software License are applicable instead of those above.
                   <VerticalPanel padding="0" spacing="0">
                     <widget valign="top">
                       <table key="orderTestTable" width="auto" maxRows="4" showScroll="ALWAYS" tab="orderContainerTable, orderContainerTable" title="">
-                        <col key="{meta:getTestId()}" width="160" align="left" header="{resource:getString($constants,'test')}">
+                        <col key="{meta:getTestName()}" width="160" align="left" header="{resource:getString($constants,'test')}">
                           <autoComplete width="160" case="LOWER" popWidth="auto" field="Integer" required="true">
                             <col width="150" header="{resource:getString($constants,'test')}" />
                             <col width="150" header="{resource:getString($constants,'method')}" />

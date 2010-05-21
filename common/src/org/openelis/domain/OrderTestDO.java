@@ -29,18 +29,16 @@ public class OrderTestDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
     
-    protected Integer  id, orderId, sortOrder, referenceId, referenceTableId;    
+    protected Integer  id, orderId, sortOrder, testId;    
     
     public OrderTestDO() {        
     }
     
-    public OrderTestDO(Integer  id, Integer orderId, Integer sortOrder,
-                       Integer referenceId, Integer referenceTableId) {   
+    public OrderTestDO(Integer  id, Integer orderId, Integer sortOrder, Integer testId) {   
         setId(id);
         setOrderId(orderId);
         setSortOrder(sortOrder);
-        setReferenceId(referenceId);
-        setReferenceTableId(referenceTableId);
+        setTestId(testId);
         _changed = false;
     }
 
@@ -73,21 +71,12 @@ public class OrderTestDO extends DataObject {
         }
     }
 
-    public Integer getReferenceId() {
-        return referenceId;
+    public Integer getTestId() {
+        return testId;
     }
 
-    public void setReferenceId(Integer referenceId) {
-        this.referenceId = referenceId;
-        _changed = true;
-    }
-
-    public Integer getReferenceTableId() {
-        return referenceTableId;
-    }
-
-    public void setReferenceTableId(Integer referenceTableId) {
-        this.referenceTableId = referenceTableId;
+    public void setTestId(Integer testId) {
+        this.testId = testId;
         _changed = true;
     }
 

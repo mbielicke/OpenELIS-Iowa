@@ -303,16 +303,11 @@ public class CurrentTab extends Screen {
                             try {
                                 //
                                 // we need to get a lock on the parent storage
-                                // location
-                                // of the storage location that was selected
-                                // through the
-                                // pop up screen; thus we call fetchForUpdate
-                                // for
-                                // the id of the parent storage location and put
-                                // it in the
-                                // hashmap so that we won't try to lock the same
-                                // id more
-                                // than once
+                                // location of the storage location that was selected
+                                // through the pop up screen; thus we call fetchForUpdate
+                                // for the id of the parent storage location and put
+                                // it in the hashmap so that we won't try to lock the same
+                                // id more than once
                                 //
                                 locMan = storageLocationCache.get(parentId);
                                 if (locMan == null) {

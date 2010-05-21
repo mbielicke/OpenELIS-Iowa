@@ -32,8 +32,8 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrderContainerDO;
 import org.openelis.domain.OrderTestViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestMethodVO;
+import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -43,7 +43,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -80,11 +79,12 @@ public class ContainerTab extends Screen {
     private TableWidget           orderTestTable, orderContainerTable;
     private boolean               loaded;
 
-    protected ScreenService       analysisService;
+    protected ScreenService       analysisService, testService;
 
     public ContainerTab(ScreenDefInt def, ScreenWindow window) {
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
         analysisService = new ScreenService("controller?service=org.openelis.modules.analysis.server.AnalysisService");
+        testService  = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
 
         setDefinition(def);
         setWindow(window);
@@ -96,12 +96,14 @@ public class ContainerTab extends Screen {
     private void initialize() {        
         orderTestTable = (TableWidget)def.getWidget("orderTestTable");
         addScreenHandler(orderTestTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
-            public void onDataChange(DataChangeEvent event) {                
-                orderTestTable.load(getTestTableModel());
+            public void onDataChange(DataChangeEvent event) {       
+                if(state != State.QUERY)
+                    orderTestTable.load(getTestTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 orderTestTable.enable(true);
+                orderTestTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -116,7 +118,7 @@ public class ContainerTab extends Screen {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 OrderTestViewDO data;
-                TestMethodVO row;
+                TestMethodVO test;
                 Object val;
 
                 r = event.getRow();
@@ -132,15 +134,27 @@ public class ContainerTab extends Screen {
                 
                 switch(c) {
                     case 0:
-                        row = (TestMethodVO)((TableDataRow)val).data;                        
-                        data.setReferenceId(row.getTestId());
-                        data.setReferenceName(row.getTestName());
-                        data.setDescription(row.getTestDescription());
-                        if(row.getMethodId() == null) {
-                            data.setReferenceTableId(ReferenceTable.PANEL);
-                        } else { 
-                            data.setReferenceTableId(ReferenceTable.TEST);
-                            data.setMethodName(row.getMethodName());
+                        if (val != null) {
+                            test = (TestMethodVO) ((TableDataRow)val).data;
+                            if(test.getMethodId() == null) {
+                                addTestsFromPanel(test.getTestId(), r);
+                            } else {
+                                data.setTestId(test.getTestId());
+                                data.setTestName(test.getTestName());
+                                data.setDescription(test.getTestDescription());
+                                data.setMethodName(test.getMethodName());
+                                
+                                orderTestTable.setCell(r, 1, null);
+                                orderTestTable.setCell(r, 2, null);
+                            }
+                        } else {
+                            data.setTestId(null);
+                            data.setTestName(null);
+                            data.setMethodName(null);
+                            data.setDescription(null);
+                            
+                            orderTestTable.setCell(r, 1, null);
+                            orderTestTable.setCell(r, 2, null);
                         }
                 }
             }
@@ -149,11 +163,34 @@ public class ContainerTab extends Screen {
         orderTestTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 int r;
+                TableDataRow val;
+                OrderTestViewDO data;
+                TestMethodVO test;                
+                OrderTestManager man;
                 
                 r = event.getIndex();
+                
                 try {
-                    manager.getTests().addTestAt(r);
+                    man = manager.getTests();
+                    man.addTestAt(r);
+                    data = man.getTestAt(r);                    
+                    
+                    val = (TableDataRow)orderTestTable.getObject(r, 0);
+                    
+                    if(val != null) {
+                        test = (TestMethodVO)val.data;
+                        data.setTestId(test.getTestId());
+                        data.setTestName(test.getTestName());
+                        data.setMethodName(test.getMethodName());
+                        data.setDescription(test.getTestDescription());
+                    } else {
+                        data.setTestId(null);
+                        data.setTestName(null);
+                        data.setMethodName(null);
+                        data.setDescription(null);
+                    }
                 } catch (Exception e) {
+                    e.printStackTrace();
                     Window.alert(e.getMessage());
                 }
             }
@@ -163,13 +200,13 @@ public class ContainerTab extends Screen {
             public void onRowDeleted(RowDeletedEvent event) {
                 try {
                     manager.getTests().removeTestAt(event.getIndex());
-                } catch (Exception e) {
+                } catch (Exception e) {                    
                     Window.alert(e.getMessage());
                 }
             }
         });
         
-        test = (AutoComplete) orderTestTable.getColumnWidget(OrderMeta.getTestId());
+        test = (AutoComplete) orderTestTable.getColumnWidget(OrderMeta.getTestName());
         test.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {               
                 Query query;
@@ -226,7 +263,12 @@ public class ContainerTab extends Screen {
                 selectedRow = event.getSelectedItem().row;                
                 r = orderTestTable.getSelectedRow();
 
-                // set the method
+                //
+                // since rows can be added to this table in two ways i.e. by 
+                // clicking addTestButton or selecting a panel and adding all
+                // the tests belonging to that panel we have to make sure that 
+                // in both cases the id of the test is set for each
+                // 
                 if (selectedRow != null && selectedRow.key != null) {
                     data = (TestMethodVO)selectedRow.data;
                     orderTestTable.setCell(r, 1, data.getMethodName());
@@ -272,7 +314,7 @@ public class ContainerTab extends Screen {
                 removeTestButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
-
+        
         orderContainerTable = (TableWidget)def.getWidget("orderContainerTable");
         addScreenHandler(orderContainerTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
@@ -402,6 +444,8 @@ public class ContainerTab extends Screen {
         OrderTestViewDO data;
         ArrayList<TableDataRow> model;
         OrderTestManager man;
+        TableDataRow row;
+        
         
         model = new ArrayList<TableDataRow>();
         if (manager == null)
@@ -411,8 +455,9 @@ public class ContainerTab extends Screen {
             man = manager.getTests();
             for (i = 0; i < man.count(); i++ ) {
                 data = (OrderTestViewDO)man.getTestAt(i);
-                model.add(new TableDataRow(null, new TableDataRow(data.getReferenceId(), data.getReferenceName()), 
-                                           data.getMethodName(), data.getDescription()));
+                row = new TableDataRow(data.getTestId(), data.getTestName());
+                row.data = data;
+                model.add(new TableDataRow(null, row, data.getMethodName(), data.getDescription()));
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -456,5 +501,40 @@ public class ContainerTab extends Screen {
             DataChangeEvent.fire(this);
 
         loaded = true;
-    }
+    }    
+    
+    private void addTestsFromPanel(Integer panelId, int index) {
+        ArrayList<TestMethodVO> tests;
+        TableDataRow row, val;  
+        TestMethodVO data;
+
+        try {
+            tests = testService.callList("fetchByPanelId", panelId);            
+            if (tests != null && tests.size() > 0) {
+                orderTestTable.deleteRow(index);
+                for (int i = 0; i < tests.size(); i++ ) {
+                    data = tests.get(i);
+
+                    row = new TableDataRow(3);
+
+                    val = new TableDataRow(data.getTestId(), data.getTestName());
+                    val.data = data;
+
+                    row.cells.get(0).setValue(val);
+                    row.cells.get(1).setValue(data.getMethodName());
+                    row.cells.get(2).setValue(data.getTestDescription());
+
+                    orderTestTable.addRow(index + i, row);
+                }
+            } else {
+                orderTestTable.setCellException(index, 0, new LocalizedException("noActiveTestFoundForPanelException"));
+                orderTestTable.setCell(index, 0, null);
+                orderTestTable.setCell(index, 1, null);
+                orderTestTable.setCell(index, 2, null);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+        }
+    } 
 }

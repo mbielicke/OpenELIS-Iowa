@@ -29,7 +29,6 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.IdVO;
-import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.PanelItemManager;
 import org.openelis.manager.PanelManager;
@@ -43,7 +42,7 @@ public class PanelService {
 
     public PanelManager fetchById(Integer id) throws Exception {
         return remoteManager().fetchById(id);
-    }
+    }   
 
     public PanelManager fetchWithItems(Integer id) throws Exception {
         return remoteManager().fetchWithItems(id);
@@ -66,11 +65,7 @@ public class PanelService {
     }
 
     public PanelManager fetchForUpdate(Integer id) throws Exception {
-        try {
-            return remoteManager().fetchForUpdate(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return remoteManager().fetchForUpdate(id);
     }
 
     public PanelManager abortUpdate(Integer id) throws Exception {

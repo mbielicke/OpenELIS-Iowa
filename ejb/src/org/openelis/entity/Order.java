@@ -61,7 +61,13 @@ import org.openelis.utils.Auditable;
                 	  + " from Order o where o.id = :id"),
     @NamedQuery( name = "Order.FetchByDescription",
                 query = "select new org.openelis.domain.IdNameVO(o.id,o.description)"
-                      + " from Order o where o.description like :description")})
+                      + " from Order o where o.description like :description"),
+    @NamedQuery( name = "Order.FetchByShippingItemId",
+               query  = "select new org.openelis.domain.OrderViewDO(o.id,o.description,o.statusId,o.orderedDate," +
+                        "o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention," +
+                        "o.type,o.externalOrderNumber,o.reportToId,o.reportToAttention,o.billToId,o.billToAttention,o.shipFromId)"
+                      + " from Order o left join o.orderItem i "
+                      +	" where i.id = (select s.referenceId from ShippingItem s where s.referenceTableId = org.openelis.domain.ReferenceTable.ORDER_ITEM and s.referenceId = :id)")})
 /*
     @NamedQuery(name = "Order.OrderExternalKit", query = "select new org.openelis.domain.OrderDO(o.id, o.statusId, o.orderedDate, o.neededInDays, o.requestedBy, o.costCenterId, o.organizationId, " +
                             " oo.name, oo.address.multipleUnit, oo.address.streetAddress, oo.address.city, oo.address.state, oo.address.zipCode, o.isExternal, o.externalOrderNumber, " +

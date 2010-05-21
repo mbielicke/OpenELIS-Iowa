@@ -40,4 +40,6 @@ public interface OrderRemote {
     public ArrayList<OrderViewDO> queryOrderFill(ArrayList<QueryData> fields) throws Exception;
 
     public ArrayList<IdNameVO> fetchByDescription(String string, int max) throws Exception;
+    
+    public OrderViewDO fetchByShippingItemId(Integer id) throws Exception;
 }
