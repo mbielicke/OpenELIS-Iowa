@@ -103,7 +103,7 @@ public class SampleMeta implements Meta, MetaMap {
                     //sample sdwis
                     SDWIS_ID = "_sampleSDWIS.id",
                     SDWIS_SAMPLE_ID = "_sampleSDWIS.sampleId",
-                    SDWIS_PWS_ID = "_sampleSDWIS.pwdId",
+                    SDWIS_PWS_ID = "_sampleSDWIS.pwsId",
                     SDWIS_STATE_LAB_ID = "_sampleSDWIS.stateLabId",
                     SDWIS_FACILITY_ID = "_sampleSDWIS.facilityId",
                     SDWIS_SAMPLE_TYPE_ID = "_sampleSDWIS.sampleTypeId",

@@ -307,6 +307,10 @@ public class SampleItemManager implements RPC {
     int getNextTempId() {
         return --tempId;
     }
+    
+    void setNextTempId(int tempId) {
+        this.tempId = tempId;
+    }
 
     int deleteCount() {
         if (deletedList == null)
