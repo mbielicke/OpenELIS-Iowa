@@ -44,14 +44,11 @@ import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.event.ActionEvent;
-import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeCloseEvent;
 import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
-import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.screen.Screen;
@@ -83,14 +80,13 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
 
-public class ShippingScreen extends Screen implements HasActionHandlers<ShippingScreen.Action>{
+public class ShippingScreen extends Screen {
     private ShippingManager                manager;
     private SecurityModule                 security;
 
@@ -115,16 +111,21 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
     
     private OrderFillScreen                orderFillScreen;      
     
-    protected ScreenService                organizationService;
-    
-    
+    protected ScreenService                organizationService;    
+        
     private enum Tabs {
         ITEM, SHIP_NOTE
-    };
+    };    
     
-    public enum Action {
-        COMMIT, ABORT
-    };
+    public ShippingScreen() throws Exception {
+        super((ScreenDefInt)GWT.create(ShippingDef.class));
+        init();
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+               postConstructor();
+            }
+        });
+    }
 
     public ShippingScreen(ScreenWindow window) throws Exception {
     	 super((ScreenDefInt)GWT.create(ShippingDef.class));
@@ -133,19 +134,9 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
     	 postConstructor();
     }
     
-    public ShippingScreen() throws Exception {
-    	super((ScreenDefInt)GWT.create(ShippingDef.class));
-    	init();
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-               postConstructor();
-            }
-        });
-    }
-    
-    public void init() throws Exception {
+    private void init() throws Exception {
         service = new ScreenService("controller?service=org.openelis.modules.shipping.server.ShippingService");
-        organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
+        organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");        
         
         security = OpenELIS.security.getModule("shipping");
         if (security == null)
@@ -720,14 +711,19 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
     }    
     
     
-    public void setManager(ShippingManager manager, OrderFillScreen orderFillScreen) { 
-        add(manager);        
-        this.orderFillScreen = orderFillScreen;
-    }
-    
-    public HandlerRegistration addActionHandler(ActionHandler<ShippingScreen.Action> handler) {
-        return addHandler(handler, ActionEvent.getType());
-    }
+    public void loadShippingData(ShippingManager manager, OrderFillScreen orderFillScreen) { 
+        if(orderFillScreen != null) {
+            add(manager);        
+            this.orderFillScreen = orderFillScreen;
+        } else {
+            this.manager = manager; 
+            itemTab.setManager(manager);
+            noteTab.setManager(manager);
+            setState(State.DISPLAY);
+            DataChangeEvent.fire(this);
+            drawTabs();
+        }
+    }    
     
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
@@ -814,19 +810,32 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
         setFocus(statusId);
         window.setDone(consts.get("enterInformationPressCommit"));
     }
-
+    
     protected void update() {
+        boolean ok;
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
-            manager = manager.fetchForUpdate();
-            setState(State.UPDATE);
-            DataChangeEvent.fire(this);
-            setFocus(statusId);            
+            
+            if (status_processed.equals(manager.getShipping().getStatusId())) {
+               ok = Window.confirm(consts.get("shippingStatusProcessed"));
+               if (ok) {
+                    manager = manager.fetchForUpdate();
+                    setState(State.UPDATE);
+                    setFocus(statusId);
+                    DataChangeEvent.fire(this);
+                    window.clearStatus();
+                } else {
+                    manager = manager.abortUpdate();
+                    setState(State.DISPLAY);
+                    DataChangeEvent.fire(this);
+                    window.setDone(consts.get("updateAborted"));
+                }
+            }                         
         } catch (Exception e) {
             Window.alert(e.getMessage());
-        }
-        window.clearStatus();
+            window.clearStatus();
+        }        
     }
 
     protected void commit() {
@@ -852,10 +861,8 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
                 DataChangeEvent.fire(this);
                 window.setDone(consts.get("addingComplete"));
                 
-                if(orderFillScreen != null) {
-                    ActionEvent.fire(this, Action.COMMIT, null);
-                    window.close();
-                }
+                if(orderFillScreen != null)                     
+                    window.close();                
                     
             } catch (ValidationErrorsList e) {
                 showErrors(e);
@@ -893,10 +900,9 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             fetchById(null);
             window.setDone(consts.get("addAborted"));
             
-            if(orderFillScreen != null) {
-                ActionEvent.fire(this, Action.ABORT, null);
+            if(orderFillScreen != null)                 
                 window.close();
-            }
+            
         } else if (state == State.UPDATE) {
             try {
                 manager = manager.abortUpdate();
@@ -1017,427 +1023,4 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
                 break;   
         }
     }   
-    
-    /*private void setOrderData(Integer refTableId, Integer refId) { 
-        window.setBusy(consts.get("fetching"));
-        try {
-            //manager = ShippingManager.fetchByReferenceTableAndReferenceId(refTableId, refId);            
-            setState(State.DISPLAY);
-            DataChangeEvent.fire(this);            
-            drawTabs();
-        } catch (NotFoundException e) {
-            fetchById(null);
-            window.setDone(consts.get("noRecordsFound"));
-        } catch (Exception e) {
-            fetchById(null);
-            e.printStackTrace();
-            Window.alert(consts.get("fetchFailed") + e.getMessage());
-        }
-        window.clearStatus();
-    }*/
 }
-
-//extends OpenELISScreenForm<ShippingForm, Query<TableDataRow<Integer>>> implements ClickListener, TableManager, ChangeListener, TabListener{
-/*
-    public enum Action {Commited, Aborted}
-    private CommandListener commandTarget;
-    private Integer shipFromId, shipToId;
-    private String shipToText, multUnitText, streetAddressText, cityText, stateText, zipCodeText;
-    private AppButton removeRowButton;
-    private TextBox shippedToAptSuite, shippedToAddress, shippedToCity, shippedToState, shippedToZipCode;
-    private AutoComplete shippedToDropdown;
-    private TableWidget itemsTable, trackingNumbersTable;
-    private Dropdown status, shippedFrom, shippedMethod;
-    private TableDataModel<TableDataRow<Integer>> itemsShippedModel, checkedOrderIds;
-    private ShippingDataService data;
-    private ScreenTabPanel tabPanel;
-    private boolean closeOnCommitAbort = false;
-    
-    private ShippingMetaMap ShippingMeta = new ShippingMetaMap();
-    private CommandListener listener;
-    private KeyListManager keyList = new KeyListManager();
-    
-    public ShippingScreen() {                
-        super("org.openelis.modules.shipping.server.ShippingService");
-        query = new Query<TableDataRow<Integer>>();
-        getScreen(new ShippingForm());
-    }
-    
-    public void setShippingData(ShippingDataService data){
-        this.data = data;
-        setCloseOnCommitAbort(true);
-    }
-    
-    public void setTarget(CommandListener target){
-        this.commandTarget = target;
-    }
-    
-    private void setCloseOnCommitAbort(boolean close){
-        closeOnCommitAbort = close;
-    }
-    
-    public void loadShippingScreenFromData(){
-        this.shipFromId = data.getShipFromId();
-        this.shipToId = data.getShipToId();
-        this.shipToText = data.getShipToText();   
-        this.multUnitText = data.getMultUnitText();
-        this.streetAddressText = data.getStreetAddressText();
-        this.cityText = data.getCityText();
-        this.stateText = data.getStateText();
-        this.zipCodeText = data.getZipCodeText();
-        this.itemsShippedModel = data.getItemsShippedModel();
-
-    }
-    
-    
-    public void clearShippingData(){
-        this.shipFromId = null;
-        this.shipToId = null;
-        this.shipToText = null;   
-        this.multUnitText = null;
-        this.streetAddressText = null;
-        this.cityText = null;
-        this.stateText = null;
-        this.zipCodeText = null;
-        this.itemsShippedModel = null;
-    }
-    
-    
-    public void onClick(Widget sender) {
-        if (sender == removeRowButton)
-            onRemoveRowButtonClick();
-    }
-    
-    public void onChange(Widget sender) {
-        super.onChange(sender);
-        
-        if(sender == shippedToDropdown){
-            if(shippedToDropdown.getSelections().size() > 0){
-                TableDataRow selectedRow = shippedToDropdown.getSelections().get(0);
-                
-                //load address
-                shippedToAddress.setText((String)((StringObject)selectedRow.getCells().get(1)).getValue());
-                //load city
-                shippedToCity.setText((String)((StringObject)selectedRow.getCells().get(2)).getValue());
-                //load state
-                shippedToState.setText((String)((StringObject)selectedRow.getCells().get(3)).getValue());
-                
-                ShippingShipToKey hiddenData = (ShippingShipToKey)selectedRow.getData();
-                //load apt/suite
-                shippedToAptSuite.setText(hiddenData.aptSuite);
-                //load zipcode
-                shippedToZipCode.setText(hiddenData.zipCode);
-            }else{
-                shippedToAddress.setText("");
-                shippedToCity.setText("");
-                shippedToState.setText("");
-                shippedToAptSuite.setText("");
-                shippedToZipCode.setText("");
-            }
-        }   
-    }
-    
-    public void afterDraw(boolean success) {
-        //shipped to address fields
-        shippedToAptSuite  = (TextBox)getWidget(ShippingMeta.ORGANIZATION_META.ADDRESS.getMultipleUnit());
-        shippedToAddress = (TextBox)getWidget(ShippingMeta.ORGANIZATION_META.ADDRESS.getStreetAddress());
-        shippedToCity = (TextBox)getWidget(ShippingMeta.ORGANIZATION_META.ADDRESS.getCity());
-        shippedToState = (TextBox)getWidget(ShippingMeta.ORGANIZATION_META.ADDRESS.getState());
-        shippedToZipCode = (TextBox)getWidget(ShippingMeta.ORGANIZATION_META.ADDRESS.getZipCode());
-        
-        shippedToDropdown = (AutoComplete)getWidget(ShippingMeta.ORGANIZATION_META.getName());
-
-        removeRowButton = (AppButton)getWidget("removeRowButton");
-        
-        itemsTable = (TableWidget)getWidget("itemsTable");
-        itemsTable.model.enableAutoAdd(false);
-        
-        trackingNumbersTable = (TableWidget)getWidget("trackingNumbersTable");
-        trackingNumbersTable.model.enableAutoAdd(false);
-
-        tabPanel = (ScreenTabPanel)widgets.get("shippingTabPanel");
-        
-        ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
-        
-        CommandChain chain = new CommandChain();
-        chain.addCommand(this);
-        chain.addCommand(keyList);
-        chain.addCommand(bpanel);
-        
-        status = (Dropdown)getWidget(ShippingMeta.getStatusId()); 
-        shippedFrom = (Dropdown)getWidget(ShippingMeta.getShippedFromId());
-        shippedMethod = (Dropdown)getWidget(ShippingMeta.getShippedMethodId());
-        
-        commitAddChain.add(afterCommit);
-        
-        super.afterDraw(success);
-        
-        ArrayList cache;
-        TableDataModel<TableDataRow> model;
-        cache = DictionaryCache.getListByCategorySystemName("shippingStatus");
-        model = getDictionaryIdEntryList(cache);
-        status.setModel(model);
-        
-        cache = DictionaryCache.getListByCategorySystemName("shipFrom");
-        model = getDictionaryIdEntryList(cache);
-        shippedFrom.setModel(model);
-        
-        cache = DictionaryCache.getListByCategorySystemName("shippingMethod");
-        model = getDictionaryIdEntryList(cache);
-        shippedMethod.setModel(model);
-        
-        if(data != null)
-            add();
-    }
-    
-    protected SyncCallback afterCommit = new SyncCallback() {
-        public void onFailure(Throwable caught) {   
-        }
-        public void onSuccess(Object result) {
-            trackingNumbersTable.model.enableAutoAdd(false);
-            
-            if(commandTarget != null)
-                commandTarget.performCommand(Action.Commited, this);
-            
-            if(closeOnCommitAbort)
-                window.close();
-        }
-    };
-    
-    public void add() {
-       super.add();
-       
-       window.setBusy();
-       
-       FieldType[] args = new FieldType[0]; 
-         
-       //ShippingRPC srpc = new ShippingRPC();
-       //srpc.key = form.key;
-       //srpc.form = form.form;
-       
-       
-       screenService.call("getAddAutoFillValues", form, new AsyncCallback<ShippingForm>(){
-           public void onSuccess(ShippingForm result){    
-               //set the values in the rpc
-               form.statusId.setValue(result.statusId.getValue());
-               form.processedDate.setValue(result.processedDate.getValue());
-               form.processedBy.setValue(result.processedBy.getValue());
-               form.systemUserId = result.systemUserId;
-               //rpc.form.setFieldValue(ShippingMeta.getProcessedDate(), (DatetimeRPC)((DateField)set.get(1)).getValue());
-               //rpc.form.setFieldValue(ShippingMeta.getProcessedById(), (String)((StringField)set.get(2)).getValue());
-               //rpc.form.setFieldValue("systemUserId", ((NumberField)set.get(3)).getValue());
-                      
-               if(data != null)
-                   initScreen();
-               
-               loadScreen();
-               
-               trackingNumbersTable.model.enableAutoAdd(true);
-               
-               window.clearStatus();
-           }
-           
-           public void onFailure(Throwable caught){
-               Window.alert(caught.getMessage());
-           }
-       }); 
-       
-       ((ScreenDropDownWidget)widgets.get(ShippingMeta.getStatusId())).setFocus(true);
-    }
-    
-    
-    
-    public void initScreen(){
-        //add();
-        
-        loadShippingScreenFromData();
-        
-        //set the values after the screen is in add mode
-        form.shippedFromId.setValue(new TableDataRow<Integer>(shipFromId));
-        
-        if(shipToId != null){
-            TableDataModel<TableDataRow<Integer>> shipToModel = new TableDataModel<TableDataRow<Integer>>();
-            shipToModel.add(new TableDataRow<Integer>(shipToId,new StringObject(shipToText)));
-            form.organization.setModel(shipToModel);
-            form.organization.setValue(shipToModel.get(0));
-        }
-        
-        form.multipleUnit.setValue(multUnitText);
-        form.streetAddress.setValue(streetAddressText);
-        form.city.setValue(cityText);
-        form.state.setValue(stateText);
-        form.zipcode.setValue(zipCodeText);
-        loadItemsShippedTableFromModel(itemsShippedModel);
-        form.numberOfPackages.setValue(new Integer(1));
-        data = null;
-    }
-    
-    public void query() {
-        super.query();
-        removeRowButton.changeState(AppButton.ButtonState.DISABLED);
-        status.setFocus(true);
-    }
-    
-    public void update() {
-        super.update();
-        ((ScreenDropDownWidget)widgets.get(ShippingMeta.getStatusId())).setFocus(true);
-        trackingNumbersTable.model.enableAutoAdd(true);
-    }
-    
-    
-    public void abort() {
-        trackingNumbersTable.model.enableAutoAdd(false);
-        super.abort();
-        
-        if(commandTarget != null)
-            commandTarget.performCommand(Action.Aborted, this);
-        
-        if(closeOnCommitAbort)
-            window.close();
-    }
-    
-    
-    //
-    //start table manager methods
-    //
-    public boolean canAdd(TableWidget widget, TableDataRow set, int row) {
-        return false;
-    }
-
-    public boolean canAutoAdd(TableWidget widget, TableDataRow addRow) {
-        return ((DataObject)addRow.getCells().get(0)).getValue() != null && !((DataObject)addRow.getCells().get(0)).getValue().equals(0);
-    }
-
-    public boolean canDelete(TableWidget widget, TableDataRow set, int row) {
-        return false;
-    }
-
-    public boolean canEdit(TableWidget widget, TableDataRow set, int row, int col) {
-        return true;
-    }
-
-    public boolean canSelect(TableWidget widget, TableDataRow set, int row) {
-        if(state == State.ADD || state == State.UPDATE)           
-            return true;
-        return false;
-    }
-    
-    //
-    //end table manager methods
-    //
-    
-    private void loadItemsShippedTableFromModel(TableDataModel<TableDataRow<Integer>> model){
-        itemsTable.model.clear();
-        for(int i=0; i<model.size(); i++){
-            TableDataRow<Integer> set = model.get(i);
-            
-            TableDataRow<Integer> tableRow = itemsTable.model.createRow();
-            
-            tableRow.getCells().get(0).setValue(set.getCells().get(0).getValue());
-            tableRow.getCells().get(1).setValue(((DropDownField)set.getCells().get(1)).getTextValue());
-            
-            tableRow.setData(set.getData());
-            
-            itemsTable.model.addRow(tableRow);
-        }
-        
-        if(model.size() > 0)
-            itemsTable.model.refresh();
-    }
- 
-    private void onRemoveRowButtonClick() {
-        int selectedRow = trackingNumbersTable.model.getSelectedIndex();
-        
-        if (selectedRow > -1 && trackingNumbersTable.model.numRows() > 0) 
-            trackingNumbersTable.model.deleteRow(selectedRow);
-        
-    }
-
-    public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
-        if(state != State.QUERY){
-            if (tabIndex == 0 && !form.shippingItemsForm.load)
-                fillShippingItems();
-                
-            else if (tabIndex == 1 && !form.shippingNotesForm.load) 
-                fillOrderShippingNotes();
-              
-        }
-        return true;
-    }
-
-    public void onTabSelected(SourcesTabEvents sender, int tabIndex) { 
-        form.shippingTabPanel = tabPanel.getSelectedTabKey();
-    }
-    
-    private void fillShippingItems() {
-        if(form.entityKey == null)
-            return;
-        
-        window.setBusy();
-        
-        //ShippingItemsForm sirpc = new ShippingItemsRPC();
-        form.shippingItemsForm.entityKey = form.entityKey;
-        //sirpc.form =form.form.shippingItemsForm;
-
-        screenService.call("loadShippingItems", form.shippingItemsForm, new AsyncCallback<ShippingItemsForm>() {
-            public void onSuccess(ShippingItemsForm result) {
-                form.shippingItemsForm = result;
-                load(form.shippingItemsForm);
-
-                window.clearStatus();
-            }
-
-            public void onFailure(Throwable caught) {
-                Window.alert(caught.getMessage());
-                window.clearStatus();
-            }
-        });
-    }
-    
-    private void fillOrderShippingNotes() {
-        if(form.entityKey == null)
-            return;
-        
-        window.setBusy();
-
-        // prepare the argument list for the getObject function
-        //ShippingNotesRPC snrpc = new ShippingNotesRPC();
-        form.shippingNotesForm.entityKey = form.entityKey;
-        //snrpc.form = form.form.shippingNotesForm;
-        
-        screenService.call("loadOrderShippingNotes", form.shippingNotesForm, new AsyncCallback<ShippingNotesForm>() {
-            public void onSuccess(ShippingNotesForm result) {
-                form.shippingNotesForm = result;
-                load(form.shippingNotesForm);
-                
-                window.clearStatus();
-            }
-
-            public void onFailure(Throwable caught) {
-                Window.alert(caught.getMessage());
-                window.clearStatus();
-            }
-        });
-    }
-
-    private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
-        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
-        TableDataRow<Integer> row;
-        
-        if(list == null)
-            return m;
-        
-        m = new TableDataModel<TableDataRow>();
-        m.add(new TableDataRow<Integer>(null,new StringObject("")));
-        
-        for(int i=0; i<list.size(); i++){
-            row = new TableDataRow<Integer>(1);
-            DictionaryDO dictDO = (DictionaryDO)list.get(i);
-            row.key = dictDO.getId();
-            row.cells[0] = new StringObject(dictDO.getEntry());
-            m.add(row);
-        }
-        
-        return m;
-    }
-    */

@@ -1,4 +1,5 @@
 
+
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -82,22 +83,22 @@ UIRF Software License are applicable instead of those above.
               </xsl:with-param>
             </xsl:call-template>
             <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
-                <menuItem>
-                  <menuDisplay>
-                    <appButton style="ButtonPanelButton" action="option">
-                      <HorizontalPanel>
-                        <text>
-                          <xsl:value-of select='resource:getString($constants,"options")' />
-                        </text>
-                        <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
-                      </HorizontalPanel>
-                    </appButton>
-                  </menuDisplay>
-                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                    <menuItem key="shippingInfo" description="" enable="false" icon="shippingIcon" label="{resource:getString($constants,'shippingInfo')}" />
-                  </menuPanel>
-                </menuItem>
-              </menuPanel>
+              <menuItem>
+                <menuDisplay>
+                  <appButton style="ButtonPanelButton" action="option">
+                    <HorizontalPanel>
+                      <text>
+                        <xsl:value-of select='resource:getString($constants,"options")' />
+                      </text>
+                      <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
+                    </HorizontalPanel>
+                  </appButton>
+                </menuDisplay>
+                <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                  <menuItem key="shippingInfo" description="" enable="false" icon="shippingIcon" label="{resource:getString($constants,'shippingInfo')}" />
+                </menuPanel>
+              </menuItem>
+            </menuPanel>
           </HorizontalPanel>
         </AbsolutePanel>
 
@@ -109,31 +110,31 @@ UIRF Software License are applicable instead of those above.
               <col key="process" width="20" header="">
                 <check />
               </col>
-              <col key="{meta:getId()}" width="45" header="{resource:getString($constants,'ordNum')}" sort = "true">
+              <col key="{meta:getId()}" width="45" sort="true" header="{resource:getString($constants,'ordNum')}">
                 <textbox field="Integer" />
               </col>
               <col key="{meta:getStatusId()}" width="80" header="{resource:getString($constants,'status')}">
                 <dropdown width="80" field="Integer" />
               </col>
-              <col key="{meta:getOrderedDate()}" width="70" header="{resource:getString($constants,'orderDate')}" sort = "true">
+              <col key="{meta:getOrderedDate()}" width="70" sort="true" header="{resource:getString($constants,'orderDate')}">
                 <calendar begin="0" end="2" pattern="{resource:getString($constants,'datePattern')}" />
               </col>
               <col key="{meta:getShipFromId()}" width="65" header="{resource:getString($constants,'shipFrom')}">
                 <dropdown width="100" field="Integer" />
               </col>
-              <col key="{meta:getRequestedBy()}" width="85" header="{resource:getString($constants,'requestedBy')}">
+              <col key="{meta:getRequestedBy()}" width="85" header="{resource:getString($constants,'requestedBy')}" filter="true">
                 <textbox width="120" field="String" />
               </col>
-              <col key="{meta:getOrganizationName()}" width="160" header="{resource:getString($constants,'shipTo')}">
+              <col key="{meta:getOrganizationName()}" width="160" header="{resource:getString($constants,'shipTo')}" filter="true">
                 <textbox width="130" case="UPPER" field="String" />
               </col>
-              <col key="{meta:getDescription()}" width="155" header="{resource:getString($constants,'description')}">
+              <col key="{meta:getDescription()}" width="155" header="{resource:getString($constants,'description')}" filter="true">
                 <textbox field="String" />
               </col>
-              <col key="{meta:getNeededInDays()}" width="45" header="{resource:getString($constants,'neededNumDays')}" sort = "true">
+              <col key="{meta:getNeededInDays()}" width="45" sort="true" header="{resource:getString($constants,'neededNumDays')}">
                 <textbox field="Integer" />
               </col>
-              <col key="daysLeft" width="60" header="{resource:getString($constants,'numDaysLeft')}" sort = "true">
+              <col key="daysLeft" width="60" sort="true" header="{resource:getString($constants,'numDaysLeft')}">
                 <textbox field="Integer" />
               </col>
               <col key="{meta:getType()}" width="60" header="{resource:getString($constants,'type')}">
@@ -150,14 +151,6 @@ UIRF Software License are applicable instead of those above.
                       <xsl:value-of select='resource:getString($constants,"shipToAddress")' />
                     </text>
                     <TablePanel style="Form">
-                      <!-- <row>
-                        <text style="Prompt">
-                          <xsl:value-of select='resource:getString($constants,"requestedBy")' />:
-                        </text>
-                        <widget colspan="5">
-                          <textbox key="{meta:getRequestedBy()}" width="186" field="String" />
-                        </widget>
-                      </row> -->
                       <row>
                         <text style="Prompt">
                           <xsl:value-of select='resource:getString($constants,"costCenter")' />:
@@ -240,7 +233,7 @@ UIRF Software License are applicable instead of those above.
                           </col>
                           <col>
                             <autoComplete width="137" case="LOWER" field="Integer" required="true">
-                              <col width="137" />                              
+                              <col width="137" />
                             </autoComplete>
                           </col>
                         </leaf>
@@ -262,7 +255,7 @@ UIRF Software License are applicable instead of those above.
                               <col width="65" header="{resource:getString($constants,'lotNum')}" />
                               <col width="55" header="{resource:getString($constants,'qty')}" />
                               <col width="65" header="{resource:getString($constants,'expDate')}">
-                              	<calendar begin="0" end="2" pattern="{resource:getString($constants,'datePattern')}" />
+                                <calendar begin="0" end="2" pattern="{resource:getString($constants,'datePattern')}" />
                               </col>
                             </autoComplete>
                           </col>

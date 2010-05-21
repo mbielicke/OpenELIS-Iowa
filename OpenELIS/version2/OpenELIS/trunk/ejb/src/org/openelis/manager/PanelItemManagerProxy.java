@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.PanelItemDO;
+import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.PanelItemLocal;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -107,10 +108,16 @@ public class PanelItemManagerProxy {
     public void validate(PanelItemManager man) throws Exception {        
         ValidationErrorsList list;
         PanelItemLocal pl;
+        int count;
         
         pl = local();
         list = new ValidationErrorsList();
-        for (int i = 0; i < man.count(); i++ ) {
+        count = man.count();
+        
+        if(count == 0)
+            list.add(new FieldErrorException("noTestAssignedToPanelException", null));
+        
+        for (int i = 0; i < count; i++ ) {
             try {
                 pl.validate(man.getItemAt(i));
             } catch (Exception e) {

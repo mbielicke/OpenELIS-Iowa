@@ -28,6 +28,8 @@ package org.openelis.modules.shipping.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.domain.OrderViewDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ShippingItemDO;
 import org.openelis.domain.ShippingTrackingDO;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -35,9 +37,11 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
@@ -47,25 +51,34 @@ import org.openelis.gwt.widget.table.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
+import org.openelis.manager.OrderManager;
 import org.openelis.manager.ShippingItemManager;
 import org.openelis.manager.ShippingManager;
 import org.openelis.manager.ShippingTrackingManager;
+import org.openelis.modules.order.client.SendoutOrderScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.SyncCallback;
 
 public class ItemTab extends Screen {
     
     private ShippingManager                manager;
+    private OrderManager                   orderManager;
     private TableWidget                    itemTable, trackingTable;
     private AppButton                      addItemButton, removeItemButton, addTrackingButton,
-                                           removeTrackingButton, orderSampleButton;
-
+                                           removeTrackingButton, lookupItemButton;
+    private ScreenService                  orderService;    
+    private SendoutOrderScreen             sendoutOrderScreen;    
     private boolean                        loaded;
 
     public ItemTab(ScreenDefInt def, ScreenWindow window) {
+        this.orderService = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
         setDefinition(def);
-        setWindow(window);
+        setWindow(window);        
+        
         initialize();
     }
     
@@ -86,6 +99,12 @@ public class ItemTab extends Screen {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {                
                 event.cancel();           
             }            
+        });
+        
+        itemTable.addSelectionHandler(new SelectionHandler<TableRow>() {
+            public void onSelection(SelectionEvent<TableRow> event) {
+                lookupItemButton.enable(true);   
+            }           
         });
         
         itemTable.addCellEditedHandler(new CellEditedHandler() {
@@ -170,13 +189,14 @@ public class ItemTab extends Screen {
             }
         });
         
-        orderSampleButton = (AppButton)def.getWidget("orderSampleButton");
-        addScreenHandler(orderSampleButton, new ScreenEventHandler<Object>() {
+        lookupItemButton = (AppButton)def.getWidget("lookupItemButton");
+        addScreenHandler(lookupItemButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {                       
+                showParent();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orderSampleButton.enable(false);
+                lookupItemButton.enable(false);
             }
         });
 
@@ -195,8 +215,9 @@ public class ItemTab extends Screen {
         
         trackingTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if(state != State.ADD && state != State.UPDATE && state != State.QUERY)  
-                    event.cancel();                                    
+                if(state != State.ADD && state != State.UPDATE && state != State.QUERY) { 
+                    event.cancel();
+                } 
             }           
         });
 
@@ -324,10 +345,6 @@ public class ItemTab extends Screen {
         ArrayList<TableDataRow> model;
         ShippingItemManager man;
         ShippingItemDO data;
-        /*
-         * OrderManager man; OrderFillManager fills; InventoryXUseViewDO data;
-         * Set<Integer> set; Iterator<Integer> iter;
-         */
         TableDataRow row;
 
         int count, i;
@@ -335,12 +352,7 @@ public class ItemTab extends Screen {
         model = new ArrayList<TableDataRow>();
 
         try {
-            // set = combinedMap.keySet();
-            // iter = set.iterator();
             man = manager.getItems();
-            // while (iter.hasNext()) {
-            // man = combinedMap.get(iter.next());
-            // fills = man.getFills();
             count = man.count();
 
             for (i = 0; i < count; i++ ) {
@@ -351,12 +363,79 @@ public class ItemTab extends Screen {
                 row.data = data;
                 model.add(row);
             }
-            // }
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert(e.toString());
         }
 
         return model;
+    }
+    
+    private void showParent() {
+        TableDataRow row;
+        ShippingItemDO data;
+        
+        row = itemTable.getSelection();
+        
+        if(row == null) 
+            return;
+        
+        data = (ShippingItemDO)row.data;
+        if(data.getReferenceTableId().equals(ReferenceTable.ORDER_ITEM)) {
+            showOrder(data);
+        } else if(data.getReferenceTableId().equals(ReferenceTable.SAMPLE_ITEM)) {
+            showSample(data);   
+        }        
+    }
+
+    private void showOrder(ShippingItemDO data) {
+        ScreenWindow modal;
+        
+        try {
+            window.setBusy(consts.get("fetching"));
+            orderService.call("fetchByShippingItemId", data.getReferenceId(), new SyncCallback<OrderViewDO>() {
+                public void onSuccess(OrderViewDO result) {                                    
+                    try {
+                        if(result != null)
+                            orderManager = OrderManager.fetchById(result.getId());
+                        else
+                            orderManager = null;
+                    } catch (Throwable e) {
+                        orderManager = null;
+                        e.printStackTrace();
+                        Window.alert(e.getMessage());
+                        window.clearStatus();
+                    }                                        
+                }
+                public void onFailure(Throwable error) {    
+                    orderManager = null;
+                    error.printStackTrace();
+                    Window.alert("Error: Fetch failed; " + error.getMessage());                    
+                    window.clearStatus();
+                }
+            });    
+            
+            if(orderManager != null) {
+                modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+                modal.setName(consts.get("kitOrder"));
+                if (sendoutOrderScreen == null)
+                    sendoutOrderScreen = new SendoutOrderScreen(modal);
+                                
+                modal.setContent(sendoutOrderScreen);
+                sendoutOrderScreen.setManager(orderManager);                        
+                window.clearStatus();
+            }
+            
+        } catch (Throwable e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            window.clearStatus();
+            return;
+        }
+        
+    }
+
+    private void showSample(ShippingItemDO data) {
+        // TODO Auto-generated method stub        
     }
 }

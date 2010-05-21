@@ -37,7 +37,6 @@ import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrganizationDO;
-import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
@@ -108,8 +107,8 @@ public class ItemTab extends Screen {
                     costCenterId.setSelection(manager.getOrder().getCostCenterId());
             }
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                // this is a read only and the value will not change
+            public void onValueChange(ValueChangeEvent<Integer> event) {               
+                manager.getOrder().setCostCenterId(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -126,7 +125,7 @@ public class ItemTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                // this is a read only and the value will not change
+                manager.getOrder().setOrganizationAttention(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -316,7 +315,7 @@ public class ItemTab extends Screen {
                 OrderItemViewDO item;
                 TreeDataItem child, parent;
                 Integer qty;
-                int r, c, sum;
+                int r, c;
 
                 c = event.getCol();
                 r = itemsTree.getSelectedRow();
@@ -362,13 +361,8 @@ public class ItemTab extends Screen {
                     qty = (Integer)child.cells.get(1).getValue();
                     item = (OrderItemViewDO)child.key;
                     item.setQuantity(qty);
-                    sum = getSumOfFillQuantityForItem(child);
-                    child.cells.get(1).clearExceptions();
-                    
-                    if (qty == null || sum > qty)                             
-                        itemsTree.setCellException(r ,c, new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));                        
-                    else if(sum < qty)
-                        itemsTree.setCellException(r ,c, new LocalizedException("sumOfQtyLessThanQtyOrderedException"));                            
+                    validateItemRow(child, r);
+                    itemsTree.refreshRow(child);
                 }
             }            
         });
@@ -493,8 +487,7 @@ public class ItemTab extends Screen {
         removeItemButton = (AppButton)def.getWidget("removeItemButton");
         addScreenHandler(removeItemButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                TreeDataItem item, child;
-                ArrayList<TreeDataItem> items;
+                TreeDataItem item, parent;
                 InventoryXUseViewDO data;     
                 OrderManager man;
                 OrderFillManager fills;
@@ -504,25 +497,8 @@ public class ItemTab extends Screen {
                 if(item == null) 
                     return;
                 
-                if("top".equals(item.leafType)) {
-                    items = item.getItems();
+                if("top".equals(item.leafType)) {                    
                     window.setStatus(consts.get("qtyAdjustedItemNotRemoved"), "");
-                    if (items != null) {
-                        while(items.size() > 0) {
-                            child = items.get(0);
-                            data = (InventoryXUseViewDO)child.data;
-                            man = combinedMap.get(data.getOrderItemOrderId());
-                            itemsTree.deleteRow(child);                            
-                            try {
-                                fills = man.getFills();
-                                fills.removeFill(data);
-                            } catch (Throwable e) {
-                                e.printStackTrace();
-                                Window.alert(e.getMessage());
-                            }
-                        }
-                       item.cells.get(1).clearExceptions();                                               
-                    }
                 } else {
                     data = (InventoryXUseViewDO)item.data;
                     man = combinedMap.get(data.getOrderItemOrderId());
@@ -534,9 +510,13 @@ public class ItemTab extends Screen {
                         e.printStackTrace();
                         Window.alert(e.getMessage());
                     }
-                }
-                
-                itemsTree.refresh(true);
+                    parent = item.parent;
+                    validateItemRow(parent,-1); 
+                    if(parent.getItems().size() > 0) 
+                        parent.checkForChildren(false);
+                    
+                    itemsTree.refreshRow(parent);
+                }                                
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -606,6 +586,8 @@ public class ItemTab extends Screen {
     public boolean validate() {
         TreeDataItem parent, child; 
         ArrayList<TreeDataItem> model, items;
+        OrderItemViewDO item;
+        Integer quantity;
         boolean validate;
         int i;
         
@@ -616,7 +598,10 @@ public class ItemTab extends Screen {
             parent = model.get(i);
             if(!parent.open)
                 itemsTree.toggle(parent);
+            
             items = parent.getItems();
+            item = (OrderItemViewDO)parent.key;
+            quantity = item.getQuantity();
             
             if(items != null && items.size() > 0) {                
                 for(int j = 0; j < items.size(); j++) {
@@ -627,7 +612,11 @@ public class ItemTab extends Screen {
                         validate = false;                        
                     } 
                 }
-            }                                                
+            } else if ((quantity == null) || (quantity != null && quantity > 0)) {
+                parent.cells.get(1).addException(new LocalizedException("sumOfQtyLessThanQtyOrderedException"));
+                itemsTree.refreshRow(parent);
+                validate = false; 
+            }                                              
         }       
         
         return validate;
@@ -653,17 +642,29 @@ public class ItemTab extends Screen {
         model = new ArrayList<TreeDataItem>();
         
         try {            
-            if(man == null) {                
+            if(man == null) {                    
+                organizationAttention.enable(false);
+                costCenterId.enable(false);
+                
                 itemMan = manager.getItems();
-                count = itemMan.count();
+                count = itemMan.count();                
                 for (i = 0; i < count; i++ ) {
                     data = itemMan.getItemAt(i);
                     item = getTopLevelItem(data);
                     model.add(item);
                 }                          
-                return model;
+                return model;                
             }           
 
+            //
+            // we have to make sure that "manager" belongs to the list of  managers 
+            // being processed before allowing users to edit the data in these two
+            // widgets, because only then the record represented by "manager" will             
+            // have been locked 
+            //
+            organizationAttention.enable(true);
+            costCenterId.enable(true);
+            
             set = combinedMap.keySet();
             iter = set.iterator();
             itemPresent = true;
@@ -747,8 +748,7 @@ public class ItemTab extends Screen {
         
         window.clearStatus(); 
                 
-        if(list.size() == 0)
-            item.checkForChildren(false);
+        item.checkForChildren(false);
         
         item.data = list;                      
     }
@@ -816,6 +816,35 @@ public class ItemTab extends Screen {
         return sum;
     }
     
+    private boolean validateItemRow(TreeDataItem item, int r) {
+        OrderItemViewDO data;
+        Integer qty;
+        boolean valid;
+        int sum;
+        
+        valid = true;
+        data = (OrderItemViewDO)item.key;
+        qty = data.getQuantity();
+        sum = getSumOfFillQuantityForItem(item);
+        item.cells.get(1).clearExceptions();
+        
+        if (qty == null || sum > qty) {    
+            if(r > -1)
+                itemsTree.setCellException(r,1, new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
+            else 
+                item.cells.get(1).addException(new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
+            valid = false;
+        } else if(sum < qty) {
+            if(r > -1)
+                itemsTree.setCellException(r,1, new LocalizedException("sumOfQtyLessThanQtyOrderedException"));
+            else
+                item.cells.get(1).addException(new LocalizedException("sumOfQtyLessThanQtyOrderedException"));
+            valid = false;
+        }
+        
+        return valid;
+    }
+    
     private boolean validateLocationRow(TreeDataItem child, int row) {
         InventoryXUseViewDO fill;
         OrderItemViewDO item;
@@ -856,8 +885,7 @@ public class ItemTab extends Screen {
         
         if(invLocationId == null) {
             if(row > -1) {
-                itemsTree.setCellException(row,1, new LocalizedException("noLocationSelectedForRowException"));                
-                //itemsTree.setCellException(row,3, new LocalizedException("fieldRequiredException"));            
+                itemsTree.setCellException(row,1, new LocalizedException("noLocationSelectedForRowException"));                                         
             } else {
                 child.cells.get(1).addException(new LocalizedException("noLocationSelectedForRowException"));
                 child.cells.get(3).addException(new LocalizedException("fieldRequiredException"));

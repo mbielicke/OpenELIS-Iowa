@@ -28,6 +28,7 @@ package org.openelis.modules.shipping.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.ShippingViewDO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.ShippingItemManager;
 import org.openelis.manager.ShippingManager;
@@ -43,6 +44,10 @@ public class ShippingService {
     public ShippingManager fetchById(Integer id) throws Exception {
         return remoteManager().fetchById(id);
     }    
+    
+    public ShippingViewDO fetchByOrderId(Integer id) throws Exception {
+        return remote().fetchByOrderId(id);
+    }
     
     public ShippingManager fetchWithItemsAndTrackings (Integer id) throws Exception {
         return remoteManager().fetchWithItemsAndTracking(id);

@@ -38,16 +38,11 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.OrderTestViewDO;
-import org.openelis.domain.PanelDO;
-import org.openelis.domain.ReferenceTable;
-import org.openelis.domain.TestViewDO;
 import org.openelis.entity.OrderTest;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.OrderTestLocal;
-import org.openelis.local.PanelLocal;
-import org.openelis.local.TestLocal;
 import org.openelis.meta.OrderMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
@@ -59,20 +54,10 @@ public class OrderTestBean implements OrderTestLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
 
-    @EJB
-    private TestLocal     testBean;
-
-    @EJB
-    private PanelLocal    panelBean;
-
     @SuppressWarnings("unchecked")
     public ArrayList<OrderTestViewDO> fetchByOrderId(Integer id) throws Exception {
         Query query;
         List list;
-        OrderTestViewDO data;
-        Integer refId, reftId;
-        TestViewDO test;
-        PanelDO panel;
         
         query = manager.createNamedQuery("OrderTest.FetchByOrderId");
         query.setParameter("id", id);
@@ -82,33 +67,6 @@ public class OrderTestBean implements OrderTestLocal {
             throw new NotFoundException();
         
         list = DataBaseUtil.toArrayList(list);        
-        //
-        // we determine whether the field referenceId in a given OrderTestViewDO
-        // in "list" points to a test or to a panel; we then find out the method name 
-        // if it points to a test or set null as the method name otherwise; we also
-        // find and set the test or panel name   
-        //
-        try {
-            for(int i = 0 ; i < list.size(); i++) {
-                data = (OrderTestViewDO)list.get(i);
-                refId = data.getReferenceId();
-                reftId = data.getReferenceTableId();
-                
-                if(reftId.equals(ReferenceTable.TEST)) {
-                    test = testBean.fetchById(refId);  
-                    data.setReferenceName(test.getName());
-                    data.setMethodName(test.getMethodName());
-                    data.setDescription(test.getDescription());
-                } else if(reftId.equals(ReferenceTable.PANEL)){
-                    panel = panelBean.fetchById(refId);
-                    data.setReferenceName(panel.getName());
-                    data.setDescription(panel.getDescription());
-                }
-            }
-            
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
         
         return (ArrayList) list;
     }
@@ -120,8 +78,7 @@ public class OrderTestBean implements OrderTestLocal {
         entity = new OrderTest();
         entity.setOrderId(data.getOrderId());
         entity.setSequence(data.getSortOrder());
-        entity.setReferenceId(data.getReferenceId());
-        entity.setReferenceTableId(data.getReferenceTableId());
+        entity.setTestId(data.getTestId());
 
         manager.persist(entity);
         data.setId(entity.getId());
@@ -140,8 +97,7 @@ public class OrderTestBean implements OrderTestLocal {
         entity = manager.find(OrderTest.class, data.getId());
         entity.setOrderId(data.getOrderId());
         entity.setSequence(data.getSortOrder());
-        entity.setReferenceId(data.getReferenceId());
-        entity.setReferenceTableId(data.getReferenceTableId());
+        entity.setTestId(data.getTestId());
 
         return data;
     }
@@ -160,9 +116,9 @@ public class OrderTestBean implements OrderTestLocal {
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
-        if (data.getReferenceId() == null)
+        if (data.getTestId() == null)
             list.add(new FieldErrorException("fieldRequiredException",
-                                             OrderMeta.getTestId()));        
+                                             OrderMeta.getTestName()));        
         
         if (list.size() > 0)
             throw list;

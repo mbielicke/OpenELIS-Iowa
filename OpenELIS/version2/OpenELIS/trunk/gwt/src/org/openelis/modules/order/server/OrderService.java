@@ -49,6 +49,10 @@ public class OrderService {
     public ArrayList<IdNameVO> fetchByDescription(String search) throws Exception {
         return remote().fetchByDescription(search + "%", 10);
     }
+    
+    public OrderViewDO fetchByShippingItemId(Integer id) throws Exception {
+        return remote().fetchByShippingItemId(id);
+    }
 
     public OrderManager fetchWithItems(Integer id) throws Exception {
         return remoteManager().fetchWithItems(id);

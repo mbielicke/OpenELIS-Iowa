@@ -59,11 +59,18 @@ import org.openelis.utils.Auditable;
                 		"s.shippedFromId,s.shippedToId,s.processedBy,s.processedDate," +
                 		"s.shippedMethodId,s.shippedDate,s.numberOfPackages,s.cost)" 
                       + " from Shipping s where s.id = :id"),
-    @NamedQuery( name = "Shipping.FetchByReferenceTableAndReferenceId",
+    @NamedQuery( name = "Shipping.FetchByOrderId",
                query = "select new org.openelis.domain.ShippingViewDO(s.id,s.statusId," +
                        "s.shippedFromId,s.shippedToId,s.processedBy,s.processedDate," +
                        "s.shippedMethodId,s.shippedDate,s.numberOfPackages,s.cost)" 
-                     + " from Shipping s left join s.shippingItem i where i.referenceTableId = :referenceTableId and i.referenceId = :referenceId")})
+                     + " from Shipping s left join s.shippingItem i where i.referenceTableId = org.openelis.domain.ReferenceTable.ORDER_ITEM "
+                     + " and i.referenceId in (select id from OrderItem oi where oi.orderId = :orderId)"),
+    @NamedQuery( name = "Shipping.FetchBySampleId",
+               query = "select new org.openelis.domain.ShippingViewDO(s.id,s.statusId," +
+                       "s.shippedFromId,s.shippedToId,s.processedBy,s.processedDate," +
+                       "s.shippedMethodId,s.shippedDate,s.numberOfPackages,s.cost)" 
+                     + " from Shipping s left join s.shippingItem i where i.referenceTableId = org.openelis.domain.ReferenceTable.SAMPLE_ITEM "
+                     + " and i.referenceId in (select id from SampleItem si where si.sampleId = :sampleId)")})                
 @Entity
 @Table(name = "shipping")
 @EntityListeners( {AuditUtil.class})

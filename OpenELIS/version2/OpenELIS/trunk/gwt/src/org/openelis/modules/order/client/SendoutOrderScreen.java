@@ -133,21 +133,31 @@ public class SendoutOrderScreen extends Screen {
     
     public SendoutOrderScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SendoutOrderDef.class));
+        init();
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+               postConstructor();
+            }
+        });
+    }    
+
+    public SendoutOrderScreen(ScreenWindow window) throws Exception{
+        super((ScreenDefInt)GWT.create(SendoutOrderDef.class));
+        init();
+        this.window = window;        
+        postConstructor();
+    }
+    
+    private void init() throws Exception {
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
         userService = new ScreenService("controller?service=org.openelis.server.SystemUserService");
         organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
 
         security = OpenELIS.security.getModule("order");
         if (security == null)
-            throw new SecurityException("screenPermException", "Kit Order Screen");
-
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
+            throw new SecurityException("screenPermException", "Send-out Order Screen");
+        
     }
-    
 
     private void postConstructor() {
         tab = Tabs.ITEM;
@@ -940,6 +950,28 @@ public class SendoutOrderScreen extends Screen {
         }
     }
 
+    public void setManager(OrderManager manager) {
+        this.manager = manager;     
+        itemTab.setManager(manager);
+        fillTab.setManager(manager);
+        shipNoteTab.setManager(manager);
+        custNoteTab.setManager(manager);
+        reportToBillToTab.setManager(manager);
+        auxDataTab.setManager(manager);
+        containerTab.setManager(manager);
+        
+        itemTab.draw();
+        fillTab.draw();
+        shipNoteTab.draw();
+        custNoteTab.draw();
+        reportToBillToTab.draw();  
+        containerTab.draw();
+        auxDataTab.draw();
+        
+        setState(State.DISPLAY);
+        DataChangeEvent.fire(this);
+    }
+    
     /*
      * basic button methods
      */
@@ -1014,7 +1046,7 @@ public class SendoutOrderScreen extends Screen {
         window.clearStatus();
     }
 
-    public void commit() {
+    protected void commit() {
         setFocus(null);
 
         if ( !validate()) {
@@ -1194,7 +1226,7 @@ public class SendoutOrderScreen extends Screen {
             refVoList = new IdNameVO[count];
             for (i = 0; i < count; i++ ) {
                 data = man.getTestAt(i);
-                refVoList[i] = new IdNameVO(data.getId(), data.getReferenceName());
+                refVoList[i] = new IdNameVO(data.getId(), data.getTestName());
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -80,7 +80,7 @@ public class PanelBean implements PanelRemote, PanelLocal {
             throw new DatabaseException(e);
         }
         return data;
-    }
+    }   
     
     public ArrayList<TestMethodVO> fetchByNameSampleTypeWithTests(String name, Integer sampleItemType, int maxResults) throws Exception {
         List<PanelDO> panelList;

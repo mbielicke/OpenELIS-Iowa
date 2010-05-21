@@ -37,16 +37,38 @@ import org.openelis.gwt.common.MetaMap;
 
 public class InventoryReceiptMeta implements Meta, MetaMap {
 
-    public static final String   ID = "id", 
-                                 INVENTORY_ITEM_ID = "inventoryItemId",
-                                 ORDER_ITEM_ID = "orderItemId", 
-                                 ORGANIZATION_ID = "organizationId",
-                                 RECEIVED_DATE = "receivedDate", 
-                                 QUANTITY_RECEIVED = "quantityReceived",
-                                 UNIT_COST = "unitCost", 
-                                 QC_REFERENCE = "qcReference",
-                                 EXTERNAL_REFERENCE = "externalReference",
-                                 UPC = "upc";
+    public static final String   ID = "_inventoryReceipt.id", 
+                                 INVENTORY_ITEM_ID = "_inventoryReceipt.inventoryItemId",
+                                 ORDER_ITEM_ID = "_inventoryReceipt.orderItemId", 
+                                 ORGANIZATION_ID = "_inventoryReceipt.organizationId",
+                                 RECEIVED_DATE = "_inventoryReceipt.receivedDate", 
+                                 QUANTITY_RECEIVED = "_inventoryReceipt.quantityReceived",
+                                 UNIT_COST = "_inventoryReceipt.unitCost", 
+                                 QC_REFERENCE = "_inventoryReceipt.qcReference",
+                                 EXTERNAL_REFERENCE = "_inventoryReceipt.externalReference",
+                                 UPC = "_inventoryReceipt.upc",
+                                 
+                                 ITEM_ORDER_ID = "_orderItem.orderId",
+                                 ITEM_INVENTORY_ITEM_ID = "_orderItem.inventoryItemId",
+                                 ITEM_QUANTITY = "_orderItem.quantity",
+                                 ITEM_ORDER_CATALOG_NUMBER = "_orderItem.catalogNumber",
+                                 ITEM_UNIT_COST = "_orderItem.unitCost",  
+                                 
+                                 ORGANIZATION_ADDRESS_ID = "_organization.address.id",
+                                 ORGANIZATION_ADDRESS_MULTIPLE_UNIT = "_organization.address.multipleUnit",
+                                 ORGANIZATION_ADDRESS_STREET_ADDRESS = "_organization.address.streetAddress",
+                                 ORGANIZATION_ADDRESS_CITY = "_organization.address.city",
+                                 ORGANIZATION_ADDRESS_STATE = "_organization.address.state",
+                                 ORGANIZATION_ADDRESS_ZIP_CODE = "_organization.address.zipCode",
+                                 ORGANIZATION_ADDRESS_WORK_PHONE = "_organization.address.workPhone",
+                                 ORGANIZATION_ADDRESS_HOME_PHONE = "_organization.address.homePhone",
+                                 ORGANIZATION_ADDRESS_CELL_PHONE = "_organization.address.cellPhone",
+                                 ORGANIZATION_ADDRESS_FAX_PHONE = "_organization.address.faxPhone",
+                                 ORGANIZATION_ADDRESS_EMAIL = "_organization.address.email",
+                                 ORGANIZATION_ADDRESS_COUNTRY = "_organization.address.country",                                                               
+                                 
+                                 INVENTORY_ITEM_NAME = "_inventoryItem.name",
+                                 ORGANIZATION_NAME = "_inventoryReceipt.organization.name";
 
     private static HashSet<String> names;
 
@@ -54,7 +76,22 @@ public class InventoryReceiptMeta implements Meta, MetaMap {
         names = new HashSet<String>(Arrays.asList(ID, INVENTORY_ITEM_ID, ORDER_ITEM_ID,
                                                   ORGANIZATION_ID, RECEIVED_DATE,
                                                   QUANTITY_RECEIVED, UNIT_COST, QC_REFERENCE,
-                                                  EXTERNAL_REFERENCE, UPC));
+                                                  EXTERNAL_REFERENCE, UPC, ITEM_ORDER_ID,
+                                                  ITEM_INVENTORY_ITEM_ID, ITEM_QUANTITY,
+                                                  ITEM_ORDER_CATALOG_NUMBER, ITEM_UNIT_COST,
+                                                  ORGANIZATION_ADDRESS_ID,
+                                                  ORGANIZATION_ADDRESS_MULTIPLE_UNIT,
+                                                  ORGANIZATION_ADDRESS_STREET_ADDRESS,
+                                                  ORGANIZATION_ADDRESS_CITY,
+                                                  ORGANIZATION_ADDRESS_STATE ,
+                                                  ORGANIZATION_ADDRESS_ZIP_CODE,
+                                                  ORGANIZATION_ADDRESS_WORK_PHONE,
+                                                  ORGANIZATION_ADDRESS_HOME_PHONE,
+                                                  ORGANIZATION_ADDRESS_CELL_PHONE,
+                                                  ORGANIZATION_ADDRESS_FAX_PHONE,
+                                                  ORGANIZATION_ADDRESS_EMAIL,
+                                                  ORGANIZATION_ADDRESS_COUNTRY,
+                                                  ORGANIZATION_NAME));
     }
 
     public static String getId() {
@@ -95,6 +132,82 @@ public class InventoryReceiptMeta implements Meta, MetaMap {
 
     public static String getUpc() {
         return UPC;
+    }
+    
+    public static String getOrganizationAddressId() {
+        return ORGANIZATION_ADDRESS_ID;
+    }
+    
+    public static String getOrganizationAddressMultipleUnit() {
+        return ORGANIZATION_ADDRESS_MULTIPLE_UNIT;
+    }
+
+    public static String getOrganizationAddressStreetAddress() {
+        return ORGANIZATION_ADDRESS_STREET_ADDRESS;
+    }
+
+    public static String getOrganizationAddressCity() {
+        return ORGANIZATION_ADDRESS_CITY;
+    }
+
+    public static String getOrganizationAddressState() {
+        return ORGANIZATION_ADDRESS_STATE;
+    }
+
+    public static String getOrganizationAddressZipCode() {
+        return ORGANIZATION_ADDRESS_ZIP_CODE;
+    }
+    
+    public static String getOrganizationAddressWorkPhone() {
+        return ORGANIZATION_ADDRESS_WORK_PHONE;
+    }
+
+    public static String getOrganizationAddressHomePhone() {
+        return ORGANIZATION_ADDRESS_HOME_PHONE;
+    }
+
+    public static String getOrganizationAddressCellPhone() {
+        return ORGANIZATION_ADDRESS_CELL_PHONE;
+    }
+
+    public static String getOrganizationAddressFaxPhone() {
+        return ORGANIZATION_ADDRESS_FAX_PHONE;
+    }
+
+    public static String getOrganizationAddressEmail() {
+        return ORGANIZATION_ADDRESS_EMAIL;
+    }
+
+    public static String getOrganizationAddressCountry() {
+        return ORGANIZATION_ADDRESS_COUNTRY;
+    }   
+    
+    public static String getOrderItemOrderId() {
+        return ITEM_ORDER_ID;
+    }
+    
+    public static String getOrderItemInventoryItemId() {
+        return ITEM_INVENTORY_ITEM_ID;
+    }
+    
+    public static String getOrderItemQuantity() {
+        return ITEM_QUANTITY;
+    }
+    
+    public static String getOrderItemCatalogNumber() {
+        return ITEM_ORDER_CATALOG_NUMBER;
+    }
+    
+    public static String getOrderItemUnitCost() {
+        return ITEM_UNIT_COST;
+    }
+    
+    public static String getInventoryItemName() {
+        return INVENTORY_ITEM_NAME;
+    }
+    
+    public static String getOrganizationName() {
+        return ORGANIZATION_NAME;
     }
 
     public boolean hasColumn(String columnName) {

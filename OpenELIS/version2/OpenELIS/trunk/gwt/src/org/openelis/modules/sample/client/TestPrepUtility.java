@@ -137,11 +137,11 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
             testDO = orderTestList.get(i);
             
             // we need to expand a panel to test ids
-            if (testDO.getReferenceTableId().equals(ReferenceTable.PANEL)){
+            /*if (testDO.getReferenceTableId().equals(ReferenceTable.PANEL)){
                 panelIds = panelService.callList("fetchTestIdsByPanelId", testDO.getReferenceId());
                 testIds.addAll(panelIds);
-            } else 
-                testIds.add(new IdVO(testDO.getReferenceId()));
+            } else*/ 
+                testIds.add(new IdVO(testDO.getTestId()));
         }
 
         processTestListAndCheckPrepTests(testIds);
