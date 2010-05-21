@@ -1,4 +1,4 @@
-package org.openelis.modules.reviewRelease.client;
+package org.openelis.modules.completeRelease.client;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,15 +6,14 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.openelis.cache.DictionaryCache;
-import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.CompleteReleaseVO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.ReviewReleaseVO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
-import org.openelis.gwt.common.ReportProgress;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.ReportProgress;
 import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -60,7 +59,6 @@ import org.openelis.modules.sample.client.SampleHistoryUtility;
 import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleNotesTab;
 import org.openelis.modules.sample.client.StorageTab;
-import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -73,8 +71,9 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.AbsolutePanel;
 
-public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
+public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
     
     private Integer                        analysisLoggedInId, analysisCancelledId,
     analysisReleasedId, analysisInPrep, sampleLoggedInId, sampleErrorStatusId,
@@ -85,7 +84,7 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
         AUX_DATA
     };
 	
-    protected Tabs                         tab = Tabs.BLANK;
+    protected Tabs                         tab;
     protected ArrayList<Tabs>              tabIndexes = new ArrayList<Tabs>();
     protected TextBox                      clientReference;
     protected TextBox<Integer>             accessionNumber, orderNumber;
@@ -121,21 +120,18 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
 	private ResultTab      				   testResultsTab;
 	private TableWidget                    atozTable;
 	
-    protected MenuItem                     historySample, historySampleEnvironmental,historySamplePrivateWell,historySampleSDWIS,
+    protected MenuItem                     historySample, historySampleSpec,
     historySampleProject, historySampleOrganization, historySampleItem,
     historyAnalysis, historyCurrentResult, historyStorage, historySampleQA,
     historyAnalysisQA, historyAuxData;
     
-    private ReviewReleaseScreen reviewScreen = this; 
-	
-	
-    public ReviewReleaseScreen() throws Exception {
-        super((ScreenDefInt)GWT.create(ReviewReleaseDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.reviewRelease.server.ReviewReleaseService");
+    public CompleteReleaseScreen() throws Exception {
+        super((ScreenDefInt)GWT.create(CompleteReleaseDef.class));
+        service = new ScreenService("controller?service=org.openelis.modules.completeRelease.server.CompleteReleaseService");
 
-        security = OpenELIS.security.getModule("sample");
+        security = OpenELIS.security.getModule("samplecompleterelease");
         if (security == null)
-            throw new SecurityException("screenPermException", "Review and Release Screen");
+            throw new SecurityException("screenPermException", "Complete and Release Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -145,8 +141,8 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
     }
     
     public void postConstructor() {
+        tab = Tabs.BLANK;
         manager = SampleManager.getInstance();
-        manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
         
         try{
             DictionaryCache.preloadByCategorySystemNames("sample_status", "analysis_status", "type_of_sample", 
@@ -158,21 +154,18 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
         }
         
         initialize();
-        initializeDropdowns();
         setState(State.DEFAULT);
+        initializeDropdowns();
         DataChangeEvent.fire(this);
     }
     
     private void initialize() {
-    	sampleContent = (TabPanel)def.getWidget("SampleContent");
-        sampleContent.getTabBar().setStyleName("None");
-        sampleContent.addSelectionHandler(new SelectionHandler<Integer>() {
-    		public void onSelection(SelectionEvent<Integer> event) {
-    			tab = Tabs.values()[event.getSelectedItem()];
-    			drawTabs();
-    		}
-    	});
-
+        final CompleteReleaseScreen completeScreen;
+        completeScreen = this;
+        
+        //
+        // button panel buttons
+        //
         queryButton = (AppButton)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -189,7 +182,29 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
                     queryButton.enable(false);
             }
         });
+        
+        prevButton = (AppButton)def.getWidget("previous");
+        addScreenHandler(prevButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                previous();
+            }
 
+            public void onStateChange(StateChangeEvent<State> event) {
+                prevButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        nextButton = (AppButton)def.getWidget("next");
+        addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                next();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                nextButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
         updateButton = (AppButton)def.getWidget("update");
         addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -216,27 +231,42 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
             }
         });
         
-        nextButton = (AppButton)def.getWidget("next");
-        addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                next();
+        completeButton = (AppButton)def.getWidget("complete");
+        addScreenHandler(completeButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event){
+                complete();
             }
-
+            
             public void onStateChange(StateChangeEvent<State> event) {
-                nextButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                completeButton.enable(event.getState() == State.DISPLAY);
             }
         });
 
-        prevButton = (AppButton)def.getWidget("previous");
-        addScreenHandler(prevButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                previous();
+        releaseButton = (AppButton)def.getWidget("release");
+        addScreenHandler(releaseButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event){
+                release();
             }
-
+            
             public void onStateChange(StateChangeEvent<State> event) {
-                prevButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                releaseButton.enable(event.getState() == State.DISPLAY);
             }
         });
+        
+        //FIXME unrelease
+        
+        /*
+        reportButton = (AppButton)def.getWidget("report");
+        addScreenHandler(reportButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                doReport();
+            }
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                reportButton.enable(event.getState() == State.DISPLAY);
+            }
+        });
+        */
 
         commitButton = (AppButton)def.getWidget("commit");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
@@ -259,44 +289,10 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
                 abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
-        
-        releaseButton = (AppButton)def.getWidget("release");
-        addScreenHandler(releaseButton, new ScreenEventHandler<Object>() {
-        	public void onClick(ClickEvent event){
-        		release();
-        	}
-        	
-        	public void onStateChange(StateChangeEvent<State> event) {
-        		releaseButton.enable(event.getState() == State.DISPLAY);
-        	}
-        });
-        
-        completeButton = (AppButton)def.getWidget("complete");
-        addScreenHandler(releaseButton, new ScreenEventHandler<Object>() {
-        	public void onClick(ClickEvent event){
-        		complete();
-        	}
-        	
-        	public void onStateChange(StateChangeEvent<State> event) {
-        		completeButton.enable(event.getState() == State.DISPLAY);
-        	}
-        });
-        
-        /*
-        reportButton = (AppButton)def.getWidget("report");
-        addScreenHandler(reportButton, new ScreenEventHandler<Object>() {
-        	public void onClick(ClickEvent event) {
-        		doReport();
-        	}
-        	
-        	public void onStateChange(StateChangeEvent<State> event) {
-        		reportButton.enable(event.getState() == State.DISPLAY);
-        	}
-        });
-        */
+
         historyUtility = new SampleHistoryUtility(window){
             public void historyCurrentResult() {
-              ActionEvent.fire(reviewScreen, ResultTab.Action.RESULT_HISTORY, null);
+              ActionEvent.fire(completeScreen, ResultTab.Action.RESULT_HISTORY, null);
             }  
         };
 
@@ -311,45 +307,23 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
             }
         });
         
-        historySampleEnvironmental = (MenuItem)def.getWidget("historySampleEnvironmental");
-        addScreenHandler(historySampleEnvironmental, new ScreenEventHandler<Object>() {
+        historySampleSpec = (MenuItem)def.getWidget("historySampleSpec");
+        addScreenHandler(historySampleSpec, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                historyUtility.historySampleEnvironmental();
+                String domain;
+
+                historyUtility.setManager(manager);
+                domain = manager.getSample().getDomain();
+                if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(domain))
+                    historyUtility.historySampleEnvironmental();
+                else if (SampleManager.WELL_DOMAIN_FLAG.equals(domain))
+                    historyUtility.historySamplePrivateWell();
+                else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(domain))
+                    historyUtility.historySampleSDWIS();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-            	if(manager.getSample().getDomain().equals(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG))
-            		historySampleEnvironmental.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
-            	else
-            		historySampleEnvironmental.enable(false);
-            }
-        });
-        
-        historySamplePrivateWell = (MenuItem)def.getWidget("historySamplePrivateWell");
-        addScreenHandler(historySamplePrivateWell, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                historyUtility.historySamplePrivateWell();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-            	if(manager.getSample().getDomain().equals(SampleManager.WELL_DOMAIN_FLAG))
-            		historySamplePrivateWell.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
-            	else
-            		historySamplePrivateWell.enable(false);
-            }
-        });
-        
-        historySampleSDWIS = (MenuItem)def.getWidget("historySampleSDWIS");
-        addScreenHandler(historySampleSDWIS, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                historyUtility.historySampleSDWIS();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-            	if(manager.getSample().getDomain().equals(SampleManager.SDWIS_DOMAIN_FLAG))
-            		historySampleSDWIS.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
-            	else
-            		historySampleSDWIS.enable(false);
+                historySampleSpec.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
@@ -452,8 +426,19 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
                 historyAuxData.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         }); 
-              
         
+        //
+        // screen fields
+        //
+        sampleContent = (TabPanel)def.getWidget("SampleContent");
+        sampleContent.getTabBar().setStyleName("None");
+        sampleContent.addSelectionHandler(new SelectionHandler<Integer>() {
+            public void onSelection(SelectionEvent<Integer> event) {
+                tab = Tabs.values()[event.getSelectedItem()];
+                drawTabs();
+            }
+        });
+
         nav = new ScreenNavigator(def) {
         	
             public void executeQuery(final Query query) {
@@ -481,11 +466,11 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
             }
 
             public boolean fetch(RPC entry) {
-                return fetchByVO((ReviewReleaseVO)entry);
+                return fetchByVO((CompleteReleaseVO)entry);
             }
 
 			public ArrayList<TableDataRow> getModel() {
-				ArrayList<ReviewReleaseVO> result;
+				ArrayList<CompleteReleaseVO> result;
 				ArrayList<TableDataRow> model;
 				atozTable.setQueryMode(false);
 				model = new ArrayList<TableDataRow>();
@@ -493,7 +478,7 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
 				if(result == null)
 					return model;
 				try {
-					for(ReviewReleaseVO vo : result) {
+					for(CompleteReleaseVO vo : result) {
 						TableDataRow analysis = new TableDataRow();
 						analysis.cells.add(new TableDataCell(vo.getAccession()));
 						analysis.cells.add(new TableDataCell(vo.getTest()));
@@ -513,8 +498,6 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
         };
         
         atozTable = (TableWidget)def.getWidget("atozTable");
-        
-        
         addScreenHandler(atozTable,new ScreenEventHandler<Object>() {
         	public void onStateChange(StateChangeEvent<State> event) {
         		nav.enable(event.getState() == State.DEFAULT || event.getState() == State.DISPLAY);
@@ -522,9 +505,10 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
         	}
         });
         
-        
+        //
+        // tabs
+        //
         sampleTab = new SampleTab(def,window);
-        
         addScreenHandler(sampleTab,new ScreenEventHandler<Object>() {
         	public void onDataChange(DataChangeEvent event) {
         		sampleTab.setData(manager);
@@ -535,68 +519,138 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
         	}
         });
         
-        environmentalTab = new EnvironmentalTab(def,window);
-        
+        try {
+            environmentalTab = new EnvironmentalTab(window);
+            AbsolutePanel envTabPanel = (AbsolutePanel)def.getWidget("envDomainPanel");
+            envTabPanel.add(environmentalTab);
+        } catch (Exception e) {
+            Window.alert("env tab initialize: " + e.getMessage());
+        }
+
         addScreenHandler(environmentalTab, new ScreenEventHandler<Object>() {
-        	public void onDataChange(DataChangeEvent event) {
-        		if(manager.getSample().getDomain().equals(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG))
-        			environmentalTab.setData(manager);
-        		else {
-        			SampleManager newManager = SampleManager.getInstance();
-        			newManager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
-        			environmentalTab.setData(newManager);
-        		}
-        		
-        		if(tab == Tabs.ENVIRONMENT)
-        			environmentalTab.draw();
-        	}
-        	public void onStateChange(StateChangeEvent<State> event) {
-        		environmentalTab.setState(event.getState());
-        	}
+            public void onDataChange(DataChangeEvent event) {
+                ///////////
+/*                if(manager.getSample().getDomain().equals(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG))
+                    environmentalTab.setData(manager);
+                else {
+                    SampleManager newManager = SampleManager.getInstance();
+                    newManager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
+                    environmentalTab.setData(newManager);
+                }
+                
+                if(tab == Tabs.ENVIRONMENT)
+                    environmentalTab.draw();
+                //////////////
+                TreeDataItem selectedRow;
+
+                selectedRow = trackingTree.getSelection();
+
+                if (selectedRow != null && "sample".equals(selectedRow.leafType) &&
+                    SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(manager.getSample().getDomain())) {
+                    environmentalTab.setData(manager);
+                    environmentalTab.draw();
+                    showTabs(Tabs.ENVIRONMENT);
+
+                    addTestButton.enable(false);
+                    cancelTestButton.enable(false);
+                } else
+                    environmentalTab.setData(null);*/
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                environmentalTab.setState(event.getState());
+            }
         });
-        
-        wellTab = new PrivateWellTab(def,window);
-        
+
+        try {
+            wellTab = new PrivateWellTab(window);
+            AbsolutePanel wellTabPanel = (AbsolutePanel)def.getWidget("privateWellDomainPanel");
+            wellTabPanel.add(wellTab);
+
+        } catch (Exception e) {
+            Window.alert("well tab initialize: " + e.getMessage());
+        }
+
         addScreenHandler(wellTab, new ScreenEventHandler<Object>() {
-        	public void onDataChange(DataChangeEvent event) {
-        		if(manager.getSample().getDomain().equals(SampleManager.WELL_DOMAIN_FLAG))
-        			wellTab.setData(manager);
-        		else {
-           			SampleManager newManager = SampleManager.getInstance();
-        			newManager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
-        			wellTab.setData(newManager);
-        		}
-        		
-        		if(tab == Tabs.PRIVATE_WELL)
-        			wellTab.draw();
-        	}
-        	public void onStateChange(StateChangeEvent<State> event) {
-        		wellTab.setState(event.getState());
-        	}
+            public void onDataChange(DataChangeEvent event) {
+                ///////////
+                /*if(manager.getSample().getDomain().equals(SampleManager.WELL_DOMAIN_FLAG))
+                    wellTab.setData(manager);
+                else {
+                    SampleManager newManager = SampleManager.getInstance();
+                    newManager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
+                    wellTab.setData(newManager);
+                }
+                
+                if(tab == Tabs.PRIVATE_WELL)
+                    wellTab.draw();
+                ///////////
+                TreeDataItem selectedRow;
+
+                selectedRow = trackingTree.getSelection();
+
+                if (selectedRow != null && "sample".equals(selectedRow.leafType) &&
+                    SampleManager.WELL_DOMAIN_FLAG.equals(manager.getSample().getDomain())) {
+                    wellTab.setData(manager);
+                    wellTab.draw();
+                    showTabs(Tabs.PRIVATE_WELL);
+
+                    addTestButton.enable(false);
+                    cancelTestButton.enable(false);
+                } else
+                    wellTab.setData(null);*/
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                wellTab.setState(event.getState());
+            }
         });
         
-        sdwisTab = new SDWISTab(def,window);
-        
+        try {
+            sdwisTab = new SDWISTab(window);
+            AbsolutePanel sdwisTabPanel = (AbsolutePanel)def.getWidget("sdwisDomainPanel");
+            sdwisTabPanel.add(sdwisTab);
+
+        } catch (Exception e) {
+            Window.alert("sdwis tab initialize: " + e.getMessage());
+        }
+
         addScreenHandler(sdwisTab, new ScreenEventHandler<Object>() {
-        	public void onDataChange(DataChangeEvent event) {
-        		if(manager.getSample().getDomain().equals(SampleManager.SDWIS_DOMAIN_FLAG))
-        			sdwisTab.setData(manager);
-        		else {
-           			SampleManager newManager = SampleManager.getInstance();
-        			newManager.getSample().setDomain(SampleManager.SDWIS_DOMAIN_FLAG);
-        			sdwisTab.setData(newManager);
-        		}
-        		
-        		if(tab == Tabs.SDWIS)
-        			sdwisTab.draw();
-        	}
-        	public void onStateChange(StateChangeEvent<State> event) {
-        		sdwisTab.setState(event.getState());
-        	}
-        }); 
+            public void onDataChange(DataChangeEvent event) {
+                //////////
+                /*if(manager.getSample().getDomain().equals(SampleManager.SDWIS_DOMAIN_FLAG))
+                    sdwisTab.setData(manager);
+                else {
+                    SampleManager newManager = SampleManager.getInstance();
+                    newManager.getSample().setDomain(SampleManager.SDWIS_DOMAIN_FLAG);
+                    sdwisTab.setData(newManager);
+                }
+                
+                if(tab == Tabs.SDWIS)
+                    sdwisTab.draw();
+                ////////////
+                TreeDataItem selectedRow;
+
+                selectedRow = trackingTree.getSelection();
+
+                if (selectedRow != null && "sample".equals(selectedRow.leafType) &&
+                    SampleManager.SDWIS_DOMAIN_FLAG.equals(manager.getSample().getDomain())) {
+                    sdwisTab.setData(manager);
+                    sdwisTab.draw();
+                    showTabs(Tabs.SDWIS);
+
+                    addTestButton.enable(false);
+                    cancelTestButton.enable(false);
+                } else
+                    sdwisTab.setData(null);*/
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                sdwisTab.setState(event.getState());
+            }
+        });
         
         sampleItemTab = new SampleItemTab(def, window);
-
         addScreenHandler(sampleItemTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 sampleItemTab.setData(dataBundle);
@@ -611,7 +665,6 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
         });
         
         analysisTab = new AnalysisTab(def, window);
-
         addScreenHandler(analysisTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 analysisTab.setData(dataBundle);
@@ -625,8 +678,7 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
             }
         });
         
-        testResultsTab = new ResultTab(def, window);
-
+        testResultsTab = new ResultTab(def, window, this);
         addScreenHandler(testResultsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                     testResultsTab.setData(dataBundle);
@@ -861,7 +913,7 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
         }
     }
     
-    protected boolean fetchByVO(ReviewReleaseVO vo) {
+    protected boolean fetchByVO(CompleteReleaseVO vo) {
         if (vo.getSampleId() == null) {
         	String domain = manager.getSample().getDomain();
             manager = SampleManager.getInstance();
@@ -1104,7 +1156,7 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
 		ArrayList<TableDataRow> rows = atozTable.getSelections();
 		for(int i = 0; i < rows.size(); i++) {
 			try {
-				SampleDataBundle bundle = getAnalysisBundle(((ReviewReleaseVO)rows.get(i).data).getAnalysisId());
+				SampleDataBundle bundle = getAnalysisBundle(((CompleteReleaseVO)rows.get(i).data).getAnalysisId());
 				bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).releaseAnalyssisAt(bundle.getAnalysisIndex());
 			}catch(Exception e) {
 				if(e instanceof ValidationErrorsList)
@@ -1119,7 +1171,7 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
 		ArrayList<TableDataRow> rows = atozTable.getSelections();
 		for(int i = 0; i < rows.size(); i++) {
 			try {
-				SampleDataBundle bundle = getAnalysisBundle(((ReviewReleaseVO)rows.get(i).data).getAnalysisId());
+				SampleDataBundle bundle = getAnalysisBundle(((CompleteReleaseVO)rows.get(i).data).getAnalysisId());
 				bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).completeAnalysisAt(bundle.getAnalysisIndex());
 			}catch(Exception e) {
 				if(e instanceof ValidationErrorsList)
@@ -1129,5 +1181,4 @@ public class ReviewReleaseScreen extends Screen implements HasActionHandlers {
 			}
 		}
 	}
-	
 }

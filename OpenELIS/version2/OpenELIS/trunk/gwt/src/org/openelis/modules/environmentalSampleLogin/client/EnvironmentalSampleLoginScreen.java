@@ -675,7 +675,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             }
         });
 
-        testResultsTab = new ResultTab(def, window);
+        testResultsTab = new ResultTab(def, window, this);
 
         addScreenHandler(testResultsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
