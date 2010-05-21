@@ -121,7 +121,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
     }
     
     public void lookup(SampleDataBundle analysisDataBundle, ArrayList<OrderTestViewDO> orderTestList) throws Exception {
-        ArrayList<IdVO> testIds, panelIds;
+        ArrayList<IdVO> testIds;
         OrderTestViewDO testDO;
 
         assert manager != null : "manager is null";
@@ -135,13 +135,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         testIds = new ArrayList<IdVO>();
         for(int i=0; i<orderTestList.size(); i++){
             testDO = orderTestList.get(i);
-            
-            // we need to expand a panel to test ids
-            /*if (testDO.getReferenceTableId().equals(ReferenceTable.PANEL)){
-                panelIds = panelService.callList("fetchTestIdsByPanelId", testDO.getReferenceId());
-                testIds.addAll(panelIds);
-            } else*/ 
-                testIds.add(new IdVO(testDO.getTestId()));
+            testIds.add(new IdVO(testDO.getTestId()));
         }
 
         processTestListAndCheckPrepTests(testIds);
