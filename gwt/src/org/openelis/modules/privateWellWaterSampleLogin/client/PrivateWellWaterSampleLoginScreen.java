@@ -677,7 +677,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             }
         });
 
-        testResultsTab = new ResultTab(def, window);
+        testResultsTab = new ResultTab(def, window, this);
 
         addScreenHandler(testResultsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {

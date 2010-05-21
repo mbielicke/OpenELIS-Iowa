@@ -1,4 +1,4 @@
-package org.openelis.modules.reviewRelease.client;
+package org.openelis.modules.completeRelease.client;
 
 import java.util.EnumSet;
 

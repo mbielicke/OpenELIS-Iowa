@@ -1,4 +1,4 @@
-package org.openelis.modules.reviewRelease.server;
+package org.openelis.modules.completeRelease.server;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.openelis.domain.ReviewReleaseVO;
+import org.openelis.domain.CompleteReleaseVO;
 import org.openelis.gwt.common.ReportProgress;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.SampleManager;
@@ -16,10 +16,10 @@ import org.openelis.remote.FinalReportBeanRemote;
 import org.openelis.remote.ReviewReleaseRemote;
 import org.openelis.util.SessionManager;
 
-public class ReviewReleaseService {
+public class CompleteReleaseService {
 	private static final int rowPP = 500;
 
-	public ArrayList<ReviewReleaseVO> query(Query query) throws Exception{
+	public ArrayList<CompleteReleaseVO> query(Query query) throws Exception{
 		 return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
 	}
 	

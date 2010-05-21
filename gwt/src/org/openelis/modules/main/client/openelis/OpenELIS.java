@@ -39,6 +39,7 @@ import org.openelis.modules.SDWISSampleLogin.client.SDWISSampleLoginScreen;
 import org.openelis.modules.analyte.client.AnalyteScreen;
 import org.openelis.modules.auxiliary.client.AuxiliaryScreen;
 import org.openelis.modules.buildKits.client.BuildKitsScreen;
+import org.openelis.modules.completeRelease.client.CompleteReleaseScreen;
 import org.openelis.modules.dictionary.client.DictionaryScreen;
 import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSampleLoginScreen;
 import org.openelis.modules.favorites.client.FavoritesScreen;
@@ -60,7 +61,6 @@ import org.openelis.modules.pws.client.PwsScreen;
 import org.openelis.modules.qaevent.client.QaEventScreen;
 import org.openelis.modules.qc.client.QcScreen;
 import org.openelis.modules.quickEntry.client.QuickEntryScreen;
-import org.openelis.modules.reviewRelease.client.ReviewReleaseScreen;
 import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
 import org.openelis.modules.section.client.SectionScreen;
 import org.openelis.modules.shipping.client.ShippingScreen;
@@ -426,7 +426,7 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new ReviewReleaseScreen());
+                            browser.addScreen(new CompleteReleaseScreen());
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());

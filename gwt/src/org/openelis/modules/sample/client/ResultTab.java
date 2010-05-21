@@ -75,7 +75,7 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
-public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Action>{
+public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Action> {
     public enum Action {
         RESULT_HISTORY
     };
@@ -97,15 +97,20 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
     protected AnalysisManager                       analysisMan;
     protected AnalysisViewDO                        anDO;
     protected SampleDataBundle                      bundle;
+    private Screen                       parentScreen;
 
     private Integer                                 analysisCancelledId, analysisReleasedId,
                     testAnalyteReadOnlyId, testAnalyteRequiredId, addedTestAnalyteId,
                     addedAnalyteId;
     private String                                  addedAnalyteName;
 
-    public ResultTab(ScreenDefInt def, ScreenWindow window) {
+    private ReflexTestUtility                       reflexTestUtil;
+
+    public ResultTab(ScreenDefInt def, ScreenWindow window, Screen parentScreen) {
         setDefinition(def);
         setWindow(window);
+        
+        this.parentScreen = parentScreen;
 
         initialize();
         initializeDropdowns();
@@ -127,8 +132,8 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         addScreenHandler(testResultsTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
                 testResultsTable.load(getTableModel());
-                
-                if(testResultsTable.numRows() > 0)
+
+                if (testResultsTable.numRows() > 0)
                     popoutTable.enable(true);
             }
 
@@ -161,16 +166,16 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             public void onSelection(SelectionEvent<TableRow> event) {
                 int row;
                 ResultViewDO resultDO;
-                
-                if(EnumSet.of(State.ADD, State.UPDATE).contains(state)){
+
+                if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     row = testResultsTable.getSelectedRow();
                     resultDO = displayManager.getObjectAt(row, 0);
-    
+
                     if (testAnalyteRequiredId.equals(resultDO.getTypeId()))
                         removeResultButton.enable(false);
                     else
                         removeResultButton.enable(true);
-    
+
                     addResultButton.enable(true);
                     suggestionsButton.enable(true);
                 }
@@ -246,6 +251,12 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
                         resultDO.setTypeId(testResultDo.getTypeId());
                         resultDO.setTestResultId(testResultDo.getId());
+
+                        if (reflexTestUtil == null)
+                            reflexTestUtil = new ReflexTestUtility();
+
+                        reflexTestUtil.setScreen(parentScreen);
+                        reflexTestUtil.resultEntered(bundle, resultDO);
 
                     } catch (ParseException e) {
                         testResultsTable.clearCellExceptions(row, col);
@@ -422,15 +433,15 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         });
 
         popoutTable = (AppButton)def.getWidget("popoutTable");
-            addScreenHandler(popoutTable, new ScreenEventHandler<Object>() {
-                public void onClick(ClickEvent event) {
-                    onTablePopoutClick();
-                }
-    
-                public void onStateChange(StateChangeEvent<State> event) {
-                    popoutTable.enable(false);
-                }
-            });
+        addScreenHandler(popoutTable, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                onTablePopoutClick();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                popoutTable.enable(false);
+            }
+        });
     }
 
     private ArrayList<TableDataRow> getTableModel() {
@@ -480,7 +491,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                     }
 
                     val = resultDO.getValue();
-                    //getResultValue(resultDO, anDO.getUnitOfMeasureId());
+                    // getResultValue(resultDO, anDO.getUnitOfMeasureId());
                     row.cells.get(c + 2).setValue(val);
 
                     if (validateResults && val != null && !"".equals(val)) {
@@ -549,7 +560,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             return;
         else if (numOfCols == 3)
             width = 311;
-        
+
         if (resultTableCols == null)
             resultTableCols = (ArrayList<TableColumn>)testResultsTable.getColumns().clone();
         testResultsTable.getColumns().clear();
@@ -558,7 +569,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         for (int i = 0; i < numOfCols; i++ ) {
             col = resultTableCols.get(i);
             col.enable(testResultsTable.isEnabled());
-            
+
             if (i == 0)
                 col.setCurrentWidth(65);
             else
@@ -594,34 +605,36 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
     private void onTablePopoutClick() {
         try {
-            if (resultPopoutScreen == null) 
+            if (resultPopoutScreen == null)
                 resultPopoutScreen = new ResultTab();
 
             ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
             modal.setName(consts.get("testResults"));
 
-            //having problems with losing the last cell edited.  This will tell the table
-            //to save all values before closing
+            // having problems with losing the last cell edited. This will tell
+            // the table
+            // to save all values before closing
             modal.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
                 public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
-                    if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) 
+                    if (EnumSet.of(State.ADD, State.UPDATE).contains(state))
                         resultPopoutScreen.testResultsTable.finishEditing();
                 }
             });
-            
+
             modal.setContent(resultPopoutScreen);
             resultPopoutScreen.setData(bundle);
             resultPopoutScreen.setScreenState(state);
             resultPopoutScreen.draw();
-            
-            modal.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>(){
+
+            modal.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
                 public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
-                    //having problems with losing the last cell edited.  This will tell the table
-                    //to save all values before closing
+                    // having problems with losing the last cell edited. This
+                    // will tell the table
+                    // to save all values before closing
                     resultPopoutScreen.testResultsTable.finishEditing();
-                    
+
                     loaded = false;
-                    draw();                    
+                    draw();
                 }
             });
 
@@ -708,7 +721,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             }
         }
     }
-    
+
     public HandlerRegistration addActionHandler(ActionHandler<ResultTab.Action> handler) {
         return addHandler(handler, ActionEvent.getType());
     }
