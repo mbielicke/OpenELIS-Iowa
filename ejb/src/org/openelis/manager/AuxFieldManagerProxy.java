@@ -287,11 +287,9 @@ public class AuxFieldManagerProxy {
                     if(numDefault > 1) {
                         fieldName = AuxFieldGroupMeta.getFieldValueTypeId();
                         throw new InconsistencyException("auxMoreThanOneDefaultException");
-                    } else if(count == 1 /*numOther == 0*/ && numDefault == 1) {
-                        //if( || j > 0) {
-                            fieldName = AuxFieldGroupMeta.getFieldValueTypeId();
-                            throw new InconsistencyException("auxDefaultWithNoOtherTypeException");
-                        //}
+                    } else if(count == 1 && numDefault == 1) {                        
+                        fieldName = AuxFieldGroupMeta.getFieldValueTypeId();
+                        throw new InconsistencyException("auxDefaultWithNoOtherTypeException");                        
                     }
                                                               
                     if(DataBaseUtil.isDifferent(firstTypeId,typeId) &&

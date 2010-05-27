@@ -517,7 +517,7 @@ public class OrderFillScreen extends Screen {
         custNoteTab.setState(State.DISPLAY);        
     }
     
-    private void process() {
+    protected void process() {
         commit();  
     }    
 
@@ -565,7 +565,7 @@ public class OrderFillScreen extends Screen {
             set = combinedMap.keySet();
             iter = set.iterator();                    
             try {      
-                validateItemsTree();
+                validateQuantityOnHand();
                 while (iter.hasNext())  {                                                                        
                     man = combinedMap.get(iter.next());
                     man.getOrder().setStatusId(status_processed);
@@ -588,7 +588,7 @@ public class OrderFillScreen extends Screen {
         }        
     }
     
-    private void validateItemsTree() throws ValidationErrorsList{
+    private void validateQuantityOnHand() throws ValidationErrorsList{
         TreeDataItem parent, child;
         ArrayList<TreeDataItem> model, items;
         InventoryXUseViewDO data;
@@ -776,7 +776,7 @@ public class OrderFillScreen extends Screen {
                     try {
                         now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
                     } catch (Exception e) {
-                        Window.alert("OrderAdd Datetime: " +e.getMessage());
+                        Window.alert("OrderFill Datetime: " +e.getMessage());
                     }
                     
                     orderMap = new HashMap<TableDataRow, OrderViewDO>();

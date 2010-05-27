@@ -177,7 +177,7 @@ public class OrderBean implements OrderRemote, OrderLocal {
         list = query.getResultList();
         if (list.isEmpty())
             throw new NotFoundException();
-        //list = (ArrayList<OrderViewDO>)DataBaseUtil.subList(list, first, max);
+
         if (list == null)
             throw new LastPageException();        
         
