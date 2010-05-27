@@ -777,6 +777,13 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                     ActionEvent.fire(sdwisScreen, event.getAction(), event.getData());
             }
         });
+        
+        testResultsTab.addActionHandler(new ActionHandler<ResultTab.Action>() {
+            public void onAction(ActionEvent<ResultTab.Action> event) {
+                if (state != State.QUERY)
+                    ActionEvent.fire(sdwisScreen, event.getAction(), event.getData());
+            }
+        });
 
         // Get TabPanel and set Tab Selection Handlers
         tabs = (TabPanel)def.getWidget("sampleItemTabPanel");

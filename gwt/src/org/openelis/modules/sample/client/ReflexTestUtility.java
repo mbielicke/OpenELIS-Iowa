@@ -73,6 +73,8 @@ public class ReflexTestUtility extends Screen implements
     public void resultEntered(SampleDataBundle analysisDataBundle, ResultViewDO resultDO)
                                                                                          throws Exception {
         int sampleItemIndex, analysisIndex;
+        AnalysisManager anMan;
+        AnalysisViewDO anDO;
         TestManager testMan;
 
         assert screen != null : "screen is null";
@@ -83,15 +85,14 @@ public class ReflexTestUtility extends Screen implements
         
         sampleItemIndex = analysisDataBundle.getSampleItemIndex();
         analysisIndex = analysisDataBundle.getAnalysisIndex();
-        testMan = analysisDataBundle.getSampleManager()
-                                    .getSampleItems()
-                                    .getAnalysisAt(sampleItemIndex)
-                                    .getTestAt(analysisIndex);
+        anMan = analysisDataBundle.getSampleManager().getSampleItems().getAnalysisAt(sampleItemIndex);
+        anDO = anMan.getAnalysisAt(analysisIndex);
+        testMan = anMan.getTestAt(analysisIndex);
 
-        processReflexTests(resultDO, testMan);
+        processReflexTests(resultDO, anDO, testMan);
     }
 
-    private void processReflexTests(final ResultViewDO resultDO, TestManager testMan) throws Exception {
+    private void processReflexTests(final ResultViewDO resultDO, final AnalysisViewDO anDO, TestManager testMan) throws Exception {
         TestReflexManager reflexMan;
         ArrayList<TestReflexViewDO> reflexList;
 
@@ -105,7 +106,7 @@ public class ReflexTestUtility extends Screen implements
                 public void onAction(ActionEvent<TestReflexLookupScreen.Action> event) {
                     if (event.getAction() == TestReflexLookupScreen.Action.SELECTED_REFLEX_ROW) {
                         lookupDrawn = false;
-                        addReflexTests((ArrayList<TestIdDupsVO>)event.getData(), resultDO.getAnalysisId(), resultDO.getId());
+                        addReflexTests((ArrayList<TestIdDupsVO>)event.getData(), anDO.getId(), resultDO.getId());
                     }
                 }
             });
@@ -116,9 +117,9 @@ public class ReflexTestUtility extends Screen implements
             lookupDrawn = true;
             ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
             modal.setContent(reflexPickerScreen);
-            modal.setName(consts.get("reflexTestPicker") + " " + "??");
+            modal.setName(consts.get("reflexTestPicker") + " " + anDO.getTestName() + " : " + anDO.getMethodName());
         }else
-            addReflexTests(reflexPickerScreen.getReflexList(), resultDO.getAnalysisId(), resultDO.getId());
+            addReflexTests(reflexPickerScreen.getReflexList(), anDO.getId(), resultDO.getId());
     }
 
     private void addReflexTests(ArrayList<TestIdDupsVO> reflexList, Integer analysisId, Integer resultId) {
@@ -139,7 +140,9 @@ public class ReflexTestUtility extends Screen implements
                 if(!testDO.isCheckForDups() || !duplicatePresent(itemMan, testDO.getTestId())){
                     if (testMan.canAssign()) {
                         addedIndex = anMan.addReflexAnalysis(analysisId, resultId);
+                        anMan.setTestAt(testMan, addedIndex);
                         bundles.add(anMan.getBundleAt(addedIndex));
+                        
                     }else{
                         errorsList.add(new FormErrorException("insufficientPrivilegesAddTest",
                                                               testMan.getTest().getName(),
@@ -179,7 +182,7 @@ public class ReflexTestUtility extends Screen implements
     }
 
     private void fireFinished() {
-        if(!lookupDrawn){
+        if(!lookupDrawn && bundles.size() > 0){
             ActionEvent.fire(this, Action.DONE, bundles);
     
             if (errorsList.size() > 0)

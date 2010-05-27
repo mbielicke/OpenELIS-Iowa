@@ -1,16 +1,12 @@
 package org.openelis.modules.completeRelease.server;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Date;
 
 import org.openelis.domain.CompleteReleaseVO;
 import org.openelis.gwt.common.ReportProgress;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.manager.SampleManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.FinalReportBeanRemote;
 import org.openelis.remote.ReviewReleaseRemote;

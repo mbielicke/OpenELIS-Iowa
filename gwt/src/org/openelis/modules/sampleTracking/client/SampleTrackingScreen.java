@@ -638,7 +638,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 window.clearStatus();
             }
         });
-
+        
         prevPage = (AppButton)def.getWidget("prevPage");
         addScreenHandler(prevPage, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -991,6 +991,20 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 testResultsTab.setState(event.getState());
             }
         });
+        
+        testResultsTab.addActionHandler(new ActionHandler<ResultTab.Action>() {
+            public void onAction(ActionEvent<ResultTab.Action> event) {
+                ArrayList<SampleDataBundle> data;
+
+                if (state != State.QUERY){
+                    data = (ArrayList<SampleDataBundle>)event.getData();
+                    //we need to create a new analysis row so the utility can work from that
+                    addTest(data.get(0));
+                    
+                    treeUtil.importReflexTestList((ArrayList<SampleDataBundle>)event.getData());
+                }
+            }
+        });
 
         analysisNotesTab = new AnalysisNotesTab(def, window, "anExNotesPanel", "anExNoteButton",
                                                 "anIntNotesPanel", "anIntNoteButton");
@@ -1265,6 +1279,9 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     }
 
     protected void update() {
+        int topLevelIndex;
+        TreeDataItem sampleRow;
+        
         if (trackingTree.getSelectedRow() == -1) {
             window.setError(consts.get("selectRecordToUpdate"));
             return;
@@ -1275,6 +1292,16 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         try {
             manager = manager.fetchForUpdate();
             treeUtil.setManager(manager);
+            
+            topLevelIndex = getTopLevelIndex(trackingTree.getSelection());
+            sampleRow = trackingTree.getData().get(topLevelIndex);
+            sampleRow.data = manager.getBundle();
+            trackingTree.unselect(trackingTree.getSelectedRowIndex());
+            checkNode(sampleRow);
+            setState(State.DISPLAY);
+            trackingTree.select(topLevelIndex);
+            window.clearStatus();
+            
             setState(State.UPDATE);
             
             if (!canEdit()){
@@ -1297,7 +1324,11 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     }
 
     protected void addTest() {
-        SampleDataBundle bundle, analysisBundle;
+        addTest(null);
+    }
+        
+    protected void addTest(SampleDataBundle analysisBundle){
+        SampleDataBundle bundle;
         AnalysisManager anMan;
         TreeDataItem sampleItem;
         int analysisIndex;
@@ -1311,8 +1342,12 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
         try {
             anMan = manager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
-            analysisIndex = anMan.addAnalysis();
-            analysisBundle = anMan.getBundleAt(analysisIndex);
+            
+            if(analysisBundle == null){
+                analysisIndex = anMan.addAnalysis();
+                analysisBundle = anMan.getBundleAt(analysisIndex);
+            }else
+                analysisIndex = analysisBundle.getAnalysisIndex();
 
             results = new TreeDataItem();
             results.open = true;

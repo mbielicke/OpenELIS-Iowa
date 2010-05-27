@@ -353,6 +353,13 @@ public class SampleItemAnalysisTreeTab extends Screen
                     itemsTree.refreshRow(selected);
                 } else if (event.getAction() == ResultTab.Action.RESULT_HISTORY) {
                     historyCurrentResult();
+                } else if(event.getAction() == ResultTab.Action.REFLEX_ADDED) {
+                    //we need to create a new analysis row so the utility can work from that
+                    itemsTree.fireEvents(false);
+                    treeUtil.onAddAnalysisButtonClick();
+                    itemsTree.fireEvents(true);
+                    
+                    treeUtil.importReflexTestList((ArrayList<SampleDataBundle>)event.getData());
                 }
             }
         });

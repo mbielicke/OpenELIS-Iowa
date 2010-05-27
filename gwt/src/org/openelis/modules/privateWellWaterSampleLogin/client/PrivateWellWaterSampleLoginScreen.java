@@ -795,6 +795,13 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                     ActionEvent.fire(wellScreen, event.getAction(), event.getData());
             }
         });
+        
+        testResultsTab.addActionHandler(new ActionHandler<ResultTab.Action>() {
+            public void onAction(ActionEvent<ResultTab.Action> event) {
+                if (state != State.QUERY)
+                    ActionEvent.fire(wellScreen, event.getAction(), event.getData());
+            }
+        });
 
         nav = new ScreenNavigator(def) {
             public void executeQuery(final Query query) {
