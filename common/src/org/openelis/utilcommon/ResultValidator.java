@@ -39,7 +39,7 @@ public class ResultValidator implements RPC {
     private static final long serialVersionUID = 1L;
 
     public enum Type {
-        DATE, DATE_TIME, TIME, DICTIONARY, NUMERIC, TITER, DEFAULT
+        DATE, DATE_TIME, TIME, DICTIONARY, NUMERIC, TITER, ALPHA_LOWER, ALPHA_MIXED, ALPHA_UPPER, DEFAULT
     };
 
     HashMap<Integer, ArrayList<Item>>          units;
@@ -116,6 +116,18 @@ public class ResultValidator implements RPC {
                 break;
             case TIME:
                 item.resultRange = new ResultRangeTime();
+                item.resultRange.setRange(validRange);
+                break;
+            case ALPHA_LOWER:
+                item.resultRange = new ResultRangeAlpha(ResultRangeAlpha.Type.LOWER);
+                item.resultRange.setRange(validRange);
+                break;
+            case ALPHA_MIXED:
+                item.resultRange = new ResultRangeAlpha(ResultRangeAlpha.Type.MIXED);
+                item.resultRange.setRange(validRange);
+                break;
+            case ALPHA_UPPER:
+                item.resultRange = new ResultRangeAlpha(ResultRangeAlpha.Type.UPPER);
                 item.resultRange.setRange(validRange);
                 break;
         }
@@ -209,11 +221,17 @@ public class ResultValidator implements RPC {
                 else if(i.type == Type.TITER)
                     e = new LocalizedException("titerPlainText", i.resultRange.toString());
                 else if(i.type ==  Type.DATE)
-                    e = new LocalizedException("datePlainText", i.resultRange.toString());
+                    e = new LocalizedException("datePlainText");
                 else if(i.type == Type.DATE_TIME)
-                    e = new LocalizedException("datetimePlainText", i.resultRange.toString());
+                    e = new LocalizedException("datetimePlainText");
                 else if(i.type == Type.TIME)
-                    e = new LocalizedException("timePlainText", i.resultRange.toString());
+                    e = new LocalizedException("timePlainText");
+                else if(i.type == Type.ALPHA_LOWER)
+                    e = new LocalizedException("alphaLowerPlainText");
+                else if(i.type == Type.ALPHA_MIXED)
+                    e = new LocalizedException("alphaMixedPlainText");
+                else if(i.type == Type.ALPHA_UPPER)
+                    e = new LocalizedException("alphaUpperPlainText");
                 
                 ranges.add(e.getMessage());
             }

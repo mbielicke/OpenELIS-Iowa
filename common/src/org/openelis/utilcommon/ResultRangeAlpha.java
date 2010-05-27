@@ -23,44 +23,35 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-
-package org.openelis.utilcommon;
-
-import java.util.Date;
+ package org.openelis.utilcommon;
 
 import org.openelis.exception.ParseException;
 
-public class ResultRangeTime implements ResultRange {
+public class ResultRangeAlpha implements ResultRange {
     private static final long serialVersionUID = 1L;
     
-    protected String time;
-
+    public enum Type {
+      LOWER, MIXED, UPPER  
+    };
+    
+    protected Type type;
+    protected String value;
+    
+    public ResultRangeAlpha(){
+        
+    }
+    
+    public ResultRangeAlpha(Type type){
+        this.type = type;
+    }
+    
     public void setRange(String range) throws ParseException {
-        //
-        // this is not currently implemented
-        // 
+        value = range;
+        //always valid
     }
 
-    public void contains(String time) throws ParseException {
-        String st[];
-        
-        time = "";
-
-        if (time == null)
-            return;
-
-        try {
-            st = time.split(":");
-            if (st.length == 3)
-                new Date(0, 11, 31, Integer.parseInt(st[0]), Integer.parseInt(st[1]), Integer.parseInt(st[2]));
-            else
-                new Date(0, 11, 31, Integer.parseInt(st[0]), Integer.parseInt(st[1]));
-            
-            this.time = time;
-            
-        } catch (IllegalArgumentException ex) {
-            throw new ParseException("illegalTimeValueException");
-        }
+    public void contains(String alpha) throws ParseException {
+        //always valid
     }
 
     public boolean intersects(ResultRange range) {
@@ -68,6 +59,13 @@ public class ResultRangeTime implements ResultRange {
     }
 
     public String toString() {
-        return time;
+        if(type == Type.LOWER)
+            return value.toLowerCase();
+        else if(type == Type.MIXED)
+            return value;
+        else if(type == Type.UPPER)
+            return value.toUpperCase();
+        
+        return "";
     }
 }
