@@ -77,7 +77,7 @@ import com.google.gwt.user.client.Window;
 
 public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Action> {
     public enum Action {
-        RESULT_HISTORY
+        RESULT_HISTORY, REFLEX_ADDED
     };
 
     private boolean                                 loaded;
@@ -128,6 +128,8 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
     }
 
     private void initialize() {
+        final ResultTab resultTab = this;
+        
         testResultsTable = (TableWidget)def.getWidget("testResultsTable");
         addScreenHandler(testResultsTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
@@ -252,8 +254,15 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                         resultDO.setTypeId(testResultDo.getTypeId());
                         resultDO.setTestResultId(testResultDo.getId());
 
-                        if (reflexTestUtil == null)
+                        if (reflexTestUtil == null){
                             reflexTestUtil = new ReflexTestUtility();
+                        
+                            reflexTestUtil.addActionHandler(new ActionHandler<ReflexTestUtility.Action>(){
+                                public void onAction(ActionEvent<ReflexTestUtility.Action> event) {
+                                    ActionEvent.fire(resultTab, Action.REFLEX_ADDED, event.getData());
+                                }
+                            });
+                        }
 
                         reflexTestUtil.setScreen(parentScreen);
                         reflexTestUtil.resultEntered(bundle, resultDO);

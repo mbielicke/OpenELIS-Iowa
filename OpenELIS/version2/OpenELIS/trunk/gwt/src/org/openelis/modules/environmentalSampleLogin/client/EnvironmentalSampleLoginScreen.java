@@ -793,6 +793,13 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                     ActionEvent.fire(envScreen, event.getAction(), event.getData());
             }
         });
+        
+        testResultsTab.addActionHandler(new ActionHandler<ResultTab.Action>() {
+            public void onAction(ActionEvent<ResultTab.Action> event) {
+                if (state != State.QUERY)
+                    ActionEvent.fire(envScreen, event.getAction(), event.getData());
+            }
+        });
 
         // Get TabPanel and set Tab Selection Handlers
         tabs = (TabPanel)def.getWidget("sampleItemTabPanel");

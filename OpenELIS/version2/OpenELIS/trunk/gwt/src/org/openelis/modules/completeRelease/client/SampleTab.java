@@ -68,7 +68,7 @@ public class SampleTab extends Screen {
             }
         });
 
-        orderNumber = (TextBox<Integer>)def.getWidget("orderNumber");
+        orderNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getOrderId());
         addScreenHandler(orderNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 orderNumber.setValue(Util.toString(manager.getSample().getOrderId()));

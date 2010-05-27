@@ -59,7 +59,7 @@ public class TestReflexLookupScreen extends Screen implements
     private ArrayList<TestReflexViewDO> reflexTests;
     private ArrayList<TestIdDupsVO>     returnList;
     
-    private Integer autoAddId, promptId, promptNonDupId;
+    private Integer autoAddId, autoAddNonDupId, promptId, promptNonDupId;
 
     public TestReflexLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(TestReflexLookupDef.class));
@@ -116,17 +116,8 @@ public class TestReflexLookupScreen extends Screen implements
     }
 
     private void ok() {
-        ArrayList<TableDataRow> selectedRows;
-        TableDataRow row;
         if (validate()) {
-            returnList = getReflexList();
-            selectedRows = reflexTestTable.getSelections();
-                
-            for(int i=0; i<selectedRows.size(); i++){
-                row = selectedRows.get(i);
-                returnList.add((TestIdDupsVO)row.data);
-            }
-
+            getReflexList();
             window.close();
 
             if (returnList != null && returnList.size() > 0)
@@ -174,8 +165,10 @@ public class TestReflexLookupScreen extends Screen implements
     private void initializeDropdowns(){
         try {
             autoAddId = DictionaryCache.getIdFromSystemName("reflex_auto");
+            autoAddNonDupId = DictionaryCache.getIdFromSystemName("reflex_auto_ndup");
             promptId = DictionaryCache.getIdFromSystemName("reflex_prompt");
             promptNonDupId = DictionaryCache.getIdFromSystemName("reflex_prompt_ndup");
+            
             
         } catch (Exception e) {
             Window.alert("ReflexTestUtility constructor: " + e.getMessage());
@@ -184,17 +177,28 @@ public class TestReflexLookupScreen extends Screen implements
     
     public ArrayList<TestIdDupsVO> getReflexList(){
         TestReflexViewDO reflexDO;
+        ArrayList<TableDataRow> selectedRows;
+        TableDataRow row;
+        int i,j;
         
         if(returnList == null){
             returnList = new ArrayList<TestIdDupsVO>();
+            selectedRows = reflexTestTable.getSelections();
                 
-            for(int i=0; i<reflexTests.size(); i++){
+            //add non prompt reflex tests to the return list
+            for(i=0; i<reflexTests.size(); i++){
                 reflexDO = reflexTests.get(i);
                 
-                if(promptId.equals(reflexDO.getFlagsId()) || autoAddId.equals(reflexDO.getFlagsId()))
+                if(autoAddId.equals(reflexDO.getFlagsId()))
                     returnList.add(new TestIdDupsVO(reflexDO.getAddTestId(), false));
-                else
+                else if (autoAddNonDupId.equals(reflexDO.getFlagsId()))
                     returnList.add(new TestIdDupsVO(reflexDO.getAddTestId(), true));
+            }
+            
+            //add prompt reflex tests that are selected to the return list
+            for(j=0; j<selectedRows.size(); j++){
+                row = selectedRows.get(j);
+                returnList.add((TestIdDupsVO)row.data);
             }
         }
         

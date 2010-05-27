@@ -31,7 +31,6 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.OrderTestViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestPrepViewDO;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -98,6 +97,14 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         this.screen = screen;
     }
 
+    /**
+     * This method is used under normal circumstances.  It is used when the test/panel has changed
+     * and the screen needs to add the records to the tree and check for preps.
+     * @param analysisDataBundle
+     * @param type
+     * @param id
+     * @throws Exception
+     */
     public void lookup(SampleDataBundle analysisDataBundle, Type type, Integer id) throws Exception {
         ArrayList<IdVO> testIds;
 
@@ -120,6 +127,32 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         processTestListAndCheckPrepTests(testIds);
     }
     
+    /**
+     * This method is used when the screen has added reflex test.  All that is required is the
+     * analysis data bundles for the reflex tests to be added.  The tree also needs to be selecting
+     * the first row to be added.
+     * @param analysisBundles
+     * @throws Exception
+     */
+    public void lookup(ArrayList<SampleDataBundle> analysisBundles) throws Exception {
+        assert manager != null : "manager is null";
+        assert screen != null : "screen is null";
+        
+        errorsList = new ValidationErrorsList();
+        this.analysisDataBundle = analysisBundles.get(0);
+        bundles = new ArrayList<SampleDataBundle>();
+        numberOfPrepScreensDrawn = 0;
+
+        checkPrepTests(analysisBundles);
+    }
+    
+    /**
+     * This method is used to import analyses from an order.  This will add an analysis and check for preps.  The order
+     * screen is not responsible for checking for preps.
+     * @param analysisDataBundle
+     * @param orderTestList
+     * @throws Exception
+     */
     public void lookup(SampleDataBundle analysisDataBundle, ArrayList<OrderTestViewDO> orderTestList) throws Exception {
         ArrayList<IdVO> testIds;
         OrderTestViewDO testDO;
@@ -177,6 +210,24 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
                 anMan.removeTestAt(analysisDataBundle.getAnalysisIndex());
                 bundles.add(analysisDataBundle);
             }
+        }
+
+        fireFinished();
+    }
+    
+    private void checkPrepTests(ArrayList<SampleDataBundle> bundles) throws Exception {
+        SampleDataBundle bundle;
+        int analysisIndex;
+        AnalysisManager anMan;
+        TestManager testMan;
+        
+        for (int i = 0; i < bundles.size(); i++ ) {
+            bundle = bundles.get(i);
+            analysisIndex = bundle.getAnalysisIndex();
+            anMan =  manager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
+            testMan = anMan.getTestAt(bundle.getAnalysisIndex());
+
+            updateAnalysisAndCheckForPreps(anMan, analysisIndex, testMan);
         }
 
         fireFinished();

@@ -262,10 +262,32 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
             Window.alert("analysisTestChanged: " + e.getMessage());
         }
     }
+
+    public void importReflexTestList(ArrayList<SampleDataBundle> analysisBundleList) {
+        if (testLookup == null) {
+            testLookup = new TestPrepUtility();
+            testLookup.setScreen(parentScreen);
+            
+            testLookup.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {
+                public void onAction(ActionEvent<org.openelis.modules.sample.client.TestPrepUtility.Action> event) {
+                    testLookupFinished((ArrayList<SampleDataBundle>)event.getData());
+                }
+            });
+        }
+        
+        testLookup.setManager(manager);
+        
+        try {
+            testLookup.lookup(analysisBundleList);
+
+        } catch (Exception e) {
+            Window.alert("importReflexTestList: " + e.getMessage());
+        }
+        
+    }
     
     public void importOrderTestList(ArrayList<OrderTestViewDO> list) {
         SampleDataBundle analysisBundle;
-        TestPrepUtility.Type type;
 
         if (testLookup == null) {
             testLookup = new TestPrepUtility();

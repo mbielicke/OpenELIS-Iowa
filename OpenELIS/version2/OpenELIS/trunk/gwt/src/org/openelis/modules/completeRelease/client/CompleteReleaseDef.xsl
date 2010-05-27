@@ -38,6 +38,7 @@ UIRF Software License are applicable instead of those above.
   xmlns:meta="xalan://org.openelis.meta.SampleMeta">
 
   <xsl:import href="IMPORT/button.xsl" />
+  <xsl:import href="OPENELIS/org/openelis/modules/completeRelease/client/SampleTabDef.xsl" />
   <xsl:import href="OPENELIS/org/openelis/modules/sample/client/AnalysisTabDef.xsl" />
   <xsl:import href="OPENELIS/org/openelis/modules/sample/client/AnalysisNotesTabDef.xsl" />
   <xsl:import href="OPENELIS/org/openelis/modules/sample/client/AuxDataTabDef.xsl" />
@@ -56,8 +57,6 @@ UIRF Software License are applicable instead of those above.
         <AbsolutePanel spacing="0" style="ButtonPanelContainer">
           <HorizontalPanel>
             <xsl:call-template name="queryButton" />
-            <xsl:call-template name="previousButton" />
-            <xsl:call-template name="nextButton" />
             <xsl:call-template name="buttonPanelDivider" />
             <xsl:call-template name="updateButton" />
             <xsl:call-template name="buttonPanelDivider" />
@@ -105,6 +104,18 @@ UIRF Software License are applicable instead of those above.
                   </appButton>
                 </menuDisplay>
                 <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                <menuItem key="unrelease" description="" enable="false" icon="unreleaseIcon" label="Unrelease" />
+                <menuItem>
+  					<menuDisplay>
+  						<HorizontalPanel>
+     					<check key="previewReport"/>
+     					<text style="Prompt">
+                  Preview Final Report
+                </text>
+     					</HorizontalPanel>
+ 					</menuDisplay>
+ 				</menuItem>
+               	 <html>&lt;hr/&gt;</html>
                   <menuItem key="historySample" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySample')}" />
                   <menuItem key="historySampleSpec" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleSpec')}" />
                   <menuItem key="historySampleProject" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleProject')}" />
@@ -121,20 +132,20 @@ UIRF Software License are applicable instead of those above.
             </menuPanel>
           </HorizontalPanel>
         </AbsolutePanel>
-        <table key="atozTable" width="auto" maxRows="10" multiSelect="true" showScroll="ALWAYS">
-          <col key="{meta:getAccessionNumber()}" width="115" header="Accession #">
+        <table key="completeReleaseTable" width="auto" maxRows="10" multiSelect="true" showScroll="ALWAYS">
+          <col key="{meta:getAccessionNumber()}" width="115" header="Accession #" sort="true">
             <textbox field="Integer" />
           </col>
-          <col key="{meta:getAnalysisTestName()}" width="192" header="Test">
+          <col key="{meta:getAnalysisTestName()}" width="192" header="Test" sort="true">
             <textbox field="String" />
           </col>
-          <col key="{meta:getAnalysisMethodName()}" width="192" header="Method">
+          <col key="{meta:getAnalysisMethodName()}" width="192" header="Method" sort="true">
             <textbox field="String" />
           </col>
-          <col key="{meta:getAnalysisStatusId()}" width="101" header="Analysis Status">
+          <col key="{meta:getAnalysisStatusId()}" width="101" header="Analysis Status" sort="true">
             <dropdown width="100" field="Integer" />
           </col>
-          <col key="{meta:getStatusId()}" width="100" header="Sample Status">
+          <col key="{meta:getStatusId()}" width="100" header="Sample Status" sort="true">
             <dropdown width="100" field="Integer" />
           </col>
         </table>
@@ -146,42 +157,7 @@ UIRF Software License are applicable instead of those above.
           </tab>
 <!-- Sample deck -->
           <tab tab="{meta:getAccessionNumber()},{meta:getClientReference()}" visible="false" text="Sample">
-            <TablePanel style="Form">
-              <row>
-                <text style="Prompt">
-                  <xsl:value-of select="resource:getString($constants,'accessionNum')" />:
-                </text>
-                <textbox key="{meta:getAccessionNumber()}" width="75" tab="orderNumber,SampleContent" field="Integer" required="true" />
-                <text style="Prompt">
-                  <xsl:value-of select="resource:getString($constants,'orderNum')" />:
-                </text>
-                <textbox key="orderNumber" width="75" tab="{meta:getCollectionDate()},{meta:getAccessionNumber()}" field="Integer" />
-                <text style="Prompt">
-                  <xsl:value-of select="resource:getString($constants,'collected')" />:
-                </text>
-                <calendar key="{meta:getCollectionDate()}" begin="0" end="2" width="80" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getCollectionTime()},orderNumber" />
-                <text style="Prompt">
-                  <xsl:value-of select="resource:getString($constants,'time')" />:
-                </text>
-                <textbox key="{meta:getCollectionTime()}" begin="3" end="5" width="60" pattern="{resource:getString($constants,'timePattern')}" tab="{meta:getReceivedDate()},{meta:getCollectionDate()}" field="Date" />
-              </row>
-              <row>
-                <text style="Prompt">
-                  <xsl:value-of select="resource:getString($constants,'received')" />:
-                </text>
-                <calendar key="{meta:getReceivedDate()}" begin="0" end="4" width="110" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getStatusId()},{meta:getCollectionTime()}" />
-                <text style="Prompt">
-                  <xsl:value-of select="resource:getString($constants,'status')" />:
-                </text>
-                <dropdown key="{meta:getStatusId()}" width="110" popWidth="110px" tab="{meta:getClientReference()},{meta:getReceivedDate()}" field="Integer" required="true" />
-                <text style="Prompt">
-                  <xsl:value-of select="resource:getString($constants,'clntRef')" />:
-                </text>
-                <widget colspan="3">
-                  <textbox key="{meta:getClientReference()}" width="175" tab="SampleContent,{meta:getStatusId()}" field="String" />
-                </widget>
-              </row>
-            </TablePanel>
+            <xsl:call-template name="SampleTab" />
           </tab>
 <!-- Environmental deck -->
                 <tab text="{resource:getString($constants,'environmental')}" visible="false" tab="{meta:getEnvIsHazardous()},{meta:getBillTo()}">
