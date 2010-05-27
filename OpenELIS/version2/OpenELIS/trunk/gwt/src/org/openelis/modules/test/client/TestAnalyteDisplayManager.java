@@ -148,7 +148,7 @@ public class TestAnalyteDisplayManager<T> {
         return indexes.size();
     }
     
-    public void validateResultValue(AnalysisResultManager man, ResultViewDO resultDO, 
+    public TestResultDO validateResultValue(AnalysisResultManager man, ResultViewDO resultDO, 
                                     Integer unitOfMeasureId) throws Exception {
         Integer testResultId;
         TestResultDO testResultDo;
@@ -161,6 +161,8 @@ public class TestAnalyteDisplayManager<T> {
         testResultDo = man.getTestResultList().get(testResultId);
         resultDO.setTypeId(testResultDo.getTypeId());
         resultDO.setTestResultId(testResultDo.getId());
+        
+        return testResultDo;
     }
     
     private void refreshIndexes() {
