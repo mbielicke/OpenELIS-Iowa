@@ -63,7 +63,7 @@ public class ResultBean implements ResultLocal {
     private DictionaryLocal dictionaryBean;
 
     private static Integer  typeDictionary, typeRange, typeTiter, typeDate, typeDateTime, typeTime,
-                    typeDefault, supplementalTypeId;
+                    typeDefault, typeAlphaLower, typeAlphaUpper, typeAlphaMixed, supplementalTypeId;
 
     @PostConstruct
     private void init() {
@@ -90,8 +90,19 @@ public class ResultBean implements ResultLocal {
             dictDO = dictionaryBean.fetchBySystemName("test_res_type_default");
             typeDefault = dictDO.getId();
 
+            dictDO = dictionaryBean.fetchBySystemName("test_res_type_alpha_lower");
+            typeAlphaLower = dictDO.getId();
+            
+            dictDO = dictionaryBean.fetchBySystemName("test_res_type_alpha_upper");
+            typeAlphaUpper = dictDO.getId();
+            
+            dictDO = dictionaryBean.fetchBySystemName("test_res_type_alpha_mixed");
+            typeAlphaMixed = dictDO.getId();
+            
             dictDO = dictionaryBean.fetchBySystemName("test_analyte_suplmtl");
             supplementalTypeId = dictDO.getId();
+            
+            
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -470,6 +481,15 @@ public class ResultBean implements ResultLocal {
                     validRange = testResult.getValue();
                 }else if(typeDefault.equals(typeId)){
                     type = Type.DEFAULT;
+                    validRange = testResult.getValue();
+                }else if(typeAlphaLower.equals(typeId)){
+                    type = Type.ALPHA_LOWER;
+                    validRange = testResult.getValue();
+                }else if(typeAlphaMixed.equals(typeId)){
+                    type = Type.ALPHA_MIXED;
+                    validRange = testResult.getValue();
+                }else if(typeAlphaUpper.equals(typeId)){
+                    type = Type.ALPHA_UPPER;
                     validRange = testResult.getValue();
                 }
                 

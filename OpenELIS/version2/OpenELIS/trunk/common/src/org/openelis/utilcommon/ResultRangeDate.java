@@ -33,6 +33,8 @@ import org.openelis.exception.ParseException;
 public class ResultRangeDate implements ResultRange {
     private static final long serialVersionUID = 1L;
     
+    protected String date;
+    
     public void setRange(String range) throws ParseException {
         //
         // this is not currently implemented
@@ -40,10 +42,13 @@ public class ResultRangeDate implements ResultRange {
     }
 
     public void contains(String date) throws ParseException {
+        this.date = "";
+        
         if(date == null)
             return;        
         try {
             Date.parse(date.replaceAll("-", "/"));
+            this.date = date;
         } catch (IllegalArgumentException ex){
             throw new ParseException("illegalDateValueException");
         }   
@@ -55,6 +60,6 @@ public class ResultRangeDate implements ResultRange {
     }
     
     public String toString() {
-        return "yyyy-mm-dd";
+        return date;
     }
 }
