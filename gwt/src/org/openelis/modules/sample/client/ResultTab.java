@@ -101,7 +101,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
     private Integer                                 analysisCancelledId, analysisReleasedId,
                     testAnalyteReadOnlyId, testAnalyteRequiredId, addedTestAnalyteId,
-                    addedAnalyteId;
+                    addedAnalyteId, typeAlphaLower, typeAlphaUpper;
     private String                                  addedAnalyteName;
 
     private ReflexTestUtility                       reflexTestUtil;
@@ -246,13 +246,16 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
                 } else if ( !"".equals(val)) {
                     try {
-                        resultDO.setValue(val);
                         testResultId = manager.validateResultValue(resultDO.getResultGroup(),
                                                                    anDO.getUnitOfMeasureId(), val);
                         testResultDo = manager.getTestResultList().get(testResultId);
 
                         resultDO.setTypeId(testResultDo.getTypeId());
                         resultDO.setTestResultId(testResultDo.getId());
+                        //if its alpha we need to set it to the right case
+                        val = formatValue(testResultDo, val);
+                        resultDO.setValue(val);
+                        testResultsTable.setCell(row, col, val);
 
                         if (reflexTestUtil == null){
                             reflexTestUtil = new ReflexTestUtility();
@@ -288,6 +291,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             public void onRowAdded(RowAddedEvent event) {
                 TableDataRow row;
                 int index, prowIndex, numCols;
+                TestResultDO testResult;
                 Integer rowGroup;
                 ResultViewDO resultDO;
                 String val;
@@ -315,12 +319,18 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                     row.key = resultDO.getId();
                     try {
                         val = getDefaultValue(resultDO, anDO.getUnitOfMeasureId());
-                        testResultsTable.setCell(index, i, val);
-
+                        testResultsTable.setCell(index, i, val);   
+                        
                         if (val != null && !"".equals(val)) {
                             resultDO.setValue(val);
                             displayManager.validateResultValue(manager, resultDO,
                                                                anDO.getUnitOfMeasureId());
+                            
+                            testResult = displayManager.validateResultValue(manager, resultDO,
+                                                               anDO.getUnitOfMeasureId());
+                            val = formatValue(testResult, val);
+                            resultDO.setValue(val);
+                            testResultsTable.setCell(index, i, val);   
                         }
                     } catch (ParseException e) {
                         testResultsTable.clearCellExceptions(index, i);
@@ -455,6 +465,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
     private ArrayList<TableDataRow> getTableModel() {
         int m, c, len, numberOfCols;
+        TestResultDO testResult;
         ArrayList<TableDataRow> model;
         TableDataRow hrow, row;
         ResultViewDO resultDO;
@@ -500,13 +511,15 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                     }
 
                     val = resultDO.getValue();
-                    // getResultValue(resultDO, anDO.getUnitOfMeasureId());
                     row.cells.get(c + 2).setValue(val);
 
                     if (validateResults && val != null && !"".equals(val)) {
                         resultDO.setValue(val);
-                        displayManager.validateResultValue(manager, resultDO,
+                        testResult = displayManager.validateResultValue(manager, resultDO,
                                                            anDO.getUnitOfMeasureId());
+                        val = formatValue(testResult, val);
+                        resultDO.setValue(val);
+                        row.cells.get(c + 2).setValue(val);
                     }
                 } catch (ParseException e) {
                     row.cells.get(c + 2).clearExceptions();
@@ -660,6 +673,8 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
             testAnalyteReadOnlyId = DictionaryCache.getIdFromSystemName("test_analyte_read_only");
             testAnalyteRequiredId = DictionaryCache.getIdFromSystemName("test_analyte_req");
+            typeAlphaLower = DictionaryCache.getIdFromSystemName("test_res_type_alpha_lower");
+            typeAlphaUpper = DictionaryCache.getIdFromSystemName("test_res_type_alpha_upper");
 
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -678,6 +693,15 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
     private boolean canEdit() {
         return (anDO != null && !analysisCancelledId.equals(anDO.getStatusId()) && !analysisReleasedId.equals(anDO.getStatusId()));
+    }
+    
+    private String formatValue(TestResultDO testResultDO, String value){
+        if(typeAlphaUpper.equals(testResultDO.getTypeId()))
+            return value.toUpperCase();
+        else if(typeAlphaLower.equals(testResultDO.getTypeId()))
+            return value.toLowerCase();
+        else
+            return value;
     }
 
     public void setScreenState(State state) {
