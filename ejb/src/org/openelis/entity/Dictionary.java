@@ -187,9 +187,7 @@ import org.openelis.utils.Auditable;
                           "select type_id as DICTIONARY_ID from worksheet_qc_result where type_id = :id "+
                           "UNION " +
                           "select type_id as DICTIONARY_ID from worksheet_result where type_id = :id "+
-                          "UNION " +
-                          "select action_id as DICTIONARY_ID from history where action_id = :id "+
-                          "UNION " +
+                          "UNION " +                          
                           "select status_id as DICTIONARY_ID from order where status_id = :id "+
                           "UNION " +
                           "select cost_center_id as DICTIONARY_ID from order where cost_center_id = :id "+
