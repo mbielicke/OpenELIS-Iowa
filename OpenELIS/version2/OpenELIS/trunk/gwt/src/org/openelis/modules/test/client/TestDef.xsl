@@ -491,7 +491,7 @@ UIRF Software License are applicable instead of those above.
                             <dropdown width="70" case="MIXED" field="Integer" />
                           </col>
                           <col key="{meta:getResultTypeId()}" width="85" header="{resource:getString($constants,'type')}">
-                            <dropdown width="90" case="MIXED" field="Integer" required="true" />
+                            <dropdown width = "105" field="Integer" required="true" />
                           </col>
                           <col key="{meta:getResultValue()}" width="190" header="{resource:getString($constants,'value')}">
                             <textbox case="MIXED" field="String" />

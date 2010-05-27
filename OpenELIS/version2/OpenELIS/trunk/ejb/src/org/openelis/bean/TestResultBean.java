@@ -63,7 +63,8 @@ public class TestResultBean implements TestResultLocal {
     private DictionaryLocal          dictionary;
 
     private static int               typeDict, typeNumeric, typeTiter, typeDate,
-                                     typeDateTime, typeTime;
+                                     typeDateTime, typeTime, typeAlphaLower, typeAlphaUpper,
+                                     typeAlphaMixed;
     private static final Logger      log  = Logger.getLogger(TestResultBean.class.getName());
     
     @PostConstruct
@@ -122,7 +123,34 @@ public class TestResultBean implements TestResultLocal {
             typeTime = 0;
             log.log(Level.SEVERE,
                     "Failed to lookup dictionary entry by system name='test_res_type_time'", e);
-        }                       
+        }       
+        
+        try {
+            data = dictionary.fetchBySystemName("test_res_type_alpha_lower");
+            typeAlphaLower = data.getId();
+        } catch (Throwable e) {
+            typeAlphaLower = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='test_res_type_alpha_lower'", e);
+        }
+        
+        try {
+            data = dictionary.fetchBySystemName("test_res_type_alpha_upper");
+            typeAlphaUpper = data.getId();
+        } catch (Throwable e) {
+            typeAlphaUpper = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='test_res_type_alpha_upper'", e);
+        }
+        
+        try {
+            data = dictionary.fetchBySystemName("test_res_type_alpha_mixed");
+            typeAlphaMixed = data.getId();
+        } catch (Throwable e) {
+            typeAlphaMixed = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='test_res_type_alpha_mixed'", e);
+        }
         
     }
 
@@ -254,7 +282,9 @@ public class TestResultBean implements TestResultLocal {
                             || DataBaseUtil.isSame(typeDict,typeId))) {
             list.add(new FieldErrorException("fieldRequiredException", TestMeta.getResultValue()));
         } else if (!DataBaseUtil.isEmpty(value) &&
-                  (DataBaseUtil.isSame(typeDateTime,typeId) || DataBaseUtil.isSame(typeTime,typeId) || DataBaseUtil.isSame(typeDate,typeId))) {
+                  (DataBaseUtil.isSame(typeDateTime,typeId) || DataBaseUtil.isSame(typeTime,typeId) ||
+                   DataBaseUtil.isSame(typeDate,typeId) || DataBaseUtil.isSame(typeAlphaLower,typeId) ||
+                   DataBaseUtil.isSame(typeAlphaUpper,typeId) || DataBaseUtil.isSame(typeAlphaMixed,typeId))) {
             list.add(new FieldErrorException("valuePresentForTypeException", TestMeta.getResultValue()));
         }
 

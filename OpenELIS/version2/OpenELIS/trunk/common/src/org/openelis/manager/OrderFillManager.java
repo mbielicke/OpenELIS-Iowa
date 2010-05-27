@@ -26,7 +26,6 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.gwt.common.RPC;

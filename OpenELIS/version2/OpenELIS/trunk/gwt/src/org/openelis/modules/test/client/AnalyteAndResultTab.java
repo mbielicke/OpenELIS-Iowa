@@ -114,7 +114,9 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
     private TestAnalyteDisplayManager<TestAnalyteViewDO> displayManager;
 
     private Integer                                      typeDict, typeNumeric, typeTiter,
-                                                         typeDefault, typeDate, typeDateTime, typeTime;
+                                                         typeDefault, typeDate, typeDateTime,
+                                                         typeTime, typeAlphaLower, typeAlphaUpper,
+                                                         typeAlphaMixed ;
 
     private DictionaryLookupScreen                       dictLookup;
 
@@ -1063,7 +1065,11 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                         data.setUnitOfMeasureId((Integer)val);
                         break;
                     case 1:
-                        data.setTypeId((Integer)val);
+                        if(val != null) 
+                            data.setTypeId((Integer)val);
+                        else 
+                            data.setTypeId(null);
+                        
                         resultTable.clearCellExceptions(r, 2);
                         try {
                             validateValue(data, (String)resultTable.getObject(r, 2));
@@ -1071,7 +1077,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                             resultTable.setCellException(r, 2, e);
                             addToResultErrorList(group, r, TestMeta.getResultValue(),
                                                  e.getMessage());
-                        }
+                        }                        
                         break;
                     case 2:
                         resultTable.clearCellExceptions(r, c);
@@ -1503,7 +1509,9 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 rangeTiter.setRange((String)value);
                 data.setValue(rangeTiter.toString());
             } else if (typeDefault.equals(data.getTypeId()) || typeDate.equals(data.getTypeId()) ||
-                       typeDateTime.equals(data.getTypeId()) || typeTime.equals(data.getTypeId())) {
+                       typeDateTime.equals(data.getTypeId()) || typeTime.equals(data.getTypeId()) ||
+                       typeAlphaLower.equals(data.getTypeId()) || typeAlphaUpper.equals(data.getTypeId()) || 
+                       typeAlphaMixed.equals(data.getTypeId())) {
                 data.setValue((String)value);
             } else {
                 throw new LocalizedException("test.invalidValue");
@@ -1581,6 +1589,9 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
             typeDate = DictionaryCache.getIdFromSystemName("test_res_type_date");
             typeDateTime = DictionaryCache.getIdFromSystemName("test_res_type_date_time");
             typeTime = DictionaryCache.getIdFromSystemName("test_res_type_time");
+            typeAlphaLower = DictionaryCache.getIdFromSystemName("test_res_type_alpha_lower"); 
+            typeAlphaUpper = DictionaryCache.getIdFromSystemName("test_res_type_alpha_upper");
+            typeAlphaMixed = DictionaryCache.getIdFromSystemName("test_res_type_alpha_mixed");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();

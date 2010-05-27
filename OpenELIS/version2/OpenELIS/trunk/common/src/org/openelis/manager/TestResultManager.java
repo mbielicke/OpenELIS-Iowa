@@ -115,6 +115,7 @@ public class TestResultManager implements RPC {
    
         result = new TestResultViewDO();
         result.setId(id);
+        result.setResultGroup(group);
         results.get(group-1).add(result);
     }
     
@@ -133,6 +134,7 @@ public class TestResultManager implements RPC {
         list = results.get(group-1);
         result = new TestResultViewDO();
         result.setId(id);
+        result.setResultGroup(group);
         if (row < list.size()) {        
             list.add(row, result);
         } else {
