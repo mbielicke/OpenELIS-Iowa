@@ -70,7 +70,7 @@ public class AnalysisManagerProxy {
         for(int i=0; i<man.count(); i++){
             analysisDO = man.getAnalysisAt(i);
 
-            if(analysisDO.getPreAnalysisId() == null){
+            if(analysisDO.getPreAnalysisId() == null && analysisDO.getParentAnalysisId() == null){
                 if(!idHash.containsKey(analysisDO.getId())){
                     Integer oldId = analysisDO.getId();
                     add(man, analysisDO, i);
@@ -78,12 +78,40 @@ public class AnalysisManagerProxy {
                     idHash.put(oldId, analysisDO.getId());
                     idHash.put(analysisDO.getId(), null);
                 }
-            }else if(analysisDO.getPreAnalysisId() < 0){
-                Integer prepId = idHash.get(analysisDO.getPreAnalysisId());
+            }else if(analysisDO.getPreAnalysisId() != null && analysisDO.getPreAnalysisId() < 0){
+                Integer prepId;
+                
+                prepId = idHash.get(analysisDO.getPreAnalysisId());
                 
                 if(prepId != null){
                     Integer oldId = analysisDO.getId();
                     analysisDO.setPreAnalysisId(prepId);
+                    
+                    //make sure parent analysis id isnt negative
+                    if(analysisDO.getParentAnalysisId() > 0){
+                        add(man, analysisDO, i);
+                    
+                        if(idHash.containsKey(oldId))
+                            numOfUnresolved--;    
+                    
+                        idHash.put(oldId, analysisDO.getId());
+                    }else
+                        numOfUnresolved++;
+                    
+                    idHash.put(analysisDO.getId(), null);
+                }else{
+                    idHash.put(analysisDO.getId(), null);
+                    numOfUnresolved++;
+                }
+            }else if(analysisDO.getParentAnalysisId() != null && analysisDO.getParentAnalysisId() < 0){
+                Integer parentAnId;
+                
+                parentAnId = idHash.get(analysisDO.getParentAnalysisId());
+                
+                if(parentAnId != null){
+                    Integer oldId = analysisDO.getId();
+                    analysisDO.setParentAnalysisId(parentAnId);
+                    
                     add(man, analysisDO, i);
                     
                     if(idHash.containsKey(oldId))
@@ -95,6 +123,7 @@ public class AnalysisManagerProxy {
                     idHash.put(analysisDO.getId(), null);
                     numOfUnresolved++;
                 }
+                
             }else if(!idHash.containsKey(analysisDO.getId())){
                 Integer prepId = idHash.get(analysisDO.getPreAnalysisId());
                 if(prepId == null){
@@ -121,7 +150,7 @@ public class AnalysisManagerProxy {
         for(int i=0; i<man.count(); i++){
             analysisDO = man.getAnalysisAt(i);
 
-            if(analysisDO.getPreAnalysisId() == null){
+            if(analysisDO.getPreAnalysisId() == null && analysisDO.getParentAnalysisId() == null){
                 if(!idHash.containsKey(analysisDO.getId())){
                     Integer oldId = analysisDO.getId();
                     
@@ -133,12 +162,42 @@ public class AnalysisManagerProxy {
                     idHash.put(oldId, analysisDO.getId());
                     idHash.put(analysisDO.getId(), null);
                 }
-            }else if(analysisDO.getPreAnalysisId() < 0){
-                Integer prepId = idHash.get(analysisDO.getPreAnalysisId());
+            }else if(analysisDO.getPreAnalysisId() != null && analysisDO.getPreAnalysisId() < 0){
+                Integer prepId;
+                
+                prepId = idHash.get(analysisDO.getPreAnalysisId());
                 
                 if(prepId != null){
                     Integer oldId = analysisDO.getId();
                     analysisDO.setPreAnalysisId(prepId);
+                    
+                    //make sure parent analysis id isnt negative
+                    if(analysisDO.getParentAnalysisId() > 0){
+                        if(oldId != null && oldId > 0)
+                            update(man, analysisDO, i);
+                        else
+                            add(man, analysisDO, i);
+                    
+                        if(idHash.containsKey(oldId))
+                            numOfUnresolved--;    
+                    
+                        idHash.put(oldId, analysisDO.getId());
+                    }else
+                        numOfUnresolved++;
+                    
+                    idHash.put(analysisDO.getId(), null);
+                }else{
+                    idHash.put(analysisDO.getId(), null);
+                    numOfUnresolved++;
+                }
+            }else if(analysisDO.getParentAnalysisId() != null && analysisDO.getParentAnalysisId() < 0){
+                Integer parentAnId;
+                
+                parentAnId = idHash.get(analysisDO.getParentAnalysisId());
+                
+                if(parentAnId != null){
+                    Integer oldId = analysisDO.getId();
+                    analysisDO.setParentAnalysisId(parentAnId);
                     
                     if(oldId != null && oldId > 0)
                         update(man, analysisDO, i);
@@ -154,6 +213,7 @@ public class AnalysisManagerProxy {
                     idHash.put(analysisDO.getId(), null);
                     numOfUnresolved++;
                 }
+                
             }else if(!idHash.containsKey(analysisDO.getId())){
                 Integer prepId = idHash.get(analysisDO.getPreAnalysisId());
                 if(prepId == null){
