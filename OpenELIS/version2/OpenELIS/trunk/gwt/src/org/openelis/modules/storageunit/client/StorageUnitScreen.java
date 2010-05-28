@@ -367,12 +367,18 @@ public class StorageUnitScreen extends Screen {
 
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
+        ArrayList<DictionaryDO> list;
+        TableDataRow row;
 
         // country dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("storage_unit_category"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        list = DictionaryCache.getListByCategorySystemName("storage_unit_category");
+        for (DictionaryDO d : list) {         
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
 
         category.setModel(model);
     }

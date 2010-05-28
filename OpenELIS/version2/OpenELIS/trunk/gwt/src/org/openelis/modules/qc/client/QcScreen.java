@@ -778,28 +778,42 @@ public class QcScreen extends Screen {
 
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
+        ArrayList<DictionaryDO> list;
+        TableDataRow row;
 
         // type dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("qc_type"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        list =  DictionaryCache.getListByCategorySystemName("qc_type");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
 
         typeId.setModel(model);
 
         // prepareUnit dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("unit_of_measure"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        list = DictionaryCache.getListByCategorySystemName("unit_of_measure");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
 
         preparedUnitId.setModel(model);
 
         // analyte table type dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("qc_analyte_type"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        list = DictionaryCache.getListByCategorySystemName("qc_analyte_type");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
 
         analyteTypeId.setModel(model);
 

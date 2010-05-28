@@ -151,7 +151,7 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"name")' />:
                   </text>
-                  <textbox key="{meta:getName()}" width="215" case="LOWER" max="30" tab="{meta:getDescription()},{meta:getId()}" field="String" />
+                  <textbox key="{meta:getName()}" width="215" case="LOWER" max="30" tab="{meta:getDescription()},{meta:getId()}" required = "true" field="String" />
                 </row>
                 <row>
                   <text style="Prompt">
@@ -174,7 +174,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select='resource:getString($constants,"store")' />:
                   </text>
                   <widget colspan="3">
-                    <dropdown key="{meta:getStoreId()}" width="225" tab="{meta:getQuantityMinLevel()},{meta:getCategoryId()}" field="Integer" />
+                    <dropdown key="{meta:getStoreId()}" width="225" tab="{meta:getQuantityMinLevel()},{meta:getCategoryId()}" required = "true" field="Integer" />
                   </widget>
                 </row>
                 <row>
@@ -185,7 +185,7 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"reorderLevel")' />:
                   </text>
-                  <textbox key="{meta:getQuantityToReorder()}" width="55" tab="{meta:getQuantityMaxLevel()},{meta:getQuantityMinLevel()}" field="Integer" />
+                  <textbox key="{meta:getQuantityToReorder()}" width="55" tab="{meta:getQuantityMaxLevel()},{meta:getQuantityMinLevel()}" required = "true" field="Integer" />
                 </row>
                 <row>
                   <text style="Prompt">
@@ -199,7 +199,7 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"dispensedUnits")' />:
                   </text>
-                  <dropdown key="{meta:getDispensedUnitsId()}" width="150" tab="{meta:getIsActive()},{meta:getQuantityMaxLevel()}" field="Integer" />
+                  <dropdown key="{meta:getDispensedUnitsId()}" width="150" tab="{meta:getIsActive()},{meta:getQuantityMaxLevel()}" required = "true" field="Integer" />
                 </row>
               </TablePanel>
               <VerticalPanel style="subform">

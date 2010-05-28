@@ -634,12 +634,18 @@ public class ProjectScreen extends Screen {
 
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
+        ArrayList<DictionaryDO> list;
+        TableDataRow row;
 
         // parameter table project parameter
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("project_parameter_operations"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        list =  DictionaryCache.getListByCategorySystemName("project_parameter_operations");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
 
         ((Dropdown)parameterTable.getColumnWidget(ProjectMeta.getProjectParameterOperationId())).setModel(model);
     }

@@ -27,6 +27,7 @@ package org.openelis.modules.label.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
@@ -417,12 +418,18 @@ public class LabelScreen extends Screen {
     
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
+        List<DictionaryDO> list;
+        TableDataRow row;
 
         // printer type dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("printer_type"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        list = DictionaryCache.getListByCategorySystemName("printer_type");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
 
         printerTypeId.setModel(model);        
     }

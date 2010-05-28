@@ -34,8 +34,6 @@ import org.openelis.domain.HistoryVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -97,7 +95,7 @@ public class HistoryScreen extends Screen {
         setState(State.DEFAULT);
         initializeDropdowns();
     }
-
+    
     private void initialize() {
         operationMap = new HashMap<Integer, String>();
 
@@ -146,19 +144,6 @@ public class HistoryScreen extends Screen {
 
     private void initializeWindow(String title) {
     	OpenELIS.browser.addScreen(this);
-    	/*
-        if (popup == null) {
-            popup = new ScreenWindow(ScreenWindow.Mode.SCREEN);
-            
-            popup.setContent(instance);                    
-            popup.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-                public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
-                    popup = null;
-                }
-            });
-        }
-        popup.setName(title);
-        */
     }
     
     protected void setReferenceVoList(IdNameVO[] referenceVOList) {

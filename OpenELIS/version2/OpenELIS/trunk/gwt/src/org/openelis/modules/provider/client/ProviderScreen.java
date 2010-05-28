@@ -32,7 +32,6 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdFirstLastNameVO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.ProjectParameterDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.ProviderLocationDO;
 import org.openelis.domain.ReferenceTable;
@@ -52,7 +51,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonGroup;
@@ -62,7 +60,6 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.manager.ProjectParameterManager;
 import org.openelis.manager.ProviderLocationManager;
 import org.openelis.manager.ProviderManager;
 import org.openelis.meta.ProviderMeta;
@@ -466,14 +463,19 @@ public class ProviderScreen extends Screen {
     }
 
     private void initializeDropdowns() {
-        DictionaryDO dict;
         ArrayList<TableDataRow> model;
+        ArrayList<DictionaryDO> list;
+        TableDataRow row;
 
         // typeId dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("provider_type"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        list =  DictionaryCache.getListByCategorySystemName("provider_type");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row); 
+        }
         typeId.setModel(model);
     }
 

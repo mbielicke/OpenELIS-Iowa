@@ -11,7 +11,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindow;
@@ -28,8 +27,6 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.ProviderManager;
 
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
 public class LocationTab extends Screen {
@@ -44,15 +41,7 @@ public class LocationTab extends Screen {
 		setWindow(window);
 		initialize();
 
-		DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-
-    private void postConstructor() {
-        initializeDropdowns();
+		initializeDropdowns();
     }
 	
 	private void initialize() {
@@ -181,17 +170,34 @@ public class LocationTab extends Screen {
 	}
 	
 	private void initializeDropdowns() {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+        ArrayList<TableDataRow> model;
+        ArrayList<DictionaryDO> list;
+        TableDataRow row;
+        Dropdown<String> state, country;
+        
+        model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("state"))
-            model.add(new TableDataRow(d.getEntry(), d.getEntry()));
-        ((Dropdown<String>)locationTable.getColumns().get(5).getColumnWidget()).setModel(model);
+        list = DictionaryCache.getListByCategorySystemName("state");
+        for (DictionaryDO d : list) {            
+            row = new TableDataRow(d.getEntry(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
+        
+        state = ((Dropdown<String>)locationTable.getColumns().get(5).getColumnWidget());
+        state.setModel(model);
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("country"))
-            model.add(new TableDataRow(d.getEntry(), d.getEntry()));
-        ((Dropdown<String>)locationTable.getColumns().get(7).getColumnWidget()).setModel(model);		
+        list =  DictionaryCache.getListByCategorySystemName("country");
+        for (DictionaryDO d : list) {         
+            row = new TableDataRow(d.getEntry(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
+        
+        country = ((Dropdown<String>)locationTable.getColumns().get(7).getColumnWidget());
+        country.setModel(model);		
 	}
 	
     private ArrayList<TableDataRow> getTableModel() {

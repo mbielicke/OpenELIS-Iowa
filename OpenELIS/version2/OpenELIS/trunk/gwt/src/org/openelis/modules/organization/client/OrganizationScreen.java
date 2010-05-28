@@ -627,22 +627,31 @@ public class OrganizationScreen extends Screen {
     }
 
     private void initializeDropdowns() {
-        DictionaryDO dict;
         ArrayList<TableDataRow> model;
+        ArrayList<DictionaryDO> list;
+        TableDataRow row;
 
         // country dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("country"))
-            model.add(new TableDataRow(d.getEntry(), d.getEntry()));
+        list = DictionaryCache.getListByCategorySystemName("country");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getEntry(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
 
         country.setModel(model);
 
         // state dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("state"))
-            model.add(new TableDataRow(d.getEntry(), d.getEntry()));
+        list =  DictionaryCache.getListByCategorySystemName("state");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getEntry(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
 
         stateCode.setModel(model);
     }

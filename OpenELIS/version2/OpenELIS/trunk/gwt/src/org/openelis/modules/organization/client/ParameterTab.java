@@ -11,7 +11,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindow;
@@ -152,12 +151,20 @@ public class ParameterTab extends Screen {
 
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
+        ArrayList<DictionaryDO> list;
+        TableDataRow row;
+        Dropdown<Integer> type;
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("parameter_type"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
-        ((Dropdown<Integer>)table.getColumns().get(0).getColumnWidget()).setModel(model);
+        list = DictionaryCache.getListByCategorySystemName("parameter_type");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
+        type = ((Dropdown<Integer>)table.getColumns().get(0).getColumnWidget());
+        type.setModel(model);
     }
 
     private ArrayList<TableDataRow> getTableModel() {

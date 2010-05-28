@@ -919,26 +919,40 @@ public class SendoutOrderScreen extends Screen {
     
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
+        ArrayList<DictionaryDO> list;
+        TableDataRow row;
 
         // order status dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("order_status"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        list = DictionaryCache.getListByCategorySystemName("order_status");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
 
         statusId.setModel(model);
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("cost_centers"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        list = DictionaryCache.getListByCategorySystemName("cost_centers");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
 
         costCenterId.setModel(model);
         
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("order_ship_from"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        list =  DictionaryCache.getListByCategorySystemName("order_ship_from");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
         
         shipFromId.setModel(model);
         

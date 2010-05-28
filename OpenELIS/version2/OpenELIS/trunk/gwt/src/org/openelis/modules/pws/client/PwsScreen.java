@@ -61,7 +61,6 @@ import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.PwsManager;
 import org.openelis.meta.PwsMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
-import org.openelis.modules.sample.client.SampleLocationLookupScreen.Action;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;

@@ -1542,32 +1542,50 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
 
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
+        List<DictionaryDO> list;
+        TableDataRow row;
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO resultDO : DictionaryCache.getListByCategorySystemName("test_analyte_type"))
-            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
+        list = DictionaryCache.getListByCategorySystemName("test_analyte_type");
+        for (DictionaryDO resultDO : list) {
+            row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
+            row.enabled = ("Y".equals(resultDO.getIsActive()));
+            model.add(row);
+        }
 
         typeId.setModel(model);
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO resultDO : DictionaryCache.getListByCategorySystemName("test_result_type"))
-            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
+        list = DictionaryCache.getListByCategorySystemName("test_result_type");
+        for (DictionaryDO resultDO : list) {
+            row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
+            row.enabled = ("Y".equals(resultDO.getIsActive()));
+            model.add(row);
+        }
 
         ((Dropdown<Integer>)resultTable.getColumnWidget(TestMeta.getResultTypeId())).setModel(model);
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO resultDO : DictionaryCache.getListByCategorySystemName("test_result_flags"))
-            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
+        list = DictionaryCache.getListByCategorySystemName("test_result_flags");
+        for (DictionaryDO resultDO : list) {
+            row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
+            row.enabled = ("Y".equals(resultDO.getIsActive()));
+            model.add(row);
+        }
 
         ((Dropdown<Integer>)resultTable.getColumnWidget(TestMeta.getResultFlagsId())).setModel(model);
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO resultDO : DictionaryCache.getListByCategorySystemName("rounding_method"))
-            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
+        list = DictionaryCache.getListByCategorySystemName("rounding_method");
+        for (DictionaryDO resultDO : list) {
+            row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
+            row.enabled = ("Y".equals(resultDO.getIsActive()));
+            model.add(row);
+        }
 
         ((Dropdown<Integer>)resultTable.getColumnWidget(TestMeta.getResultRoundingMethodId())).setModel(model);
 

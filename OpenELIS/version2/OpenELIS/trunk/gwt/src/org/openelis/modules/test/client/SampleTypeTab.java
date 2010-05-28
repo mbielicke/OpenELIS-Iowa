@@ -194,12 +194,16 @@ public class SampleTypeTab extends Screen implements HasActionHandlers<SampleTyp
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         List<DictionaryDO> list;
+        TableDataRow row;
+
 
         model = new ArrayList<TableDataRow>();
         list = DictionaryCache.getListByCategorySystemName("type_of_sample");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
-            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
+            row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
+            row.enabled = ("Y".equals(resultDO.getIsActive()));
+            model.add(row);
         }
         ((Dropdown)table.getColumnWidget(TestMeta.getTypeOfSampleTypeOfSampleId())).setModel(model);
 
@@ -207,7 +211,9 @@ public class SampleTypeTab extends Screen implements HasActionHandlers<SampleTyp
         list = DictionaryCache.getListByCategorySystemName("unit_of_measure");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
-            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
+            row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
+            row.enabled = ("Y".equals(resultDO.getIsActive()));
+            model.add(row);
         }
         ((Dropdown)table.getColumnWidget(TestMeta.getTypeOfSampleUnitOfMeasureId())).setModel(model);
 
