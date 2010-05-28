@@ -202,7 +202,7 @@ public class TestResultManagerProxy {
         Integer typeId, unitId, entryId;
         int i, j, k, defCount, size;        
         String value, fieldName, unitText;
-        boolean alphaPresent;
+        boolean alphaPresent, alphaErrorAdded, defErrorAdded;
         ResultRangeNumeric nr;
         ResultRangeTiter tr;
         HashMap<Integer, List<ResultRangeTiter>> trMap;
@@ -226,7 +226,7 @@ public class TestResultManagerProxy {
         typeDataList = new ArrayList<TestResultViewDO>();
         unitTypeMap = new HashMap<Integer, List<TestResultViewDO>>();
         
-        for (i = 0; i < trm.groupCount(); i++ ) {
+        for (i = 0; i < trm.groupCount(); i++) {
             trMap.clear();
             nrMap.clear();
             dictList.clear();
@@ -235,8 +235,10 @@ public class TestResultManagerProxy {
             resDataList = new ArrayList<TestResultViewDO>();        
             resGrpRsltMap.put(i+1, resDataList);
             alphaPresent = false; 
+            alphaErrorAdded = false;
+            defErrorAdded = false;
             
-            for (j = 0; j < trm.getResultGroupSize(i+1); j++ ) {
+            for (j = 0; j < trm.getResultGroupSize(i+1); j++) {
                 data = trm.getResultAt(i+1, j);
                 value = data.getValue();
                 typeId = data.getTypeId();
@@ -287,34 +289,53 @@ public class TestResultManagerProxy {
                         if (entryId == null)
                             throw new ParseException("illegalDictEntryException");
 
-                        if (!dictList.contains(entryId))
+                        if (!dictList.contains(entryId)) {
                             dictList.add(entryId);
-                        else
-                            throw new InconsistencyException("testDictEntryNotUniqueException");
-                    } else if (DataBaseUtil.isSame(typeDefault,typeId)) { 
+                        } else { 
+                            //
+                            // this exception is added directly to the list here as opposed to getting thrown and caught
+                            // as in all the previous cases because we want its message to show at the bottom of Test screen
+                            // and not in the table
+                            //
+                            list.add(new FieldErrorException("testDictEntryNotUniqueException", null,String.valueOf(i+1)));
+                        }
+                    } else if (DataBaseUtil.isSame(typeDefault, typeId)) {
                         //
                         // here we try to check whether this result group
-                        // has more than one value of type default for a given unit   
-                        // and if it is the case then an exception is added for 
-                        // this DO to the list 
+                        // has more than one value of type default for a given unit
+                        // and if it is the case then an exception is added for
+                        // this DO to the list of exceptions
                         //
-                            defCount = 0;
-                            size = typeDataList.size();
-                            for(k = 0; k < size; k++) {
-                                tmpData = typeDataList.get(k);
-                                if(DataBaseUtil.isSame(typeDefault,tmpData.getTypeId())) 
-                                    defCount++;                                                                                                                                 
-                                
-                                if(defCount > 1) {   
-                                    fieldName = TestMeta.getResultTypeId();
-                                    throw new InconsistencyException("testMoreThanOneDefaultForUnitException");
-                                }
-                            }                                                                        
+                        defCount = 0;
+                        size = typeDataList.size();
+                        for (k = 0; k < size; k++ ) {
+                            tmpData = typeDataList.get(k);
+                            if (DataBaseUtil.isSame(typeDefault, tmpData.getTypeId()))
+                                defCount++ ;
+
+                            if (defCount > 1 && !defErrorAdded) {
+                                fieldName = TestMeta.getResultTypeId();
+                                //
+                                // this exception is added directly to the list here as opposed to getting thrown and caught
+                                // as in all the previous cases because we want its message to show at the bottom of Test screen
+                                // and not in the table
+                                //
+                                list.add(new FieldErrorException("testMoreThanOneDefaultForUnitException", null,String.valueOf(i+1)));
+                                 
+                                defErrorAdded = true;
+                            }
+                        }
                     } else if(DataBaseUtil.isSame(typeAlphaLower,typeId) || DataBaseUtil.isSame(typeAlphaUpper,typeId) ||
                                     DataBaseUtil.isSame(typeAlphaMixed,typeId)) {
-                        if(alphaPresent) {
+                        if(alphaPresent && !alphaErrorAdded) {
                             fieldName = TestMeta.getResultTypeId();
-                            throw new InconsistencyException("testMoreThanOneAlphaTypeException");
+                            //
+                            // this exception is added directly to the list here as opposed to getting thrown and caught
+                            // as in all the previous cases because we want its message to show at the bottom of Test screen
+                            // and not in the table
+                            //
+                            list.add(new FieldErrorException("testMoreThanOneAlphaTypeException", null , String.valueOf(i+1)));
+                            alphaErrorAdded = true;
                         }
                         alphaPresent = true;
                     }
@@ -334,7 +355,7 @@ public class TestResultManagerProxy {
             // Here we try to check whether for each result group and for a given
             // unit it is the case that there is a value of type default but no 
             // value of any other type. We have to do this check here as opposed
-            // to in the loop above because we need to have to the information
+            // to in the loop above because we need to have the information
             // about the whole result group before making any decision about whether
             // or not this condition is true and this will be considerably difficult
             // to do in the loop above because there we at any moment have the
@@ -349,12 +370,8 @@ public class TestResultManagerProxy {
                     tmpData = typeDataList.get(k);
                     if(DataBaseUtil.isSame(typeDefault, tmpData.getTypeId()) && size == 1) {
                         tmpData = typeDataList.get(0);
-                        if(unitId == null) {
-                            list.add(new FieldErrorException("testDefaultWithNoOtherTypeException", null ,"", String.valueOf(tmpData.getResultGroup())));                    
-                        } else {
-                            unitText = dl.fetchById(unitId).getEntry();
-                            list.add(new FieldErrorException("testDefaultWithNoOtherTypeException",null, unitText, String.valueOf(tmpData.getResultGroup())));
-                        }
+                        list.add(new FieldErrorException("testDefaultWithNoOtherTypeException",
+                                                         null , String.valueOf(tmpData.getResultGroup())));                    
                     }
                 }
                 

@@ -1243,12 +1243,15 @@ public class TestScreen extends Screen {
         ArrayList<TableDataRow> model;
         List<DictionaryDO> list;
         List<SectionDO> sectList;
+        TableDataRow row;
 
         model = new ArrayList<TableDataRow>();
         list = DictionaryCache.getListByCategorySystemName("test_format");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
-            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
+            row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
+            row.enabled = ("Y".equals(resultDO.getIsActive()));
+            model.add(row);
         }
         testFormat.setModel(model);
 
@@ -1256,7 +1259,9 @@ public class TestScreen extends Screen {
         list = DictionaryCache.getListByCategorySystemName("test_reporting_method");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
-            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
+            row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
+            row.enabled = ("Y".equals(resultDO.getIsActive()));
+            model.add(row);
         }
         reportingMethod.setModel(model);
 
@@ -1264,7 +1269,9 @@ public class TestScreen extends Screen {
         list = DictionaryCache.getListByCategorySystemName("test_sorting_method");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
-            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
+            row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
+            row.enabled = ("Y".equals(resultDO.getIsActive()));
+            model.add(row);
         }
         sortingMethod.setModel(model);
 
@@ -1272,7 +1279,9 @@ public class TestScreen extends Screen {
         list = DictionaryCache.getListByCategorySystemName("test_revision_method");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
-            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
+            row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
+            row.enabled = ("Y".equals(resultDO.getIsActive()));
+            model.add(row);
         }
         revisionMethod.setModel(model);
 
@@ -1280,7 +1289,9 @@ public class TestScreen extends Screen {
         list = DictionaryCache.getListByCategorySystemName("test_section_flags");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
-            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
+            row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
+            row.enabled = ("Y".equals(resultDO.getIsActive()));
+            model.add(row);
         }
         ((Dropdown<Integer>)sectionTable.getColumnWidget(TestMeta.getSectionFlagId())).setModel(model);
 

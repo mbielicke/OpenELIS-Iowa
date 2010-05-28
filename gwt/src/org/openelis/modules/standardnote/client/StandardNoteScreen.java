@@ -381,11 +381,17 @@ public class StandardNoteScreen extends Screen {
 
     private void initializeDropdown() {
         ArrayList<TableDataRow> model;
+        ArrayList<DictionaryDO> list;
+        TableDataRow row;
         
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO entry : DictionaryCache.getListByCategorySystemName("standard_note_type"))
-            model.add(new TableDataRow(entry.getId(), entry.getEntry()));
+        list = DictionaryCache.getListByCategorySystemName("standard_note_type");
+        for (DictionaryDO entry : list) {            
+            row = new TableDataRow(entry.getId(), entry.getEntry());
+            row.enabled = ("Y".equals(entry.getIsActive()));
+            model.add(row);
+        }
 
         typeId.setModel(model);
     }

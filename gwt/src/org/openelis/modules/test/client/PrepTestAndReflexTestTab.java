@@ -327,23 +327,42 @@ public class PrepTestAndReflexTestTab extends Screen implements
 
                 switch (c) {
                     case 0:
-                        row = (TableDataRow)val;
-                        data.setAddTestId((Integer) (row.key));
-                        data.setAddTestName(reflexTestAuto.getTextBoxDisplay());
-                        data.setAddMethodName(reflexMethodName.getText());
+                        if(val != null) {
+                            row = (TableDataRow)val;
+                            data.setAddTestId((Integer) (row.key));
+                            data.setAddTestName(reflexTestAuto.getTextBoxDisplay());
+                            data.setAddMethodName(reflexMethodName.getText());
+                        } else {
+                            data.setAddTestId(null);
+                            data.setAddTestName(null);
+                            data.setAddMethodName(null);
+                        }
                         break;
                     case 2:
-                        row = (TableDataRow)val;
-                        data.setTestAnalyteId((Integer) (row.key));
-                        data.setTestAnalyteName(analyteAuto.getTextBoxDisplay());
+                        if(val != null) {
+                            row = (TableDataRow)val;
+                            data.setTestAnalyteId((Integer) (row.key));
+                            data.setTestAnalyteName(analyteAuto.getTextBoxDisplay());
+                        } else {                            
+                            data.setTestAnalyteId(null);
+                            data.setTestAnalyteName(null);
+                        }
                         break;
                     case 3:
-                        row = (TableDataRow)val;
-                        data.setTestResultId((Integer) (row.key));
-                        data.setTestResultValue(resultAuto.getTextBoxDisplay());
+                        if(val != null) {
+                            row = (TableDataRow)val;
+                            data.setTestResultId((Integer) (row.key));
+                            data.setTestResultValue(resultAuto.getTextBoxDisplay());
+                        } else {
+                            data.setTestResultId(null);
+                            data.setTestResultValue(null);
+                        }
                         break;
                     case 4:
-                        data.setFlagsId((Integer)val);
+                        if(val != null)
+                            data.setFlagsId((Integer)val);
+                        else 
+                            data.setFlagsId(null);
                         break;
                 }
             }
@@ -675,12 +694,15 @@ public class PrepTestAndReflexTestTab extends Screen implements
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         List<DictionaryDO> list;
+        TableDataRow row;
 
         list = DictionaryCache.getListByCategorySystemName("test_reflex_flags");
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO data : list) {
-            model.add(new TableDataRow(data.getId(), data.getEntry()));
+            row = new TableDataRow(data.getId(), data.getEntry());
+            row.enabled = ("Y".equals(data.getIsActive()));
+            model.add(row);
         }
         ((Dropdown)testReflexTable.getColumnWidget(TestMeta.getReflexFlagsId())).setModel(model);
 

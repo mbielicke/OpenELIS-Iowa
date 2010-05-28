@@ -27,6 +27,7 @@ package org.openelis.modules.auxiliary.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalyteDO;
@@ -957,20 +958,30 @@ public class AuxiliaryScreen extends Screen {
 
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
+        List<DictionaryDO> list;
+        TableDataRow row;
 
         // unit of measure dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("unit_of_measure"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        list = DictionaryCache.getListByCategorySystemName("unit_of_measure");
+        for (DictionaryDO d : list) {            
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
 
         unitOfMeasureId.setModel(model);
 
         // aux field value type dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("aux_field_value_type"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        list = DictionaryCache.getListByCategorySystemName("aux_field_value_type");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
 
         auxFieldValueTypeId.setModel(model);
         

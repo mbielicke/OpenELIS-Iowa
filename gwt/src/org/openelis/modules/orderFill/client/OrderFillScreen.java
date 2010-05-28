@@ -455,13 +455,17 @@ public class OrderFillScreen extends Screen {
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         List<DictionaryDO> list;
+        TableDataRow row;
+        Dropdown<Integer> status, shipFrom, type;
         
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("order_status");
-        
-        for (DictionaryDO resultDO : list)          
-            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));      
+        list = DictionaryCache.getListByCategorySystemName("order_status");        
+        for (DictionaryDO resultDO : list)  {        
+            row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
+            row.enabled = ("Y".equals(resultDO.getIsActive()));
+            model.add(row);
+        }
         
         status = ((Dropdown<Integer>)orderTable.getColumnWidget(OrderMeta.getStatusId()));        
         status.setModel(model);
@@ -469,18 +473,22 @@ public class OrderFillScreen extends Screen {
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         list = DictionaryCache.getListByCategorySystemName("order_ship_from");
+        for (DictionaryDO resultDO : list) {
+           row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
+           row.enabled = ("Y".equals(resultDO.getIsActive()));
+           model.add(row);
+        }
         
-        for (DictionaryDO resultDO : list) 
-            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));        
-        
-        ((Dropdown<Integer>)orderTable.getColumnWidget(OrderMeta.getShipFromId())).setModel(model);
+        shipFrom = ((Dropdown<Integer>)orderTable.getColumnWidget(OrderMeta.getShipFromId()));
+        shipFrom.setModel(model);
         
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));   
         model.add(new TableDataRow(OrderManager.TYPE_INTERNAL, consts.get("internal")));
         model.add(new TableDataRow(OrderManager.TYPE_SEND_OUT, consts.get("sendOut")));
         
-        ((Dropdown<Integer>)orderTable.getColumnWidget(OrderMeta.getType())).setModel(model);
+        type = ((Dropdown<Integer>)orderTable.getColumnWidget(OrderMeta.getType()));
+        type.setModel(model);
         
         try {
             status_pending = DictionaryCache.getIdFromSystemName("order_status_pending");            

@@ -464,13 +464,19 @@ public class QaEventScreen extends Screen {
 
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
+        ArrayList<DictionaryDO> list;
+        TableDataRow row;
 
         // type dropdown
         model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("qaevent_type"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
-
+        model.add(new TableDataRow(null, "")); 
+        list = DictionaryCache.getListByCategorySystemName("qaevent_type");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getId(), d.getEntry()); 
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
+        
         typeId.setModel(model);
     }
 

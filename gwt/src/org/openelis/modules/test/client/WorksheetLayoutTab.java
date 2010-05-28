@@ -560,12 +560,15 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         List<DictionaryDO> list;
+        TableDataRow row;
 
         model = new ArrayList<TableDataRow>();
         list = DictionaryCache.getListByCategorySystemName("test_worksheet_analyte_flags");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
-            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
+            row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
+            row.enabled = ("Y".equals(resultDO.getIsActive()));
+            model.add(row);
         }
         ((Dropdown)worksheetAnalyteTable.getColumnWidget(TestMeta.getWorksheetAnalyteFlagId())).setModel(model);
 
@@ -573,7 +576,9 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         list = DictionaryCache.getListByCategorySystemName("test_worksheet_item_type");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
-            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
+            row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
+            row.enabled = ("Y".equals(resultDO.getIsActive()));
+            model.add(row);
         }
         ((Dropdown)worksheetTable.getColumnWidget(TestMeta.getWorksheetItemTypeId())).setModel(model);
 
@@ -581,10 +586,11 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         list = DictionaryCache.getListByCategorySystemName("test_worksheet_format");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
-            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
+            row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
+            row.enabled = ("Y".equals(resultDO.getIsActive()));
+            model.add(row);
         }
         formatId.setModel(model);
-
     }
 
     private ArrayList<TableDataRow> getWSItemsModel() {

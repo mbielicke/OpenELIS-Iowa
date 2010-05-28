@@ -641,20 +641,30 @@ public class InstrumentScreen extends Screen {
     
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
+        ArrayList<DictionaryDO> list;
+        TableDataRow row;
 
         // type dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("instrument_type"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        list = DictionaryCache.getListByCategorySystemName("instrument_type");
+        for (DictionaryDO d : list) {         
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
 
         typeId.setModel(model);
 
         // log type dropdown
         model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("instrument_log_type"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        model.add(new TableDataRow(null, "")); 
+        list = DictionaryCache.getListByCategorySystemName("instrument_log_type");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
 
         ((Dropdown<Integer>)(logTable.getColumnWidget(InstrumentMeta.getLogTypeId()))).setModel(model);        
     }

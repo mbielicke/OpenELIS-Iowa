@@ -222,6 +222,8 @@ public class ItemTab extends Screen {
     private void initializeDropdowns() {
         Dropdown<Integer> store, storeId, units;
         ArrayList<TableDataRow> model;
+        ArrayList<DictionaryDO> list;
+        TableDataRow row;
 
         store = (Dropdown) inventory.getColumns().get(1).getColumnWidget();
         units = (Dropdown) inventory.getColumns().get(2).getColumnWidget();
@@ -229,15 +231,23 @@ public class ItemTab extends Screen {
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("inventory_store"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        list = DictionaryCache.getListByCategorySystemName("inventory_store");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
         store.setModel(model);
         storeId.setModel(model);
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("inventory_unit"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        list =  DictionaryCache.getListByCategorySystemName("inventory_unit");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
         units.setModel(model);
     }
 

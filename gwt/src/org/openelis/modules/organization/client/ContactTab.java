@@ -181,24 +181,43 @@ public class ContactTab extends Screen {
 
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
+        ArrayList<DictionaryDO> list;
+        TableDataRow row;
+        Dropdown<String> state, country;
+        Dropdown<Integer> type;
         
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("contact_type"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
-        ((Dropdown<Integer>)table.getColumns().get(0).getColumnWidget()).setModel(model);
+        list = DictionaryCache.getListByCategorySystemName("contact_type");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
+        type = ((Dropdown<Integer>)table.getColumns().get(0).getColumnWidget());
+        type.setModel(model);
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("state"))
-            model.add(new TableDataRow(d.getEntry(), d.getEntry()));
-        ((Dropdown<Integer>)table.getColumns().get(5).getColumnWidget()).setModel(model);
+        list =  DictionaryCache.getListByCategorySystemName("state");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getEntry(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
+        state = ((Dropdown<String>)table.getColumns().get(5).getColumnWidget());
+        state.setModel(model);
 
         model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("country"))
-            model.add(new TableDataRow(d.getEntry(), d.getEntry()));
-        ((Dropdown<Integer>)table.getColumns().get(7).getColumnWidget()).setModel(model);
+        model.add(new TableDataRow(null, "")); 
+        list = DictionaryCache.getListByCategorySystemName("country");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getEntry(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
+        country = ((Dropdown<String>)table.getColumns().get(7).getColumnWidget());
+        country.setModel(model);
     }
     
     private ArrayList<TableDataRow> getTableModel() {
