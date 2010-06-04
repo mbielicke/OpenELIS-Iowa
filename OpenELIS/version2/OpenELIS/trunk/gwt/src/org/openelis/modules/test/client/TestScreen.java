@@ -1689,6 +1689,7 @@ public class TestScreen extends Screen {
         IdNameVO hist;
         TestWorksheetManager man;
         TestWorksheetViewDO data;
+        Integer id;
         
         try {
             man = manager.getTestWorksheet();
@@ -1699,7 +1700,10 @@ public class TestScreen extends Screen {
             return;
         }
         
-        hist = new IdNameVO(data.getId(), consts.get("worksheet"));
+        id = data.getId();
+        if(id == null)
+            id = -1;
+        hist = new IdNameVO(id, consts.get("worksheet"));
         HistoryScreen.showHistory(consts.get("testWorksheetHistory"),
                                   ReferenceTable.TEST_WORKSHEET, hist);
         
