@@ -27,6 +27,7 @@ package org.openelis.modules.inventoryItem.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
@@ -825,19 +826,29 @@ public class InventoryItemScreen extends Screen {
         TableWidget atozTable;
         Dropdown<Integer> atozStoreId;
         ArrayList<TableDataRow> model;
+        List<DictionaryDO> list;
+        TableDataRow row;
 
         // category dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("inventory_category"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        list = DictionaryCache.getListByCategorySystemName("inventory_category");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
         categoryId.setModel(model);
 
         // stores dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("inventory_store"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        list = DictionaryCache.getListByCategorySystemName("inventory_store");
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("inventory_store")) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
         storeId.setModel(model);
         
         // add the same store model to left hand side atoz table
@@ -848,8 +859,12 @@ public class InventoryItemScreen extends Screen {
         // units dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("inventory_unit"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        list = DictionaryCache.getListByCategorySystemName("inventory_unit");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
         dispensedUnitsId.setModel(model);
     }
 

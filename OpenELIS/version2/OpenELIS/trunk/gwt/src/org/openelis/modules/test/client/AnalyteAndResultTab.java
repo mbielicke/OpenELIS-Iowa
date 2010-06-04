@@ -1062,7 +1062,10 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
 
                 switch (c) {
                     case 0:
-                        data.setUnitOfMeasureId((Integer)val);
+                        if(val != null) 
+                            data.setUnitOfMeasureId((Integer)val);
+                        else
+                            data.setUnitOfMeasureId(null);
                         break;
                     case 1:
                         if(val != null) 
@@ -1091,13 +1094,22 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                         ActionEvent.fire(screen, Action.RESULT_CHANGED, data);
                         break;
                     case 3:
-                        data.setFlagsId((Integer)val);
+                        if(val != null) 
+                            data.setFlagsId((Integer)val);
+                        else
+                            data.setFlagsId(null);
                         break;
                     case 4:
-                        data.setSignificantDigits((Integer)val);
+                        if(val != null) 
+                            data.setSignificantDigits((Integer)val);
+                        else
+                            data.setSignificantDigits(null);
                         break;
                     case 5:
-                        data.setRoundingMethodId((Integer)val);
+                        if(val != null) 
+                            data.setRoundingMethodId((Integer)val);
+                        else
+                            data.setRoundingMethodId(null);
                         break;
                 }
             }

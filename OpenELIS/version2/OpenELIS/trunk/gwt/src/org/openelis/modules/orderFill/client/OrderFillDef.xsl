@@ -106,7 +106,7 @@ UIRF Software License are applicable instead of those above.
 
         <VerticalPanel padding="0" spacing="0">
           <widget valign="top">
-            <table key="orderTable" width="860" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides">
+            <table key="orderTable" width="870" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides">
               <col key="process" width="20" header="">
                 <check />
               </col>
@@ -137,13 +137,13 @@ UIRF Software License are applicable instead of those above.
               <col key="daysLeft" width="60" sort="true" header="{resource:getString($constants,'numDaysLeft')}">
                 <textbox field="Integer" />
               </col>
-              <col key="{meta:getType()}" width="60" header="{resource:getString($constants,'type')}">
-                <dropdown width="60" field="String" />
+              <col key="{meta:getType()}" width="75" header="{resource:getString($constants,'type')}" filter="true">
+                <dropdown width="75" field="String" />
               </col>
             </table>
           </widget>
           <VerticalPanel style="WhiteContentPanel">
-            <TabPanel key="tabPanel" width="867" height="200">
+            <TabPanel key="tabPanel" width="880" height="200">
               <tab key="itemTab" text="{resource:getString($constants,'items')}">
                 <HorizontalPanel>
                   <VerticalPanel style="subform">
@@ -291,7 +291,7 @@ UIRF Software License are applicable instead of those above.
               </tab>
               <tab key="noteTab" tab="notesPanel, notesPanel" text="{resource:getString($constants,'orderShippingNotes')}">
                 <VerticalPanel padding="0" spacing="0">
-                  <notes key="notesPanel" width="867" height="170" />
+                  <notes key="notesPanel" width="880" height="170" />
                   <appButton key="standardNoteButton" style="Button">
                     <HorizontalPanel>
                       <AbsolutePanel style="StandardNoteButtonImage" />
@@ -304,7 +304,7 @@ UIRF Software License are applicable instead of those above.
               </tab>
               <tab key="customerNote" tab="customerNotesPanel, customerNotesPanel" text="{resource:getString($constants,'customerNotes')}">
                 <VerticalPanel padding="0" spacing="0">
-                  <notes key="customerNotesPanel" width="867" height="170" />
+                  <notes key="customerNotesPanel" width="880" height="170" />
                   <appButton key="editNoteButton" style="Button">
                     <HorizontalPanel>
                       <AbsolutePanel style="StandardNoteButtonImage" />

@@ -108,8 +108,8 @@ public class ShippingScreen extends Screen {
     private AutoComplete<Integer>          shippedToName;
     private TabPanel                       tabPanel;
     private Integer                        status_processed;
-    
-    private OrderFillScreen                orderFillScreen;      
+        
+    private boolean                        openedFromMenu;
     
     protected ScreenService                organizationService;    
         
@@ -125,6 +125,7 @@ public class ShippingScreen extends Screen {
                postConstructor();
             }
         });
+        openedFromMenu = true;
     }
 
     public ShippingScreen(ScreenWindow window) throws Exception {
@@ -132,6 +133,7 @@ public class ShippingScreen extends Screen {
     	 init();
     	 this.window = window;
     	 postConstructor();
+    	 openedFromMenu = false;
     }
     
     private void init() throws Exception {
@@ -711,15 +713,14 @@ public class ShippingScreen extends Screen {
     }    
     
     
-    public void loadShippingData(ShippingManager manager, OrderFillScreen orderFillScreen) { 
-        if(orderFillScreen != null) {
-            add(manager);        
-            this.orderFillScreen = orderFillScreen;
-        } else {
+    public void loadShippingData(ShippingManager manager, State state) { 
+        if(state == State.ADD) {
+            add(manager);                    
+        } else if(state == State.DISPLAY){
             this.manager = manager; 
             itemTab.setManager(manager);
             noteTab.setManager(manager);
-            setState(State.DISPLAY);
+            setState(state);
             DataChangeEvent.fire(this);
             drawTabs();
         }
@@ -873,7 +874,7 @@ public class ShippingScreen extends Screen {
                 DataChangeEvent.fire(this);
                 window.setDone(consts.get("addingComplete"));
                 
-                if(orderFillScreen != null)                     
+                if(!openedFromMenu)                     
                     window.close();                
                     
             } catch (ValidationErrorsList e) {
@@ -912,7 +913,7 @@ public class ShippingScreen extends Screen {
             fetchById(null);
             window.setDone(consts.get("addAborted"));
             
-            if(orderFillScreen != null)                 
+            if(!openedFromMenu)                 
                 window.close();
             
         } else if (state == State.UPDATE) {

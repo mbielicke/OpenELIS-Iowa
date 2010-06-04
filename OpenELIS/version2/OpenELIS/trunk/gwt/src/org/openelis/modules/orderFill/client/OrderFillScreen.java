@@ -93,7 +93,6 @@ public class OrderFillScreen extends Screen {
     private ShipNoteTab                        shipNoteTab;
     private Tabs                               tab;
 
-    private Dropdown<Integer>                  status;
     private AppButton                          queryButton, updateButton, processButton,
                                                commitButton, abortButton;
     private MenuItem                           shippingInfo;
@@ -180,7 +179,7 @@ public class OrderFillScreen extends Screen {
         processButton = (AppButton)def.getWidget("process");
         addScreenHandler(processButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                process();
+                commit();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {               
@@ -523,10 +522,6 @@ public class OrderFillScreen extends Screen {
         setState(State.UPDATE);  
         shipNoteTab.setState(State.DISPLAY);
         custNoteTab.setState(State.DISPLAY);        
-    }
-    
-    protected void process() {
-        commit();  
     }    
 
    protected void commit() {        
@@ -538,23 +533,7 @@ public class OrderFillScreen extends Screen {
         ArrayList<TreeDataItem> model;
         ShippingManager shippingManager; 
         
-        data = getProcessShipData();
-        shippingManager = null;        
-        
-        if (state == State.UPDATE) {
-            if (data == null) {
-                Window.alert(consts.get("noOrdersSelectForProcess"));
-                return;
-            } else {
-                loadProcessRows();
-                model = itemsTree.getData();
-
-                if (model == null || model.size() == 0) {
-                    Window.alert(consts.get("noItemsToProcess"));
-                    return;
-                }
-            }
-        }        
+        shippingManager = null;               
         
         if (!validate()) {         
             window.setError(consts.get("correctErrors"));
@@ -568,7 +547,20 @@ public class OrderFillScreen extends Screen {
             executeQuery(query); 
             combinedMap = new HashMap<Integer, OrderManager>();
             setState(State.DISPLAY);
-        } if(state == State.UPDATE) {
+        } else if(state == State.UPDATE) {
+            data = getProcessShipData();
+            if (data == null) {
+                Window.alert(consts.get("noOrdersSelectForProcess"));
+                return;
+            } else {
+                loadProcessRows();
+                model = itemsTree.getData();
+
+                if (model == null || model.size() == 0) {
+                    Window.alert(consts.get("noItemsToProcess"));
+                    return;
+                }
+            }
             window.setBusy(consts.get("updating"));                
             set = combinedMap.keySet();
             iter = set.iterator();                    
@@ -586,7 +578,7 @@ public class OrderFillScreen extends Screen {
                 DataChangeEvent.fire(this);
                 window.setDone(consts.get("updatingComplete"));
                                 
-                showShippingScreen(shippingManager, this);
+                showShippingScreen(shippingManager, State.ADD);
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -596,6 +588,77 @@ public class OrderFillScreen extends Screen {
         }        
     }
     
+   protected void abort() {
+       OrderManager man;
+       
+       man = OrderManager.getInstance();
+       
+       setFocus(null);
+       clearErrors();
+       window.setBusy(consts.get("cancelChanges"));
+
+       if (state == State.QUERY) {
+           itemTab.setManager(man, combinedMap);
+           shipNoteTab.setManager(man);
+           custNoteTab.setManager(man);
+           
+           setState(State.DEFAULT);
+           DataChangeEvent.fire(this);
+           window.setDone(consts.get("queryAborted"));
+       } else if (state == State.UPDATE) {
+           releaseLocks();
+           setState(State.DISPLAY);
+           DataChangeEvent.fire(this);
+           window.setDone(consts.get("updateAborted"));
+       }             
+   } 
+   
+   protected void shippingInfo() {
+       OrderManager order;
+       OrderViewDO data;
+       TableDataRow row;
+       
+       try {
+           row = orderTable.getSelection();
+           order = (OrderManager)row.data;     
+           data = order.getOrder();
+                              
+           window.setBusy(consts.get("fetching"));            
+           
+           shippingService.call("fetchByOrderId", data.getId(), new SyncCallback<ShippingViewDO>() {
+               public void onSuccess(ShippingViewDO result) {                                    
+                   try {
+                       if(result != null)
+                           shippingManager = ShippingManager.fetchById(result.getId());
+                       else
+                           shippingManager = null;
+                   } catch (Throwable e) {
+                       shippingManager = null;
+                       e.printStackTrace();
+                       Window.alert(e.getMessage());
+                       window.clearStatus();
+                   }                                        
+               }
+               
+               public void onFailure(Throwable error) {    
+                   shippingManager = null;
+                   error.printStackTrace();
+                   Window.alert("Error: Fetch failed; " + error.getMessage());                    
+                   window.clearStatus();
+               }
+           });    
+           
+           showShippingScreen(shippingManager, State.DISPLAY);
+       } catch (Throwable e) {
+           e.printStackTrace();
+           Window.alert(e.getMessage());
+           window.clearStatus();
+           return;
+       }               
+       
+       window.clearStatus();
+   }
+   
     private void validateQuantityOnHand() throws ValidationErrorsList{
         TreeDataItem parent, child;
         ArrayList<TreeDataItem> model, items;
@@ -654,77 +717,6 @@ public class OrderFillScreen extends Screen {
         
         if(list.size() > 0) 
             throw list;
-    }
-
-    protected void abort() {
-        OrderManager man;
-        
-        man = OrderManager.getInstance();
-        
-        setFocus(null);
-        clearErrors();
-        window.setBusy(consts.get("cancelChanges"));
-
-        if (state == State.QUERY) {
-            itemTab.setManager(man, combinedMap);
-            shipNoteTab.setManager(man);
-            custNoteTab.setManager(man);
-            
-            setState(State.DEFAULT);
-            DataChangeEvent.fire(this);
-            window.setDone(consts.get("queryAborted"));
-        } else if (state == State.UPDATE) {
-            releaseLocks();
-            setState(State.DISPLAY);
-            DataChangeEvent.fire(this);
-            window.setDone(consts.get("updateAborted"));
-        }             
-    } 
-    
-    protected void shippingInfo() {
-        OrderManager order;
-        OrderViewDO data;
-        TableDataRow row;
-        
-        try {
-            row = orderTable.getSelection();
-            order = (OrderManager)row.data;     
-            data = order.getOrder();
-                               
-            window.setBusy(consts.get("fetching"));            
-            
-            shippingService.call("fetchByOrderId", data.getId(), new SyncCallback<ShippingViewDO>() {
-                public void onSuccess(ShippingViewDO result) {                                    
-                    try {
-                        if(result != null)
-                            shippingManager = ShippingManager.fetchById(result.getId());
-                        else
-                            shippingManager = null;
-                    } catch (Throwable e) {
-                        shippingManager = null;
-                        e.printStackTrace();
-                        Window.alert(e.getMessage());
-                        window.clearStatus();
-                    }                                        
-                }
-                
-                public void onFailure(Throwable error) {    
-                    shippingManager = null;
-                    error.printStackTrace();
-                    Window.alert("Error: Fetch failed; " + error.getMessage());                    
-                    window.clearStatus();
-                }
-            });    
-            
-            showShippingScreen(shippingManager, null);
-        } catch (Throwable e) {
-            e.printStackTrace();
-            Window.alert(e.getMessage());
-            window.clearStatus();
-            return;
-        }               
-        
-        window.clearStatus();
     }
     
     private OrderManager fetchById(OrderViewDO data) {
@@ -1080,7 +1072,7 @@ public class OrderFillScreen extends Screen {
         return shippingManager;        
     } 
     
-    private void showShippingScreen(ShippingManager manager, OrderFillScreen screen) throws Exception{
+    private void showShippingScreen(ShippingManager manager, State state) throws Exception{
         ScreenWindow modal;
         if(manager != null) {
             modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
@@ -1089,7 +1081,7 @@ public class OrderFillScreen extends Screen {
                 shippingScreen = new ShippingScreen(modal);
                             
             modal.setContent(shippingScreen);
-            shippingScreen.loadShippingData(manager, screen);                        
+            shippingScreen.loadShippingData(manager, state);                        
             window.clearStatus();
         }
     }

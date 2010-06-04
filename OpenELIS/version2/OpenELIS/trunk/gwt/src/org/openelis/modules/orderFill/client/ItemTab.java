@@ -590,41 +590,44 @@ public class ItemTab extends Screen {
     }
     
     public boolean validate() {
-        TreeDataItem parent, child; 
+        TreeDataItem parent, child;
         ArrayList<TreeDataItem> model, items;
         OrderItemViewDO item;
         Integer quantity;
         boolean validate;
         int i;
         
-        model = itemsTree.getData();
         validate = true;
-                
-        for(i = 0; i < model.size(); i++) {
-            parent = model.get(i);
-            if(!parent.open)
-                itemsTree.toggle(parent);
-            
-            items = parent.getItems();
-            item = (OrderItemViewDO)parent.key;
-            quantity = item.getQuantity();
-            
-            if(items != null && items.size() > 0) {                
-                for(int j = 0; j < items.size(); j++) {
-                    child = items.get(j);
-                    if(!validateLocationRow(child, -1)) {
-                        itemsTree.refreshRow(child);
-                        itemsTree.refreshRow(parent);
-                        validate = false;                        
-                    } 
-                }
-            } else if ((quantity == null) || (quantity != null && quantity > 0)) {
-                parent.cells.get(1).addException(new LocalizedException("sumOfQtyLessThanQtyOrderedException"));
-                itemsTree.refreshRow(parent);
-                validate = false; 
-            }                                              
-        }       
         
+        if (combinedMap != null && combinedMap.get(manager.getOrder().getId()) != null) {
+            itemsTree.finishEditing();
+            model = itemsTree.getData();
+                        
+            for (i = 0; i < model.size(); i++ ) {
+                parent = model.get(i);
+                if ( !parent.open)
+                    itemsTree.toggle(parent);
+
+                items = parent.getItems();
+                item = (OrderItemViewDO)parent.key;
+                quantity = item.getQuantity();
+
+                if (items != null && items.size() > 0) {
+                    for (int j = 0; j < items.size(); j++ ) {
+                        child = items.get(j);
+                        if ( !validateLocationRow(child, -1)) {
+                            itemsTree.refreshRow(child);
+                            itemsTree.refreshRow(parent);
+                            validate = false;
+                        }
+                    }
+                } else if ( (quantity == null) || (quantity != null && quantity > 0)) {
+                    parent.cells.get(1).addException(new LocalizedException("sumOfQtyLessThanQtyOrderedException"));
+                    itemsTree.refreshRow(parent);
+                    validate = false;
+                }
+            }
+        }
         return validate;
     }
     

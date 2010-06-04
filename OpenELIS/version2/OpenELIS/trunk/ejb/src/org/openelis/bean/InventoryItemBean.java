@@ -216,6 +216,9 @@ public class InventoryItemBean implements InventoryItemRemote, InventoryItemLoca
 
         if (DataBaseUtil.isEmpty(data.getDispensedUnitsId()))
             list.add(new FieldErrorException("fieldRequiredException", InventoryItemMeta.getDispensedUnitsId()));
+        
+        if (DataBaseUtil.isEmpty(data.getQuantityToReorder()))
+            list.add(new FieldErrorException("fieldRequiredException", InventoryItemMeta.getQuantityToReorder()));
 
         //
         // check for duplicate lot #

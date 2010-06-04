@@ -34,7 +34,6 @@ import org.openelis.meta.OrderMeta;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Widget;
 
 public class ItemTab extends Screen {
 
@@ -42,10 +41,10 @@ public class ItemTab extends Screen {
     private TableWidget           table;
     private AutoComplete<Integer> inventory;
     private AppButton             addItemButton, removeItemButton;
-    
-    private boolean               loaded;
-    private int                   numColumns;   
-    
+
+    private boolean               loaded, hasExtraCols;
+    private int                   numColumns;
+
     protected ScreenService       inventoryService;
 
     public ItemTab(ScreenDefInt def, ScreenWindow window) {
@@ -55,41 +54,41 @@ public class ItemTab extends Screen {
         setDefinition(def);
         setWindow(window);
         initialize();
-        
+
         initializeDropdowns();
     }
 
     private void initialize() {
         table = (TableWidget)def.getWidget("itemTable");
-        inventory = (AutoComplete) table.getColumnWidget(OrderMeta.getOrderItemInventoryItemName());
+        inventory = (AutoComplete)table.getColumnWidget(OrderMeta.getOrderItemInventoryItemName());
 
         addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
                 table.load(getTableModel());
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {               
+            public void onStateChange(StateChangeEvent<State> event) {
                 table.enable(true);
                 table.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
         table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
-            public void onBeforeCellEdited(BeforeCellEditedEvent event) {                
-                if(state != State.ADD && state != State.UPDATE) { 
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                if (state != State.ADD && state != State.UPDATE) {
                     event.cancel();
                     return;
                 }
-                                
+
                 // store column is not editable -- it is set from inventory item
                 // column
                 if (event.getCol() == 2)
                     event.cancel();
             }
         });
-        
+
         numColumns = table.getColumns().size();
-        
+
         table.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
@@ -100,7 +99,7 @@ public class ItemTab extends Screen {
 
                 r = event.getRow();
                 c = event.getCol();
-                val = table.getObject(r,c);
+                val = table.getObject(r, c);
 
                 try {
                     data = manager.getItems().getItemAt(r);
@@ -109,13 +108,13 @@ public class ItemTab extends Screen {
                     return;
                 }
 
-                switch(c) {
+                switch (c) {
                     case 0:
                         data.setQuantity((Integer)val);
                         break;
                     case 1:
                         trow = ((TableDataRow)val);
-                        if(trow != null) {
+                        if (trow != null) {
                             row = (InventoryItemDO)trow.data;
                             data.setInventoryItemId(row.getId());
                             data.setInventoryItemName(row.getName());
@@ -133,7 +132,7 @@ public class ItemTab extends Screen {
                         break;
                     case 4:
                         data.setCatalogNumber((String)val);
-                        break;    
+                        break;
                 }
             }
         });
@@ -157,7 +156,7 @@ public class ItemTab extends Screen {
                 }
             }
         });
-        
+
         inventory.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 InventoryItemDO data;
@@ -170,9 +169,9 @@ public class ItemTab extends Screen {
                     model = new ArrayList<TableDataRow>();
 
                     for (int i = 0; i < list.size(); i++ ) {
-                        data = (InventoryItemDO) list.get(i);
-                        row = new TableDataRow(data.getId(), data.getName(),
-                                               data.getStoreId(), data.getDispensedUnitsId());
+                        data = (InventoryItemDO)list.get(i);
+                        row = new TableDataRow(data.getId(), data.getName(), data.getStoreId(),
+                                               data.getDispensedUnitsId());
                         row.data = data;
                         model.add(row);
                     }
@@ -196,11 +195,9 @@ public class ItemTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addItemButton.enable(EnumSet.of(State.ADD, State.UPDATE)
-                                            .contains(event.getState()));
+                addItemButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
-
 
         removeItemButton = (AppButton)def.getWidget("removeItemButton");
         addScreenHandler(removeItemButton, new ScreenEventHandler<Object>() {
@@ -217,6 +214,13 @@ public class ItemTab extends Screen {
                                                .contains(event.getState()));
             }
         });
+
+        //
+        // This class is responsible for managing a table that can show
+        // variable number of columns. One table has OrderItemUnitCost and the
+        // other one does not
+        //
+        hasExtraCols = table.getColumnWidget(OrderMeta.getOrderItemUnitCost()) != null;
     }
 
     private void initializeDropdowns() {
@@ -225,9 +229,9 @@ public class ItemTab extends Screen {
         ArrayList<DictionaryDO> list;
         TableDataRow row;
 
-        store = (Dropdown) inventory.getColumns().get(1).getColumnWidget();
-        units = (Dropdown) inventory.getColumns().get(2).getColumnWidget();
-        storeId = (Dropdown) table.getColumnWidget(OrderMeta.getOrderItemInventoryItemStoreId());
+        store = (Dropdown)inventory.getColumns().get(1).getColumnWidget();
+        units = (Dropdown)inventory.getColumns().get(2).getColumnWidget();
+        storeId = (Dropdown)table.getColumnWidget(OrderMeta.getOrderItemInventoryItemStoreId());
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
@@ -242,7 +246,7 @@ public class ItemTab extends Screen {
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list =  DictionaryCache.getListByCategorySystemName("inventory_unit");
+        list = DictionaryCache.getListByCategorySystemName("inventory_unit");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -256,7 +260,6 @@ public class ItemTab extends Screen {
         OrderItemViewDO data;
         ArrayList<TableDataRow> model;
         TableDataRow row;
-        Widget widget;
 
         model = new ArrayList<TableDataRow>();
         if (manager == null)
@@ -266,20 +269,15 @@ public class ItemTab extends Screen {
             for (i = 0; i < manager.getItems().count(); i++ ) {
                 data = (OrderItemViewDO)manager.getItems().getItemAt(i);
                 row = new TableDataRow(numColumns);
-                            
+
                 row.cells.get(0).setValue(data.getQuantity());
                 row.cells.get(1).setValue(new TableDataRow(data.getInventoryItemId(),
                                                            data.getInventoryItemName()));
                 row.cells.get(2).setValue(data.getStoreId());
-                
-                widget = table.getColumnWidget(OrderMeta.getOrderItemUnitCost());                
-                if(widget != null) 
+                if (hasExtraCols) {
                     row.cells.get(3).setValue(data.getUnitCost());
-                
-                widget = table.getColumnWidget(OrderMeta.getOrderItemCatalogNumber());                
-                if(widget != null) 
                     row.cells.get(4).setValue(data.getCatalogNumber());
-                
+                }
                 model.add(row);
             }
         } catch (Exception e) {
@@ -300,5 +298,5 @@ public class ItemTab extends Screen {
 
         loaded = true;
     }
-    
+
 }
