@@ -162,7 +162,7 @@ UIRF Software License are applicable instead of those above.
           <AbsolutePanel key="collapsePanel" style="LeftSidePanel">
             <HorizontalPanel width="225">
               <VerticalPanel>
-                <tree key="trackingTree" maxRows="15" width="auto">
+                <tree key="trackingTree" maxRows="14" width="auto">
                   <header>
                     <col header="Sample" width="200" />
                     <col header="Type/Status" width="100" />
@@ -269,7 +269,7 @@ UIRF Software License are applicable instead of those above.
               </widget>
             </row>
               </TablePanel>
-              <TabPanel height="266" key="tabPanel" width="724">
+              <TabPanel height="244" key="tabPanel" width="715">
 <!-- Blank Default deck -->
                 <tab text="" visible="false">
                   <AbsolutePanel />

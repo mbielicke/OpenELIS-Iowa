@@ -1587,21 +1587,15 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             public void onSuccess(ArrayList<SampleManager> result) {
                 manager = null;
 
+                if (result.size() > 0)
+                    setState(State.DISPLAY);
+                else 
+                    setState(State.DEFAULT);
+                
                 trackingTree.load(getModel(result));
-
-                try {
-                    if (result.size() > 0) {
-                        setState(State.DISPLAY);
-                        trackingTree.select(0);
-
-                    } else {
-                        setState(State.DEFAULT);
-                    }
-
-                } catch (Exception e) {
-
-                    Window.alert("executeQuery: " + e.getMessage());
-                }
+                
+                if (result.size() > 0)
+                    trackingTree.select(0);
 
                 window.clearStatus();
             }
