@@ -38,7 +38,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import org.openelis.cache.DictionaryCache;
-//import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SecuritySystemUserDO;

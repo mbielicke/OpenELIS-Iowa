@@ -80,27 +80,27 @@ import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
 
 public class WorksheetCompletionScreen extends Screen {
 
-    private boolean                 closeWindow, isPopup;
-    private ScreenService           instrumentService;
-    private SecurityModule          security;
-    private WorksheetManager        manager;
+    private boolean                     closeWindow, isPopup;
+    private ScreenService               instrumentService;
+    private SecurityModule              security;
+    private WorksheetManager            manager;
 
-    private AppButton               lookupWorksheetButton, printButton,
-                                    updateButton, commitButton, abortButton;
+    private AppButton                   lookupWorksheetButton, printButton, updateButton,
+                                        commitButton, abortButton, loadFilePopupButton;
 
-    private WorksheetTab            worksheetTab;
-    private NotesTab                noteTab;
-    private Tabs                    tab;
-    private TabPanel                tabPanel;
+    private WorksheetTab                worksheetTab;
+    private NotesTab                    noteTab;
+    private Tabs                        tab;
+    private TabPanel                    tabPanel;
 
-    protected AutoComplete<Integer> instrumentId;
-    protected CalendarLookUp        defaultStartedDate, defaultCompletedDate;
-    protected Confirm               worksheetExitConfirm;
-    protected Dropdown<Integer>     statusId;
-    protected FileUploadWidget      loadFile;
-    protected TextBox<Integer>      worksheetId, relatedWorksheetId;
-    protected TextBox<String>       defaultInitials;
-    protected WorksheetLookupScreen wLookupScreen, wrLookupScreen;
+    protected AutoComplete<Integer>     instrumentId;
+    protected CalendarLookUp            defaultStartedDate, defaultCompletedDate;
+    protected Confirm                   worksheetExitConfirm;
+    protected Dropdown<Integer>         statusId;
+    protected TextBox<Integer>          worksheetId, relatedWorksheetId;
+    protected TextBox<String>           defaultInitials;
+    protected WorksheetFileUploadScreen wFileUploadScreen;
+    protected WorksheetLookupScreen     wLookupScreen, wrLookupScreen;
     
     private enum Tabs {
         WORKSHEET, NOTE
@@ -308,10 +308,14 @@ public class WorksheetCompletionScreen extends Screen {
             } 
         });
 
-        loadFile = (FileUploadWidget)def.getWidget("loadFile");
-        addScreenHandler(loadFile, new ScreenEventHandler<String>() {
+        loadFilePopupButton = (AppButton)def.getWidget("loadFilePopupButton");
+        addScreenHandler(loadFilePopupButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                openWorksheetFileUpload();
+            }
+
             public void onStateChange(StateChangeEvent<State> event) {
-                loadFile.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
+                loadFilePopupButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -598,6 +602,31 @@ public class WorksheetCompletionScreen extends Screen {
             modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
             modal.setName(consts.get("worksheetLookup"));
             modal.setContent(wrLookupScreen);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert("error: " + e.getMessage());
+            return;
+        }
+    }
+    
+    private void openWorksheetFileUpload() {
+        ScreenWindow modal;
+        
+        try {
+            if (wFileUploadScreen == null) {
+                final WorksheetCompletionScreen wcs = this;
+                wFileUploadScreen = new WorksheetFileUploadScreen();
+                wFileUploadScreen.addActionHandler(new ActionHandler<WorksheetFileUploadScreen.Action>() {
+                    public void onAction(ActionEvent<WorksheetFileUploadScreen.Action> event) {
+                        if (event.getAction() == WorksheetFileUploadScreen.Action.OK) {
+                        }
+                    }
+                });
+            }
+            
+            modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+            modal.setName(consts.get("worksheetFileUpload"));
+            modal.setContent(wFileUploadScreen);
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert("error: " + e.getMessage());

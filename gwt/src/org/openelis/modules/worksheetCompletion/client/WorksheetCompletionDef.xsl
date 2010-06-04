@@ -80,7 +80,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'instrumentName')" />:
               </text>
-              <autoComplete key="instrumentId" width="150" case="LOWER" popWidth="auto" tab="loadFrom,lookupWorksheetButton" field="Integer">
+              <autoComplete key="instrumentId" width="150" case="LOWER" popWidth="auto" tab="loadFilePopupButton,lookupWorksheetButton" field="Integer">
                 <col width="150" header="Name" />
                 <col width="200" header="Description" />
                 <col width="75" header="Type">
@@ -91,7 +91,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'initials')" />:
               </text>
-              <textbox key="defaultInitials" width="50" case="LOWER" tab="defaultStartedDate,browseButton" field="String"/>
+              <textbox key="defaultInitials" width="50" case="LOWER" tab="defaultStartedDate,loadFilePopupButton" field="String"/>
             </row>
             <row>
               <text style="Prompt">
@@ -101,20 +101,14 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'loadFrom')" />:
               </text>
-			  <fileUpload key="loadFile" service="org.openelis.modules.worksheet.server.WorksheetService"/>
-<!--
-	          <HorizontalPanel>
-                <textbox key="loadFile" width="200" case="LOWER" tab="browseButton,instrumentId" field="String"/>
-                <appButton key="browseButton" style="Button" action="browse" tab="loadButton,loadFile">
-                  <HorizontalPanel>
-                    <AbsolutePanel style="FindButtonImage" />
-                    <text>
-                      <xsl:value-of select="resource:getString($constants,'browse')" />
-                    </text>
-                  </HorizontalPanel>
-                </appButton>
-              </HorizontalPanel>
--->
+              <appButton key="loadFilePopupButton" style="Button" action="load" tab="defaultInitials,browseButton">
+                <HorizontalPanel>
+                  <AbsolutePanel style="LoadButtonImage" />
+                  <text>
+                    <xsl:value-of select="resource:getString($constants,'load')" />
+                  </text>
+                </HorizontalPanel>
+              </appButton>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'started')" />:
               </text>
@@ -131,14 +125,6 @@ UIRF Software License are applicable instead of those above.
                 </appButton>
               </HorizontalPanel>
 	          <HorizontalPanel/>
-              <appButton key="loadButton" style="Button" action="load" tab="defaultInitials,browseButton">
-                <HorizontalPanel>
-                  <AbsolutePanel style="LoadButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'load')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'completed')" />:
               </text>
