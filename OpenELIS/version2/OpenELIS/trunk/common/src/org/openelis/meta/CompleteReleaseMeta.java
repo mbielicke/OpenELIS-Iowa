@@ -1,6 +1,6 @@
 package org.openelis.meta;
 
-public class ReviewReleaseMeta extends SampleMeta {
+public class CompleteReleaseMeta extends SampleMeta {
 
 	@Override
 	public String buildFrom(String where) {
