@@ -150,7 +150,7 @@ UIRF Software License are applicable instead of those above.
           </col>
         </table>
         <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
-        <TabPanel key="SampleContent" width="715" height="274">
+        <TabPanel key="SampleContent" width="715" height="236">
 <!-- Blank default deck -->
           <tab visible="false" text="">
             <AbsolutePanel />

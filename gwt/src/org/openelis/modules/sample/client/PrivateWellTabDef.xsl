@@ -42,8 +42,8 @@ UIRF Software License are applicable instead of those above.
   <xsl:variable name="props" select="doc/props" />
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
   <xsl:template match="doc">
-  
   <screen id="PrivateWell" name="PrivateWell">
+  
   	          <TablePanel style="Form">
                 <row>
                   <text style="Prompt">
@@ -147,28 +147,10 @@ UIRF Software License are applicable instead of those above.
                   <widget colspan="3">
                   <textbox key="{meta:getWellOwner()}" width="200" max="30" tab="{meta:getWellCollector()},itemsTestsTree" field="String" />
                   </widget>
-                </row>
-                <row>
-                  <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'collector')" />:
-                  </text>
-                  <widget colspan="3">
-                  <textbox key="{meta:getWellCollector()}" width="200" max="30" tab="{meta:getWellWellNumber()},{meta:getWellOwner()}" field="String" />
-                  </widget>
-                </row>
-                <row>
-                  <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'wellNum')" />:
-                  </text>
-                  <widget colspan="3">
-                  <textbox key="{meta:getWellWellNumber()}" width="80" tab="{meta:getProjectName()},{meta:getWellCollector()}" field="Integer" />
-                  </widget>
-                </row>
-                <row>
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'project')" />:
                   </text>
-                  <widget colspan="3">
+                  <widget colspan="5">
                   <HorizontalPanel>
                     <autoComplete key="{meta:getProjectName()}" width="182" case="UPPER" popWidth="auto" tab="sampleItemTabPanel,{meta:getWellWellNumber()}" field="Integer">
                       <col width="115" header="{resource:getString($constants,'name')}" />
@@ -182,9 +164,15 @@ UIRF Software License are applicable instead of those above.
                 </row>
                 <row>
                   <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'billTo')" />:
+                    <xsl:value-of select="resource:getString($constants,'collector')" />:
                   </text>
                   <widget colspan="3">
+                  <textbox key="{meta:getWellCollector()}" width="200" max="30" tab="{meta:getWellWellNumber()},{meta:getWellOwner()}" field="String" />
+                  </widget>
+                  <text style="Prompt">
+                    <xsl:value-of select="resource:getString($constants,'billTo')" />:
+                  </text>
+                  <widget colspan="5">
                   <HorizontalPanel>
                     <autoComplete key="{meta:getBillTo()}" width="182" case="UPPER" popWidth="auto" tab="sampleItemTabPanel,{meta:getProjectName()}" field="Integer">
                       <col width="200" header="{resource:getString($constants,'name')}" />
@@ -198,7 +186,16 @@ UIRF Software License are applicable instead of those above.
                   </HorizontalPanel>
                   </widget>
                 </row>
+                <row>
+                  <text style="Prompt">
+                    <xsl:value-of select="resource:getString($constants,'wellNum')" />:
+                  </text>
+                  <widget colspan="3">
+                  <textbox key="{meta:getWellWellNumber()}" width="80" tab="{meta:getProjectName()},{meta:getWellCollector()}" field="Integer" />
+                  </widget>
+                </row>
               </TablePanel>
+              
   </screen>
   </xsl:template>
 </xsl:stylesheet>

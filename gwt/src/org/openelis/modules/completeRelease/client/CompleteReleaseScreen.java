@@ -11,6 +11,7 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.CompleteReleaseVO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleDO;
+import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.LastPageException;
@@ -44,6 +45,8 @@ import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
+import org.openelis.gwt.widget.table.event.UnselectionEvent;
+import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
@@ -80,59 +83,57 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 
 public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
-    
-    private Integer                        analysisLoggedInId, analysisCancelledId,
-    analysisReleasedId, analysisInPrep, sampleLoggedInId, sampleErrorStatusId,
-    sampleReleasedId, userId;
-    
-    public enum Tabs {BLANK,SAMPLE,ENVIRONMENT,PRIVATE_WELL,SDWIS,
-        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
-        AUX_DATA
+
+    private Integer sampleLoggedInId, sampleErrorStatusId, sampleReleasedId;
+
+    public enum Tabs {
+        BLANK, SAMPLE, ENVIRONMENT, PRIVATE_WELL, SDWIS, SAMPLE_ITEM, ANALYSIS, TEST_RESULT,
+        ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA
     };
-	
-    protected Tabs                         tab;
-    protected ArrayList<Tabs>              tabIndexes = new ArrayList<Tabs>();
-    protected TextBox                      clientReference;
-    protected TextBox<Integer>             accessionNumber, orderNumber;
-    protected TextBox<Datetime>            collectedTime;
-   
-    protected Dropdown<Integer>            statusId;
-    protected TreeWidget                   itemsTree;
-    protected AppButton                    removeRow, releaseButton, reportButton, completeButton,
-    									   addItem, addAnalysis, queryButton, updateButton,
-    									   commitButton, abortButton;
-    
-    protected CalendarLookUp               collectedDate, receivedDate;
-	
-	private SecurityModule 				   security;
-    protected AccessionNumberUtility       accessionNumUtil;
-    protected SampleHistoryUtility         historyUtility;
-	
-	private SampleManager                  manager;
-	private SampleDataBundle               dataBundle;
-	private TabPanel                  	   sampleContent;
-	private SampleTab                      sampleTab;
-	private EnvironmentalTab               environmentalTab;
-	private PrivateWellTab			       wellTab;
-	private SDWISTab                       sdwisTab;
-	private SampleItemTab                  sampleItemTab;
-	private AnalysisTab                    analysisTab;
-	private QAEventsTab                    qaEventsTab;
-	private StorageTab                     storageTab;
-	private SampleNotesTab                 sampleNotesTab;
-	private AnalysisNotesTab               analysisNotesTab;
-	private AuxDataTab                     auxDataTab;
-	private ResultTab      				   testResultsTab;
-	private TableWidget                    completeReleaseTable;
-	
-    protected MenuItem                     historySample, historySampleSpec,
-    historySampleProject, historySampleOrganization, historySampleItem,
-    historyAnalysis, historyCurrentResult, historyStorage, historySampleQA,
-    historyAnalysisQA, historyAuxData;
-    
+
+    protected Tabs                   tab;
+    protected ArrayList<Tabs>        tabIndexes = new ArrayList<Tabs>();
+    protected TextBox                clientReference;
+    protected TextBox<Integer>       accessionNumber, orderNumber;
+    protected TextBox<Datetime>      collectedTime;
+
+    protected Dropdown<Integer>      statusId;
+    protected TreeWidget             itemsTree;
+    protected AppButton              removeRow, releaseButton, reportButton, completeButton,
+                    addItem, addAnalysis, queryButton, updateButton, commitButton, abortButton;
+
+    protected CalendarLookUp         collectedDate, receivedDate;
+
+    private SecurityModule           security;
+    protected AccessionNumberUtility accessionNumUtil;
+    protected SampleHistoryUtility   historyUtility;
+
+    private SampleManager            manager;
+    private SampleDataBundle         dataBundle;
+    private TabPanel                 sampleContent;
+    private SampleTab                sampleTab;
+    private EnvironmentalTab         environmentalTab;
+    private PrivateWellTab           wellTab;
+    private SDWISTab                 sdwisTab;
+    private SampleItemTab            sampleItemTab;
+    private AnalysisTab              analysisTab;
+    private QAEventsTab              qaEventsTab;
+    private StorageTab               storageTab;
+    private SampleNotesTab           sampleNotesTab;
+    private AnalysisNotesTab         analysisNotesTab;
+    private AuxDataTab               auxDataTab;
+    private ResultTab                testResultsTab;
+    private TableWidget              completeReleaseTable;
+
+    protected MenuItem               historySample, historySampleSpec, historySampleProject,
+                    historySampleOrganization, historySampleItem, historyAnalysis,
+                    historyCurrentResult, historyStorage, historySampleQA, historyAnalysisQA,
+                    historyAuxData;
+
     public CompleteReleaseScreen() throws Exception {
         super((ScreenDefInt)GWT.create(CompleteReleaseDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.completeRelease.server.CompleteReleaseService");
+        service = new ScreenService(
+                                    "controller?service=org.openelis.modules.completeRelease.server.CompleteReleaseService");
 
         security = OpenELIS.security.getModule("samplecompleterelease");
         if (security == null)
@@ -144,30 +145,32 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
             }
         });
     }
-    
+
     public void postConstructor() {
         tab = Tabs.BLANK;
         manager = SampleManager.getInstance();
-        
-        try{
-            DictionaryCache.preloadByCategorySystemNames("sample_status", "analysis_status", "type_of_sample", 
-                                                         "source_of_sample", "sample_container", "unit_of_measure", 
-                                                         "qaevent_type", "aux_field_value_type", "organization_type");
-        }catch(Exception e){
+
+        try {
+            DictionaryCache.preloadByCategorySystemNames("sample_status", "analysis_status",
+                                                         "type_of_sample", "source_of_sample",
+                                                         "sample_container", "unit_of_measure",
+                                                         "qaevent_type", "aux_field_value_type",
+                                                         "organization_type");
+        } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
         }
-        
+
         initialize();
         setState(State.DEFAULT);
         initializeDropdowns();
         DataChangeEvent.fire(this);
     }
-    
+
     private void initialize() {
         final CompleteReleaseScreen completeScreen;
         completeScreen = this;
-        
+
         //
         // button panel buttons
         //
@@ -178,8 +181,8 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                if(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) && 
-                                security.hasSelectPermission())
+                if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
+                    security.hasSelectPermission())
                     queryButton.enable(true);
                 else if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
@@ -187,24 +190,24 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
                     queryButton.enable(false);
             }
         });
-        
+
         updateButton = (AppButton)def.getWidget("update");
         addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 update();
             }
-            
+
             public void onDataChange(DataChangeEvent event) {
-                if (canEdit() && EnumSet.of(State.DISPLAY).contains(state) && 
-                                security.hasUpdatePermission())
+                if (canEdit() && EnumSet.of(State.DISPLAY).contains(state) &&
+                    security.hasUpdatePermission())
                     updateButton.enable(true);
-                else if(state == State.DISPLAY)
+                else if (state == State.DISPLAY)
                     updateButton.enable(false);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                if (EnumSet.of(State.DISPLAY).contains(event.getState()) && 
-                                security.hasUpdatePermission())
+                if (EnumSet.of(State.DISPLAY).contains(event.getState()) &&
+                    security.hasUpdatePermission())
                     updateButton.enable(true);
                 else if (EnumSet.of(State.UPDATE).contains(event.getState()))
                     updateButton.setState(ButtonState.LOCK_PRESSED);
@@ -213,13 +216,13 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
 
             }
         });
-        
+
         completeButton = (AppButton)def.getWidget("complete");
         addScreenHandler(completeButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event){
+            public void onClick(ClickEvent event) {
                 complete();
             }
-            
+
             public void onStateChange(StateChangeEvent<State> event) {
                 completeButton.enable(event.getState() == State.DISPLAY);
             }
@@ -227,29 +230,24 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
 
         releaseButton = (AppButton)def.getWidget("release");
         addScreenHandler(releaseButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event){
+            public void onClick(ClickEvent event) {
                 release();
             }
-            
+
             public void onStateChange(StateChangeEvent<State> event) {
                 releaseButton.enable(event.getState() == State.DISPLAY);
             }
         });
-        
-        //FIXME unrelease
-        
+
+        // FIXME unrelease
+
         /*
-        reportButton = (AppButton)def.getWidget("report");
-        addScreenHandler(reportButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                doReport();
-            }
-            
-            public void onStateChange(StateChangeEvent<State> event) {
-                reportButton.enable(event.getState() == State.DISPLAY);
-            }
-        });
-        */
+         * reportButton = (AppButton)def.getWidget("report");
+         * addScreenHandler(reportButton, new ScreenEventHandler<Object>() {
+         * public void onClick(ClickEvent event) { doReport(); } public void
+         * onStateChange(StateChangeEvent<State> event) {
+         * reportButton.enable(event.getState() == State.DISPLAY); } });
+         */
 
         commitButton = (AppButton)def.getWidget("commit");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
@@ -258,7 +256,8 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE).contains(event.getState()));
+                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                           .contains(event.getState()));
             }
         });
 
@@ -269,14 +268,15 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE).contains(event.getState()));
+                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
             }
         });
 
-        historyUtility = new SampleHistoryUtility(window){
+        historyUtility = new SampleHistoryUtility(window) {
             public void historyCurrentResult() {
-              ActionEvent.fire(completeScreen, ResultTab.Action.RESULT_HISTORY, null);
-            }  
+                ActionEvent.fire(completeScreen, ResultTab.Action.RESULT_HISTORY, null);
+            }
         };
 
         historySample = (MenuItem)def.getWidget("historySample");
@@ -289,7 +289,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
                 historySample.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
-        
+
         historySampleSpec = (MenuItem)def.getWidget("historySampleSpec");
         addScreenHandler(historySampleSpec, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -309,7 +309,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
                 historySampleSpec.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
-        
+
         historySampleProject = (MenuItem)def.getWidget("historySampleProject");
         addScreenHandler(historySampleProject, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -320,7 +320,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
                 historySampleProject.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
-        
+
         historySampleOrganization = (MenuItem)def.getWidget("historySampleOrganization");
         addScreenHandler(historySampleOrganization, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -328,10 +328,11 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historySampleOrganization.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                historySampleOrganization.enable(EnumSet.of(State.DISPLAY)
+                                                        .contains(event.getState()));
             }
         });
-        
+
         historySampleItem = (MenuItem)def.getWidget("historySampleItem");
         addScreenHandler(historySampleItem, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -342,7 +343,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
                 historySampleItem.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
-        
+
         historyAnalysis = (MenuItem)def.getWidget("historyAnalysis");
         addScreenHandler(historyAnalysis, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -353,7 +354,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
                 historyAnalysis.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
-        
+
         historyCurrentResult = (MenuItem)def.getWidget("historyCurrentResult");
         addScreenHandler(historyCurrentResult, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -364,7 +365,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
                 historyCurrentResult.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
-        
+
         historyStorage = (MenuItem)def.getWidget("historyStorage");
         addScreenHandler(historyStorage, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -375,7 +376,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
                 historyStorage.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
-        
+
         historySampleQA = (MenuItem)def.getWidget("historySampleQA");
         addScreenHandler(historySampleQA, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -386,7 +387,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
                 historySampleQA.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
-        
+
         historyAnalysisQA = (MenuItem)def.getWidget("historyAnalysisQA");
         addScreenHandler(historyAnalysisQA, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -397,8 +398,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
                 historyAnalysisQA.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
-        
-        
+
         historyAuxData = (MenuItem)def.getWidget("historyAuxData");
         addScreenHandler(historyAuxData, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -408,8 +408,8 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
             public void onStateChange(StateChangeEvent<State> event) {
                 historyAuxData.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
-        }); 
-        
+        });
+
         //
         // screen fields
         //
@@ -424,83 +424,59 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
 
         completeReleaseTable = (TableWidget)def.getWidget("completeReleaseTable");
         addScreenHandler(completeReleaseTable, new ScreenEventHandler<Object>() {
-        	public void onStateChange(StateChangeEvent<State> event) {
-        		completeReleaseTable.enable(true);
-        		completeReleaseTable.setQueryMode(EnumSet.of(State.QUERY).contains(event.getState()));
-        	}
+            public void onStateChange(StateChangeEvent<State> event) {
+                completeReleaseTable.enable(true);
+                completeReleaseTable.setQueryMode(EnumSet.of(State.QUERY)
+                                                         .contains(event.getState()));
+            }
         });
-        
-        completeReleaseTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler(){
+
+        completeReleaseTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 event.cancel();
             }
         });
         
-        completeReleaseTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
-            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
-                //always allow
-            }
-        });
-        
-        completeReleaseTable.addSelectionHandler(new SelectionHandler<TableRow>(){
-           public void onSelection(SelectionEvent<TableRow> event) {
-               CompleteReleaseVO vo;
-               
-               vo = (CompleteReleaseVO)event.getSelectedItem().row.data;
-               
-               if(completeReleaseTable.getSelections().size() > 1){
-                   //do nothing
-               }else if (vo.getSampleId() == null) {
-                   String domain = manager.getSample().getDomain();
-                   manager = SampleManager.getInstance();
-                   manager.getSample().setDomain(domain);
-                   setState(State.DEFAULT);
-                   historyUtility.setManager(manager);
-               }else if(manager == null || !manager.getSample().getId().equals(vo.getSampleId())){
-                   window.setBusy(consts.get("fetching"));
-                   try {
-                      manager = SampleManager.fetchWithItemsAnalyses(vo.getSampleId());
-                      historyUtility.setManager(manager);
-                      dataBundle = getAnalysisBundle(vo.getAnalysisId());
-                   } catch (Exception e) {
-                       e.printStackTrace();
-                       setState(State.DEFAULT);
-                       Window.alert(consts.get("fetchFailed") + e.getMessage());
-                       window.clearStatus();
-                   }
-                   setState(Screen.State.DISPLAY);
-               }else {
-                   try {
-                       dataBundle = getAnalysisBundle(vo.getAnalysisId());
-                   }catch(Exception e) {
-                       e.printStackTrace();
-                       setState(State.DEFAULT);
-                       Window.alert(consts.get("fetchFailed") + e.getMessage());
-                       window.clearStatus();
-                   }
-                   setState(State.DISPLAY);
-                   DataChangeEvent.fire(completeScreen);
-               }
-          
-               resetScreen();
-                
+        completeReleaseTable.addUnselectionHandler(new UnselectionHandler<TableDataRow>(){
+           public void onUnselection(UnselectionEvent<TableDataRow> event) {
+               if(state == State.UPDATE)
+                   event.cancel();
             } 
         });
         
+        completeReleaseTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
+            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+                // always allow
+            }
+        });
+
+        completeReleaseTable.addSelectionHandler(new SelectionHandler<TableRow>() {
+            public void onSelection(SelectionEvent<TableRow> event) {
+               if (completeReleaseTable.getSelections().size() == 1) {
+                    dataBundle = (SampleDataBundle)event.getSelectedItem().row.data;
+                    manager = dataBundle.getSampleManager();
+                    setState(State.DISPLAY);
+                }
+
+                resetScreen();
+            }
+        });
+
         //
         // tabs
         //
-        sampleTab = new SampleTab(def,window);
-        addScreenHandler(sampleTab,new ScreenEventHandler<Object>() {
-        	public void onDataChange(DataChangeEvent event) {
-        		sampleTab.setData(manager);
-        		sampleTab.draw();
-        	}
-        	public void onStateChange(StateChangeEvent<State> event) {
-        		sampleTab.setState(event.getState());
-        	}
+        sampleTab = new SampleTab(def, window);
+        addScreenHandler(sampleTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                sampleTab.setData(manager);
+                sampleTab.draw();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                sampleTab.setState(event.getState());
+            }
         });
-        
+
         try {
             environmentalTab = new EnvironmentalTab(window);
             AbsolutePanel envTabPanel = (AbsolutePanel)def.getWidget("envDomainPanel");
@@ -511,32 +487,13 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
 
         addScreenHandler(environmentalTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                ///////////
-/*                if(manager.getSample().getDomain().equals(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG))
-                    environmentalTab.setData(manager);
-                else {
-                    SampleManager newManager = SampleManager.getInstance();
-                    newManager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
-                    environmentalTab.setData(newManager);
-                }
-                
-                if(tab == Tabs.ENVIRONMENT)
-                    environmentalTab.draw();
-                //////////////
-                TreeDataItem selectedRow;
-
-                selectedRow = trackingTree.getSelection();
-
-                if (selectedRow != null && "sample".equals(selectedRow.leafType) &&
-                    SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(manager.getSample().getDomain())) {
-                    environmentalTab.setData(manager);
-                    environmentalTab.draw();
-                    showTabs(Tabs.ENVIRONMENT);
-
-                    addTestButton.enable(false);
-                    cancelTestButton.enable(false);
-                } else
-                    environmentalTab.setData(null);*/
+                 if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(manager.getSample().getDomain())) 
+                     environmentalTab.setData(manager); 
+                 else
+                     environmentalTab.setData(null);
+                 
+                 if(tab == Tabs.ENVIRONMENT) 
+                     environmentalTab.draw();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -555,39 +512,20 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
 
         addScreenHandler(wellTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                ///////////
-                /*if(manager.getSample().getDomain().equals(SampleManager.WELL_DOMAIN_FLAG))
-                    wellTab.setData(manager);
-                else {
-                    SampleManager newManager = SampleManager.getInstance();
-                    newManager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
-                    wellTab.setData(newManager);
-                }
+                if (SampleManager.WELL_DOMAIN_FLAG.equals(manager.getSample().getDomain())) 
+                    wellTab.setData(manager); 
+                else
+                    wellTab.setData(null);
                 
-                if(tab == Tabs.PRIVATE_WELL)
+                if(tab == Tabs.PRIVATE_WELL) 
                     wellTab.draw();
-                ///////////
-                TreeDataItem selectedRow;
-
-                selectedRow = trackingTree.getSelection();
-
-                if (selectedRow != null && "sample".equals(selectedRow.leafType) &&
-                    SampleManager.WELL_DOMAIN_FLAG.equals(manager.getSample().getDomain())) {
-                    wellTab.setData(manager);
-                    wellTab.draw();
-                    showTabs(Tabs.PRIVATE_WELL);
-
-                    addTestButton.enable(false);
-                    cancelTestButton.enable(false);
-                } else
-                    wellTab.setData(null);*/
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 wellTab.setState(event.getState());
             }
         });
-        
+
         try {
             sdwisTab = new SDWISTab(window);
             AbsolutePanel sdwisTabPanel = (AbsolutePanel)def.getWidget("sdwisDomainPanel");
@@ -599,39 +537,20 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
 
         addScreenHandler(sdwisTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                //////////
-                /*if(manager.getSample().getDomain().equals(SampleManager.SDWIS_DOMAIN_FLAG))
-                    sdwisTab.setData(manager);
-                else {
-                    SampleManager newManager = SampleManager.getInstance();
-                    newManager.getSample().setDomain(SampleManager.SDWIS_DOMAIN_FLAG);
-                    sdwisTab.setData(newManager);
-                }
+                if (SampleManager.SDWIS_DOMAIN_FLAG.equals(manager.getSample().getDomain())) 
+                    sdwisTab.setData(manager); 
+                else
+                    sdwisTab.setData(null);
                 
-                if(tab == Tabs.SDWIS)
+                if(tab == Tabs.SDWIS) 
                     sdwisTab.draw();
-                ////////////
-                TreeDataItem selectedRow;
-
-                selectedRow = trackingTree.getSelection();
-
-                if (selectedRow != null && "sample".equals(selectedRow.leafType) &&
-                    SampleManager.SDWIS_DOMAIN_FLAG.equals(manager.getSample().getDomain())) {
-                    sdwisTab.setData(manager);
-                    sdwisTab.draw();
-                    showTabs(Tabs.SDWIS);
-
-                    addTestButton.enable(false);
-                    cancelTestButton.enable(false);
-                } else
-                    sdwisTab.setData(null);*/
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 sdwisTab.setState(event.getState());
             }
         });
-        
+
         sampleItemTab = new SampleItemTab(def, window);
         addScreenHandler(sampleItemTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -645,12 +564,12 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
                 sampleItemTab.setState(event.getState());
             }
         });
-        
+
         analysisTab = new AnalysisTab(def, window);
         addScreenHandler(analysisTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 analysisTab.setData(dataBundle);
-                if (tab == Tabs.ANALYSIS){
+                if (tab == Tabs.ANALYSIS) {
                     analysisTab.draw();
                 }
             }
@@ -659,22 +578,23 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
                 analysisTab.setState(event.getState());
             }
         });
-        
+
         testResultsTab = new ResultTab(def, window, this);
         addScreenHandler(testResultsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                    testResultsTab.setData(dataBundle);
+                testResultsTab.setData(dataBundle);
 
-                    if (tab == Tabs.TEST_RESULT)
-                        testResultsTab.draw();
+                if (tab == Tabs.TEST_RESULT)
+                    testResultsTab.draw();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 testResultsTab.setState(event.getState());
             }
         });
-        
-        analysisNotesTab = new AnalysisNotesTab(def, window, "anExNotesPanel", "anExNoteButton", "anIntNotesPanel", "anIntNoteButton");
+
+        analysisNotesTab = new AnalysisNotesTab(def, window, "anExNotesPanel", "anExNoteButton",
+                                                "anIntNotesPanel", "anIntNoteButton");
         addScreenHandler(analysisNotesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 analysisNotesTab.setData(dataBundle);
@@ -686,27 +606,29 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
                 analysisNotesTab.setState(event.getState());
             }
         });
-                
-        sampleNotesTab = new SampleNotesTab(def, window, "sampleExtNotesPanel", "sampleExtNoteButton", "sampleIntNotesPanel", "sampleIntNoteButton");
+
+        sampleNotesTab = new SampleNotesTab(def, window, "sampleExtNotesPanel",
+                                            "sampleExtNoteButton", "sampleIntNotesPanel",
+                                            "sampleIntNoteButton");
         addScreenHandler(sampleNotesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 sampleNotesTab.setManager(manager);
                 if (tab == Tabs.SAMPLE_NOTES)
-                	sampleNotesTab.draw();
+                    sampleNotesTab.draw();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 sampleNotesTab.setState(event.getState());
             }
         });
-        
+
         storageTab = new StorageTab(def, window);
         addScreenHandler(storageTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                    storageTab.setData(dataBundle);
+                storageTab.setData(dataBundle);
 
-                   if (tab == Tabs.STORAGE)
-                        storageTab.draw();
+                if (tab == Tabs.STORAGE)
+                    storageTab.draw();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -717,57 +639,50 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
         qaEventsTab = new QAEventsTab(def, window);
         addScreenHandler(qaEventsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                    qaEventsTab.setData(dataBundle);
-                    qaEventsTab.setManager(manager);
+                qaEventsTab.setData(dataBundle);
+                qaEventsTab.setManager(manager);
 
-                    if (tab == Tabs.QA_EVENTS)
-                        qaEventsTab.draw();
+                if (tab == Tabs.QA_EVENTS)
+                    qaEventsTab.draw();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 qaEventsTab.setState(event.getState());
             }
         });
-        
+
         auxDataTab = new AuxDataTab(def, window);
         addScreenHandler(auxDataTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                    auxDataTab.setManager(manager);
+                auxDataTab.setManager(manager);
 
-                    if (tab == Tabs.AUX_DATA)
-                        auxDataTab.draw();
+                if (tab == Tabs.AUX_DATA)
+                    auxDataTab.draw();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 auxDataTab.setState(event.getState());
             }
         });
-        
-        
+
     }
-    
+
     private void executeQuery(final Query query) {
         window.setBusy(consts.get("querying"));
 
-        service.callList("query", query, new AsyncCallback<ArrayList<CompleteReleaseVO>>() {
-            public void onSuccess(ArrayList<CompleteReleaseVO> result) {
+        service.callList("query", query, new AsyncCallback<ArrayList<SampleDataBundle>>() {
+            public void onSuccess(ArrayList<SampleDataBundle> result) {
                 manager = null;
 
+                if (result.size() > 0)
+                    setState(State.DISPLAY);
+                else 
+                    setState(State.DEFAULT);
+
                 completeReleaseTable.load(getModel(result));
-
-                try {
-                    if (result.size() > 0) {
-                        setState(State.DISPLAY);
-                        completeReleaseTable.selectRow(0,true);
-
-                    } else {
-                        setState(State.DEFAULT);
-                    }
-
-                } catch (Exception e) {
-
-                    Window.alert("executeQuery: " + e.getMessage());
-                }
+                
+                if (result.size() > 0)
+                    completeReleaseTable.selectRow(0, true);
 
                 window.clearStatus();
             }
@@ -791,50 +706,59 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
             }
         });
     }
-    
-    public ArrayList<TableDataRow> getModel(ArrayList<CompleteReleaseVO> result) {
+
+    public ArrayList<TableDataRow> getModel(ArrayList<SampleDataBundle> result) {
         ArrayList<TableDataRow> model;
-        completeReleaseTable.setQueryMode(false);
+        TableDataRow analysis;
+        SampleManager sampleMan;
+        SampleDO sampleDO;
+        AnalysisViewDO anDO;
+       
         model = new ArrayList<TableDataRow>();
 
-        if(result == null)
+        if (result == null)
             return model;
+       
         try {
-            for(CompleteReleaseVO vo : result) {
-                TableDataRow analysis = new TableDataRow();
-                analysis.cells.add(new TableDataCell(vo.getAccession()));
-                analysis.cells.add(new TableDataCell(vo.getTest()));
-                analysis.cells.add(new TableDataCell(vo.getMethod()));
-                analysis.cells.add(new TableDataCell(vo.getAnalysisStatus()));
-                analysis.cells.add(new TableDataCell(vo.getSpecimenStatus()));
-                analysis.data = vo;
-                model.add(analysis);    
+            for (SampleDataBundle bundle : result) {
+                sampleMan = bundle.getSampleManager();
+                sampleDO = sampleMan.getSample();
+                anDO = sampleMan.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).getAnalysisAt(bundle.getAnalysisIndex());
+                analysis = new TableDataRow();
+                
+                analysis.cells.add(new TableDataCell(sampleDO.getAccessionNumber()));
+                analysis.cells.add(new TableDataCell(anDO.getTestName()));
+                analysis.cells.add(new TableDataCell(anDO.getMethodName()));
+                analysis.cells.add(new TableDataCell(anDO.getStatusId()));
+                analysis.cells.add(new TableDataCell(sampleDO.getStatusId()));
+                analysis.data = bundle;
+                model.add(analysis);
             }
-            
-        }catch(Exception e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            Window.alert("getModel: " + e.getMessage());
         }
+                
         return model;
     }
-    
-    private boolean canEdit(){
-        return (!sampleReleasedId.equals(manager.getSample().getStatusId()));
+
+    private boolean canEdit() {
+        return ( !sampleReleasedId.equals(manager.getSample().getStatusId()));
     }
-    
+
     protected void query() {
-		manager = SampleManager.getInstance();
-		manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
-		dataBundle = null;
-		
-		showTabs(Tabs.BLANK);
-		setState(Screen.State.QUERY);
-		DataChangeEvent.fire(this);
-        
-		// clear all the tabs
-		sampleTab.draw();
-		environmentalTab.draw();
-		wellTab.draw();
-		sdwisTab.draw();
+        manager = SampleManager.getInstance();
+        manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
+        dataBundle = null;
+
+        showTabs(Tabs.BLANK);
+        setState(Screen.State.QUERY);
+        DataChangeEvent.fire(this);
+
+        // clear all the tabs
+        sampleTab.draw();
+        environmentalTab.draw();
+        wellTab.draw();
+        sdwisTab.draw();
         sampleItemTab.draw();
         analysisTab.draw();
         testResultsTab.draw();
@@ -844,25 +768,28 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
         qaEventsTab.draw();
         auxDataTab.draw();
 
-        completeReleaseTable.select(0,0);
-		window.setDone(consts.get("enterFieldsToQuery"));
+        completeReleaseTable.select(0, 0);
+        window.setDone(consts.get("enterFieldsToQuery"));
     }
 
     protected void update() {
-        if(completeReleaseTable.getSelections().size() > 1){
+        if (completeReleaseTable.getSelections().size() > 1) {
             window.setError(consts.get("cantUpdateMultiple"));
             return;
         }
-            
+
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
             manager = manager.fetchForUpdate();
-            historyUtility.setManager(manager);
+            
+            //update row data
+            updateSelectedTableRow();
+            
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
             window.clearStatus();
-            
+
         } catch (EntityLockedException e) {
             window.clearStatus();
             Window.alert(e.getMessage());
@@ -874,7 +801,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
     protected void commit() {
         setFocus(null);
 
-        if ( !validate()){
+        if ( !validate()) {
             window.setError(consts.get("correctErrors"));
             return;
         }
@@ -889,7 +816,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
             qd.type = QueryData.Type.STRING;
             query.setFields(qd);
             executeQuery(query);
-            
+
         } else if (state == State.UPDATE) {
             window.setBusy(consts.get("updating"));
             try {
@@ -902,18 +829,18 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
                 window.clearStatus();
             } catch (ValidationErrorsList e) {
                 showErrors(e);
-                
-                if(!e.hasErrors() && e.hasWarnings())
+
+                if ( !e.hasErrors() && e.hasWarnings())
                     showWarningsDialog(e);
             } catch (Exception e) {
                 Window.alert("commitUpdate(): " + e.getMessage());
             }
         }
     }
-    
+
     protected void commitWithWarnings() {
         clearErrors();
-        
+
         manager.getSample().setStatusId(sampleErrorStatusId);
 
         if (state == State.UPDATE) {
@@ -930,109 +857,160 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
             }
         }
     }
-    
+
     public void abort() {
         clearErrors();
         window.setBusy(consts.get("cancelChanges"));
-        
+
         if (state == State.QUERY) {
-        	String domain = manager.getSample().getDomain();
+            String domain = manager.getSample().getDomain();
             manager = SampleManager.getInstance();
             manager.getSample().setDomain(domain);
             historyUtility.setManager(manager);
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
             window.setDone(consts.get("queryAborted"));
-        }
-        else if (state == State.UPDATE) {
-            
+        } else if (state == State.UPDATE) {
+
             try {
                 manager = manager.abortUpdate();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
-            
+
             } catch (Exception e) {
                 Window.alert(e.getMessage());
                 window.clearStatus();
             }
 
-        }else{
+        } else {
             window.clearStatus();
         }
     }
-    
+
     private void resetScreen() {
-    	if(completeReleaseTable.getSelections().size() > 1)
+        boolean showingDomainTab;
+        
+        showingDomainTab = (tab == Tabs.ENVIRONMENT || tab == Tabs.PRIVATE_WELL || tab == Tabs.SDWIS);
+        
+        if (completeReleaseTable.getSelections().size() > 1) {
             showTabs(Tabs.BLANK);
         
-        else if(manager.getSample().getDomain().equals(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG))
-        	showTabs(Tabs.SAMPLE,Tabs.ENVIRONMENT,Tabs.SAMPLE_ITEM,Tabs.ANALYSIS,Tabs.TEST_RESULT,Tabs.ANALYSIS_NOTES,Tabs.SAMPLE_NOTES,Tabs.STORAGE,Tabs.QA_EVENTS,Tabs.AUX_DATA);
-        
-        else if(manager.getSample().getDomain().equals(SampleManager.WELL_DOMAIN_FLAG))
-        	showTabs(Tabs.SAMPLE,Tabs.PRIVATE_WELL,Tabs.SAMPLE_ITEM,Tabs.ANALYSIS,Tabs.TEST_RESULT,Tabs.ANALYSIS_NOTES,Tabs.SAMPLE_NOTES,Tabs.STORAGE,Tabs.QA_EVENTS,Tabs.AUX_DATA);
-        
-        else if(manager.getSample().getDomain().equals(SampleManager.SDWIS_DOMAIN_FLAG))
-        	showTabs(Tabs.SAMPLE,Tabs.SDWIS,Tabs.SAMPLE_ITEM,Tabs.ANALYSIS,Tabs.TEST_RESULT,Tabs.ANALYSIS_NOTES,Tabs.SAMPLE_NOTES,Tabs.STORAGE,Tabs.QA_EVENTS,Tabs.AUX_DATA);
+        } else if (manager.getSample().getDomain().equals(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG)) {
+            if(showingDomainTab)
+                tab = Tabs.ENVIRONMENT;
+            
+            showTabs(Tabs.SAMPLE, Tabs.ENVIRONMENT, Tabs.SAMPLE_ITEM, Tabs.ANALYSIS,
+                     Tabs.TEST_RESULT, Tabs.ANALYSIS_NOTES, Tabs.SAMPLE_NOTES, Tabs.STORAGE,
+                     Tabs.QA_EVENTS, Tabs.AUX_DATA);
+
+        } else if (manager.getSample().getDomain().equals(SampleManager.WELL_DOMAIN_FLAG)) {
+            if(showingDomainTab)
+                tab = Tabs.PRIVATE_WELL;
+            
+            showTabs(Tabs.SAMPLE, Tabs.PRIVATE_WELL, Tabs.SAMPLE_ITEM, Tabs.ANALYSIS,
+                     Tabs.TEST_RESULT, Tabs.ANALYSIS_NOTES, Tabs.SAMPLE_NOTES, Tabs.STORAGE,
+                     Tabs.QA_EVENTS, Tabs.AUX_DATA);
+
+       } else if (manager.getSample().getDomain().equals(SampleManager.SDWIS_DOMAIN_FLAG)) {
+           if(showingDomainTab)
+               tab = Tabs.SDWIS;
+           
+            showTabs(Tabs.SAMPLE, Tabs.SDWIS, Tabs.SAMPLE_ITEM, Tabs.ANALYSIS, Tabs.TEST_RESULT,
+                     Tabs.ANALYSIS_NOTES, Tabs.SAMPLE_NOTES, Tabs.STORAGE, Tabs.QA_EVENTS,
+                     Tabs.AUX_DATA);
+       }
 
         DataChangeEvent.fire(this);
         window.clearStatus();
     }
-    
-    
-    private SampleDataBundle getSampleItemBundle(Integer id) throws Exception{
-    	SampleItemManager siManager = manager.getSampleItems();
-    	int index = -1;
-    	for(int i = 0; i < siManager.count(); i++) {
-    		if(siManager.getSampleItemAt(i).getId().equals(id)){
-    			index = i; 
-    			break;
-    		}
-    	}
-    	if(index < -1)
-    		return null;
-    	return siManager.getBundleAt(index);
+
+    private SampleDataBundle getSampleItemBundle(Integer id) throws Exception {
+        SampleItemManager siManager = manager.getSampleItems();
+        int index = -1;
+        for (int i = 0; i < siManager.count(); i++ ) {
+            if (siManager.getSampleItemAt(i).getId().equals(id)) {
+                index = i;
+                break;
+            }
+        }
+        if (index < -1)
+            return null;
+        return siManager.getBundleAt(index);
     }
-    
+
     private SampleDataBundle getAnalysisBundle(Integer id) throws Exception {
-    	SampleItemManager siManager = manager.getSampleItems();
-    	int sindex = -1;
-    	int aindex = -1;
-    	for(int i = 0; i < siManager.count(); i++) {
-    		for(int j = 0; j < siManager.getAnalysisAt(i).count(); j++){
-    			if(siManager.getAnalysisAt(i).getAnalysisAt(j).getId().equals(id)){
-    				sindex = i;
-    				aindex = j;
-    				break;
-    			}
-    		}
-    	}
-    	if(sindex < -1)
-    		return null;
-    	return siManager.getAnalysisAt(sindex).getBundleAt(aindex);
+        SampleItemManager siManager = manager.getSampleItems();
+        int sindex = -1;
+        int aindex = -1;
+        for (int i = 0; i < siManager.count(); i++ ) {
+            for (int j = 0; j < siManager.getAnalysisAt(i).count(); j++ ) {
+                if (siManager.getAnalysisAt(i).getAnalysisAt(j).getId().equals(id)) {
+                    sindex = i;
+                    aindex = j;
+                    break;
+                }
+            }
+        }
+        if (sindex < -1)
+            return null;
+        return siManager.getAnalysisAt(sindex).getBundleAt(aindex);
+    }
+
+    private void updateSelectedTableRow(){
+        int index, itemIndex, anIndex;
+        TableDataRow row;
+        Integer analysisId;
+        SampleDO sampleDO;
+        AnalysisViewDO anDO;
+        SampleDataBundle oldBundle, bundle;
+        
+        try{
+            index = completeReleaseTable.getSelectedRow();
+            row = completeReleaseTable.getRow(index);
+            oldBundle = (SampleDataBundle)row.data;
+            itemIndex = oldBundle.getSampleItemIndex();
+            anIndex = oldBundle.getAnalysisIndex();
+            analysisId = oldBundle.getSampleManager().getSampleItems().getAnalysisAt(itemIndex).getAnalysisAt(anIndex).getId();
+            
+            if(analysisId.equals(manager.getSampleItems().getAnalysisAt(itemIndex).getAnalysisAt(anIndex).getId()))
+                bundle = manager.getSampleItems().getAnalysisAt(itemIndex).getBundleAt(anIndex);
+            else
+                bundle = getAnalysisBundle(analysisId);
+            
+            row.data = bundle;
+            dataBundle = bundle;
+            
+            //get the DOs from the new bundle
+            itemIndex = bundle.getSampleItemIndex();
+            anIndex = bundle.getAnalysisIndex();
+            sampleDO = bundle.getSampleManager().getSample();
+            anDO = bundle.getSampleManager().getSampleItems().getAnalysisAt(itemIndex).getAnalysisAt(anIndex);
+            
+            updateTableRow(index, sampleDO, anDO);
+        }catch(Exception e){
+            Window.alert("updateSelectedTableRow: " + e.getMessage());
+        }
     }
     
-    private void initializeDropdowns(){
+    private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         window.clearStatus();
-    
-        //preload dictionary models and single entries, close the window if an error is found 
-        try{
-            analysisLoggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
+
+        // preload dictionary models and single entries, close the window if an
+        // error is found
+        try {
             sampleLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
             sampleErrorStatusId = DictionaryCache.getIdFromSystemName("sample_error");
-            analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
-            analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
-            analysisInPrep = DictionaryCache.getIdFromSystemName("analysis_inprep");
             sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
-        
-        }catch(Exception e){
+
+        } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
         }
-        
-        //sample status dropdown
+
+        // sample status dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("sample_status"))
@@ -1040,7 +1018,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
 
         ((Dropdown<Integer>)def.getWidget(SampleMeta.getStatusId())).setModel(model);
         ((Dropdown<Integer>)completeReleaseTable.getColumnWidget(SampleMeta.getStatusId())).setModel(model);
-        
+
         // analysis status dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
@@ -1048,23 +1026,23 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
         ((Dropdown<Integer>)completeReleaseTable.getColumnWidget(SampleMeta.getAnalysisStatusId())).setModel(model);
-        
+
     }
-    
+
     private void drawTabs() {
         switch (tab) {
-        	case ENVIRONMENT:
-        		environmentalTab.draw();
-        		break;
-        	case PRIVATE_WELL:
-        		wellTab.draw();
-        		break;
-        	case SDWIS:
-        		sdwisTab.draw();
-        		break;
-        	case SAMPLE :
-        		sampleTab.draw();
-        		break;
+            case ENVIRONMENT:
+                environmentalTab.draw();
+                break;
+            case PRIVATE_WELL:
+                wellTab.draw();
+                break;
+            case SDWIS:
+                sdwisTab.draw();
+                break;
+            case SAMPLE:
+                sampleTab.draw();
+                break;
             case SAMPLE_ITEM:
                 sampleItemTab.draw();
                 break;
@@ -1091,145 +1069,157 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
                 break;
         }
     }
-    
+
     private void showTabs(Tabs... tabs) {
-    	List<Tabs> tabList = Arrays.asList(tabs);
+        List<Tabs> tabList = Arrays.asList(tabs);
 
-    	for(Tabs tab : Tabs.values()) {
-   			sampleContent.setTabVisible(tab.ordinal(),tabList.contains(tab));
-    	}
-    	
-    	if(tabs[0] == Tabs.BLANK){
-    		sampleContent.selectTab(tabs[0].ordinal());
-    		sampleContent.getTabBar().setStyleName("None");
-    	}else{
-    		sampleContent.selectTab(tabs[0].ordinal());
-    		sampleContent.getTabBar().setStyleName("gwt-TabBar");
-    	}
+        for (Tabs tab : Tabs.values()) {
+            sampleContent.setTabVisible(tab.ordinal(), tabList.contains(tab));
+        }
+
+        if (tabs[0] == Tabs.BLANK) {
+            sampleContent.selectTab(tabs[0].ordinal());
+            sampleContent.getTabBar().setStyleName("None");
+        } else {
+            if(tab == Tabs.BLANK)
+                sampleContent.selectTab(tabs[0].ordinal());
+            else
+                sampleContent.selectTab(tab.ordinal());
+            sampleContent.getTabBar().setStyleName("gwt-TabBar");
+        }
     }
-    
+
     private void doReport() {
-		Request req = service.call("doFinalReport", new AsyncCallback<ReportProgress>() {
-			public void onSuccess(final ReportProgress rp) {
-				window.setDone("Done");
-				window.setProgress(0);
-				DeferredCommand.addCommand(new Command() {
-					public void execute() {
-						Window.open("Report.html?id="+rp.name, "Report", "toolbar=no,location=no,menubar=no,status=no,titlebar=no");
-					}
-				});
-			    
-			}
-			
-			public void onFailure(Throwable caught) {
-				Window.alert(caught.getMessage());
-			}
-		});
-		getProgress(req);
+        Request req = service.call("doFinalReport", new AsyncCallback<ReportProgress>() {
+            public void onSuccess(final ReportProgress rp) {
+                window.setDone("Done");
+                window.setProgress(0);
+                DeferredCommand.addCommand(new Command() {
+                    public void execute() {
+                        Window.open("Report.html?id=" + rp.name, "Report",
+                                    "toolbar=no,location=no,menubar=no,status=no,titlebar=no");
+                    }
+                });
 
-	}
-    
-	public void getProgress(final Request req) {
-		if(!req.isPending()){
-			window.setDone("Done");
-			window.setProgress(0);
-			return;
-		}
-		service.call("getProgress", new AsyncCallback<ReportProgress>() {
-			public void onSuccess(ReportProgress fp) {
-				window.setBusy("Generating Report...");
-				window.setProgress(fp.generated);
-				Timer timer = new Timer() {
-					public void run() {
-						getProgress(req);
-					}
-				};
-				timer.schedule(500);
-			}	
-			
-			public void onFailure(Throwable caught) {
-				Window.alert(caught.getMessage());
-			}
-		});
-	}
+            }
 
-	public HandlerRegistration addActionHandler(ActionHandler handler) {
-		return addHandler(handler,ActionEvent.getType());
-	}
-	
-	private void release() {
-		int[] rows;
-		int index;
-		TableDataRow row;
-		HashMap<Integer, String> lockList;
-		LocalizedException ex;
-		SampleDataBundle bundle;
-		SampleManager man;
-		
-		rows = completeReleaseTable.getSelectedRows();
-		ex = new LocalizedException("releaseMultipleWarning", String.valueOf(rows.length));
-		
-		if(rows.length > 1 && !Window.confirm(ex.getMessage()))
-		    return;
-		    
-		lockList = new HashMap<Integer, String>();
-		for(int i = 0; i < rows.length; i++) {
-		    try {
-		        index = rows[i];
-		        row = completeReleaseTable.getRow(index);
-		        bundle = getAnalysisBundle(((CompleteReleaseVO)row.data).getAnalysisId());
-		        man = bundle.getSampleManager();
-		    
-			    //lock if not in hash
-			    if(lockList.get(man.getSample().getId()) == null){
-			        man = man.fetchForUpdate();
-			        lockList.put(man.getSample().getId(), "");
-			    }
-			    			    
-			    //release
-			    man.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).releaseAnalyssisAt(bundle.getAnalysisIndex());
-			    
-			    //update table row
-			    updateTableRow(index, man.getSample(), man.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).getAnalysisAt(bundle.getAnalysisIndex()));
-				
-			} catch (EntityLockedException e) {
-	             //if unable to lock stop loop and error
-	            window.clearStatus();
-	            Window.alert(e.getMessage());
-	            break;
-			}catch(Exception e) {
-			  //FIXME if unable keep error
-				if(e instanceof ValidationErrorsList)
-					showErrors((ValidationErrorsList)e);
-				else
-					Window.alert(e.getMessage());
-			}
-		}
-		
-		//loop through hash and unlock records
-		
-	}
-	
-	private void complete() {
-		ArrayList<TableDataRow> rows = completeReleaseTable.getSelections();
-		for(int i = 0; i < rows.size(); i++) {
-			try {
-				SampleDataBundle bundle = getAnalysisBundle(((CompleteReleaseVO)rows.get(i).data).getAnalysisId());
-				bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).completeAnalysisAt(bundle.getAnalysisIndex());
-			}catch(Exception e) {
-				if(e instanceof ValidationErrorsList)
-					showErrors((ValidationErrorsList)e);
-				else
-					Window.alert(e.getMessage());
-			}
-		}
-	}
-	
-	private void updateTableRow(int row, SampleDO sampleDO, AnalysisViewDO anDO){
-	    completeReleaseTable.setCell(row, 0, sampleDO.getAccessionNumber());
-	    completeReleaseTable.setCell(row, 1, anDO.getTestName());
-	    completeReleaseTable.setCell(row, 2, anDO.getMethodName());
-	    completeReleaseTable.setCell(row, 3, anDO.getStatusId());
-	    completeReleaseTable.setCell(row, 4, sampleDO.getStatusId());
-	}
+            public void onFailure(Throwable caught) {
+                Window.alert(caught.getMessage());
+            }
+        });
+        getProgress(req);
+
+    }
+
+    public void getProgress(final Request req) {
+        if ( !req.isPending()) {
+            window.setDone("Done");
+            window.setProgress(0);
+            return;
+        }
+        service.call("getProgress", new AsyncCallback<ReportProgress>() {
+            public void onSuccess(ReportProgress fp) {
+                window.setBusy("Generating Report...");
+                window.setProgress(fp.generated);
+                Timer timer = new Timer() {
+                    public void run() {
+                        getProgress(req);
+                    }
+                };
+                timer.schedule(500);
+            }
+
+            public void onFailure(Throwable caught) {
+                Window.alert(caught.getMessage());
+            }
+        });
+    }
+
+    public HandlerRegistration addActionHandler(ActionHandler handler) {
+        return addHandler(handler, ActionEvent.getType());
+    }
+
+    private void release() {
+        int[] rows;
+        int index;
+        TableDataRow row;
+        HashMap<Integer, String> lockList;
+        LocalizedException ex;
+        SampleDataBundle bundle;
+        SampleManager man;
+
+        rows = completeReleaseTable.getSelectedRows();
+        ex = new LocalizedException("releaseMultipleWarning", String.valueOf(rows.length));
+
+        if (rows.length > 1 && !Window.confirm(ex.getMessage()))
+            return;
+
+        lockList = new HashMap<Integer, String>();
+        for (int i = 0; i < rows.length; i++ ) {
+            try {
+                index = rows[i];
+                row = completeReleaseTable.getRow(index);
+                bundle = getAnalysisBundle( ((CompleteReleaseVO)row.data).getAnalysisId());
+                man = bundle.getSampleManager();
+
+                // lock if not in hash
+                if (lockList.get(man.getSample().getId()) == null) {
+                    man = man.fetchForUpdate();
+                    lockList.put(man.getSample().getId(), "");
+                }
+
+                // release
+                man.getSampleItems()
+                   .getAnalysisAt(bundle.getSampleItemIndex())
+                   .releaseAnalyssisAt(bundle.getAnalysisIndex());
+
+                // update table row
+                updateTableRow(index, man.getSample(),
+                               man.getSampleItems()
+                                  .getAnalysisAt(bundle.getSampleItemIndex())
+                                  .getAnalysisAt(bundle.getAnalysisIndex()));
+
+            } catch (EntityLockedException e) {
+                // if unable to lock stop loop and error
+                window.clearStatus();
+                Window.alert(e.getMessage());
+                break;
+            } catch (Exception e) {
+                // FIXME if unable keep error
+                if (e instanceof ValidationErrorsList)
+                    showErrors((ValidationErrorsList)e);
+                else
+                    Window.alert(e.getMessage());
+            }
+        }
+
+        // loop through hash and unlock records
+
+    }
+
+    private void complete() {
+        ArrayList<TableDataRow> rows = completeReleaseTable.getSelections();
+        for (int i = 0; i < rows.size(); i++ ) {
+            try {
+                SampleDataBundle bundle = getAnalysisBundle( ((CompleteReleaseVO)rows.get(i).data).getAnalysisId());
+                bundle.getSampleManager()
+                      .getSampleItems()
+                      .getAnalysisAt(bundle.getSampleItemIndex())
+                      .completeAnalysisAt(bundle.getAnalysisIndex());
+            } catch (Exception e) {
+                if (e instanceof ValidationErrorsList)
+                    showErrors((ValidationErrorsList)e);
+                else
+                    Window.alert(e.getMessage());
+            }
+        }
+    }
+
+    private void updateTableRow(int row, SampleDO sampleDO, AnalysisViewDO anDO) {
+        completeReleaseTable.setCell(row, 0, sampleDO.getAccessionNumber());
+        completeReleaseTable.setCell(row, 1, anDO.getTestName());
+        completeReleaseTable.setCell(row, 2, anDO.getMethodName());
+        completeReleaseTable.setCell(row, 3, anDO.getStatusId());
+        completeReleaseTable.setCell(row, 4, sampleDO.getStatusId());
+    }
 }
