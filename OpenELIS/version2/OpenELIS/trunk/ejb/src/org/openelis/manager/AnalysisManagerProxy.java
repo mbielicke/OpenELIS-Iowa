@@ -88,7 +88,7 @@ public class AnalysisManagerProxy {
                     analysisDO.setPreAnalysisId(prepId);
                     
                     //make sure parent analysis id isnt negative
-                    if(analysisDO.getParentAnalysisId() > 0){
+                    if(analysisDO.getParentAnalysisId() == null || (analysisDO.getParentAnalysisId() != null && analysisDO.getParentAnalysisId() > 0)) { 
                         add(man, analysisDO, i);
                     
                         if(idHash.containsKey(oldId))
@@ -172,7 +172,7 @@ public class AnalysisManagerProxy {
                     analysisDO.setPreAnalysisId(prepId);
                     
                     //make sure parent analysis id isnt negative
-                    if(analysisDO.getParentAnalysisId() > 0){
+                    if(analysisDO.getParentAnalysisId() == null || (analysisDO.getParentAnalysisId() != null && analysisDO.getParentAnalysisId() > 0)) {
                         if(oldId != null && oldId > 0)
                             update(man, analysisDO, i);
                         else
