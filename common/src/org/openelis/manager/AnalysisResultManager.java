@@ -7,6 +7,7 @@ import java.util.HashMap;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.TestAnalyteDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.gwt.common.RPC;
@@ -183,6 +184,24 @@ public class AnalysisResultManager implements RPC {
 
     public void setTestAnalyteList(HashMap<Integer, TestAnalyteListItem> testAnalyteList) {
         this.testAnalyteList = testAnalyteList;
+    }
+    
+    public TestAnalyteViewDO getTestAnalyte(Integer rowGroup, Integer testAnalyteId) {
+        TestAnalyteViewDO returnDO, tmpDO;
+        ArrayList<TestAnalyteViewDO> anList;
+        
+        returnDO = null;
+        anList = testAnalyteList.get(rowGroup).testAnalytes;
+        for(int i=0; i<anList.size(); i++){
+            tmpDO = anList.get(i);
+            
+            if(testAnalyteId.equals(tmpDO.getId())){
+                returnDO = tmpDO;
+                break;
+            }
+        }
+        
+        return returnDO;
     }
 
     public HashMap<Integer, TestResultDO> getTestResultList() {
