@@ -30,7 +30,9 @@ import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.TestAnalyteDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
@@ -64,6 +66,7 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.SampleDataBundle;
+import org.openelis.manager.AnalysisResultManager.TestAnalyteListItem;
 import org.openelis.modules.test.client.TestAnalyteDisplayManager;
 
 import com.google.gwt.core.client.GWT;
@@ -186,10 +189,11 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
         testResultsTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                int r, c;
+                int r, c, manRow;
                 TableDataRow row;
                 boolean isHeaderRow = false, enableButton = true;
                 ResultViewDO resultDO;
+                TestAnalyteViewDO testAnalyte;
 
                 r = event.getRow();
                 c = event.getCol();
@@ -201,9 +205,12 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                     resultDO = displayManager.getObjectAt(r, 0);
                 else if (c != 1)
                     resultDO = displayManager.getObjectAt(r, c - 2);
+                
+                manRow = displayManager.getIndexAt(r);
+                testAnalyte = manager.getTestAnalyte(resultDO.getRowGroup(), resultDO.getTestAnalyteId());
 
                 if (isHeaderRow || c == 1 || c >= displayManager.columnCount(r) ||
-                    testAnalyteReadOnlyId.equals(resultDO.getTypeId())) {
+                    testAnalyteReadOnlyId.equals(testAnalyte.getTypeId())) {
                     event.cancel();
                     enableButton = false;
                 }
