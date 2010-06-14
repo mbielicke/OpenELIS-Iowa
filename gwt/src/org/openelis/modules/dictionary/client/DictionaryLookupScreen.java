@@ -122,18 +122,9 @@ public class DictionaryLookupScreen extends Screen implements
 
         dictEntTable = (TableWidget)def.getWidget("dictEntTable");
         addScreenHandler(dictEntTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
-
             public void onStateChange(StateChangeEvent<State> event) {
                 dictEntTable.enable(true);
-
             }
-        });
-
-        dictEntTable.addSelectionHandler(new SelectionHandler() {
-            public void onSelection(SelectionEvent event) {
-                selectionList = dictEntTable.getSelections();
-            }
-
         });
 
         okButton = (AppButton)def.getWidget("ok");
@@ -181,6 +172,7 @@ public class DictionaryLookupScreen extends Screen implements
         
         list = null;
         
+        selectionList = dictEntTable.getSelections();
         if(selectionList != null) {
             list = new ArrayList<IdNameVO>();
             for(TableDataRow row: selectionList)

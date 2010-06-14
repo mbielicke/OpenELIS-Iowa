@@ -1205,6 +1205,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
         dictionaryLookUpButton = (AppButton)def.getWidget("dictionaryLookUpButton");
         addScreenHandler(dictionaryLookUpButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                resultTable.finishEditing();
                 showDictionary(null, null);
             }
 
@@ -1289,8 +1290,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
         }
     }
 
-    public void onBeforeGetMatches(BeforeGetMatchesEvent event) {
-
+    public void onBeforeGetMatches(BeforeGetMatchesEvent event) {        
     }
 
     public void showTestAnalyteError(GridFieldErrorException error) {
@@ -2077,6 +2077,10 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                                 return;
                             }
 
+                            //
+                            // set the first dictionary value in the row that was
+                            // selected when the lookup screen was brought up 
+                            // 
                             entry = list.get(0);
                             data = testResultManager.getResultAt(selTab + 1, r);
                             data.setValue(entry.getId().toString());
@@ -2086,6 +2090,24 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                             resultTable.setCell(r, 2, data.getDictionary());
                             resultTable.clearCellExceptions(r, 2);
                             clearResultCellError(selTab, r, TestMeta.getResultValue());
+                            ActionEvent.fire(screen, Action.RESULT_CHANGED, data);
+                            
+                            //
+                            // set the rest of the dictionary values in newly 
+                            // added rows at the end of the table 
+                            //                           
+                            for (int i = 1; i < list.size(); i++ ) {
+                                resultTable.addRow();
+                                entry = list.get(i);
+                                r = resultTable.numRows() - 1;
+                                data = testResultManager.getResultAt(selTab + 1, r);
+                                data.setValue(entry.getId().toString());
+                                data.setDictionary(entry.getName());
+                                data.setTypeId(typeDict);
+                                resultTable.setCell(r, 1, typeDict);
+                                resultTable.setCell(r, 2, data.getDictionary());
+                            }
+                           
                         }
                     }
                 }

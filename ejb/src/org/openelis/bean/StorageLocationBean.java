@@ -93,9 +93,18 @@ public class StorageLocationBean implements StorageLocationRemote, StorageLocati
 
         return DataBaseUtil.toArrayList(list);
     }
-
-    public ArrayList<StorageLocationViewDO> fetchByName(String name) {
+    
+    public ArrayList<StorageLocationViewDO> fetchAvailableByName(String name, int max) throws Exception{
         Query query = null;
+        query = manager.createNamedQuery("StorageLocation.FetchAvailableByName");
+        query.setParameter("name",name);
+        query.setMaxResults(max);
+    
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    public ArrayList<StorageLocationViewDO> fetchByName(String name) throws Exception {
+        Query query;
         query = manager.createNamedQuery("StorageLocation.FetchByName");
         query.setParameter("name", name);
         return DataBaseUtil.toArrayList(query.getResultList());
@@ -244,14 +253,6 @@ public class StorageLocationBean implements StorageLocationRemote, StorageLocati
             throw list;
         }
     }
-    
-    public ArrayList<StorageLocationViewDO> fetchAvailableByName(String name, int max) throws Exception{
-        Query query = null;
-        query = manager.createNamedQuery("StorageLocation.FetchAvailableByName");
-        query.setParameter("name",name);
-        query.setMaxResults(max);
-    
-        return DataBaseUtil.toArrayList(query.getResultList());
-    }
+
 
 }

@@ -66,7 +66,7 @@ UIRF Software License are applicable instead of those above.
                 </row>
               </TablePanel>
               <VerticalPanel>
-                <VerticalPanel height="28px" />
+                <VerticalPanel height="28" />
                 <widget halign="center">
                   <appButton key="findButton" style="Button" action="find">
                     <HorizontalPanel>

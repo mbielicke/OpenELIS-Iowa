@@ -93,7 +93,7 @@ public class ProviderLocationDO extends DataObject {
         _changed = true;
     }
 
-    public AddressDO getAddressDO() {
+    public AddressDO getAddress() {
         return addressDO;
     }
 }

@@ -12,6 +12,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.AddressDO;
 import org.openelis.domain.ProviderLocationDO;
 import org.openelis.entity.ProviderLocation;
 import org.openelis.gwt.common.FieldErrorException;
@@ -54,9 +55,9 @@ public class ProviderLocationBean implements ProviderLocationLocal {
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        addressBean.add(data.getAddressDO());
+        addressBean.add(data.getAddress());
         entity = new ProviderLocation();
-        entity.setAddressId(data.getAddressDO().getId());
+        entity.setAddressId(data.getAddress().getId());
         entity.setLocation(data.getLocation());
         entity.setExternalId(data.getExternalId());
         entity.setProviderId(data.getProviderId());
@@ -69,16 +70,21 @@ public class ProviderLocationBean implements ProviderLocationLocal {
 
     public ProviderLocationDO update(ProviderLocationDO data) throws Exception {
         ProviderLocation entity;
+        AddressDO address;
 
-        if ( !data.isChanged())
-            return data;
+        if (data.isChanged()) {
+            manager.setFlushMode(FlushModeType.COMMIT);            
+            entity = manager.find(ProviderLocation.class, data.getId());
+            entity.setLocation(data.getLocation());
+            entity.setExternalId(data.getExternalId());
 
-        manager.setFlushMode(FlushModeType.COMMIT);
-        addressBean.update(data.getAddressDO());
-        entity = manager.find(ProviderLocation.class, data.getId());
-        entity.setLocation(data.getLocation());
-        entity.setExternalId(data.getExternalId());
-
+            if (data.getAddress().getId() == null) {
+                address = addressBean.add(data.getAddress());
+                entity.setAddressId(address.getId());
+            } else {
+                addressBean.update(data.getAddress());
+            }
+        }
         return data;
     }
 
@@ -88,7 +94,7 @@ public class ProviderLocationBean implements ProviderLocationLocal {
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(ProviderLocation.class, data.getId());
         if (entity != null) {
-            addressBean.delete(data.getAddressDO());
+            addressBean.delete(data.getAddress());
             manager.remove(entity);
         }
     }
