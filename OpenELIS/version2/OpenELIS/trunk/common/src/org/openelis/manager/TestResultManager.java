@@ -108,15 +108,17 @@ public class TestResultManager implements RPC {
      * by the argument "group" and sets the id of the DO to the argument "id".
      * The argument "group" is an index that begins at one. 
      */
-    public void addResult(int group,Integer id) {
+    public TestResultViewDO addResult(int group,Integer id) {
         TestResultViewDO result;
         if(results == null || group <= 0 || group-1 >= results.size())
-            return;
+            return null;
    
         result = new TestResultViewDO();
         result.setId(id);
         result.setResultGroup(group);
         results.get(group-1).add(result);
+        
+        return result;
     }
     
     /**
@@ -124,22 +126,23 @@ public class TestResultManager implements RPC {
      * by the argument "group" and sets the id of the DO to the argument "id".
      * The argument "group" is an index that begins at one. 
      */
-    public void addResultAt(int group,int row,Integer id) {
+    public TestResultViewDO addResultAt(int group,int row,Integer id) {
         ArrayList<TestResultViewDO> list;
         TestResultViewDO result;
         
         if(row < 0 || results == null || group <= 0 || group-1 >= results.size())
-            return;
+            return null;
         
         list = results.get(group-1);
         result = new TestResultViewDO();
         result.setId(id);
         result.setResultGroup(group);
-        if (row < list.size()) {        
+        if (row < list.size())         
             list.add(row, result);
-        } else {
-            list.add(result);
-        }            
+        else 
+            list.add(result);                   
+        
+        return result;
     }
     
     public void addResultGroup() {        
@@ -149,26 +152,28 @@ public class TestResultManager implements RPC {
         results.add(new ArrayList<TestResultViewDO>());
     }
     
-    public void removeResultAt(int group, int row) {
+    public TestResultViewDO removeResultAt(int group, int row) {
         ArrayList<TestResultViewDO> list;
-        TestResultViewDO testResult;
+        TestResultViewDO result;
         
         if(row < 0 || results == null || group <= 0 || group-1 >= results.size())
-            return;
+            return null;
         
         list = results.get(group-1);
         
         if(row >= list.size())
-            return;
+            return null;
         
-        testResult = list.remove(row);
+        result = list.remove(row);
         
-        if(testResult.getId() > 0) {
+        if(result.getId() > 0) {
             if(deletedResults == null)
                 deletedResults = new ArrayList<TestResultViewDO>();
             
-            deletedResults.add(testResult);
+            deletedResults.add(result);
         }
+        
+        return result;
     }
     
     public void removeResultGroup(int group) {

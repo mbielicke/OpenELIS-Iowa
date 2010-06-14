@@ -39,6 +39,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.AddressDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationViewDO;
@@ -171,17 +172,21 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
 
     public OrganizationViewDO update(OrganizationViewDO data) throws Exception {
         Organization entity;
+        AddressDO address;
         
-        if (!data.isChanged())
-            return data;
-        
-        manager.setFlushMode(FlushModeType.COMMIT);
-        addressBean.update(data.getAddress());
-        entity = manager.find(Organization.class, data.getId());
-        entity.setIsActive(data.getIsActive());
-        entity.setName(data.getName());
-        entity.setParentOrganizationId(data.getParentOrganizationId());
-
+        if (data.isChanged()) {                   
+            manager.setFlushMode(FlushModeType.COMMIT);
+            entity = manager.find(Organization.class, data.getId());
+            entity.setIsActive(data.getIsActive());
+            entity.setName(data.getName());
+            entity.setParentOrganizationId(data.getParentOrganizationId());
+            if(data.getAddress().getId() == null) {
+               address = addressBean.add(data.getAddress());
+               entity.setAddressId(address.getId());               
+            } else {
+                addressBean.update(data.getAddress());
+            }            
+        }
         return data;
     }
 

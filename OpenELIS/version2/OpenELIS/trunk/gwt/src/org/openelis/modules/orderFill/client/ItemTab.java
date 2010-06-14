@@ -457,6 +457,7 @@ public class ItemTab extends Screen {
 
                 window.setBusy();
                 try {
+                    
                     list = service.callList("fetchByLocationNameInventoryItemId", query);
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
@@ -464,7 +465,9 @@ public class ItemTab extends Screen {
                         data = list.get(i);
 
                         row.key = data.getId();
-                        row.cells.get(0).setValue(data.getStorageLocationName());
+                        row.cells.get(0).setValue(data.getStorageLocationName() +", "+ 
+                                                  data.getStorageLocationUnitDescription()+" "+
+                                                  data.getStorageLocationLocation());
                         row.cells.get(1).setValue(data.getLotNumber());
                         row.cells.get(2).setValue(data.getQuantityOnhand());
                         row.cells.get(3).setValue(data.getExpirationDate());

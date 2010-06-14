@@ -260,7 +260,7 @@ public class OrderFillScreen extends Screen {
                 r = event.getRow();
                 row = orderTable.getRow(r);
                 data = orderMap.get(row);
-                val = (String)orderTable.getCell(r, 0).getValue();
+                val = (String)orderTable.getObject(r, 0);
                 cancel = false; 
                 status = data.getStatusId();
                 type = data.getType();                                                   
@@ -326,7 +326,7 @@ public class OrderFillScreen extends Screen {
                 c = event.getCol();
 
                 if (c == 0) {
-                    val = (String)orderTable.getCell(r, c).getValue();
+                    val = (String)orderTable.getObject(r, c);
                     row = orderTable.getRow(r);
                     data = orderMap.get(row);
 
