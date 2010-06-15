@@ -47,6 +47,7 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.gwt.widget.tree.TreeWidget;
+import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
@@ -83,7 +84,7 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 
 public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
 
-    private Integer sampleLoggedInId, sampleErrorStatusId, sampleReleasedId;
+    private Integer sampleLoggedInId, sampleErrorStatusId, sampleReleasedId, analysisOnHold;
 
     public enum Tabs {
         BLANK, SAMPLE, ENVIRONMENT, PRIVATE_WELL, SDWIS, SAMPLE_ITEM, ANALYSIS, TEST_RESULT,
@@ -1001,6 +1002,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
             sampleLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
             sampleErrorStatusId = DictionaryCache.getIdFromSystemName("sample_error");
             sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
+            analysisOnHold = DictionaryCache.getIdFromSystemName("analysis_on_hold");
 
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -1203,6 +1205,8 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
         SampleDataBundle bundle;
         SampleManager man;
         HashMap<Integer, Item> hash;
+        AnalysisManager anMan;
+        AnalysisViewDO anDO;
         
         bundle = null;
         rows = completeReleaseTable.getSelections();
@@ -1212,7 +1216,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
         //loop through and lock sample if necessary
         for (int i = 0; i < rows.size(); i++ ) {
             row = rows.get(i);
-            //index = indexList[i];
             bundle = (SampleDataBundle)row.data;
             item = hash.get(bundle.getSampleManager().getSample().getId());
             man = bundle.getSampleManager();
@@ -1221,30 +1224,31 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
                 if(item == null){
                     man = man.fetchForUpdate();
                     item = new Item(man, 1);
-                    
                     hash.put(man.getSample().getId(), item);
-                    bundle = getCurrentRowBundle(row, man);
-                    row.data = bundle;
-                    bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).completeAnalysisAt(bundle.getAnalysisIndex());
-                    
-                } else if(item.count != -1){
-                    item.count = item.count+1;
-                    man = item.man;
-                    bundle = getCurrentRowBundle(row, man);
-                    row.data = bundle;
-                    bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).completeAnalysisAt(bundle.getAnalysisIndex());
-                    
+
+                } else if(item.getCount() != -1){
+                    item.setCount(item.getCount()+1);
+                    man = item.getSampleManager();
+
                 }
+
+                anMan = bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
+                anDO = anMan.getAnalysisAt(bundle.getAnalysisIndex());
+                if(!analysisOnHold.equals(anDO.getStatusId()) || Window.confirm(consts.get("onHoldWarning"))){
+                    bundle = getCurrentRowBundle(row, man);                
+                    row.data = bundle;
+                    bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).completeAnalysisAt(bundle.getAnalysisIndex());
+                }
+            
             } catch (EntityLockedException e) {
                 hash.put(man.getSample().getId(), new Item(man, -1));
                 Window.alert("Error with sample accession #" + man.getSample().getAccessionNumber() + ":\n\n"+e.getMessage());
             } catch (ValidationErrorsList e){
                 String errorMsg;
-                AnalysisViewDO anDO;
 
                 try{
                     anDO = man.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).getAnalysisAt(bundle.getAnalysisIndex());
-                    item.count = item.count-1;
+                    item.setCount(item.getCount()-1);
                     
                     errorMsg = "Cannot complete "+anDO.getTestName()+":"+anDO.getMethodName()+" on accession #"+man.getSample().getAccessionNumber()+":\n";
     
@@ -1268,23 +1272,21 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
             row = rows.get(j);
             bundle = (SampleDataBundle)row.data;
             item = hash.get(bundle.getSampleManager().getSample().getId());
-            Window.alert("["+item+"]  ["+item.count+"] ["+item.man+"]");
          
-                if(item != null && item.count > 0){
-                    
-                    try{
-                       // item.man.update();
-                        //item.count = -1;
-                    } catch (Exception e) {
-                        Window.alert("Error with sample accession #" + bundle.getSampleManager().getSample().getAccessionNumber() + ":\n\n"+e.getMessage());
-                    }
+            try{
+                if(item != null && item.getCount() > 0){
+                        item.getSampleManager().update();
+                        item.setCount(-1);
                 }
                 
                 //update the row
-         //       updateTableRowCells(index, 
-         //                           bundle.getSampleManager().getSample(), 
-         //                           bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).getAnalysisAt(bundle.getAnalysisIndex()));
-            
+                updateTableRowCells(index, 
+                                    bundle.getSampleManager().getSample(), 
+                                    bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).getAnalysisAt(bundle.getAnalysisIndex()));
+
+            } catch (Exception e) {
+                Window.alert("Error with sample accession #" + bundle.getSampleManager().getSample().getAccessionNumber() + ":\n\n"+e.getMessage());
+            }
 
         }
     }
@@ -1307,6 +1309,22 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
         
         public Item(SampleManager man, int count){
             this.man = man;
+            this.count = count;
+        }
+
+        public SampleManager getSampleManager() {
+            return man;
+        }
+
+        public void setSampleManager(SampleManager man) {
+            this.man = man;
+        }
+
+        public int getCount() {
+            return count;
+        }
+
+        public void setCount(int count) {
             this.count = count;
         }
     }
