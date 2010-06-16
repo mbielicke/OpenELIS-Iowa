@@ -223,6 +223,17 @@ public class AnalysisManager implements RPC {
         
         anDO  = items.get(index).analysis;
         assert anDO.getSectionId() != null : "section id is null";
+        loadDictionaryEntries();
+        
+        if(anRequeueId.equals(anDO.getStatusId())){ //make sure the status is not requeue
+            errorsList = new ValidationErrorsList();
+            errorsList.add(new FormErrorException("requeueStatusNoComplete"));
+            throw errorsList;
+        }else if(anCompletedId.equals(anDO.getStatusId())){ //make sure status is not already complete
+            errorsList = new ValidationErrorsList();
+            errorsList.add(new FormErrorException("analysisAlreadyComplete"));
+            throw errorsList;
+        }
         
         //make sure the user has complete permission for the section
         section = proxy().getSectionFromId(anDO.getSectionId());
@@ -234,16 +245,17 @@ public class AnalysisManager implements RPC {
         }
         
         //if the sample/analysis has an overriding QA event go ahead and complete the analysis
-        if(getQAEventAt(index).hasResultOverrideQA() || getSampleItemManager().getSampleManager().getQaEvents().hasResultOverrideQA()){
-            anDO.setStatusId(anCompletedId);
-            return;
-        }
-        
         //make sure all required results are filled, and all results are valid
         //this method will throw an exception if it finds and error
-        getAnalysisResultAt(index).validateForComplete(anDO);
+        if(!getQAEventAt(index).hasResultOverrideQA() && !getSampleItemManager().getSampleManager().getQaEvents().hasResultOverrideQA())
+            getAnalysisResultAt(index).validateForComplete(anDO);
         
         anDO.setStatusId(anCompletedId);
+        if(anDO.getStartedDate() == null)
+            anDO.setStartedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.DAY));
+
+        anDO.setCompletedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.DAY));
+        //FIXME add analysis user records
     }
     
     public void releaseAnalyssisAt(int index) throws Exception {
