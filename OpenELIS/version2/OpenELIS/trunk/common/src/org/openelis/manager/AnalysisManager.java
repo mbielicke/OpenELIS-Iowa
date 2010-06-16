@@ -252,10 +252,18 @@ public class AnalysisManager implements RPC {
         
         anDO.setStatusId(anCompletedId);
         if(anDO.getStartedDate() == null)
-            anDO.setStartedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.DAY));
+            anDO.setStartedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
 
-        anDO.setCompletedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.DAY));
-        //FIXME add analysis user records
+        anDO.setCompletedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
+
+        try{
+            //add an analysis user record
+            getAnalysisUserAt(index).addCompleteRecord();
+            
+        }catch(Exception e){
+            //do nothing
+        }
+        
     }
     
     public void releaseAnalyssisAt(int index) throws Exception {
@@ -269,7 +277,11 @@ public class AnalysisManager implements RPC {
         loadDictionaryEntries();
         
         //make sure the status is completed
-        if(!anCompletedId.equals(anDO.getStatusId())){
+        if(anReleasedId.equals(anDO.getStatusId())){
+            errorsList = new ValidationErrorsList();
+            errorsList.add(new FormErrorException("analysisAlreadyReleased"));
+            throw errorsList;
+        }else if(!anCompletedId.equals(anDO.getStatusId())){
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("completeStatusRequiredToRelease", anDO.getTestName(), anDO.getMethodName()));
             throw errorsList;
@@ -285,6 +297,15 @@ public class AnalysisManager implements RPC {
         }
         
         anDO.setStatusId(anReleasedId);
+        anDO.setReleasedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
+
+        try{
+            //add an analysis user record
+            getAnalysisUserAt(index).addReleaseRecord();
+            
+        }catch(Exception e){
+            //do nothing
+        }
     }
 
     public int count() {

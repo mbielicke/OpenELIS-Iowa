@@ -30,8 +30,12 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.AnalysisUserViewDO;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalysisUserLocal;
+import org.openelis.local.DictionaryLocal;
+import org.openelis.local.LoginLocal;
+import org.openelis.security.domain.SystemUserDO;
 
 public class AnalysisUserManagerProxy {
     public AnalysisUserManager fetchByAnalysisId(Integer analysisId) throws Exception {
@@ -50,6 +54,20 @@ public class AnalysisUserManagerProxy {
         man.setAnalysisId(analysisId);
         
         return man;
+    }
+    
+    public String getSystemUserName(){
+        SystemUserDO user;
+        
+        user = loginLocal().getSystemUserDO();
+        return user.getLoginName();
+    }
+    
+    public Integer getSystemUserId(){
+        SystemUserDO user;
+        
+        user = loginLocal().getSystemUserDO();
+        return user.getId();
     }
 
     public AnalysisUserManager add(AnalysisUserManager man) throws Exception {
@@ -93,10 +111,36 @@ public class AnalysisUserManagerProxy {
        
    }
    
+   public Integer getIdFromSystemName(String systemName) throws Exception{
+       DictionaryDO dictDO = dictionaryLocal().fetchBySystemName(systemName);
+       
+       return dictDO.getId();
+   }
+   
    private AnalysisUserLocal local(){
        try{
            InitialContext ctx = new InitialContext();
            return (AnalysisUserLocal)ctx.lookup("openelis/AnalysisUserBean/local");
+       }catch(Exception e){
+            System.out.println(e.getMessage());
+            return null;
+       }
+   }
+   
+   private LoginLocal loginLocal(){
+       try{
+           InitialContext ctx = new InitialContext();
+           return (LoginLocal)ctx.lookup("openelis/LoginBean/local");
+       }catch(Exception e){
+            System.out.println(e.getMessage());
+            return null;
+       }
+   }
+   
+   private static DictionaryLocal dictionaryLocal(){
+       try{
+           InitialContext ctx = new InitialContext();
+           return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
        }catch(Exception e){
             System.out.println(e.getMessage());
             return null;

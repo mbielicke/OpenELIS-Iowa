@@ -252,9 +252,10 @@ public class Analysis implements Auditable, Cloneable {
       return null;
     return new Datetime(Datetime.YEAR,Datetime.MINUTE,startedDate);
   }
-  public void setStartedDate (Datetime started_date){
+  
+  public void setStartedDate (Datetime startedDate){
     if(DataBaseUtil.isDifferentYM(startedDate, this.startedDate))
-      this.startedDate = started_date.getDate();
+      this.startedDate = startedDate.getDate();
   }
 
   public Datetime getCompletedDate() {

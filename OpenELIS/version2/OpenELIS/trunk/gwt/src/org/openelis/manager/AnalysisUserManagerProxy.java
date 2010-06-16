@@ -25,8 +25,10 @@
 */
 package org.openelis.manager;
 
+import org.openelis.cache.DictionaryCache;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.main.client.openelis.OpenELIS;
 
 public class AnalysisUserManagerProxy {
     protected static final String ANALYSIS_USER_SERVICE_URL = "org.openelis.modules.analysisUser.server.AnalysisUserService";
@@ -38,6 +40,18 @@ public class AnalysisUserManagerProxy {
     
     public AnalysisUserManager fetchByAnalysisId(Integer analysisId) throws Exception {
         return service.call("fetchByAnalysisId", analysisId);
+    }
+    
+    public String getSystemUserName(){
+        return OpenELIS.security.getSystemUserName();
+    }
+    
+    public Integer getSystemUserId(){
+        return OpenELIS.security.getSystemUserId();
+    }
+    
+    public Integer getIdFromSystemName(String systemName) throws Exception {
+        return DictionaryCache.getIdFromSystemName(systemName);
     }
 
     public AnalysisUserManager add(AnalysisUserManager man) throws Exception {
