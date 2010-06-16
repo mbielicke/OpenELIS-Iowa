@@ -36,6 +36,7 @@ public class AnalysisUserManager implements RPC {
     private static final long                           serialVersionUID = 1L;
     protected Integer                                   analysisId;
     protected ArrayList<AnalysisUserViewDO>             analysisUserList, deletedList;
+    protected transient Integer                     actionCompletedId, actionReleasedId;
 
     protected transient static AnalysisUserManagerProxy proxy;
 
@@ -55,11 +56,67 @@ public class AnalysisUserManager implements RPC {
         return analysisUserList.get(i);
     }
 
-    public void addAnalysisUser(AnalysisUserViewDO analysisUser) throws Exception {
+    public int addAnalysisUser(AnalysisUserViewDO analysisUser) {
         if (analysisUserList == null)
             analysisUserList = new ArrayList<AnalysisUserViewDO>();
 
         analysisUserList.add(analysisUser);
+        
+        return count() - 1;
+    }
+    
+    public int addCompleteRecord() throws Exception {
+        String userName;
+        Integer userId;
+        AnalysisUserViewDO user;
+        
+        loadDictionaryEntries();
+        
+        if (analysisUserList == null)
+            analysisUserList = new ArrayList<AnalysisUserViewDO>();
+        
+        userName = proxy().getSystemUserName();
+        userId = proxy().getSystemUserId();
+        
+        //if this user has already completed this record, dont add another one
+        if(completeRecordAlreadyExists(userId))
+            return -1;
+        
+        //multiples allowed
+        user = new AnalysisUserViewDO();
+        user.setActionId(actionCompletedId);
+        user.setSystemUserId(userId);
+        user.setSystemUser(userName);
+        
+        return addAnalysisUser(user);
+    }
+    
+    public int addReleaseRecord() throws Exception {
+        int releaseIndex;
+        String userName;
+        Integer userId;
+        AnalysisUserViewDO user;
+        
+        loadDictionaryEntries();
+        
+        if (analysisUserList == null)
+            analysisUserList = new ArrayList<AnalysisUserViewDO>();
+        
+        userName = proxy().getSystemUserName();
+        userId = proxy().getSystemUserId();
+        
+        releaseIndex = releasedRecordIndex();
+        
+        //if a release entry already exists delete it, and create the new one
+        if(releaseIndex != -1)
+            removeAnalysisUserAt(releaseIndex);
+        
+        user = new AnalysisUserViewDO();
+        user.setActionId(actionReleasedId);
+        user.setSystemUserId(userId);
+        user.setSystemUser(userName);
+        
+        return addAnalysisUser(user);
     }
 
     public void removeAnalysisUserAt(int i) {
@@ -85,6 +142,13 @@ public class AnalysisUserManager implements RPC {
     public static AnalysisUserManager fetchByAnalysisId(Integer analysisId) throws Exception {
         return proxy().fetchByAnalysisId(analysisId);
     }
+    
+    private void loadDictionaryEntries() throws Exception {
+        if (actionCompletedId == null) {
+            actionCompletedId = proxy().getIdFromSystemName("an_user_ac_completed");
+            actionReleasedId = proxy().getIdFromSystemName("an_user_ac_released");
+        }
+    }
 
     // service methods
     public AnalysisUserManager add() throws Exception {
@@ -106,6 +170,32 @@ public class AnalysisUserManager implements RPC {
 
     public void validate(ValidationErrorsList errorsList) throws Exception {
         proxy().validate(this, errorsList);
+    }
+    
+    private boolean completeRecordAlreadyExists(Integer systemUserId){
+        AnalysisUserViewDO anDO;
+        
+        for(int i=0; i<analysisUserList.size(); i++){
+            anDO = analysisUserList.get(i);
+            
+            if(actionCompletedId.equals(anDO.getActionId()) && systemUserId.equals(anDO.getSystemUserId()))
+                return true;
+        }
+        
+        return false;
+    }
+    
+    private int releasedRecordIndex(){
+        AnalysisUserViewDO anDO;
+        
+        for(int i=0; i<analysisUserList.size(); i++){
+            anDO = analysisUserList.get(i);
+            
+            if(actionReleasedId.equals(anDO.getActionId()))
+                return i;
+        }
+        
+        return -1;
     }
 
     // these are friendly methods so only managers and proxies can call this
