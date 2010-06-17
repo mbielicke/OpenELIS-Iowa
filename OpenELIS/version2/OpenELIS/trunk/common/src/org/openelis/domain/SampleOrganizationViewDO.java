@@ -25,6 +25,8 @@
  */
 package org.openelis.domain;
 
+import org.openelis.utilcommon.DataBaseUtil;
+
 /**
  * The class extends analysis DO and carries several commonly used fields such
  * as test & method names. The additional fields are for read/display only and
@@ -64,7 +66,7 @@ public class SampleOrganizationViewDO extends SampleOrganizationDO {
     }
 
     public void setOrganizationCity(String organizationCity) {
-        OrganizationCity = organizationCity;
+        OrganizationCity = DataBaseUtil.trim(organizationCity);
     }
 
     public String getOrganizationState() {
@@ -72,6 +74,6 @@ public class SampleOrganizationViewDO extends SampleOrganizationDO {
     }
 
     public void setOrganizationState(String organizationState) {
-        OrganizationState = organizationState;
+        OrganizationState = DataBaseUtil.trim(organizationState);
     }
 }
