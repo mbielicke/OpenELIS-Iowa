@@ -104,7 +104,7 @@ UIRF Software License are applicable instead of those above.
                   </appButton>
                 </menuDisplay>
                 <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                <menuItem key="unrelease" description="" enable="false" icon="unreleaseIcon" label="Unrelease" />
+                <menuItem key="unreleaseAnalysis" description="" enable="false" icon="unreleaseIcon" label="Unrelease Analysis" />
                 <menuItem>
   					<menuDisplay>
   						<HorizontalPanel>
