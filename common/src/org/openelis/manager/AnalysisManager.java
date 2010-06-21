@@ -219,24 +219,22 @@ public class AnalysisManager implements RPC {
         AnalysisViewDO anDO;
         SecurityUtil security;
         SectionViewDO section;
+        TestManager testMan;
+        SampleDataBundle bundle;
         ValidationErrorsList errorsList;
         
         anDO  = items.get(index).analysis;
         assert anDO.getSectionId() != null : "section id is null";
         loadDictionaryEntries();
         
-        //if(anReleasedId.equals(arg0)){
-            //FIXME code this
-            
-        //}else 
-        if(anRequeueId.equals(anDO.getStatusId())){ //make sure the status is not requeue
-            errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("requeueStatusNoComplete"));
-            throw errorsList;
-            
-        }else if(anCompletedId.equals(anDO.getStatusId())){ //make sure status is not already complete
+        if(anCompletedId.equals(anDO.getStatusId())){ //make sure status is not already complete
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("analysisAlreadyComplete"));
+            throw errorsList;
+            
+        } else if(!anOnHoldId.equals(anDO.getStatusId()) && !anInitiatedId.equals(anDO.getStatusId())){ //make sure the status is initiated or on hold
+            errorsList = new ValidationErrorsList();
+            errorsList.add(new FormErrorException("wrongStatusNoComplete"));
             throw errorsList;
             
         }
@@ -247,6 +245,15 @@ public class AnalysisManager implements RPC {
         if(security.getSection(section.getName()) == null || !security.getSection(section.getName()).hasCompletePermission()){
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("insufficientPrivilegesCompleteAnalysis", anDO.getTestName(), anDO.getMethodName()));
+            throw errorsList;
+        }
+        
+        //validate the sample type
+        testMan = getTestAt(index);
+        bundle = getBundleAt(index);
+        if (!testMan.getSampleTypes().hasType(sampleItemManager.getSampleItemAt(bundle.getSampleItemIndex()).getTypeOfSampleId())){
+            errorsList = new ValidationErrorsList();
+            errorsList.add(new FormErrorException("sampleTypeInvalid", anDO.getTestName(), anDO.getMethodName()));
             throw errorsList;
         }
         
