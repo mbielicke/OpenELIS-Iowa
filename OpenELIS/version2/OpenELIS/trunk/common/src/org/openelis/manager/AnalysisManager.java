@@ -225,14 +225,20 @@ public class AnalysisManager implements RPC {
         assert anDO.getSectionId() != null : "section id is null";
         loadDictionaryEntries();
         
+        //if(anReleasedId.equals(arg0)){
+            //FIXME code this
+            
+        //}else 
         if(anRequeueId.equals(anDO.getStatusId())){ //make sure the status is not requeue
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("requeueStatusNoComplete"));
             throw errorsList;
+            
         }else if(anCompletedId.equals(anDO.getStatusId())){ //make sure status is not already complete
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("analysisAlreadyComplete"));
             throw errorsList;
+            
         }
         
         //make sure the user has complete permission for the section

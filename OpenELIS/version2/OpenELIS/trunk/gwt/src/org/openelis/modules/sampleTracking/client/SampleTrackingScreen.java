@@ -124,7 +124,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     private AppButton            prevPage, nextPage, similarButton, expandButton, collapseButton,
                     queryButton, updateButton, commitButton, abortButton, addTestButton,
                     cancelTestButton;
-    private MenuItem             envMenuQuery, wellMenuQuery, sdwisMenuQuery, historySample,
+    private MenuItem             envMenuQuery, wellMenuQuery, sdwisMenuQuery, unreleaseSample, historySample,
                     historySampleSpec, historySampleProject, historySampleOrganization,
                     historySampleItem, historyAnalysis, historyCurrentResult, historyStorage,
                     historySampleQA, historyAnalysisQA, historyAuxData;
@@ -334,6 +334,17 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 ActionEvent.fire(trackingScreen, ResultTab.Action.RESULT_HISTORY, null);
             }
         };
+        
+        unreleaseSample = (MenuItem)def.getWidget("unreleaseSample");
+        addScreenHandler(unreleaseSample, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                unrelease();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                unreleaseSample.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
 
         historySample = (MenuItem)def.getWidget("historySample");
         addScreenHandler(historySample, new ScreenEventHandler<Object>() {
@@ -1888,6 +1899,10 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             return getTopLevelIndex(node.parent);
 
         return trackingTree.getData().indexOf(node);
+    }
+    
+    private void unrelease(){
+        
     }
 
     public HandlerRegistration addActionHandler(ActionHandler handler) {
