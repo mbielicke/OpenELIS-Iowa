@@ -125,7 +125,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
     private ResultTab                testResultsTab;
     private TableWidget              completeReleaseTable;
 
-    protected MenuItem               historySample, historySampleSpec, historySampleProject,
+    protected MenuItem               unreleaseAnalysis, historySample, historySampleSpec, historySampleProject,
                     historySampleOrganization, historySampleItem, historyAnalysis,
                     historyCurrentResult, historyStorage, historySampleQA, historyAnalysisQA,
                     historyAuxData;
@@ -262,7 +262,18 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
                 ActionEvent.fire(completeScreen, ResultTab.Action.RESULT_HISTORY, null);
             }
         };
+        
+        unreleaseAnalysis = (MenuItem)def.getWidget("unreleaseAnalysis");
+        addScreenHandler(unreleaseAnalysis, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                unrelease();
+            }
 
+            public void onStateChange(StateChangeEvent<State> event) {
+                unreleaseAnalysis.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
         historySample = (MenuItem)def.getWidget("historySample");
         addScreenHandler(historySample, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -1142,7 +1153,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
         ArrayList<TableDataRow> rows;
         LocalizedException ex;
         int[] indexList;
-        int index;
         TableDataRow row;
         Item item;
         SampleDataBundle bundle;
@@ -1209,42 +1219,12 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
             }
         }
         
-        
-        for (int j = 0; j < rows.size(); j++ ) {
-            index = indexList[j];
-            row = rows.get(j);
-            bundle = (SampleDataBundle)row.data;
-            item = hash.get(bundle.getSampleManager().getSample().getId());
-         
-            try{
-                if(item != null && item.getCount() > 0){
-                        item.getSampleManager().update();
-                        item.setCount(-1);
-                }
-                
-                //update the row
-                updateTableRowCells(index, 
-                                    bundle.getSampleManager().getSample(), 
-                                    bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).getAnalysisAt(bundle.getAnalysisIndex()));
-
-            } catch (Exception e) {
-                Window.alert("Error with sample accession #" + bundle.getSampleManager().getSample().getAccessionNumber() + ":\n\n"+e.getMessage());
-            }
-
-        }
-        
-        //if the tabs are showing data we need to make sure to refresh them
-        if(rows.size() == 1){
-            dataBundle = bundle;
-            manager = bundle.getSampleManager();
-            resetScreen();
-        }
+        updateAndRefreshTable(rows, indexList, hash, bundle);
     }
 
     private void complete() {
         ArrayList<TableDataRow> rows;
         int[] indexList;
-        int index;
         TableDataRow row;
         Item item;
         SampleDataBundle bundle;
@@ -1252,90 +1232,117 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
         HashMap<Integer, Item> hash;
         AnalysisManager anMan;
         AnalysisViewDO anDO;
-        
+
         bundle = null;
         rows = completeReleaseTable.getSelections();
         indexList = completeReleaseTable.getSelectedRows();
         hash = new HashMap<Integer, Item>();
-        
-        //loop through and lock sample if necessary
+
+        // loop through and lock sample if necessary
         for (int i = 0; i < rows.size(); i++ ) {
             row = rows.get(i);
             bundle = (SampleDataBundle)row.data;
             item = hash.get(bundle.getSampleManager().getSample().getId());
             man = bundle.getSampleManager();
-            
+
             try {
-                if(item == null){
+                if (item == null) {
                     man = man.fetchForUpdate();
                     item = new Item(man, 1);
                     hash.put(man.getSample().getId(), item);
 
-                } else if(item.getCount() != -1){
-                    item.setCount(item.getCount()+1);
+                } else if (item.getCount() != -1) {
+                    item.setCount(item.getCount() + 1);
                     man = item.getSampleManager();
 
                 }
 
-                anMan = bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
+                anMan = bundle.getSampleManager()
+                              .getSampleItems()
+                              .getAnalysisAt(bundle.getSampleItemIndex());
                 anDO = anMan.getAnalysisAt(bundle.getAnalysisIndex());
-                if(!analysisOnHold.equals(anDO.getStatusId()) || Window.confirm(consts.get("onHoldWarning"))){
-                    bundle = getCurrentRowBundle(row, man);                
+                if ( !analysisOnHold.equals(anDO.getStatusId()) ||
+                    Window.confirm(consts.get("onHoldWarning"))) {
+                    bundle = getCurrentRowBundle(row, man);
                     row.data = bundle;
-                    bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).completeAnalysisAt(bundle.getAnalysisIndex());
+                    bundle.getSampleManager()
+                          .getSampleItems()
+                          .getAnalysisAt(bundle.getSampleItemIndex())
+                          .completeAnalysisAt(bundle.getAnalysisIndex());
                 }
-            
+
             } catch (EntityLockedException e) {
                 hash.put(man.getSample().getId(), new Item(man, -1));
-                Window.alert("Error with sample accession #" + man.getSample().getAccessionNumber() + ":\n\n"+e.getMessage());
-            } catch (ValidationErrorsList e){
+                Window.alert("Error with sample accession #" +
+                             man.getSample().getAccessionNumber() + ":\n\n" + e.getMessage());
+            } catch (ValidationErrorsList e) {
                 String errorMsg;
 
-                try{
-                    anDO = man.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).getAnalysisAt(bundle.getAnalysisIndex());
-                    item.setCount(item.getCount()-1);
-                    
-                    errorMsg = "Cannot complete "+anDO.getTestName()+":"+anDO.getMethodName()+" on accession #"+man.getSample().getAccessionNumber()+":\n";
-    
-                    for(int l=0; l<e.size();l++)
-                        errorMsg+=" * "+e.getErrorList().get(l).getMessage()+"\n";
-    
+                try {
+                    anDO = man.getSampleItems()
+                              .getAnalysisAt(bundle.getSampleItemIndex())
+                              .getAnalysisAt(bundle.getAnalysisIndex());
+                    item.setCount(item.getCount() - 1);
+
+                    errorMsg = "Cannot complete " + anDO.getTestName() + ":" +
+                               anDO.getMethodName() + " on accession #" +
+                               man.getSample().getAccessionNumber() + ":\n";
+
+                    for (int l = 0; l < e.size(); l++ )
+                        errorMsg += " * " + e.getErrorList().get(l).getMessage() + "\n";
+
                     Window.alert(errorMsg);
-                    
-                }catch(Exception f){
+
+                } catch (Exception f) {
                     Window.alert(e.getMessage());
                 }
-                
+
             } catch (Exception e) {
-                    Window.alert("Error with sample accession #" + man.getSample().getAccessionNumber() + ":\n\n"+e.getMessage());
+                Window.alert("Error with sample accession #" +
+                             man.getSample().getAccessionNumber() + ":\n\n" + e.getMessage());
             }
         }
         
+        updateAndRefreshTable(rows, indexList, hash, bundle);
+    }
+    
+    private void unrelease(){
+        
+    }
+    
+    private void updateAndRefreshTable(ArrayList<TableDataRow> rows, int[] indexList, HashMap<Integer, Item> hash, SampleDataBundle bundle){
+        TableDataRow row;
+        int index;
+        Item item;
         
         for (int j = 0; j < rows.size(); j++ ) {
             index = indexList[j];
             row = rows.get(j);
             bundle = (SampleDataBundle)row.data;
             item = hash.get(bundle.getSampleManager().getSample().getId());
-         
-            try{
-                if(item != null && item.getCount() > 0){
-                        item.getSampleManager().update();
-                        item.setCount(-1);
+
+            try {
+                if (item != null && item.getCount() > 0) {
+                    item.getSampleManager().update();
+                    item.setCount( -1);
                 }
-                
-                //update the row
-                updateTableRowCells(index, 
-                                    bundle.getSampleManager().getSample(), 
-                                    bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).getAnalysisAt(bundle.getAnalysisIndex()));
+
+                // update the row
+                updateTableRowCells(index, bundle.getSampleManager().getSample(),
+                                    bundle.getSampleManager()
+                                          .getSampleItems()
+                                          .getAnalysisAt(bundle.getSampleItemIndex())
+                                          .getAnalysisAt(bundle.getAnalysisIndex()));
 
             } catch (Exception e) {
-                Window.alert("Error with sample accession #" + bundle.getSampleManager().getSample().getAccessionNumber() + ":\n\n"+e.getMessage());
+                Window.alert("Error with sample accession #" +
+                             bundle.getSampleManager().getSample().getAccessionNumber() + ":\n\n" +
+                             e.getMessage());
             }
         }
-        
-        //if the tabs are showing data we need to make sure to refresh them
-        if(rows.size() == 1){
+
+        // if the tabs are showing data we need to make sure to refresh them
+        if (rows.size() == 1) {
             dataBundle = bundle;
             manager = bundle.getSampleManager();
             resetScreen();

@@ -97,8 +97,6 @@ UIRF Software License are applicable instead of those above.
                 </appButton>
               </menuDisplay>
               <menuPanel layout="vertical" position="below" style="topMenuContainer">
-              <menuItem key="unreleaseSample" description="" enable="false" icon="unreleaseIcon" label="Unrelease Sample" />
-              <html>&lt;hr/&gt;</html>
                 <menuItem description="" icon="environmentalSampleLoginIcon" key="environmentalSample" label="{resource:getString($constants,'environmentalSample')}" style="TopMenuRowContainer" />
                 <menuItem description="" enable="true" icon="privateWellWaterSampleLoginIcon" key="privateWellWaterSample" label="{resource:getString($constants,'privateWellWaterSample')}" style="TopMenuRowContainer" />
                 <menuItem description="" enable="true" icon="sdwisSampleLoginIcon" key="sdwisSample" label="{resource:getString($constants,'sdwisSample')}" style="TopMenuRowContainer" />
@@ -144,6 +142,8 @@ UIRF Software License are applicable instead of those above.
                   </appButton>
                 </menuDisplay>
                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                  <menuItem key="unreleaseSample" description="" enable="false" icon="unreleaseIcon" label="Unrelease Sample" />
+                  <html>&lt;hr/&gt;</html>
                   <menuItem key="historySample" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySample')}" />
                   <menuItem key="historySampleSpec" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleSpec')}" />
                   <menuItem key="historySampleProject" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleProject')}" />
