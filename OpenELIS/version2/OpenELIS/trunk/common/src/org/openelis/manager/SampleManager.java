@@ -30,6 +30,7 @@ import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -52,6 +53,8 @@ public class SampleManager implements RPC, HasAuxDataInt {
                     anReleasedId, anInPrepId, anOnHoldId, anRequeueId, anCancelledId,
                     anErrorLoggedInId, anErrorInitiatedId, anErrorInPrepId, anErrorCompletedId,
                     samLoggedInId, samCompletedId, samReleasedId, samErrorId;
+    
+    protected transient boolean unreleased;
 
     public static final String                    ENVIRONMENTAL_DOMAIN_FLAG = "E",
                                                   HUMAN_DOMAIN_FLAG = "H", 
@@ -117,13 +120,13 @@ public class SampleManager implements RPC, HasAuxDataInt {
     }
 
     public SampleManager add() throws Exception {
-        updateSampleStatus();
+        updateSampleAnalysesStatuses();
         return proxy().add(this);
     
     }
 
     public SampleManager update() throws Exception {
-        updateSampleStatus();
+        updateSampleAnalysesStatuses();
         return proxy().update(this);
     
     }
@@ -168,6 +171,23 @@ public class SampleManager implements RPC, HasAuxDataInt {
         }catch(Exception e){
             //ignore, we catch this on the validation
         }
+    }
+    
+    public void unrelease() throws Exception {
+        ValidationErrorsList errorsList;
+        
+        loadDictionaryEntries();
+        
+        if(!samReleasedId.equals(sample.getStatusId())){
+            errorsList = new ValidationErrorsList();
+            errorsList.add(new FormErrorException("wrongStatusUnrelease"));
+            throw errorsList;
+        }
+            
+        unreleased = true;
+        sample.setStatusId(samCompletedId);
+        sample.setReleasedDate(null);
+        sample.setRevision(sample.getRevision()+1);
     }
 
     //
@@ -370,15 +390,17 @@ public class SampleManager implements RPC, HasAuxDataInt {
         return getSampleItems().hasReleasedAnalysis();
     }
 
-    protected void updateSampleStatus() throws Exception {
+    protected void updateSampleAnalysesStatuses() throws Exception {
         int e = 0, l = 0, c = 0, r = 0;
         SampleItemManager itemMan;
         AnalysisManager analysisMan;
         SampleItemViewDO sampleItemDO;
         AnalysisViewDO anDO;
-        Integer statusId = null, analysisStatusId;
+        Integer oldStatusId, statusId, analysisStatusId;
     
         loadDictionaryEntries();
+        statusId = null;
+        oldStatusId = sample.getStatusId();
     
         itemMan = getSampleItems();
         for (int s = 0; s < itemMan.count(); s++ ) {
@@ -410,23 +432,31 @@ public class SampleManager implements RPC, HasAuxDataInt {
             }
         }
     
-        if (e > 0) {
-            statusId = samErrorId;
-        } else if (l > 0) {
-            statusId = samLoggedInId;
-        } else if (c > 0) {
-            statusId = samCompletedId;
-        } else if (r > 0) {
-            if (sample.getReleasedDate() == null)
-                sample.setReleasedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-            statusId = samReleasedId;
+        //if the sample has been unreleased we dont want to update the status
+        if(!unreleased){
+            if (e > 0) {
+                statusId = samErrorId;
+            } else if (l > 0) {
+                statusId = samLoggedInId;
+            } else if (c > 0) {
+                if (sample.getReleasedDate() != null)
+                    sample.setReleasedDate(null);
+                statusId = samCompletedId;
+                
+                if(oldStatusId.equals(samReleasedId))
+                    sample.setRevision(sample.getRevision());
+            } else if (r > 0) {
+                if (sample.getReleasedDate() == null)
+                    sample.setReleasedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+                statusId = samReleasedId;
+            }
+        
+            // if the sample is in error keep it that way
+            if (samErrorId.equals(sample.getStatusId()))
+                statusId = samErrorId;
+        
+            sample.setStatusId(statusId);
         }
-    
-        // if the sample is in error keep it that way
-        if (samErrorId.equals(sample.getStatusId()))
-            statusId = samErrorId;
-    
-        sample.setStatusId(statusId);
     }
     
     Integer getNextSequence(){
