@@ -320,6 +320,24 @@ public class AnalysisManager implements RPC {
             //do nothing
         }
     }
+    
+    public void unreleaseAnalysisAt(int index) throws Exception {
+        AnalysisViewDO anDO;
+        ValidationErrorsList errorsList;
+        
+        anDO  = items.get(index).analysis;
+        loadDictionaryEntries();
+        
+        if(!anReleasedId.equals(anDO.getStatusId())){
+            errorsList = new ValidationErrorsList();
+            errorsList.add(new FormErrorException("wrongStatusUnrelease"));
+            throw errorsList;
+        }
+            
+        anDO.setStatusId(anCompletedId);
+        anDO.setReleasedDate(null);
+        anDO.setRevision(anDO.getRevision()+1);
+    }
 
     public int count() {
         if (items == null)
