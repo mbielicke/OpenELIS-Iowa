@@ -1307,7 +1307,13 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
     }
     
     private void unrelease(){
-        
+        if(completeReleaseTable.getSelections().size() > 1){
+            Window.alert("Please select exactly 1 row to unrelease.");
+            return;
+        }else if(completeReleaseTable.getSelections().size() == 0){
+            Window.alert("Please select a row to unrelease.");
+            return;
+        }
     }
     
     private void updateAndRefreshTable(ArrayList<TableDataRow> rows, int[] indexList, HashMap<Integer, Item> hash, SampleDataBundle bundle){
