@@ -25,9 +25,48 @@
 */
 package org.openelis.modules.inventoryReceipt.server;
 
+import java.util.ArrayList;
 
+import org.openelis.domain.IdNameVO;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.manager.InventoryReceiptManager;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.InventoryReceiptManagerRemote;
+import org.openelis.remote.InventoryReceiptRemote;
 
 public class InventoryReceiptService {
+    
+    public ArrayList<IdNameVO> fetchByUpc(String search) throws Exception {
+        return remote().fetchByUpc(search + "%", 10);
+    }
+    
+    public ArrayList<InventoryReceiptManager> query(Query query) throws Exception {
+        return remote().query(query.getFields());
+    }
+    
+    public InventoryReceiptManager add(InventoryReceiptManager man) throws Exception {
+        return remoteManager().add(man);
+    }
+    
+    public InventoryReceiptManager update(InventoryReceiptManager man) throws Exception {
+        return remoteManager().update(man);
+    }
+    
+    public InventoryReceiptManager fetchForUpdate(InventoryReceiptManager man) throws Exception {
+        return remoteManager().fetchForUpdate(man);
+    }
+    
+    public InventoryReceiptManager abortUpdate(InventoryReceiptManager man) throws Exception {
+        return remoteManager().abortUpdate(man);
+    }
+    
+    private InventoryReceiptRemote remote() {
+        return (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
+    }
+    
+    private InventoryReceiptManagerRemote remoteManager() {
+        return (InventoryReceiptManagerRemote)EJBFactory.lookup("openelis/InventoryReceiptManagerBean/remote");        
+    }
 }
 /*
     private static final InventoryReceiptMetaMap InventoryReceiptMeta = new InventoryReceiptMetaMap();

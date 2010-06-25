@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameStoreVO;
 import org.openelis.domain.InventoryItemDO;
+import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -68,6 +69,10 @@ public class InventoryItemService {
             return remote().fetchActiveByName(name+"%", 10);
         else
             return remote().fetchActiveByNameAndStore(name+"%", storeId, 10);
+    }
+    
+    public InventoryItemViewDO fetchInventoryItemById(Integer id) throws Exception {
+        return remote().fetchById(id);
     }
 
     public InventoryItemManager fetchWithComponents(Integer id) throws Exception {
