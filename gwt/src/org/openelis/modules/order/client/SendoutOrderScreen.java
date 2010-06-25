@@ -710,9 +710,7 @@ public class SendoutOrderScreen extends Screen {
                     e.printStackTrace();
                     Window.alert(e.getMessage());
                 }
-                window.clearStatus();
-                
-            
+                window.clearStatus();                            
             }
 
         });

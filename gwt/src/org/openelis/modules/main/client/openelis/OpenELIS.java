@@ -46,6 +46,7 @@ import org.openelis.modules.favorites.client.FavoritesScreen;
 import org.openelis.modules.instrument.client.InstrumentScreen;
 import org.openelis.modules.inventoryAdjustment.client.InventoryAdjustmentScreen;
 import org.openelis.modules.inventoryItem.client.InventoryItemScreen;
+import org.openelis.modules.inventoryReceipt.client.InventoryReceiptScreen;
 import org.openelis.modules.label.client.LabelScreen;
 import org.openelis.modules.method.client.MethodScreen;
 import org.openelis.modules.order.client.InternalOrderScreen;
@@ -631,6 +632,25 @@ public class OpenELIS extends Screen {
                 });
             }
         });
+        addClickHandler("inventoryReceipt", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new InventoryReceiptScreen());
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });        
         addClickHandler("inventoryTransfer", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -649,7 +669,7 @@ public class OpenELIS extends Screen {
                     }
                 });
             }
-        });
+        });        
         addClickHandler("inventoryAdjustment", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {

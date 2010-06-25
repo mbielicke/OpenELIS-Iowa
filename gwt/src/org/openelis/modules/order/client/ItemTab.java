@@ -64,7 +64,8 @@ public class ItemTab extends Screen {
 
         addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                table.load(getTableModel());
+                if(state != State.QUERY)
+                    table.load(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
