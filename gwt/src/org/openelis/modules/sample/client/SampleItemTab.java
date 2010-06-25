@@ -203,36 +203,49 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
 
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
+        TableDataRow            row;
 
         // sample type dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("type_of_sample"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("type_of_sample")) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = "Y".equals(d.getIsActive());
+            model.add(row);
+        }
 
         typeOfSampleId.setModel(model);
 
         // source dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("source_of_sample"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("source_of_sample")) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = "Y".equals(d.getIsActive());
+            model.add(row);
+        }
 
         sourceOfSampleId.setModel(model);
 
         // sample container dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("sample_container"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("sample_container")) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = "Y".equals(d.getIsActive());
+            model.add(row);
+        }
 
         containerId.setModel(model);
 
         // unit of measure dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("unit_of_measure"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("unit_of_measure")) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = "Y".equals(d.getIsActive());
+            model.add(row);
+        }
 
         unitOfMeasureId.setModel(model);
     }

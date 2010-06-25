@@ -27,7 +27,6 @@ package org.openelis.modules.worksheet.server;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.WorksheetDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.WorksheetAnalysisManager;
