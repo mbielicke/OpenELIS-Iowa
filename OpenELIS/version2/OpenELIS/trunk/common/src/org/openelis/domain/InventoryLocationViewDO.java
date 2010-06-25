@@ -40,7 +40,7 @@ public class InventoryLocationViewDO extends InventoryLocationDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String          inventoryItemName, inventoryLocationName, storageLocationName,
+    protected String          inventoryItemName, storageLocationName,
                               storageLocationUnitDescription, storageLocationLocation;
 
     public InventoryLocationViewDO() {

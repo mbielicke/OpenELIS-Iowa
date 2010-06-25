@@ -37,6 +37,7 @@ public class OrderManager implements RPC, HasAuxDataInt {
     protected OrderViewDO                        order;
     protected OrderItemManager                   items;
     protected OrderFillManager                   fills;
+    protected OrderReceiptManager                receipts;
     protected OrderContainerManager              containers; 
     protected OrderTestManager                   tests; 
     protected NoteManager                        shipNotes, customerNotes;
@@ -56,6 +57,7 @@ public class OrderManager implements RPC, HasAuxDataInt {
         order = null;
         items = null;
         fills = null;
+        receipts = null;
         shipNotes = null;
     }
 
@@ -156,6 +158,23 @@ public class OrderManager implements RPC, HasAuxDataInt {
                 fills = OrderFillManager.getInstance();
         }
         return fills;
+    }
+    
+    public OrderReceiptManager getReceipts() throws Exception {
+        if (receipts == null) {
+            if (order.getId() != null) {
+                try {
+                    receipts = OrderReceiptManager.fetchByOrderId(order.getId());
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+            if (receipts == null)
+                receipts = OrderReceiptManager.getInstance();
+        }
+        return receipts;
     }
 
     public NoteManager getShippingNotes() throws Exception {

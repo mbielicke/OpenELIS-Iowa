@@ -39,6 +39,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -80,6 +82,24 @@ import org.openelis.utils.Auditable;
                             " order by i.name"),
     @NamedQuery(name = "InventoryReceipt.LocationIdsByReceiptId", query = "select distinct il.id  from InventoryXPut tr LEFT JOIN tr.inventoryLocation il where tr.inventoryReceiptId = :id ")})
 */  
+@NamedQueries( {
+    @NamedQuery ( name = "InventoryReceipt.FetchById",
+                 query = "select distinct new org.openelis.domain.InventoryReceiptViewDO(r.id, r.inventoryItemId, r.orderItemId, r.organizationId," +
+    		             "r.receivedDate, r.quantityReceived, r.unitCost, r.qcReference, r.externalReference, r.upc, i.quantity, i.orderId," +
+    		             "i.order.externalOrderNumber, i.unitCost)"
+                       + " from InventoryReceipt r left join r.orderItem i where r.id = :id"),
+    @NamedQuery ( name = "InventoryReceipt.FetchByUpc",
+                 query = "select distinct new org.openelis.domain.IdNameVO(r.inventoryItemId, r.upc, i.name)"
+                       + " from InventoryReceipt r left join r.inventoryItem i where r.upc like :upc"),                   
+    @NamedQuery( name = "InventoryReceipt.OrderItemsNotFilled",
+                query = "select oi.id from OrderItem oi, Order o, Dictionary d where oi.orderId = o.id and " + 
+                        "d.id = o.statusId and d.systemName <> 'order_status_cancelled' and d.systemName <> 'order_status_processed' and " + 
+                        "oi.quantity > (select sum(ir.quantityReceived) "
+                       +" from InventoryReceipt ir left join ir.orderItem ois where ois.id = oi.id) and o.id = :id"),
+    @NamedQuery( name = "InventoryReceipt.OrdersNotCompletedCanceled",
+                query = "select o.id "
+                     +  " from Order o, Dictionary d where d.id = o.statusId and d.systemName <> 'order_status_cancelled' and"
+                     +	" d.systemName <> 'order_status_processed' and o.id = :id") })
 
 @Entity
 @Table(name = "inventory_receipt")
@@ -132,7 +152,7 @@ public class InventoryReceipt implements Auditable, Cloneable {
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "inventory_receipt_id", insertable = false, updatable = false)
-    private Collection<InventoryXPut> transReceiptLocations;
+    private Collection<InventoryXPut> inventoryXPut;
 
 //    @OneToMany(fetch = FetchType.LAZY)
 //    @JoinTable(name = "inventory_receipt_order_item", joinColumns = {@JoinColumn(name = "inventory_receipt_id")}, inverseJoinColumns = {@JoinColumn(name = "order_item_id")})
@@ -178,11 +198,11 @@ public class InventoryReceipt implements Auditable, Cloneable {
     }
 
     public Datetime getReceivedDate() {
-        return DataBaseUtil.toYM(receivedDate);
+        return DataBaseUtil.toYD(receivedDate);
     }
 
     public void setReceivedDate(Datetime receivedDate) {
-        if (DataBaseUtil.isDifferentYM(receivedDate, this.receivedDate))
+        if (DataBaseUtil.isDifferentYD(receivedDate, this.receivedDate))
             this.receivedDate = DataBaseUtil.toDate(receivedDate);
     }
 
@@ -242,9 +262,13 @@ public class InventoryReceipt implements Auditable, Cloneable {
     public Organization getOrganization() {
         return organization;
     }
+    
+    public void setInventoryXPut(Collection<InventoryXPut> inventoryXPut) {
+         this.inventoryXPut = inventoryXPut;
+    }
 
-    public Collection<InventoryXPut> getTransReceiptLocations() {
-        return transReceiptLocations;
+    public Collection<InventoryXPut> getInventoryXPut() {
+        return inventoryXPut;
     }
 
     public OrderItem getOrderItem() {

@@ -56,6 +56,10 @@ import org.openelis.utils.Auditable;
                 query = "select distinct new org.openelis.domain.OrderItemViewDO(o.id,o.orderId,o.inventoryItemId," +
                 		"o.quantity,o.catalogNumber,o.unitCost,i.name,i.storeId)"
                       + " from OrderItem o left join o.inventoryItem i where o.orderId = :id"),
+    @NamedQuery( name = "OrderItem.FetchById",
+                query = "select distinct new org.openelis.domain.OrderItemViewDO(o.id,o.orderId,o.inventoryItemId," +
+                        "o.quantity,o.catalogNumber,o.unitCost,i.name,i.storeId)"
+                      + " from OrderItem o left join o.inventoryItem i where o.id = :id")                  
     
     /*@NamedQuery(name = "OrderItem.OrderItemsWithLocByOrderId", query = "select distinct new org.openelis.domain.OrderItemDO(oi.id, oi.orderId, oi.inventoryItemId, ii.name,oi.quantity, " +
                             " d.entry, t.inventoryLocationId, childLoc.name, childLoc.location, parentLoc.name, childLoc.storageUnit.description, t.id, il.quantityOnhand, il.lotNumber) from " +

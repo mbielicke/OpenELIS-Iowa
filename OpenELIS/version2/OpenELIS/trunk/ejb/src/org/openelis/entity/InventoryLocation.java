@@ -56,19 +56,25 @@ import org.openelis.utils.Auditable;
                 query = "select new org.openelis.domain.InventoryLocationViewDO(i.id,i.inventoryItemId," +
                         "i.lotNumber,i.storageLocationId,i.quantityOnhand,i.expirationDate," +
                         "i.inventoryItem.name,s.name,s.storageUnit.description,s.location)"
-                      + " from InventoryLocation i left join i.storageLocation s"+
-                        " where i.inventoryItemId = :id"),
-    @NamedQuery( name = "InventoryLocation.FetchByStorageLocationName",
+                      + " from InventoryLocation i left join i.storageLocation s"
+                      + " where i.inventoryItemId = :id"),
+    @NamedQuery( name = "InventoryLocation.FetchByLocationNameAndItemId",
                 query = "select new org.openelis.domain.InventoryLocationViewDO(i.id,i.inventoryItemId," +
                         "i.lotNumber,i.storageLocationId,i.quantityOnhand,i.expirationDate," +
                         "i.inventoryItem.name,s.name,s.storageUnit.description,s.location)"
                       + " from InventoryLocation i left join i.storageLocation s where s.name like :name and i.inventoryItemId = :id and i.quantityOnhand > 0" ),
+    @NamedQuery( name = "InventoryLocation.FetchByInventoryReceiptId",
+                query = "select new org.openelis.domain.InventoryLocationViewDO(i.id,i.inventoryItemId," +
+                        "i.lotNumber,i.storageLocationId,i.quantityOnhand,i.expirationDate," +
+                        "i.inventoryItem.name,s.name,s.storageUnit.description,s.location)"
+                      + " from InventoryXPut xp left join xp.inventoryLocation i left join i.storageLocation s "
+                      + " where xp.inventoryReceiptId = :id"),                   
    @NamedQuery( name = "InventoryLocation.FetchById",
-              query = "select new org.openelis.domain.InventoryLocationViewDO(i.id,i.inventoryItemId," +
-                      "i.lotNumber,i.storageLocationId,i.quantityOnhand,i.expirationDate," +
-                      "i.inventoryItem.name,s.name,s.storageUnit.description,s.location)"
-                    + " from InventoryLocation i left join i.storageLocation s where i.id = :id")                  
-                     //" and s.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId = s.id)")                    
+               query = "select new org.openelis.domain.InventoryLocationViewDO(i.id,i.inventoryItemId," +
+                       "i.lotNumber,i.storageLocationId,i.quantityOnhand,i.expirationDate," +
+                       "i.inventoryItem.name,s.name,s.storageUnit.description,s.location)"
+                     + " from InventoryLocation i left join i.storageLocation s where i.id = :id"),                  
+                     //" and s.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId = s.id)")                  
     })
 /*
     @NamedQuery(name = "InventoryLocation.InventoryLocationByItem", query = "select new org.openelis.domain.InventoryLocationDO(i.id,i.inventoryItemId,i.inventoryItem.name,i.lotNumber, "

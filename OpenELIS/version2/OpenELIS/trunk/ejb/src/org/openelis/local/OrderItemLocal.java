@@ -35,6 +35,8 @@ import org.openelis.domain.OrderItemViewDO;
 @Local
 public interface OrderItemLocal {
     public ArrayList<OrderItemViewDO> fetchByOrderId(Integer id) throws Exception;
+    
+    public OrderItemViewDO fetchById(Integer id) throws Exception;
 
     public OrderItemViewDO add(OrderItemViewDO data) throws Exception;
 
