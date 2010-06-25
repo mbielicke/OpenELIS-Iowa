@@ -29,22 +29,21 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
-import org.openelis.domain.InventoryLocationDO;
-import org.openelis.domain.InventoryLocationViewDO;
+import org.openelis.domain.InventoryXPutDO;
 
 @Local
-public interface InventoryLocationLocal {
-    public ArrayList<InventoryLocationViewDO> fetchByInventoryItemId(Integer id) throws Exception;
+public interface InventoryXPutLocal {
+
+    public ArrayList<InventoryXPutDO> fetchByOrderId(Integer id) throws Exception;
     
-    public ArrayList<InventoryLocationViewDO> fetchByInventoryReceiptId(Integer id) throws Exception;
+    public ArrayList<InventoryXPutDO> fetchByInventoryReceiptId(Integer id) throws Exception;
     
-    public InventoryLocationViewDO fetchById(Integer id) throws Exception;
+    public ArrayList<InventoryXPutDO> fetchByInventoryLocationId(Integer id) throws Exception;
 
-    public InventoryLocationViewDO add(InventoryLocationViewDO data) throws Exception;
+    public InventoryXPutDO add(InventoryXPutDO data) throws Exception;
 
-    public InventoryLocationViewDO update(InventoryLocationViewDO data) throws Exception;
+    public InventoryXPutDO update(InventoryXPutDO data) throws Exception;
 
-    public void delete(InventoryLocationDO data) throws Exception;
-
-    public void validate(InventoryLocationDO data) throws Exception;    
+    public void delete(InventoryXPutDO data) throws Exception;
+    
 }

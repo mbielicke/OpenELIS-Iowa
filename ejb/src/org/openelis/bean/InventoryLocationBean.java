@@ -72,6 +72,21 @@ public class InventoryLocationBean implements InventoryLocationLocal, InventoryL
         return DataBaseUtil.toArrayList(list);
     }
     
+    @SuppressWarnings("unchecked")
+    public ArrayList<InventoryLocationViewDO> fetchByInventoryReceiptId(Integer id) throws Exception {
+        Query query;
+        List list;
+
+        query = manager.createNamedQuery("InventoryLocation.FetchByInventoryReceiptId");
+        query.setParameter("id", id);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        return DataBaseUtil.toArrayList(list);
+    }
+    
     public InventoryLocationViewDO fetchById(Integer id) throws Exception {
         Query query;
         InventoryLocationViewDO data;
@@ -92,7 +107,7 @@ public class InventoryLocationBean implements InventoryLocationLocal, InventoryL
     public ArrayList<InventoryLocationViewDO> fetchByLocationNameInventoryItemId(String match,Integer id, int maxResults) throws Exception {
         Query query;
         
-        query = manager.createNamedQuery("InventoryLocation.FetchByStorageLocationName");
+        query = manager.createNamedQuery("InventoryLocation.FetchByLocationNameAndItemId");
         query.setParameter("name", match);
         query.setParameter("id", id);
         query.setMaxResults(maxResults);

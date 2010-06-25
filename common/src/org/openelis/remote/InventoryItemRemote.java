@@ -31,11 +31,12 @@ import javax.ejb.Remote;
 
 import org.openelis.domain.IdNameStoreVO;
 import org.openelis.domain.InventoryItemDO;
+import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.gwt.common.data.QueryData;
 
 @Remote
 public interface InventoryItemRemote {
-    public InventoryItemDO fetchById(Integer id) throws Exception;
+    public InventoryItemViewDO fetchById(Integer id) throws Exception;
 
     public ArrayList<InventoryItemDO> fetchActiveByName(String name, int max) throws Exception;
 

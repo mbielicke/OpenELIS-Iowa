@@ -50,10 +50,9 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-    @NamedQuery( name = "InventoryXPut.TransIdsLocIdsByReceiptId",
-                query = "select tr.id, tr.inventoryLocationId"
-                      +	" from InventoryXPut tr where tr.inventoryReceiptId = :id "
-                      + " and quantity > 0 order by tr.quantity desc")})
+    @NamedQuery( name = "InventoryXPut.FetchByInventoryReceiptId",
+                query = "select distinct new org.openelis.domain.InventoryXPutDO(tr.id, tr.inventoryReceiptId, tr.inventoryLocationId, tr.quantity)"
+                      +	" from InventoryXPut tr where tr.inventoryReceiptId = :id")})
 @Entity
 @Table(name = "inventory_x_put")
 @EntityListeners( {AuditUtil.class})
@@ -72,10 +71,6 @@ public class InventoryXPut implements Auditable, Cloneable {
 
     @Column(name = "quantity")
     private Integer           quantity;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "inventory_receipt_id", insertable = false, updatable = false)
-    private InventoryReceipt  inventoryReceipt;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inventory_location_id", insertable = false, updatable = false)
@@ -122,10 +117,6 @@ public class InventoryXPut implements Auditable, Cloneable {
 
     public InventoryLocation getInventoryLocation() {
         return inventoryLocation;
-    }
-
-    public InventoryReceipt getInventoryReceipt() {
-        return inventoryReceipt;
     }
 
     public void setClone() {

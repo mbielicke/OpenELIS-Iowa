@@ -25,16 +25,22 @@
 */
 package org.openelis.remote;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.InventoryLocationDO;
-import org.openelis.domain.InventoryReceiptDO;
+import org.openelis.domain.IdNameVO;
+import org.openelis.gwt.common.data.QueryData;
+import org.openelis.manager.InventoryReceiptManager;
 
 @Remote
 public interface InventoryReceiptRemote {
-    public static final String  RECEIPT          = "receipt",
+    
+    public ArrayList<IdNameVO> fetchByUpc(String search, int max) throws Exception;
+    
+    public ArrayList<InventoryReceiptManager> query(ArrayList<QueryData> fields) throws Exception;   
+    
+    /*public static final String  RECEIPT          = "receipt",
                                 TRANSFER          = "transfer";
     
     //method to return inventory records by order number
@@ -77,5 +83,5 @@ public interface InventoryReceiptRemote {
      public void validateReceipts(List<InventoryReceiptDO> inventoryReceipts) throws Exception;
      
      //method to validate the transfer fields before the backend updates it in the database     
-     public void validateTransfers(List<InventoryReceiptDO> inventoryTransfers) throws Exception;
+     public void validateTransfers(List<InventoryReceiptDO> inventoryTransfers) throws Exception;*/
 }

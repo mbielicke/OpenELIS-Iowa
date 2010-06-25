@@ -32,6 +32,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -39,6 +40,7 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.OrderItemDO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.entity.OrderItem;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -67,6 +69,22 @@ public class OrderItemBean implements OrderItemLocal {
             throw new NotFoundException();
 
         return DataBaseUtil.toArrayList(list);
+    }
+    
+    public OrderItemViewDO fetchById(Integer id) throws Exception {
+        Query query;
+        OrderItemViewDO data;
+        
+        query = manager.createNamedQuery("OrderItem.FetchById");
+        query.setParameter("id", id);
+        try {
+            data = (OrderItemViewDO)query.getSingleResult();          
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
     }
 
     public OrderItemViewDO add(OrderItemViewDO data) throws Exception {
