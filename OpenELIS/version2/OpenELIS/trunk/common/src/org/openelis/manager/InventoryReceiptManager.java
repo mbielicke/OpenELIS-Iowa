@@ -184,8 +184,6 @@ public class InventoryReceiptManager implements RPC{
                     throw e;
                 }
             }
-            if(order == null)
-                order = OrderManager.getInstance();
         }
         return order;
     }       

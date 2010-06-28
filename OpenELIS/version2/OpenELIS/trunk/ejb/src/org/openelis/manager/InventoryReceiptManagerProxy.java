@@ -37,8 +37,6 @@ import org.openelis.domain.OrderItemViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.InventoryReceiptLocal;
-import org.openelis.local.OrderLocal;
-import org.openelis.local.OrganizationContactLocal;
 import org.openelis.utilcommon.DataBaseUtil;
 
 
@@ -67,20 +65,22 @@ public class InventoryReceiptManagerProxy {
         InventoryReceiptViewDO receipt;
         InventoryLocationViewDO location;
         
-        rl = local();        
+        rl = local();    
+        location = null;
         for (int i = 0; i < man.count(); i++ ) {             
             receipt = man.getReceiptAt(i);
             qtyRec = receipt.getQuantityReceived();
-            location = receipt.getInventoryLocations().get(0);
-            if((qtyRec != null && qtyRec > 0))
+            if (receipt.getInventoryLocations() != null)
+                location = receipt.getInventoryLocations().get(0);
+            if (qtyRec != null && qtyRec > 0)
                 //
                 // if it's a new record then the inventory item in it must 
                 // have a valid inventory location associated with it if 
                 // "addToExisting" is true
                 //
-                if(!"Y".equals(receipt.getAddToExistingLocation()))
+                if ( !"Y".equals(receipt.getAddToExistingLocation()))
                     rl.add(receipt);
-                else if(location.getId() != null)
+                else if (location != null && location.getId() != null)
                     rl.add(receipt);
         }
         
@@ -99,23 +99,25 @@ public class InventoryReceiptManagerProxy {
                 
         rl = local();
         sumQRec = 0;
+        location = null;
         for (i = 0; i < man.deleteCount(); i++ )
             rl.delete(man.getDeletedAt(i));
         
         for (i = 0; i < man.count(); i++ ) {                         
             receipt = man.getReceiptAt(i);
             qtyRec = receipt.getQuantityReceived();
-            location = receipt.getInventoryLocations().get(0);
+            if(receipt.getInventoryLocations() != null)
+                location = receipt.getInventoryLocations().get(0);
             if (receipt.getId() == null) {
-                if((qtyRec != null && qtyRec > 0)) {
+                if (qtyRec != null && qtyRec > 0) {
                     //
                     // if it's a new record then the inventory item in it must 
                     // have a valid inventory location associated with it if 
                     // "addToExisting" is true
                     //
-                    if(!"Y".equals(receipt.getAddToExistingLocation()))
+                    if ( !"Y".equals(receipt.getAddToExistingLocation()))
                         rl.add(receipt);
-                    else if(location.getId() != null)
+                    else if (location != null && location.getId() != null)
                         rl.add(receipt);
                 }
             } else {
@@ -125,9 +127,14 @@ public class InventoryReceiptManagerProxy {
             if(qtyRec != null) 
                 sumQRec += qtyRec;            
         }
-        
-        orderMan = man.getOrder();        
-        if(orderMan != null) {
+                
+        orderMan = man.getOrder();
+        //
+        // if the total of the quantities received of all the inventory items in
+        // this order is equal to the total of quantities required in the order
+        // items of the order then we set the status of the order to "Processed"  
+        //
+        if (orderMan != null) {
             sumQReq = 0;
             orderItemMan = orderMan.getItems();
             for (i = 0; i < orderItemMan.count(); i++) {
@@ -135,7 +142,7 @@ public class InventoryReceiptManagerProxy {
                 sumQReq += orderItem.getQuantity();
             }
             
-            if(sumQRec == sumQReq) 
+            if (sumQRec == sumQReq) 
                 orderMan.getOrder().setStatusId(statusProcessed);   
             
             //
