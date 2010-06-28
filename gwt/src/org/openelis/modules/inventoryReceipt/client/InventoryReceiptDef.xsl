@@ -97,7 +97,7 @@ UIRF Software License are applicable instead of those above.
                 <textbox field="String" />
               </col>
               <col key="{meta:getReceivedDate()}" width="75" header="{resource:getString($constants,'dateRec')}">
-                <calendar begin="0" end="2" pattern="{resource:getString($constants,'datePattern')}" required  = "true"/>
+                <calendar begin="0" end="2" pattern="{resource:getString($constants,'datePattern')}" />
               </col>
               <col key="{meta:getUpc()}" width="80" header="{resource:getString($constants,'upc')}">
                 <autoComplete width="120" case="LOWER" field="Integer">
@@ -106,14 +106,14 @@ UIRF Software License are applicable instead of those above.
                 </autoComplete>
               </col>
               <col key="{meta:getInventoryItemName()}" width="140" header="{resource:getString($constants,'inventoryItem')}">
-                <autoComplete width="120" case="LOWER" field="Integer" required  = "true">
+                <autoComplete width="120" case="LOWER" field="Integer" >
                   <col width="100" header="{resource:getString($constants,'name')}" />
                   <col width="150" header="{resource:getString($constants,'store')}" />
                   <col width="150" header="{resource:getString($constants,'dispensedUnits')}" />
                 </autoComplete>
               </col>
               <col key="{meta:getOrganizationName()}" width="160" header="{resource:getString($constants,'vendor')}">
-                <autoComplete width="140" case="UPPER" field="Integer" required  = "true">
+                <autoComplete width="140" case="UPPER" field="Integer" >
                   <col width="180" header="{resource:getString($constants,'name')}" />
                   <col width="110" header="{resource:getString($constants,'street')}" />
                   <col width="100" header="{resource:getString($constants,'city')}" />
@@ -124,7 +124,7 @@ UIRF Software License are applicable instead of those above.
                 <label field="Integer" />
               </col>
               <col key="{meta:getQuantityReceived()}" width="50" header="{resource:getString($constants,'numRec')}">
-                <textbox field="Integer" required  = "true"/>
+                <textbox field="Integer" />
               </col>
               <col key="{meta:getUnitCost()}" width="55" header="{resource:getString($constants,'cost')}">
                 <textbox field="Double" />
@@ -162,7 +162,7 @@ UIRF Software License are applicable instead of those above.
                         <text style="Prompt">
                           <xsl:value-of select='resource:getString($constants,"addToExisting")' />:
                         </text>
-                        <check key="addToExisting" />
+                        <check key="addToExisting" tab = "{meta:getInventoryLocationStorageLocationId()},{meta:getInventoryLocationExpirationDate()}"/>
                       </row>
                     </TablePanel>
                   </HorizontalPanel>
@@ -199,7 +199,7 @@ UIRF Software License are applicable instead of those above.
                           <xsl:value-of select='resource:getString($constants,"location")' />:
                         </text>
                         <widget colspan="7">
-                          <autoComplete key="{meta:getInventoryLocationStorageLocationId()}" width="300" field="Integer">
+                          <autoComplete key="{meta:getInventoryLocationStorageLocationId()}"  width="300" field="Integer" tab = "{meta:getInventoryLocationLotNumber()},addToExisting">
                             <col width="300" header="{resource:getString($constants,'description')}" />
                             <col width="65" header="{resource:getString($constants,'lotNum')}" />
                             <col width="55" header="{resource:getString($constants,'qty')}" />
@@ -214,7 +214,7 @@ UIRF Software License are applicable instead of those above.
                           <xsl:value-of select='resource:getString($constants,"lotNum")' />:
                         </text>
                         <widget colspan="2">
-                          <textbox key="{meta:getInventoryLocationLotNumber()}" width="100" max="30" field="String" />
+                          <textbox key="{meta:getInventoryLocationLotNumber()}" width="100" max="30" field="String" tab = "{meta:getQcReference()},{meta:getInventoryLocationStorageLocationId()}"/>
                         </widget>
                       </row>
                       <row>
@@ -222,13 +222,13 @@ UIRF Software License are applicable instead of those above.
                           <xsl:value-of select='resource:getString($constants,"extQC")' />:
                         </text>
                         <widget colspan="2">
-                          <textbox key="{meta:getQcReference()}" width="100" field="String" />
+                          <textbox key="{meta:getQcReference()}" width="100" field="String" tab = "{meta:getInventoryLocationExpirationDate()},{meta:getInventoryLocationLotNumber()}"/>
                         </widget>
                         <text style="Prompt">
                           <xsl:value-of select='resource:getString($constants,"expDate")' />:
                         </text>
                         <widget colspan="2">
-                          <calendar key="{meta:getInventoryLocationExpirationDate()}" begin="0" end="2" width="100" />
+                          <calendar key="{meta:getInventoryLocationExpirationDate()}" begin="0" end="2" width="100" tab = "addToExisting,{meta:getQcReference()}"/>
                         </widget>
 
 <!--

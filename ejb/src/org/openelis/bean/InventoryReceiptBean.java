@@ -42,7 +42,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.BuildKitDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InventoryItemViewDO;
@@ -181,7 +180,6 @@ public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryRe
         Query query;
         QueryBuilderV2 builder;
         List list;
-        QueryData field;
         
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
@@ -486,8 +484,17 @@ public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryRe
         ValidationErrorsList list;
         InventoryItemViewDO item;
         InventoryLocationViewDO locationData;
-        Integer ordeItemQ, receivedQ;
+        Integer orderItemQ, receivedQ;
 
+        //
+        // we do this here in order to make sure we don't try to validate a record
+        // that the user had no intentions of updating on the screen but was not able
+        // to remove because it represented an inventory item no quantity of which
+        // was received        
+        // 
+        if (data.getId() == null && data.getQuantityReceived() == null && data.getReceivedDate() == null)
+            return;
+        
         list = new ValidationErrorsList();
         item = null;
                 
@@ -516,12 +523,14 @@ public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryRe
             list.add(new FieldErrorException("storageLocReqForItemException", InventoryReceiptMeta.getInventoryItemName()));
         }                
                
-        ordeItemQ = data.getOrderItemQuantity();
+        orderItemQ = data.getOrderItemQuantity();
         receivedQ = data.getQuantityReceived();
         if (receivedQ == null) {
             if (data.getId() != null)
                 list.add(new FieldErrorException("numRecReqForReceivedItemsException", InventoryReceiptMeta.getQuantityReceived()));
-        } else if(ordeItemQ != null && receivedQ > ordeItemQ){
+        } else if (receivedQ < 0){
+            list.add(new FieldErrorException("numRecNotLessThanZeroException", InventoryReceiptMeta.getQuantityReceived()));
+        } else if (orderItemQ != null && receivedQ > orderItemQ){
             list.add(new FieldErrorException("numReqLessThanNumRecException", InventoryReceiptMeta.getQuantityReceived()));
         }
         

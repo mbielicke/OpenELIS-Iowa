@@ -227,7 +227,14 @@ public class InventoryItemBean implements InventoryItemRemote, InventoryItemLoca
             dup = fetchActiveByNameAndStore(data.getName(), data.getStoreId(), 1);
             if (dup.size() > 0 && DataBaseUtil.isDifferent(dup.get(0).getId(), data.getId()))
                 list.add(new FieldErrorException("fieldUniqueException", InventoryItemMeta.getName()));
-        }
+        }        
+
+        if ("Y".equals(data.getIsBulk()) && "Y".equals(data.getIsSerialMaintained()))
+            list.add(new FieldErrorException("itemCantBeBulkAndSerialReqException", null)); 
+        
+        if ("Y".equals(data.getIsBulk()) && "Y".equals(data.getIsLotMaintained()))
+            list.add(new FieldErrorException("itemCantBeBulkAndLotReqException", null));
+        
         if (list.size() > 0)
             throw list;
     }
