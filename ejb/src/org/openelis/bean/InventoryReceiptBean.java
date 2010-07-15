@@ -72,6 +72,7 @@ import org.openelis.local.OrderItemLocal;
 import org.openelis.local.OrderLocal;
 import org.openelis.local.OrganizationLocal;
 import org.openelis.manager.InventoryReceiptManager;
+import org.openelis.manager.OrderManager;
 import org.openelis.meta.InventoryReceiptMeta;
 import org.openelis.remote.InventoryReceiptRemote;
 import org.openelis.util.QueryBuilderV2;
@@ -109,7 +110,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryRe
     @EJB
     private InventoryXPutLocal                inventoryXPutBean;
 
-    private static int                        statusPending, statusBackOrdered, statusProcessed;
+    private static int                        statusPending, statusBackOrdered;
 
     private static final Logger               log  = Logger.getLogger(InventoryReceiptBean.class.getName());
 
@@ -136,23 +137,14 @@ public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryRe
             log.log(Level.SEVERE,
                     "Failed to lookup dictionary entry by system name='order_status_back_ordered'",
                     e);
-        }
-
-        try {
-            data = dictionaryBean.fetchBySystemName("order_status_processed");
-            statusProcessed = data.getId();
-        } catch (Throwable e) {
-            statusProcessed = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='order_status_processed'", e);
-        }
+        }        
     }
 
     public InventoryReceiptViewDO fetchById(Integer id) throws Exception {
         Query query;
         InventoryReceiptViewDO data;
 
-        query = manager.createNamedQuery("InventoryReceipt.FetchByOrderId");
+        query = manager.createNamedQuery("InventoryReceipt.FetchById");
         query.setParameter("id", id);
 
         try {
@@ -201,7 +193,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryRe
                           InventoryReceiptMeta.getOrderItemUnitCost() + ") ");
         builder.constructWhere(fields);
         
-        builder.addWhere(InventoryReceiptMeta.getOrderItemOrderType() + "=" + "'V' and " +
+        builder.addWhere(InventoryReceiptMeta.getOrderItemOrderType() + "=" + "'"+OrderManager.TYPE_VENDOR+"' and " +
                          InventoryReceiptMeta.getOrderItemOrderStatusId() + " IN (" +
                          statusPending + "," + statusBackOrdered + ")");
         

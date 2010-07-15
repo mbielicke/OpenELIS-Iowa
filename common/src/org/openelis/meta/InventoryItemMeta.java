@@ -76,6 +76,7 @@ public class InventoryItemMeta implements Meta, MetaMap {
                                   PARENT_INVENTORY_ITEM_NAME = "_inventoryItem.parentInventoryItem.name",
                                   CMP_COMPONENT_NAME = "_inventoryComponent.componentInventoryItem.name",
                                   CMP_COMPONENT_DESCRIPTION = "_inventoryComponent.componentInventoryItem.description",
+                                  CMP_COMPONENT_DISPENSED_UNITS_ID = "_inventoryComponent.componentInventoryItem.dispensedUnitsId",
                                   LOC_STORAGE_LOCATION_NAME = "_inventoryLocation.storageLocation.name";
 
     private static HashSet<String> names;
@@ -90,14 +91,14 @@ public class InventoryItemMeta implements Meta, MetaMap {
                                                   IS_NOT_INVENTORIED, PRODUCT_URI,
                                                   AVERAGE_LEAD_TIME, AVERAGE_COST,
                                                   AVERAGE_DAILY_USE, PARENT_INVENTORY_ITEM_ID,
-                                                  PARENT_RATIO,
-                                                  CMP_ID, CMP_INVENTORY_ITEM_ID, CMP_COMPONENT_ID,
-                                                  CMP_QUANTITY, LOC_ID,
+                                                  PARENT_RATIO, CMP_ID, CMP_INVENTORY_ITEM_ID,
+                                                  CMP_COMPONENT_ID, CMP_QUANTITY, LOC_ID,
                                                   LOC_INVENTORY_ITEM_ID, LOC_LOT_NUMBER,
                                                   LOC_STORAGE_LOCATION_ID, LOC_QUANTITY_ONHAND,
-                                                  LOC_EXPIRATION_DATE,
-                                                  PARENT_INVENTORY_ITEM_NAME, CMP_COMPONENT_NAME,
-                                                  CMP_COMPONENT_DESCRIPTION, LOC_STORAGE_LOCATION_NAME));
+                                                  LOC_EXPIRATION_DATE, PARENT_INVENTORY_ITEM_NAME,
+                                                  CMP_COMPONENT_NAME, CMP_COMPONENT_DESCRIPTION,
+                                                  CMP_COMPONENT_DISPENSED_UNITS_ID,
+                                                  LOC_STORAGE_LOCATION_NAME));
     }
 
     public static String getId() {
@@ -222,6 +223,10 @@ public class InventoryItemMeta implements Meta, MetaMap {
 
     public static String getComponentQuantity() {
         return CMP_QUANTITY;
+    }
+    
+    public static String getComponentDispensedUnitsId() {
+        return CMP_COMPONENT_DISPENSED_UNITS_ID;
     }
 
     public static String getLocationId() {

@@ -59,8 +59,8 @@ import org.openelis.utilcommon.DataBaseUtil;
 public class InventoryItemBean implements InventoryItemRemote, InventoryItemLocal {
 
     @PersistenceContext(name = "openelis")
-    private EntityManager manager;
-   
+    private EntityManager            manager;
+
     private static InventoryItemMeta meta = new InventoryItemMeta();
     
     public InventoryItemViewDO fetchById(Integer id) throws Exception {
@@ -97,6 +97,19 @@ public class InventoryItemBean implements InventoryItemRemote, InventoryItemLoca
         query = manager.createNamedQuery("InventoryItem.FetchActiveByNameAndStore");
         query.setParameter("name", name);
         query.setParameter("storeId", storeId);
+        query.setMaxResults(max);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
+    public ArrayList<InventoryItemDO> fetchActiveByNameStoreAndParentInventoryItem(String name, Integer parentInventoryItemId,
+                                                                                   int max) throws Exception {
+        Query query;
+        
+        query = manager.createNamedQuery("InventoryItem.FetchActiveByNameAndParentInventoryItem");
+        query.setParameter("name", name);
+        //query.setParameter("storeId", storeId);
+        query.setParameter("parentInventoryItemId", parentInventoryItemId);
         query.setMaxResults(max);
 
         return DataBaseUtil.toArrayList(query.getResultList());

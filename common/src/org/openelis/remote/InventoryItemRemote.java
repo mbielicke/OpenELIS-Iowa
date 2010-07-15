@@ -41,6 +41,8 @@ public interface InventoryItemRemote {
     public ArrayList<InventoryItemDO> fetchActiveByName(String name, int max) throws Exception;
 
     public ArrayList<InventoryItemDO> fetchActiveByNameAndStore(String name, Integer storeId, int max) throws Exception;
+    
+    public ArrayList<InventoryItemDO> fetchActiveByNameStoreAndParentInventoryItem(String name, Integer parentInventoryItemId, int max) throws Exception;
 
     public ArrayList<IdNameStoreVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
 }

@@ -75,7 +75,16 @@ import org.openelis.utils.Auditable;
                         "i.isBulk,i.isNotForSale,i.isSubAssembly,i.isLabor,i.isNotInventoried,i.productUri," +
                         "i.averageLeadTime,i.averageCost,i.averageDailyUse,i.parentInventoryItemId,"+
                         "i.parentRatio)"
-                      + " from InventoryItem i where i.isActive='Y' and i.storeId = :storeId and i.name like :name")
+                      + " from InventoryItem i where i.isActive='Y' and i.storeId = :storeId and i.name like :name"), 
+    @NamedQuery( name = "InventoryItem.FetchActiveByNameAndParentInventoryItem",
+                query = "select new org.openelis.domain.InventoryItemDO(i.id,i.name,i.description," +
+                        "i.categoryId,i.storeId,i.quantityMinLevel,i.quantityMaxLevel,i.quantityToReorder," +
+                        "i.dispensedUnitsId,i.isReorderAuto,i.isLotMaintained,i.isSerialMaintained,i.isActive," +
+                        "i.isBulk,i.isNotForSale,i.isSubAssembly,i.isLabor,i.isNotInventoried,i.productUri," +
+                        "i.averageLeadTime,i.averageCost,i.averageDailyUse,i.parentInventoryItemId,"+
+                        "i.parentRatio)"
+                      + " from InventoryItem i where i.isActive='Y' and i.parentInventoryItemId = :parentInventoryItemId"
+                      + " and i.name like :name ")                  
              })
 
 /*

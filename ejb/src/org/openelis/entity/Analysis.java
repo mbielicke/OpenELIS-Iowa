@@ -54,19 +54,23 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-    @NamedQuery(name = "Analysis.FetchById", query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision," + 
-                " a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId," + 
-                " a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.method.id, t.method.name,pat.name, pam.name) " +
-                " from Analysis a LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam LEFT JOIN a.test t where a.id = :id"),
-    @NamedQuery(name = "Analysis.FetchBySampleId", query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision, " + 
-                " a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId, " + 
-                " a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.method.id, t.method.name, pat.name, " + 
-                " pam.name) from Analysis a LEFT JOIN a.sampleItem si LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat " + 
-                " LEFT JOIN pat.method pam LEFT JOIN a.test t where si.sampleId = :id order by t.name, t.method.name "),
-    @NamedQuery(name = "Analysis.FetchBySampleItemId", query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision, " + 
-                " a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId, " + 
-                " a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.method.id, t.method.name, pat.name, pam.name) from " +
-                " Analysis a LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam LEFT JOIN a.test t where a.sampleItemId = :id order by t.name, t.method.name "),
+    @NamedQuery( name = "Analysis.FetchById", 
+                query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision," + 
+                        "a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId," + 
+                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.method.id, t.method.name,pat.name, pam.name) "
+                      + " from Analysis a LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam LEFT JOIN a.test t where a.id = :id"),
+    @NamedQuery( name = "Analysis.FetchBySampleId",
+                query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision, " + 
+                        "a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId, " + 
+                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.method.id, t.method.name, pat.name, " + 
+                        "pam.name)"
+                      + " from Analysis a LEFT JOIN a.sampleItem si LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat " + 
+                        " LEFT JOIN pat.method pam LEFT JOIN a.test t where si.sampleId = :id order by t.name, t.method.name "),
+    @NamedQuery( name = "Analysis.FetchBySampleItemId",
+                query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision, " + 
+                        "a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId, " + 
+                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.method.id, t.method.name, pat.name, pam.name)"
+                      + " from Analysis a LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam LEFT JOIN a.test t where a.sampleItemId = :id order by t.name, t.method.name "),
     })
                 
 @Entity
@@ -152,6 +156,7 @@ public class Analysis implements Auditable, Cloneable {
   public Integer getId() {
     return id;
   }
+  
   protected void setId(Integer id) {
     if(DataBaseUtil.isDifferent(id, this.id))
       this.id = id;
@@ -160,6 +165,7 @@ public class Analysis implements Auditable, Cloneable {
   public Integer getSampleItemId() {
     return sampleItemId;
   }
+  
   public void setSampleItemId(Integer sampleItemId) {
     if(DataBaseUtil.isDifferent(sampleItemId, this.sampleItemId))
       this.sampleItemId = sampleItemId;
@@ -168,6 +174,7 @@ public class Analysis implements Auditable, Cloneable {
   public Integer getRevision() {
     return revision;
   }
+  
   public void setRevision(Integer revision) {
     if(DataBaseUtil.isDifferent(revision, this.revision))
       this.revision = revision;
@@ -176,6 +183,7 @@ public class Analysis implements Auditable, Cloneable {
   public Integer getTestId() {
     return testId;
   }
+  
   public void setTestId(Integer testId) {
     if(DataBaseUtil.isDifferent(testId, this.testId))
       this.testId = testId;
@@ -184,6 +192,7 @@ public class Analysis implements Auditable, Cloneable {
   public Integer getSectionId() {
     return sectionId;
   }
+  
   public void setSectionId(Integer sectionId) {
     if(DataBaseUtil.isDifferent(sectionId, this.sectionId))
       this.sectionId = sectionId;
@@ -192,6 +201,7 @@ public class Analysis implements Auditable, Cloneable {
   public Integer getPreAnalysisId() {
     return preAnalysisId;
   }
+  
   public void setPreAnalysisId(Integer preAnalysisId) {
     if(DataBaseUtil.isDifferent(preAnalysisId, this.preAnalysisId))
       this.preAnalysisId = preAnalysisId;
@@ -200,6 +210,7 @@ public class Analysis implements Auditable, Cloneable {
   public Integer getParentAnalysisId() {
     return parentAnalysisId;
   }
+  
   public void setParentAnalysisId(Integer parentAnalysisId) {
     if(DataBaseUtil.isDifferent(parentAnalysisId, this.parentAnalysisId))
       this.parentAnalysisId = parentAnalysisId;
@@ -216,6 +227,7 @@ public class Analysis implements Auditable, Cloneable {
   public String getIsReportable() {
     return isReportable;
   }
+  
   public void setIsReportable(String isReportable) {
     if(DataBaseUtil.isDifferent(isReportable, this.isReportable ))
       this.isReportable = isReportable;
@@ -224,6 +236,7 @@ public class Analysis implements Auditable, Cloneable {
   public Integer getUnitOfMeasureId() {
     return unitOfMeasureId;
   }
+  
   public void setUnitOfMeasureId(Integer unitOfMeasureId) {
     if(DataBaseUtil.isDifferent(unitOfMeasureId, this.unitOfMeasureId))
       this.unitOfMeasureId = unitOfMeasureId;
@@ -232,73 +245,95 @@ public class Analysis implements Auditable, Cloneable {
   public Integer getStatusId() {
     return statusId;
   }
+  
   public void setStatusId(Integer statusId) {
     if(DataBaseUtil.isDifferent(statusId, this.statusId))
       this.statusId = statusId;
   }
 
   public Datetime getAvailableDate() {
-    if(availableDate == null)
-      return null;
-    return new Datetime(Datetime.YEAR,Datetime.MINUTE,availableDate);
+      return DataBaseUtil.toYM(availableDate);
   }
+  
   public void setAvailableDate (Datetime availableDate){
       if(DataBaseUtil.isDifferentYM(availableDate, this.availableDate))
           this.availableDate = availableDate.getDate();
   }
 
   public Datetime getStartedDate() {
-    if(startedDate == null)
-      return null;
-    return new Datetime(Datetime.YEAR,Datetime.MINUTE,startedDate);
+      return DataBaseUtil.toYM(startedDate);
   }
   
   public void setStartedDate (Datetime startedDate){
-    if(DataBaseUtil.isDifferentYM(startedDate, this.startedDate))
-      this.startedDate = startedDate.getDate();
+      if(DataBaseUtil.isDifferentYM(startedDate, this.startedDate))
+          this.startedDate = startedDate.getDate();
   }
 
   public Datetime getCompletedDate() {
-    if(completedDate == null)
-      return null;
-    return new Datetime(Datetime.YEAR,Datetime.MINUTE,completedDate);
+      return DataBaseUtil.toYM(completedDate);
   }
+  
   public void setCompletedDate (Datetime completedDate){
-    if(DataBaseUtil.isDifferentYM(completedDate, this.completedDate))
-      this.completedDate = completedDate.getDate();
+      if(DataBaseUtil.isDifferentYM(completedDate, this.completedDate))
+          this.completedDate = completedDate.getDate();
   }
 
   public Datetime getReleasedDate() {
-    if(releasedDate == null)
-      return null;
-    return new Datetime(Datetime.YEAR,Datetime.MINUTE,releasedDate);
+      return DataBaseUtil.toYM(releasedDate);
   }
+  
   public void setReleasedDate (Datetime releasedDate){
-    if(DataBaseUtil.isDifferentYM(releasedDate, this.releasedDate))
-      this.releasedDate = releasedDate.getDate();
+      if(DataBaseUtil.isDifferentYM(releasedDate, this.releasedDate))
+          this.releasedDate = releasedDate.getDate();
   }
 
   public Datetime getPrintedDate() {
-    if(printedDate == null)
-      return null;
-    return new Datetime(Datetime.YEAR,Datetime.MINUTE,printedDate);
+      return DataBaseUtil.toYM(printedDate);
   }
+  
   public void setPrintedDate (Datetime printedDate){
-    if(DataBaseUtil.isDifferentYM(printedDate, this.printedDate))
-      this.printedDate = printedDate.getDate();
+      if(DataBaseUtil.isDifferentYM(printedDate, this.printedDate))
+        this.printedDate = printedDate.getDate();
   }
   
   public Test getTest() {
       return test;
   }
+  
   public void setTest(Test test) {
       this.test = test;
   }
+  
   public Collection<AnalysisQaevent> getAnalysisQAEvent() {
       return analysisQAEvent;
   }
+  
   public void setAnalysisQAEvent(Collection<AnalysisQaevent> analysisQAEvent) {
       this.analysisQAEvent = analysisQAEvent;
+  }
+  
+  public SampleItem getSampleItem() {
+      return sampleItem;
+  }
+  
+  public void setSampleItem(SampleItem sampleItem) {
+      this.sampleItem = sampleItem;
+  }
+  
+  public Analysis getPreAnalysis() {
+      return preAnalysis;
+  }
+  
+  public void setPreAnalysis(Analysis preAnalysis) {
+      this.preAnalysis = preAnalysis;
+  }
+  
+  public Section getSection() {
+      return section;
+  }
+  
+  public void setSection(Section section) {
+      this.section = section;
   }
   
   public void setClone() {
@@ -335,22 +370,4 @@ public class Analysis implements Auditable, Cloneable {
 
         return audit;
     }
-public SampleItem getSampleItem() {
-    return sampleItem;
-}
-public void setSampleItem(SampleItem sampleItem) {
-    this.sampleItem = sampleItem;
-}
-public Analysis getPreAnalysis() {
-    return preAnalysis;
-}
-public void setPreAnalysis(Analysis preAnalysis) {
-    this.preAnalysis = preAnalysis;
-}
-public Section getSection() {
-    return section;
-}
-public void setSection(Section section) {
-    this.section = section;
-}
 }   

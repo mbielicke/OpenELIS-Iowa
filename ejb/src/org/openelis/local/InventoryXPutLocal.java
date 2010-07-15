@@ -38,7 +38,7 @@ public interface InventoryXPutLocal {
     
     public ArrayList<InventoryXPutDO> fetchByInventoryReceiptId(Integer id) throws Exception;
     
-    public ArrayList<InventoryXPutDO> fetchByInventoryLocationId(Integer id) throws Exception;
+    public InventoryXPutDO fetchByInventoryLocationId(Integer id) throws Exception;
 
     public InventoryXPutDO add(InventoryXPutDO data) throws Exception;
 
