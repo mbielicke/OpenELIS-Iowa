@@ -36,6 +36,8 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.manager.InventoryItemManager;
 import org.openelis.manager.StorageLocationManager;
 
@@ -62,9 +64,16 @@ public class LocationTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                table.enable(event.getState() == State.QUERY);
+                table.enable(true);
                 table.setQueryMode(event.getState() == State.QUERY);
             }
+        });
+        
+        table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                if(state != State.QUERY) 
+                    event.cancel();                
+            }            
         });
     }
 

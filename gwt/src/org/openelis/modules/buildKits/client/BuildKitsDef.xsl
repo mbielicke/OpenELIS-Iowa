@@ -1,3 +1,4 @@
+
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -24,6 +25,7 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
+
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -47,7 +49,9 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="BuildKits" name="{resource:getString($constants,'buildKits')}">
       <VerticalPanel padding="0" spacing="0">
+
 <!--button panel code-->
+
         <AbsolutePanel spacing="0" style="ButtonPanelContainer">
           <HorizontalPanel>
             <xsl:call-template name="addButton">
@@ -68,100 +72,113 @@ UIRF Software License are applicable instead of those above.
             </xsl:call-template>
           </HorizontalPanel>
         </AbsolutePanel>
+
 <!--end button panel-->
+
         <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
-          <TablePanel style="Form">
-            <row>
-              <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"kit")' />:
-              </text>
-              <autoComplete key="{meta:getName()}" width="190" case="LOWER" tab="numRequested,{meta:getLocationExpirationDate()}" field="Integer" required="true">
-                <col width="135" header="{resource:getString($constants,'name')}" />
-                <col width="130" header="{resource:getString($constants,'store')}" />
-                <col width="110" header="{resource:getString($constants,'dispensedUnits')}" />
-              </autoComplete>
-              <widget colspan="2">
+          <HorizontalPanel>
+            <TablePanel style="Form">
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"kit")' />:
+                </text>
+                <autoComplete key="{meta:getName()}" width="190" case="LOWER" tab="numRequested, componentTable" required="true" field="Integer" > 
+                  <col width="135" header="{resource:getString($constants,'name')}" />
+                  <col width="200" header="{resource:getString($constants,'desc')}" />
+                  <col width="130" header="{resource:getString($constants,'store')}" />
+                  <col width="110" header="{resource:getString($constants,'dispensedUnits')}" />
+                </autoComplete>
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"numRequested")' />:
+                </text>
+                <textbox key="numRequested" width="50" max="20" tab="addToExisting, {meta:getName()}" required="true" field="Integer" />
+              </row>              
+            </TablePanel>
+            <TablePanel>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"addToExisting")' />:
+                </text>
+                <check key="addToExisting" tab = "{meta:getLocationStorageLocationName()}, numRequested"></check>
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"location")' />:
+                </text>
+                <autoComplete key="{meta:getLocationStorageLocationName()}" width="180" case="LOWER" tab="{meta:getLocationLotNumber()}, addToExisting" required="true" field="Integer" > 
+                  <col width="300" header="{resource:getString($constants,'description')}" />
+                  <col width="65" header="{resource:getString($constants,'lotNum')}" />
+                  <col width="55" header="{resource:getString($constants,'qty')}" />
+                  <col width="65" header="{resource:getString($constants,'expDate')}">
+                    <calendar begin="0" end="2" pattern="{resource:getString($constants,'datePattern')}" />
+                  </col>  
+                </autoComplete>
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"lotNum")' />:
+                </text>
+                <textbox key="{meta:getLocationLotNumber()}" width="100" max="30" tab = "{meta:getLocationExpirationDate()}, {meta:getLocationStorageLocationName()}" field="String" />
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"expDate")' />:
+                </text>
+                <calendar key="{meta:getLocationExpirationDate()}" width="100" begin="0" end="2" tab = "qcReference,{meta:getLocationLotNumber()}" />
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"extQC")' />:
+                </text>
+                <widget colspan="2">
+                  <textbox key="qcReference" width="100" field="String" tab = "componentTable,{meta:getLocationExpirationDate()}"/>
+                </widget>
+              </row>
+            </TablePanel>
+          </HorizontalPanel>
+          <widget>
+            <table key="componentTable" width="auto" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getLocationExpirationDate()}" title="">
+              <col key="{meta:getComponentName()}" width="160" header="{resource:getString($constants,'component')}">
+                <label field="String" />
+              </col>
+              <col key="{meta:getLocationStorageLocationName()}" width="177" header="{resource:getString($constants,'location')}">
+                <autoComplete width="137" case="LOWER" field="Integer" required="true">
+                  <col width="300" header="{resource:getString($constants,'description')}" />
+                  <col width="65" header="{resource:getString($constants,'lotNum')}" />
+                  <col width="55" header="{resource:getString($constants,'qty')}" />
+                  <col width="65" header="{resource:getString($constants,'expDate')}">
+                    <calendar begin="0" end="2" pattern="{resource:getString($constants,'datePattern')}" />
+                  </col>                                   
+                </autoComplete>
+              </col>
+              <col key="{meta:getLocationLotNumber()}" width="80" header="{resource:getString($constants,'lotNum')}">
+                <label field="String" />
+              </col>
+              <col key="{meta:getComponentDispensedUnitsId()}" width="60" header="{resource:getString($constants,'unit')}">
+                <dropdown width="100" field="Integer" />
+              </col>
+              <col key="total" width="60" header="{resource:getString($constants,'total')}">
+                <textbox max="10" field="Integer"/>
+              </col>
+              <col key="{meta:getLocationQuantityOnhand()}" width="60" header="{resource:getString($constants,'onHand')}">
+                <label field="Integer" />
+              </col>
+            </table>
+          </widget>
+          <widget style="TableButtonFooter">
+            <HorizontalPanel>
+              <appButton key="transferButton" style="Button">
                 <HorizontalPanel>
-                  <check key="addToExisting" tab="{meta:getLocationStorageLocationName()},numRequested"></check>
-                  <text style="Prompt">
-                    <xsl:value-of select='resource:getString($constants,"addToExisting")' />
+                  <AbsolutePanel style="RemoveRowButtonImage" />
+                  <text>
+                    <xsl:value-of select="resource:getString($constants,'transfer')" />
                   </text>
                 </HorizontalPanel>
-              </widget>
-            </row>
-            <row>
-              <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"numRequested")' />:
-              </text>
-              <textbox key="numRequested" width="50" max="20" tab="addToExisting,{meta:getName()}" field="Integer" required="true" />
-              <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"location")' />:
-              </text>
-              <autoComplete key="{meta:getLocationStorageLocationName()}" width="160" case="LOWER" tab="{meta:getLocationLotNumber()},addToExisting" field="Integer" required="true">
-                <col width="300" header="{resource:getString($constants,'description')}" />
-              </autoComplete>
-            </row>
-            <row>
-              <widget colspan="2">
-                <HorizontalPanel />
-              </widget>
-              <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"lotNum")' />:
-              </text>
-              <textbox key="{meta:getLocationLotNumber()}" width="100" max="30" tab="{meta:getLocationExpirationDate()},{meta:getLocationStorageLocationName()}" field="String" />
-            </row>
-            <row>
-              <widget colspan="2">
-                <HorizontalPanel />
-              </widget>
-              <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"expDate")' />:
-              </text>
-              <calendar key="{meta:getLocationExpirationDate()}" begin="0" end="2" tab="{meta:getName()},{meta:getLocationLotNumber()}" />
-            </row>
-          </TablePanel>
-          <TablePanel>
-            <row>
-              <widget colspan="4">
-                <table key="subItemsTable" width="auto" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getIsNotInventoried()}" title="">
-                  <col key="{meta:getComponentComponentId()}" width="160" header="{resource:getString($constants,'kitComponentName')}">
-                    <label field="Integer" required="true" />
-                  </col>
-                  <col key="{meta:getLocationStorageLocationName()}" width="177" header="{resource:getString($constants,'location')}">
-                    <autoComplete width="137" case="LOWER" field="Integer" required="true">
-                      <col width="300" header="{resource:getString($constants,'description')}" />
-                      <col width="65" header="{resource:getString($constants,'lotNum')}" />
-                      <col width="30" header="{resource:getString($constants,'qty')}" />
-                    </autoComplete>
-                  </col>
-                  <col key="{meta:getLocationLotNumber()}" width="80" header="{resource:getString($constants,'lotNum')}">
-                    <label field="String" />
-                  </col>
-                  <col key="{meta:getComponentQuantity()}" width="60" header="{resource:getString($constants,'unit')}">
-                    <label field="String" />
-                  </col>
-                  <col key="total" width="60" header="{resource:getString($constants,'total')}">
-                    <textbox max="10" field="Double" required="true" />
-                  </col>
-                  <col key="{meta:getLocationQuantityOnhand()}" width="60" header="{resource:getString($constants,'onHand')}">
-                    <label field="Integer" required="true" />
-                  </col>
-                </table>
-              </widget>
-            </row>
-            <row>
-              <widget colspan="4">
-                <appButton key="transferButton" style="Button" action="transfer">
-                  <HorizontalPanel>
-                    <AbsolutePanel style="RemoveRowButtonImage" />
-                    <text>
-                      <xsl:value-of select='resource:getString($constants,"transfer")' />
-                    </text>
-                  </HorizontalPanel>
-                </appButton>
-              </widget>
-            </row>
-          </TablePanel>
+              </appButton>
+            </HorizontalPanel>
+          </widget>
         </VerticalPanel>
       </VerticalPanel>
     </screen>

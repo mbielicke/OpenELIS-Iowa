@@ -645,10 +645,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
             public void onStateChange(StateChangeEvent<State> event) {
                 shipNoteTab.setState(event.getState());
             }
-        });
-                
-        screen = this;
-        inventoryItemMap = new HashMap<Integer, InventoryItemViewDO>();
+        });               
         
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
             public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
@@ -658,6 +655,9 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                 }
             }
         });
+        
+        screen = this;
+        inventoryItemMap = new HashMap<Integer, InventoryItemViewDO>();
     }
     
     protected void query() {    

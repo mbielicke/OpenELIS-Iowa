@@ -281,7 +281,7 @@ UIRF Software License are applicable instead of those above.
                         <label field = "String"/>
                       </col>
                       <col key="{meta:getComponentQuantity()}" width="70" header="{resource:getString($constants,'quantity')}">
-                        <textbox max="10" field="Double" required="true" />
+                        <textbox max="10" field="Integer" required="true" />
                       </col>
                     </table>
                     <widget style="TableButtonFooter">
@@ -311,7 +311,7 @@ UIRF Software License are applicable instead of those above.
                   <VerticalPanel padding="0" spacing="0">
                     <table key="locationTable" width="auto" maxRows="11" showScroll="ALWAYS">
                       <col key="{meta:getLocationStorageLocationName()}" width="172" sort="true" header="{resource:getString($constants,'location')}">
-                        <textbox max="20" field="String" />
+                        <textbox max="40" field="String" />
                       </col>
                       <col key="{meta:getLocationLotNumber()}" width="110" sort="true" header="{resource:getString($constants,'lotNum')}">
                         <textbox max="20" field="String" />

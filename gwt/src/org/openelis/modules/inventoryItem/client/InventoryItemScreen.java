@@ -34,6 +34,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameStoreVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InventoryComponentViewDO;
+import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.LastPageException;
@@ -47,6 +48,8 @@ import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.BeforeCloseEvent;
 import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.GetMatchesEvent;
+import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
@@ -609,6 +612,34 @@ public class InventoryItemScreen extends Screen {
                 parentInventoryItemId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 parentInventoryItemId.setQueryMode(event.getState() == State.QUERY);
             }
+        });
+        
+        parentInventoryItemId.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                InventoryItemDO data;
+                TableDataRow row;
+                ArrayList<InventoryItemDO> list;
+                ArrayList<TableDataRow> model;
+                DictionaryDO store, units;
+
+                try {
+                    list = service.callList("fetchActiveByName", event.getMatch());
+                    model = new ArrayList<TableDataRow>();
+
+                    for (int i = 0; i < list.size(); i++ ) {
+                        data = (InventoryItemDO) list.get(i);
+                        store = DictionaryCache.getEntryFromId(data.getStoreId());
+                        units = DictionaryCache.getEntryFromId(data.getDispensedUnitsId());
+                        row = new TableDataRow(data.getId(), data.getName(),
+                                               store.getEntry(), units.getEntry());
+                        row.data = data;
+                        model.add(row);
+                    }
+                    parentInventoryItemId.showAutoMatches(model);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+            }                                        
         });
 
         parentRatio = (TextBox)def.getWidget(InventoryItemMeta.getParentRatio());
