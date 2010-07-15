@@ -86,7 +86,7 @@ public class BuildKitsScreen extends Screen {
     
     private SecurityModule          security;
     private BuildKitsScreen         screen;
-    private InventoryTransferScreen inventoryTransferScreen;
+    //private InventoryTransferScreen inventoryTransferScreen;
     private BuildKitManager         manager;          
     private AppButton               addButton, commitButton, abortButton;
     private CalendarLookUp          locationExpirationDate;
@@ -861,7 +861,7 @@ public class BuildKitsScreen extends Screen {
         ScreenWindow modal; 
         modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
         modal.setName(consts.get("inventoryTransfer"));
-        try {
+        /*try {
             if (inventoryTransferScreen == null)
                 inventoryTransferScreen = new InventoryTransferScreen(modal);
         } catch (Throwable e) {
@@ -869,7 +869,7 @@ public class BuildKitsScreen extends Screen {
             Window.alert(e.getMessage());
             return;
         }
-        modal.setContent(inventoryTransferScreen);
+        modal.setContent(inventoryTransferScreen);*/
     }    
 }
 /*
