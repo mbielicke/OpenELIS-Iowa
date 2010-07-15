@@ -34,13 +34,13 @@ public class InventoryComponentDO extends DataObject {
     private static final long serialVersionUID = 1L;
 
     protected Integer         id, inventoryItemId, componentId;
-    protected Double          quantity;
+    protected Integer          quantity;
 
     public InventoryComponentDO() {
     }
 
     public InventoryComponentDO(Integer id, Integer inventoryItemId, Integer componentId,
-                                Double quantity) {
+                                Integer quantity) {
         setId(id);
         setInventoryItemId(inventoryItemId);
         setComponentId(componentId);
@@ -75,11 +75,11 @@ public class InventoryComponentDO extends DataObject {
         _changed = true;
     }
 
-    public Double getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Double quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
         _changed = true;
     }

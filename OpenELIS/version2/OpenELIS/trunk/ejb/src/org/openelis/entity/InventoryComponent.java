@@ -51,7 +51,7 @@ import org.openelis.utils.Auditable;
 @NamedQueries({
     @NamedQuery( name = "InventoryComponent.FetchByInventoryItemId",
                  query = "select new org.openelis.domain.InventoryComponentViewDO(c.id,"+
-                         "c.inventoryItemId,c.componentId,c.quantity,i.name,i.description)"
+                         "c.inventoryItemId,c.componentId,c.quantity,i.name,i.description, i.dispensedUnitsId)"
                        + " from InventoryComponent c left join c.componentInventoryItem i where c.inventoryItemId = :id")})
 //
 //                @NamedQuery(name = "InventoryComponent.InventoryComponentsByItem", query = "select new org.openelis.domain.InventoryComponentDO(c.id,c.inventoryItemId,c.componentId,i.name,i.description, "
@@ -74,7 +74,7 @@ public class InventoryComponent implements Auditable, Cloneable {
     private Integer            componentId;
 
     @Column(name = "quantity")
-    private Double             quantity;
+    private Integer             quantity;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "component_id", insertable = false, updatable = false)
@@ -110,11 +110,11 @@ public class InventoryComponent implements Auditable, Cloneable {
             this.componentId = componentId;
     }
 
-    public Double getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Double quantity) {
+    public void setQuantity(Integer quantity) {
         if (DataBaseUtil.isDifferent(quantity, this.quantity))
             this.quantity = quantity;
     }

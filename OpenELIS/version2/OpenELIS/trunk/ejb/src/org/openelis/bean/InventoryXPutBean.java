@@ -31,10 +31,12 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.openelis.domain.InventoryXPutDO;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.InventoryLocationLocal;
 import org.openelis.local.InventoryXPutLocal;
@@ -63,9 +65,18 @@ public class InventoryXPutBean implements InventoryXPutLocal {
         return DataBaseUtil.toArrayList(list);
     }
     
-    public ArrayList<InventoryXPutDO> fetchByInventoryLocationId(Integer id) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
+    public InventoryXPutDO fetchByInventoryLocationId(Integer id) throws Exception {
+        Query query;
+        
+        query = manager.createNamedQuery("InventoryXPut.FetchByInventoryLocationId");
+        query.setParameter("id", id);
+        try {
+            return (InventoryXPutDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
     }  
     
     public ArrayList<InventoryXPutDO> fetchByOrderId(Integer id) throws Exception {

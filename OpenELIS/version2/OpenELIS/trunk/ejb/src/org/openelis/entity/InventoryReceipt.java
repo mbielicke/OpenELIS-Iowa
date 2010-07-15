@@ -90,16 +90,7 @@ import org.openelis.utils.Auditable;
                        + " from InventoryReceipt r left join r.orderItem i where r.id = :id"),
     @NamedQuery ( name = "InventoryReceipt.FetchByUpc",
                  query = "select distinct new org.openelis.domain.IdNameVO(r.inventoryItemId, r.upc, i.name)"
-                       + " from InventoryReceipt r left join r.inventoryItem i where r.upc like :upc"),                   
-    @NamedQuery( name = "InventoryReceipt.OrderItemsNotFilled",
-                query = "select oi.id from OrderItem oi, Order o, Dictionary d where oi.orderId = o.id and " + 
-                        "d.id = o.statusId and d.systemName <> 'order_status_cancelled' and d.systemName <> 'order_status_processed' and " + 
-                        "oi.quantity > (select sum(ir.quantityReceived) "
-                       +" from InventoryReceipt ir left join ir.orderItem ois where ois.id = oi.id) and o.id = :id"),
-    @NamedQuery( name = "InventoryReceipt.OrdersNotCompletedCanceled",
-                query = "select o.id "
-                     +  " from Order o, Dictionary d where d.id = o.statusId and d.systemName <> 'order_status_cancelled' and"
-                     +	" d.systemName <> 'order_status_processed' and o.id = :id") })
+                       + " from InventoryReceipt r left join r.inventoryItem i where r.upc like :upc")})
 
 @Entity
 @Table(name = "inventory_receipt")

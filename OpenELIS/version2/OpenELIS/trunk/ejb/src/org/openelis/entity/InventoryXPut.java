@@ -52,7 +52,10 @@ import org.openelis.utils.Auditable;
 @NamedQueries({
     @NamedQuery( name = "InventoryXPut.FetchByInventoryReceiptId",
                 query = "select distinct new org.openelis.domain.InventoryXPutDO(tr.id, tr.inventoryReceiptId, tr.inventoryLocationId, tr.quantity)"
-                      +	" from InventoryXPut tr where tr.inventoryReceiptId = :id")})
+                      +	" from InventoryXPut tr where tr.inventoryReceiptId = :id"),
+    @NamedQuery( name = "InventoryXPut.FetchByInventoryLocationId",
+                query = "select distinct new org.openelis.domain.InventoryXPutDO(tr.id, tr.inventoryReceiptId, tr.inventoryLocationId, tr.quantity)"
+                      + " from InventoryXPut tr where tr.inventoryLocationId = :id")})
 @Entity
 @Table(name = "inventory_x_put")
 @EntityListeners( {AuditUtil.class})

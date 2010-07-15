@@ -38,17 +38,22 @@ public class InventoryComponentViewDO extends InventoryComponentDO {
 
     private static final long serialVersionUID = 1L;
 
-    String                    componentName, componentDescription;
+    protected String          componentName, componentDescription, inventoryLocationLotNumber,
+                              inventoryLocationStorageLocationName,
+                              inventoryLocationStorageLocationUnitDescription,
+                              inventoryLocationStorageLocationLocation;
+    protected Integer         componentDispensedUnitsId, inventoryLocationId, inventoryLocationQuantityOnhand, total;
 
     public InventoryComponentViewDO() {
     }
 
     public InventoryComponentViewDO(Integer id, Integer inventoryItemId, Integer componentId,
-                                    Double quantity, String componentName,
-                                    String componentDescription) {
+                                    Integer quantity, String componentName,
+                                    String componentDescription, Integer componentDispensedUnitsId) {
         super(id, inventoryItemId, componentId, quantity);
         setComponentName(componentName);
         setComponentDescription(componentDescription);
+        setComponentDispensedUnitsId(componentDispensedUnitsId);
     }
 
     public String getComponentName() {
@@ -66,4 +71,70 @@ public class InventoryComponentViewDO extends InventoryComponentDO {
     public void setComponentDescription(String componentDescription) {
         this.componentDescription = DataBaseUtil.trim(componentDescription);
     }
+
+    public Integer getComponentDispensedUnitsId() {
+        return componentDispensedUnitsId;
+    }
+
+    public void setComponentDispensedUnitsId(Integer componentDispensedUnitsId) {
+        this.componentDispensedUnitsId = componentDispensedUnitsId;
+    }
+
+    public Integer getInventoryLocationId() {
+        return inventoryLocationId;
+    }
+
+    public void setInventoryLocationId(Integer inventoryLocationId) {
+        this.inventoryLocationId = inventoryLocationId;
+    }
+    
+    public String getInventoryLocationLotNumber() {
+        return inventoryLocationLotNumber;
+    }
+
+    public void setInventoryLocationLotNumber(String inventoryLocationLotNumber) {
+        this.inventoryLocationLotNumber = DataBaseUtil.trim(inventoryLocationLotNumber);
+    }
+
+    public String getInventoryLocationStorageLocationName() {
+        return inventoryLocationStorageLocationName;
+    }
+
+    public void setInventoryLocationStorageLocationName(String inventoryLocationStorageLocationName) {
+        this.inventoryLocationStorageLocationName = DataBaseUtil.trim(inventoryLocationStorageLocationName);
+    }
+
+    public String getInventoryLocationStorageLocationUnitDescription() {
+        return inventoryLocationStorageLocationUnitDescription;
+    }
+
+    public void setInventoryLocationStorageLocationUnitDescription(String inventoryLocationStorageLocationUnitDescription) {
+        this.inventoryLocationStorageLocationUnitDescription = DataBaseUtil.trim(inventoryLocationStorageLocationUnitDescription);
+    }
+
+    public String getInventoryLocationStorageLocationLocation() {
+        return inventoryLocationStorageLocationLocation;
+    }
+
+    public void setInventoryLocationStorageLocationLocation(String inventoryLocationStorageLocationLocation) {
+        this.inventoryLocationStorageLocationLocation = inventoryLocationStorageLocationLocation;
+    }
+
+    public Integer getInventoryLocationQuantityOnhand() {
+        return inventoryLocationQuantityOnhand;
+    }
+
+    public void setInventoryLocationQuantityOnhand(Integer inventoryLocationQuantityOnhand) {
+        this.inventoryLocationQuantityOnhand = inventoryLocationQuantityOnhand;
+    }
+
+    public Integer getTotal() {
+        return total;
+    }
+
+    public void setTotal(Integer total) {
+        this.total = total;
+    }
+    
+    
 }

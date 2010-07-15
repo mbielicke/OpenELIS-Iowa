@@ -114,6 +114,19 @@ public class InventoryLocationBean implements InventoryLocationLocal, InventoryL
 
         return DataBaseUtil.toArrayList(query.getResultList());
     }
+    
+    public ArrayList<InventoryLocationViewDO> fetchByLocationNameInventoryItemIdStoreId(String match, Integer inventoryItemId,
+                                                                                        Integer storeId, int maxResults) throws Exception {
+        Query query;
+        
+        query = manager.createNamedQuery("InventoryLocation.FetchByLocationNameItemIdAndStoreId");
+        query.setParameter("name", match);
+        query.setParameter("inventoryItemId", inventoryItemId);
+        query.setParameter("storeId", storeId);
+        query.setMaxResults(maxResults);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
 
     public InventoryLocationViewDO add(InventoryLocationViewDO data) throws Exception {
         InventoryLocation entity;
