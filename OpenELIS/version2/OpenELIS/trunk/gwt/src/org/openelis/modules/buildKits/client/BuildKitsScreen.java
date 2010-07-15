@@ -837,7 +837,8 @@ public class BuildKitsScreen extends Screen {
                     tableRow = new TableDataRow(6);
                     tableRow.cells.get(0).setValue(data.getComponentName() + " , " +
                                               data.getComponentDescription());
-                    tableRow.cells.get(3).setValue(data.getComponentDispensedUnitsId());   
+                    tableRow.cells.get(3).setValue(data.getComponentDispensedUnitsId());  
+                    tableRow.cells.get(4).setValue(data.getTotal());
                     if (data.getInventoryLocationId() != null) {
                         tableRow.cells.get(1).setValue(new TableDataRow(data.getInventoryLocationId(),data.getInventoryLocationStorageLocationName() + ", " +
                                                        data.getInventoryLocationStorageLocationUnitDescription() + " " +
