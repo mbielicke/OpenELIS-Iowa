@@ -230,17 +230,6 @@ UIRF Software License are applicable instead of those above.
                         <widget colspan="2">
                           <calendar key="{meta:getInventoryLocationExpirationDate()}" begin="0" end="2" width="100" tab = "addToExisting,{meta:getQcReference()}"/>
                         </widget>
-
-<!--
-  
-<text style="Prompt">
-<xsl:value-of select='resource:getString($constants,"extReference")' />:
-</text>
-<widget colspan="4">
-<textbox key="{meta:getExternalReference()}" width="100" field="String" />
-</widget>
-  -->
-
                       </row>
                     </TablePanel>
                   </HorizontalPanel>

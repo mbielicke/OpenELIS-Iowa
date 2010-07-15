@@ -359,7 +359,6 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                 Query query;
                 QueryData field;
                 String param;
-                ArrayList<Integer> storLocIdList;
                 
                 if(index == -1)
                     return;
@@ -372,7 +371,6 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                 window.setBusy();
                 model = new ArrayList<TableDataRow>();
                 try {
-                    storLocIdList = new ArrayList<Integer>();
                     itemId = data.getInventoryItemId();
                     if ("Y".equals(addToExisting.getValue()) && itemId != null) {   
                         fields = new ArrayList<QueryData>();
@@ -401,7 +399,6 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                             row.cells.get(3).setValue(invLoc.getExpirationDate());
 
                             row.data = invLoc;
-                            storLocIdList.add(invLoc.getStorageLocationId());
 
                             model.add(row);
                         }
@@ -410,19 +407,18 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                         for (i = 0; i < storLocList.size(); i++ ) {
                             row = new TableDataRow(4);
                             storLoc = storLocList.get(i);
-                            if ( !storLocIdList.contains(storLoc.getId())) {
-                                row.cells.get(0).setValue(storLoc.getName() + ", " +
-                                                          storLoc.getStorageUnitDescription() + " " + 
-                                                          storLoc.getLocation());
-                                invLoc = new InventoryLocationViewDO();
-                                invLoc.setStorageLocationId(storLoc.getId());
-                                invLoc.setStorageLocationName(storLoc.getName());
-                                invLoc.setStorageLocationUnitDescription(storLoc.getStorageUnitDescription());
-                                invLoc.setStorageLocationLocation(storLoc.getLocation());
-                                row.data = invLoc;
+                            row.cells.get(0).setValue(storLoc.getName() + ", " +
+                                                      storLoc.getStorageUnitDescription() + " " + 
+                                                      storLoc.getLocation());
+                            invLoc = new InventoryLocationViewDO();
+                            invLoc.setStorageLocationId(storLoc.getId());
+                            invLoc.setStorageLocationName(storLoc.getName());
+                            invLoc.setStorageLocationUnitDescription(storLoc.getStorageUnitDescription());
+                            invLoc.setStorageLocationLocation(storLoc.getLocation());
+                            row.data = invLoc;
 
-                                model.add(row);
-                            }
+                            model.add(row);
+
                         }
                     }
                     inventoryLocationStorageLocationName.showAutoMatches(model);

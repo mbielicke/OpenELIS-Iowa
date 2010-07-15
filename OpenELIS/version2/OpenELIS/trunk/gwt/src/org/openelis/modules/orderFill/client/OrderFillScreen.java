@@ -138,6 +138,14 @@ public class OrderFillScreen extends Screen {
      */
     private void postConstructor() {
         tab = Tabs.ITEM;
+        
+        try {
+            DictionaryCache.preloadByCategorySystemNames("order_status", "order_ship_from");
+        } catch (Exception e) {
+            Window.alert("Fill Order Screen: missing dictionary entry; " + e.getMessage());
+            window.close();
+        }
+        
         initialize(); 
         setState(State.DEFAULT);
         initializeDropdowns();

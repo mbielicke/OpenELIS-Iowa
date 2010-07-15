@@ -53,9 +53,11 @@ public class InventoryItemService {
     }
 
     public ArrayList<InventoryItemDO> fetchActiveByNameAndStore(Query query) throws Exception {
-        Integer storeId = null;
-        String name = null;
+        Integer storeId;
+        String name;
         
+        storeId = null;
+        name = null;
         // parse the query to find name and/or store
         for (QueryData field : query.getFields()) {
             if (field.key != null) {
@@ -69,6 +71,29 @@ public class InventoryItemService {
             return remote().fetchActiveByName(name+"%", 10);
         else
             return remote().fetchActiveByNameAndStore(name+"%", storeId, 10);
+    }
+    
+    public ArrayList<InventoryItemDO> fetchActiveByNameStoreAndParentInventoryItem(Query query) throws Exception {
+        Integer parentInventoryItemId;
+        String name;
+        
+        //storeId = null;
+        name = null;
+        parentInventoryItemId = null;
+        
+        // parse the query to find name and/or store
+        for (QueryData field : query.getFields()) {
+            if (field.key != null) {
+                if (field.key.endsWith("name"))
+                    name = field.query;
+                //else if (field.key.endsWith("storeId"))
+                  //  storeId = Integer.valueOf(field.query);
+                else if (field.key.endsWith("parentInventoryItemId"))
+                    parentInventoryItemId = Integer.valueOf(field.query);
+            }
+        }
+        
+        return remote().fetchActiveByNameStoreAndParentInventoryItem(name+"%", parentInventoryItemId, 10);
     }
     
     public InventoryItemViewDO fetchInventoryItemById(Integer id) throws Exception {

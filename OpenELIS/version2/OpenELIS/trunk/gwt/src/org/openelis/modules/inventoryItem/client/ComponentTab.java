@@ -126,7 +126,7 @@ public class ComponentTab extends Screen {
                         table.setCell(r, 1, data.getComponentDescription());
                         break;
                     case 2:
-                        data.setQuantity((Double)val);
+                        data.setQuantity((Integer)val);
                         break;
                 }
             }

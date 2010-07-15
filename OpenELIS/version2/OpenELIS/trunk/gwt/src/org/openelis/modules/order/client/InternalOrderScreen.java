@@ -94,7 +94,7 @@ public class InternalOrderScreen extends Screen {
     private Tabs              tab;
 
     private AppButton         queryButton, previousButton, nextButton, addButton, updateButton,
-                              commitButton, abortButton, addNoteButton, editNoteButton;
+                              commitButton, abortButton;
     private MenuItem          duplicate, orderHistory, itemHistory;
     private TextBox           id, neededInDays, requestedBy;
     private CalendarLookUp    orderedDate;
