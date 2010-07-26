@@ -52,6 +52,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.inventoryAdjustment.InventoryAdjustment"/>
     <inherits name="org.openelis.modules.inventoryItem.InventoryItem"/>
     <inherits name="org.openelis.modules.inventoryReceipt.InventoryReceipt"/>
+    <inherits name="org.openelis.modules.inventoryTransfer.InventoryTransfer"/>
     <inherits name="org.openelis.modules.label.Label"/> 
     <inherits name="org.openelis.modules.method.Method"/>
     <inherits name="org.openelis.modules.newbornScreeningSampleLogin.NewbornScreeningSampleLogin"/>

@@ -55,6 +55,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -100,7 +101,7 @@ public class ShippingScreen extends Screen {
                                            updateButton, commitButton, abortButton;
     protected MenuItem                     shippingHistory, shippingItemHistory,
                                            shippingTrackingHistory;
-    private TextBox                        numberOfPackages, cost, shippedToAddressMultipleUnit,
+    private TextBox                        id, numberOfPackages, cost, shippedToAddressMultipleUnit,
                                            processedById, shippedToAddressStreetAddress, shippedToAddressCity,
                                            shippedToAddressState, shippedToAddressZipCode;
     private CalendarLookUp                 shippedDate, processedDate;
@@ -292,6 +293,22 @@ public class ShippingScreen extends Screen {
             }
         });
 
+        id = (TextBox<Integer>)def.getWidget(ShippingMeta.getId());
+        addScreenHandler(id, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                id.setValue(manager.getShipping().getId());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                manager.getShipping().setId(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                id.enable(EnumSet.of(State.QUERY)
+                                 .contains(event.getState()));
+                id.setQueryMode(event.getState() == State.QUERY);
+            }
+        });    
         statusId = (Dropdown)def.getWidget(ShippingMeta.getStatusId());
         addScreenHandler(statusId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -784,7 +801,7 @@ public class ShippingScreen extends Screen {
         itemTab.draw();
         noteTab.draw();
         
-        setFocus(statusId);
+        setFocus(id);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
 
@@ -874,7 +891,7 @@ public class ShippingScreen extends Screen {
                 DataChangeEvent.fire(this);
                 window.setDone(consts.get("addingComplete"));
                 
-                if(!openedFromMenu)                     
+                if (!openedFromMenu)                     
                     window.close();                
                     
             } catch (ValidationErrorsList e) {
@@ -913,7 +930,7 @@ public class ShippingScreen extends Screen {
             fetchById(null);
             window.setDone(consts.get("addAborted"));
             
-            if(!openedFromMenu)                 
+            if (!openedFromMenu)                 
                 window.close();
             
         } else if (state == State.UPDATE) {

@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.orderFill.server;
+package org.openelis.modules.inventoryReceipt.server;
 
 import java.util.ArrayList;
 
@@ -32,8 +32,8 @@ import org.openelis.gwt.common.data.Query;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.InventoryLocationRemote;
 
-public class OrderFillService {
-    
+public class InventoryLocationService {
+
     public ArrayList<InventoryLocationViewDO> fetchByLocationNameInventoryItemId(Query query) throws Exception {
         Integer id;
         String search;
@@ -51,6 +51,19 @@ public class OrderFillService {
         itemId = new Integer(query.getFields().get(1).query);
         storeId = new Integer(query.getFields().get(2).query);
         return invLocRemote().fetchByLocationNameInventoryItemIdStoreId(search + "%", itemId, storeId, 10);
+    }
+    
+    public ArrayList<InventoryLocationViewDO> fetchByInventoryItemName(String search) throws Exception {
+        return invLocRemote().fetchByInventoryItemName(search + "%", 10);
+    }
+    
+    public ArrayList<InventoryLocationViewDO> fetchByInventoryItemNameStoreId(Query query) throws Exception {
+        Integer storeId;
+        String search;
+        
+        search = query.getFields().get(0).query;
+        storeId = new Integer(query.getFields().get(1).query);
+        return invLocRemote().fetchByInventoryItemNameStoreId(search + "%", storeId, 10);
     }
     
     private InventoryLocationRemote invLocRemote() {

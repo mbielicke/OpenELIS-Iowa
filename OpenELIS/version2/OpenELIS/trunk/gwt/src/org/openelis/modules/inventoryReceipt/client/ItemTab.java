@@ -55,6 +55,7 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.InventoryReceiptManager;
+import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.InventoryReceiptMeta;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -75,15 +76,15 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
     private int                                   index;
     private boolean                               loaded;
     
-    private ScreenService                         orderFillService, storageService;
+    private ScreenService                         inventoryLocationService, storageService;
     
     public enum Action {
         STORAGE_LOCATION_CHANGED, LOT_NUMBER_CHANGED 
     }
     
     public ItemTab(ScreenDefInt def, ScreenWindow window) {
-        service = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService");              
-        orderFillService = new ScreenService("controller?service=org.openelis.modules.orderFill.server.OrderFillService");
+        service = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService");                      
+        inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");
         storageService = new ScreenService("controller?service=org.openelis.modules.storage.server.StorageService");
         
         setDefinition(def);
@@ -272,7 +273,8 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
         inventoryLocationStorageLocationName = (AutoComplete)def.getWidget(InventoryReceiptMeta.getInventoryLocationStorageLocationId());
         addScreenHandler(inventoryLocationStorageLocationName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                InventoryLocationViewDO location;
+                String location;
+                InventoryLocationViewDO invLoc;
                 InventoryReceiptViewDO data;
                 Integer storLocId;
 
@@ -287,16 +289,17 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                         data.setInventoryLocations(new ArrayList<InventoryLocationViewDO>());
                         data.getInventoryLocations().add(new InventoryLocationViewDO());
                     }
-                    location = data.getInventoryLocations().get(0);
-                    storLocId = location.getStorageLocationId();
+                    invLoc = data.getInventoryLocations().get(0);
+                    storLocId = invLoc.getStorageLocationId();
 
-                    if (storLocId != null)
-                        inventoryLocationStorageLocationName.setSelection(storLocId,
-                                                                          location.getStorageLocationName() + ", " +
-                                                                          location.getStorageLocationUnitDescription() + " " +
-                                                                          location.getStorageLocationLocation());
-                    else
+                    if (storLocId != null) {
+                        location = StorageLocationManager.getLocationForDisplay(invLoc.getStorageLocationName(),
+                                                                                invLoc.getStorageLocationUnitDescription(),
+                                                                                invLoc.getStorageLocationLocation());
+                        inventoryLocationStorageLocationName.setSelection(storLocId, location);
+                    } else {
                         inventoryLocationStorageLocationName.setSelection(null, "");
+                    }
                 } else {
                     inventoryLocationStorageLocationName.setSelection(null, "");
                 }
@@ -347,6 +350,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
             public void onGetMatches(GetMatchesEvent event) {
                 int i;
                 Integer itemId;
+                String param, location;
                 InventoryReceiptViewDO data;
                 ArrayList<InventoryLocationViewDO> invLocList; 
                 InventoryLocationViewDO invLoc;
@@ -358,7 +362,6 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                 ArrayList<QueryData> fields;
                 Query query;
                 QueryData field;
-                String param;
                 
                 if(index == -1)
                     return;
@@ -385,15 +388,16 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                         fields.add(field);
 
                         query.setFields(fields);
-                        invLocList = orderFillService.callList("fetchByLocationNameInventoryItemId", query);
+                        invLocList = inventoryLocationService.callList("fetchByLocationNameInventoryItemId", query);
                         for (i = 0; i < invLocList.size(); i++ ) {
                             row = new TableDataRow(4);
                             invLoc = invLocList.get(i);
 
                             row.key = invLoc.getId();
-                            row.cells.get(0).setValue(invLoc.getStorageLocationName() + ", " +
-                                                      invLoc.getStorageLocationUnitDescription() + " " +
-                                                      invLoc.getStorageLocationLocation());
+                            location = StorageLocationManager.getLocationForDisplay(invLoc.getStorageLocationName(),
+                                                                                    invLoc.getStorageLocationUnitDescription(),
+                                                                                    invLoc.getStorageLocationLocation());
+                            row.cells.get(0).setValue(location);
                             row.cells.get(1).setValue(invLoc.getLotNumber());
                             row.cells.get(2).setValue(invLoc.getQuantityOnhand());
                             row.cells.get(3).setValue(invLoc.getExpirationDate());
@@ -407,9 +411,10 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                         for (i = 0; i < storLocList.size(); i++ ) {
                             row = new TableDataRow(4);
                             storLoc = storLocList.get(i);
-                            row.cells.get(0).setValue(storLoc.getName() + ", " +
-                                                      storLoc.getStorageUnitDescription() + " " + 
-                                                      storLoc.getLocation());
+                            location = StorageLocationManager.getLocationForDisplay(storLoc.getName(),
+                                                                                    storLoc.getStorageUnitDescription(),
+                                                                                    storLoc.getLocation());
+                            row.cells.get(0).setValue(location);
                             invLoc = new InventoryLocationViewDO();
                             invLoc.setStorageLocationId(storLoc.getId());
                             invLoc.setStorageLocationName(storLoc.getName());

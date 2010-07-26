@@ -96,7 +96,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"adjustmentNum")' />:
               </text>
-              <textbox key="{meta:getId()}" width="75" max="20" tab="{meta:getDescription()},{meta:getInventoryItemStoreId()}" field="Integer" />
+              <textbox key="{meta:getId()}" width="75" max="20" tab="{meta:getDescription()},{meta:getInventoryLocationInventoryItemStoreId()}" field="Integer" />
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"description")' />:
               </text>
@@ -112,20 +112,20 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"user")' />:
               </text>
-              <textbox key="{meta:getSystemUserId()}" width="125" tab="{meta:getInventoryItemStoreId()},{meta:getAdjustmentDate()}" field="String" />
+              <textbox key="{meta:getSystemUserId()}" width="125" tab="{meta:getInventoryLocationInventoryItemStoreId()},{meta:getAdjustmentDate()}" field="String" />
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"store")' />:
               </text>
-              <dropdown key="{meta:getInventoryItemStoreId()}" width="243" tab="{meta:getId()},{meta:getSystemUserId()}" field="Integer" />
+              <dropdown key="{meta:getInventoryLocationInventoryItemStoreId()}" width="243" tab="{meta:getId()},{meta:getSystemUserId()}" field="Integer" />
             </row>
           </TablePanel>
           <VerticalPanel padding="0" spacing="0">
             <widget valign="top">
-              <table key="adjustmentsTable" width="auto" maxRows="14" showScroll="ALWAYS" style="ScreenTableWithSides">
+              <table key="adjustmentTable" width="auto" maxRows="14" showScroll="ALWAYS" style="ScreenTableWithSides">
                 <col key="{meta:getInventoryLocationId()}" width="55" header="{resource:getString($constants,'locationNum')}">
                   <textbox field="Integer" required="true" />
                 </col>
-                <col key="{meta:getInventoryItemName()}" width="205" header="{resource:getString($constants,'inventoryItem')}">
+                <col key="{meta:getInventoryLocationInventoryItemName()}" width="205" header="{resource:getString($constants,'inventoryItem')}">
                   <autoComplete width="auto" case="LOWER" field="Integer" required="true">
                     <col width="130" header="{resource:getString($constants,'name')}" />
                     <col width="110" header="{resource:getString($constants,'store')}" />
@@ -141,24 +141,36 @@ UIRF Software License are applicable instead of those above.
                 <col key="{meta:getInventoryLocationQuantityOnhand()}" width="65" header="{resource:getString($constants,'onHand')}">
                   <label field="Integer" />
                 </col>
-                <col key="{meta:getTransAdjustmentLocationPhysicalCount()}" width="65" header="{resource:getString($constants,'physCount')}">
+                <col key="{meta:getInventoryXAdjustPhysicalCount()}" width="65" header="{resource:getString($constants,'physCount')}">
                   <label field="Integer" />
                 </col>
-                <col key="{meta:getTransAdjustmentLocationQuantity()}" width="65" header="{resource:getString($constants,'adjQuan')}">
+                <col key="{meta:getInventoryXAdjustQuantity()}" width="65" header="{resource:getString($constants,'adjQuan')}">
                   <label field="String" />
                 </col>
               </table>
             </widget>
-            <widget style="TableButtonFooter">
-              <appButton key="removeRowButton" style="Button" action="removeRow">
-                <HorizontalPanel>
-                  <AbsolutePanel style="RemoveRowButtonImage" />
-                  <text>
-                    <xsl:value-of select='resource:getString($constants,"removeRow")' />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
-            </widget>
+            <HorizontalPanel style="TableFooterPanel">
+                <widget halign="center">
+                  <appButton key="addRowButton" style="Button">
+                    <HorizontalPanel>
+                      <AbsolutePanel style="AddRowButtonImage" />
+                      <text>
+                        <xsl:value-of select='resource:getString($constants,"addRow")' />
+                      </text>
+                    </HorizontalPanel>
+                  </appButton>
+                </widget>
+                <widget halign="center">
+                  <appButton key="removeRowButton" style="Button">
+                    <HorizontalPanel>
+                      <AbsolutePanel style="RemoveRowButtonImage" />
+                      <text>
+                        <xsl:value-of select='resource:getString($constants,"removeRow")' />
+                      </text>
+                    </HorizontalPanel>
+                  </appButton>
+                </widget>
+              </HorizontalPanel>
           </VerticalPanel>
         </VerticalPanel>
       </VerticalPanel>

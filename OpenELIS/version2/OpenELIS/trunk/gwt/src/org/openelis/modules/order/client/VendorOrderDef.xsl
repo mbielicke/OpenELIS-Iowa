@@ -169,7 +169,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select='resource:getString($constants,"vendor")' />:
                 </text>
                 <widget colspan="5">
-                  <autoComplete key="{meta:getOrganizationName()}" width="188" case="UPPER" popWidth="auto" tab="{meta:getOrderedDate()},{meta:getStatusId()}" field="Integer">
+                  <autoComplete key="{meta:getOrganizationName()}" width="188" case="UPPER" popWidth="auto" tab="{meta:getOrderedDate()},{meta:getStatusId()}" required = "true" field="Integer">
                     <col width="180" header="{resource:getString($constants,'name')}" />
                     <col width="110" header="{resource:getString($constants,'street')}" />
                     <col width="100" header="{resource:getString($constants,'city')}" />

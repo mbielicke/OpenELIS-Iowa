@@ -311,19 +311,19 @@ UIRF Software License are applicable instead of those above.
                   <VerticalPanel padding="0" spacing="0">
                     <table key="locationTable" width="auto" maxRows="11" showScroll="ALWAYS">
                       <col key="{meta:getLocationStorageLocationName()}" width="172" sort="true" header="{resource:getString($constants,'location')}">
-                        <textbox max="40" field="String" />
+                        <textbox field="String" />
                       </col>
                       <col key="{meta:getLocationLotNumber()}" width="110" sort="true" header="{resource:getString($constants,'lotNum')}">
-                        <textbox max="20" field="String" />
+                        <textbox field="String" />
                       </col>
                       <col key="{meta:getLocationId()}" width="70" header="{resource:getString($constants,'serialNum')}">
-                        <textbox max="20" field="String" />
+                        <textbox field="String" />
                       </col>
                       <col key="{meta:getLocationExpirationDate()}" width="105" sort="true" header="{resource:getString($constants,'expirationDate')}">
                         <calendar begin="0" end="2" pattern="{resource:getString($constants,'datePattern')}" />
                       </col>
                       <col key="{meta:getLocationQuantityOnhand()}" width="115" sort="true" header="{resource:getString($constants,'quantityOnHand')}">
-                        <textbox max="10" field="Integer" required="true" />
+                        <textbox field="Integer" required="true" />
                       </col>
                     </table>
                   </VerticalPanel>

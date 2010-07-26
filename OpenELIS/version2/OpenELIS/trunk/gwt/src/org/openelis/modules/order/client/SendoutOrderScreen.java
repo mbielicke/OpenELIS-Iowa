@@ -678,10 +678,11 @@ public class SendoutOrderScreen extends Screen {
                 ArrayList<TableDataRow> model;                
                 QueryFieldUtil parser;
                 IdNameVO data;
-                ArrayList<IdNameVO> list;  
-                String match;
+                ArrayList<IdNameVO> dataList;  
+                ArrayList<String> matchList;
+                String match, name;
                 
-                list = null;
+                dataList = null;
                 match = event.getMatch();
                 window.setBusy();
                 
@@ -694,14 +695,19 @@ public class SendoutOrderScreen extends Screen {
                     if(descQuery == null || (!(match.indexOf(descQuery) == 0))) {
                         parser = new QueryFieldUtil();
                         parser.parse(match);
-                        list = service.callList("fetchByDescription", parser.getParameter().get(0));
-                        for (int i = 0; i < list.size(); i++ ) {
-                            data = list.get(i);
-                            row = new TableDataRow(data.getName(), data.getName());                  
-                            model.add(row);
+                        dataList = service.callList("fetchByDescription", parser.getParameter().get(0));
+                        matchList = new ArrayList<String>();
+                        for (int i = 0; i < dataList.size(); i++ ) {
+                            data = dataList.get(i);
+                            name = data.getName();
+                            if (!matchList.contains(name)) {
+                                row = new TableDataRow(name, name);                  
+                                model.add(row);
+                                matchList.add(name);
+                            }
                         } 
                         
-                        if(list.size() == 0)
+                        if(dataList.size() == 0)
                             descQuery = match;
                     }                                                                                    
                     
