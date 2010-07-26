@@ -227,8 +227,8 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
 
         receiptTable = (TableWidget)def.getWidget("receiptTable");
         addScreenHandler(receiptTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
-            public void onDataChange(DataChangeEvent event) {
-                if (state == State.ADD || newQuery)          
+            public void onDataChange(DataChangeEvent event) {                
+                if (state != State.QUERY)
                     receiptTable.load(receiptModel);                
             }
 
@@ -821,8 +821,9 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
             DataChangeEvent.fire(this);
             drawTabs();
             window.setDone(consts.get("queryAborted"));
-        } else if (state == State.ADD) {            
-            receiptModel = null;
+        } else if (state == State.ADD) {          
+            query = null;
+            receiptModel = new ArrayList<TableDataRow>();
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
             drawTabs();

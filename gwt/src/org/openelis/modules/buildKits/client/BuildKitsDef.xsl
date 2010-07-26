@@ -139,7 +139,7 @@ UIRF Software License are applicable instead of those above.
             </TablePanel>
           </HorizontalPanel>
           <widget>
-            <table key="componentTable" width="auto" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getLocationExpirationDate()}" title="">
+            <table key="componentTable" width="auto" maxRows="10" multiSelect = "true" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getLocationExpirationDate()}" title="">
               <col key="{meta:getComponentName()}" width="160" header="{resource:getString($constants,'component')}">
                 <label field="String" />
               </col>

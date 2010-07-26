@@ -26,7 +26,9 @@
 package org.openelis.modules.buildKits.client;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 
 import org.openelis.cache.DictionaryCache;
@@ -71,6 +73,9 @@ import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.manager.BuildKitManager;
 import org.openelis.manager.InventoryComponentManager;
+import org.openelis.manager.InventoryItemManager;
+import org.openelis.manager.InventoryTransferManager;
+import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.InventoryItemMeta;
 import org.openelis.modules.inventoryTransfer.client.InventoryTransferScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
@@ -84,26 +89,28 @@ import com.google.gwt.user.client.Window;
 
 public class BuildKitsScreen extends Screen {
     
-    private SecurityModule          security;
-    private BuildKitsScreen         screen;
-    //private InventoryTransferScreen inventoryTransferScreen;
-    private BuildKitManager         manager;          
-    private AppButton               addButton, commitButton, abortButton;
-    private CalendarLookUp          locationExpirationDate;
-    private TextBox                 numRequested, qcReference, locationLotNumber;
-    private AutoComplete<Integer>   name, locationStorageLocationName,
-                                    componentLocationStorageLocationName;
-    private AppButton               transferButton;
-    private CheckBox                addToExisting;
-    private TableWidget             componentTable;
-    private Dropdown<Integer>       dispensedUnitsId;
-    private ScreenService           inventoryItemService, orderFillService, storageService;     
+    private SecurityModule                        security;
+    private BuildKitsScreen                       screen;
+    private InventoryTransferScreen               inventoryTransferScreen;
+    private BuildKitManager                       manager;
+    private AppButton                             addButton, commitButton, abortButton;
+    private CalendarLookUp                        locationExpirationDate;
+    private TextBox                               numRequested, qcReference, locationLotNumber;
+    private AutoComplete<Integer>                 name, locationStorageLocationName,
+                                                  componentLocationStorageLocationName;
+    private AppButton                             transferButton;
+    private CheckBox                              addToExisting;
+    private TableWidget                           componentTable;
+    private Dropdown<Integer>                     dispensedUnitsId;
+    private ScreenService                         inventoryItemService, inventoryLocationService,
+                                                  storageService;
+    private HashMap<Integer, InventoryItemViewDO> inventoryItemMap;
     
     public BuildKitsScreen() throws Exception {
         super((ScreenDefInt)GWT.create(BuildKitsDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.buildKits.server.BuildKitsService");
-        inventoryItemService = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
-        orderFillService = new ScreenService("controller?service=org.openelis.modules.orderFill.server.OrderFillService");
+        inventoryItemService = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");       
+        inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");
         storageService = new ScreenService("controller?service=org.openelis.modules.storage.server.StorageService");
         
         security = OpenELIS.security.getModule("buildkits");
@@ -417,8 +424,9 @@ public class BuildKitsScreen extends Screen {
 
         locationStorageLocationName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                int i;
+                int i;                
                 Integer itemId;
+                String param,location;
                 InventoryItemViewDO data;
                 ArrayList<InventoryLocationViewDO> invLocList; 
                 InventoryLocationViewDO invLoc;
@@ -430,7 +438,6 @@ public class BuildKitsScreen extends Screen {
                 ArrayList<QueryData> fields;
                 Query query;
                 QueryData field;
-                String param;
                 
                 if(manager == null)
                     return;
@@ -459,15 +466,16 @@ public class BuildKitsScreen extends Screen {
                         fields.add(field);
 
                         query.setFields(fields);
-                        invLocList = orderFillService.callList("fetchByLocationNameInventoryItemId", query);
+                        invLocList = inventoryLocationService.callList("fetchByLocationNameInventoryItemId", query);
                         for (i = 0; i < invLocList.size(); i++ ) {
                             row = new TableDataRow(4);
                             invLoc = invLocList.get(i);
 
                             row.key = invLoc.getId();
-                            row.cells.get(0).setValue(invLoc.getStorageLocationName() + ", " +
-                                                      invLoc.getStorageLocationUnitDescription() + " " +
-                                                      invLoc.getStorageLocationLocation());
+                            location = StorageLocationManager.getLocationForDisplay(invLoc.getStorageLocationName(),
+                                                                                    invLoc.getStorageLocationUnitDescription(),
+                                                                                    invLoc.getStorageLocationLocation());
+                            row.cells.get(0).setValue(location);
                             row.cells.get(1).setValue(invLoc.getLotNumber());
                             row.cells.get(2).setValue(invLoc.getQuantityOnhand());
                             row.cells.get(3).setValue(invLoc.getExpirationDate());
@@ -482,9 +490,10 @@ public class BuildKitsScreen extends Screen {
                             row = new TableDataRow(4);
                             storLoc = storLocList.get(i);
                             row.key = -1;
-                            row.cells.get(0).setValue(storLoc.getName() + ", " +
-                                                      storLoc.getStorageUnitDescription() + " " +
-                                                      storLoc.getLocation());
+                            location = StorageLocationManager.getLocationForDisplay(storLoc.getName(),
+                                                                                    storLoc.getStorageUnitDescription(),
+                                                                                    storLoc.getLocation());
+                            row.cells.get(0).setValue(location);
                             invLoc = new InventoryLocationViewDO();
                             invLoc.setStorageLocationId(storLoc.getId());
                             invLoc.setStorageLocationName(storLoc.getName());
@@ -646,7 +655,7 @@ public class BuildKitsScreen extends Screen {
                     fields.add(field);
 
                     query.setFields(fields);
-                    invLocList = orderFillService.callList("fetchByLocationNameInventoryItemIdStoreId", query);
+                    invLocList = inventoryLocationService.callList("fetchByLocationNameInventoryItemIdStoreId", query);
                     for (i = 0; i < invLocList.size(); i++ ) {
                         autoRow = new TableDataRow(4);
                         invLoc = invLocList.get(i);
@@ -690,14 +699,19 @@ public class BuildKitsScreen extends Screen {
                 Object val;                                   
                 TableDataRow autoRow, tableRow;
                 InventoryComponentViewDO data;
+                InventoryItemManager itemMan;
                 InventoryLocationViewDO location;
 
                 r = event.getRow();
                 c = event.getCol();
                 val = componentTable.getObject(r,c);
                 tableRow = componentTable.getRow(r);
+                data = null;
                 try {
-                    data = manager.getInventoryItem().getComponents().getComponentAt(r);
+                    itemMan = manager.getInventoryItem();
+                    if (itemMan == null)
+                        return;
+                    data = itemMan.getComponents().getComponentAt(r);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     return;
@@ -728,7 +742,8 @@ public class BuildKitsScreen extends Screen {
                                 data = (InventoryComponentViewDO)tableRow.data;
                                 data.setTotal(factor * data.getQuantity());
                                 componentTable.setCell(r, 4, factor * data.getQuantity());                                
-                            }                                    
+                            }                                 
+                            numRequested.clearExceptions();
                             numRequested.setValue(factor);
                         }                    
                         break;
@@ -739,17 +754,18 @@ public class BuildKitsScreen extends Screen {
         transferButton = (AppButton)def.getWidget("transferButton");
         addScreenHandler(transferButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                componentTable.finishEditing();
                 showTransfer();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                transferButton.enable(false);
+                transferButton.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
         });
         
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
             public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
-                if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
+                if (EnumSet.of(State.ADD).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
                 }
@@ -757,6 +773,7 @@ public class BuildKitsScreen extends Screen {
         });
         
         screen = this;
+        inventoryItemMap = new HashMap<Integer, InventoryItemViewDO>();
     }
     
     private void initializeDropdowns() {
@@ -820,6 +837,7 @@ public class BuildKitsScreen extends Screen {
     }
     
     private ArrayList<TableDataRow> getTableModel() {
+        String location;
         InventoryComponentViewDO data;
         ArrayList<TableDataRow> model;
         InventoryComponentManager components;
@@ -840,9 +858,10 @@ public class BuildKitsScreen extends Screen {
                     tableRow.cells.get(3).setValue(data.getComponentDispensedUnitsId());  
                     tableRow.cells.get(4).setValue(data.getTotal());
                     if (data.getInventoryLocationId() != null) {
-                        tableRow.cells.get(1).setValue(new TableDataRow(data.getInventoryLocationId(),data.getInventoryLocationStorageLocationName() + ", " +
-                                                       data.getInventoryLocationStorageLocationUnitDescription() + " " +
-                                                       data.getInventoryLocationStorageLocationLocation()));
+                        location = StorageLocationManager.getLocationForDisplay(data.getInventoryLocationStorageLocationName(),
+                                                                                data.getInventoryLocationStorageLocationUnitDescription(),
+                                                                                data.getInventoryLocationStorageLocationLocation());
+                        tableRow.cells.get(1).setValue(new TableDataRow(data.getInventoryLocationId(), location));
                         tableRow.cells.get(2).setValue(data.getInventoryLocationLotNumber());
                         tableRow.cells.get(5).setValue(data.getInventoryLocationQuantityOnhand());
                     }
@@ -859,18 +878,79 @@ public class BuildKitsScreen extends Screen {
     
     private void showTransfer() {       
         ScreenWindow modal; 
+        InventoryTransferManager manager;        
+
+        manager = getInventoryTransferManager();
+        if (manager == null)
+            return;
         modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
         modal.setName(consts.get("inventoryTransfer"));
-        /*try {
+        try {
             if (inventoryTransferScreen == null)
-                inventoryTransferScreen = new InventoryTransferScreen(modal);
+                inventoryTransferScreen = new InventoryTransferScreen(modal);   
+            modal.setContent(inventoryTransferScreen);
+            
+            inventoryTransferScreen.loadTransferData(manager);
         } catch (Throwable e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
             return;
+        }        
+    }  
+    
+    private InventoryTransferManager getInventoryTransferManager() {
+        int selRows[];
+        InventoryTransferManager itman;
+        InventoryComponentManager icman;
+        InventoryComponentViewDO comp;
+        InventoryLocationViewDO loc;
+        TableDataRow row;
+                
+        selRows = componentTable.getSelectedRows();
+        if (selRows.length == 0) {
+            Window.alert(consts.get("selRowsToTransfer"));
+            return null;
         }
-        modal.setContent(inventoryTransferScreen);*/
-    }    
+           
+        loc = null;
+        itman = InventoryTransferManager.getInstance();
+        try {
+            icman = manager.getInventoryItem().getComponents();
+            Arrays.sort(selRows);
+            for (int i = 0; i < selRows.length; i++) {
+                comp = icman.getComponentAt(selRows[i]);
+                itman.addTransfer();                                
+                itman.setToInventoryItemAt(getInventoryItem(comp.getComponentId()), i);
+                
+                row = (TableDataRow)componentTable.getObject(selRows[i], 1);
+                if (row != null) 
+                    loc = (InventoryLocationViewDO)row.data;                
+                itman.setToInventoryLocationAt(loc, i);                
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+        return itman;
+    }
+    
+    private InventoryItemViewDO getInventoryItem(Integer id) {
+        InventoryItemViewDO data;         
+                    
+        data = inventoryItemMap.get(id);
+        if (data == null && id != null) {
+            try {
+                data  = inventoryItemService.call("fetchInventoryItemById", id);                
+                inventoryItemMap.put(id, data);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Window.alert(e.getMessage());
+            }
+        }
+        
+        return data;        
+    }
 }
 /*
 

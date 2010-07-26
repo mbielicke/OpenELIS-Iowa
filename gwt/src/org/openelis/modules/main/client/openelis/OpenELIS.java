@@ -47,6 +47,7 @@ import org.openelis.modules.instrument.client.InstrumentScreen;
 import org.openelis.modules.inventoryAdjustment.client.InventoryAdjustmentScreen;
 import org.openelis.modules.inventoryItem.client.InventoryItemScreen;
 import org.openelis.modules.inventoryReceipt.client.InventoryReceiptScreen;
+import org.openelis.modules.inventoryTransfer.client.InventoryTransferScreen;
 import org.openelis.modules.label.client.LabelScreen;
 import org.openelis.modules.method.client.MethodScreen;
 import org.openelis.modules.order.client.InternalOrderScreen;
@@ -656,7 +657,7 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                          //  browser.addScreen(new InventoryReceiptScreen());
+                            browser.addScreen(new InventoryTransferScreen());
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());

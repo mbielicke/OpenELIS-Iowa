@@ -166,15 +166,17 @@ UIRF Software License are applicable instead of those above.
                 <code>if(OpenELIS.security.hasModule("buildkits","SELECT")){</code>
                 <menuItem key="buildKits" description="{resource:getString($constants,'buildKitsDescription')}" enable="true" icon="buildKitsIcon" label="{resource:getString($constants,'buildKits')}" />
                 <code>}</code>
-                <menuItem key="inventoryTransfer" description="{resource:getString($constants,'inventoryTransferDescription')}" enable="false" icon="inventoryTransferIcon" label="{resource:getString($constants,'inventoryTransfer')}" />
+                <code>if(OpenELIS.security.hasModule("inventorytransfer","SELECT")){</code>
+                <menuItem key="inventoryTransfer" description="{resource:getString($constants,'inventoryTransferDescription')}" enable="true" icon="inventoryTransferIcon" label="{resource:getString($constants,'inventoryTransfer')}" />
+                <code>}</code>
                 <html>&lt;hr/&gt;</html>
                 <code>if(OpenELIS.security.hasModule("inventoryreceipt","SELECT")){</code>
                 <menuItem key="inventoryReceipt" description="{resource:getString($constants,'inventoryReceiptDescription')}" enable="true" icon="inventoryReceiptIcon" label="{resource:getString($constants,'inventoryReceipt')}" />
                 <code>}</code>
                 <code>if(OpenELIS.security.hasModule("inventoryadjustment","SELECT")){</code>
-                <menuItem key="inventoryAdjustment" description="{resource:getString($constants,'inventoryAdjustmentDescription')}" enable="true" icon="inventoryAdjustmentIcon" label="{resource:getString($constants,'inventoryAdjustment')}" />
-                <code>if(OpenELIS.security.hasModule("inventoryitem","SELECT")){</code>
+                <menuItem key="inventoryAdjustment" description="{resource:getString($constants,'inventoryAdjustmentDescription')}" enable="true" icon="inventoryAdjustmentIcon" label="{resource:getString($constants,'inventoryAdjustment')}" />                
                 <code>}</code>
+                <code>if(OpenELIS.security.hasModule("inventoryitem","SELECT")){</code>
                 <menuItem key="inventoryItem" description="{resource:getString($constants,'inventoryItemDescription')}" enable="true" icon="inventoryItemIcon" label="{resource:getString($constants,'inventoryItem')}" />
                 <code>}</code>
               </menuPanel>

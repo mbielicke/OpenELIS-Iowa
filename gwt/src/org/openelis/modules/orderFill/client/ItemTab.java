@@ -87,10 +87,11 @@ public class ItemTab extends Screen {
     private AppButton                      removeItemButton, addItemButton;
 
     private boolean                        loaded;
-    private HashMap<Integer, OrderManager> combinedMap;    
+    private HashMap<Integer, OrderManager> combinedMap;   
+    private ScreenService                  inventoryLocationService;                 
     
     public ItemTab(ScreenDefInt def, ScreenWindow window) {
-        service = new ScreenService("controller?service=org.openelis.modules.orderFill.server.OrderFillService");              
+        inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");              
 
         setDefinition(def);
         setWindow(window);
@@ -458,7 +459,7 @@ public class ItemTab extends Screen {
                 window.setBusy();
                 try {
                     
-                    list = service.callList("fetchByLocationNameInventoryItemId", query);
+                    list = inventoryLocationService.callList("fetchByLocationNameInventoryItemId", query);
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
