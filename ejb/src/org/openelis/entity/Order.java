@@ -60,7 +60,7 @@ import org.openelis.utils.Auditable;
                 		"o.type,o.externalOrderNumber,o.reportToId,o.reportToAttention,o.billToId,o.billToAttention,o.shipFromId)"
                 	  + " from Order o where o.id = :id"),
     @NamedQuery( name = "Order.FetchByDescription",
-                query = "select new org.openelis.domain.IdNameVO(o.id,o.description)"
+                query = "select distinct new org.openelis.domain.IdNameVO(o.id,o.description)"
                       + " from Order o where o.description like :description"),
     @NamedQuery( name = "Order.FetchByShippingItemId",
                query  = "select new org.openelis.domain.OrderViewDO(o.id,o.description,o.statusId,o.orderedDate," +

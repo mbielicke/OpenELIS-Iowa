@@ -31,6 +31,7 @@ import javax.ejb.Local;
 
 import org.openelis.domain.OrderItemDO;
 import org.openelis.domain.OrderItemViewDO;
+import org.openelis.domain.OrderViewDO;
 
 @Local
 public interface OrderItemLocal {
@@ -39,6 +40,9 @@ public interface OrderItemLocal {
     public OrderItemViewDO fetchById(Integer id) throws Exception;
 
     public OrderItemViewDO add(OrderItemViewDO data) throws Exception;
+    
+    public ArrayList<OrderItemViewDO> add(OrderViewDO order, 
+                                          ArrayList<OrderItemViewDO> items) throws Exception;
 
     public OrderItemViewDO update(OrderItemViewDO data) throws Exception;
 

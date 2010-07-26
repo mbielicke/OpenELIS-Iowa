@@ -48,8 +48,7 @@ public class InventoryReceiptManager implements RPC{
     }
     
     /**
-     * Creates a new instance of this object. A default inventory receipt object is
-     * also created.
+     * Creates a new instance of this object
      */
     public static InventoryReceiptManager getInstance() {               
         return new InventoryReceiptManager();                

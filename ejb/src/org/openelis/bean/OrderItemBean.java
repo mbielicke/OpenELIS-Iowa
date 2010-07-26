@@ -37,8 +37,11 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.InventoryComponentViewDO;
+import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.domain.OrderItemDO;
 import org.openelis.domain.OrderItemViewDO;
+import org.openelis.domain.OrderViewDO;
 import org.openelis.entity.OrderItem;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
@@ -121,6 +124,14 @@ public class OrderItemBean implements OrderItemLocal {
         entity.setUnitCost(data.getUnitCost());
 
         return data;
+    }
+    
+    public ArrayList<OrderItemViewDO> add(OrderViewDO order, 
+                                          ArrayList<OrderItemViewDO> items) throws Exception {
+        for (int i = 0; i < items.size(); i++)                    
+            add(items.get(i));
+        
+        return items;
     }
 
     public void delete(OrderItemDO data) throws Exception {

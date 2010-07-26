@@ -23,32 +23,28 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.local;
+package org.openelis.remote;
 
-import java.util.ArrayList;
+import javax.ejb.Remote;
 
-import javax.ejb.Local;
+import org.openelis.manager.InventoryAdjustmentManager;
+import org.openelis.manager.InventoryXAdjustManager;
 
-import org.openelis.domain.InventoryLocationDO;
-import org.openelis.domain.InventoryLocationViewDO;
+@Remote
+public interface InventoryAdjustmentManagerRemote {
 
-@Local
-public interface InventoryLocationLocal {
-    public ArrayList<InventoryLocationViewDO> fetchByInventoryItemId(Integer id) throws Exception;
-    
-    public ArrayList<InventoryLocationViewDO> fetchByInventoryReceiptId(Integer id) throws Exception;
-    
-    public InventoryLocationViewDO fetchById(Integer id) throws Exception;        
+    public InventoryAdjustmentManager fetchById(Integer id) throws Exception;
 
-    public InventoryLocationViewDO add(InventoryLocationViewDO data) throws Exception;
+    public InventoryAdjustmentManager fetchWithAdjustments(Integer id) throws Exception;
 
-    public InventoryLocationViewDO update(InventoryLocationViewDO data) throws Exception;
-    
-    public InventoryLocationViewDO fetchForUpdate(Integer id) throws Exception;
-    
-    public InventoryLocationViewDO abortUpdate(Integer id) throws Exception;
+    public InventoryAdjustmentManager add(InventoryAdjustmentManager man) throws Exception;
 
-    public void delete(InventoryLocationDO data) throws Exception;
+    public InventoryAdjustmentManager update(InventoryAdjustmentManager man) throws Exception;
 
-    public void validate(InventoryLocationDO data) throws Exception;    
+    public InventoryAdjustmentManager fetchForUpdate(Integer id) throws Exception;
+
+    public InventoryAdjustmentManager abortUpdate(Integer id) throws Exception;
+
+    public InventoryXAdjustManager fetchAdjustmentByInventoryAdjustmentId(Integer id) throws Exception;
+
 }

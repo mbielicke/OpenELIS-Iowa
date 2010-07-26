@@ -25,6 +25,7 @@
 */
 package org.openelis.manager;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,7 +37,6 @@ import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryReceiptViewDO;
 import org.openelis.domain.InventoryXPutDO;
-import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.gwt.common.Datetime;
@@ -46,9 +46,12 @@ import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.InventoryItemLocal;
+import org.openelis.local.InventoryLocationLocal;
 import org.openelis.local.InventoryReceiptLocal;
 import org.openelis.local.InventoryXPutLocal;
+import org.openelis.local.InventoryXUseLocal;
 import org.openelis.local.LoginLocal;
+import org.openelis.local.OrderItemLocal;
 import org.openelis.meta.InventoryItemMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
@@ -72,102 +75,111 @@ public class BuildKitManagerProxy {
     }
     
    public BuildKitManager add(BuildKitManager kitMan) throws Exception {
-       int i;
-       Integer storeId;
-       Double totalCost;
-       InventoryComponentManager compMan;
-       InventoryReceiptManager recMan;
-       InventoryReceiptViewDO kitReceipt, compReceipt;
-       InventoryItemViewDO invItem;
-       InventoryComponentViewDO component;
-       InventoryXUseViewDO fill;
-       InventoryXPutDO xput;
-       InventoryReceiptLocal rl;
-       InventoryXPutLocal xl;
-       InventoryItemLocal il;
-       OrderManager orderMan;
-       OrderItemManager itemMan; 
-       OrderViewDO order;
-       OrderItemViewDO orderItem;
-       OrderFillManager orderFillMan;
-       Datetime date;
-              
-       date = Datetime.getInstance(Datetime.YEAR, Datetime.MONTH);
-       
-       //
-       // we create an internal order in order to use up kit components
-       //
-       orderMan = OrderManager.getInstance();
-       order = orderMan.getOrder();
-       order.setNeededInDays(0);
-       order.setOrderedDate(date);
-       order.setRequestedBy(loginLocal().getSecurityUtil().getSystemUserName());
-       order.setType(OrderManager.TYPE_INTERNAL);
-       order.setStatusId(statusProcessed);  
-       
-       compMan = kitMan.getInventoryItem().getComponents();
-       itemMan = orderMan.getItems();
-       storeId =  kitMan.getInventoryItem().getInventoryItem().getStoreId();
-       for (i = 0; i < compMan.count(); i++) {
-           component = compMan.getComponentAt(i);
-           orderItem = itemMan.getItemAt(itemMan.addItem());
-           orderItem.setInventoryItemId(component.getComponentId());
-           orderItem.setQuantity(component.getTotal());
-           orderItem.setStoreId(storeId);  
-       }       
-       orderMan.add();
-       
-       //
-       // fill the order 
-       //
-       itemMan = orderMan.getItems();
-       orderFillMan = orderMan.getFills();
-       for (i = 0; i < itemMan.count(); i++) {
-           fill = orderFillMan.getFillAt(orderFillMan.addFill());           
-           orderItem = itemMan.getItemAt(i);      
-           component = compMan.getComponentAt(i);
-           fill.setInventoryLocationId(component.getInventoryLocationId());
-           fill.setOrderItemId(orderItem.getId());
-           fill.setQuantity(orderItem.getQuantity());
-       }
-       orderMan.update();
-       
-       //
-       // calculate the total cost of the kit 
-       //
-       xl = xputLocal();
-       rl = receiptLocal();
-       il = itemLocal();
-       totalCost = 0.0;
-       for (i = 0; i < compMan.count(); i++) {
-           component = compMan.getComponentAt(i);        
-           invItem = il.fetchById(component.getComponentId());
-           //
-           // there's no unit cost for inventory items that are marked as either
-           // "labor" or "do not inventory", 
-           //
-           if (!"Y".equals(invItem.getIsLabor()) && !"Y".equals(invItem.getIsNotInventoried())) {
-               xput = xl.fetchByInventoryLocationId(component.getInventoryLocationId());
-               compReceipt = rl.fetchById(xput.getInventoryReceiptId());
-               if (compReceipt.getUnitCost() != null) 
-                   totalCost += (compReceipt.getUnitCost() * component.getTotal());               
-           }
-       }
-       
-       //
-       // create an inventory receipt record for all the kits that were built 
-       //
-       kitReceipt = kitMan.getInventoryReceipt();
-       kitReceipt.setInventoryItemId(kitMan.getInventoryItemId());
-       kitReceipt.setReceivedDate(date);
-       kitReceipt.setUnitCost(totalCost);
-       
-       recMan = InventoryReceiptManager.getInstance();
-       recMan.addReceipt(kitReceipt);
-       recMan.add();      
-       
-       return kitMan;
-   }
+        int i;
+        Integer kitLocId;
+        Double totalCost;
+        InventoryComponentManager compMan;
+        InventoryReceiptManager recMan;
+        InventoryReceiptViewDO kitReceipt, compReceipt;
+        InventoryItemViewDO invItem;
+        InventoryComponentViewDO component;
+        ArrayList<InventoryXPutDO> xputList;
+        InventoryReceiptLocal rl;
+        InventoryXPutLocal xl;
+        InventoryLocationLocal ll;
+        InventoryItemLocal il;
+        OrderManager orderMan;
+        OrderViewDO order;
+        OrderItemViewDO orderItem;
+        ArrayList<OrderItemViewDO> orderItems;
+        ArrayList<Integer> locationIdList;
+
+        Datetime date;
+
+        date = Datetime.getInstance(Datetime.YEAR, Datetime.MONTH);
+
+        //
+        // we create an internal order in order to use up kit components
+        //
+        orderMan = OrderManager.getInstance();
+        order = orderMan.getOrder();
+        order.setNeededInDays(0);
+        order.setOrderedDate(date);
+        order.setRequestedBy(loginLocal().getSecurityUtil().getSystemUserName());
+        order.setType(OrderManager.TYPE_INTERNAL);
+        order.setStatusId(statusProcessed);
+        orderMan.add();
+
+        compMan = kitMan.getInventoryItem().getComponents();
+        orderItems = new ArrayList<OrderItemViewDO>();
+        locationIdList = new ArrayList<Integer>();
+        ll = invLocLocal();
+        for (i = 0; i < compMan.count(); i++ ) {
+            component = compMan.getComponentAt(i);
+            orderItem = new OrderItemViewDO();
+            orderItem.setOrderId(order.getId());
+            orderItem.setInventoryItemId(component.getComponentId());
+            orderItem.setQuantity(component.getTotal());
+            ll.fetchForUpdate(component.getInventoryLocationId());
+            locationIdList.add(component.getInventoryLocationId());
+            orderItems.add(orderItem);
+        }
+
+        orderItemLocal().add(order, orderItems);
+        //
+        // fill the order
+        //
+        xuseLocal().add(orderItems, locationIdList);
+
+        //
+        // calculate the total cost of the kit
+        //
+        xl = xputLocal();
+        rl = receiptLocal();
+        il = invItemLocal();
+        totalCost = 0.0;
+        for (i = 0; i < compMan.count(); i++ ) {
+            component = compMan.getComponentAt(i);
+            invItem = il.fetchById(component.getComponentId());
+            //
+            // there's no unit cost for inventory items that are marked as
+            // either
+            // "labor" or "do not inventory",
+            //
+            if ( !"Y".equals(invItem.getIsLabor()) && !"Y".equals(invItem.getIsNotInventoried())) {
+                System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%1");
+                xputList = xl.fetchByInventoryLocationId(component.getInventoryLocationId());
+                System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%2");
+                compReceipt = rl.fetchById(xputList.get(0).getInventoryReceiptId());
+                if (compReceipt.getUnitCost() != null)
+                    totalCost += (compReceipt.getUnitCost() * component.getTotal());
+                System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%3");
+            }
+        }
+
+        //
+        // create an inventory receipt record for all the kits that were built
+        //
+        kitReceipt = kitMan.getInventoryReceipt();
+        kitLocId = kitReceipt.getInventoryLocations().get(0).getId();
+        if (kitLocId != null)
+            ll.fetchForUpdate(kitLocId);
+        kitReceipt.setInventoryItemId(kitMan.getInventoryItemId());        
+        kitReceipt.setReceivedDate(date);
+        kitReceipt.setUnitCost(totalCost);
+
+        recMan = InventoryReceiptManager.getInstance();
+        recMan.addReceipt(kitReceipt);
+        recMan.add();
+
+        for (i = 0; i < locationIdList.size(); i++ ) {
+            ll.abortUpdate(locationIdList.get(i));
+            if (kitLocId != null)
+                ll.abortUpdate(kitLocId);
+        }
+
+        return kitMan;
+    }
    
    public void validate(BuildKitManager man) throws Exception {      
        Integer receivedQ, storeId;
@@ -185,7 +197,7 @@ public class BuildKitManagerProxy {
        itemMan = man.getInventoryItem();       
        receipt = man.getInventoryReceipt();
        list = new ValidationErrorsList();
-       il = itemLocal();
+       il = invItemLocal();
        storeId = null;
        
        if (DataBaseUtil.isEmpty(itemMan)) {
@@ -196,11 +208,18 @@ public class BuildKitManagerProxy {
            storeId = item.getStoreId();
        }
        
+       //
+       // location must be specified for the kit 
+       //       
        if (receipt.getInventoryLocations() != null) {
            location = receipt.getInventoryLocations().get(0);
            if (location.getStorageLocationId() == null) 
                list.add(new FieldErrorException("fieldRequiredException", InventoryItemMeta.getLocationStorageLocationName()));
            
+           //
+           // if the inventory item is flagged as "lot numnber required" then 
+           // lot number must be specified
+           //
            if (item != null && location.getLotNumber() == null && "Y".equals(item.getIsLotMaintained())) 
                 list.add(new FieldErrorException("lotNumRequiredForOrderItemException", 
                                                  InventoryItemMeta.getLocationLotNumber()));                                
@@ -214,6 +233,10 @@ public class BuildKitManagerProxy {
        else if (receivedQ < 0)
            list.add(new FieldErrorException("numRequestedMoreThanZeroException", "numRequested"));
        
+       //
+       // only the inventory items that have components can be chosen to be added
+       // as kits
+       //
        if (DataBaseUtil.isEmpty(compMan) || compMan.count() == 0) {
            list.add(new FormErrorException("kitAtleastOneComponentException"));
        } else {
@@ -223,6 +246,9 @@ public class BuildKitManagerProxy {
                    list.add(new TableFieldErrorException("fieldRequiredException", i, InventoryItemMeta.getLocationStorageLocationName(), "componentTable"));
                
                compItem = il.fetchById(component.getComponentId());
+               //
+               // the stores for all the components and the kit must be the same  
+               //
                if (!storeId.equals(compItem.getStoreId())) 
                    list.add(new TableFieldErrorException("kitAndComponentSameStoreException", i, InventoryItemMeta.getLocationStorageLocationName(), "componentTable"));               
            }
@@ -242,10 +268,20 @@ public class BuildKitManagerProxy {
        }
    }  
    
-   private InventoryItemLocal itemLocal() {
+   private InventoryItemLocal invItemLocal() {
        try {
            InitialContext ctx = new InitialContext();
            return (InventoryItemLocal)ctx.lookup("openelis/InventoryItemBean/local")  ;
+       } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+       }
+   }
+   
+   private OrderItemLocal orderItemLocal() {
+       try {
+           InitialContext ctx = new InitialContext();
+           return (OrderItemLocal)ctx.lookup("openelis/OrderItemBean/local")  ;
        } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
@@ -256,6 +292,26 @@ public class BuildKitManagerProxy {
        try {
            InitialContext ctx = new InitialContext();
            return (LoginLocal)ctx.lookup("openelis/LoginBean/local")  ;
+       } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+       }
+   }
+   
+   private InventoryXUseLocal xuseLocal() {
+       try {
+           InitialContext ctx = new InitialContext();
+           return (InventoryXUseLocal)ctx.lookup("openelis/InventoryXUseBean/local")  ;
+       } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+       }
+   }
+   
+   private InventoryLocationLocal invLocLocal() {
+       try {
+           InitialContext ctx = new InitialContext();
+           return (InventoryLocationLocal)ctx.lookup("openelis/InventoryLocationBean/local")  ;
        } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;

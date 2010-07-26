@@ -25,21 +25,12 @@
 */
 package org.openelis.remote;
 
-import java.util.ArrayList;
-
 import javax.ejb.Remote;
 
-import org.openelis.domain.InventoryLocationViewDO;
+import org.openelis.manager.InventoryTransferManager;
 
 @Remote
-public interface InventoryLocationRemote {
+public interface InventoryTransferManagerRemote {
 
-    public ArrayList<InventoryLocationViewDO> fetchByLocationNameInventoryItemId(String match, Integer id, int maxResults) throws Exception;
-    
-    public ArrayList<InventoryLocationViewDO> fetchByLocationNameInventoryItemIdStoreId(String match, Integer itemId,
-                                                                                        Integer storeId, int maxResults) throws Exception;
-    
-    public ArrayList<InventoryLocationViewDO> fetchByInventoryItemName(String match, int maxResults) throws Exception;
-    
-    public ArrayList<InventoryLocationViewDO> fetchByInventoryItemNameStoreId(String match, Integer storeId, int maxResults) throws Exception;
+    public InventoryTransferManager add(InventoryTransferManager man) throws Exception;
 }

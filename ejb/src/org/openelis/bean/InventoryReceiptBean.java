@@ -619,7 +619,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryRe
          * i<inventoryTransfers.size(); i++){ InventoryReceiptDO transferDO =
          * (InventoryReceiptDO)inventoryTransfers.get(i); Integer qtyInto = -1;
          * if(transferDO.getParentRatio() != null) qtyInto =
-         * transferDO.getQuantityReceived() transferDO.getParentRatio(); else
+         * transferDO.getQuantityReceived() * transferDO.getParentRatio(); else
          * if(transferDO.getChildRatio() != null) qtyInto =
          * transferDO.getQuantityReceived() / transferDO.getChildRatio();
          * //create new order item records with FROM inv item ids OrderItem

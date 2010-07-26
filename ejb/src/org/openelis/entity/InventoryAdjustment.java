@@ -53,10 +53,10 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-    @NamedQuery( name = "InventoryAdjustment.InventoryAdjustment",
-                query = "select distinct new org.openelis.domain.InventoryAdjustmentDO(ia.id, ia.description," +
+    @NamedQuery( name = "InventoryAdjustment.FetchById",
+                query = "select distinct new org.openelis.domain.InventoryAdjustmentViewDO(ia.id, ia.description," +
                         "ia.systemUserId, ia.adjustmentDate, ii.storeId)"
-                      + " from InventoryAdjustment ia LEFT JOIN ia.transAdjustmentLocation trans LEFT JOIN "
+                      + " from InventoryAdjustment ia left join ia.inventoryXAdjust trans left join "
                       + " trans.inventoryLocation.inventoryItem ii where ia.id = :id ")})
 @Entity
 @Table(name = "inventory_adjustment")
@@ -79,7 +79,7 @@ public class InventoryAdjustment implements Auditable, Cloneable {
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "inventory_adjustment_id", insertable = false, updatable = false)
-    private Collection<InventoryXAdjust> transAdjustmentLocation;
+    private Collection<InventoryXAdjust> inventoryXAdjust;
 
     @Transient
     private InventoryAdjustment          original;
@@ -120,8 +120,8 @@ public class InventoryAdjustment implements Auditable, Cloneable {
             this.adjustmentDate = DataBaseUtil.toDate(adjustmentDate);
     }
 
-    public Collection<InventoryXAdjust> getTransAdjustmentLocation() {
-        return transAdjustmentLocation;
+    public Collection<InventoryXAdjust> getInventoryXAdjustLocation() {
+        return inventoryXAdjust;
     }
 
     public void setClone() {

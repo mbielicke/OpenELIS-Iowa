@@ -35,21 +35,21 @@ import javax.transaction.UserTransaction;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
-import org.openelis.manager.BuildKitManager;
-import org.openelis.remote.BuildKitManagerRemote;
+import org.openelis.manager.InventoryTransferManager;
+import org.openelis.remote.InventoryTransferManagerRemote;
 import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("buildkits-select")
+@RolesAllowed("inventorytransfer-select")
 @TransactionManagement(TransactionManagementType.BEAN)
 
-public class BuildKitManagerBean implements BuildKitManagerRemote {
+public class InventoryTransferManagerBean implements InventoryTransferManagerRemote {
 
     @Resource
     private SessionContext ctx;
     
-    public BuildKitManager add(BuildKitManager man) throws Exception {
+    public InventoryTransferManager add(InventoryTransferManager man) throws Exception {
         UserTransaction ut;
 
         checkSecurity(ModuleFlags.ADD);
@@ -63,7 +63,6 @@ public class BuildKitManagerBean implements BuildKitManagerRemote {
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
-            e.printStackTrace();
             throw e;
         }
 
@@ -71,7 +70,7 @@ public class BuildKitManagerBean implements BuildKitManagerRemote {
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity("buildkits", flag);
+        SecurityInterceptor.applySecurity("inventorytransfer", flag);
     }
 
 }

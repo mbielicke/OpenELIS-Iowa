@@ -29,7 +29,9 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.InventoryComponentViewDO;
 import org.openelis.domain.InventoryXUseViewDO;
+import org.openelis.domain.OrderItemViewDO;
 
 @Local
 public interface InventoryXUseLocal {
@@ -37,6 +39,9 @@ public interface InventoryXUseLocal {
     public ArrayList<InventoryXUseViewDO> fetchByOrderId(Integer id) throws Exception;
 
     public InventoryXUseViewDO add(InventoryXUseViewDO data) throws Exception;
+    
+    public ArrayList<InventoryXUseViewDO> add(ArrayList<OrderItemViewDO> items, 
+                                              ArrayList<Integer> locationIdList) throws Exception;
 
     public InventoryXUseViewDO update(InventoryXUseViewDO data) throws Exception;
 

@@ -28,95 +28,65 @@ package org.openelis.domain;
 import java.util.Date;
 
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class InventoryAdjustmentDO implements RPC {
+/**
+ * Class represents the fields in database table inventory_adjustment.
+ */
+public class InventoryAdjustmentDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
-    protected Integer         id;
+    protected Integer         id, systemUserId;
     protected String          description;
-    protected Integer         systemUserId;
-    protected String          systemUser;
     protected Datetime        adjustmentDate;
-    protected Integer         storeId;
-
-    public Integer getStoreId() {
-        return storeId;
-    }
-
-    public void setStoreId(Integer storeId) {
-        this.storeId = storeId;
-    }
 
     public InventoryAdjustmentDO() {
-
     }
-
+    
     public InventoryAdjustmentDO(Integer id,
                                  String description,
                                  Integer systemUserId,
-                                 String systemUser,
                                  Date adjustmentDate) {
         setId(id);
         setDescription(description);
         setSystemUserId(systemUserId);
-        setSystemUser(systemUser);
-        setAdjustmentDate(adjustmentDate);
+        setAdjustmentDate(DataBaseUtil.toYD(adjustmentDate));
     }
-
-    public InventoryAdjustmentDO(Integer id,
-                                 String description,
-                                 Integer systemUserId,
-                                 Date adjustmentDate,
-                                 Integer storeId) {
-        setId(id);
-        setDescription(description);
-        setSystemUserId(systemUserId);
-        setAdjustmentDate(adjustmentDate);
-        setStoreId(storeId);
-    }
-
-    public Datetime getAdjustmentDate() {
-        return adjustmentDate;
-    }
-
-    public void setAdjustmentDate(Date adjustmentDate) {
-        this.adjustmentDate = new Datetime(Datetime.YEAR,
-                                           Datetime.DAY,
-                                           adjustmentDate);
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = DataBaseUtil.trim(description);
-    }
-
+    
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
+        _changed = true;
+    }
+    
+    public String getDescription() {
+        return description;
     }
 
-    public String getSystemUser() {
-        return systemUser;
+    public void setDescription(String description) {
+        this.description = DataBaseUtil.trim(description);
+        _changed = true;
     }
-
-    public void setSystemUser(String systemUser) {
-        this.systemUser = DataBaseUtil.trim(systemUser);
-    }
-
+    
     public Integer getSystemUserId() {
         return systemUserId;
     }
 
     public void setSystemUserId(Integer systemUserId) {
         this.systemUserId = systemUserId;
+        _changed = true;
+    }
+
+    public Datetime getAdjustmentDate() {
+        return adjustmentDate;
+    }
+
+    public void setAdjustmentDate(Datetime adjustmentDate) {
+        this.adjustmentDate = DataBaseUtil.toYD(adjustmentDate);
+        _changed = true;
     }
 
 }

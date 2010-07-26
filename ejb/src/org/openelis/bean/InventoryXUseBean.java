@@ -35,7 +35,10 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.openelis.domain.InventoryComponentViewDO;
+import org.openelis.domain.InventoryXUseDO;
 import org.openelis.domain.InventoryXUseViewDO;
+import org.openelis.domain.OrderItemViewDO;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryXUse;
 import org.openelis.gwt.common.FieldErrorException;
@@ -71,7 +74,6 @@ public class InventoryXUseBean implements InventoryXUseLocal {
         InventoryXUse entity;
         InventoryLocation loc; 
         
-
         manager.setFlushMode(FlushModeType.COMMIT);               
 
         loc = manager.find(InventoryLocation.class, data.getInventoryLocationId());      
@@ -89,6 +91,26 @@ public class InventoryXUseBean implements InventoryXUseLocal {
 
         data.setId(entity.getId());
         return data;
+    }
+    
+    public ArrayList<InventoryXUseViewDO> add(ArrayList<OrderItemViewDO> items, 
+                                              ArrayList<Integer> locationIdList) throws Exception {
+        OrderItemViewDO item;
+        InventoryXUseViewDO data;
+        ArrayList<InventoryXUseViewDO> fills;
+        
+        fills = new ArrayList<InventoryXUseViewDO>();
+        for (int i = 0; i < items.size(); i++) {
+            data = new InventoryXUseViewDO();           
+            item = items.get(i);      
+            data.setInventoryLocationId(locationIdList.get(i));
+            data.setOrderItemId(item.getId());
+            data.setQuantity(item.getQuantity());
+            add(data);
+            fills.add(data);
+        }
+        
+        return fills;
     }
 
     public InventoryXUseViewDO update(InventoryXUseViewDO data) throws Exception {
