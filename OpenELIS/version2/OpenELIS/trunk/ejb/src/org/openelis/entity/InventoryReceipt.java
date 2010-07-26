@@ -85,9 +85,9 @@ import org.openelis.utils.Auditable;
 @NamedQueries( {
     @NamedQuery ( name = "InventoryReceipt.FetchById",
                  query = "select distinct new org.openelis.domain.InventoryReceiptViewDO(r.id, r.inventoryItemId, r.orderItemId, r.organizationId," +
-    		             "r.receivedDate, r.quantityReceived, r.unitCost, r.qcReference, r.externalReference, r.upc, i.quantity, i.orderId," +
-    		             "i.order.externalOrderNumber, i.unitCost)"
-                       + " from InventoryReceipt r left join r.orderItem i where r.id = :id"),
+    		             "r.receivedDate, r.quantityReceived, r.unitCost, r.qcReference, r.externalReference, r.upc, i.quantity, o.id," +
+    		             "o.externalOrderNumber, i.unitCost)"
+                       + " from InventoryReceipt r left join r.orderItem i left join i.order o where r.id = :id"),
     @NamedQuery ( name = "InventoryReceipt.FetchByUpc",
                  query = "select distinct new org.openelis.domain.IdNameVO(r.inventoryItemId, r.upc, i.name)"
                        + " from InventoryReceipt r left join r.inventoryItem i where r.upc like :upc")})

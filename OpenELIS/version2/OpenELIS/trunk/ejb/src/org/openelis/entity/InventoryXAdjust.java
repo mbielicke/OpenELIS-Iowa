@@ -50,12 +50,12 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-    @NamedQuery( name = "InventoryXAdjust.InventoryXAdjust",
-                query = "select distinct new org.openelis.domain.InventoryAdjustmentChildDO(trans.id, il.id," +
-                        "il.inventoryItemId, ii.name, storLoc.name, storLoc.storageUnit.description, storLoc.location," +
-                        "trans.physicalCount, trans.quantity)"
-                      + " from InventoryXAdjust trans LEFT JOIN trans.inventoryLocation il LEFT JOIN il.inventoryItem ii LEFT JOIN il.storageLocation storLoc "
-                      + " where trans.inventoryAdjustmentId = :id ORDER BY il.id ")})
+    @NamedQuery( name = "InventoryXAdjust.FetchByInventoryAdjustmentId",
+                query = "select distinct new org.openelis.domain.InventoryXAdjustViewDO(trans.id, trans.inventoryAdjustmentId," +
+                        "il.id, trans.quantity, trans.physicalCount, il.lotNumber,il.quantityOnhand,"+
+                        "s.name,su.description,s.location, ii.id, ii.name)"
+                      + " from InventoryXAdjust trans left join trans.inventoryLocation il left join il.inventoryItem ii" 
+                      + " left join il.storageLocation s left join s.storageUnit su where trans.inventoryAdjustmentId = :id ORDER BY il.id ")})
 @Entity
 @Table(name = "inventory_x_adjust")
 @EntityListeners( {AuditUtil.class})

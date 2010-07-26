@@ -43,11 +43,11 @@ public class InventoryAdjustmentMeta implements Meta, MetaMap {
                                    SYSTEM_USER_ID = "_inventoryAdjustment.systemUserId",
                                    ADJUSTMENT_DATE = "_inventoryAdjustment.adjustmentDate",
             
-                                   TRANS_ADJ_LOC_ID = " _transAdjustmentLocation.id",
-                                   TRANS_ADJ_LOC_INVENTORY_ADJUSTMENT_ID = "_transAdjustmentLocation.inventoryAdjustmentId",
-                                   TRANS_ADJ_LOC_INVENTORY_LOCATION_ID = "_transAdjustmentLocation.inventoryLocationId",
-                                   TRANS_ADJ_LOC_QUANTITY = "_transAdjustmentLocation.quantity",
-                                   TRANS_ADJ_LOC_PHYSICAL_COUNT = "_transAdjustmentLocation.physicalCount",
+                                   INVENTORY_X_ADJUST_ID = " _inventoryXAdjust.id",
+                                   INVENTORY_X_ADJUST_INVENTORY_ADJUSTMENT_ID = "_inventoryXAdjust.inventoryAdjustmentId",
+                                   INVENTORY_X_ADJUST_INVENTORY_LOCATION_ID = "_inventoryXAdjust.inventoryLocationId",
+                                   INVENTORY_X_ADJUST_QUANTITY = "_inventoryXAdjust.quantity",
+                                   INVENTORY_X_ADJUST_PHYSICAL_COUNT = "_inventoryXAdjust.physicalCount",
     
                                    INV_LOC_ID = "_inventoryLocation.id",
                                    INV_LOC_INVENTORY_ITEM_ID = "_inventoryLocation.inventoryItemId",
@@ -56,51 +56,51 @@ public class InventoryAdjustmentMeta implements Meta, MetaMap {
                                    INV_LOC_QUANTITY_ON_HAND = "_inventoryLocation.quantityOnhand",
                                    INV_LOC_EXPIRATION_DATE = "_inventoryLocation.expirationDate",
                                    
-                                   INV_ITEM_ID   = "_inventoryLocation.inventoryItem.id", 
-                                   INV_ITEM_NAME = "_inventoryLocation.inventoryItem.name",
-                                   INV_ITEM_DESCRIPTION = "_inventoryLocation.inventoryItem.description",
-                                   INV_ITEM_CATEGORY_ID = "_inventoryLocation.inventoryItem.categoryId", 
-                                   INV_ITEM_STORE_ID = "_inventoryLocation.inventoryItem.storeId",
-                                   INV_ITEM_QUANTITY_MIN_LEVEL = "_inventoryLocation.inventoryItem.quantityMinLevel",
-                                   INV_ITEM_QUANTITY_MAX_LEVEL = "_inventoryLocation.inventoryItem.quantityMaxLevel",
-                                   INV_ITEM_QUANTITY_TO_REORDER = "_inventoryLocation.inventoryItem.quantityToReorder",
-                                   INV_ITEM_DISPENSED_UNITS_ID = "_inventoryLocation.inventoryItem.dispensedUnitsId",
-                                   INV_ITEM_IS_REORDER_AUTO = "_inventoryLocation.inventoryItem.isReorderAuto",
-                                   INV_ITEM_IS_LOT_MAINTAINED = "_inventoryLocation.inventoryItem.isLotMaintained",
-                                   INV_ITEM_IS_SERIAL_MAINTAINED = "_inventoryLocation.inventoryItem.isSerialMaintained",
-                                   INV_ITEM_IS_ACTIVE = "_inventoryLocation.inventoryItem.isActive",
-                                   INV_ITEM_IS_BULK = "_inventoryLocation.inventoryItem.isBulk",
-                                   INV_ITEM_IS_NOT_FOR_SALE = "_inventoryLocation.inventoryItem.isNotForSale",
-                                   INV_ITEM_IS_SUB_ASSEMBLY = "_inventoryLocation.inventoryItem.isSubAssembly",
-                                   INV_ITEM_IS_LABOR = "_inventoryLocation.inventoryItem.isLabor",
-                                   INV_ITEM_IS_NOT_INVENTORIED = "_inventoryLocation.inventoryItem.isNotInventoried",
-                                   INV_ITEM_PRODUCT_URI = "_inventoryLocation.inventoryItem.productUri",
-                                   INV_ITEM_AVERAGE_LEAD_TIME = "_inventoryLocation.inventoryItem.averageLeadTime",
-                                   INV_ITEM_AVERAGE_COST = "_inventoryLocation.inventoryItem.averageCost",
-                                   INV_ITEM_AVERAGE_DAILY_USE = "_inventoryLocation.inventoryItem.averageDailyUse",
-                                   INV_ITEM_PARENT_INVENTORY_ITEM_ID = "_inventoryLocation.inventoryItem.parentInventoryItemId",
-                                   INV_ITEM_PARENT_RATIO = "_inventoryLocation.inventoryItem.parentRatio";
+                                   INV_LOC_INV_ITEM_ID   = "_inventoryLocation.inventoryItem.id", 
+                                   INV_LOC_INV_ITEM_NAME = "_inventoryLocation.inventoryItem.name",
+                                   INV_LOC_INV_ITEM_DESCRIPTION = "_inventoryLocation.inventoryItem.description",
+                                   INV_LOC_INV_ITEM_CATEGORY_ID = "_inventoryLocation.inventoryItem.categoryId", 
+                                   INV_LOC_INV_ITEM_STORE_ID = "_inventoryLocation.inventoryItem.storeId",
+                                   INV_LOC_INV_ITEM_QUANTITY_MIN_LEVEL = "_inventoryLocation.inventoryItem.quantityMinLevel",
+                                   INV_LOC_INV_ITEM_QUANTITY_MAX_LEVEL = "_inventoryLocation.inventoryItem.quantityMaxLevel",
+                                   INV_LOC_INV_ITEM_QUANTITY_TO_REORDER = "_inventoryLocation.inventoryItem.quantityToReorder",
+                                   INV_LOC_INV_ITEM_DISPENSED_UNITS_ID = "_inventoryLocation.inventoryItem.dispensedUnitsId",
+                                   INV_LOC_INV_ITEM_IS_REORDER_AUTO = "_inventoryLocation.inventoryItem.isReorderAuto",
+                                   INV_LOC_INV_ITEM_IS_LOT_MAINTAINED = "_inventoryLocation.inventoryItem.isLotMaintained",
+                                   INV_LOC_INV_ITEM_IS_SERIAL_MAINTAINED = "_inventoryLocation.inventoryItem.isSerialMaintained",
+                                   INV_LOC_INV_ITEM_IS_ACTIVE = "_inventoryLocation.inventoryItem.isActive",
+                                   INV_LOC_INV_ITEM_IS_BULK = "_inventoryLocation.inventoryItem.isBulk",
+                                   INV_LOC_INV_ITEM_IS_NOT_FOR_SALE = "_inventoryLocation.inventoryItem.isNotForSale",
+                                   INV_LOC_INV_ITEM_IS_SUB_ASSEMBLY = "_inventoryLocation.inventoryItem.isSubAssembly",
+                                   INV_LOC_INV_ITEM_IS_LABOR = "_inventoryLocation.inventoryItem.isLabor",
+                                   INV_LOC_INV_ITEM_IS_NOT_INVENTORIED = "_inventoryLocation.inventoryItem.isNotInventoried",
+                                   INV_LOC_INV_ITEM_PRODUCT_URI = "_inventoryLocation.inventoryItem.productUri",
+                                   INV_LOC_INV_ITEM_AVERAGE_LEAD_TIME = "_inventoryLocation.inventoryItem.averageLeadTime",
+                                   INV_LOC_INV_ITEM_AVERAGE_COST = "_inventoryLocation.inventoryItem.averageCost",
+                                   INV_LOC_INV_ITEM_AVERAGE_DAILY_USE = "_inventoryLocation.inventoryItem.averageDailyUse",
+                                   INV_LOC_INV_ITEM_PARENT_INVENTORY_ITEM_ID = "_inventoryLocation.inventoryItem.parentInventoryItemId",
+                                   INV_LOC_INV_ITEM_PARENT_RATIO = "_inventoryLocation.inventoryItem.parentRatio";
 
     private static HashSet<String> names;
 
     static {
         names = new HashSet<String>(Arrays.asList(ID, DESCRIPTION, SYSTEM_USER_ID, ADJUSTMENT_DATE,
-                                                  TRANS_ADJ_LOC_ID, TRANS_ADJ_LOC_INVENTORY_ADJUSTMENT_ID,
-                                                  TRANS_ADJ_LOC_INVENTORY_LOCATION_ID, TRANS_ADJ_LOC_QUANTITY,
-                                                  TRANS_ADJ_LOC_PHYSICAL_COUNT, INV_LOC_ID,
+                                                  INVENTORY_X_ADJUST_ID, INVENTORY_X_ADJUST_INVENTORY_ADJUSTMENT_ID,
+                                                  INVENTORY_X_ADJUST_INVENTORY_LOCATION_ID, INVENTORY_X_ADJUST_QUANTITY,
+                                                  INVENTORY_X_ADJUST_PHYSICAL_COUNT, INV_LOC_ID,
                                                   INV_LOC_INVENTORY_ITEM_ID, INV_LOC_LOT_NUMBER,
                                                   INV_LOC_STORAGE_LOCATION_ID, INV_LOC_QUANTITY_ON_HAND,
-                                                  INV_LOC_EXPIRATION_DATE, INV_ITEM_ID, INV_ITEM_NAME,
-                                                  INV_ITEM_DESCRIPTION, INV_ITEM_CATEGORY_ID, INV_ITEM_STORE_ID,
-                                                  INV_ITEM_QUANTITY_MIN_LEVEL, INV_ITEM_QUANTITY_MAX_LEVEL,
-                                                  INV_ITEM_QUANTITY_TO_REORDER, INV_ITEM_DISPENSED_UNITS_ID,
-                                                  INV_ITEM_IS_REORDER_AUTO, INV_ITEM_IS_LOT_MAINTAINED,
-                                                  INV_ITEM_IS_SERIAL_MAINTAINED, INV_ITEM_IS_ACTIVE, INV_ITEM_IS_BULK,
-                                                  INV_ITEM_IS_NOT_FOR_SALE, INV_ITEM_IS_SUB_ASSEMBLY, INV_ITEM_IS_LABOR,
-                                                  INV_ITEM_IS_NOT_INVENTORIED, INV_ITEM_PRODUCT_URI,
-                                                  INV_ITEM_AVERAGE_LEAD_TIME, INV_ITEM_AVERAGE_COST,
-                                                  INV_ITEM_AVERAGE_DAILY_USE, INV_ITEM_PARENT_INVENTORY_ITEM_ID,
-                                                  INV_ITEM_PARENT_RATIO));
+                                                  INV_LOC_EXPIRATION_DATE, INV_LOC_INV_ITEM_ID, INV_LOC_INV_ITEM_NAME,
+                                                  INV_LOC_INV_ITEM_DESCRIPTION, INV_LOC_INV_ITEM_CATEGORY_ID, INV_LOC_INV_ITEM_STORE_ID,
+                                                  INV_LOC_INV_ITEM_QUANTITY_MIN_LEVEL, INV_LOC_INV_ITEM_QUANTITY_MAX_LEVEL,
+                                                  INV_LOC_INV_ITEM_QUANTITY_TO_REORDER, INV_LOC_INV_ITEM_DISPENSED_UNITS_ID,
+                                                  INV_LOC_INV_ITEM_IS_REORDER_AUTO, INV_LOC_INV_ITEM_IS_LOT_MAINTAINED,
+                                                  INV_LOC_INV_ITEM_IS_SERIAL_MAINTAINED, INV_LOC_INV_ITEM_IS_ACTIVE, INV_LOC_INV_ITEM_IS_BULK,
+                                                  INV_LOC_INV_ITEM_IS_NOT_FOR_SALE, INV_LOC_INV_ITEM_IS_SUB_ASSEMBLY, INV_LOC_INV_ITEM_IS_LABOR,
+                                                  INV_LOC_INV_ITEM_IS_NOT_INVENTORIED, INV_LOC_INV_ITEM_PRODUCT_URI,
+                                                  INV_LOC_INV_ITEM_AVERAGE_LEAD_TIME, INV_LOC_INV_ITEM_AVERAGE_COST,
+                                                  INV_LOC_INV_ITEM_AVERAGE_DAILY_USE, INV_LOC_INV_ITEM_PARENT_INVENTORY_ITEM_ID,
+                                                  INV_LOC_INV_ITEM_PARENT_RATIO));
 
     }
 
@@ -116,28 +116,28 @@ public class InventoryAdjustmentMeta implements Meta, MetaMap {
         return SYSTEM_USER_ID;
     }
     
-    public String getAdjustmentDate() {
+    public static String getAdjustmentDate() {
         return ADJUSTMENT_DATE;
     } 
 
-    public static String getTransAdjustmentLocationId() {
-        return TRANS_ADJ_LOC_ID;
+    public static String getInventoryXAdjustId() {
+        return INVENTORY_X_ADJUST_ID;
     }
     
-    public static String getTransAdjustmentLocationInventoryAdjustmentId() {
-        return TRANS_ADJ_LOC_INVENTORY_ADJUSTMENT_ID;
+    public static String getInventoryXAdjustInventoryAdjustmentId() {
+        return INVENTORY_X_ADJUST_INVENTORY_ADJUSTMENT_ID;
     }
     
-    public static String getTransAdjustmentLocationInventoryLocationId() {
-        return TRANS_ADJ_LOC_INVENTORY_LOCATION_ID;
+    public static String getInventoryXAdjustInventoryLocationId() {
+        return INVENTORY_X_ADJUST_INVENTORY_LOCATION_ID;
     }
     
-    public static String getTransAdjustmentLocationQuantity() {
-        return TRANS_ADJ_LOC_QUANTITY;
+    public static String getInventoryXAdjustQuantity() {
+        return INVENTORY_X_ADJUST_QUANTITY;
     }
     
-    public static String getTransAdjustmentLocationPhysicalCount() {
-        return TRANS_ADJ_LOC_PHYSICAL_COUNT;
+    public static String getInventoryXAdjustPhysicalCount() {
+        return INVENTORY_X_ADJUST_PHYSICAL_COUNT;
     }
     
     public static String getInventoryLocationId() {
@@ -162,105 +162,100 @@ public class InventoryAdjustmentMeta implements Meta, MetaMap {
 
     public static String getInventoryLocationExpirationDate() {
         return INV_LOC_EXPIRATION_DATE;
+    }   
+
+    public static String getInventoryLocationInventoryItemName() {
+        return INV_LOC_INV_ITEM_NAME;
+    }
+
+    public static String getInventoryLocationInventoryItemDescription() {
+        return INV_LOC_INV_ITEM_DESCRIPTION;
+    }
+
+    public static String getInventoryLocationInventoryItemCategoryId() {
+        return INV_LOC_INV_ITEM_CATEGORY_ID;
+    }
+
+    public static String getInventoryLocationInventoryItemStoreId() {
+        return INV_LOC_INV_ITEM_STORE_ID;
+    }
+
+    public static String getInventoryLocationInventoryItemQuantityMinLevel() {
+        return INV_LOC_INV_ITEM_QUANTITY_MIN_LEVEL;
+    }
+
+    public static String getInventoryLocationInventoryItemQuantityMaxLevel() {
+        return INV_LOC_INV_ITEM_QUANTITY_MAX_LEVEL;
+    }
+
+    public static String getInventoryLocationInventoryItemQuantityToReorder() {
+        return INV_LOC_INV_ITEM_QUANTITY_TO_REORDER;
+    }
+
+    public static String getInventoryLocationInventoryItemDispensedUnitsId() {
+        return INV_LOC_INV_ITEM_DISPENSED_UNITS_ID;
+    }
+
+    public static String getInventoryLocationInventoryItemIsReorderAuto() {
+        return INV_LOC_INV_ITEM_IS_REORDER_AUTO;
+    }
+
+    public static String getInventoryLocationInventoryItemIsLotMaintained() {
+        return INV_LOC_INV_ITEM_IS_LOT_MAINTAINED;
+    }
+
+    public static String getInventoryLocationInventoryItemIsSerialMaintained() {
+        return INV_LOC_INV_ITEM_IS_SERIAL_MAINTAINED;
+    }
+
+    public static String getInventoryLocationInventoryItemIsActive() {
+        return INV_LOC_INV_ITEM_IS_ACTIVE;
+    }
+
+    public static String getInventoryLocationInventoryItemIsBulk() {
+        return INV_LOC_INV_ITEM_IS_BULK;
+    }
+
+    public static String getInventoryLocationInventoryItemIsNotForSale() {
+        return INV_LOC_INV_ITEM_IS_NOT_FOR_SALE;
+    }
+
+    public static String getInventoryLocationInventoryItemIsSubAssembly() {
+        return INV_LOC_INV_ITEM_IS_SUB_ASSEMBLY;
+    }
+
+    public static String getInventoryLocationInventoryItemIsLabor() {
+        return INV_LOC_INV_ITEM_IS_LABOR;
+    }
+
+    public static String getInventoryLocationInventoryItemIsNotInventoried() {
+        return INV_LOC_INV_ITEM_IS_NOT_INVENTORIED;
+    }
+
+    public static String getInventoryLocationInventoryItemProductUri() {
+        return INV_LOC_INV_ITEM_PRODUCT_URI;
+    }
+
+    public static String getInventoryLocationInventoryItemAverageLeadTime() {
+        return INV_LOC_INV_ITEM_AVERAGE_LEAD_TIME;
+    }
+
+    public static String getInventoryLocationInventoryItemAverageCost() {
+        return INV_LOC_INV_ITEM_AVERAGE_COST;
+    }
+
+    public static String getInventoryLocationInventoryItemAverageDailyUse() {
+        return INV_LOC_INV_ITEM_AVERAGE_DAILY_USE;
+    }
+
+    public static String getInventoryLocationInventoryItemParentInventoryItemId() {
+        return INV_LOC_INV_ITEM_PARENT_INVENTORY_ITEM_ID;
+    }
+
+    public static String getInventoryLocationInventoryItemParentRatio() {
+        return INV_LOC_INV_ITEM_PARENT_RATIO;
     }
     
-    public static String getInventoryItemId() {
-        return INV_ITEM_ID;
-    }
-
-    public static String getInventoryItemName() {
-        return INV_ITEM_NAME;
-    }
-
-    public static String getInventoryItemDescription() {
-        return INV_ITEM_DESCRIPTION;
-    }
-
-    public static String getInventoryItemCategoryId() {
-        return INV_ITEM_CATEGORY_ID;
-    }
-
-    public static String getInventoryItemStoreId() {
-        return INV_ITEM_STORE_ID;
-    }
-
-    public static String getInventoryItemQuantityMinLevel() {
-        return INV_ITEM_QUANTITY_MIN_LEVEL;
-    }
-
-    public static String getInventoryItemQuantityMaxLevel() {
-        return INV_ITEM_QUANTITY_MAX_LEVEL;
-    }
-
-    public static String getInventoryItemQuantityToReorder() {
-        return INV_ITEM_QUANTITY_TO_REORDER;
-    }
-
-    public static String getInventoryItemDispensedUnitsId() {
-        return INV_ITEM_DISPENSED_UNITS_ID;
-    }
-
-    public static String getInventoryItemIsReorderAuto() {
-        return INV_ITEM_IS_REORDER_AUTO;
-    }
-
-    public static String getInventoryItemIsLotMaintained() {
-        return INV_ITEM_IS_LOT_MAINTAINED;
-    }
-
-    public static String getInventoryItemIsSerialMaintained() {
-        return INV_ITEM_IS_SERIAL_MAINTAINED;
-    }
-
-    public static String getInventoryItemIsActive() {
-        return INV_ITEM_IS_ACTIVE;
-    }
-
-    public static String getInventoryItemIsBulk() {
-        return INV_ITEM_IS_BULK;
-    }
-
-    public static String getInventoryItemIsNotForSale() {
-        return INV_ITEM_IS_NOT_FOR_SALE;
-    }
-
-    public static String getInventoryItemIsSubAssembly() {
-        return INV_ITEM_IS_SUB_ASSEMBLY;
-    }
-
-    public static String getInventoryItemIsLabor() {
-        return INV_ITEM_IS_LABOR;
-    }
-
-    public static String getInventoryItemIsNotInventoried() {
-        return INV_ITEM_IS_NOT_INVENTORIED;
-    }
-
-    public static String getInventoryItemProductUri() {
-        return INV_ITEM_PRODUCT_URI;
-    }
-
-    public static String getInventoryItemAverageLeadTime() {
-        return INV_ITEM_AVERAGE_LEAD_TIME;
-    }
-
-    public static String getInventoryItemAverageCost() {
-        return INV_ITEM_AVERAGE_COST;
-    }
-
-    public static String getInventoryItemAverageDailyUse() {
-        return INV_ITEM_AVERAGE_DAILY_USE;
-    }
-
-    public static String getInventoryItemParentInventoryItemId() {
-        return INV_ITEM_PARENT_INVENTORY_ITEM_ID;
-    }
-
-    public static String getInventoryItemParentRatio() {
-        return INV_ITEM_PARENT_RATIO;
-    }
-    
-
     public boolean hasColumn(String columnName) {
         return names.contains(columnName);
     }

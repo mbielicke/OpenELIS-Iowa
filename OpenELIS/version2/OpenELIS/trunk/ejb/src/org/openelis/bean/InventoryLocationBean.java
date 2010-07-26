@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -39,12 +40,14 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.InventoryLocationDO;
 import org.openelis.domain.InventoryLocationViewDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.InventoryLocationLocal;
+import org.openelis.local.LockLocal;
 import org.openelis.meta.InventoryItemMeta;
 import org.openelis.remote.InventoryLocationRemote;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -56,6 +59,9 @@ public class InventoryLocationBean implements InventoryLocationLocal, InventoryL
 
     @PersistenceContext(name = "openelis")
     private EntityManager                    manager;
+    
+    @EJB
+    private LockLocal                        lockBean;
 
     @SuppressWarnings("unchecked")
     public ArrayList<InventoryLocationViewDO> fetchByInventoryItemId(Integer id) throws Exception {
@@ -127,6 +133,27 @@ public class InventoryLocationBean implements InventoryLocationLocal, InventoryL
 
         return DataBaseUtil.toArrayList(query.getResultList());
     }
+    
+    public ArrayList<InventoryLocationViewDO> fetchByInventoryItemName(String match, int maxResults) throws Exception {
+        Query query;
+        
+        query = manager.createNamedQuery("InventoryLocation.FetchByInventoryItemName");
+        query.setParameter("name", match);
+        query.setMaxResults(maxResults);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
+    public ArrayList<InventoryLocationViewDO> fetchByInventoryItemNameStoreId(String match,Integer storeId, int maxResults) throws Exception {
+        Query query;
+        
+        query = manager.createNamedQuery("InventoryLocation.FetchByInventoryItemNameStoreId");
+        query.setParameter("name", match);
+        query.setParameter("id", storeId);
+        query.setMaxResults(maxResults);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
 
     public InventoryLocationViewDO add(InventoryLocationViewDO data) throws Exception {
         InventoryLocation entity;
@@ -162,6 +189,16 @@ public class InventoryLocationBean implements InventoryLocationLocal, InventoryL
         entity.setExpirationDate(data.getExpirationDate());
 
         return data;
+    }
+    
+    public InventoryLocationViewDO fetchForUpdate(Integer id) throws Exception {
+        lockBean.getLock(ReferenceTable.INVENTORY_LOCATION, id);
+        return fetchById(id);
+    }
+    
+    public InventoryLocationViewDO abortUpdate(Integer id) throws Exception {
+        lockBean.giveUpLock(ReferenceTable.INVENTORY_LOCATION, id);
+        return fetchById(id);
     }
 
     public void delete(InventoryLocationDO data) throws Exception {

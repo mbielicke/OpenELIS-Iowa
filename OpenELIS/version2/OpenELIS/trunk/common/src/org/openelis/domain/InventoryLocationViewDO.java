@@ -42,6 +42,7 @@ public class InventoryLocationViewDO extends InventoryLocationDO {
 
     protected String          inventoryItemName, storageLocationName,
                               storageLocationUnitDescription, storageLocationLocation;
+    protected Integer         inventoryItemStoreId;               
 
     public InventoryLocationViewDO() {
     }
@@ -49,11 +50,13 @@ public class InventoryLocationViewDO extends InventoryLocationDO {
     public InventoryLocationViewDO(Integer id, Integer inventoryItemId, String lotNumber,
                                    Integer storageLocationId, Integer quantityOnhand,
                                    Date expirationDate, String inventoryItemName,
+                                   Integer inventoryItemStoreId,
                                    String storageLocationName,
                                    String storageLocationUnitDescription,
                                    String storageLocationLocation) {
         super(id, inventoryItemId, lotNumber, storageLocationId, quantityOnhand, expirationDate);
         setInventoryItemName(inventoryItemName);
+        setInventoryItemStoreId(inventoryItemStoreId);
         setStorageLocationName(storageLocationName);
         setStorageLocationUnitDescription(storageLocationUnitDescription);
         setStorageLocationLocation(storageLocationLocation);
@@ -65,6 +68,14 @@ public class InventoryLocationViewDO extends InventoryLocationDO {
 
     public void setInventoryItemName(String inventoryItemName) {
         this.inventoryItemName = DataBaseUtil.trim(inventoryItemName);
+    }
+    
+    public Integer getInventoryItemStoreId() {
+        return inventoryItemStoreId;
+    }
+
+    public void setInventoryItemStoreId(Integer inventoryItemStoreId) {
+        this.inventoryItemStoreId = inventoryItemStoreId;
     }
 
     public String getStorageLocationName() {

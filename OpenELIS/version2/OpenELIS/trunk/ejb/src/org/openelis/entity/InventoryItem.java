@@ -83,7 +83,8 @@ import org.openelis.utils.Auditable;
                         "i.isBulk,i.isNotForSale,i.isSubAssembly,i.isLabor,i.isNotInventoried,i.productUri," +
                         "i.averageLeadTime,i.averageCost,i.averageDailyUse,i.parentInventoryItemId,"+
                         "i.parentRatio)"
-                      + " from InventoryItem i where i.isActive='Y' and i.parentInventoryItemId = :parentInventoryItemId"
+                      + " from InventoryItem i where i.isActive='Y' and"
+                      + " (i.parentInventoryItemId = :parentInventoryItemId or i.id = :parentInventoryItemId)"
                       + " and i.name like :name ")                  
              })
 

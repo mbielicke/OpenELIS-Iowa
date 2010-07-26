@@ -247,6 +247,13 @@ public class InventoryItemBean implements InventoryItemRemote, InventoryItemLoca
         
         if ("Y".equals(data.getIsBulk()) && "Y".equals(data.getIsLotMaintained()))
             list.add(new FieldErrorException("itemCantBeBulkAndLotReqException", null));
+                
+        if (!DataBaseUtil.isEmpty(data.getParentRatio())) {
+            if (data.getParentRatio() <= 0)
+                list.add(new FieldErrorException("parentRatioMoreThanZeroException", InventoryItemMeta.getParentRatio()));
+        } else if (!DataBaseUtil.isEmpty(data.getParentInventoryItemId())) {
+            list.add(new FieldErrorException("parentRatioReqIfParentItemSpecException", InventoryItemMeta.getParentRatio()));
+        }                
         
         if (list.size() > 0)
             throw list;
