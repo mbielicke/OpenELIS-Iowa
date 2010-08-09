@@ -95,6 +95,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.SyncCallback;
+import com.google.gwt.user.client.ui.Focusable;
 
 public class InventoryReceiptScreen extends Screen implements ActionHandler<ItemTab.Action> {
     
@@ -117,8 +118,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
     
     private ArrayList<TableDataRow>                   receiptModel; 
     private HashMap<Integer, InventoryItemViewDO>     inventoryItemMap;  
-    private Query                                     query;
-    private boolean                                   newQuery; 
+    private Query                                     query; 
     private String                                    upcQuery;
     private int                                       newManagerIndex;              
     
@@ -239,6 +239,22 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
             }
         });
 
+        receiptTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>(){
+            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+                //
+                // this is done here in order to make sure that whenever a row 
+                // is selected if some data for the previous row got changed
+                // in one of the tabs then the last widget being edited in the 
+                // tab will lose focus and ValueChangeEvent will be fired for it, 
+                // so that the inventory receipt record associated with the 
+                // previous row will get updated before the tabs get filled with
+                // any new data that belongs to the current row
+                // 
+                if (state ==State.ADD || state == State.UPDATE)
+                    ((Focusable)def.getPanel().focused).setFocus(false);
+            }            
+        });
+        
         receiptTable.addSelectionHandler(new SelectionHandler<TableRow>(){
             public void onSelection(SelectionEvent<TableRow> event) {                                               
                 int index;
@@ -325,10 +341,10 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                         break;
                     case 3:
                         valRow = (TableDataRow)val; 
-                        if(valRow != null) {
+                        if (valRow != null) {
                             upcData = (IdNameVO)valRow.data;
                             data.setUpc(upcData.getName());
-                            if(!upcData.getId().equals(-1)) {
+                            if (!upcData.getId().equals(-1)) {
                                 tmpRow = new TableDataRow(upcData.getId(), upcData.getDescription());
                                 item = getInventoryItem(upcData.getId());
                                 tmpRow.data = item;
@@ -346,6 +362,9 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                                         tableRow.cells.get(4).clearExceptions();
                                 }
                                 receiptTable.setCell(r, 4, tmpRow);
+                                data.setInventoryItemId(upcData.getId()); 
+                                itemTab.setManager(man, index, screen);
+                                drawTabs();
                             }
                         } else {
                             data.setUpc(null);
@@ -353,7 +372,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                         break;
                     case 4:
                         valRow = (TableDataRow)val; 
-                        if(valRow != null) {
+                        if (valRow != null) {
                             item = (InventoryItemDO)valRow.data;
                             data.setInventoryItemId(item.getId());                                                       
                         } else {                                                       
@@ -364,7 +383,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                         break;
                     case 5:
                         valRow = (TableDataRow)val; 
-                        if(valRow != null) {
+                        if (valRow != null) {
                             org = (OrganizationDO)valRow.data;                            
                             data.setOrganizationId(org.getId());
                             data.setOrganization(org);
@@ -390,7 +409,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                                 data.setReceivedDate(dateRec);
                                 //
                                 // this will get rid of any exceptions that were
-                                // added to the coulmn showing date recieved
+                                // added to the column showing date recieved
                                 // because of wrong formatting or a value not 
                                 // being present
                                 //
@@ -664,7 +683,6 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
         OrderManager order;
         
         order = OrderManager.getInstance();     
-        newQuery = false;
                 
         setState(State.QUERY);        
         DataChangeEvent.fire(this);
@@ -760,6 +778,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                     Window.alert("commitAdd(): " + e.getMessage());
                     window.clearStatus();
                     success = false;
+                    break;
                 }                
             }            
             if (success) {
@@ -788,7 +807,8 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                 } catch (Exception e) {
                     Window.alert("commitUpdate(): " + e.getMessage());
                     window.clearStatus();
-                    success = false;
+                    success = false;   
+                    break;
                 }
                 prevMan = currMan;
             }
@@ -983,7 +1003,6 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                 Integer orderId;
                               
                 invItem = null;                                
-                newQuery = true;
                 try {
                     if (result != null) {                          
                         receiptModel = new ArrayList<TableDataRow>();                              
@@ -1016,8 +1035,9 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                                                                         organization.getName()));
 
                                 row.cells.get(6).setValue(data.getOrderItemQuantity());         
-                                row.cells.get(7).setValue(data.getQuantityReceived());                                                                                      
-                                row.cells.get(8).setValue(data.getUnitCost());
+                                row.cells.get(7).setValue(data.getQuantityReceived());     
+                                if (data.getId() != null)
+                                    row.cells.get(8).setValue(data.getUnitCost());
 
                                 if(state == State.UPDATE)
                                     manager = manager.abortUpdate();
@@ -1046,11 +1066,12 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                 receiptTable.load(null);
                 if (error instanceof NotFoundException) {
                     window.setDone(consts.get("noRecordsFound"));
+                    receiptModel = null;
                     setState(State.DEFAULT);
                 } else if (error instanceof LastPageException) {
                     window.setError(consts.get("noMoreRecordInDir"));
                 } else {
-                    Window.alert("Error: Order call query failed; " + error.getMessage());
+                    Window.alert("Error: Inventory Receipt call query failed; " + error.getMessage());
                     window.setError(consts.get("queryFailed"));
                 }
             }

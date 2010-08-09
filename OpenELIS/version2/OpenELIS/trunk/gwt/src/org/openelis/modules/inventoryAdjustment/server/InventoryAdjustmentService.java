@@ -27,26 +27,47 @@ package org.openelis.modules.inventoryAdjustment.server;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.IdNameVO;
-import org.openelis.domain.InventoryAdjustmentViewDO;
+import org.openelis.domain.InventoryAdjustmentDO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.InventoryAdjustmentManager;
+import org.openelis.manager.InventoryXAdjustManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.InventoryAdjustmentManagerRemote;
 import org.openelis.remote.InventoryAdjustmentRemote;
 
 public class InventoryAdjustmentService {
-    private static final int rowPP = 20;
+    private static final int rowPP = 19;
     
     public InventoryAdjustmentManager fetchWithAdjustments (Integer id) throws Exception {
         return remoteManager().fetchWithAdjustments(id);
     }
-    public ArrayList<IdNameVO> query(Query query) throws Exception {
+    
+    public ArrayList<InventoryAdjustmentDO> query(Query query) throws Exception {
         return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
     }
     
     private InventoryAdjustmentRemote remote() {
         return (InventoryAdjustmentRemote)EJBFactory.lookup("openelis/InventoryAdjustmentBean/remote");
+    }
+    
+    public InventoryAdjustmentManager add(InventoryAdjustmentManager man) throws Exception {
+        return remoteManager().add(man);
+    }
+    
+    public InventoryAdjustmentManager update(InventoryAdjustmentManager man) throws Exception {
+        return remoteManager().update(man);
+    }
+    
+    public InventoryAdjustmentManager fetchForUpdate(Integer id) throws Exception {
+        return remoteManager().fetchForUpdate(id);
+    }
+    
+    public InventoryAdjustmentManager abortUpdate(Integer id) throws Exception {
+        return remoteManager().abortUpdate(id);
+    }
+    
+    public InventoryXAdjustManager fetchAdjustmentByInventoryAdjustmentId(Integer id) throws Exception {
+        return remoteManager().fetchAdjustmentByInventoryAdjustmentId(id);
     }
     
     private InventoryAdjustmentManagerRemote remoteManager() {

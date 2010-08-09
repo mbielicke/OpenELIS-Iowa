@@ -25,7 +25,6 @@
 */
 package org.openelis.modules.inventoryTransfer.server;
 
-import org.openelis.manager.InventoryReceiptManager;
 import org.openelis.manager.InventoryTransferManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.InventoryTransferManagerRemote;
@@ -40,7 +39,6 @@ public class InventoryTransferService {
         return (InventoryTransferManagerRemote)EJBFactory.lookup("openelis/InventoryTransferManagerBean/remote");        
     }
 }   
-
 
 /*   
     public InventoryReceiptQuery commitQuery(InventoryReceiptQuery query) throws Exception {

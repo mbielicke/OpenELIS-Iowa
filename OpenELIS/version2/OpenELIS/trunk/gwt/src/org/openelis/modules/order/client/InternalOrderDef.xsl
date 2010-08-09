@@ -164,7 +164,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'requestedBy')" />:
                 </text>
-                <textbox key="{meta:getRequestedBy()}" width="175" tab="{meta:getOrderedDate()},{meta:getStatusId()}" field="String" required="true" />
+                <textbox key="{meta:getRequestedBy()}" width="175" tab="{meta:getOrderedDate()},{meta:getStatusId()}" field="String" case = "LOWER" required="true" />
               </row>
               <row>
                 <text style="Prompt">
@@ -240,7 +240,7 @@ UIRF Software License are applicable instead of those above.
                       <label field="String" />
                     </col>
                     <col key="" width="92" header="{resource:getString($constants,'expDate')}">
-                      <label field="String" />
+                      <calendar pattern="{resource:getString($constants,'datePattern')}" begin = "0" end = "2" />
                     </col>
                   </table>
                 </VerticalPanel>

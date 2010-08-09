@@ -25,28 +25,7 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
-
-<!-- 
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-xmlns:xalan="http://xml.apache.org/xalan"
-xmlns:resource="xalan://org.openelis.util.UTFResource"
-xmlns:locale="xalan://java.util.Locale"
-xmlns:meta="xalan://org.openelis.metamap.InventoryReceiptMetaMap"
-xmlns:inventoryReceiptMeta="xalan://org.openelis.meta.InventoryReceiptMeta"
-xmlns:orderMeta="xalan://org.openelis.metamap.OrderMetaMap"
-xmlns:orderItemMeta="xalan://org.openelis.metamap.OrderItemMetaMap"
-xmlns:transReceiptLocationMeta="xalan://org.openelis.metamap.TransReceiptLocationMetaMap"
-xmlns:inventoryLocationMeta="xalan://org.openelis.metamap.InventoryLocationMetaMap"
-xmlns:organizationMeta="xalan://org.openelis.metamap.OrderOrganizationMetaMap"
-xmlns:addressMeta="xalan://org.openelis.meta.AddressMeta"
-xmlns:inventoryItemMeta="xalan://org.openelis.meta.InventoryItemMeta"
-xmlns:inventoryXUseMeta="xalan://org.openelis.metamap.InventoryXUseMetaMap"
-xmlns:storageLocationMeta="xalan://org.openelis.metamap.StorageLocationMetaMap"
-extension-element-prefixes="resource"
-version="1.0">
-  -->
-
+  
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -75,12 +54,6 @@ version="1.0">
 
         <AbsolutePanel spacing="0" style="ButtonPanelContainer">
           <HorizontalPanel>
-            <xsl:call-template name="queryButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="buttonPanelDivider" />
             <xsl:call-template name="addButton">
               <xsl:with-param name="language">
                 <xsl:value-of select="language" />
@@ -119,6 +92,9 @@ version="1.0">
               <col key="qtyOnHand" width="55" header="{resource:getString($constants,'onHand')}">
                 <label field="Integer" />
               </col>
+              <col key="qtyReceived" width="40" header="{resource:getString($constants,'qty')}">
+                <textbox key="inventoryReceiptgetQuantityReceived" required  = "true" field="Integer" />
+              </col>
               <col key="toItemName" width="135"  header="{resource:getString($constants,'toItem')}">
                 <autoComplete width="120" case="LOWER" field="Integer" >
                   <col width="100" header="{resource:getString($constants,'name')}" />
@@ -138,9 +114,6 @@ version="1.0">
                     <calendar begin="0" end="2" pattern="{resource:getString($constants,'datePattern')}" />
                   </col>                                   
                 </autoComplete>
-              </col>
-              <col key="qtyReceived" width="40" header="{resource:getString($constants,'qty')}">
-                <textbox key="inventoryReceiptgetQuantityReceived" required  = "true" field="Integer" />
               </col>
             </table>
           </widget>
@@ -190,37 +163,37 @@ version="1.0">
               <row>
                 <text style="Prompt"><xsl:value-of select="resource:getString($constants,'from')" />:</text>
                 <widget>
-                  <textbox key="inventoryItemDescription" width="195" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+                  <textbox key="inventoryItemDescription" width="225" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
                 <widget>
-                  <textbox key="inventoryItemStoreId" width="115" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+                  <textbox key="inventoryItemStoreId" width="165" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
                 <widget>
                   <textbox key="inventoryItemDispensedUnitsId" width="90" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
                 <widget>
-                  <textbox key="inventoryLocationLotNumber" width="100" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+                  <textbox key="inventoryLocationLotNumber" width="130" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
                 <widget>
-                  <textbox key="inventoryLocationExpirationDate" width="140" case="MIXED" style="ScreenTextboxDisplayOnly" pattern="{resource:getString($constants,'datePattern')}" field="String" />
+                  <textbox key="inventoryLocationExpirationDate" width="122" case="MIXED" style="ScreenTextboxDisplayOnly" pattern="{resource:getString($constants,'datePattern')}" field="String" />
                 </widget>
               </row>
               <row>
                 <text style="Prompt"><xsl:value-of select="resource:getString($constants,'to')" />:</text>
                 <widget>
-                  <textbox key="toDescription" width="195" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+                  <textbox key="toDescription" width="225" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
                 <widget>
-                  <textbox key="toStoreId" width="115" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+                  <textbox key="toStoreId" width="165" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
                 <widget>
                   <textbox key="toDispensedUnits" width="90" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
                 <widget>
-                  <textbox key="toLotNumber" width="100" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+                  <textbox key="toLotNumber" width="130" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
                 <widget>
-                  <textbox key="toExpDate" width="140" case="MIXED" style="ScreenTextboxDisplayOnly" pattern="{resource:getString($constants,'datePattern')}" field="String" />
+                  <textbox key="toExpDate" width="122" case="MIXED" style="ScreenTextboxDisplayOnly" pattern="{resource:getString($constants,'datePattern')}" field="String" />
                 </widget>
               </row>
             </TablePanel>

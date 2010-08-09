@@ -186,14 +186,14 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select='resource:getString($constants,"attention")' />:
                 </text>
                 <widget colspan="5">
-                  <textbox key="{meta:getOrganizationAttention()}" tab="{meta:getRequestedBy()},{meta:getOrderedDate()}" width="188" max = "30" field="String" />
+                  <textbox key="{meta:getOrganizationAttention()}" tab="{meta:getRequestedBy()},{meta:getOrderedDate()}" case = "UPPER" width="188" max = "30" field="String" />
                 </widget>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"requestedBy")' />:
                 </text>
-                <textbox key="{meta:getRequestedBy()}" width="203" tab="{meta:getCostCenterId()},{meta:getOrganizationAttention()}" field="String" />
+                <textbox key="{meta:getRequestedBy()}" width="203" tab="{meta:getCostCenterId()},{meta:getOrganizationAttention()}" case = "LOWER" field="String" />
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"aptSuite")' />:
                 </text>
@@ -320,10 +320,10 @@ UIRF Software License are applicable instead of those above.
                     <label field="String" />
                   </col>
                   <col key="" width="92" header="{resource:getString($constants,'expDate')}">
-                    <label field="String" />
+                    <calendar begin="0" end="2" pattern="{resource:getString($constants,'datePattern')}" />
                   </col>
                   <col key="{meta:getInventoryReceiptReceivedDate()}" width="80" header="{resource:getString($constants,'dateRec')}">
-                    <textbox pattern="{resource:getString($constants,'dateTimePattern')}" field="Date" begin = "0" end = "4" />
+                    <calendar begin="0" end="2" pattern="{resource:getString($constants,'datePattern')}" />
                   </col>
                   <col key="{meta:getInventoryReceiptUnitCost()}" width="55" header="{resource:getString($constants,'cost')}" align = "right">
                     <textbox field="String" />

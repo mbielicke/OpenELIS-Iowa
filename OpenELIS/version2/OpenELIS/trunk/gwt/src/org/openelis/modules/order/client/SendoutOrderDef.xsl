@@ -192,7 +192,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select='resource:getString($constants,"attention")' />:
                 </text>
                 <widget colspan="5">
-                  <textbox key="{meta:getOrganizationAttention()}" tab="{meta:getOrderedDate()},{meta:getStatusId()}" width="188" max="30" field="String" />
+                  <textbox key="{meta:getOrganizationAttention()}" tab="{meta:getOrderedDate()},{meta:getStatusId()}" width="188" max="30" case = "UPPER" field="String" />
                 </widget>
               </row>
               <row>
@@ -211,7 +211,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"requestedBy")' />:
                 </text>
-                <textbox key="{meta:getRequestedBy()}" width="203" tab="{meta:getCostCenterId()},{meta:getOrderedDate()}" field="String" />
+                <textbox key="{meta:getRequestedBy()}" width="203" tab="{meta:getCostCenterId()},{meta:getOrderedDate()}" case = "LOWER" field="String" />
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"address")' />:
                 </text>

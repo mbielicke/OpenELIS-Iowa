@@ -144,8 +144,8 @@ public class ContainerTab extends Screen {
                                 data.setDescription(test.getTestDescription());
                                 data.setMethodName(test.getMethodName());
                                 
-                                orderTestTable.setCell(r, 1, null);
-                                orderTestTable.setCell(r, 2, null);
+                                orderTestTable.setCell(r, 1, test.getMethodName());
+                                orderTestTable.setCell(r, 2, test.getTestDescription());
                             }
                         } else {
                             data.setTestId(null);
@@ -338,12 +338,12 @@ public class ContainerTab extends Screen {
         orderContainerTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
-                Integer val;
+                Object val;
                 OrderContainerDO data;
 
                 r = event.getRow();
                 c = event.getCol();
-                val = (Integer)orderContainerTable.getObject(r,c);
+                val = orderContainerTable.getObject(r,c);
                 
                 try {
                     data = manager.getContainers().getContainerAt(r);
@@ -354,13 +354,13 @@ public class ContainerTab extends Screen {
                 
                 switch(c) {
                     case 0:
-                        data.setContainerId(val);
+                        data.setContainerId((Integer)val);
                         break;
                     case 1:
-                        data.setNumberOfContainers(val);
+                        data.setNumberOfContainers((Integer)val);
                         break;
                     case 2:
-                        data.setTypeOfSampleId(val);
+                        data.setTypeOfSampleId((Integer)val);
                         break;
                 }
             }
@@ -368,8 +368,20 @@ public class ContainerTab extends Screen {
 
         orderContainerTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
+                int index;
+                Integer sampleTypeId;
+                OrderContainerDO data, prevData;
+                OrderContainerManager man;
                 try {
-                    manager.getContainers().addContainer();
+                    man = manager.getContainers();
+                    index = man.addContainer();
+                    if (index > 0) {
+                        prevData = man.getContainerAt(index-1);
+                        sampleTypeId = prevData.getTypeOfSampleId();                        
+                        data = man.getContainerAt(index);
+                        data.setTypeOfSampleId(sampleTypeId);
+                        orderContainerTable.setCell(index, 2, sampleTypeId);
+                    }
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }

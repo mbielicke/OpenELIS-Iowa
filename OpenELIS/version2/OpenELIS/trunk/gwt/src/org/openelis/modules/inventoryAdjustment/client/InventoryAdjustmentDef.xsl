@@ -46,6 +46,40 @@ UIRF Software License are applicable instead of those above.
     </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="InventoryAdjustment" name="{resource:getString($constants,'inventoryAdjustment')}">
+     <HorizontalPanel padding="0" spacing="0">
+<!--left table goes here -->
+        <CollapsePanel key="collapsePanel" style="LeftSidePanel">
+          <HorizontalPanel width="225">
+            <buttonGroup key="atozButtons">
+              <VerticalPanel height="100%" padding="0" spacing="0" style="AtoZ">
+                <xsl:call-template name="aToZButton">
+                  <xsl:with-param name="keyParam">#</xsl:with-param>
+                  <xsl:with-param name="queryParam">&gt;0</xsl:with-param>
+                </xsl:call-template>
+              </VerticalPanel>
+            </buttonGroup>
+            <VerticalPanel>
+              <table key="atozTable" width="auto" maxRows="19" style="atozTable">
+                <col width="85" header="{resource:getString($constants,'adjustmentNum')}">
+                  <label field="Integer" />
+                </col>
+                <col width="90" header="{resource:getString($constants,'adjDate')}">
+                  <calendar begin="0" end="2" pattern="{resource:getString($constants,'datePattern')}" />
+                </col>
+              </table>
+              <widget halign="center">
+                <HorizontalPanel>
+                  <appButton key="atozPrev" style="Button" enable="false">
+                    <AbsolutePanel style="prevNavIndex" />
+                  </appButton>
+                  <appButton key="atozNext" style="Button" enable="false">
+                    <AbsolutePanel style="nextNavIndex" />
+                  </appButton>
+                </HorizontalPanel>
+              </widget>
+            </VerticalPanel>
+          </HorizontalPanel>
+        </CollapsePanel>
       <VerticalPanel padding="0" spacing="0">
 <!--button panel code-->
         <AbsolutePanel spacing="0" style="ButtonPanelContainer">
@@ -87,6 +121,25 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select="language" />
               </xsl:with-param>
             </xsl:call-template>
+            <xsl:call-template name="buttonPanelDivider" />
+              <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
+                <menuItem>
+                  <menuDisplay>
+                    <appButton style="ButtonPanelButton" action="option">
+                      <HorizontalPanel>
+                        <text>
+                          <xsl:value-of select='resource:getString($constants,"options")' />
+                        </text>
+                        <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
+                      </HorizontalPanel>
+                    </appButton>
+                  </menuDisplay>
+                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                    <menuItem key="inventoryAdjustmentHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'inventoryAdjustmentHistory')}" />
+                    <menuItem key="inventoryAdjustmentLocationHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'inventoryAdjustmentLocationHistory')}" />
+                  </menuPanel>
+                </menuItem>
+              </menuPanel>
           </HorizontalPanel>
         </AbsolutePanel>
 <!--end button panel-->
@@ -96,19 +149,19 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"adjustmentNum")' />:
               </text>
-              <textbox key="{meta:getId()}" width="75" max="20" tab="{meta:getDescription()},{meta:getInventoryLocationInventoryItemStoreId()}" field="Integer" />
+              <textbox key="{meta:getId()}" width="50" tab="{meta:getDescription()},{meta:getInventoryLocationInventoryItemStoreId()}" field="Integer" />
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"description")' />:
               </text>
               <widget colspan="3">
-                <textbox key="{meta:getDescription()}" width="414" max="60" tab="{meta:getAdjustmentDate()},{meta:getId()}" field="String" />
+                <textbox key="{meta:getDescription()}" width="414" max="60" tab="{meta:getAdjustmentDate()},{meta:getId()}" field="String" required  = "true"/>
               </widget>
             </row>
             <row>
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"adjDate")' />:
               </text>
-              <calendar key="{meta:getAdjustmentDate()}" begin="0" end="2" width="75" tab="{meta:getSystemUserId()},{meta:getDescription()}" />
+              <calendar key="{meta:getAdjustmentDate()}" begin="0" end="2" width="90" tab="{meta:getSystemUserId()},{meta:getDescription()}" required  = "true"/>
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"user")' />:
               </text>
@@ -123,10 +176,18 @@ UIRF Software License are applicable instead of those above.
             <widget valign="top">
               <table key="adjustmentTable" width="auto" maxRows="14" showScroll="ALWAYS" style="ScreenTableWithSides">
                 <col key="{meta:getInventoryLocationId()}" width="55" header="{resource:getString($constants,'locationNum')}">
-                  <textbox field="Integer" required="true" />
+                  <autoComplete width="auto" case="LOWER" field="Integer" required  = "true" >
+                     <col width="55" header="{resource:getString($constants,'locationNum')}" />
+                     <col width="130" header="{resource:getString($constants,'name')}" />
+                     <col width="110" header="{resource:getString($constants,'store')}" />
+                     <col width="160" header="{resource:getString($constants,'location')}" />
+                     <col width="70" header="{resource:getString($constants,'lotNum')}" />
+                     <col width="70" header="{resource:getString($constants,'expDate')}" />
+                     <col width="30" header="{resource:getString($constants,'qty')}" />                    
+                  </autoComplete>
                 </col>
                 <col key="{meta:getInventoryLocationInventoryItemName()}" width="205" header="{resource:getString($constants,'inventoryItem')}">
-                  <autoComplete width="auto" case="LOWER" field="Integer" required="true">
+                  <autoComplete width="auto" case="LOWER" field="Integer" required  = "true" >
                     <col width="130" header="{resource:getString($constants,'name')}" />
                     <col width="110" header="{resource:getString($constants,'store')}" />
                     <col width="160" header="{resource:getString($constants,'location')}" />
@@ -136,16 +197,16 @@ UIRF Software License are applicable instead of those above.
                   </autoComplete>
                 </col>
                 <col width="225" header="{resource:getString($constants,'storageLocation')}">
-                  <label field="Integer" />
+                  <label field="String" />
                 </col>
                 <col key="{meta:getInventoryLocationQuantityOnhand()}" width="65" header="{resource:getString($constants,'onHand')}">
                   <label field="Integer" />
                 </col>
                 <col key="{meta:getInventoryXAdjustPhysicalCount()}" width="65" header="{resource:getString($constants,'physCount')}">
-                  <label field="Integer" />
+                  <textbox field="Integer" required  = "true"/>
                 </col>
                 <col key="{meta:getInventoryXAdjustQuantity()}" width="65" header="{resource:getString($constants,'adjQuan')}">
-                  <label field="String" />
+                  <label field="Integer" />
                 </col>
               </table>
             </widget>
@@ -174,6 +235,7 @@ UIRF Software License are applicable instead of those above.
           </VerticalPanel>
         </VerticalPanel>
       </VerticalPanel>
+     </HorizontalPanel>	
     </screen>
   </xsl:template>
 </xsl:stylesheet>

@@ -66,6 +66,10 @@ public class InventoryLocationService {
         return invLocRemote().fetchByInventoryItemNameStoreId(search + "%", storeId, 10);
     }
     
+    public InventoryLocationViewDO fetchById(Integer id) throws Exception {
+        return invLocRemote().fetchById(id);
+    }
+    
     private InventoryLocationRemote invLocRemote() {
        return (InventoryLocationRemote)EJBFactory.lookup("openelis/InventoryLocationBean/remote");
     }

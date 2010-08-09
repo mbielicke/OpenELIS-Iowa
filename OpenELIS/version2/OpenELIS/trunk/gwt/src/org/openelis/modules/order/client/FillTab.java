@@ -2,6 +2,8 @@ package org.openelis.modules.order.client;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.InventoryLocationViewDO;
+import org.openelis.domain.InventoryXPutViewDO;
 import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
@@ -16,6 +18,7 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.manager.OrderFillManager;
 import org.openelis.manager.OrderManager;
+import org.openelis.manager.OrderReceiptManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.OrderMeta;
 
@@ -70,39 +73,60 @@ public class FillTab extends Screen {
     private ArrayList<TableDataRow> getTableModel() {
         int i, count;
         String location;
-        InventoryXUseViewDO data;
+        InventoryXUseViewDO fillData;
+        InventoryXPutViewDO receiptData;
+        InventoryLocationViewDO invLocData;
         ArrayList<TableDataRow> model;
-
         TableDataRow row;
-        OrderFillManager man;
+        OrderFillManager fillMan;
+        OrderReceiptManager receiptMan;
 
         model = new ArrayList<TableDataRow>();
         if (manager == null)
             return model;
 
         try {
-            man = manager.getFills();
-            count = man.count();
+            if (hasExtraCols) {
+                receiptMan = manager.getReceipts();
+                count = receiptMan.count();
 
-            for (i = 0; i < count; i++ ) {
-                data = (InventoryXUseViewDO)man.getFillAt(i);
-                row = new TableDataRow(numColumns);
-                location = StorageLocationManager.getLocationForDisplay(
-                                                                        data.getStorageLocationName(),
-                                                                        data.getStorageLocationUnitDescription(),
-                                                                        data.getStorageLocationLocation());
-                row.cells.get(0).setValue(data.getInventoryItemName());
-                row.cells.get(1).setValue(location);
-                row.cells.get(2).setValue(data.getQuantity());
-                row.cells.get(3).setValue(data.getInventoryLocationLotNumber());
-                row.cells.get(4).setValue(data.getInventoryLocationExpirationDate());
+                for (i = 0; i < count; i++ ) {
+                    receiptData = (InventoryXPutViewDO)receiptMan.getReceiptAt(i);
+                    invLocData = receiptData.getInventoryLocation();
+                    row = new TableDataRow(numColumns);
+                    location = StorageLocationManager.getLocationForDisplay(
+                                                                            invLocData.getStorageLocationName(),
+                                                                            invLocData.getStorageLocationUnitDescription(),
+                                                                            invLocData.getStorageLocationLocation());
+                    row.cells.get(0).setValue(invLocData.getInventoryItemName());
+                    row.cells.get(1).setValue(location);
+                    row.cells.get(2).setValue(receiptData.getQuantity());
+                    row.cells.get(3).setValue(invLocData.getLotNumber());
+                    row.cells.get(4).setValue(invLocData.getExpirationDate());
+                    row.cells.get(5).setValue(receiptData.getReceivedDate());
+                    row.cells.get(6).setValue(receiptData.getUnitCost());
+                    row.cells.get(7).setValue(receiptData.getExternalReference());
 
-                if (hasExtraCols) {
-                    row.cells.get(5).setValue(data.getInventoryReceiptReceivedDate());
-                    row.cells.get(6).setValue(data.getInventoryReceiptUnitCost());
-                    row.cells.get(7).setValue(data.getInventoryReceiptExternalReference());
+                    model.add(row);
                 }
-                model.add(row);
+            } else {
+                fillMan = manager.getFills();
+                count = fillMan.count();
+
+                for (i = 0; i < count; i++ ) {
+                    fillData = (InventoryXUseViewDO)fillMan.getFillAt(i);
+                    row = new TableDataRow(numColumns);
+                    location = StorageLocationManager.getLocationForDisplay(fillData.getStorageLocationName(),
+                                                                            fillData.getStorageLocationUnitDescription(),
+                                                                            fillData.getStorageLocationLocation());
+                    row.cells.get(0).setValue(fillData.getInventoryItemName());
+                    row.cells.get(1).setValue(location);
+                    row.cells.get(2).setValue(fillData.getQuantity());
+                    row.cells.get(3).setValue(fillData.getInventoryLocationLotNumber());
+                    row.cells.get(4).setValue(fillData.getInventoryLocationExpirationDate());
+
+                    model.add(row);
+                }
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());

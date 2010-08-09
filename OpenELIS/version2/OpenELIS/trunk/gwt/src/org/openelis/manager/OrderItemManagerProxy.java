@@ -49,6 +49,6 @@ public class OrderItemManagerProxy {
         return null;
     }
     
-    public void validate(OrderItemManager man) throws Exception {
+    public void validate(OrderItemManager man, String type) throws Exception {
     }
 }
