@@ -218,6 +218,7 @@ public class InventoryItemBean implements InventoryItemRemote, InventoryItemLoca
 
     public void validate(InventoryItemViewDO data) throws Exception {
         ArrayList<InventoryItemDO> dup;
+        InventoryItemViewDO parentItem;
         ValidationErrorsList list;
         
         list = new ValidationErrorsList();
@@ -226,6 +227,9 @@ public class InventoryItemBean implements InventoryItemRemote, InventoryItemLoca
 
         if (DataBaseUtil.isEmpty(data.getStoreId()))
             list.add(new FieldErrorException("fieldRequiredException", InventoryItemMeta.getStoreId()));
+        
+        if (DataBaseUtil.isEmpty(data.getQuantityMinLevel()))
+            list.add(new FieldErrorException("fieldRequiredException", InventoryItemMeta.getQuantityMinLevel()));
 
         if (DataBaseUtil.isEmpty(data.getDispensedUnitsId()))
             list.add(new FieldErrorException("fieldRequiredException", InventoryItemMeta.getDispensedUnitsId()));
@@ -248,12 +252,18 @@ public class InventoryItemBean implements InventoryItemRemote, InventoryItemLoca
         if ("Y".equals(data.getIsBulk()) && "Y".equals(data.getIsLotMaintained()))
             list.add(new FieldErrorException("itemCantBeBulkAndLotReqException", null));
                 
-        if (!DataBaseUtil.isEmpty(data.getParentRatio())) {
-            if (data.getParentRatio() <= 0)
-                list.add(new FieldErrorException("parentRatioMoreThanZeroException", InventoryItemMeta.getParentRatio()));
-        } else if (!DataBaseUtil.isEmpty(data.getParentInventoryItemId())) {
-            list.add(new FieldErrorException("parentRatioReqIfParentItemSpecException", InventoryItemMeta.getParentRatio()));
-        }                
+        if ( !DataBaseUtil.isEmpty(data.getParentInventoryItemId())) {
+            parentItem = fetchById(data.getParentInventoryItemId());            
+            if ("Y".equals(data.getIsLotMaintained()) && !"Y".equals(parentItem.getIsLotMaintained()))
+                list.add(new FieldErrorException("parentNotFlaggedLotReqException", InventoryItemMeta.getIsLotMaintained()));    
+            
+            if ( !DataBaseUtil.isEmpty(data.getParentRatio())) {
+                if (data.getParentRatio() <= 0)
+                    list.add(new FieldErrorException("parentRatioMoreThanZeroException", InventoryItemMeta.getParentRatio()));
+            } else {
+                list.add(new FieldErrorException("parentRatioReqIfParentItemSpecException", InventoryItemMeta.getParentRatio()));
+            }
+        }               
         
         if (list.size() > 0)
             throw list;

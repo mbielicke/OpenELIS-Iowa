@@ -31,6 +31,7 @@ import org.openelis.domain.InventoryAdjustmentViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.InventoryAdjustmentLocal;
 import org.openelis.local.InventoryXAdjustLocal;
+import org.openelis.utilcommon.DataBaseUtil;
 
 public class InventoryAdjustmentManagerProxy {
 
@@ -95,6 +96,17 @@ public class InventoryAdjustmentManagerProxy {
         ValidationErrorsList list;
         
         list = new ValidationErrorsList();
+        try {
+            local().validate(man.getInventoryAdjustment());
+        } catch (Exception e) {
+            DataBaseUtil.mergeException(list, e);
+        }
+        try {
+            if (man.adjustments != null)
+                man.getAdjustments().validate();
+        } catch (Exception e) {
+            DataBaseUtil.mergeException(list, e);
+        }
         
         if (list.size() > 0)
             throw list;

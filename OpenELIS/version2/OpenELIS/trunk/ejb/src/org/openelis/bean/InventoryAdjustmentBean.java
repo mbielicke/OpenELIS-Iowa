@@ -26,7 +26,6 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
@@ -40,13 +39,11 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.InventoryAdjustmentAddAutoFillDO;
-import org.openelis.domain.InventoryAdjustmentChildDO;
 import org.openelis.domain.InventoryAdjustmentDO;
 import org.openelis.domain.InventoryAdjustmentViewDO;
 import org.openelis.entity.InventoryAdjustment;
-import org.openelis.entity.InventoryXAdjust;
 import org.openelis.gwt.common.DatabaseException;
+import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -91,6 +88,36 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote, Inven
         return data;
     }
     
+    public ArrayList<InventoryAdjustmentDO> query(ArrayList<QueryData> fields, int first, int max)
+                                                                                     throws Exception {
+        Query query;
+        QueryBuilderV2 builder;
+        List list;
+
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+        builder.setSelect("distinct new org.openelis.domain.InventoryAdjustmentDO(" +
+                          InventoryAdjustmentMeta.getId() + ", " +
+                          InventoryAdjustmentMeta.getDescription() + ", " +
+                          InventoryAdjustmentMeta.getSystemUserId() + ", " +
+                          InventoryAdjustmentMeta.getAdjustmentDate() +  ") ");
+        builder.constructWhere(fields);
+        builder.setOrderBy(InventoryAdjustmentMeta.getId() + " DESC");
+
+        query = manager.createQuery(builder.getEJBQL());
+        query.setMaxResults(first + max);
+        builder.setQueryParams(query, fields);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+        list = (ArrayList<InventoryAdjustmentDO>)DataBaseUtil.subList(list, first, max);
+        if (list == null)
+            throw new LastPageException();
+
+        return (ArrayList<InventoryAdjustmentDO>)list;
+    }
+    
     public InventoryAdjustmentViewDO add(InventoryAdjustmentViewDO data) throws Exception {
         InventoryAdjustment entity;
         
@@ -125,39 +152,20 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote, Inven
         ValidationErrorsList list;
         
         list = new ValidationErrorsList();
+        if (DataBaseUtil.isEmpty(data.getDescription()))
+            list.add(new FieldErrorException("fieldRequiredException",InventoryAdjustmentMeta.getDescription()));
+        
+        if (DataBaseUtil.isEmpty(data.getAdjustmentDate()))
+            list.add(new FieldErrorException("fieldRequiredException",InventoryAdjustmentMeta.getAdjustmentDate()));
+        
+        if (DataBaseUtil.isEmpty(data.getSystemUserId()))
+            list.add(new FieldErrorException("fieldRequiredException",InventoryAdjustmentMeta.getSystemUserId()));
+               
         if (list.size() > 0)
             throw list;                
-    }
+    }   
     
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields,
-                                                      int first, int max) throws Exception {
-        Query query;
-        QueryBuilderV2 builder;
-        List list;
-
-        builder = new QueryBuilderV2();
-        builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + 
-                          InventoryAdjustmentMeta.getId() + ", " +
-                          InventoryAdjustmentMeta.getDescription() + ") ");
-        builder.constructWhere(fields);
-        builder.setOrderBy(InventoryAdjustmentMeta.getId() + " DESC");
-
-        query = manager.createQuery(builder.getEJBQL());
-        query.setMaxResults(first + max);
-        builder.setQueryParams(query, fields);
-
-        list = query.getResultList();
-        if (list.isEmpty())
-            throw new NotFoundException();
-        list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
-        if (list == null)
-            throw new LastPageException();
-
-        return (ArrayList<IdNameVO>)list;
-    }
-    
-    public InventoryAdjustmentAddAutoFillDO getAddAutoFillValues() throws Exception {
+    /*public InventoryAdjustmentAddAutoFillDO getAddAutoFillValues() throws Exception {
         InventoryAdjustmentAddAutoFillDO autoFillDO = new InventoryAdjustmentAddAutoFillDO();
         //adjustment date
         autoFillDO.setAdjustmentDate(new Date());
@@ -165,10 +173,10 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote, Inven
         //system user information
         /*SystemUserDO systemUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal().getName());
         autoFillDO.setSystemUser(systemUserDO.getLoginName());
-        autoFillDO.setSystemUserId(systemUserDO.getId());*/
+        autoFillDO.setSystemUserId(systemUserDO.getId());
         
         return autoFillDO;
-    }
+    }*/
 
     public List getChildRecords(Integer inventoryAdjustmentId) {
         Query query = manager.createNamedQuery("InventoryXAdjust.InventoryXAdjust");
@@ -244,7 +252,7 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote, Inven
         else
          return returnList;
     }
-*/
+
     public Integer updateInventoryAdjustment(InventoryAdjustmentDO inventoryAdjustmentDO, List children) throws Exception {
         manager.setFlushMode(FlushModeType.COMMIT);
         
@@ -295,13 +303,13 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote, Inven
                 }
            }else{
                manager.remove(transaction);
-           }*/
+           }
         }
         
         unlockRecords(children);
    
         return inventoryAdjustment.getId();        
-    }
+    }*/
 
     public void validateAdjustment(InventoryAdjustmentDO inventoryAdjustmentDO, List children) throws Exception{
         ValidationErrorsList list = new ValidationErrorsList();
@@ -330,17 +338,17 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote, Inven
 */
     }
     
-    private void validateAdjItem(InventoryAdjustmentChildDO childDO, int rowIndex, ValidationErrorsList exceptionList){
+    /* private void validateAdjItem(InventoryAdjustmentChildDO childDO, int rowIndex, ValidationErrorsList exceptionList){
         //loc required
-/*
+
         if(childDO.getLocationId() == null)
             exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, InventoryAdjustmentMetaMap.TRANS_ADJUSTMENT_LOCATION_META.INVENTORY_LOCATION_META.getId()));
         
         //count required
         if(childDO.getPhysicalCount() == null)
             exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, InventoryAdjustmentMetaMap.TRANS_ADJUSTMENT_LOCATION_META.getPhysicalCount()));
-*/
-    }
+
+    }*/
     
     public List getInventoryitemDataAndLockLoc(Integer inventoryLocationId, Integer oldLocId, Integer storeId) throws Exception{
         //if there is an old lock we need to unlock this record
@@ -366,7 +374,7 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote, Inven
         
         for(int i=0; i<childRows.size(); i++){
         
-            InventoryAdjustmentChildDO childDO = (InventoryAdjustmentChildDO)childRows.get(i);
+            //InventoryAdjustmentChildDO childDO = (InventoryAdjustmentChildDO)childRows.get(i);
         
             /*if(childDO.getLocationId() != null){
                 if(validate)
@@ -383,7 +391,7 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote, Inven
         
         for(int i=0; i<childRows.size(); i++){
         
-            InventoryAdjustmentChildDO childDO = (InventoryAdjustmentChildDO)childRows.get(i);
+            //InventoryAdjustmentChildDO childDO = (InventoryAdjustmentChildDO)childRows.get(i);
         
             //if(childDO.getLocationId() != null)
               //  lockBean.giveUpLock(invLocRefTableId, childDO.getLocationId());

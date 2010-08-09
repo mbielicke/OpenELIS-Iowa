@@ -36,7 +36,7 @@ import org.openelis.domain.InventoryComponentViewDO;
 import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryReceiptViewDO;
-import org.openelis.domain.InventoryXPutDO;
+import org.openelis.domain.InventoryXPutViewDO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.gwt.common.Datetime;
@@ -83,7 +83,7 @@ public class BuildKitManagerProxy {
         InventoryReceiptViewDO kitReceipt, compReceipt;
         InventoryItemViewDO invItem;
         InventoryComponentViewDO component;
-        ArrayList<InventoryXPutDO> xputList;
+        ArrayList<InventoryXPutViewDO> xputList;
         InventoryReceiptLocal rl;
         InventoryXPutLocal xl;
         InventoryLocationLocal ll;
@@ -116,12 +116,20 @@ public class BuildKitManagerProxy {
         ll = invLocLocal();
         for (i = 0; i < compMan.count(); i++ ) {
             component = compMan.getComponentAt(i);
+            //
+            // it is possible that since the inventory item associated with this
+            // order item is flagged as "is not inventoried" there isn't any
+            // inventory location associated with the inventory item
+            //
+            if (component.getInventoryLocationId() == null)
+                continue;
+            
+            ll.fetchForUpdate(component.getInventoryLocationId());            
             orderItem = new OrderItemViewDO();
             orderItem.setOrderId(order.getId());
             orderItem.setInventoryItemId(component.getComponentId());
-            orderItem.setQuantity(component.getTotal());
-            ll.fetchForUpdate(component.getInventoryLocationId());
-            locationIdList.add(component.getInventoryLocationId());
+            orderItem.setQuantity(component.getTotal());                        
+            locationIdList.add(component.getInventoryLocationId());            
             orderItems.add(orderItem);
         }
 
@@ -142,18 +150,14 @@ public class BuildKitManagerProxy {
             component = compMan.getComponentAt(i);
             invItem = il.fetchById(component.getComponentId());
             //
-            // there's no unit cost for inventory items that are marked as
-            // either
+            // there's no unit cost for inventory items that are marked as either
             // "labor" or "do not inventory",
             //
             if ( !"Y".equals(invItem.getIsLabor()) && !"Y".equals(invItem.getIsNotInventoried())) {
-                System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%1");
                 xputList = xl.fetchByInventoryLocationId(component.getInventoryLocationId());
-                System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%2");
                 compReceipt = rl.fetchById(xputList.get(0).getInventoryReceiptId());
                 if (compReceipt.getUnitCost() != null)
                     totalCost += (compReceipt.getUnitCost() * component.getTotal());
-                System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%3");
             }
         }
 
@@ -211,16 +215,16 @@ public class BuildKitManagerProxy {
        //
        // location must be specified for the kit 
        //       
-       if (receipt.getInventoryLocations() != null) {
+       if (!DataBaseUtil.isEmpty(receipt.getInventoryLocations())) {
            location = receipt.getInventoryLocations().get(0);
-           if (location.getStorageLocationId() == null) 
+           if (DataBaseUtil.isEmpty(location.getStorageLocationId())) 
                list.add(new FieldErrorException("fieldRequiredException", InventoryItemMeta.getLocationStorageLocationName()));
            
            //
            // if the inventory item is flagged as "lot numnber required" then 
            // lot number must be specified
            //
-           if (item != null && location.getLotNumber() == null && "Y".equals(item.getIsLotMaintained())) 
+           if (!DataBaseUtil.isEmpty(item) && DataBaseUtil.isEmpty(location.getLotNumber()) && DataBaseUtil.isSame("Y",item.getIsLotMaintained())) 
                 list.add(new FieldErrorException("lotNumRequiredForOrderItemException", 
                                                  InventoryItemMeta.getLocationLotNumber()));                                
        } else {
@@ -242,14 +246,15 @@ public class BuildKitManagerProxy {
        } else {
            for (int i = 0; i < compMan.count(); i++) {
                component = compMan.getComponentAt(i);
-               if (component.getInventoryLocationId() == null) 
-                   list.add(new TableFieldErrorException("fieldRequiredException", i, InventoryItemMeta.getLocationStorageLocationName(), "componentTable"));
-               
                compItem = il.fetchById(component.getComponentId());
+               
+               if (DataBaseUtil.isEmpty(component.getInventoryLocationId()) && !"Y".equals(compItem.getIsNotInventoried())) 
+                   list.add(new TableFieldErrorException("fieldRequiredException", i, InventoryItemMeta.getLocationStorageLocationName(), "componentTable"));               
+               
                //
                // the stores for all the components and the kit must be the same  
                //
-               if (!storeId.equals(compItem.getStoreId())) 
+               if (!DataBaseUtil.isSame(storeId, compItem.getStoreId())) 
                    list.add(new TableFieldErrorException("kitAndComponentSameStoreException", i, InventoryItemMeta.getLocationStorageLocationName(), "componentTable"));               
            }
        }

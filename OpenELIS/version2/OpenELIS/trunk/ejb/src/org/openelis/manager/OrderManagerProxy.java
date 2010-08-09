@@ -201,7 +201,7 @@ public class OrderManagerProxy {
         
         try {
             if (man.items != null)
-                man.getItems().validate();
+                man.getItems().validate(man.getOrder().getType());
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }

@@ -28,22 +28,19 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.openelis.domain.InventoryComponentViewDO;
-import org.openelis.domain.InventoryXUseDO;
 import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.domain.OrderItemViewDO;
+import org.openelis.entity.InventoryItem;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryXUse;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.InventoryLocationLocal;
 import org.openelis.local.InventoryXUseLocal;
 import org.openelis.utilcommon.DataBaseUtil;
 
@@ -52,9 +49,6 @@ public class InventoryXUseBean implements InventoryXUseLocal {
 
     @PersistenceContext(unitName = "openelis")
     EntityManager          manager;
-    
-    @EJB
-    InventoryLocationLocal inventoryLocation;
 
     public ArrayList<InventoryXUseViewDO> fetchByOrderId(Integer id) throws Exception {
         Query query;
@@ -73,13 +67,18 @@ public class InventoryXUseBean implements InventoryXUseLocal {
     public InventoryXUseViewDO add(InventoryXUseViewDO data) throws Exception {
         InventoryXUse entity;
         InventoryLocation loc; 
+        InventoryItem inventoryItem;
+        
+        inventoryItem = manager.find(InventoryItem.class, data.getInventoryItemId());
+        if ("Y".equals(inventoryItem.getIsNotInventoried()))
+            return data;
         
         manager.setFlushMode(FlushModeType.COMMIT);               
 
         loc = manager.find(InventoryLocation.class, data.getInventoryLocationId());      
-        if(loc.getQuantityOnhand() <  data.getQuantity()) {
+        if(loc.getQuantityOnhand() <  data.getQuantity()) 
             throw new FieldErrorException("qtyMoreThanQtyOnhandException", null);
-        }
+        
         loc.setQuantityOnhand(loc.getQuantityOnhand() - data.getQuantity());
         
         entity = new InventoryXUse();
@@ -104,6 +103,7 @@ public class InventoryXUseBean implements InventoryXUseLocal {
             data = new InventoryXUseViewDO();           
             item = items.get(i);      
             data.setInventoryLocationId(locationIdList.get(i));
+            data.setInventoryItemId(item.getInventoryItemId());
             data.setOrderItemId(item.getId());
             data.setQuantity(item.getQuantity());
             add(data);
@@ -114,11 +114,16 @@ public class InventoryXUseBean implements InventoryXUseLocal {
     }
 
     public InventoryXUseViewDO update(InventoryXUseViewDO data) throws Exception {
+        Integer newQty, oldQty;
         InventoryXUse entity;
-        InventoryLocation newLoc, prevLoc;
-        Integer newQty, oldQty; 
+        InventoryLocation newLoc, prevLoc; 
+        InventoryItem inventoryItem;
        
         if (! data.isChanged()) 
+            return data;
+        
+        inventoryItem = manager.find(InventoryItem.class, data.getInventoryItemId());
+        if ("Y".equals(inventoryItem.getIsNotInventoried()))
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -146,9 +151,8 @@ public class InventoryXUseBean implements InventoryXUseLocal {
             newLoc.setQuantityOnhand(newLoc.getQuantityOnhand() + oldQty);                    
         }
         
-        if(newLoc.getQuantityOnhand() < newQty) {
-            throw new FieldErrorException("qtyMoreThanQtyOnhandException", null);
-        }
+        if(newLoc.getQuantityOnhand() < newQty) 
+            throw new FieldErrorException("qtyMoreThanQtyOnhandException", null);        
         
         newLoc.setQuantityOnhand(newLoc.getQuantityOnhand() - newQty);        
         

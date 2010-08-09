@@ -32,6 +32,7 @@ import java.util.logging.Logger;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryReceiptViewDO;
 import org.openelis.domain.OrderItemViewDO;
@@ -40,6 +41,7 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
+import org.openelis.local.InventoryItemLocal;
 import org.openelis.local.InventoryLocationLocal;
 import org.openelis.local.InventoryXUseLocal;
 import org.openelis.local.LoginLocal;
@@ -159,8 +161,8 @@ public class InventoryTransferManagerProxy {
         ValidationErrorsList list;
         Integer onHandQ, receivedQ;
         
-        list = new ValidationErrorsList();
-        for (int i = 0 ; i < man.count(); i++) {
+        list = new ValidationErrorsList();        
+        for (int i = 0 ; i < man.count(); i++) {                        
             if (DataBaseUtil.isEmpty(man.getFromInventoryItemAt(i))) {
                 list.add(new TableFieldErrorException("fieldRequiredException", i,"fromItemName", "receiptTable"));                        
                 onHandQ = null;
@@ -168,9 +170,9 @@ public class InventoryTransferManagerProxy {
                 onHandQ = man.getFromInventoryLocationAt(i).getQuantityOnhand();
             }
             
-            if (DataBaseUtil.isEmpty(man.getToInventoryItemAt(i))) 
+            if (DataBaseUtil.isEmpty(man.getToInventoryItemAt(i)))  
                 list.add(new TableFieldErrorException("fieldRequiredException", i,"toItemName", "receiptTable"));
-            
+                                    
             if (DataBaseUtil.isEmpty(man.getToInventoryLocationAt(i))) 
                 list.add(new TableFieldErrorException("fieldRequiredException", i,"toLoc", "receiptTable"));
         
@@ -185,8 +187,7 @@ public class InventoryTransferManagerProxy {
         }
         
         if (list.size() > 0) 
-            throw list;    
-        
+            throw list;            
     }
     
     private DictionaryLocal dictLocal() {
@@ -233,6 +234,16 @@ public class InventoryTransferManagerProxy {
         try {
             InitialContext ctx = new InitialContext();
             return (InventoryLocationLocal)ctx.lookup("openelis/InventoryLocationBean/local")  ;
+        } catch (Exception e) {
+             System.out.println(e.getMessage());
+             return null;
+        }
+    }
+    
+    private InventoryItemLocal invItemLocal() {
+        try {
+            InitialContext ctx = new InitialContext();
+            return (InventoryItemLocal)ctx.lookup("openelis/InventoryItemBean/local")  ;
         } catch (Exception e) {
              System.out.println(e.getMessage());
              return null;

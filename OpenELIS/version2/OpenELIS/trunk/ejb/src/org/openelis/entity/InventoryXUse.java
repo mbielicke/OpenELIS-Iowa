@@ -52,7 +52,7 @@ import org.openelis.utilcommon.DataBaseUtil;
                         " left join s.storageUnit u " +
                         " left join i.orderItem o left join o.inventoryItem oi " +
                         " left join o.inventoryReceipt r " + 
-                        " where o.order.id = :id order by i.id") })
+                        " where o.order.id = :id order by o.id") })
 
 @Entity
 @Table(name = "inventory_x_use")

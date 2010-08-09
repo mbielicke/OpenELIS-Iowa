@@ -30,8 +30,10 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.OrderItemViewDO;
+import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.OrderItemLocal;
+import org.openelis.meta.OrderMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 public class OrderItemManagerProxy {
@@ -84,17 +86,35 @@ public class OrderItemManagerProxy {
         return man;
     }
     
-    public void validate(OrderItemManager man) throws Exception {
+    public void validate(OrderItemManager man, String type) throws Exception {
+        Integer invItemId;
+        ArrayList<Integer> invItemIdList;
         ValidationErrorsList list;
-        OrderItemLocal cl;
+        OrderItemLocal cl;        
 
         cl = local();
         list = new ValidationErrorsList();
+        invItemIdList = null;
+        if (OrderManager.TYPE_VENDOR.equals(type))
+            invItemIdList = new ArrayList<Integer>();
+        
         for (int i = 0; i < man.count(); i++ ) {
             try {
-                cl.validate(man.getItemAt(i));
+                cl.validate(man.getItemAt(i));                
             } catch (Exception e) {
                 DataBaseUtil.mergeException(list, e, "itemTable", i);
+            }
+                        
+            if (!OrderManager.TYPE_VENDOR.equals(type))
+                continue;
+            
+            invItemId = man.getItemAt(i).getInventoryItemId();
+            if (invItemId != null) {
+                if (invItemIdList.contains(invItemId)) 
+                    list.add(new TableFieldErrorException("duplicateInvItemVendorOrderException",i,
+                                                          OrderMeta.getOrderItemInventoryItemName(), "itemTable"));
+                else
+                    invItemIdList.add(invItemId);
             }
         }
         if (list.size() > 0)

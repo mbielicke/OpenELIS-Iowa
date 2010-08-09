@@ -42,6 +42,7 @@ import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderFillManager;
 import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
+import org.openelis.manager.OrderReceiptManager;
 import org.openelis.manager.OrderTestManager;
 import org.openelis.remote.OrderManagerRemote;
 import org.openelis.utils.SecurityInterceptor;
@@ -137,6 +138,10 @@ public class OrderManagerBean implements OrderManagerRemote {
 
     public OrderFillManager fetchFillByOrderId(Integer id) throws Exception {
         return OrderFillManager.fetchByOrderId(id);
+    }
+    
+    public OrderReceiptManager fetchReceiptByOrderId(Integer id) throws Exception {
+        return OrderReceiptManager.fetchByOrderId(id);
     }
     
     public OrderContainerManager fetchContainerByOrderId(Integer id) throws Exception {        

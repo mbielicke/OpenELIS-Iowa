@@ -30,10 +30,10 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.InventoryXAdjustViewDO;
-import org.openelis.domain.OrderItemViewDO;
+import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.InventoryXAdjustLocal;
-import org.openelis.local.OrderItemLocal;
+import org.openelis.meta.InventoryAdjustmentMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 public class InventoryXAdjustManagerProxy {
@@ -88,16 +88,31 @@ public class InventoryXAdjustManagerProxy {
     }
     
     public void validate(InventoryXAdjustManager man) throws Exception {
+        Integer locationId;
+        ArrayList<Integer> locationIdList;
         ValidationErrorsList list;
         InventoryXAdjustLocal cl;
+        InventoryXAdjustViewDO data;
 
-        cl = local();
+        cl = local();        
         list = new ValidationErrorsList();
+        data = null;
+        locationIdList = new ArrayList<Integer>();
         for (int i = 0; i < man.count(); i++ ) {
             try {
-                cl.validate(man.getAdjustmentAt(i));
+                data = man.getAdjustmentAt(i);
+                cl.validate(data);
             } catch (Exception e) {
-                DataBaseUtil.mergeException(list, e, "itemTable", i);
+                DataBaseUtil.mergeException(list, e, "adjustmentTable", i);
+            }
+            
+            locationId = data.getInventoryLocationId();
+            if (locationId != null && locationIdList.contains(locationId)) {
+                list.add(new TableFieldErrorException("fieldUniqueOnlyException",i,
+                                                      InventoryAdjustmentMeta.getInventoryLocationInventoryItemName(),
+                                                      "adjustmentTable"));
+            } else {
+                locationIdList.add(locationId);
             }
         }
         if (list.size() > 0)

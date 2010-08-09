@@ -51,11 +51,21 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "InventoryXPut.FetchByInventoryReceiptId",
-                query = "select distinct new org.openelis.domain.InventoryXPutDO(tr.id, tr.inventoryReceiptId, tr.inventoryLocationId, tr.quantity)"
-                      +	" from InventoryXPut tr where tr.inventoryReceiptId = :id"),
+                query = "select distinct new org.openelis.domain.InventoryXPutViewDO(tr.id, tr.inventoryReceiptId, tr.inventoryLocationId, tr.quantity," +
+                		"il.inventoryItemId, il.lotNumber, il.storageLocationId, il.quantityOnhand, il.expirationDate, ii.name, ii.storeId," +
+                		"s.name, su.description, s.location, ir.receivedDate, ir.unitCost, ir.externalReference)"
+                      +	" from InventoryXPut tr left join tr.inventoryLocation il left join tr.inventoryReceipt ir left join il.storageLocation s left join s.storageUnit su" +
+                      	" left join il.inventoryItem ii where tr.inventoryReceiptId = :id"),
     @NamedQuery( name = "InventoryXPut.FetchByInventoryLocationId",
-                query = "select distinct new org.openelis.domain.InventoryXPutDO(tr.id, tr.inventoryReceiptId, tr.inventoryLocationId, tr.quantity)"
-                      + " from InventoryXPut tr where tr.inventoryLocationId = :id")})
+                query = "select distinct new org.openelis.domain.InventoryXPutViewDO(tr.id, tr.inventoryReceiptId, tr.inventoryLocationId, tr.quantity," +
+                        "il.inventoryItemId, il.lotNumber, il.storageLocationId, il.quantityOnhand, il.expirationDate, ii.name, ii.storeId," +
+                        "s.name, su.description, s.location, ir.receivedDate, ir.unitCost, ir.externalReference)"
+                      + " from InventoryXPut tr left join tr.inventoryLocation il left join tr.inventoryReceipt ir left join il.storageLocation s left join s.storageUnit su left join il.inventoryItem ii where tr.inventoryLocationId = :id"),
+   @NamedQuery( name = "InventoryXPut.FetchByOrderId",
+               query = "select distinct new org.openelis.domain.InventoryXPutViewDO(tr.id, tr.inventoryReceiptId, tr.inventoryLocationId, tr.quantity," +
+                        "il.inventoryItemId, il.lotNumber, il.storageLocationId, il.quantityOnhand, il.expirationDate, ii.name, ii.storeId," +
+                        "s.name, su.description, s.location, ir.receivedDate, ir.unitCost, ir.externalReference)"
+                      + " from InventoryXPut tr left join tr.inventoryReceipt ir left join ir.orderItem oi left join tr.inventoryLocation il left join il.inventoryItem ii left join il.storageLocation s left join s.storageUnit su where oi.orderId = :id")})
 @Entity
 @Table(name = "inventory_x_put")
 @EntityListeners( {AuditUtil.class})
@@ -78,6 +88,10 @@ public class InventoryXPut implements Auditable, Cloneable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inventory_location_id", insertable = false, updatable = false)
     private InventoryLocation inventoryLocation;
+    
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "inventory_receipt_id", insertable = false, updatable = false)
+    private InventoryReceipt inventoryReceipt;
 
     @Transient
     private InventoryXPut     original;
@@ -120,6 +134,14 @@ public class InventoryXPut implements Auditable, Cloneable {
 
     public InventoryLocation getInventoryLocation() {
         return inventoryLocation;
+    }
+    
+    public InventoryReceipt getInventoryReceipt() {
+        return inventoryReceipt;
+    }
+
+    public void setInventoryReceipt(InventoryReceipt inventoryReceipt) {
+        this.inventoryReceipt = inventoryReceipt;
     }
 
     public void setClone() {

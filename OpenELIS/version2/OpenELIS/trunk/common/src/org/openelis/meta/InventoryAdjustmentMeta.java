@@ -263,11 +263,11 @@ public class InventoryAdjustmentMeta implements Meta, MetaMap {
     public String buildFrom(String where) {
         String from, transFrom, invLocFrom;       
         
-        transFrom = ", IN (_inventoryAdjustment.transAdjustmentLocation) _transAdjustmentLocation ";
-        invLocFrom = ", IN (_transAdjustmentLocation.inventoryLocation) _inventoryLocation ";
+        transFrom = ", IN (_inventoryAdjustment.inventoryXAdjust) _inventoryXAdjust ";
+        invLocFrom = ", IN (_inventoryXAdjust.inventoryLocation) _inventoryLocation ";
         
         from = "InventoryAdjustment _inventoryAdjustment ";
-        if (where.indexOf("transAdjustmentLocation.") > -1)
+        if (where.indexOf("inventoryXAdjust.") > -1)
             from += transFrom;
         if (where.indexOf("inventoryLocation.") > -1) {
             if (from.indexOf(transFrom) < 0)

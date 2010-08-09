@@ -109,8 +109,8 @@ public class OrderItemManager implements RPC {
         return proxy().update(this);
     }
 
-    public void validate() throws Exception {
-        proxy().validate(this);
+    public void validate(String type) throws Exception {
+        proxy().validate(this, type);
     }
 
     // friendly methods used by managers and proxies

@@ -42,4 +42,6 @@ public interface InventoryLocationRemote {
     public ArrayList<InventoryLocationViewDO> fetchByInventoryItemName(String match, int maxResults) throws Exception;
     
     public ArrayList<InventoryLocationViewDO> fetchByInventoryItemNameStoreId(String match, Integer storeId, int maxResults) throws Exception;
+
+    public InventoryLocationViewDO fetchById(Integer id) throws Exception;
 }
