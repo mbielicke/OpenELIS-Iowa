@@ -36,6 +36,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 public class InventoryAdjustmentDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
+    
     protected Integer         id, systemUserId;
     protected String          description;
     protected Datetime        adjustmentDate;

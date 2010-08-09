@@ -29,14 +29,13 @@ import java.util.ArrayList;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.IdNameVO;
-import org.openelis.domain.InventoryAdjustmentViewDO;
+import org.openelis.domain.InventoryAdjustmentDO;
 import org.openelis.gwt.common.data.QueryData;
 
 @Remote
 public interface InventoryAdjustmentRemote {
     
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
+    public ArrayList<InventoryAdjustmentDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
     
     //method to return adjustment record
     /*public InventoryAdjustmentDO getInventoryAdjustment(Integer inventoryAdjustmentId);

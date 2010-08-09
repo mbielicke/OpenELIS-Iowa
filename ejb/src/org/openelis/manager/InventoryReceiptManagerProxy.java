@@ -34,9 +34,11 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryReceiptViewDO;
 import org.openelis.domain.OrderItemViewDO;
+import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.InventoryReceiptLocal;
+import org.openelis.meta.InventoryReceiptMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 
@@ -156,17 +158,52 @@ public class InventoryReceiptManagerProxy {
     }
     
     public void validate(InventoryReceiptManager man) throws Exception {
+        Integer qtyReceived, qtyOrdered, itemId,  prevItemId;   
         ValidationErrorsList list;
         InventoryReceiptLocal cl;
+        InventoryReceiptViewDO data;
+        OrderManager orderMan;          
 
         cl = local();
         list = new ValidationErrorsList();
-        for (int i = 0; i < man.count(); i++ ) {
+        orderMan = man.getOrder();
+        data = null;
+        prevItemId = null;
+        qtyReceived = 0;
+        qtyOrdered = 0;
+        
+        for (int i = 0; i < man.count(); i++ ) {            
             try {
-                cl.validate(man.getReceiptAt(i));
+                data = man.getReceiptAt(i);
+                cl.validate(data);
             } catch (Exception e) {
                 DataBaseUtil.mergeException(list, e, "receiptTable", i);
-            }
+            }                     
+            
+            if (orderMan == null) 
+                continue;                        
+            
+            itemId = data.getInventoryItemId();
+            if (!itemId.equals(prevItemId)) {                
+                qtyOrdered = data.getOrderItemQuantity();
+                if (data.getQuantityReceived() != null)
+                    qtyReceived = data.getQuantityReceived();
+                else 
+                    qtyReceived = 0;
+            } else {                      
+                if (data.getQuantityReceived() != null) {
+                    qtyReceived += data.getQuantityReceived();
+
+                    if (qtyOrdered < qtyReceived) {
+                        list.add(new TableFieldErrorException("numReqLessThanNumRecException",i,
+                                                              InventoryReceiptMeta.getQuantityReceived(),
+                                                              "receiptTable"));
+                    }
+                }
+                               
+            }  
+            
+            prevItemId = itemId;
         }
         if (list.size() > 0)
             throw list;

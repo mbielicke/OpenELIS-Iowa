@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -36,12 +37,15 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.InventoryAdjustmentChildDO;
+import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryXAdjustViewDO;
-import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryXAdjust;
+import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.InventoryLocationLocal;
 import org.openelis.local.InventoryXAdjustLocal;
+import org.openelis.meta.InventoryAdjustmentMeta;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
@@ -50,7 +54,10 @@ import org.openelis.utilcommon.DataBaseUtil;
 public class InventoryXAdjustBean implements InventoryXAdjustLocal {
 
     @PersistenceContext(name = "openelis")
-    private EntityManager manager;
+    private EntityManager          manager;
+
+    @EJB
+    private InventoryLocationLocal inventoryLocationBean;
 
     @SuppressWarnings("unchecked")
     public ArrayList<InventoryXAdjustViewDO> fetchByInventoryAdjustmentId(Integer id) throws Exception {
@@ -68,20 +75,23 @@ public class InventoryXAdjustBean implements InventoryXAdjustLocal {
     }
     
     public InventoryXAdjustViewDO add(InventoryXAdjustViewDO data) throws Exception {
+        Integer inventoryLocationId;
         InventoryXAdjust entity;
-        InventoryLocation inventoryLocation;
+        InventoryLocationViewDO inventorylocation;
 
-        manager.setFlushMode(FlushModeType.COMMIT);
-
+        manager.setFlushMode(FlushModeType.COMMIT);        
         entity = new InventoryXAdjust();
 
         entity.setInventoryAdjustmentId(data.getInventoryAdjustmentId());
-        entity.setInventoryLocationId(data.getInventoryLocationId());
+        inventoryLocationId = data.getInventoryLocationId();
+        entity.setInventoryLocationId(inventoryLocationId);
         entity.setPhysicalCount(data.getPhysicalCount());
         entity.setQuantity(data.getQuantity());
 
-        inventoryLocation = manager.find(InventoryLocation.class, data.getInventoryLocationId());
-        inventoryLocation.setQuantityOnhand(data.getPhysicalCount());
+        inventorylocation = inventoryLocationBean.fetchForUpdate(inventoryLocationId);
+        inventorylocation.setQuantityOnhand(data.getPhysicalCount());
+        inventoryLocationBean.update(inventorylocation);
+        inventoryLocationBean.abortUpdate(inventoryLocationId);
 
         manager.persist(entity);
 
@@ -89,8 +99,9 @@ public class InventoryXAdjustBean implements InventoryXAdjustLocal {
     }
 
     public InventoryXAdjustViewDO update(InventoryXAdjustViewDO data) throws Exception {
+        Integer inventoryLocationId;
         InventoryXAdjust entity;
-        InventoryLocation inventoryLocation;
+        InventoryLocationViewDO inventorylocation;
 
         if ( !data.isChanged())
             return data;
@@ -98,24 +109,47 @@ public class InventoryXAdjustBean implements InventoryXAdjustLocal {
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(InventoryXAdjust.class, data.getId());
         entity.setInventoryAdjustmentId(data.getInventoryAdjustmentId());
-        entity.setInventoryLocationId(data.getInventoryLocationId());
+        inventoryLocationId = data.getInventoryLocationId();
+        entity.setInventoryLocationId(inventoryLocationId);
         entity.setPhysicalCount(data.getPhysicalCount());
         entity.setQuantity(data.getQuantity());
 
-        inventoryLocation = manager.find(InventoryLocation.class, data.getInventoryLocationId());
-        inventoryLocation.setQuantityOnhand(data.getPhysicalCount());
-
-        manager.persist(entity);
+        inventorylocation = inventoryLocationBean.fetchForUpdate(inventoryLocationId);
+        inventorylocation.setQuantityOnhand(data.getPhysicalCount());
+        inventoryLocationBean.update(inventorylocation);
+        inventoryLocationBean.abortUpdate(inventoryLocationId);
 
         return data;
     }
     
     public void delete(InventoryXAdjustViewDO data) throws Exception {
-        // TODO Auto-generated method stub        
+        InventoryXAdjust entity;     
+        
+        manager.setFlushMode(FlushModeType.COMMIT);
+
+        entity = manager.find(InventoryXAdjust.class, data.getId());
+        if (entity != null)
+            manager.remove(entity);
     }
 
     public void validate(InventoryXAdjustViewDO data) throws Exception {
-        // TODO Auto-generated method stub
+        ValidationErrorsList list;
+
+        list = new ValidationErrorsList();
+        if (DataBaseUtil.isEmpty(data.getInventoryLocationId()))
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             InventoryAdjustmentMeta.getInventoryLocationInventoryItemName()));
+        
+        if (DataBaseUtil.isEmpty(data.getPhysicalCount()))  
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             InventoryAdjustmentMeta.getInventoryXAdjustPhysicalCount()));
+        else if (!DataBaseUtil.isEmpty(data.getQuantity()) && data.getQuantity() == 0) 
+            list.add(new FieldErrorException("physCountNotEqualToOnHandException",
+                                             InventoryAdjustmentMeta.getInventoryXAdjustPhysicalCount()));
+        
+        
+        if (list.size() > 0)
+            throw list;
         
     }
 

@@ -27,7 +27,8 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.InventoryXPutDO;
+import org.openelis.domain.InventoryXPutViewDO;
+import org.openelis.domain.InventoryXPutViewDO;
 import org.openelis.gwt.common.RPC;
 
 
@@ -36,7 +37,7 @@ public class OrderReceiptManager implements RPC {
     private static final long                           serialVersionUID = 1L;
 
     protected Integer                                   orderId;
-    protected ArrayList<InventoryXPutDO>                receipts, deleted;
+    protected ArrayList<InventoryXPutViewDO>                receipts, deleted;
 
     protected transient static OrderReceiptManagerProxy proxy;
 
@@ -50,34 +51,34 @@ public class OrderReceiptManager implements RPC {
         return new OrderReceiptManager();
     }
 
-    public InventoryXPutDO getReceiptAt(int i) {
+    public InventoryXPutViewDO getReceiptAt(int i) {
         return receipts.get(i);
     }
 
-    public void setReceiptAt(InventoryXPutDO data, int i) {
+    public void setReceiptAt(InventoryXPutViewDO data, int i) {
         if (receipts == null)
-            receipts = new ArrayList<InventoryXPutDO>();
+            receipts = new ArrayList<InventoryXPutViewDO>();
         receipts.set(i, data);
     }
 
     public int addReceipt() {
         if (receipts == null)
-            receipts = new ArrayList<InventoryXPutDO>();
-        receipts.add(new InventoryXPutDO());
+            receipts = new ArrayList<InventoryXPutViewDO>();
+        receipts.add(new InventoryXPutViewDO());
 
         return count() - 1;
     }
 
     public int addReceiptAt(int i) {
         if (receipts == null)
-            receipts = new ArrayList<InventoryXPutDO>();
-        receipts.add(i, new InventoryXPutDO());
+            receipts = new ArrayList<InventoryXPutViewDO>();
+        receipts.add(i, new InventoryXPutViewDO());
 
         return i;
     }
 
     public void removeReceiptAt(int i) {
-        InventoryXPutDO tmp;
+        InventoryXPutViewDO tmp;
 
         if (receipts == null || i >= receipts.size())
             return;
@@ -85,12 +86,12 @@ public class OrderReceiptManager implements RPC {
         tmp = receipts.remove(i);
         if (tmp.getId() != null) {
             if (deleted == null)
-                deleted = new ArrayList<InventoryXPutDO>();
+                deleted = new ArrayList<InventoryXPutViewDO>();
             deleted.add(tmp);
         }
     }
 
-    public void removeReceipt(InventoryXPutDO data) {
+    public void removeReceipt(InventoryXPutViewDO data) {
         int index;
 
         if (receipts == null || receipts.size() == 0 || data == null)
@@ -135,11 +136,11 @@ public class OrderReceiptManager implements RPC {
         orderId = id;
     }
 
-    ArrayList<InventoryXPutDO> getReceipts() {
+    ArrayList<InventoryXPutViewDO> getReceipts() {
         return receipts;
     }
 
-    void setReceipts(ArrayList<InventoryXPutDO> receipts) {
+    void setReceipts(ArrayList<InventoryXPutViewDO> receipts) {
         this.receipts = receipts;
     }
 
@@ -149,7 +150,7 @@ public class OrderReceiptManager implements RPC {
         return deleted.size();
     }
 
-    InventoryXPutDO getDeletedAt(int i) {
+    InventoryXPutViewDO getDeletedAt(int i) {
         return deleted.get(i);
     }
 

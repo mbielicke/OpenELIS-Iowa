@@ -55,7 +55,7 @@ public class InventoryXAdjustDO extends DataObject {
 
     public void setId(Integer id) {
         this.id = id;
-        _changed = false;
+        _changed = true;
     }
 
     public Integer getInventoryAdjustmentId() {
@@ -64,7 +64,7 @@ public class InventoryXAdjustDO extends DataObject {
 
     public void setInventoryAdjustmentId(Integer inventoryAdjustmentId) {
         this.inventoryAdjustmentId = inventoryAdjustmentId;
-        _changed = false;
+        _changed = true;
     }
 
     public Integer getInventoryLocationId() {
@@ -73,7 +73,7 @@ public class InventoryXAdjustDO extends DataObject {
 
     public void setInventoryLocationId(Integer inventoryLocationId) {
         this.inventoryLocationId = inventoryLocationId;
-        _changed = false;
+        _changed = true;
     }
 
     public Integer getQuantity() {
@@ -82,7 +82,7 @@ public class InventoryXAdjustDO extends DataObject {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
-        _changed = false;
+        _changed = true;
     }
     
     public Integer getPhysicalCount() {
@@ -91,6 +91,6 @@ public class InventoryXAdjustDO extends DataObject {
 
     public void setPhysicalCount(Integer physicalCount) {
         this.physicalCount = physicalCount;
-        _changed = false;
+        _changed = true;
     }
 }

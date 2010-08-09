@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.InventoryXPutDO;
+import org.openelis.domain.InventoryXPutViewDO;
 import org.openelis.local.InventoryXPutLocal;
 
 public class OrderReceiptManagerProxy {
@@ -37,7 +37,7 @@ public class OrderReceiptManagerProxy {
     public OrderReceiptManager fetchByOrderId(Integer id) throws Exception {
         InventoryXPutLocal pl;
         OrderReceiptManager m;
-        ArrayList<InventoryXPutDO> list;
+        ArrayList<InventoryXPutViewDO> list;
 
         pl = local();
         list = pl.fetchByOrderId(id);
@@ -50,7 +50,7 @@ public class OrderReceiptManagerProxy {
 
     public OrderReceiptManager add(OrderReceiptManager man) throws Exception {
         InventoryXPutLocal pl;
-        InventoryXPutDO receipt;        
+        InventoryXPutViewDO receipt;        
 
         pl = local();
         for (int i = 0; i < man.count(); i++ ) {
@@ -63,7 +63,7 @@ public class OrderReceiptManagerProxy {
 
     public OrderReceiptManager update(OrderReceiptManager man) throws Exception {
         InventoryXPutLocal pl;
-        InventoryXPutDO receipt;        
+        InventoryXPutViewDO receipt;        
 
         pl = local();
         

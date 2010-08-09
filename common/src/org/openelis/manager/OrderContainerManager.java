@@ -59,16 +59,20 @@ public class OrderContainerManager implements RPC {
         containers.set(i, container);
     }
 
-    public void addContainer() {
+    public int addContainer() {
         if (containers == null)
             containers = new ArrayList<OrderContainerDO>();
-        containers.add(new OrderContainerDO());                
+        containers.add(new OrderContainerDO());   
+        
+        return count() - 1;
     }
     
-    public void addContainerAt(int i) {
+    public int addContainerAt(int i) {
         if (containers == null)
             containers = new ArrayList<OrderContainerDO>();
-        containers.add(i, new OrderContainerDO());                
+        containers.add(i, new OrderContainerDO()); 
+        
+        return count() - 1;
     }
 
     public void removeContainerAt(int i) {

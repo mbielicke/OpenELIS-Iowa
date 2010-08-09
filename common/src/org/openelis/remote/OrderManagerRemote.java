@@ -6,6 +6,7 @@ import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderFillManager;
 import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
+import org.openelis.manager.OrderReceiptManager;
 import org.openelis.manager.OrderTestManager;
 
 @Remote
@@ -32,6 +33,8 @@ public interface OrderManagerRemote {
     public OrderItemManager fetchItemByOrderId(Integer id) throws Exception;
 
     public OrderFillManager fetchFillByOrderId(Integer id) throws Exception;
+    
+    public OrderReceiptManager fetchReceiptByOrderId(Integer id) throws Exception;
     
     public OrderTestManager fetchTestByOrderId(Integer id) throws Exception;
     

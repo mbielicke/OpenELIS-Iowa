@@ -33,6 +33,7 @@ import javax.naming.InitialContext;
 import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.InventoryItemLocal;
 import org.openelis.local.InventoryXUseLocal;
 
 public class OrderFillManagerProxy {
@@ -53,7 +54,7 @@ public class OrderFillManagerProxy {
 
     public OrderFillManager add(OrderFillManager man) throws Exception {
         InventoryXUseLocal ul;
-        InventoryXUseViewDO fill;        
+        InventoryXUseViewDO fill; 
 
         ul = local();
         for (int i = 0; i < man.count(); i++ ) {
@@ -95,14 +96,14 @@ public class OrderFillManagerProxy {
     }
 
     public void validate(OrderFillManager man) throws Exception {
+        int j;
+        Integer sum, locationId;
         ValidationErrorsList list;
         InventoryXUseViewDO data;
-        Integer sum, locationId;
         HashMap<Integer, Integer> locationSumMap;
         FieldErrorException exc;
         ArrayList<String[]> names;
         String[] name;
-        int j;
 
         list = new ValidationErrorsList();
         locationSumMap = new HashMap<Integer, Integer>();
@@ -147,4 +148,14 @@ public class OrderFillManagerProxy {
             return null;
         }
     }
+    
+    private InventoryItemLocal invItemLocal() {
+        try {
+            InitialContext ctx = new InitialContext();
+            return (InventoryItemLocal)ctx.lookup("openelis/InventoryItemBean/local");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }   
 }
