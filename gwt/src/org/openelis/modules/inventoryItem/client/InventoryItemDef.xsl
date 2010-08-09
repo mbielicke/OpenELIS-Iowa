@@ -181,7 +181,7 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"minOrderLevel")' />:
                   </text>
-                  <textbox key="{meta:getQuantityMinLevel()}" width="55" tab="{meta:getQuantityToReorder()},{meta:getStoreId()}" field="Integer" />
+                  <textbox key="{meta:getQuantityMinLevel()}" width="55" tab="{meta:getQuantityToReorder()},{meta:getStoreId()}" required = "true" field="Integer" />
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"reorderLevel")' />:
                   </text>

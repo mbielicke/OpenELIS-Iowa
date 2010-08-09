@@ -576,11 +576,12 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
     }   
     
     public void setManager(InventoryReceiptManager manager, int index, 
-                           InventoryReceiptScreen inventoryReceiptScreen) {                
+                           InventoryReceiptScreen inventoryReceiptScreen) {                   
+                    
         this.manager = manager;
         this.index = index;  
         this.inventoryReceiptScreen = inventoryReceiptScreen;
-                      
+                  
         loaded = false;
     }
                            

@@ -827,8 +827,8 @@ public class BuildKitsScreen extends Screen {
     }
 
     protected void abort() {
-        manager = BuildKitManager.getInstance();
         setFocus(null);
+        manager = BuildKitManager.getInstance();        
         clearErrors();
         window.setBusy(consts.get("cancelChanges"));
         setState(State.DEFAULT);
@@ -905,6 +905,7 @@ public class BuildKitsScreen extends Screen {
         InventoryComponentViewDO comp;
         InventoryLocationViewDO loc;
         TableDataRow row;
+        InventoryItemDO toItem, fromItem;
                 
         selRows = componentTable.getSelectedRows();
         if (selRows.length == 0) {
@@ -919,9 +920,11 @@ public class BuildKitsScreen extends Screen {
             Arrays.sort(selRows);
             for (int i = 0; i < selRows.length; i++) {
                 comp = icman.getComponentAt(selRows[i]);
-                itman.addTransfer();                                
-                itman.setToInventoryItemAt(getInventoryItem(comp.getComponentId()), i);
-                
+                itman.addTransfer();            
+                toItem = getInventoryItem(comp.getComponentId());
+                itman.setToInventoryItemAt(toItem, i);
+                fromItem = getInventoryItem(toItem.getParentInventoryItemId());
+                itman.setFromInventoryItemAt(fromItem, i);
                 row = (TableDataRow)componentTable.getObject(selRows[i], 1);
                 if (row != null) 
                     loc = (InventoryLocationViewDO)row.data;                

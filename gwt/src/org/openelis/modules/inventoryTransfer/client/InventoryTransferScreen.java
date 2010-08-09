@@ -40,6 +40,8 @@ import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.BeforeCloseEvent;
+import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -84,14 +86,17 @@ public class InventoryTransferScreen extends Screen {
     private InventoryTransferScreen               screen;
     private InventoryTransferManager              manager;
     private boolean                               openedFromMenu, reloadTable;
-    private TextBox                               inventoryItemDescription, inventoryItemStoreId, inventoryItemDispensedUnitsId,
-                                                  inventoryLocationLotNumber, inventoryLocationExpirationDate, toDescription,
-                                                  toStoreId, toDispensedUnits, toLotNumber, toExpDate;
+    private TextBox                               inventoryItemDescription, inventoryItemStoreId,
+                                                  inventoryItemDispensedUnitsId,
+                                                  inventoryLocationLotNumber, inventoryLocationExpirationDate,
+                                                  toDescription, toStoreId, toDispensedUnits,
+                                                  toLotNumber, toExpDate;
     private AutoComplete<Integer>                 fromItemName, toItemName, toStorageLocationName;
-    private AppButton                             queryButton, addButton, commitButton,
-                                                  abortButton, addReceiptButton, removeReceiptButton;
+    private AppButton                             addButton, commitButton, abortButton,
+                                                  addReceiptButton, removeReceiptButton;
     private TableWidget                           receiptTable;
-    private ScreenService                         inventoryItemService, inventoryLocationService, storageService;    
+    private ScreenService                         inventoryItemService, inventoryLocationService, 
+                                                  storageService;    
 
     private HashMap<Integer, InventoryItemViewDO> inventoryItemMap;
     
@@ -141,20 +146,6 @@ public class InventoryTransferScreen extends Screen {
         //
         // button panel buttons
         //
-        queryButton = (AppButton)def.getWidget("query");
-        addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                query();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && security.hasSelectPermission());
-                if (event.getState() == State.QUERY)
-                    queryButton.setState(ButtonState.LOCK_PRESSED);
-            }
-        });
-
         addButton = (AppButton)def.getWidget("add");
         addScreenHandler(addButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -194,8 +185,13 @@ public class InventoryTransferScreen extends Screen {
         receiptTable = (TableWidget)def.getWidget("receiptTable");
         addScreenHandler(receiptTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                if(reloadTable) 
-                    //receiptTable.load(receiptModel);       
+                //
+                // this is done in order to prevent the table from getting refreshed
+                // when DataChangeEvent is fired to refresh the widgets that are
+                // loaded from the "from/to" inventory item/location when one of
+                // these is set in one of the rows in the table
+                //
+                if(reloadTable)      
                     receiptTable.load(getTransferModel());
             }
 
@@ -417,7 +413,7 @@ public class InventoryTransferScreen extends Screen {
                 
                 if (state != State.ADD) { 
                     event.cancel();
-                } else if (c == 4){
+                } else if (c == 5){
                     data = manager.getToInventoryItemAt(r);
                     if (data == null || "N".equals(data.getIsBulk()))
                         event.cancel();
@@ -430,7 +426,7 @@ public class InventoryTransferScreen extends Screen {
                 int r, c;
                 String location;
                 TableDataRow row;
-                InventoryLocationViewDO data;
+                InventoryLocationViewDO data, tempData;
                 Object val;
 
                 r = event.getRow();
@@ -443,44 +439,70 @@ public class InventoryTransferScreen extends Screen {
                         if (row != null) {      
                             data = (InventoryLocationViewDO)row.data;
                             manager.setFromInventoryItemAt(getInventoryItem(data.getInventoryItemId()), r);
-                            manager.setFromInventoryLocationAt(data, r);
+                            manager.setFromInventoryLocationAt(data, r);                                                  
                             location = StorageLocationManager.getLocationForDisplay(data.getStorageLocationName(),
                                                                                     data.getStorageLocationUnitDescription(),
                                                                                     data.getStorageLocationLocation());
                             receiptTable.setCell(r, 1, location);
                             receiptTable.setCell(r, 2, data.getQuantityOnhand());
+                            
+                            tempData = manager.getToInventoryLocationAt(r);     
+                            if (tempData != null) {
+                                tempData.setLotNumber(data.getLotNumber());
+                                tempData.setExpirationDate(data.getExpirationDate());
+                            }
                         } else { 
                             manager.setFromInventoryItemAt(null, r);
                             receiptTable.setCell(r, 1, null);
                             receiptTable.setCell(r, 2, null);
                         }
                         reloadTable = false;
+                        //
+                        // this is done in order to refresh the data in all the 
+                        // widgets that are loaded from "from" inventory item/location
+                        //
                         DataChangeEvent.fire(screen);
                         break;
                     case 3:
+                        manager.setQuantityAt((Integer)val, r);
+                        break;                        
+                    case 4:
                         row = (TableDataRow)val;
                         if (row != null) 
                             manager.setToInventoryItemAt((InventoryItemDO)row.data, r);
                         else 
                             manager.setToInventoryItemAt(null, r);
-                        receiptTable.setCell(r, 4, "N");
+                        receiptTable.setCell(r, 5, "N");
                         reloadTable = false;
+                        //
+                        // this is done in order to refresh the data in all the 
+                        // widgets that are loaded from "to" inventory item
+                        //
                         DataChangeEvent.fire(screen);
-                        break;
-                    case 4:
-                        manager.setAddtoExistingAt((String)val,r);
                         break;
                     case 5:
-                        row = (TableDataRow)val;
-                        if (row != null) 
-                            manager.setToInventoryLocationAt((InventoryLocationViewDO)row.data, r);
-                        else 
-                            manager.setToInventoryLocationAt(null, r);
-                        reloadTable = false;
-                        DataChangeEvent.fire(screen);
+                        manager.setAddtoExistingAt((String)val,r);
                         break;
                     case 6:
-                        manager.setQuantityAt((Integer)val, r);
+                        row = (TableDataRow)val;
+                        if (row != null) {
+                            data = (InventoryLocationViewDO)row.data;
+                            tempData =  manager.getFromInventoryLocationAt(r);
+                            if (tempData != null) {
+                                data.setLotNumber(tempData.getLotNumber());
+                                data.setExpirationDate(tempData.getExpirationDate());
+                            }
+                            
+                            manager.setToInventoryLocationAt(data, r);                            
+                        } else { 
+                            manager.setToInventoryLocationAt(null, r);
+                        }
+                        reloadTable = false;
+                        //
+                        // this is done in order to refresh the data in all the 
+                        // widgets that are loaded from "to" inventory location
+                        //
+                        DataChangeEvent.fire(screen);
                         break;                   
                 }
             }
@@ -842,6 +864,15 @@ public class InventoryTransferScreen extends Screen {
             }
         });
         
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+                if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
+                    event.cancel();
+                    window.setError(consts.get("mustCommitOrAbort"));
+                }
+            }
+        });
+        
         screen = this;        
         inventoryItemMap = new HashMap<Integer, InventoryItemViewDO>();
     }
@@ -849,10 +880,6 @@ public class InventoryTransferScreen extends Screen {
     public void loadTransferData(InventoryTransferManager manager) {
         add(manager);
     } 
-
-    protected void query() {        
-        
-    }
     
     protected void add(InventoryTransferManager manager) { 
         if (manager == null) {
@@ -904,9 +931,8 @@ public class InventoryTransferScreen extends Screen {
         
     }
     
-    protected void abort() {
-        manager = InventoryTransferManager.getInstance(); 
-        setFocus(null);
+    protected void abort() {        
+        setFocus(null);        
         clearErrors();
         window.setBusy(consts.get("cancelChanges"));
         
@@ -916,6 +942,7 @@ public class InventoryTransferScreen extends Screen {
             window.setDone(consts.get("queryAborted"));
         } else if (state == State.ADD) {            
             reloadTable = true;
+            manager = InventoryTransferManager.getInstance();
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
             window.setDone(consts.get("addAborted"));
@@ -973,21 +1000,23 @@ public class InventoryTransferScreen extends Screen {
                     row.cells.get(2).setValue(fromLoc.getQuantityOnhand());
                 }
                 
-                toItem = manager.getToInventoryItemAt(i);
-                if (toItem != null)                    
-                    row.cells.get(3).setValue(new TableDataRow(toItem.getId(), toItem.getName()));
+                row.cells.get(3).setValue(manager.getQuantityAt(i));
                 
-                row.cells.get(4).setValue(manager.getAddtoExistingAt(i));
+                toItem = manager.getToInventoryItemAt(i);                
+                if (toItem != null)                    
+                    row.cells.get(4).setValue(new TableDataRow(toItem.getId(), toItem.getName()));
+                
+                row.cells.get(5).setValue(manager.getAddtoExistingAt(i));
                 
                 toLoc = manager.getToInventoryLocationAt(i);
                 if (toLoc != null) {
                     location = StorageLocationManager.getLocationForDisplay(toLoc.getStorageLocationName(),
                                                                             toLoc.getStorageLocationUnitDescription(),
                                                                             toLoc.getStorageLocationLocation());
-                    row.cells.get(5).setValue(new TableDataRow(toLoc.getId(), location));
+                    row.cells.get(6).setValue(new TableDataRow(toLoc.getId(), location));
                 }
                 
-                row.cells.get(6).setValue(manager.getQuantityAt(i));
+                
                 
                 model.add(row);
             }

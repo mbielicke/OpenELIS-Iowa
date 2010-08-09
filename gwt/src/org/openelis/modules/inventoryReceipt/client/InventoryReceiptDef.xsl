@@ -1,5 +1,3 @@
-
-
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -120,14 +118,14 @@ UIRF Software License are applicable instead of those above.
                   <col width="20" header="{resource:getString($constants,'st')}" />
                 </autoComplete>
               </col>
-              <col key="{meta:getOrderItemQuantity()}" width="50" header="{resource:getString($constants,'numReq')}">
+              <col key="{meta:getOrderItemQuantity()}" width="50" header="{resource:getString($constants,'numReq')}" align = "right">
                 <label field="Integer" />
               </col>
-              <col key="{meta:getQuantityReceived()}" width="50" header="{resource:getString($constants,'numRec')}">
+              <col key="{meta:getQuantityReceived()}" width="50" header="{resource:getString($constants,'numRec')}" align = "right">
                 <textbox field="Integer" />
               </col>
-              <col key="{meta:getUnitCost()}" width="55" header="{resource:getString($constants,'cost')}">
-                <textbox field="Double" />
+              <col key="{meta:getUnitCost()}" width="55" header="{resource:getString($constants,'cost')}" align = "right">
+                <textbox pattern = "{resource:getString($constants,'displayCurrencyFormat')}" field="Double" />
               </col>
             </table>
           </widget>
@@ -214,7 +212,7 @@ UIRF Software License are applicable instead of those above.
                           <xsl:value-of select='resource:getString($constants,"lotNum")' />:
                         </text>
                         <widget colspan="2">
-                          <textbox key="{meta:getInventoryLocationLotNumber()}" width="100" max="30" field="String" tab = "{meta:getQcReference()},{meta:getInventoryLocationStorageLocationId()}"/>
+                          <textbox key="{meta:getInventoryLocationLotNumber()}" width="100" max="30" field="String" case = "UPPER" tab = "{meta:getQcReference()},{meta:getInventoryLocationStorageLocationId()}"/>
                         </widget>
                       </row>
                       <row>

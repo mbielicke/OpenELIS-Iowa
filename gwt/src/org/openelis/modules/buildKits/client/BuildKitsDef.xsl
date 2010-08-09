@@ -120,7 +120,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"lotNum")' />:
                 </text>
-                <textbox key="{meta:getLocationLotNumber()}" width="100" max="30" tab = "{meta:getLocationExpirationDate()}, {meta:getLocationStorageLocationName()}" field="String" />
+                <textbox key="{meta:getLocationLotNumber()}" width="100" max="30" tab = "{meta:getLocationExpirationDate()}, {meta:getLocationStorageLocationName()}" case = "UPPER" field="String" />
               </row>
               <row>
                 <text style="Prompt">
@@ -144,7 +144,7 @@ UIRF Software License are applicable instead of those above.
                 <label field="String" />
               </col>
               <col key="{meta:getLocationStorageLocationName()}" width="177" header="{resource:getString($constants,'location')}">
-                <autoComplete width="137" case="LOWER" field="Integer" required="true">
+                <autoComplete width="137" case="LOWER" field="Integer">
                   <col width="300" header="{resource:getString($constants,'description')}" />
                   <col width="65" header="{resource:getString($constants,'lotNum')}" />
                   <col width="55" header="{resource:getString($constants,'qty')}" />

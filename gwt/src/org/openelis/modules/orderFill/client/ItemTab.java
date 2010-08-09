@@ -33,6 +33,7 @@ import java.util.Set;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.domain.OrderItemViewDO;
@@ -78,6 +79,7 @@ import com.google.gwt.user.client.Window;
 public class ItemTab extends Screen {
 
     private OrderManager                   manager;
+    private OrderFillScreen                orderFillScreen;
     private TreeWidget                     itemsTree;
     private Dropdown<Integer>              costCenterId;
     private TextBox                        organizationAttention,
@@ -90,9 +92,9 @@ public class ItemTab extends Screen {
     private HashMap<Integer, OrderManager> combinedMap;   
     private ScreenService                  inventoryLocationService;                 
     
-    public ItemTab(ScreenDefInt def, ScreenWindow window) {
+    public ItemTab(ScreenDefInt def, ScreenWindow window, OrderFillScreen orderFillScreen) {
         inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");              
-
+        this.orderFillScreen = orderFillScreen;
         setDefinition(def);
         setWindow(window);
         initialize();
@@ -113,8 +115,7 @@ public class ItemTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                costCenterId.enable(EnumSet.of(State.QUERY,State.UPDATE).contains(event.getState()));
-                costCenterId.setQueryMode(event.getState() == State.QUERY);
+                costCenterId.enable(EnumSet.of(State.UPDATE).contains(event.getState()));                
             }
         });
 
@@ -130,8 +131,7 @@ public class ItemTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationAttention.enable(EnumSet.of(State.QUERY,State.UPDATE).contains(event.getState()));
-                organizationAttention.setQueryMode(event.getState() == State.QUERY);
+                organizationAttention.enable(EnumSet.of(State.UPDATE).contains(event.getState()));                
             }
         });
 
@@ -327,7 +327,6 @@ public class ItemTab extends Screen {
                     parent = child.parent;
                     item = (OrderItemViewDO)parent.key;
 
-
                     if (c == 1) {
                         qty = (Integer)child.cells.get(1).getValue();
                         fill.setQuantity(qty);                        
@@ -340,6 +339,7 @@ public class ItemTab extends Screen {
                             loc = (InventoryLocationViewDO)row.data;
                             child.cells.get(4).setValue(loc.getLotNumber());
                             child.cells.get(5).setValue(loc.getExpirationDate());
+                            fill.setInventoryItemId(item.getInventoryItemId());
                             fill.setStorageLocationId(loc.getStorageLocationId());
                             fill.setStorageLocationName(loc.getStorageLocationName());
                             fill.setInventoryLocationId(loc.getId());
@@ -348,6 +348,7 @@ public class ItemTab extends Screen {
                         } else {
                             child.cells.get(4).setValue(null);
                             child.cells.get(5).setValue(null);
+                            fill.setInventoryItemId(null);
                             fill.setStorageLocationId(null);
                             fill.setStorageLocationName(null);
                             fill.setInventoryLocationId(null);
@@ -531,7 +532,9 @@ public class ItemTab extends Screen {
         addItemButton = (AppButton)def.getWidget("addItemButton");
         addScreenHandler(addItemButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                TreeDataItem item, child, parent;      
+                TreeDataItem item, child, parent;
+                OrderItemViewDO data;
+                InventoryItemDO invItem;
                 int row;
                                 
                 item = itemsTree.getSelection();
@@ -540,8 +543,16 @@ public class ItemTab extends Screen {
                 
                 itemsTree.finishEditing();
                 if("top".equals(item.leafType)) {
+                    data = (OrderItemViewDO)item.key;
+                    invItem = orderFillScreen.getInventoryItem(data.getInventoryItemId());                    
                     if(!item.open)
-                        itemsTree.toggle(item);                                        
+                        itemsTree.toggle(item);
+                    
+                    if ("Y".equals(invItem.getIsNotInventoried())) {
+                        Window.alert(consts.get("itemFlagDontInvCantBeFilled"));
+                        return;
+                    }
+                                                            
                     child = createAndAddChildToParent((OrderItemViewDO)item.key, item);                    
                     itemsTree.select(child);    
                     row = itemsTree.getSelectedRow();
@@ -597,6 +608,7 @@ public class ItemTab extends Screen {
         TreeDataItem parent, child;
         ArrayList<TreeDataItem> model, items;
         OrderItemViewDO item;
+        InventoryItemDO invItem;
         Integer quantity;
         boolean validate;
         int i;
@@ -609,11 +621,16 @@ public class ItemTab extends Screen {
                         
             for (i = 0; i < model.size(); i++ ) {
                 parent = model.get(i);
+                item = (OrderItemViewDO)parent.key;
+                invItem = orderFillScreen.getInventoryItem(item.getInventoryItemId());
+                
+                if ("Y".equals(invItem.getIsNotInventoried())) 
+                    continue;
+                
                 if ( !parent.open)
                     itemsTree.toggle(parent);
 
-                items = parent.getItems();
-                item = (OrderItemViewDO)parent.key;
+                items = parent.getItems();                                
                 quantity = item.getQuantity();
 
                 if (items != null && items.size() > 0) {
@@ -634,7 +651,6 @@ public class ItemTab extends Screen {
         }
         return validate;
     }
-    
     
     private ArrayList<TreeDataItem> getTreeModel() {
         ArrayList<TreeDataItem> model;
@@ -830,17 +846,32 @@ public class ItemTab extends Screen {
     }
     
     private boolean validateItemRow(TreeDataItem item, int r) {
-        OrderItemViewDO data;
-        Integer qty;
-        boolean valid;
         int sum;
+        boolean valid;
+        Integer qty;
+        OrderItemViewDO data;
+        InventoryItemDO invItemData;
         
-        valid = true;
         data = (OrderItemViewDO)item.key;
+        invItemData = orderFillScreen.getInventoryItem(data.getInventoryItemId());
         qty = data.getQuantity();
-        sum = getSumOfFillQuantityForItem(item);
+        
         item.cells.get(1).clearExceptions();
         
+        if ("Y".equals(invItemData.getIsNotInventoried())) {
+            if (qty == null || qty < 0) {
+                if (r > -1)
+                    itemsTree.setCellException(r,1, new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
+                else
+                    item.cells.get(1).addException(new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));         
+                return false;
+            }      
+            return true;
+        }
+        
+        sum = getSumOfFillQuantityForItem(item);
+        valid = true;
+                        
         if (qty == null || sum > qty) {    
             if(r > -1)
                 itemsTree.setCellException(r,1, new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
@@ -889,9 +920,9 @@ public class ItemTab extends Screen {
                 
         if(qty < 1) {
             if(row > -1)
-                itemsTree.setCellException(row, 1,new LocalizedException("invalidQuantityException"));
+                itemsTree.setCellException(row, 1,new LocalizedException("invalidLocationQuantityException"));
             else
-                child.cells.get(1).addException(new LocalizedException("invalidQuantityException"));  
+                child.cells.get(1).addException(new LocalizedException("invalidLocationQuantityException"));  
             
             valid = false;
         }

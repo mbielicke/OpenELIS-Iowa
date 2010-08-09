@@ -177,7 +177,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'lotNumber')" />:
                   </text>
                   <widget colspan="6">
-                    <textbox key="{meta:getLotNumber()}" width="215" max="30" tab="{meta:getIsActive()},{meta:getSource()}" field="Integer" required="true" />
+                    <textbox key="{meta:getLotNumber()}" width="215" max="30" tab="{meta:getIsActive()},{meta:getSource()}" field="String" case = "UPPER" required="true" />
                   </widget>
                 </row>
                 <row>

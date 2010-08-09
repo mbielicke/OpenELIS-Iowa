@@ -26,7 +26,10 @@ import java.util.Set;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.InventoryItemDO;
+import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.domain.InventoryXUseViewDO;
+import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ReferenceTable;
@@ -65,6 +68,7 @@ import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.manager.OrderFillManager;
+import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.ShippingItemManager;
 import org.openelis.manager.ShippingManager;
@@ -86,29 +90,30 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.SyncCallback;
 
 public class OrderFillScreen extends Screen {
-    private SecurityModule                     security;
+    private SecurityModule                        security;
 
-    private ItemTab                            itemTab;
-    private CustomerNoteTab                    custNoteTab;
-    private ShipNoteTab                        shipNoteTab;
-    private Tabs                               tab;
+    private ItemTab                               itemTab;
+    private CustomerNoteTab                       custNoteTab;
+    private ShipNoteTab                           shipNoteTab;
+    private Tabs                                  tab;
 
-    private AppButton                          queryButton, updateButton, processButton,
-                                               commitButton, abortButton;
-    private MenuItem                           shippingInfo;
-    private TableWidget                        orderTable;
-    private TreeWidget                         itemsTree;
-    private TabPanel                           tabPanel;            
-    
-    private ShippingManager                    shippingManager;
-    private ShippingScreen                     shippingScreen; 
+    private AppButton                             queryButton, updateButton, processButton,
+                                                  commitButton, abortButton;
+    private MenuItem                              shippingInfo;
+    private TableWidget                           orderTable;
+    private TreeWidget                            itemsTree;
+    private TabPanel                              tabPanel;
 
-    private boolean                            treeValid;                 
-    private Integer                            status_pending, status_processed;
-    private HashMap<TableDataRow, OrderViewDO> orderMap;
-    private HashMap<Integer, OrderManager>     combinedMap;
-    
-    private ScreenService                      shippingService;  
+    private ShippingManager                       shippingManager;
+    private ShippingScreen                        shippingScreen;
+
+    private boolean                               treeValid;
+    private Integer                               status_pending, status_processed;
+    private HashMap<TableDataRow, OrderViewDO>    orderMap;
+    private HashMap<Integer, OrderManager>        combinedMap;
+    private HashMap<Integer, InventoryItemViewDO> inventoryItemMap;
+
+    private ScreenService                         shippingService, inventoryItemService;  
         
     
     private enum Tabs {
@@ -119,8 +124,9 @@ public class OrderFillScreen extends Screen {
         super((ScreenDefInt)GWT.create(OrderFillDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
         shippingService = new ScreenService("controller?service=org.openelis.modules.shipping.server.ShippingService");
+        inventoryItemService = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
     
-        security = OpenELIS.security.getModule("order");
+        security = OpenELIS.security.getModule("fillorder");
         if (security == null)
             throw new SecurityException("screenPermException", "Order Fill Screen");
 
@@ -142,7 +148,7 @@ public class OrderFillScreen extends Screen {
         try {
             DictionaryCache.preloadByCategorySystemNames("order_status", "order_ship_from");
         } catch (Exception e) {
-            Window.alert("Fill Order Screen: missing dictionary entry; " + e.getMessage());
+            Window.alert("Order Fill Screen: missing dictionary entry; " + e.getMessage());
             window.close();
         }
         
@@ -411,7 +417,7 @@ public class OrderFillScreen extends Screen {
             }
         });
 
-        itemTab = new ItemTab(def, window);
+        itemTab = new ItemTab(def, window, this);
         addScreenHandler(itemTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 if (tab == Tabs.ITEM)
@@ -457,6 +463,8 @@ public class OrderFillScreen extends Screen {
                 }
             }
         });
+        
+        inventoryItemMap = new HashMap<Integer, InventoryItemViewDO>();
     }
     
     private void initializeDropdowns() {
@@ -670,6 +678,8 @@ public class OrderFillScreen extends Screen {
     private void validateQuantityOnHand() throws ValidationErrorsList{
         TreeDataItem parent, child;
         ArrayList<TreeDataItem> model, items;
+        OrderItemViewDO ordItem;
+        InventoryItemDO invItem;
         InventoryXUseViewDO data;
         Integer sum, locationId;
         HashMap<Integer, Integer> locationSumMap;
@@ -688,6 +698,12 @@ public class OrderFillScreen extends Screen {
 
         for (i = 0; i < model.size(); i++ ) {
             parent = model.get(i);
+            ordItem = (OrderItemViewDO)parent.key;
+            invItem = getInventoryItem(ordItem.getInventoryItemId());
+            
+            if ("Y".equals(invItem.getIsNotInventoried())) 
+                continue;
+            
             if (!parent.open)
                 itemsTree.toggle(parent);
             items = parent.getItems();
@@ -746,6 +762,23 @@ public class OrderFillScreen extends Screen {
         return man;
     }
     
+    protected InventoryItemViewDO getInventoryItem(Integer id) {
+        InventoryItemViewDO data;         
+                    
+        data = inventoryItemMap.get(id);
+        if (data == null && id != null) {
+            try {
+                data  = inventoryItemService.call("fetchInventoryItemById", id);                
+                inventoryItemMap.put(id, data);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Window.alert(e.getMessage());
+            }
+        }
+        
+        return data;        
+    }
+    
     private void drawTabs() {                
         switch (tab) {
             case ITEM:  
@@ -784,7 +817,7 @@ public class OrderFillScreen extends Screen {
                     try {
                         now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
                     } catch (Exception e) {
-                        Window.alert("OrderFill Datetime: " +e.getMessage());
+                        Window.alert("Order Fill Datetime: " +e.getMessage());
                     }
                     
                     orderMap = new HashMap<TableDataRow, OrderViewDO>();
@@ -932,13 +965,16 @@ public class OrderFillScreen extends Screen {
     
     private void createShippingItems(ShippingManager manager, HashMap<Integer, OrderManager> combinedMap) {
         ShippingItemManager man;
-        OrderManager order;
-        OrderFillManager fills;
+        OrderManager orderMan;
+        OrderItemManager orderItemMan;
+        OrderFillManager fillMan;
+        OrderItemViewDO orderItemData;
+        InventoryItemViewDO invItemData;
         InventoryXUseViewDO data;
-        ShippingItemDO item;
+        ShippingItemDO shippingItem;
         Set<Integer> set; 
         Iterator<Integer> iter;
-        int count, i, index;
+        int  i, j, index;
         
         if(combinedMap == null)
             return;              
@@ -948,19 +984,49 @@ public class OrderFillScreen extends Screen {
             set = combinedMap.keySet();
             iter = set.iterator();            
                                     
-            while (iter.hasNext())  {                                                                        
-                order = combinedMap.get(iter.next());
-                fills = order.getFills();
-                count = fills.count();                
+            while (iter.hasNext()) {
+                orderMan = combinedMap.get(iter.next());
+                orderItemMan = orderMan.getItems();
+                fillMan = orderMan.getFills();
 
-                for (i = 0; i < count; i++) {                    
-                    data = fills.getFillAt(i);           
-                    index = man.addItem();
-                    item = man.getItemAt(index);
-                    item.setQuantity(data.getQuantity());
-                    item.setDescription("Order # "+ data.getOrderItemOrderId()+": " + data.getInventoryItemName());
-                    item.setReferenceId(data.getOrderItemId());
-                    item.setReferenceTableId(ReferenceTable.ORDER_ITEM);                   
+                for (i = 0; i < orderItemMan.count(); i++ ) {
+                    orderItemData = orderItemMan.getItemAt(i);
+                    invItemData = getInventoryItem(orderItemData.getInventoryItemId());
+                    //
+                    // Since order items that have their inventory items flagged
+                    // as "is not inventoried" don't get inventory x use records 
+                    // created for them, they won't get diplayed in one of the 
+                    // shipping items if only inventory x use records were to be
+                    // used to create shipping items. Thus the following code makes
+                    // sure that if an order item is associated with such an 
+                    // inventory item a shipping item gets created for it from 
+                    // the information in the order item itself.
+                    //
+                    if ("Y".equals(invItemData.getIsNotInventoried())) {
+                        index = man.addItem();
+                        shippingItem = man.getItemAt(index);
+                        shippingItem.setQuantity(orderItemData.getQuantity());
+                        shippingItem.setDescription(consts.get("orderNum") + " " +
+                                                    orderItemData.getOrderId() + ": " +
+                                                    orderItemData.getInventoryItemName());
+                        shippingItem.setReferenceId(orderItemData.getId());
+                        shippingItem.setReferenceTableId(ReferenceTable.ORDER_ITEM);
+                        continue;
+                    }
+
+                    for (j = 0; j < fillMan.count(); j++ ) {
+                        data = fillMan.getFillAt(j);
+                        if (orderItemData.getId().equals(data.getOrderItemId())) {
+                            index = man.addItem();
+                            shippingItem = man.getItemAt(index);
+                            shippingItem.setQuantity(data.getQuantity());
+                            shippingItem.setDescription(consts.get("orderNum") + " " +
+                                                        data.getOrderItemOrderId() + ": " +
+                                                        data.getInventoryItemName());
+                            shippingItem.setReferenceId(data.getOrderItemId());
+                            shippingItem.setReferenceTableId(ReferenceTable.ORDER_ITEM);
+                        }                        
+                    }
                 }
             } 
         } catch (Exception e) {
