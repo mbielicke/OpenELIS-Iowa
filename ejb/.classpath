@@ -5,6 +5,7 @@
 	<classpathentry kind="lib" path="/usr/local/java/jboss/server/all/lib/jboss-ejb3x.jar"/>
 	<classpathentry kind="lib" path="/usr/local/java/jboss/server/all/lib/jboss-j2ee.jar"/>
 	<classpathentry kind="lib" path="/usr/local/java/jboss/client/jboss-annotations-ejb3.jar"/>
+	<classpathentry kind="lib" path="/usr/local/java/jboss/server/uhl/lib/poi-3.6-20091214.jar" sourcepath="/usr/pub/mbielick/src/poi-3.6/src/java"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Lib"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Common"/>
 	<classpathentry kind="lib" path="/OpenELIS-Lib/lib/security.jar"/>
