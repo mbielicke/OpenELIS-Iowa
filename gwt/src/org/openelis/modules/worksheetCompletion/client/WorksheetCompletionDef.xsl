@@ -78,43 +78,9 @@ UIRF Software License are applicable instead of those above.
               </text>
               <textbox key="{meta:getId()}" width="100" case="LOWER" field="String"/>
               <text style="Prompt">
-                <xsl:value-of select="resource:getString($constants,'instrumentName')" />:
-              </text>
-              <autoComplete key="instrumentId" width="150" case="LOWER" popWidth="auto" tab="loadFilePopupButton,lookupWorksheetButton" field="Integer">
-                <col width="150" header="Name" />
-                <col width="200" header="Description" />
-                <col width="75" header="Type">
-                  <dropdown width="75" popWidth="auto" field="Integer"/>
-                </col>
-                <col width="200" header="Location" />
-              </autoComplete>
-              <text style="Prompt">
-                <xsl:value-of select="resource:getString($constants,'initials')" />:
-              </text>
-              <textbox key="defaultInitials" width="50" case="LOWER" tab="defaultStartedDate,loadFilePopupButton" field="String"/>
-            </row>
-            <row>
-              <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'status')" />:
               </text>
               <dropdown key="{meta:getStatusId()}" width="100" popWidth="100" tab="lookupWorksheetButton,tabPanel" field="Integer" />
-              <text style="Prompt">
-                <xsl:value-of select="resource:getString($constants,'loadFrom')" />:
-              </text>
-              <appButton key="loadFilePopupButton" style="Button" action="load" tab="defaultInitials,browseButton">
-                <HorizontalPanel>
-                  <AbsolutePanel style="LoadButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'load')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
-              <text style="Prompt">
-                <xsl:value-of select="resource:getString($constants,'started')" />:
-              </text>
-              <calendar key="defaultStartedDate" begin="0" end="4" width="130" pattern="{resource:getString($constants,'dateTimePattern')}" tab="defaultCompletedDate,defaultInitials" />
-            </row>
-            <row>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'relatedWorksheetNumber')" />:
               </text>
@@ -124,7 +90,31 @@ UIRF Software License are applicable instead of those above.
                   <AbsolutePanel style="LookupButtonImage" />
                 </appButton>
               </HorizontalPanel>
-	          <HorizontalPanel/>
+            </row>
+            <row>
+              <text style="Prompt">
+                <xsl:value-of select="resource:getString($constants,'instrumentName')" />:
+              </text>
+              <widget colspan="5">
+                <autoComplete key="instrumentId" width="150" case="LOWER" popWidth="auto" tab="defaultUser,lookupWorksheetButton" field="Integer">
+                  <col width="150" header="Name" />
+                  <col width="200" header="Description" />
+                  <col width="75" header="Type">
+                    <dropdown width="75" popWidth="auto" field="Integer"/>
+                  </col>
+                  <col width="200" header="Location" />
+                </autoComplete>
+              </widget>
+            </row>
+            <row>
+              <text style="Prompt">
+                <xsl:value-of select="resource:getString($constants,'initials')" />:
+              </text>
+              <autoComplete key="defaultUser" width="100" case="LOWER" tab="defaultStartedDate,instrumentId" field="Integer"/>
+              <text style="Prompt">
+                <xsl:value-of select="resource:getString($constants,'started')" />:
+              </text>
+              <calendar key="defaultStartedDate" begin="0" end="4" width="130" pattern="{resource:getString($constants,'dateTimePattern')}" tab="defaultCompletedDate,defaultUser" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'completed')" />:
               </text>
@@ -179,11 +169,27 @@ UIRF Software License are applicable instead of those above.
                 </table>
                 <widget style="TableButtonFooter">
                   <HorizontalPanel>
-                    <appButton key="editMultipleButton" style="Button">
+                    <appButton key="editWorksheetButton" style="Button">
                       <HorizontalPanel>
                         <AbsolutePanel style="EditMultipleButtonImage" />
                         <text>
-                          <xsl:value-of select="resource:getString($constants,'editMultiple')" />
+                          <xsl:value-of select="resource:getString($constants,'editWorksheet')" />
+                        </text>
+                      </HorizontalPanel>
+                    </appButton>
+                    <appButton key="loadFromEditButton" style="Button">
+                      <HorizontalPanel>
+                        <AbsolutePanel style="LoadButtonImage" />
+                        <text>
+                          <xsl:value-of select="resource:getString($constants,'loadFromEditFile')" />
+                        </text>
+                      </HorizontalPanel>
+                    </appButton>
+                    <appButton key="loadFilePopupButton" style="Button">
+                      <HorizontalPanel>
+                        <AbsolutePanel style="LoadButtonImage" />
+                        <text>
+                          <xsl:value-of select="resource:getString($constants,'loadFromFile')" />
                         </text>
                       </HorizontalPanel>
                     </appButton>

@@ -25,6 +25,21 @@
 */
 package org.openelis.modules.worksheetCompletion.server;
 
+import org.openelis.manager.WorksheetManager;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.WorksheetCompletionRemote;
+
 public class WorksheetCompletionService {
 
+    public WorksheetManager saveForEdit(WorksheetManager manager) throws Exception {
+        return remote().saveForEdit(manager);
+    }
+
+    public WorksheetManager loadFromEdit(WorksheetManager manager) throws Exception {
+        return remote().loadFromEdit(manager);
+    }
+
+    private WorksheetCompletionRemote remote() {
+        return (WorksheetCompletionRemote)EJBFactory.lookup("openelis/WorksheetCompletionBean/remote");
+    }
 }

@@ -96,11 +96,13 @@ UIRF Software License are applicable instead of those above.
 	 
 	<set-property name="user.agent" value="gecko1_8" />
    
-        <!-- <extend-property name="locale" values="cn"/>
+<!--    
+    <extend-property name="locale" values="cn"/>
     <extend-property name="locale" values="fa"/>
-    <extend-property name="locale" values="sp"/> -->
+    <extend-property name="locale" values="sp"/>
+-->
     
-    <define-property name="props" values="org_openelis_modules_main_server_constants_OpenELISConstants"/>
-    <set-property name="props" value="org_openelis_modules_main_server_constants_OpenELISConstants"/>
+    <define-property name="props" values="org_openelis_constants_OpenELISConstants"/>
+    <set-property name="props" value="org_openelis_constants_OpenELISConstants"/>
     
 </module>
