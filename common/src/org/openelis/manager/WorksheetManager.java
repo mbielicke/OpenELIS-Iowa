@@ -25,6 +25,8 @@
  */
 package org.openelis.manager;
 
+import java.util.HashMap;
+
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.WorksheetDO;
 import org.openelis.gwt.common.NotFoundException;
@@ -35,9 +37,10 @@ public class WorksheetManager implements RPC, HasNotesInt {
 
     private static final long      serialVersionUID = 1L;
 
-    protected WorksheetDO          worksheet;
-    protected WorksheetItemManager items;
-    protected NoteManager          notes;
+    protected HashMap<Integer,SampleManager> sampleManagers;
+    protected NoteManager                    notes;
+    protected WorksheetDO                    worksheet;
+    protected WorksheetItemManager           items;
 
     protected transient static WorksheetManagerProxy proxy;
 
@@ -46,9 +49,10 @@ public class WorksheetManager implements RPC, HasNotesInt {
      * allocation.
      */
     protected WorksheetManager() {
-        worksheet = null;
-        items     = null;
-        notes     = null;
+        worksheet      = null;
+        items          = null;
+        notes          = null;
+        sampleManagers = new HashMap<Integer,SampleManager>();
     }
 
     /**
@@ -129,6 +133,8 @@ public class WorksheetManager implements RPC, HasNotesInt {
             }
             if (items == null)
                 items = WorksheetItemManager.getInstance();
+            
+            items.setSampleManagers(sampleManagers);
         }
         return items;
     }

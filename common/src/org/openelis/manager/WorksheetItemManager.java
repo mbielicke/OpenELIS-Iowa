@@ -38,7 +38,8 @@ public class WorksheetItemManager implements RPC {
     private static final long                  serialVersionUID = 1L;
     protected Integer                          worksheetId;
     protected ArrayList<WorksheetItemListItem> items, deleted;
-    
+    protected HashMap<Integer,SampleManager>   sampleManagers;
+
     protected transient static WorksheetItemManagerProxy proxy;
     
     /**
@@ -102,11 +103,13 @@ public class WorksheetItemManager implements RPC {
                     throw e;
                 }
             }
+
+            if (item.analysis == null)
+                item.analysis = WorksheetAnalysisManager.getInstance();
+        
+            item.analysis.setSampleManagers(sampleManagers);
         }
             
-        if (item.analysis == null)
-            item.analysis = WorksheetAnalysisManager.getInstance();
-    
         return item.analysis;
     }
 
@@ -142,6 +145,10 @@ public class WorksheetItemManager implements RPC {
 
     void setWorksheetId(Integer id) {
         worksheetId = id;
+    }
+    
+    void setSampleManagers(HashMap<Integer,SampleManager> managers) {
+        sampleManagers = managers;
     }
     
     int deleteCount() {

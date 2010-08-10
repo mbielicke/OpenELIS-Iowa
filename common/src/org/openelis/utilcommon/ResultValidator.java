@@ -198,9 +198,9 @@ public class ResultValidator implements RPC {
     /**
      * This method returns a list of valid result ranges suitable for tooltip.
      */
-    public ArrayList<String> getRanges(Integer unitId) {
+    public ArrayList<LocalizedException> getRanges(Integer unitId) {
         ArrayList<Item> list;
-        ArrayList<String> ranges;
+        ArrayList<LocalizedException> ranges;
         HashMap<String, Integer> dictUnit;
         LocalizedException e;
         
@@ -212,7 +212,7 @@ public class ResultValidator implements RPC {
         if (list == null && dictUnit == null)
             list = units.get(0);
 
-        ranges = new ArrayList<String>();
+        ranges = new ArrayList<LocalizedException>();
         e = null;
         if (list != null)
             for (Item i : list){
@@ -233,7 +233,7 @@ public class ResultValidator implements RPC {
                 else if(i.type == Type.ALPHA_UPPER)
                     e = new LocalizedException("alphaUpperPlainText");
                 
-                ranges.add(e.getMessage());
+                ranges.add(e);
             }
 
         return ranges;
@@ -242,9 +242,9 @@ public class ResultValidator implements RPC {
     /**
      * This method returns a list of valid result ranges suitable for tooltip.
      */
-    public ArrayList<String> getDictionaryRanges(Integer unitId) {
+    public ArrayList<LocalizedException> getDictionaryRanges(Integer unitId) {
         ArrayList<Item> list;
-        ArrayList<String> ranges;
+        ArrayList<LocalizedException> ranges;
         HashMap<String, Integer> dictUnit;
         LocalizedException e;
 
@@ -257,11 +257,11 @@ public class ResultValidator implements RPC {
             dictUnit = dictionary.get(0);
 
         e = null;
-        ranges = new ArrayList<String>();
+        ranges = new ArrayList<LocalizedException>();
         if (dictUnit != null)
             for (String i : dictUnit.keySet()){
                 e = new LocalizedException("dictionaryPlainText", i);
-                ranges.add(e.getMessage());
+                ranges.add(e);
             }
 
         return ranges;
