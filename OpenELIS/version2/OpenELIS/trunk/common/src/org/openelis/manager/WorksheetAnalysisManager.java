@@ -40,6 +40,7 @@ public class WorksheetAnalysisManager implements RPC {
     boolean                                        notDone;
     protected Integer                              worksheetId, worksheetItemId;
     protected ArrayList<WorksheetAnalysisListItem> analyses, deleted;
+    protected HashMap<Integer,SampleManager>       sampleManagers;
     
     protected transient static WorksheetAnalysisManagerProxy proxy;
     
@@ -104,11 +105,11 @@ public class WorksheetAnalysisManager implements RPC {
                     throw e;
                 }
             }
+
+            if (analysis.worksheetResult == null)
+                analysis.worksheetResult = WorksheetResultManager.getInstance();
         }
             
-        if (analysis.worksheetResult == null)
-            analysis.worksheetResult = WorksheetResultManager.getInstance();
-    
         return analysis.worksheetResult;
     }
 
@@ -129,10 +130,10 @@ public class WorksheetAnalysisManager implements RPC {
                     throw e;
                 }
             }
-        }
             
-        if (analysis.worksheetQcResult == null)
-            analysis.worksheetQcResult = WorksheetQcResultManager.getInstance();
+            if (analysis.worksheetQcResult == null)
+                analysis.worksheetQcResult = WorksheetQcResultManager.getInstance();
+        }
     
         return analysis.worksheetQcResult;
     }
@@ -148,8 +149,9 @@ public class WorksheetAnalysisManager implements RPC {
         AnalysisManager           aManager;
         AnalysisViewDO            aVDO;
         WorksheetAnalysisDO       waDO;
-        WorksheetAnalysisListItem analysis = analyses.get(i);
+        WorksheetAnalysisListItem analysis;
 
+        analysis = analyses.get(i);
         if (analysis.bundle == null) {
             waDO = analysis.worksheetAnalysis;
             if (waDO != null && waDO.getId() != null) {
@@ -215,6 +217,10 @@ public class WorksheetAnalysisManager implements RPC {
 
     void setWorksheetItemId(Integer id) {
         worksheetItemId = id;
+    }
+    
+    void setSampleManagers(HashMap<Integer,SampleManager> managers) {
+        sampleManagers = managers;
     }
     
     boolean getNotDone() {

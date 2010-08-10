@@ -33,7 +33,8 @@ public class WorksheetResultViewDO extends WorksheetResultDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String analyteName;
+    protected Integer resultGroup;
+    protected String  analyteName;
 
     public WorksheetResultViewDO() {
     }
@@ -41,10 +42,11 @@ public class WorksheetResultViewDO extends WorksheetResultDO {
     public WorksheetResultViewDO(Integer id, Integer worksheetAnalysisId, Integer testAnalyteId,
                                  Integer testResultId, String isColumn, Integer sortOrder,
                                  Integer analyteId, Integer typeId, String value,
-                                 String analyteName) {
+                                 String analyteName, Integer resultGroup) {
         super(id, worksheetAnalysisId, testAnalyteId, testResultId, isColumn, sortOrder,
               analyteId, typeId, value);
         setAnalyteName(analyteName);
+        setResultGroup(resultGroup);
     }
 
     public String getAnalyteName() {
@@ -53,5 +55,13 @@ public class WorksheetResultViewDO extends WorksheetResultDO {
 
     public void setAnalyteName(String analyteName) {
         this.analyteName = analyteName;
+    }
+
+    public Integer getResultGroup() {
+        return resultGroup;
+    }
+
+    public void setResultGroup(Integer resultGroup) {
+        this.resultGroup = resultGroup;
     }
 }
