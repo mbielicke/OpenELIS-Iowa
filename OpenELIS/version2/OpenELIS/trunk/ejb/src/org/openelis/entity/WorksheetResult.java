@@ -25,8 +25,8 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "WorksheetResult.FetchByWorksheetAnalysisId",
-                query = "select new org.openelis.domain.WorksheetResultViewDO(wr.id,wr.worksheetAnalysisId,wr.testAnalyteId,wr.testResultId,wr.isColumn,wr.sortOrder,wr.analyteId,wr.typeId,wr.value,a.name) "+
-                        "from WorksheetResult wr LEFT JOIN wr.analyte a "+
+                query = "select new org.openelis.domain.WorksheetResultViewDO(wr.id,wr.worksheetAnalysisId,wr.testAnalyteId,wr.testResultId,wr.isColumn,wr.sortOrder,wr.analyteId,wr.typeId,wr.value,a.name,ta.resultGroup) "+
+                        "from WorksheetResult wr LEFT JOIN wr.analyte a LEFT JOIN wr.testAnalyte ta "+
                         "where wr.worksheetAnalysisId = :id order by wr.sortOrder")})
 @Entity
 @Table(name = "worksheet_result")
@@ -65,6 +65,10 @@ public class WorksheetResult implements Auditable, Cloneable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "analyte_id", insertable = false, updatable = false)
     private Analyte analyte;
+    
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "test_analyte_id", insertable = false, updatable = false)
+    private TestAnalyte testAnalyte;
     
     @Transient
     private WorksheetResult original;
@@ -156,6 +160,14 @@ public class WorksheetResult implements Auditable, Cloneable {
 
     public void setAnalyte(Analyte analyte) {
         this.analyte = analyte;
+    }
+
+    public TestAnalyte getTestAnalyte() {
+        return testAnalyte;
+    }
+
+    public void setTestAnalyte(TestAnalyte testAnalyte) {
+        this.testAnalyte = testAnalyte;
     }
 
     public void setClone() {

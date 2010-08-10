@@ -23,6 +23,7 @@
 		</jar>
 		<jar jarfile="build/openelis-common.jar">
 			<fileset dir="../OpenELIS-Common/bin">
+				<include name="org/openelis/constants/*" />
 				<include name="org/openelis/domain/*.class" />
 				<include name="org/openelis/exception/*.class" />
 				<include name="org/openelis/remote/*.class" />

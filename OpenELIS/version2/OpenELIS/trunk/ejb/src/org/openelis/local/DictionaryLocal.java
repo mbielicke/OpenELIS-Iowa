@@ -36,6 +36,8 @@ import org.openelis.domain.DictionaryViewDO;
 public interface DictionaryLocal {
     public ArrayList<DictionaryViewDO> fetchByCategoryId(Integer id) throws Exception;    
     
+    public ArrayList<DictionaryDO> fetchByCategorySystemName(String categoryName) throws Exception;
+    
     public DictionaryDO fetchBySystemName(String systemName) throws Exception;
     
     public DictionaryViewDO fetchById(Integer id) throws Exception;    
