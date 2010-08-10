@@ -93,11 +93,8 @@ UIRF Software License are applicable instead of those above.
 	<!-- Specify the app entry point class.                   -->
 	<entry-point class='org.openelis.modules.main.client.OpenELIS'/>
 	
-	 
-	<set-property name="user.agent" value="gecko1_8" />
-   
-<!--    
-    <extend-property name="locale" values="cn"/>
+<!--
+	<extend-property name="locale" values="cn"/>
     <extend-property name="locale" values="fa"/>
     <extend-property name="locale" values="sp"/>
 -->

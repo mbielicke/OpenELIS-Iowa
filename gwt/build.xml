@@ -47,7 +47,6 @@
       <jvmarg value="-Xmx2048M"/>
       <!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
       <arg value="org.openelis.OpenELIS"/>
-      <arg value="-draftCompile"/>
     </java>
   </target>
 
