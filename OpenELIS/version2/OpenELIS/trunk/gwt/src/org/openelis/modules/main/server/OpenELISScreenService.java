@@ -72,7 +72,7 @@ public class OpenELISScreenService {
     }
     
     private HashMap<String,String> getConstants() {
-        UTFResource resource = UTFResource.getBundle("org.openelis.modules.main.server.constants.OpenELISConstants",new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
+        UTFResource resource = UTFResource.getBundle("org.openelis.constants.OpenELISConstants",new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
                         ? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
         HashMap<String,String> cmap = new HashMap<String,String>();
         Enumeration<String> bundleKeys = resource.getKeys();

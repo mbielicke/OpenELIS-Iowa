@@ -26,22 +26,28 @@
 package org.openelis.modules.worksheetCompletion.client;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.QcAnalyteViewDO;
+import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SectionDO;
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindow;
@@ -55,6 +61,7 @@ import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.manager.AnalysisManager;
+import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.QcManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleDomainInt;
@@ -64,23 +71,30 @@ import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetQcResultManager;
 import org.openelis.manager.WorksheetResultManager;
+import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class WorksheetTab extends Screen {
 
     private boolean              loaded;
     private Integer              formatBatch, formatTotal;
-    private AppButton            editMultipleButton;
+    private AppButton            editWorksheetButton, loadFromEditButton, loadFilePopupButton;
     private ArrayList<SectionDO> sections;
     private TableWidget          table;
     private WorksheetManager     manager;
 
+    protected WorksheetFileUploadScreen wFileUploadScreen;
+
     public WorksheetTab(ScreenDefInt def, ScreenWindow window) {
         setDefinition(def);
+
+        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheetCompletion.server.WorksheetCompletionService");
+
         setWindow(window);
         initialize();
         
@@ -99,114 +113,58 @@ public class WorksheetTab extends Screen {
                 table.enable(true);
             }
         });
-
+/*
         table.addSelectionHandler(new SelectionHandler<TableRow>() {
             public void onSelection(SelectionEvent<TableRow> event) {
                 if (table.getSelectedRow() != -1)
-                    editMultipleButton.enable(true);
+                    editWorksheetButton.enable(true);
             }
         });
         
         table.addUnselectionHandler(new UnselectionHandler<TableDataRow>() {
             public void onUnselection(UnselectionEvent<TableDataRow> event) {
                 if (table.getSelectedRow() == -1)
-                    editMultipleButton.enable(false);
+                    editWorksheetButton.enable(false);
             }
         });
-        
+*/        
         table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-//                if (event.getCol() != 6)
-                    event.cancel();
+                // table cannot be edited directly
+                event.cancel();
             }
         });
 
-        table.addCellEditedHandler(new CellEditedHandler() {
-            public void onCellUpdated(CellEditedEvent event) {
-                int               r, c;
-                Object            val;
-                TableDataRow      row;
-                AnalysisManager   aManager;
-                AnalysisViewDO    aVDO;
-                SampleDataBundle  data;
-                SampleItemManager siManager;
-                SampleManager     sManager;
-
-                r = event.getRow();
-                c = event.getCol();
-                val = table.getObject(r,c);
-
-                row = table.getRow(r);
-                if (!(row.data instanceof SampleDataBundle))
-                    return;
-                
-                data = (SampleDataBundle) row.data;
-                sManager = data.getSampleManager();
-                try {
-                    siManager = sManager.getSampleItems();
-                    aManager = siManager.getAnalysisAt(data.getSampleItemIndex());
-                    aVDO = aManager.getAnalysisAt(data.getAnalysisIndex());
-                } catch (Exception anyE) {
-                    Window.alert("Table Edit: "+anyE.getMessage());
-                    return;
-                }
-
-                switch (c) {
-/*
-                    case 0:
-                        data.setContactTypeId((Integer)val);
-                        break;
-                    case 1:
-                        data.setName((String)val);
-                        break;
-                    case 2:
-                        data.getAddressDO().setMultipleUnit((String)val);
-                        break;
-                    case 3:
-                        data.getAddressDO().setStreetAddress((String)val);
-                        break;
-                    case 4:
-                        data.getAddressDO().setCity((String)val);
-                        break;
-                    case 5:
-                        data.getAddressDO().setState((String)val);
-                        break;
-*/
-                    case 6:
-                        aVDO.setStatusId((Integer)val);
-                        break;
-/*
-                    case 7:
-                        data.getAddressDO().setCountry((String)val);
-                        break;
-                    case 8:
-                        data.getAddressDO().setWorkPhone((String)val);
-                        break;
-                    case 9:
-                        data.getAddressDO().setHomePhone((String)val);
-                        break;
-                    case 10:
-                        data.getAddressDO().setCellPhone((String)val);
-                        break;
-                    case 11:
-                        data.getAddressDO().setFaxPhone((String)val);
-                        break;
-                    case 12:
-                        data.getAddressDO().setEmail((String)val);
-                        break;
-*/
-                }
-            }
-        });
-
-        editMultipleButton = (AppButton)def.getWidget("editMultipleButton");
-        addScreenHandler(editMultipleButton, new ScreenEventHandler<Object>() {
+        editWorksheetButton = (AppButton)def.getWidget("editWorksheetButton");
+        addScreenHandler(editWorksheetButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                editMultiple();
+                editWorksheet();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                editMultipleButton.enable(false);
+                editWorksheetButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
+            }
+        });
+
+        loadFromEditButton = (AppButton)def.getWidget("loadFromEditButton");
+        addScreenHandler(loadFromEditButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                loadFromEdit();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                loadFromEditButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
+            }
+        });
+
+        loadFilePopupButton = (AppButton)def.getWidget("loadFilePopupButton");
+        addScreenHandler(loadFilePopupButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                openWorksheetFileUpload();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                loadFilePopupButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
             }
         });
     }
@@ -240,7 +198,10 @@ public class WorksheetTab extends Screen {
         ArrayList<TableDataRow>  model;
         TableDataRow             row;
         AnalysisManager          aManager;
+        AnalysisResultManager    arManager;
         AnalysisViewDO           aVDO;
+        ResultViewDO             rVDO;
+        QcAnalyteViewDO          qcaVDO;
         QcManager                qcManager;
         SampleDataBundle         bundle;
         SampleDomainInt          sDomain;
@@ -279,6 +240,7 @@ public class WorksheetTab extends Screen {
                         sDomain = sManager.getDomainManager();
                         aManager = sManager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
                         aVDO = aManager.getAnalysisAt(bundle.getAnalysisIndex());
+                        arManager = aManager.getAnalysisResultAt(bundle.getAnalysisIndex());
 
                         if (sections == null)
                             sections = new ArrayList<SectionDO>();
@@ -308,10 +270,11 @@ public class WorksheetTab extends Screen {
                                 row.cells.get(6).value = 0;
                             }
                             wrVDO = wrManager.getWorksheetResultAt(k);
+                            rVDO = arManager.getResultForWorksheet(waDO.getAnalysisId(), wrVDO.getAnalyteId());
                             row.cells.get(7).value = wrVDO.getAnalyteName();
-                            row.cells.get(8).value = "";
+                            row.cells.get(8).value = wrVDO.getValue();
                             row.cells.get(9).value = "";
-                            row.cells.get(10).value = "";
+                            row.cells.get(10).value = rVDO.getValue();
                             row.cells.get(11).value = "";
                             row.cells.get(12).value = "";
                             row.data = bundle;
@@ -347,11 +310,12 @@ public class WorksheetTab extends Screen {
                                 row.cells.get(6).value = 0;
                             }
                             wqrVDO = wqrManager.getWorksheetQcResultAt(k);
+                            qcaVDO = qcManager.getAnalytes().getAnalyteAt(k);
                             row.cells.get(7).value = wqrVDO.getAnalyteName();
-                            row.cells.get(8).value = "";
+                            row.cells.get(8).value = wqrVDO.getValue();
                             row.cells.get(9).value = "";
                             row.cells.get(10).value = "";
-                            row.cells.get(11).value = wqrVDO.getValue();
+                            row.cells.get(11).value = qcaVDO.getValue();
                             row.cells.get(12).value = "";
                             row.data = qcManager;
                             model.add((TableDataRow)row.clone());
@@ -413,11 +377,57 @@ public class WorksheetTab extends Screen {
         }
     }
     
-    protected void editMultiple() {
-        // TODO - Add edit multiple code
-        Window.alert("Edit Multiple Popup");
+    protected void editWorksheet() {
+        window.setBusy("Saving worksheet for editing");
+        try {
+            service.call("saveForEdit", manager);
+            window.setDone("Worksheet saved for editing");
+        } catch (Exception anyE) {
+            Window.alert(anyE.getMessage());
+            window.clearStatus();
+        }
     }
 
+    protected void loadFromEdit() {
+        window.setBusy("Loading worksheet from edited file");
+        try {
+            manager = service.call("loadFromEdit", manager);
+            // TODO - Add code to load the worksheet from the edited excel file
+            DataChangeEvent.fire(this);
+            window.setDone("Worksheet loaded");
+        } catch (ValidationErrorsList e) {
+            showErrors(e);
+        } catch (Exception anyE) {
+            Window.alert(anyE.getMessage());
+            window.clearStatus();
+        }
+    }
+
+    protected void openWorksheetFileUpload() {
+        ScreenWindow modal;
+        
+        try {
+            if (wFileUploadScreen == null) {
+                final WorksheetTab wt = this;
+                wFileUploadScreen = new WorksheetFileUploadScreen();
+                wFileUploadScreen.addActionHandler(new ActionHandler<WorksheetFileUploadScreen.Action>() {
+                    public void onAction(ActionEvent<WorksheetFileUploadScreen.Action> event) {
+                        if (event.getAction() == WorksheetFileUploadScreen.Action.OK) {
+                        }
+                    }
+                });
+            }
+            
+            modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+            modal.setName(consts.get("worksheetFileUpload"));
+            modal.setContent(wFileUploadScreen);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert("error: " + e.getMessage());
+            return;
+        }
+    }
+    
     public ArrayList<SectionDO> getSections() {
         return sections;
     }

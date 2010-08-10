@@ -27,6 +27,7 @@ package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
 
+import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -77,21 +78,22 @@ public class ResultSuggestionsScreen extends Screen {
      }
      
      private ArrayList<TableDataRow> getTableModel(){
-         TableDataRow row;
-         ArrayList<TableDataRow> model;
-         ArrayList<String> suggestions;
+         int                           i;
+         TableDataRow                  row;
+         ArrayList<TableDataRow>       model;
+         ArrayList<LocalizedException> suggestions;
          
          model = new ArrayList<TableDataRow>();
          
          suggestions = resultValidator.getRanges(unitId);
-         for(int i=0; i<suggestions.size(); i++){
-             row = new TableDataRow(suggestions.get(i),suggestions.get(i));
+         for(i = 0; i < suggestions.size(); i++){
+             row = new TableDataRow(suggestions.get(i).getMessage(),suggestions.get(i).getMessage());
              model.add(row);
          }
          
          suggestions = resultValidator.getDictionaryRanges(unitId);
-         for(int i=0; i<suggestions.size(); i++)
-             model.add(new TableDataRow(suggestions.get(i),suggestions.get(i)));
+         for(i = 0; i < suggestions.size(); i++)
+             model.add(new TableDataRow(suggestions.get(i).getMessage(),suggestions.get(i).getMessage()));
          
          return model;
      }
