@@ -162,13 +162,17 @@ public class InventoryTransferManagerProxy {
         Integer onHandQ, receivedQ;
         
         list = new ValidationErrorsList();        
-        for (int i = 0 ; i < man.count(); i++) {                        
+        for (int i = 0 ; i < man.count(); i++) {          
+            onHandQ = null;
             if (DataBaseUtil.isEmpty(man.getFromInventoryItemAt(i))) {
                 list.add(new TableFieldErrorException("fieldRequiredException", i,"fromItemName", "receiptTable"));                        
                 onHandQ = null;
-            } else {
-                onHandQ = man.getFromInventoryLocationAt(i).getQuantityOnhand();
-            }
+            } 
+            
+            if (DataBaseUtil.isEmpty(man.getFromInventoryLocationAt(i))) 
+                list.add(new TableFieldErrorException("fieldRequiredException", i,"fromLoc", "receiptTable"));
+            else 
+                onHandQ = man.getFromInventoryLocationAt(i).getQuantityOnhand();            
             
             if (DataBaseUtil.isEmpty(man.getToInventoryItemAt(i)))  
                 list.add(new TableFieldErrorException("fieldRequiredException", i,"toItemName", "receiptTable"));
@@ -179,7 +183,7 @@ public class InventoryTransferManagerProxy {
             receivedQ = man.getQuantityAt(i);
             if (DataBaseUtil.isEmpty(receivedQ)) {
                 list.add(new TableFieldErrorException("fieldRequiredException", i,"qtyReceived", "receiptTable"));
-            } else  if (receivedQ <= 0) {
+            } else  if (receivedQ < 1) {
                 list.add(new TableFieldErrorException("qtyRecMoreThanZeroException", i,"qtyReceived", "receiptTable"));
             } else if (!DataBaseUtil.isEmpty(onHandQ) && onHandQ < receivedQ) {
                 list.add(new TableFieldErrorException("qtyOnHandLessThanQtyRecException", i,"qtyReceived", "receiptTable"));

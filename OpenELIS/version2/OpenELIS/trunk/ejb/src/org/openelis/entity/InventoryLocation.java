@@ -91,33 +91,7 @@ import org.openelis.utils.Auditable;
                         "i.lotNumber,i.storageLocationId,i.quantityOnhand,i.expirationDate," +
                         "i.inventoryItem.name,i.inventoryItem.storeId,s.name,s.storageUnit.description,s.location)"
                       + " from InventoryLocation i left join i.storageLocation s" 
-                      + " where i.inventoryItem.isActive='Y' and i.inventoryItem.name like :name and i.inventoryItem.storeId = :id and i.quantityOnhand > 0" )                  
-                     //" and s.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId = s.id)")                  
-    })    
-/*
-    @NamedQuery(name = "InventoryLocation.InventoryLocationByItem", query = "select new org.openelis.domain.InventoryLocationDO(i.id,i.inventoryItemId,i.inventoryItem.name,i.lotNumber, "
-                                                                                        + " childLoc.name,childLoc.location, parentLoc.name, childLoc.storageUnit.description, i.quantityOnhand, i.expirationDate) "
-                                                                                        + " from InventoryLocation i left join i.storageLocation childLoc "
-                                                                                        + " left join childLoc.parentStorageLocation parentLoc "
-                                                                                        + " where i.inventoryItemId = :id and i.quantityOnhand > 0"),
-                @NamedQuery(name = "InventoryLocation.AutoCompleteByName", query = "select new org.openelis.domain.StorageLocationVO(childLoc.id, childLoc.name, i.id, childLoc.location, "
-                                                                                   + " parentLoc.name, childLoc.storageUnit.description) "
-                                                                                   + " from InventoryLocation i left join i.storageLocation childLoc left join childLoc.parentStorageLocation parentLoc where "
-                                                                                   + " (childLoc.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId=childLoc.id))"
-                                                                                   + " and (childLoc.name like :name OR childLoc.location like :loc OR childLoc.storageUnit.description like :desc) "
-                                                                                   + " order by childLoc.name"),
-                @NamedQuery(name = "InventoryLocation.AutoCompleteByNameInvId", query = "select new org.openelis.domain.StorageLocationVO(childLoc.id, childLoc.name, childLoc.location, "
-                                                                                        + " parentLoc.name, childLoc.storageUnit.description, i.id, i.quantityOnhand, i.lotNumber) "
-                                                                                        + " from InventoryLocation i left join i.storageLocation childLoc left join childLoc.parentStorageLocation parentLoc where "
-                                                                                        + " (childLoc.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId=childLoc.id))"
-                                                                                        + " and (childLoc.name like :name OR childLoc.location like :loc OR childLoc.storageUnit.description like :desc) "
-                                                                                        + " and i.inventoryItemId = :id order by childLoc.name"),
-                @NamedQuery(name = "InventoryLocation.IdByStorageLocation", query = "select i.id from InventoryLocation i where i.storageLocationId = :id"),
-                @NamedQuery(name = "InventoryLocation.LocationInfoForAdjustmentFromId", query = "select distinct new org.openelis.domain.InventoryAdjLocationAutoDO(loc.id, ii.id, ii.name, dictStore.entry, "
-                                                                                                + " sl.name, sl.location, sl.storageUnit.description, loc.quantityOnhand) "
-                                                                                                + " from InventoryLocation loc LEFT JOIN loc.inventoryItem ii LEFT JOIN loc.storageLocation sl, Dictionary dictStore where ii.storeId = dictStore.id AND loc.id = :id "
-                                                                                                + " AND ii.storeId = :store ")})
-*/                                                                                                
+                      + " where i.inventoryItem.isActive='Y' and i.inventoryItem.name like :name and i.inventoryItem.storeId = :id and i.quantityOnhand > 0" )})                                                                                                    
 
 @Entity
 @Table(name = "inventory_location")

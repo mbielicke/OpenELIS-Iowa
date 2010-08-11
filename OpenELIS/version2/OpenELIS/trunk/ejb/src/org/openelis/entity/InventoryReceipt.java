@@ -52,36 +52,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-
-/*
-@NamedQueries( {
-    @NamedQuery(name = "InventoryReceipt.OrderItemListWithTransByOrderNum", query = "select distinct oi.id from InventoryTransaction tr LEFT JOIN tr.toOrder oi where " + 
-                               " oi.order.id = :id and tr.fromReceiptId is not null "),
-    @NamedQuery(name = "InventoryReceipt.OrderItemListByOrderNum", query = "select distinct oi.id from Order o LEFT JOIN o.orderItem oi where " + 
-                               " (NOT EXISTS (select ir.id from InventoryReceipt ir LEFT JOIN ir.orderItems ois where ois.id = oi.id) OR " +
-                               " oi.quantity > (select sum(ir2.quantityReceived) from InventoryReceipt ir2 LEFT JOIN ir2.orderItems ois2 where ois2.id = oi.id))" + 
-                               " and o.id = :id and o.isExternal='Y'"),
-    @NamedQuery(name = "InventoryReceipt.InventoryReceiptNotRecByOrderId", query = "select distinct new org.openelis.domain.InventoryReceiptDO(o.id, oi.inventoryItemId, oi.inventoryItem.name, " +
-                               " oi.id, oi.unitCost, o.organizationId,orgz.name,oi.quantity,orgz.address.streetAddress,orgz.address.multipleUnit,orgz.address.city,orgz.address.state, " +
-                               " orgz.address.zipCode, ii.description, dictStore.entry, dicDisUnits.entry, ii.isBulk, ii.isLotMaintained, ii.isSerialMaintained) from Order o " +
-                               " LEFT JOIN o.orderItem oi LEFT JOIN oi.inventoryItem ii LEFT JOIN o.organization orgz, " +
-                               " Dictionary dictStore, Dictionary dicDisUnits where " + 
-                               " ii.storeId = dictStore.id and ii.dispensedUnitsId = dicDisUnits.id " +                                
-                               " and oi.id = :id order by o.id "),
-    @NamedQuery(name = "InventoryReceipt.OrderItemsNotFilled", query = "SELECT oi.id FROM OrderItem oi, Order o, Dictionary d WHERE oi.orderId = o.id AND " + 
-                            " d.id = o.statusId and d.systemName <> 'order_status_cancelled' and d.systemName <> 'order_status_processed' and " + 
-                            " oi.quantity > (SELECT sum(ir.quantityReceived) FROM InventoryReceipt ir LEFT JOIN ir.orderItems ois where ois.id = oi.id) " + 
-                            " and o.id = :id"),
-    @NamedQuery(name = "InventoryReceipt.OrdersNotCompletedCanceled", query = "SELECT o.id FROM Order o, Dictionary d WHERE " + 
-                            " d.id = o.statusId and d.systemName <> 'order_status_cancelled' and d.systemName <> 'order_status_processed' " +
-                            " and o.id = :id"),
-    @NamedQuery(name = "InventoryReceipt.InventoryItemByUPC", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry, " +
-                            " i.isBulk, i.isLotMaintained, i.isSerialMaintained) " +
-                            " from InventoryReceipt ir left join ir.inventoryItem i, Dictionary store, Dictionary disUnit " +
-                            " where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and ir.upc like :upc and i.isActive = 'Y' " +
-                            " order by i.name"),
-    @NamedQuery(name = "InventoryReceipt.LocationIdsByReceiptId", query = "select distinct il.id  from InventoryXPut tr LEFT JOIN tr.inventoryLocation il where tr.inventoryReceiptId = :id ")})
-*/  
+ 
 @NamedQueries( {
     @NamedQuery ( name = "InventoryReceipt.FetchById",
                  query = "select distinct new org.openelis.domain.InventoryReceiptViewDO(r.id, r.inventoryItemId, r.orderItemId, r.organizationId," +
