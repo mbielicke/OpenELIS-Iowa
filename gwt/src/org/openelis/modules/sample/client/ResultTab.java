@@ -189,40 +189,44 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
         testResultsTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                int r, c, manRow;
-                TableDataRow row;
-                boolean isHeaderRow = false, enableButton = true;
-                ResultViewDO resultDO;
+                boolean           isHeaderRow, enableButton;
+                int               r, c;
+                TableDataRow      row;
+                ResultViewDO      resultDO;
                 TestAnalyteViewDO testAnalyte;
+
+                isHeaderRow  = false;
+                enableButton = true;
 
                 r = event.getRow();
                 c = event.getCol();
                 row = testResultsTable.getRow(r);
                 isHeaderRow = ((Boolean)row.data).booleanValue();
 
-                resultDO = null;
-                if (c == 0)
-                    resultDO = displayManager.getObjectAt(r, 0);
-                else if (c != 1)
-                    resultDO = displayManager.getObjectAt(r, c - 2);
-                
-                manRow = displayManager.getIndexAt(r);
-                testAnalyte = manager.getTestAnalyte(resultDO.getRowGroup(), resultDO.getTestAnalyteId());
-
-                if (isHeaderRow || c == 1 || c >= displayManager.columnCount(r) ||
-                    testAnalyteReadOnlyId.equals(testAnalyte.getTypeId())) {
+                if (isHeaderRow || c == 1 || c >= displayManager.columnCount(r)) {
                     event.cancel();
                     enableButton = false;
+                } else {
+                    if (c < 2)
+                        resultDO = displayManager.getObjectAt(r, 0);
+                    else
+                        resultDO = displayManager.getObjectAt(r, c - 2);
+                    
+                    testAnalyte = manager.getTestAnalyte(resultDO.getRowGroup(), resultDO.getTestAnalyteId());
+                    if (testAnalyte == null || testAnalyteReadOnlyId.equals(testAnalyte.getTypeId())) {
+                        if (testAnalyte == null)
+                            window.setError(consts.get("testAnalyteDefinitionChanged"));
+                        event.cancel();
+                        enableButton = false;
+                    } else if (anDO.getUnitOfMeasureId() == null &&
+                               !manager.getResultValidator(resultDO.getResultGroup()).noUnitsSpecified()) {
+                        window.setError(consts.get("unitOfMeasureException"));
+                        event.cancel();
+                        enableButton = false;
+                    } else {
+                        window.clearStatus();
+                    }
                 }
-
-                if (anDO.getUnitOfMeasureId() == null &&
-                    !manager.getResultValidator(resultDO.getResultGroup()).noUnitsSpecified()) {
-                    window.setError(consts.get("unitOfMeasureException"));
-                    event.cancel();
-                    enableButton = false;
-                } else
-                    window.clearStatus();
-
                 suggestionsButton.enable(enableButton);
             }
         });
@@ -446,8 +450,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
                 Popup popUp = new Popup(consts.get("suggestions"), suggestionsScreen);
 
-                suggestionsScreen.setValidator(
-                                               manager.getResultValidator(resultDO.getResultGroup()),
+                suggestionsScreen.setValidator(manager.getResultValidator(resultDO.getResultGroup()),
                                                anDO.getUnitOfMeasureId());
 
                 popUp.show();
