@@ -32,6 +32,7 @@ import javax.naming.InitialContext;
 import org.openelis.domain.InventoryXAdjustViewDO;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.InventoryLocationLocal;
 import org.openelis.local.InventoryXAdjustLocal;
 import org.openelis.meta.InventoryAdjustmentMeta;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -40,48 +41,76 @@ public class InventoryXAdjustManagerProxy {
 
     public InventoryXAdjustManager fetchByInventoryAdjustmentId(Integer id) throws Exception {
         InventoryXAdjustManager m;
-        ArrayList<InventoryXAdjustViewDO> items;
+        ArrayList<InventoryXAdjustViewDO> adjustments;
 
-        items = local().fetchByInventoryAdjustmentId(id);
+        adjustments = local().fetchByInventoryAdjustmentId(id);
         m = InventoryXAdjustManager.getInstance();
         m.setInventoryAdjustmentId(id);
-        m.setAdjustments(items);
+        m.setAdjustments(adjustments);
 
         return m;
     }
 
     public InventoryXAdjustManager add(InventoryXAdjustManager man) throws Exception {
+        int i;
+        Integer invLocId;
+        ArrayList<Integer> invLocIdList;
         InventoryXAdjustLocal cl;
-        InventoryXAdjustViewDO item;
+        InventoryXAdjustViewDO data;
+        InventoryLocationLocal il;
 
         cl = local();
-        for (int i = 0; i < man.count(); i++ ) {
-            item = man.getAdjustmentAt(i);
-            item.setInventoryAdjustmentId(man.getInventoryAdjustmentId());
-            cl.add(item);
+        il = invLocLocal();
+        invLocIdList = new ArrayList<Integer>();
+        
+        for (i = 0; i < man.count(); i++ ) {
+            data = man.getAdjustmentAt(i);
+            invLocId = data.getInventoryLocationId();
+            il.fetchForUpdate(invLocId);
+            invLocIdList.add(invLocId);
+            data.setInventoryAdjustmentId(man.getInventoryAdjustmentId());
+            cl.add(data);
+        }
+        
+        for (i = 0; i < invLocIdList.size(); i++ ) {            
+            invLocId = invLocIdList.get(i);
+            il.abortUpdate(invLocId);
         }
 
         return man;
     }
 
     public InventoryXAdjustManager update(InventoryXAdjustManager man) throws Exception {
-        InventoryXAdjustLocal cl;
-        InventoryXAdjustViewDO item;
         int i;
+        Integer invLocId;
+        ArrayList<Integer> invLocIdList;
+        InventoryXAdjustLocal cl;
+        InventoryXAdjustViewDO data;
+        InventoryLocationLocal il;
 
         cl = local();
+        il = invLocLocal();
+        
         for (i = 0; i < man.deleteCount(); i++ )
             cl.delete(man.getDeletedAt(i));
 
+        invLocIdList = new ArrayList<Integer>();
         for (i = 0; i < man.count(); i++ ) {
-            item = man.getAdjustmentAt(i);
-
-            if (item.getId() == null) {
-                item.setInventoryAdjustmentId(man.getInventoryAdjustmentId());
-                cl.add(item);
+            data = man.getAdjustmentAt(i);
+            invLocId = data.getInventoryLocationId();
+            il.fetchForUpdate(invLocId);
+            invLocIdList.add(invLocId);
+            if (data.getId() == null) {
+                data.setInventoryAdjustmentId(man.getInventoryAdjustmentId());
+                cl.add(data);
             } else {
-                cl.update(item);
+                cl.update(data);
             }
+        }
+        
+        for (i = 0; i < invLocIdList.size(); i++ ) {            
+            invLocId = invLocIdList.get(i);
+            il.abortUpdate(invLocId);
         }
 
         return man;
@@ -123,6 +152,16 @@ public class InventoryXAdjustManagerProxy {
         try {
             InitialContext ctx = new InitialContext();
             return (InventoryXAdjustLocal)ctx.lookup("openelis/InventoryXAdjustBean/local");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+    
+    private InventoryLocationLocal invLocLocal() {
+        try {
+            InitialContext ctx = new InitialContext();
+            return (InventoryLocationLocal)ctx.lookup("openelis/InventoryLocationBean/local");
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;

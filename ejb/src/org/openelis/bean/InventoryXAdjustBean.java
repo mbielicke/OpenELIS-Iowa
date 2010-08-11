@@ -39,6 +39,7 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryXAdjustViewDO;
+import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryXAdjust;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
@@ -77,7 +78,7 @@ public class InventoryXAdjustBean implements InventoryXAdjustLocal {
     public InventoryXAdjustViewDO add(InventoryXAdjustViewDO data) throws Exception {
         Integer inventoryLocationId;
         InventoryXAdjust entity;
-        InventoryLocationViewDO inventorylocation;
+        InventoryLocation inventorylocation;
 
         manager.setFlushMode(FlushModeType.COMMIT);        
         entity = new InventoryXAdjust();
@@ -88,10 +89,8 @@ public class InventoryXAdjustBean implements InventoryXAdjustLocal {
         entity.setPhysicalCount(data.getPhysicalCount());
         entity.setQuantity(data.getQuantity());
 
-        inventorylocation = inventoryLocationBean.fetchForUpdate(inventoryLocationId);
+        inventorylocation = manager.find(InventoryLocation.class, data.getInventoryLocationId());
         inventorylocation.setQuantityOnhand(data.getPhysicalCount());
-        inventoryLocationBean.update(inventorylocation);
-        inventoryLocationBean.abortUpdate(inventoryLocationId);
 
         manager.persist(entity);
 
@@ -101,7 +100,7 @@ public class InventoryXAdjustBean implements InventoryXAdjustLocal {
     public InventoryXAdjustViewDO update(InventoryXAdjustViewDO data) throws Exception {
         Integer inventoryLocationId;
         InventoryXAdjust entity;
-        InventoryLocationViewDO inventorylocation;
+        InventoryLocation inventorylocation;
 
         if ( !data.isChanged())
             return data;
@@ -114,10 +113,8 @@ public class InventoryXAdjustBean implements InventoryXAdjustLocal {
         entity.setPhysicalCount(data.getPhysicalCount());
         entity.setQuantity(data.getQuantity());
 
-        inventorylocation = inventoryLocationBean.fetchForUpdate(inventoryLocationId);
+        inventorylocation = manager.find(InventoryLocation.class, data.getInventoryLocationId());
         inventorylocation.setQuantityOnhand(data.getPhysicalCount());
-        inventoryLocationBean.update(inventorylocation);
-        inventoryLocationBean.abortUpdate(inventoryLocationId);
 
         return data;
     }

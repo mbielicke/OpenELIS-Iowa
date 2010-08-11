@@ -25,9 +25,12 @@
  */
 package org.openelis.manager;
 
+import java.util.ArrayList;
+
 import javax.naming.InitialContext;
 
 import org.openelis.domain.InventoryAdjustmentViewDO;
+import org.openelis.domain.InventoryXAdjustViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.InventoryAdjustmentLocal;
 import org.openelis.local.InventoryXAdjustLocal;
@@ -56,14 +59,14 @@ public class InventoryAdjustmentManagerProxy {
         return m;
     }
 
-    public InventoryAdjustmentManager add(InventoryAdjustmentManager man) throws Exception {
-        Integer id;
+    public InventoryAdjustmentManager add(InventoryAdjustmentManager man) throws Exception {        
+        Integer id;        
 
         local().add(man.getInventoryAdjustment());
         id = man.getInventoryAdjustment().getId();
         
         if (man.adjustments != null) {
-            man.getAdjustments().setInventoryAdjustmentId(id);
+            man.getAdjustments().setInventoryAdjustmentId(id);            
             man.getAdjustments().add();
         }
         return man;
@@ -120,15 +123,5 @@ public class InventoryAdjustmentManagerProxy {
             System.out.println(e.getMessage());
             return null;
         }
-    }
-    
-    private InventoryXAdjustLocal xAdjustLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (InventoryXAdjustLocal)ctx.lookup("openelis/InventoryXAdjustBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
+    }   
 }

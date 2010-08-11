@@ -234,7 +234,7 @@ public class BuildKitManagerProxy {
        receivedQ = receipt.getQuantityReceived();
        if (DataBaseUtil.isEmpty(receivedQ))                    
            list.add(new FieldErrorException("fieldRequiredException", "numRequested"));
-       else if (receivedQ < 0)
+       else if (receivedQ < 1)
            list.add(new FieldErrorException("numRequestedMoreThanZeroException", "numRequested"));
        
        //

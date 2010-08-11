@@ -30,20 +30,24 @@ import java.util.Date;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.utilcommon.DataBaseUtil;
 
-
 public class InventoryXPutViewDO extends InventoryXPutDO {
 
     private static final long         serialVersionUID = 1L;
 
     protected InventoryLocationViewDO inventoryLocation;
     
-    protected Integer                 inventoryItemId, storageLocationId, quantityOnhand,
-                                      inventoryItemStoreId;
-    protected Double                  unitCost;
-    protected String                  lotNumber, inventoryItemName, storageLocationName,
-                                      storageLocationUnitDescription, storageLocationLocation,
-                                      externalReference;
-    protected Datetime                expirationDate, receivedDate;
+    protected Integer                 inventoryLocationInventoryItemId,
+                                      inventoryLocationStorageLocationId,
+                                      inventoryLocationQuantityOnhand,
+                                      inventoryLocationInventoryItemStoreId;
+    protected Double                  inventoryReceiptUnitCost;
+    protected String                  inventoryLocationLotNumber, inventoryItemName,
+                                      inventoryLocationStorageLocationName,
+                                      inventoryLocationStorageLocationUnitDescription,
+                                      inventoryLocationStorageLocationLocation,
+                                      inventoryReceiptExternalReference;
+    protected Datetime                inventoryLocationExpirationDate,
+                                      inventoryReceiptReceivedDate;
     
     public InventoryXPutViewDO() {
         inventoryLocation = new InventoryLocationViewDO();
@@ -67,9 +71,9 @@ public class InventoryXPutViewDO extends InventoryXPutDO {
                                                         storageLocationName,
                                                         storageLocationUnitDescription,
                                                         storageLocationLocation);
-        setReceivedDate(DataBaseUtil.toYD(receivedDate));
-        setUnitCost(unitCost);
-        setExternalReference(externalReference);
+        setInventoryReceiptReceivedDate(DataBaseUtil.toYD(receivedDate));
+        setInventoryReceiptUnitCost(unitCost);
+        setInventoryReceiptExternalReference(externalReference);
         
     }
 
@@ -77,28 +81,28 @@ public class InventoryXPutViewDO extends InventoryXPutDO {
         return inventoryLocation;
     }
 
-    public Double getUnitCost() {
-        return unitCost;
+    public Double getInventoryReceiptUnitCost() {
+        return inventoryReceiptUnitCost;
     }
 
-    public void setUnitCost(Double unitCost) {
-        this.unitCost = unitCost;
+    public void setInventoryReceiptUnitCost(Double unitCost) {
+        this.inventoryReceiptUnitCost = unitCost;
     }
 
     public String getExternalReference() {
-        return externalReference;
+        return inventoryReceiptExternalReference;
     }
 
-    public void setExternalReference(String externalReference) {
-        this.externalReference = externalReference;
+    public void setInventoryReceiptExternalReference(String externalReference) {
+        this.inventoryReceiptExternalReference = externalReference;
     }
 
-    public Datetime getReceivedDate() {
-        return receivedDate;
+    public Datetime getInventoryReceiptReceivedDate() {
+        return inventoryReceiptReceivedDate;
     }
 
-    public void setReceivedDate(Datetime receivedDate) {
-        this.receivedDate = receivedDate;
+    public void setInventoryReceiptReceivedDate(Datetime receivedDate) {
+        this.inventoryReceiptReceivedDate = receivedDate;
     }
     
 

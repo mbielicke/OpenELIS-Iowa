@@ -93,10 +93,10 @@ UIRF Software License are applicable instead of those above.
                 <label field="Integer" />
               </col>
               <col key="qtyReceived" width="40" header="{resource:getString($constants,'qty')}">
-                <textbox key="inventoryReceiptgetQuantityReceived" required  = "true" field="Integer" />
+                <textbox key="inventoryReceiptgetQuantityReceived" required = "true" field="Integer" />
               </col>
               <col key="toItemName" width="135"  header="{resource:getString($constants,'toItem')}">
-                <autoComplete width="120" case="LOWER" field="Integer" >
+                <autoComplete width="120" case="LOWER" field="Integer" required = "true">
                   <col width="100" header="{resource:getString($constants,'name')}" />
                   <col width="150" header="{resource:getString($constants,'store')}" />
                   <col width="150" header="{resource:getString($constants,'dispensedUnits')}" />

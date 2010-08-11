@@ -103,8 +103,8 @@ public class FillTab extends Screen {
                     row.cells.get(2).setValue(receiptData.getQuantity());
                     row.cells.get(3).setValue(invLocData.getLotNumber());
                     row.cells.get(4).setValue(invLocData.getExpirationDate());
-                    row.cells.get(5).setValue(receiptData.getReceivedDate());
-                    row.cells.get(6).setValue(receiptData.getUnitCost());
+                    row.cells.get(5).setValue(receiptData.getInventoryReceiptReceivedDate());
+                    row.cells.get(6).setValue(receiptData.getInventoryReceiptUnitCost());
                     row.cells.get(7).setValue(receiptData.getExternalReference());
 
                     model.add(row);
