@@ -25,6 +25,7 @@
 */
 package org.openelis.manager;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,6 +38,7 @@ import org.openelis.domain.OrderItemViewDO;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
+import org.openelis.local.InventoryLocationLocal;
 import org.openelis.local.InventoryReceiptLocal;
 import org.openelis.meta.InventoryReceiptMeta;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -62,28 +64,43 @@ public class InventoryReceiptManagerProxy {
     }
     
     public InventoryReceiptManager add(InventoryReceiptManager man) throws Exception {
-        InventoryReceiptLocal rl;     
-        Integer qtyRec;
+        int i;
+        Integer qtyRec, invLocId;
+        ArrayList<Integer> invLocIdList;
+        InventoryReceiptLocal rl;   
+        InventoryLocationLocal il;
         InventoryReceiptViewDO receipt;
         InventoryLocationViewDO location;
         
-        rl = local();    
+        rl = local();  
+        il = invLocLocal();
         location = null;
-        for (int i = 0; i < man.count(); i++ ) {             
+        invLocIdList = new ArrayList<Integer>();
+
+        for ( i = 0; i < man.count(); i++ ) {             
             receipt = man.getReceiptAt(i);
             qtyRec = receipt.getQuantityReceived();
             if (receipt.getInventoryLocations() != null)
                 location = receipt.getInventoryLocations().get(0);
             if (qtyRec != null && qtyRec > 0)
                 //
-                // if it's a new record then the inventory item in it must 
+                // if it is a new record then the inventory item in it must 
                 // have a valid inventory location associated with it if 
                 // "addToExisting" is true
                 //
-                if ( !"Y".equals(receipt.getAddToExistingLocation()))
+                if ( !"Y".equals(receipt.getAddToExistingLocation())) {
                     rl.add(receipt);
-                else if (location != null && location.getId() != null)
+                } else if (location != null && location.getId() != null) {
+                    invLocId = location.getId();
+                    il.fetchForUpdate(invLocId);
+                    invLocIdList.add(invLocId);
                     rl.add(receipt);
+                }
+        }
+        
+        for (i = 0; i < invLocIdList.size(); i++ ) {            
+            invLocId = invLocIdList.get(i);
+            il.abortUpdate(invLocId);
         }
         
         return man;
@@ -91,8 +108,10 @@ public class InventoryReceiptManagerProxy {
     
     public InventoryReceiptManager update(InventoryReceiptManager man) throws Exception {
         int sumQRec, sumQReq, i;
-        Integer qtyRec;
+        Integer qtyRec, invLocId;
+        ArrayList<Integer> invLocIdList;
         InventoryReceiptLocal rl;
+        InventoryLocationLocal il;
         InventoryReceiptViewDO receipt;
         InventoryLocationViewDO location;
         OrderManager orderMan;
@@ -100,8 +119,11 @@ public class InventoryReceiptManagerProxy {
         OrderItemViewDO orderItem;
                 
         rl = local();
+        il = invLocLocal();
         sumQRec = 0;
         location = null;
+        invLocIdList = new ArrayList<Integer>();
+        
         for (i = 0; i < man.deleteCount(); i++ )
             rl.delete(man.getDeletedAt(i));
         
@@ -117,12 +139,19 @@ public class InventoryReceiptManagerProxy {
                     // have a valid inventory location associated with it if 
                     // "addToExisting" is true
                     //
-                    if ( !"Y".equals(receipt.getAddToExistingLocation()))
+                    if ( !"Y".equals(receipt.getAddToExistingLocation())) {
                         rl.add(receipt);
-                    else if (location != null && location.getId() != null)
+                    } else if (location != null && location.getId() != null) {
+                        invLocId = location.getId();
+                        il.fetchForUpdate(invLocId);
+                        invLocIdList.add(invLocId);
                         rl.add(receipt);
+                    }
                 }
             } else {
+                invLocId = location.getId();
+                il.fetchForUpdate(invLocId);
+                invLocIdList.add(invLocId);
                 rl.update(receipt);
             }
             
@@ -131,28 +160,35 @@ public class InventoryReceiptManagerProxy {
         }
                 
         orderMan = man.getOrder();
+
+        if (orderMan == null) 
+            return man;
+        
         //
         // if the total of the quantities received of all the inventory items in
-        // this order is equal to the total of quantities required in the order
+        // this order is equal to the total of the quantities required by the order
         // items of the order then we set the status of the order to "Processed"  
         //
-        if (orderMan != null) {
-            sumQReq = 0;
-            orderItemMan = orderMan.getItems();
-            for (i = 0; i < orderItemMan.count(); i++) {
-                orderItem = orderItemMan.getItemAt(i);
-                sumQReq += orderItem.getQuantity();
-            }
+        sumQReq = 0;        
+        orderItemMan = orderMan.getItems();        
+        for (i = 0; i < orderItemMan.count(); i++) {        
+            orderItem = orderItemMan.getItemAt(i);
+            sumQReq += orderItem.getQuantity();
+        }
             
-            if (sumQRec == sumQReq) 
-                orderMan.getOrder().setStatusId(statusProcessed);   
+        if (sumQRec == sumQReq) 
+            orderMan.getOrder().setStatusId(statusProcessed);   
             
-            //
-            // we need to update the OrderManager every time because a new note
-            // may have been added to it through Inventory Receipt screen 
-            //
-            orderMan.update();
-        }                       
+        //
+        // we need to update the OrderManager every time because a new note
+        // may have been added to it through Inventory Receipt screen 
+        //
+        orderMan.update();
+        
+        for (i = 0; i < invLocIdList.size(); i++ ) {            
+            invLocId = invLocIdList.get(i);
+            il.abortUpdate(invLocId);
+        }
         
         return man;
     }
@@ -238,4 +274,14 @@ public class InventoryReceiptManagerProxy {
             return null;
         }
     }   
+    
+    private InventoryLocationLocal invLocLocal() {
+        try {
+            InitialContext ctx = new InitialContext();
+            return (InventoryLocationLocal)ctx.lookup("openelis/InventoryLocationBean/local");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
 }

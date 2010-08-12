@@ -555,7 +555,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryRe
         for (int i = 0; i < list.size(); i++ ) {
             data = list.get(i);                                                                                                                                                                                                                                                 
             orderId = data.getOrderItemOrderId();
-            if (!DataBaseUtil.isSame(prevOrderId, orderId))         
+            if (!DataBaseUtil.isSame(prevOrderId, orderId))      
                 prevInvItemId = null;                
                                            
             if (orderId == null) {
@@ -571,6 +571,14 @@ public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryRe
                 man.addReceipt(data);
             } else {
                 if (!orderList.contains(orderId)) {
+                    //
+                    // this is done in order to make sure that if the inventory item in the
+                    // last DO in the order has not been received the full quantity of,
+                    // the additional DO gets added at the end of the list when the order changes
+                    //
+                    if (prevData != null && prevData.getOrderItemQuantity() > qtyReceived && qtyReceived != 0)
+                        man.addReceipt(getRemainingQtyReceipt(prevData, qtyReceived, prevOrderId));
+                    
                     man = InventoryReceiptManager.getInstance();
                     managers.add(man);
                     orderList.add(orderId);
@@ -628,8 +636,8 @@ public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryRe
         // last DO has not been received the full quantity of, the addtional DO 
         // gets added at the end of the list
         //
-        if (data.getOrderItemQuantity() > qtyReceived && qtyReceived != 0)
-            man.addReceipt(getRemainingQtyReceipt(data, qtyReceived, prevOrderId));               
+        if (prevData.getOrderItemQuantity() > qtyReceived && qtyReceived != 0)
+            man.addReceipt(getRemainingQtyReceipt(prevData, qtyReceived, prevOrderId));               
         
         return managers;
     }
