@@ -546,7 +546,7 @@ public class TestScreen extends Screen {
         timeTaMax = (TextBox)def.getWidget(TestMeta.getTimeTaMax());
         addScreenHandler(timeTaMax, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                timeTaMax.setValue(Util.toString(manager.getTest().getTimeTaMax()));
+                timeTaMax.setValue(manager.getTest().getTimeTaMax());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -563,7 +563,7 @@ public class TestScreen extends Screen {
         timeTaAverage = (TextBox)def.getWidget(TestMeta.getTimeTaAverage());
         addScreenHandler(timeTaAverage, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                timeTaAverage.setValue(Util.toString(manager.getTest().getTimeTaAverage()));
+                timeTaAverage.setValue(manager.getTest().getTimeTaAverage());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -580,7 +580,7 @@ public class TestScreen extends Screen {
         timeTaWarning = (TextBox)def.getWidget(TestMeta.getTimeTaWarning());
         addScreenHandler(timeTaWarning, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                timeTaWarning.setValue(Util.toString(manager.getTest().getTimeTaWarning()));
+                timeTaWarning.setValue(manager.getTest().getTimeTaWarning());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -597,7 +597,7 @@ public class TestScreen extends Screen {
         timeTransit = (TextBox)def.getWidget(TestMeta.getTimeTransit());
         addScreenHandler(timeTransit, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                timeTransit.setValue(Util.toString(manager.getTest().getTimeTransit()));
+                timeTransit.setValue(manager.getTest().getTimeTransit());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -614,7 +614,7 @@ public class TestScreen extends Screen {
         timeHolding = (TextBox)def.getWidget(TestMeta.getTimeHolding());
         addScreenHandler(timeHolding, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                timeHolding.setValue(Util.toString(manager.getTest().getTimeHolding()));
+                timeHolding.setValue(manager.getTest().getTimeHolding());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -652,7 +652,6 @@ public class TestScreen extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<Datetime> event) {
-                if (event.getValue() != null)
                     manager.getTest().setActiveBegin(event.getValue());
             }
 
@@ -670,8 +669,7 @@ public class TestScreen extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<Datetime> event) {
-                if (event.getValue() != null)
-                    manager.getTest().setActiveEnd(event.getValue());
+                manager.getTest().setActiveEnd(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -732,7 +730,7 @@ public class TestScreen extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                manager.getTest().setLabelQty(Integer.valueOf(event.getValue()));
+                manager.getTest().setLabelQty(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
