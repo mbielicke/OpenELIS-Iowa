@@ -91,6 +91,10 @@ public class InventoryReceiptManagerProxy {
                 if ( !"Y".equals(receipt.getAddToExistingLocation())) {
                     rl.add(receipt);
                 } else if (location != null && location.getId() != null) {
+                    //
+                    // we lock all the inventory locations that are going to
+                    // be updated 
+                    //
                     invLocId = location.getId();
                     il.fetchForUpdate(invLocId);
                     invLocIdList.add(invLocId);
@@ -98,6 +102,9 @@ public class InventoryReceiptManagerProxy {
                 }
         }
         
+        //
+        // we unlock all the inventory locations that were updated 
+        //
         for (i = 0; i < invLocIdList.size(); i++ ) {            
             invLocId = invLocIdList.get(i);
             il.abortUpdate(invLocId);
@@ -142,6 +149,10 @@ public class InventoryReceiptManagerProxy {
                     if ( !"Y".equals(receipt.getAddToExistingLocation())) {
                         rl.add(receipt);
                     } else if (location != null && location.getId() != null) {
+                        //
+                        // we lock all the inventory locations that are going to
+                        // be updated 
+                        //
                         invLocId = location.getId();
                         il.fetchForUpdate(invLocId);
                         invLocIdList.add(invLocId);
@@ -149,6 +160,10 @@ public class InventoryReceiptManagerProxy {
                     }
                 }
             } else {
+                //
+                // we lock all the inventory locations that are going to
+                // be updated 
+                //
                 invLocId = location.getId();
                 il.fetchForUpdate(invLocId);
                 invLocIdList.add(invLocId);
@@ -157,6 +172,14 @@ public class InventoryReceiptManagerProxy {
             
             if(qtyRec != null) 
                 sumQRec += qtyRec;            
+        }
+        
+        //
+        // we unlock all the inventory locations that were updated 
+        //
+        for (i = 0; i < invLocIdList.size(); i++ ) {            
+            invLocId = invLocIdList.get(i);
+            il.abortUpdate(invLocId);
         }
                 
         orderMan = man.getOrder();
@@ -183,12 +206,7 @@ public class InventoryReceiptManagerProxy {
         // we need to update the OrderManager every time because a new note
         // may have been added to it through Inventory Receipt screen 
         //
-        orderMan.update();
-        
-        for (i = 0; i < invLocIdList.size(); i++ ) {            
-            invLocId = invLocIdList.get(i);
-            il.abortUpdate(invLocId);
-        }
+        orderMan.update();        
         
         return man;
     }
