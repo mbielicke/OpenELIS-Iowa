@@ -445,8 +445,13 @@ public class DictionaryScreen extends Screen {
                         break;
                     case 4:
                         row = (TableDataRow)val;
-                        data.setRelatedEntryId((Integer)row.key);
-                        data.setRelatedEntryName((String)row.cells.get(0).getValue());
+                        if (row != null) {
+                            data.setRelatedEntryId((Integer)row.key);
+                            data.setRelatedEntryName((String)row.cells.get(0).getValue());
+                        } else {
+                            data.setRelatedEntryId(null);
+                            data.setRelatedEntryName(null);
+                        }
                         break;
                 }
             }
