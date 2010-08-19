@@ -35,7 +35,6 @@ public class AnalysisResultManager implements RPC {
 
         arm = new AnalysisResultManager();
         arm.results = new ArrayList<ArrayList<ResultViewDO>>();
-        arm.resultList = new HashMap<ArrayList<Integer>, ArrayList<GridCoords>>();
         arm.setDefaultsLoaded(false);
 
         return arm;
@@ -58,10 +57,8 @@ public class AnalysisResultManager implements RPC {
             key.add(analysisId);
             key.add(analyteId);
             
-            if (resultList == null) {
-                resultList = new HashMap<ArrayList<Integer>, ArrayList<GridCoords>>();
+            if (resultList == null)
                 refreshResultListFrom(0);
-            }
             
             cList = resultList.get(key);
             if (cList != null) {
@@ -508,6 +505,9 @@ public class AnalysisResultManager implements RPC {
         ArrayList<GridCoords> cList;
         GridCoords            oldCoords, newCoords;
         
+        if (resultList == null)
+            refreshResultListFrom(0);
+
         if (oldResult != null) {
             oldKey = new ArrayList<Integer>();
             oldKey.add(oldResult.getAnalysisId());
@@ -567,6 +567,11 @@ public class AnalysisResultManager implements RPC {
         ArrayList<ResultViewDO> rowList;
         GridCoords              oldCoords, newCoords;
         ResultViewDO            result;
+        
+        if (resultList == null) {
+            resultList = new HashMap<ArrayList<Integer>, ArrayList<GridCoords>>();
+            row = 0;
+        }
         
         key = new ArrayList<Integer>();
         key.add(null);
