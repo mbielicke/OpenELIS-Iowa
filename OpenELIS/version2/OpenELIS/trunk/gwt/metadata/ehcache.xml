@@ -35,7 +35,7 @@ UIRF Software License are applicable instead of those above.
          user.home - User's home directory
          user.dir - User's current working directory
          java.io.tmpdir - Default temp file path -->
-    <diskStore path="/usr/local/java/tomcat/temp/openelis-web-1.6"/>
+    <diskStore path="/usr/pub/http/var/cache/openelis/tomcat"/>
 
 
     <!--Default Cache configuration. These will applied to caches programmatically created through
