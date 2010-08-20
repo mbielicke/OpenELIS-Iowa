@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<project name="OpenELIS" default="build" basedir=".">
+<project name="OpenELIS" default="gwtc" basedir=".">
   <!-- Configure path to GWT SDK -->
   <property name="gwt.sdk" location="../OpenELIS-Lib-tools/gwt-2.0.0" />
 
@@ -11,6 +11,8 @@
     <fileset dir="${gwt.sdk}" includes="gwt-dev*.jar"/>
     <!-- Add any additional non-server libs (such as JUnit) -->
     <fileset dir="war/WEB-INF/lib" includes="**/*.jar"/>
+  	<pathelement location="/var/lib/tomcat6/shared/ehcache-1.2.jar"/>
+  	<pathelement location="/var/lib/tomcat6/shared/log4j-1.2.14.jar"/>
   </path>
 
   <target name="libs" description="Copy libs to WEB-INF/lib">
@@ -64,9 +66,7 @@
     </java>
   </target>
 
-  <target name="build" depends="gwtc" description="Build this project" />
-
-  <target name="war" depends="build" description="Create a war file">
+  <target name="war" depends="gwtc" description="Create a war file">
   
        <jar jarfile="build/elissecurity.jar">
 	      <fileset dir="../OpenELIS-Security-EJB/bin">
@@ -76,9 +76,8 @@
 	   	  </jar>
 	  	<jar jarfile="build/openelis-common.jar">
     	    <fileset dir="../OpenELIS-Common/bin">
- 	  	       <include name="org/openelis/constants/*"/>
 	  	       <include name="org/openelis/domain/*.class"/>
-               <include name="org/openelis/exception/*.class"/>
+    	       <include name="org/openelis/exception/*.class"/>
 	  	       <include name="org/openelis/remote/*.class"/>
 	  	       <include name="org/openelis/local/*.class"/>
 	  	       <include name="org/openelis/utilcommon/*.class"/>
@@ -91,7 +90,7 @@
 	    </jar>
         <jar jarfile="build/openelis-lib.jar">
 	      <fileset dir="../OpenELIS-Lib/bin"/>
-	   	 </jar>
+	   	</jar>
 	    <delete file="build/openelis.war" />
 	    
 	      <war destfile="build/openelis.war"
@@ -113,8 +112,6 @@
 	      	           includes="openelis-lib.jar,openelis-common.jar,elissecurity.jar" />
 	      	  
 	      </war>
-	   <!-- 
-       <zip destfile="OpenELIS.war" basedir="war"/>-->
   </target>
   
   <target name="deploy-openelis" depends="war">
