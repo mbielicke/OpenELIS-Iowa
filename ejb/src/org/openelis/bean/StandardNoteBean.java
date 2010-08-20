@@ -39,7 +39,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.StandardNoteDO;
@@ -63,7 +63,7 @@ import org.openelis.utils.SecurityInterceptor;
 @RolesAllowed("standardnote-select")
 public class StandardNoteBean implements StandardNoteRemote {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager                 manager;
 
     @Resource

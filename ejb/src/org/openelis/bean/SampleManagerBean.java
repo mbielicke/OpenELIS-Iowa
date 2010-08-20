@@ -38,7 +38,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
@@ -68,7 +68,7 @@ import org.openelis.utils.SecurityInterceptor;
 @RolesAllowed("sample-select")
 public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLocal {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     
     @Resource
     private SessionContext ctx;

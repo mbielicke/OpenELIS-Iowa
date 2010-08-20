@@ -35,7 +35,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.PwsFacilityDO;
 import org.openelis.entity.PwsFacility;
 import org.openelis.gwt.common.NotFoundException;
@@ -47,7 +47,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 @RolesAllowed("pws-select")
 public class PwsFacilityBean implements PwsFacilityLocal {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager                    manager;
     
     @SuppressWarnings("unchecked")

@@ -35,7 +35,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.OrderContainerDO;
 import org.openelis.entity.OrderContainer;
 import org.openelis.gwt.common.FieldErrorException;
@@ -50,7 +50,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 @RolesAllowed("order-select")
 public class OrderContainerBean implements OrderContainerLocal {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager                    manager;
     private static final Integer   MAX_QUANTITY = 50;
 

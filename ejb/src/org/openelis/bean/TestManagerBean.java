@@ -35,7 +35,7 @@ import javax.ejb.TransactionManagementType;
 import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.local.LockLocal;
@@ -55,7 +55,7 @@ import org.openelis.utils.SecurityInterceptor;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class TestManagerBean implements TestManagerRemote {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     @Resource
     private SessionContext ctx;
 

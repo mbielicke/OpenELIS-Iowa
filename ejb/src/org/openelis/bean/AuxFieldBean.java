@@ -35,7 +35,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.entity.AuxField;
 import org.openelis.gwt.common.DatabaseException;
@@ -51,7 +51,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 @RolesAllowed("auxiliary-select")
 public class AuxFieldBean implements AuxFieldLocal {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager                 manager;
 
     public ArrayList<AuxFieldViewDO> fetchById(Integer id) throws Exception {

@@ -38,7 +38,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
@@ -62,7 +62,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 @RolesAllowed("organization-select")
 public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager                    manager;
 
     @EJB

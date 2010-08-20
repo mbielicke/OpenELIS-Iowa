@@ -36,7 +36,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.PanelDO;
@@ -61,7 +61,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 @RolesAllowed("panel-select")
 public class PanelBean implements PanelRemote, PanelLocal {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager             manager;
 
     private static final PanelMeta    meta = new PanelMeta();

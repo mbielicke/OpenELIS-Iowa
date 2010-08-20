@@ -35,7 +35,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.entity.WorksheetResult;
 import org.openelis.gwt.common.FieldErrorException;
@@ -50,7 +50,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 @RolesAllowed("worksheet-select")
 public class WorksheetResultBean implements WorksheetResultLocal {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
 
     @SuppressWarnings("unchecked")

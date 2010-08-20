@@ -11,7 +11,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.PatientDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.SampleHumanDO;
@@ -29,7 +29,7 @@ import org.openelis.remote.SampleHumanRemote;
 //@RolesAllowed("inventory-select")
 public class SampleHumanBean implements SampleHumanRemote, SampleHumanLocal {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
    
     @Resource

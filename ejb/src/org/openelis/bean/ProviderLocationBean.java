@@ -11,7 +11,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.ProviderLocationDO;
 import org.openelis.entity.ProviderLocation;
@@ -28,7 +28,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 @RolesAllowed("provider-select")
 public class ProviderLocationBean implements ProviderLocationLocal {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager                manager;
 
     @EJB

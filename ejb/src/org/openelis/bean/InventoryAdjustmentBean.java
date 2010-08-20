@@ -37,7 +37,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InventoryAdjustmentDO;
 import org.openelis.domain.InventoryAdjustmentViewDO;
@@ -52,7 +52,7 @@ import org.openelis.local.InventoryAdjustmentLocal;
 import org.openelis.meta.InventoryAdjustmentMeta;
 import org.openelis.remote.InventoryAdjustmentRemote;
 import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
+import org.openelis.security.remote.*;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
 
@@ -61,11 +61,11 @@ import org.openelis.utilcommon.DataBaseUtil;
 @RolesAllowed("inventoryadjustment-select")
 public class InventoryAdjustmentBean implements InventoryAdjustmentRemote, InventoryAdjustmentLocal{
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
-    
-    @EJB
-    private SystemUserUtilLocal systemUserBean;        
+       
+    @EJB (mappedName="security/SystemUserUtilBean") private SystemUserUtilRemote systemUserBean;
+
     
     private static final InventoryAdjustmentMeta meta = new InventoryAdjustmentMeta();
     

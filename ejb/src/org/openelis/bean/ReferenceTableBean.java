@@ -34,7 +34,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.local.ReferenceTableLocal;
 import org.openelis.remote.ReferenceTableRemote;
 
@@ -43,7 +43,7 @@ import org.openelis.remote.ReferenceTableRemote;
 @SecurityDomain("openelis")
 public class ReferenceTableBean implements ReferenceTableRemote, ReferenceTableLocal {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
    
     @Resource

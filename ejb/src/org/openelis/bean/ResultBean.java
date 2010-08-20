@@ -37,7 +37,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ResultViewDO;
@@ -56,7 +56,7 @@ import org.openelis.utilcommon.ResultValidator.Type;
 // @RolesAllowed("LOCKINGtest")
 public class ResultBean implements ResultLocal {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager   manager;
 
     @EJB

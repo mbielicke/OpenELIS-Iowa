@@ -34,7 +34,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.entity.SampleOrganization;
 import org.openelis.gwt.common.NotFoundException;
@@ -45,7 +45,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 
 @SecurityDomain("openelis")
 public class SampleOrganizationBean implements SampleOrganizationLocal {
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
    
     public ArrayList<SampleOrganizationViewDO> fetchBySampleId(Integer sampleId) throws Exception {

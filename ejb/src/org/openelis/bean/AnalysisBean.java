@@ -35,7 +35,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.entity.Analysis;
 import org.openelis.gwt.common.DatabaseException;
@@ -48,7 +48,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 @SecurityDomain("openelis")
 public class AnalysisBean implements AnalysisLocal{
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
    
     public ArrayList<AnalysisViewDO> fetchBySampleId(Integer sampleId) throws Exception {

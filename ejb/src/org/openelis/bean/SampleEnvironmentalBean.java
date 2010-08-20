@@ -33,7 +33,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.entity.SampleEnvironmental;
 import org.openelis.local.AddressLocal;
@@ -44,7 +44,7 @@ import org.openelis.local.SampleEnvironmentalLocal;
 @SecurityDomain("openelis")
 @RolesAllowed("sampleenvironmental-select")
 public class SampleEnvironmentalBean implements SampleEnvironmentalLocal {
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
     
     @EJB private AddressLocal addressBean;

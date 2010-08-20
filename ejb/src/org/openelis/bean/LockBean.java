@@ -31,7 +31,7 @@ import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.local.LockLocal;
 import org.openelis.local.LoginLocal;
 import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
+import org.openelis.security.remote.*;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -58,8 +58,7 @@ public class LockBean implements LockLocal {
     @EJB
     private LoginLocal          login;
 
-    @EJB //(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class)
-    private SystemUserUtilLocal sysUser;
+    @EJB (mappedName="security/SystemUserUtilBean") private SystemUserUtilRemote sysUser;
 
     /**
      * This method returns true if an un-expired lock is found in the table and

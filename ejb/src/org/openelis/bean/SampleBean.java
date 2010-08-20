@@ -35,7 +35,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ReferenceTable;
@@ -59,7 +59,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 //@RolesAllowed("inventory-select")
 public class SampleBean implements SampleLocal, SampleRemote {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
 
     //declare the locals

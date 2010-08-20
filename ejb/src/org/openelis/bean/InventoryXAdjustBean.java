@@ -36,7 +36,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryXAdjustViewDO;
 import org.openelis.entity.InventoryLocation;
@@ -54,11 +54,8 @@ import org.openelis.utilcommon.DataBaseUtil;
 @RolesAllowed("inventoryadjustment-select")
 public class InventoryXAdjustBean implements InventoryXAdjustLocal {
 
-    @PersistenceContext(name = "openelis")
-    private EntityManager          manager;
-
-    @EJB
-    private InventoryLocationLocal inventoryLocationBean;
+    @PersistenceContext(unitName = "openelis")
+    private EntityManager manager;
 
     @SuppressWarnings("unchecked")
     public ArrayList<InventoryXAdjustViewDO> fetchByInventoryAdjustmentId(Integer id) throws Exception {

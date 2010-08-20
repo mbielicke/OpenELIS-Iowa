@@ -36,7 +36,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.PwsDO;
 import org.openelis.entity.Pws;
@@ -55,7 +55,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 @RolesAllowed("pws-select")
 public class PwsBean implements PwsLocal, PwsRemote{
     
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager                    manager;
     
     private static final PwsMeta             meta = new PwsMeta();

@@ -35,7 +35,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.TestPrepViewDO;
 import org.openelis.entity.TestPrep;
 import org.openelis.gwt.common.FieldErrorException;
@@ -50,7 +50,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 @RolesAllowed("test-select")
 public class TestPrepBean implements TestPrepLocal {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager            manager;
     
     public ArrayList<TestPrepViewDO> fetchByTestId(Integer testId) throws Exception {

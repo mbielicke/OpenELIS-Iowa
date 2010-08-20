@@ -34,7 +34,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.entity.Note;
 import org.openelis.gwt.common.Datetime;
@@ -42,19 +42,18 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.LoginLocal;
 import org.openelis.local.NoteLocal;
 import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
+import org.openelis.security.remote.*;
 
 @Stateless
 @SecurityDomain("openelis")
 public class NoteBean implements NoteLocal {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
 
-    @EJB
-    SystemUserUtilLocal   sysUser;
-    @EJB
-    LoginLocal            login;
+
+    @EJB (mappedName="security/SystemUserUtilBean") private SystemUserUtilRemote sysUser;
+    @EJB         LoginLocal            login;
 
     public ArrayList<NoteViewDO> fetchByRefTableRefId(Integer refTableId, Integer refId) throws Exception {
         Query query;

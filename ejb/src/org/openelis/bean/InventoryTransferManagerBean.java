@@ -33,7 +33,7 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.transaction.UserTransaction;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.manager.InventoryTransferManager;
 import org.openelis.remote.InventoryTransferManagerRemote;

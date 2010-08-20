@@ -37,7 +37,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.entity.SampleItem;
 import org.openelis.gwt.common.DatabaseException;
@@ -53,7 +53,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 @SecurityDomain("openelis")
 public class SampleItemBean implements SampleItemLocal {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
    
     public SampleItemViewDO fetchById(Integer id) throws Exception {

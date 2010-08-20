@@ -37,7 +37,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.ProjectViewDO;
@@ -52,7 +52,7 @@ import org.openelis.local.ProjectLocal;
 import org.openelis.meta.ProjectMeta;
 import org.openelis.remote.ProjectRemote;
 import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
+import org.openelis.security.remote.*;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
 
@@ -61,13 +61,12 @@ import org.openelis.utilcommon.DataBaseUtil;
 @RolesAllowed("project-select")
 public class ProjectBean implements ProjectLocal, ProjectRemote {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager       manager;
 
     private static ProjectMeta  meta = new ProjectMeta();
 
-    @EJB
-    private SystemUserUtilLocal sysUser;
+    @EJB (mappedName="security/SystemUserUtilBean") private SystemUserUtilRemote sysUser;
 
     public ProjectBean() {
     }
