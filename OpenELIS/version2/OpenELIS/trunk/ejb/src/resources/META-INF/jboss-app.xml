@@ -1,3 +1,4 @@
+<?xml version='1.0' encoding='UTF-8' ?>
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
 
@@ -24,7 +25,9 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
 -->
+
 <jboss-app>
+
   <loader-repository>
     org.openelis:loader=openelis.ear
     <loader-repository-config>

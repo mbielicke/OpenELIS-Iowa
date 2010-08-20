@@ -39,7 +39,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
 import org.openelis.domain.ReferenceTable;
@@ -64,7 +64,7 @@ import org.openelis.utils.SecurityInterceptor;
 @SecurityDomain("openelis")
 public class MethodBean implements MethodRemote {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
 
     @Resource

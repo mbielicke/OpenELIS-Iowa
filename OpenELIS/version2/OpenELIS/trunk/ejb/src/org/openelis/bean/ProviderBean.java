@@ -36,7 +36,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdFirstLastNameVO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.entity.Provider;
@@ -57,7 +57,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 @RolesAllowed("provider-select")
 public class ProviderBean implements ProviderRemote, ProviderLocal {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager             manager;
 
     private static final ProviderMeta meta = new ProviderMeta();

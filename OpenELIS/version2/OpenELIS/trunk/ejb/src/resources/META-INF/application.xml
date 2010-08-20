@@ -1,3 +1,4 @@
+<?xml version='1.0' encoding='UTF-8' ?>
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
 
@@ -24,11 +25,17 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
 -->
-<application>
-  <module>
-     <ejb>openelis.jar</ejb>
-  </module>
-  <module>
-     <ejb>openelis-common.jar</ejb>
-  </module>
+
+<application xmlns="http://java.sun.com/xml/ns/javaee" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="5"
+xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_5.xsd">
+
+    <display-name>OpenELIS EJB</display-name>
+
+    <module>
+       <ejb>openelis.jar</ejb>
+    </module>
+    <module>
+       <ejb>openelis-common.jar</ejb>
+    </module>
 </application>

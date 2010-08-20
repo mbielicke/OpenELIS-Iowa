@@ -7,7 +7,7 @@ import javax.annotation.Resource;
 import javax.ejb.Local;
 import javax.ejb.SessionContext;
 
-import org.jboss.annotation.ejb.Service;
+import org.jboss.ejb3.annotation.Service;
 
 @Service(objectName="jboss:custom=SessionManager")
 public class SessionManager implements SessionManagerInt {

@@ -40,7 +40,7 @@ import org.openelis.entity.History;
 import org.openelis.local.HistoryLocal;
 import org.openelis.remote.HistoryRemote;
 import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
+import org.openelis.security.remote.*;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
@@ -49,8 +49,8 @@ public class HistoryBean implements HistoryRemote, HistoryLocal {
     @PersistenceContext(unitName = "openelis")
     EntityManager               manager;
 
-    @EJB
-    private SystemUserUtilLocal sysUser;
+
+    @EJB (mappedName="security/SystemUserUtilBean") private SystemUserUtilRemote sysUser;
 
     @SuppressWarnings("unchecked")
     public ArrayList<HistoryVO> fetchByReferenceIdAndTable(Integer referenceId, Integer referenceTableId) throws Exception{

@@ -36,7 +36,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.entity.AnalysisUser;
@@ -44,17 +44,16 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.AnalysisUserLocal;
 import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
+import org.openelis.security.remote.*;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")
 public class AnalysisUserBean implements AnalysisUserLocal {
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
     
-    @EJB
-    private SystemUserUtilLocal      sysUser;
+    @EJB (mappedName="security/SystemUserUtilBean") private SystemUserUtilRemote sysUser;
 
     public AnalysisUserViewDO fetchById(Integer id) throws Exception {
         Query query;

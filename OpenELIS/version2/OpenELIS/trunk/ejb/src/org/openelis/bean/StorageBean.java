@@ -35,7 +35,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
@@ -51,30 +51,25 @@ import org.openelis.local.SampleItemLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.StorageLocal;
 import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
+import org.openelis.security.remote.*;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")
 @RolesAllowed("storage-select")
 public class StorageBean implements StorageLocal {
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager            manager;
 
-    @EJB
-    private SystemUserUtilLocal      sysUser;
+    @EJB (mappedName="security/SystemUserUtilBean") private SystemUserUtilRemote sysUser;
     
-    @EJB
-    private LoginLocal               login;
+    @EJB private LoginLocal               login;
     
-    @EJB
-    private SampleItemLocal          sampleItem;
+    @EJB private SampleItemLocal          sampleItem;
     
-    @EJB
-    private AnalysisLocal            analysis;
+    @EJB private AnalysisLocal            analysis;
     
-    @EJB
-    private SampleLocal              sample;    
+    @EJB private SampleLocal              sample;    
 
     public ArrayList<StorageViewDO> fetchByRefId(Integer refTableId, Integer refId) throws Exception {
         SystemUserDO user;

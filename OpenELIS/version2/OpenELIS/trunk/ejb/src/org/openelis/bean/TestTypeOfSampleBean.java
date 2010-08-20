@@ -34,7 +34,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.entity.TestTypeOfSample;
 import org.openelis.gwt.common.FieldErrorException;
@@ -48,7 +48,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 @SecurityDomain("openelis")
 @RolesAllowed("test-select")
 public class TestTypeOfSampleBean implements TestTypeOfSampleLocal {
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager            manager;
     
     public ArrayList<TestTypeOfSampleDO> fetchByTestId(Integer testId) throws Exception {

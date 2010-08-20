@@ -36,7 +36,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.entity.StorageLocation;
@@ -57,7 +57,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 @RolesAllowed("storagelocation-select")
 public class StorageLocationBean implements StorageLocationRemote, StorageLocationLocal {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager                       manager;
 
     private static final StorageLocationMeta meta = new StorageLocationMeta();

@@ -34,7 +34,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.PwsDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.entity.SampleSDWIS;
@@ -49,7 +49,7 @@ import org.openelis.local.SampleSDWISLocal;
 @RolesAllowed("samplesdwis-select")
 public class SampleSDWISBean implements SampleSDWISLocal {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
     
     @EJB private PwsLocal pwsBean;

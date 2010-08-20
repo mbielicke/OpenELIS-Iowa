@@ -34,7 +34,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.entity.SampleQaevent;
 import org.openelis.gwt.common.NotFoundException;
@@ -46,7 +46,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 @SecurityDomain("openelis")
 public class SampleQaEventBean implements SampleQAEventLocal {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
     
     public ArrayList<SampleQaEventViewDO> fetchBySampleId(Integer sampleId) throws Exception {

@@ -38,7 +38,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.WorksheetDO;
 import org.openelis.domain.WorksheetViewDO;
@@ -58,7 +58,7 @@ import org.openelis.manager.WorksheetManagerProxy;
 import org.openelis.meta.WorksheetCompletionMeta;
 import org.openelis.remote.WorksheetRemote;
 import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
+import org.openelis.security.remote.SystemUserUtilRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
 
@@ -67,13 +67,12 @@ import org.openelis.utilcommon.DataBaseUtil;
 @RolesAllowed("worksheet-select")
 public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
 
-	@PersistenceContext(name = "openelis")
+	@PersistenceContext(unitName = "openelis")
     private EntityManager manager;
 	
     private static final WorksheetCompletionMeta meta = new WorksheetCompletionMeta();
     
-    @EJB
-    SystemUserUtilLocal sysUser;
+    @EJB (mappedName="security/SystemUserUtilBean") private SystemUserUtilRemote sysUser;
     
 	public WorksheetDO fetchById(Integer id) throws Exception {		
 		Query       query;

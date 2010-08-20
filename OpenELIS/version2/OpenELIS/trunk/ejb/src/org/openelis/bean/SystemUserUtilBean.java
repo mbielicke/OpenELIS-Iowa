@@ -31,18 +31,17 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.SecuritySystemUserDO;
-import org.openelis.remote.SystemUserUtilRemote;
 import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
+import org.openelis.security.remote.SystemUserUtilRemote;
 
 @Stateless
 @SecurityDomain("openelis")
-public class SystemUserUtilBean implements SystemUserUtilRemote {
+public class SystemUserUtilBean implements org.openelis.remote.SystemUserUtilRemote {
 
-    @EJB
-    private SystemUserUtilLocal sysUser;
+    @EJB (mappedName="security/SystemUserUtilBean") private SystemUserUtilRemote sysUser;
+    
     
     public ArrayList<SecuritySystemUserDO> fetchByLogin(String loginName, int numResult) {
         SecuritySystemUserDO secUserDO;

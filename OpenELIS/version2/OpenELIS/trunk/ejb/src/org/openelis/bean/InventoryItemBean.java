@@ -36,7 +36,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdNameStoreVO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryItemViewDO;
@@ -58,7 +58,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 @RolesAllowed("inventoryitem-select")
 public class InventoryItemBean implements InventoryItemRemote, InventoryItemLocal {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager            manager;
 
     private static InventoryItemMeta meta = new InventoryItemMeta();

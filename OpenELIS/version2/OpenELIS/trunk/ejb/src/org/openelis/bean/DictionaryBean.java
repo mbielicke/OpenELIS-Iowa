@@ -36,7 +36,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.DictionaryCacheCategoryVO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
@@ -58,7 +58,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 @RolesAllowed("dictionary-select")
 public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager            manager;
 
     private static CategoryMeta   meta = new CategoryMeta();

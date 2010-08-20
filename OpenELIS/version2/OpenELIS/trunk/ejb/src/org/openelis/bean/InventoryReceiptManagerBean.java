@@ -35,7 +35,7 @@ import javax.ejb.TransactionManagementType;
 import javax.naming.InitialContext;
 import javax.transaction.UserTransaction;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.InventoryReceiptViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.ReferenceTable;

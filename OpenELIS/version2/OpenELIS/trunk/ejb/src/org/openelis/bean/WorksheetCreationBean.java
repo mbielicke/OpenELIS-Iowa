@@ -35,7 +35,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
@@ -50,7 +50,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 @RolesAllowed("organization-select")
 public class WorksheetCreationBean implements WorksheetCreationRemote {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
 
     private static final WorksheetCreationMeta meta = new WorksheetCreationMeta();

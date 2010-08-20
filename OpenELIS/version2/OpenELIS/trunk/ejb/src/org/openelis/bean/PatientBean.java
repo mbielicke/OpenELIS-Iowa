@@ -9,7 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.PatientDO;
 import org.openelis.local.PatientLocal;
 import org.openelis.remote.PatientRemote;
@@ -19,7 +19,7 @@ import org.openelis.remote.PatientRemote;
 @SecurityDomain("openelis")
 //@RolesAllowed("inventory-select")
 public class PatientBean implements PatientRemote, PatientLocal {
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
    
     @Resource

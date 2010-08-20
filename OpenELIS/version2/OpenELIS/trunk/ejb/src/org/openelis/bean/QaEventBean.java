@@ -25,7 +25,7 @@
  */
 package org.openelis.bean;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.QaEventVO;
@@ -65,7 +65,7 @@ import javax.persistence.Query;
 @RolesAllowed("qaevent-select")
 public class QaEventBean implements QaEventRemote {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager               manager;
 
     @Resource

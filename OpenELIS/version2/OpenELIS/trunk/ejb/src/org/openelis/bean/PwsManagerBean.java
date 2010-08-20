@@ -28,7 +28,7 @@ package org.openelis.bean;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.manager.PwsAddressManager;
 import org.openelis.manager.PwsFacilityManager;
 import org.openelis.manager.PwsManager;

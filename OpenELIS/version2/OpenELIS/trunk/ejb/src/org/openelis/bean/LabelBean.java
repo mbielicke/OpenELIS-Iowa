@@ -39,7 +39,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.LabelDO;
 import org.openelis.domain.LabelViewDO;
@@ -65,7 +65,7 @@ import org.openelis.utils.SecurityInterceptor;
 @RolesAllowed("label-select")
 public class LabelBean implements LabelRemote {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager             manager;
 
     @Resource

@@ -8,6 +8,7 @@
 	<property name="src.resources" value="${basedir}/src/resources" />
 
 	<target name="ejbjar">
+		<delete file="build/openelis.jar"/>
 		<jar jarfile="build/openelis.jar">
 			<fileset dir="bin">
 				<include name="org/openelis/bean/*.class" />
@@ -21,9 +22,9 @@
 				<include name="META-INF/ehcache.xml" />
 			</fileset>
 		</jar>
+		<delete file="build/openelis-common.jar"/>
 		<jar jarfile="build/openelis-common.jar">
 			<fileset dir="../OpenELIS-Common/bin">
-				<include name="org/openelis/constants/*" />
 				<include name="org/openelis/domain/*.class" />
 				<include name="org/openelis/exception/*.class" />
 				<include name="org/openelis/remote/*.class" />
@@ -35,6 +36,7 @@
 				<include name="org/openelis/messages/*.class" />
 			</fileset>
 		</jar>
+		<delete file="build/openelis.ear"/>
 		<jar jarfile="build/openelis.ear">
 			<fileset dir="${src.resources}/">
 				<include name="META-INF/application.xml" />
@@ -47,7 +49,8 @@
 				<include name="openelis-common.jar" />
 			</fileset>
 			<fileset dir=".">
-				<include name="lib/lib.jar" />
+				<include name="lib/openelis-lib.jar" />
+				<include name="lib/security.jar" />
 			</fileset>
 		</jar>
 	</target>

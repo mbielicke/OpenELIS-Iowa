@@ -32,7 +32,7 @@ import javax.ejb.TransactionManagementType;
 import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.Query;
@@ -47,7 +47,7 @@ import org.openelis.remote.StorageManagerRemote;
 @RolesAllowed("storage-select")
 public class StorageManagerBean implements StorageManagerRemote {
     
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     
     public StorageManager fetchById(Integer referenceTableId, Integer referenceId) throws Exception {
         return StorageManager.fetchByRefTableRefId(referenceTableId, referenceId);

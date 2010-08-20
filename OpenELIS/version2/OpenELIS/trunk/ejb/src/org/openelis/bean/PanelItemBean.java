@@ -35,7 +35,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.PanelItemDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.entity.PanelItem;
@@ -51,7 +51,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 @RolesAllowed("panel-select")
 public class PanelItemBean implements PanelItemLocal {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager              manager;
     
     @SuppressWarnings("unchecked")

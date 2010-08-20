@@ -10,7 +10,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.ProjectParameterDO;
 import org.openelis.entity.ProjectParameter;
 import org.openelis.gwt.common.FieldErrorException;
@@ -25,7 +25,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 @RolesAllowed("project-select")
 public class ProjectParameterBean implements ProjectParameterLocal {
 
-    @PersistenceContext(name = "openelis")
+    @PersistenceContext(unitName = "openelis")
     private EntityManager         manager;
 
     public ArrayList<ProjectParameterDO> fetchByProjectId(Integer id) throws Exception {
