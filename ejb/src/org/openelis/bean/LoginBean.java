@@ -25,10 +25,9 @@
 */
 package org.openelis.bean;
 
-import javax.annotation.PostConstruct;
+
 import javax.annotation.Resource;
 import javax.ejb.EJB;
-import javax.ejb.EJBs;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 
@@ -38,19 +37,14 @@ import org.openelis.remote.LoginRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.remote.SecurityRemote;
 import org.openelis.security.remote.SystemUserUtilRemote;
-/*
-@EJBs({
-    @EJB(name="ejb/Security",beanInterface=SecurityLocal.class),
-    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class)
-})
-*/
+
 
 
 @Stateless
 public class LoginBean implements LoginRemote, LoginLocal {
 
-    @EJB (mappedName="security/SecurityBean") private SecurityRemote security;
-    @EJB (mappedName="security/SystemUserUtilBean") private SystemUserUtilRemote sysUser;
+    @EJB private SecurityRemote security;
+    @EJB private SystemUserUtilRemote sysUser;
         
     @EJB SessionManagerInt session;
   
@@ -60,7 +54,7 @@ public class LoginBean implements LoginRemote, LoginLocal {
      
     
     public SecurityUtil login() {
-        System.out.println("HELLO5!");
+
         SecurityUtil securityUtil = security.initSecurity("openelis");
         SystemUserDO sysUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal().getName());
         securityUtil.setSystemUserId(sysUserDO.getId());
@@ -79,7 +73,7 @@ public class LoginBean implements LoginRemote, LoginLocal {
     }
 
     public SecurityUtil getSecurityUtil() {
-        System.out.println("HELLO4!");
+
         SecurityUtil util = (SecurityUtil)session.getAttribute("security");
         if(util == null){
             return login();
@@ -88,9 +82,9 @@ public class LoginBean implements LoginRemote, LoginLocal {
     }
 
     public SystemUserDO getSystemUserDO() {
-        System.out.println("HELLO3!");
+
         SystemUserDO userDO = (SystemUserDO)session.getAttribute("userdo");
-        System.out.println("HELLO2!");
+
         if(userDO == null){
             login();
             userDO = (SystemUserDO)session.getAttribute("userdo");
@@ -99,7 +93,7 @@ public class LoginBean implements LoginRemote, LoginLocal {
     }
 
     public Integer getSystemUserId() {
-        System.out.println("HELLO1!");
+
         return getSecurityUtil().getSystemUserId();
     }
  

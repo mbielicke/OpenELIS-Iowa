@@ -25,15 +25,15 @@
 		<delete file="build/openelis-common.jar"/>
 		<jar jarfile="build/openelis-common.jar">
 			<fileset dir="../OpenELIS-Common/bin">
-				<include name="org/openelis/domain/*.class" />
-				<include name="org/openelis/exception/*.class" />
-				<include name="org/openelis/remote/*.class" />
-				<include name="org/openelis/utilcommon/*.class" />
-				<include name="org/openelis/manager/*.class" />
-				<include name="org/openelis/managerOld/*.class" />
-				<include name="org/openelis/meta/*.class" />
-				<include name="org/openelis/metamap/*.class" />
-				<include name="org/openelis/messages/*.class" />
+	    	       <include name="org/openelis/constants/*"/>	
+		  	       <include name="org/openelis/domain/*.class"/>
+	    	       <include name="org/openelis/exception/*.class"/>
+	    	       <include name="org/openelis/manager/*.class"/>
+	 	  	       <include name="org/openelis/messages/*.class"/>
+	     	       <include name="org/openelis/meta/*.class"/>
+	 	  	       <include name="org/openelis/metamap/*.class"/>
+		  	       <include name="org/openelis/remote/*.class"/>
+	  	  	       <include name="org/openelis/utilcommon/*.class"/>
 			</fileset>
 		</jar>
 		<delete file="build/openelis.ear"/>
@@ -51,6 +51,7 @@
 			<fileset dir=".">
 				<include name="lib/openelis-lib.jar" />
 				<include name="lib/security.jar" />
+				<include name="lib/poi-3.6-20091214.jar" />
 			</fileset>
 		</jar>
 	</target>
