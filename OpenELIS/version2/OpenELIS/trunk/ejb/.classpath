@@ -8,5 +8,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Lib"/>
 	<classpathentry kind="lib" path="/OpenELIS-Security/build/security.jar"/>
+	<classpathentry kind="lib" path="/libraries/lib/poi-3.6-20091214.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
