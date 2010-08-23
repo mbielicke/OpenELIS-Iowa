@@ -30,6 +30,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.InventoryItemCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryItemViewDO;
@@ -97,8 +98,6 @@ public class InventoryTransferScreen extends Screen {
     private TableWidget                           receiptTable;
     private ScreenService                         inventoryItemService, inventoryLocationService, 
                                                   storageService;    
-
-    private HashMap<Integer, InventoryItemViewDO> inventoryItemMap;
     
     public InventoryTransferScreen() throws Exception {
         super((ScreenDefInt)GWT.create(InventoryTransferDef.class));
@@ -454,7 +453,12 @@ public class InventoryTransferScreen extends Screen {
                         row = (TableDataRow)val;
                         if (row != null) {      
                             data = (InventoryLocationViewDO)row.data;
-                            manager.setFromInventoryItemAt(getInventoryItem(data.getInventoryItemId()), r);
+                            try {
+                                manager.setFromInventoryItemAt(InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId()), r);
+                            } catch (Exception e) {
+                                Window.alert(e.getMessage());
+                                e.printStackTrace();
+                            }
                             manager.setFromInventoryLocationAt(data, r);                                                  
                             location = StorageLocationManager.getLocationForDisplay(data.getStorageLocationName(),
                                                                                     data.getStorageLocationUnitDescription(),
@@ -895,7 +899,6 @@ public class InventoryTransferScreen extends Screen {
         });
         
         screen = this;        
-        inventoryItemMap = new HashMap<Integer, InventoryItemViewDO>();
     }
     
     public void loadTransferData(InventoryTransferManager manager) {
@@ -965,24 +968,7 @@ public class InventoryTransferScreen extends Screen {
             if (!openedFromMenu)                     
                 window.close();
         }        
-    }
-    
-    private InventoryItemViewDO getInventoryItem(Integer id) {
-        InventoryItemViewDO data;         
-                    
-        data = inventoryItemMap.get(id);
-        if (data == null && id != null) {
-            try {
-                data  = inventoryItemService.call("fetchInventoryItemById", id);                
-                inventoryItemMap.put(id, data);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Window.alert(e.getMessage());
-            }
-        }
-        
-        return data;        
-    }  
+    }    
     
     private ArrayList<TableDataRow> getTransferModel() {
         String location;

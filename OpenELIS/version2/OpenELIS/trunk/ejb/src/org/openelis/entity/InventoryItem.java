@@ -60,6 +60,14 @@ import org.openelis.utils.Auditable;
                         "i.averageLeadTime,i.averageCost,i.averageDailyUse,i.parentInventoryItemId,"+
                         "i.parentRatio,p.name)"
                       + " from InventoryItem i LEFT JOIN i.parentInventoryItem p where i.id = :id"),
+   @NamedQuery( name = "InventoryItem.FetchActiveById",
+               query = "select new org.openelis.domain.InventoryItemDO(i.id,i.name,i.description," +
+                       "i.categoryId,i.storeId,i.quantityMinLevel,i.quantityMaxLevel,i.quantityToReorder," +
+                       "i.dispensedUnitsId,i.isReorderAuto,i.isLotMaintained,i.isSerialMaintained,i.isActive," +
+                       "i.isBulk,i.isNotForSale,i.isSubAssembly,i.isLabor,i.isNotInventoried,i.productUri," +
+                       "i.averageLeadTime,i.averageCost,i.averageDailyUse,i.parentInventoryItemId,"+
+                       "i.parentRatio)"
+                     + " from InventoryItem i where i.isActive='Y' and i.id = :id"),
     @NamedQuery( name = "InventoryItem.FetchActiveByName",
                 query = "select new org.openelis.domain.InventoryItemDO(i.id,i.name,i.description," +
                         "i.categoryId,i.storeId,i.quantityMinLevel,i.quantityMaxLevel,i.quantityToReorder," +
@@ -85,77 +93,7 @@ import org.openelis.utils.Auditable;
                         "i.parentRatio)"
                       + " from InventoryItem i where i.isActive='Y' and"
                       + " (i.parentInventoryItemId = :parentInventoryItemId or i.id = :parentInventoryItemId)"
-                      + " and i.name like :name ")                  
-             })
-
-/*
-@NamedQueries({ @NamedQuery(name = "InventoryItem.InventoryItem", query = "select new org.openelis.domain.InventoryItemDO(i.id,i.name,i.description,i.categoryId,i.storeId,i.quantityMinLevel, " +
-                               " i.quantityMaxLevel,i.quantityToReorder, i.dispensedUnitsId,i.isReorderAuto,i.isLotMaintained,i.isSerialMaintained,i.isActive, " +
-                            " i.isBulk,i.isNotForSale,i.isSubAssembly,i.isLabor,i.isNoInventory,i.productUri,i.averageLeadTime, i.averageCost, i.averageDailyUse, i.parentInventoryItemId, "+
-                            " pi.name, i.parentRatio) from InventoryItem i LEFT JOIN i.parentInventoryItem pi where i.id = :id"),
-     @NamedQuery(name = "InventoryItem.AutocompleteByNameStoreCurrentName", query = "select new org.openelis.domain.IdNameDO(i.id, i.name) " +
-                            "  from InventoryItem i where i.name like :name and i.storeId = :store and i.name != :currentName and i.isActive = 'Y' order by i.name"),
-     @NamedQuery(name = "InventoryItem.AutocompleteByName", query = "select new org.openelis.domain.IdNameDO(i.id, i.name) " +
-                            "  from InventoryItem i where i.name like :name and i.isActive = 'Y' order by i.name"),
-     @NamedQuery(name = "InventoryItem.AutocompleteItemStoreLocByName", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, d.entry, il.id, childLoc.name, " +
-                            " childLoc.location, parentLoc.name, childLoc.storageUnit.description, il.lotNumber, il.expirationDate, il.quantityOnhand) " +
-                            "  from InventoryItem i left join i.inventoryLocation il left join il.storageLocation childLoc " +
-                            " left join childLoc.parentStorageLocation parentLoc, Dictionary d where "+
-                            " (childLoc.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId=childLoc.id))" +
-                            " and i.storeId = d.id and i.name like :name and i.isActive = 'Y' " +
-                            " and i.isNotForSale = 'N' and i.isSubAssembly = 'N' order by i.name"),
-     @NamedQuery(name = "InventoryItem.AutocompleteItemStoreLocByNameSubItems", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, i.description, d.entry, il.id, childLoc.name, " +
-                            " childLoc.location, parentLoc.name, childLoc.storageUnit.description, il.lotNumber, il.expirationDate, il.quantityOnhand, disUnit.entry, " +
-                            " i.isBulk, i.isLotMaintained, i.isSerialMaintained, i.parentRatio, i.parentInventoryItemId) " +
-                            "  from InventoryItem i left join i.inventoryLocation il left join il.storageLocation childLoc " +
-                            " left join childLoc.parentStorageLocation parentLoc, Dictionary d, Dictionary disUnit where "+
-                            " (childLoc.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId=childLoc.id))" +
-                            " and i.storeId = d.id and i.dispensedUnitsId = disUnit.id " +
-                            " and i.name like :name and i.isActive = 'Y' " +
-                            " and i.isNotForSale = 'N' order by i.name"),
-     @NamedQuery(name = "InventoryItem.AutocompleteItemStoreLocByNameMainStore", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, d.entry, il.id, childLoc.name, " +
-                            " childLoc.location, parentLoc.name, childLoc.storageUnit.description, il.lotNumber, il.expirationDate, il.quantityOnhand) " +
-                            "  from InventoryItem i left join i.inventoryLocation il left join il.storageLocation childLoc " +
-                            " left join childLoc.parentStorageLocation parentLoc, Dictionary d where " + 
-                            " (childLoc.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId=childLoc.id))" +
-                            " and i.storeId = d.id  and i.name like :name and i.isActive = 'Y' " +
-                            " and i.isNotForSale = 'N' and i.isSubAssembly = 'N' and d.systemName = 'inv_main_store' " +
-                            " order by i.name"), 
-     @NamedQuery(name = "InventoryItem.AutocompleteItemStoreByName", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry, " +
-                            " i.isBulk, i.isSerialMaintained) " +
-                            " from InventoryItem i, Dictionary store, Dictionary disUnit where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and i.name like :name and i.isActive = 'Y' " +
-                            " and i.isNotForSale = 'N' and i.isSubAssembly = 'N' order by i.name"),    
-     @NamedQuery(name = "InventoryItem.AutocompleteItemStoreByNameMainStoreSubItems", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry, " +
-                            " i.isBulk, i.isLotMaintained, i.isSerialMaintained) " +
-                            " from InventoryItem i, Dictionary store, Dictionary disUnit where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and i.name like :name and i.isActive = 'Y' " +
-                            " and i.isNotForSale = 'N' and store.systemName = 'inv_main_store'  order by i.name"),
-     @NamedQuery(name = "InventoryItem.AutocompleteItemStoreChildrenByNameId", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry, " +
-                            " i.isBulk, i.isLotMaintained, i.isSerialMaintained, i.parentRatio, i.parentInventoryItemId) " +
-                            " from InventoryItem i, Dictionary store, Dictionary disUnit where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and i.parentInventoryItemId = :id and " +
-                            " i.name like :name and i.isActive = 'Y' and i.isNotForSale = 'N' order by i.name "),           
-     @NamedQuery(name = "InventoryItem.AutocompleteItemStoreChildrenByNameParentId", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry, " +
-                            " i.isBulk, i.isLotMaintained, i.isSerialMaintained, i.parentRatio, i.parentInventoryItemId) " +
-                            " from InventoryItem i, Dictionary store, Dictionary disUnit where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and i.id = :id and " +
-                            " i.name like :name and i.isActive = 'Y' and i.isNotForSale = 'N' order by i.name "),
-     @NamedQuery(name = "InventoryItem.AutocompleteItemStoreByNameReceipt", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry, " + 
-                            " i.isBulk, i.isSerialMaintained) " +
-                            " from InventoryItem i, Dictionary store, Dictionary disUnit where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and i.name like :name and i.isActive = 'Y' " +
-                            " and i.isNotForSale = 'N' order by i.name"),
-     @NamedQuery(name = "InventoryItem.AutocompleteItemByNameStore", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, d.entry, il.id, childLoc.name, " +
-                            " childLoc.location, parentLoc.name, childLoc.storageUnit.description, il.lotNumber, il.expirationDate, il.quantityOnhand) " +
-                            "  from InventoryItem i left join i.inventoryLocation il left join il.storageLocation childLoc " +
-                            " left join childLoc.parentStorageLocation parentLoc, Dictionary d where i.storeId = d.id and i.name like :name and i.isActive = 'Y' " +
-                            " and i.isNotForSale = 'N' and i.isSubAssembly = 'N' and ((i.isSerialMaintained = 'Y' and il.quantityOnhand > 0) or (i.isSerialMaintained = 'N')) and " +
-                            " i.storeId = :store order by i.name"),
-     @NamedQuery(name = "InventoryItem.AutocompleteItemByNameKits", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry, i.isBulk, i.isSerialMaintained) " +
-                            "  from InventoryItem i, Dictionary store, Dictionary disUnit where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and i.name like :name and i.isActive = 'Y' " +
-                            " and i.isNotForSale = 'N' and i.isSubAssembly = 'N' and 0 < (select count(ic.id) from InventoryComponent ic where ic.inventoryItemId=i.id) order by i.name"),
-     @NamedQuery(name = "InventoryItem.DescriptionById", query = "select i.description from InventoryItem i where i.id = :id"),
-     @NamedQuery(name = "InventoryItem.UpdateNameStoreCompare", query = "select i.id from InventoryItem i where i.name = :name and i.storeId = :store AND i.id != :id"),
-     @NamedQuery(name = "InventoryItem.AddNameStoreCompare", query = "select i.id from InventoryItem i where i.name = :name AND i.storeId = :store"),
-     @NamedQuery(name = "InventoryItem.ValidateComponentWithItemStore", query = "select i.id from InventoryItem i where " +
-                            " i.storeId = :store AND i.id = :id")})
-*/
+                      + " and i.name like :name ")})
      
 @Entity
 @Table(name = "inventory_item")
@@ -509,8 +447,8 @@ public class InventoryItem implements Auditable, Cloneable {
             audit.setField("id", id, original.id)
                  .setField("name", name, original.name)
                  .setField("description", description, original.description)
-                 .setField("category_id", categoryId, original.categoryId)
-                 .setField("store_id", storeId, original.storeId)
+                 .setField("category_id", categoryId, original.categoryId, ReferenceTable.DICTIONARY)
+                 .setField("store_id", storeId, original.storeId, ReferenceTable.DICTIONARY)
                  .setField("quantity_min_level", quantityMinLevel, original.quantityMinLevel)
                  .setField("quantity_max_level", quantityMaxLevel, original.quantityMaxLevel)
                  .setField("quantity_to_reorder", quantityToReorder, original.quantityToReorder)

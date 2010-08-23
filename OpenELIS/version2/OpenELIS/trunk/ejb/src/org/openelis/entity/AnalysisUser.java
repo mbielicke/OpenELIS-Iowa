@@ -40,85 +40,86 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-    @NamedQuery(name = "AnalysisUser.FetchById", query = "select new org.openelis.domain.AnalysisUserViewDO(a.id, a.analysisId, a.systemUserId," +
-    		           " a.actionId, '') from AnalysisUser a where a.id = :id"),
-    @NamedQuery(name = "AnalysisUser.FetchByAnalysisId", query = "select new org.openelis.domain.AnalysisUserViewDO(a.id, a.analysisId, a.systemUserId," +
-                       " a.actionId, '') from AnalysisUser a where a.analysisId = :id "),
-    })
+     @NamedQuery( name = "AnalysisUser.FetchById",
+                query = "select new org.openelis.domain.AnalysisUserViewDO(a.id, a.analysisId, a.systemUserId, a.actionId, '')"
+                      + " from AnalysisUser a where a.id = :id"),
+    @NamedQuery( name = "AnalysisUser.FetchByAnalysisId",
+                query = "select new org.openelis.domain.AnalysisUserViewDO(a.id, a.analysisId, a.systemUserId,a.actionId, '')"
+                      + " from AnalysisUser a where a.analysisId = :id ")})
 
 @Entity
-@Table(name="analysis_user")
-@EntityListeners({AuditUtil.class})
+@Table(name = "analysis_user")
+@EntityListeners( {AuditUtil.class})
 public class AnalysisUser implements Auditable, Cloneable {
-  
-  @Id
-  @GeneratedValue
-  @Column(name="id")
-  private Integer id;             
 
-  @Column(name="analysis_id")
-  private Integer analysisId;             
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private Integer      id;
 
-  @Column(name="system_user_id")
-  private Integer systemUserId;             
+    @Column(name = "analysis_id")
+    private Integer      analysisId;
 
-  @Column(name="action_id")
-  private Integer actionId;             
+    @Column(name = "system_user_id")
+    private Integer      systemUserId;
 
-  @Transient
-  private AnalysisUser original;
-  
-  public Integer getId() {
-    return id;
-  }
-  protected void setId(Integer id) {
-    if((id == null && this.id != null) || 
-       (id != null && !id.equals(this.id)))
-      this.id = id;
-  }
+    @Column(name = "action_id")
+    private Integer      actionId;
 
-  public Integer getAnalysisId() {
-    return analysisId;
-  }
-  public void setAnalysisId(Integer analysisId) {
-    if((analysisId == null && this.analysisId != null) || 
-       (analysisId != null && !analysisId.equals(this.analysisId)))
-      this.analysisId = analysisId;
-  }
+    @Transient
+    private AnalysisUser original;
 
-  public Integer getSystemUserId() {
-    return systemUserId;
-  }
-  public void setSystemUserId(Integer systemUserId) {
-    if((systemUserId == null && this.systemUserId != null) || 
-       (systemUserId != null && !systemUserId.equals(this.systemUserId)))
-      this.systemUserId = systemUserId;
-  }
-
-  public Integer getActionId() {
-    return actionId;
-  }
-  public void setActionId(Integer actionId) {
-    if((actionId == null && this.actionId != null) || 
-       (actionId != null && !actionId.equals(this.actionId)))
-      this.actionId = actionId;
-  }
-
-  
-  public void setClone() {
-    try {
-      original = (AnalysisUser)this.clone();
-    }catch(Exception e){
-        e.printStackTrace();
+    public Integer getId() {
+        return id;
     }
-  }
-  
-  public Audit getAudit() {
+
+    protected void setId(Integer id) {
+        if (DataBaseUtil.isDifferent(id, this.id))
+            this.id = id;
+    }
+
+    public Integer getAnalysisId() {
+        return analysisId;
+    }
+
+    public void setAnalysisId(Integer analysisId) {
+        if (DataBaseUtil.isDifferent(analysisId,this.analysisId))
+            this.analysisId = analysisId;
+    }
+
+    public Integer getSystemUserId() {
+        return systemUserId;
+    }
+
+    public void setSystemUserId(Integer systemUserId) {
+        if (DataBaseUtil.isDifferent(systemUserId,this.systemUserId))
+            this.systemUserId = systemUserId;
+    }
+
+    public Integer getActionId() {
+        return actionId;
+    }
+
+    public void setActionId(Integer actionId) {
+        if (DataBaseUtil.isDifferent(actionId,this.actionId))
+            this.actionId = actionId;
+    }
+
+    public void setClone() {
+        try {
+            original = (AnalysisUser)this.clone();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Audit getAudit() {
         Audit audit;
 
         audit = new Audit();
@@ -126,11 +127,11 @@ public class AnalysisUser implements Auditable, Cloneable {
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("analysis_id", analysisId, original.analysisId)
+                 .setField("analysis_id", analysisId, original.analysisId, ReferenceTable.ANALYSIS)
                  .setField("system_user_id", systemUserId, original.systemUserId)
-                 .setField("action_id", actionId, original.actionId);
+                 .setField("action_id", actionId, original.actionId, ReferenceTable.DICTIONARY);
 
         return audit;
-  }
-  
-}   
+    }
+
+}

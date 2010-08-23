@@ -66,14 +66,14 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
     private EntityManager                    manager;
 
     @EJB
-    private AddressLocal                     addressBean;
+    private AddressLocal                  addressBean;
 
     private static final OrganizationMeta meta = new OrganizationMeta();
 
     public OrganizationViewDO fetchById(Integer id) throws Exception {
         Query query;
         OrganizationViewDO data;
-        
+
         query = manager.createNamedQuery("Organization.FetchById");
         query.setParameter("id", id);
         try {
@@ -89,7 +89,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
     @SuppressWarnings("unchecked")
     public ArrayList<OrganizationViewDO> fetchByIds(Integer... ids) {
         Query query;
-        
+
         query = manager.createNamedQuery("Organization.FetchByIds");
         query.setParameter("ids", Arrays.asList(ids));
 
@@ -98,12 +98,12 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
 
     public OrganizationDO fetchActiveById(Integer id) throws Exception {
         Query query;
-        
+
         query = manager.createNamedQuery("Organization.FetchActiveById");
         query.setParameter("id", id);
 
         try {
-            return (OrganizationDO) query.getSingleResult();
+            return (OrganizationDO)query.getSingleResult();
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -114,7 +114,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
     @SuppressWarnings("unchecked")
     public ArrayList<OrganizationDO> fetchActiveByName(String name, int max) {
         Query query;
-        
+
         query = manager.createNamedQuery("Organization.FetchActiveByName");
         query.setParameter("name", name);
         query.setMaxResults(max);
@@ -130,9 +130,8 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + 
-                          OrganizationMeta.getId() + ", " +
-                          OrganizationMeta.getName() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + OrganizationMeta.getId() +
+                          ", " + OrganizationMeta.getName() + ") ");
         builder.constructWhere(fields);
         builder.setOrderBy(OrganizationMeta.getName());
 
@@ -150,61 +149,64 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         return (ArrayList<IdNameVO>)list;
     }
 
-
     public OrganizationViewDO add(OrganizationViewDO data) throws Exception {
         Organization entity;
-        
+
         manager.setFlushMode(FlushModeType.COMMIT);
-        
+
         // first insert the address so we can reference its id
         addressBean.add(data.getAddress());
+        
         entity = new Organization();
-        entity.setAddressId(data.getAddress().getId());
         entity.setIsActive(data.getIsActive());
-        entity.setName(data.getName());
         entity.setParentOrganizationId(data.getParentOrganizationId());
+        entity.setName(data.getName());
+        entity.setAddressId(data.getAddress().getId());
 
         manager.persist(entity);
         data.setId(entity.getId());
-        
+
         return data;
     }
 
     public OrganizationViewDO update(OrganizationViewDO data) throws Exception {
         Organization entity;
-        AddressDO address;
+
+        if (! data.isChanged() && !data.getAddress().isChanged())
+            return data;
         
-        if (data.isChanged()) {                   
-            manager.setFlushMode(FlushModeType.COMMIT);
-            entity = manager.find(Organization.class, data.getId());
-            entity.setIsActive(data.getIsActive());
-            entity.setName(data.getName());
-            entity.setParentOrganizationId(data.getParentOrganizationId());
-            if(data.getAddress().getId() == null) {
-               address = addressBean.add(data.getAddress());
-               entity.setAddressId(address.getId());               
-            } else {
-                addressBean.update(data.getAddress());
-            }            
+        manager.setFlushMode(FlushModeType.COMMIT);
+        entity = manager.find(Organization.class, data.getId());
+        entity.setIsActive(data.getIsActive());
+        entity.setName(data.getName());
+        entity.setParentOrganizationId(data.getParentOrganizationId());
+
+        if (data.getAddress().isChanged()) {
+            entity.setAuditAddressId(true);
+            addressBean.update(data.getAddress());
         }
+        
         return data;
     }
 
     public void validate(OrganizationViewDO data) throws Exception {
         ValidationErrorsList list;
-        
+
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getName()))
             list.add(new FieldErrorException("fieldRequiredException", OrganizationMeta.getName()));
 
         if (DataBaseUtil.isEmpty(data.getAddress().getStreetAddress()))
-            list.add(new FieldErrorException("fieldRequiredException", OrganizationMeta.getAddressStreetAddress()));
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             OrganizationMeta.getAddressStreetAddress()));
 
         if (DataBaseUtil.isEmpty(data.getAddress().getCity()))
-            list.add(new FieldErrorException("fieldRequiredException", OrganizationMeta.getAddressCity()));
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             OrganizationMeta.getAddressCity()));
 
         if (DataBaseUtil.isEmpty(data.getAddress().getZipCode()))
-            list.add(new FieldErrorException("fieldRequiredException", OrganizationMeta.getAddressZipCode()));
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             OrganizationMeta.getAddressZipCode()));
 
         if (list.size() > 0)
             throw list;

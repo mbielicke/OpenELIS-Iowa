@@ -43,7 +43,8 @@ import org.openelis.utilcommon.DataBaseUtil;
     @NamedQuery( name  = "History.FetchByReferenceIdAndTable",
                  query = "select new org.openelis.domain.HistoryVO(h.id,h.referenceId,h.referenceTableId," +
                          "h.timestamp,h.activityId,h.systemUserId,h.changes)"
-                       + " from History h where referenceId = :referenceId and referenceTableId = :referenceTableId")})
+                       + " from History h where referenceId = :referenceId and referenceTableId = :referenceTableId"
+                       + " order by h.timestamp desc")})
 
 @Entity
 @Table(name = "history")

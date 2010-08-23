@@ -23,28 +23,30 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.remote;
+package org.openelis.messages;
 
-import java.util.ArrayList;
-
-import javax.ejb.Remote;
-
-import org.openelis.domain.IdNameStoreVO;
-import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryItemViewDO;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.persistence.Message;
 
-@Remote
-public interface InventoryItemRemote {
-    public InventoryItemViewDO fetchById(Integer id) throws Exception;
+public class InventoryItemCacheMessage implements Message {
+    private static final long serialVersionUID = 1L;
+
+    public String handler = "org.openelis.server.handlers.InventoryItemCacheHandler";
+    public enum Action {UPDATED,DELETED}
+    public Action action;
     
-    public InventoryItemDO fetchActiveById(Integer id) throws Exception;
-
-    public ArrayList<InventoryItemDO> fetchActiveByName(String name, int max) throws Exception;
-
-    public ArrayList<InventoryItemDO> fetchActiveByNameAndStore(String name, Integer storeId, int max) throws Exception;
+    protected InventoryItemViewDO inventoryItemDO;
     
-    public ArrayList<InventoryItemDO> fetchActiveByNameStoreAndParentInventoryItem(String name, Integer parentInventoryItemId, int max) throws Exception;
+    public String getHandler() {
+        return handler;
+    }
 
-    public ArrayList<IdNameStoreVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
+    public InventoryItemViewDO getInventoryItemDO() {
+        return inventoryItemDO;
+    }
+
+    public void setInventoryItemDO(InventoryItemViewDO inventoryItemDO) {
+        this.inventoryItemDO = inventoryItemDO;
+    }
+
 }

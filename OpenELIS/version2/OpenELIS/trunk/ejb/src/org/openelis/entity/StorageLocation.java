@@ -243,8 +243,8 @@ public class StorageLocation implements Auditable, Cloneable {
                  .setField("sort_order", sortOrder, original.sortOrder)
                  .setField("name", name, original.name)
                  .setField("location", location, original.location)
-                 .setField("parent_storage_location_id", parentStorageLocationId, original.parentStorageLocationId)
-                 .setField("storage_unit_id", storageUnitId, original.storageUnitId)
+                 .setField("parent_storage_location_id", parentStorageLocationId, original.parentStorageLocationId, ReferenceTable.STORAGE_LOCATION)
+                 .setField("storage_unit_id", storageUnitId, original.storageUnitId, ReferenceTable.STORAGE_UNIT)
                  .setField("is_available", isAvailable, original.isAvailable);
 
         return audit;

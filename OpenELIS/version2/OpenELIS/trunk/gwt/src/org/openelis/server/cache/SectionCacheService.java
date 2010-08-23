@@ -29,25 +29,16 @@ import java.util.ArrayList;
 
 import org.openelis.domain.SectionDO;
 import org.openelis.domain.SectionViewDO;
-import org.openelis.gwt.common.DatabaseException;
 import org.openelis.server.handlers.SectionCacheHandler;
 
 public class SectionCacheService {
     
     public ArrayList<SectionDO> fetchSectionList(String name) throws Exception {
-        try {
-            return SectionCacheHandler.getSectionList();
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+        return SectionCacheHandler.getSectionList();
     }
     
-    public SectionViewDO fetchSectionById(Integer id) throws Exception {
-        try {
-            return SectionCacheHandler.getSectionDOFromId(id);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+    public SectionViewDO fetchSectionById(Integer id) {
+        return SectionCacheHandler.getSectionDOFromId(id);        
     }  
 
 }

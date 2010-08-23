@@ -30,6 +30,12 @@ public class AnalysisResultManager implements RPC {
     protected transient TestManager                                        testManager;
     protected transient static AnalysisResultManagerProxy                  proxy;
 
+    
+    private AnalysisResultManager() {
+        analysisManager = null;
+        testManager = null;
+    }
+    
     public static AnalysisResultManager getInstance() {
         AnalysisResultManager arm;
 

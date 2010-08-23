@@ -38,10 +38,10 @@ public class OrganizationContactDO extends DataObject {
 
     protected Integer         id, organizationId, contactTypeId;
     protected String          name;
-    protected AddressDO       addressDO;
+    protected AddressDO       address;
 
     public OrganizationContactDO() {
-        addressDO = new AddressDO();
+        address = new AddressDO();
     }
 
     public OrganizationContactDO(Integer id, Integer organizationId, Integer contactTypeId,
@@ -53,7 +53,8 @@ public class OrganizationContactDO extends DataObject {
         setOrganizationId(organizationId);
         setContactTypeId(contactTypeId);
         setName(name);
-        addressDO = new AddressDO(addressId, multipleUnit, streetAddress, city, state, zipCode,
+        
+        address = new AddressDO(addressId, multipleUnit, streetAddress, city, state, zipCode,
                                   workPhone, homePhone, cellPhone, faxPhone, email, country);
         _changed = false;
     }
@@ -94,7 +95,7 @@ public class OrganizationContactDO extends DataObject {
         _changed = true;
     }
 
-    public AddressDO getAddressDO() {
-        return addressDO;
+    public AddressDO getAddress() {
+        return address;
     }
 }

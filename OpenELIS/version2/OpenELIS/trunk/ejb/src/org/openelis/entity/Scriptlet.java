@@ -40,6 +40,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -75,7 +76,7 @@ public class Scriptlet implements Auditable, Cloneable {
     }
 
     protected void setId(Integer id) {
-        if ( (id == null && this.id != null) || (id != null && !id.equals(this.id)))
+        if (DataBaseUtil.isDifferent(id, this.id))
             this.id = id;
     }
 
@@ -84,7 +85,7 @@ public class Scriptlet implements Auditable, Cloneable {
     }
 
     public void setName(String name) {
-        if ( (name == null && this.name != null) || (name != null && !name.equals(this.name)))
+        if (DataBaseUtil.isDifferent(name, this.name))
             this.name = name;
     }
 
@@ -93,8 +94,7 @@ public class Scriptlet implements Auditable, Cloneable {
     }
 
     public void setCodeSource(String codeSource) {
-        if ( (codeSource == null && this.codeSource != null) ||
-            (codeSource != null && !codeSource.equals(this.codeSource)))
+        if (DataBaseUtil.isDifferent(codeSource, this.codeSource))
             this.codeSource = codeSource;
     }
 

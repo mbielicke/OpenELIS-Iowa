@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -48,6 +49,8 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.InventoryItemLocal;
+import org.openelis.local.JMSMessageProducerLocal;
+import org.openelis.messages.InventoryItemCacheMessage;
 import org.openelis.meta.InventoryItemMeta;
 import org.openelis.remote.InventoryItemRemote;
 import org.openelis.util.QueryBuilderV2;
@@ -60,6 +63,9 @@ public class InventoryItemBean implements InventoryItemRemote, InventoryItemLoca
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager            manager;
+    
+    @EJB
+    private JMSMessageProducerLocal     jmsProducer;
 
     private static InventoryItemMeta meta = new InventoryItemMeta();
     
@@ -71,6 +77,22 @@ public class InventoryItemBean implements InventoryItemRemote, InventoryItemLoca
         query.setParameter("id", id);
         try {
             data = (InventoryItemViewDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
+    }
+    
+    public InventoryItemDO fetchActiveById(Integer id) throws Exception {
+        Query query;
+        InventoryItemDO data;
+        
+        query = manager.createNamedQuery("InventoryItem.FetchActiveById");
+        query.setParameter("id", id);
+        try {
+            data = (InventoryItemDO)query.getSingleResult();
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -108,12 +130,12 @@ public class InventoryItemBean implements InventoryItemRemote, InventoryItemLoca
         
         query = manager.createNamedQuery("InventoryItem.FetchActiveByNameAndParentInventoryItem");
         query.setParameter("name", name);
-        //query.setParameter("storeId", storeId);
         query.setParameter("parentInventoryItemId", parentInventoryItemId);
         query.setMaxResults(max);
 
         return DataBaseUtil.toArrayList(query.getResultList());
     }
+   
 
     @SuppressWarnings("unchecked")
     public ArrayList<IdNameStoreVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
@@ -146,6 +168,7 @@ public class InventoryItemBean implements InventoryItemRemote, InventoryItemLoca
 
     public InventoryItemViewDO add(InventoryItemViewDO data) throws Exception {
         InventoryItem entity;
+        InventoryItemCacheMessage msg;
         
         manager.setFlushMode(FlushModeType.COMMIT);
         
@@ -177,11 +200,17 @@ public class InventoryItemBean implements InventoryItemRemote, InventoryItemLoca
         manager.persist(entity);
         data.setId(entity.getId());
         
+        // invalidate the cache
+        msg = new InventoryItemCacheMessage();
+        msg.action = InventoryItemCacheMessage.Action.UPDATED;
+        msg.setInventoryItemDO(data);
+        jmsProducer.writeMessage(msg);        
         return data;
     }
 
     public InventoryItemViewDO update(InventoryItemViewDO data) throws Exception {
         InventoryItem entity;
+        InventoryItemCacheMessage msg;
         
         if (!data.isChanged())
             return data;
@@ -213,6 +242,11 @@ public class InventoryItemBean implements InventoryItemRemote, InventoryItemLoca
         entity.setParentInventoryItemId(data.getParentInventoryItemId());
         entity.setParentRatio(data.getParentRatio());
 
+        // invalidate the cache
+        msg = new InventoryItemCacheMessage();
+        msg.action = InventoryItemCacheMessage.Action.UPDATED;
+        msg.setInventoryItemDO(data);
+        jmsProducer.writeMessage(msg);        
         return data;
     }
 

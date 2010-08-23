@@ -248,11 +248,11 @@ public class TestAnalyte implements Auditable, Cloneable {
                  .setField("sort_order", sortOrder, original.sortOrder)
                  .setField("row_group", rowGroup, original.rowGroup)
                  .setField("is_column", isColumn, original.isColumn)
-                 .setField("analyte_id", analyteId, original.analyteId)
-                 .setField("type_id", typeId, original.typeId)
+                 .setField("analyte_id", analyteId, original.analyteId, ReferenceTable.ANALYTE)
+                 .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
                  .setField("is_reportable", isReportable, original.isReportable)
                  .setField("result_group", resultGroup, original.resultGroup)
-                 .setField("scriptlet_id", scriptletId, original.scriptletId);
+                 .setField("scriptlet_id", scriptletId, original.scriptletId, ReferenceTable.SCRIPTLET);
 
         return audit;
     }

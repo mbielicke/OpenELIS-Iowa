@@ -153,7 +153,7 @@ public class SendoutOrderScreen extends Screen {
         userService = new ScreenService("controller?service=org.openelis.server.SystemUserService");
         organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
 
-        security = OpenELIS.security.getModule("order");
+        security = OpenELIS.security.getModule("sendoutorder");
         if (security == null)
             throw new SecurityException("screenPermException", "Send-out Order Screen");
         

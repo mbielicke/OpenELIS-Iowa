@@ -634,7 +634,11 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         });
 
         // well section of the screen
-        privateWellTab = new PrivateWellTab(def, window);
+        try {
+            privateWellTab = new PrivateWellTab(def, window);
+        } catch (Exception e) {
+            Window.alert("well tab initialize: " + e.getMessage());
+        }
 
         addScreenHandler(privateWellTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {

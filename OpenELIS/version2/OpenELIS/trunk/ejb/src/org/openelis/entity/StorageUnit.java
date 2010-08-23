@@ -130,7 +130,7 @@ public class StorageUnit implements Auditable, Cloneable {
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("category_id", categoryId, original.categoryId)
+                 .setField("category_id", categoryId, original.categoryId, ReferenceTable.DICTIONARY)
                  .setField("description", description, original.description)
                  .setField("is_singular", isSingular, original.isSingular);
 

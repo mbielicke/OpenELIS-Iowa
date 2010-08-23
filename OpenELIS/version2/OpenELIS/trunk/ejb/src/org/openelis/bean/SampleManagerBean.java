@@ -104,7 +104,7 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
         
         ut = ctx.getUserTransaction();
         try {
-            ut.begin();
+            ut.begin(); 
             man.add();
             ut.commit();
         } catch (Exception e) {
@@ -125,7 +125,9 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
+            lockBean.validateLock(ReferenceTable.SAMPLE, man.getSample().getId());
             man.update();
+            lockBean.giveUpLock(ReferenceTable.SAMPLE, man.getSample().getId());  
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -151,21 +153,15 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
     }
 
     public SampleOrganizationManager fetchSampleOrgsBySampleId(Integer sampleId) throws Exception {
-        SampleOrganizationManager man = SampleOrganizationManager.fetchBySampleId(sampleId);   
-        
-        return man;
+        return SampleOrganizationManager.fetchBySampleId(sampleId);   
     }
 
     public SampleProjectManager fetchSampleProjectsBySampleId(Integer sampleId) throws Exception {
-        SampleProjectManager man = SampleProjectManager.fetchBySampleId(sampleId);   
-        
-        return man;
+        return SampleProjectManager.fetchBySampleId(sampleId);   
     }
     
     public SampleItemManager fetchSampleItemsBySampleId(Integer sampleId) throws Exception {
-        SampleItemManager man = SampleItemManager.fetchBySampleId(sampleId);
-        
-        return man;
+        return SampleItemManager.fetchBySampleId(sampleId);
     }
     
     public SampleManager validateAccessionNumber(SampleDO sampleDO) throws Exception {

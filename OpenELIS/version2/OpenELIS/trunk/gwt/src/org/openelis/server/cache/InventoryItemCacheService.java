@@ -23,15 +23,15 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.cache;
+package org.openelis.server.cache;
 
-import java.util.ArrayList;
+import org.openelis.domain.InventoryItemDO;
+import org.openelis.server.handlers.InventoryItemCacheHandler;
 
-import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.common.RPC;
-
-public class DictionaryCacheRPC implements RPC {
-    private static final long serialVersionUID = 1L;
+public class InventoryItemCacheService {   
     
-    public ArrayList<DictionaryDO> dictionaryList;
+    public InventoryItemDO fetchActiveInventoryItemById(Integer id) throws Exception {
+        return InventoryItemCacheHandler.getActiveInventoryItemDOFromId(id);
+    }  
+
 }

@@ -139,7 +139,7 @@ public class ProjectParameter implements Auditable, Cloneable {
             audit.setField("id", id, original.id)
                  .setField("project_id", projectId, original.projectId)
                  .setField("parameter", parameter, original.parameter)
-                 .setField("operation_id", operationId, original.operationId)
+                 .setField("operation_id", operationId, original.operationId, ReferenceTable.DICTIONARY)
                  .setField("value", value, original.value);
         
         return audit;

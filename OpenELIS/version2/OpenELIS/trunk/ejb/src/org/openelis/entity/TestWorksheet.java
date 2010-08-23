@@ -179,8 +179,8 @@ public class TestWorksheet implements Auditable, Cloneable {
                  .setField("test_id", testId, original.testId)
                  .setField("batch_capacity", batchCapacity, original.batchCapacity)
                  .setField("total_capacity", totalCapacity, original.totalCapacity)
-                 .setField("format_id", formatId, original.formatId)
-                 .setField("scriptlet_id", scriptletId, original.scriptletId);
+                 .setField("format_id", formatId, original.formatId, ReferenceTable.DICTIONARY)
+                 .setField("scriptlet_id", scriptletId, original.scriptletId, ReferenceTable.SCRIPTLET);
 
         return audit;
     }

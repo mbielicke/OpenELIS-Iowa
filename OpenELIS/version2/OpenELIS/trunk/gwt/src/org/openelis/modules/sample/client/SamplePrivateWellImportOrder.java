@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import org.openelis.cache.DictionaryCache;
-import org.openelis.domain.AddressDO;
 import org.openelis.domain.AuxDataDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.DictionaryDO;
@@ -129,7 +128,7 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                                 reportToError = true;
                         }else{
                             loadReportToAddress(wellMan);
-                            wellMan.getReportToAddress().setMultipleUnit(auxData.getValue());
+                            wellMan.getPrivateWell().getReportToAddress().setMultipleUnit(auxData.getValue());
                         }
                         
                     }else if(analyteId.equals("report_to_street_add")){
@@ -138,7 +137,7 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                                 reportToError = true;
                         }else{
                             loadReportToAddress(wellMan);
-                            wellMan.getReportToAddress().setStreetAddress(auxData.getValue());
+                            wellMan.getPrivateWell().getReportToAddress().setStreetAddress(auxData.getValue());
                         }
                         
                     }else if(analyteId.equals("report_to_city")){
@@ -147,7 +146,7 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                                 reportToError = true;
                         }else{
                             loadReportToAddress(wellMan);
-                            wellMan.getReportToAddress().setCity(auxData.getValue());
+                            wellMan.getPrivateWell().getReportToAddress().setCity(auxData.getValue());
                         }
                         
                     }else if(analyteId.equals("report_to_state")){
@@ -156,7 +155,7 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                                 reportToError = true;
                         }else{
                             loadReportToAddress(wellMan);
-                            wellMan.getReportToAddress().setState(auxData.getValue());
+                            wellMan.getPrivateWell().getReportToAddress().setState(auxData.getValue());
                         }
                         
                     }else if(analyteId.equals("report_to_zip_code")){
@@ -165,7 +164,7 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                                 reportToError = true;
                         }else{
                             loadReportToAddress(wellMan);
-                            wellMan.getReportToAddress().setZipCode(auxData.getValue());
+                            wellMan.getPrivateWell().getReportToAddress().setZipCode(auxData.getValue());
                         }
                         
                     }else if(analyteId.equals("report_to_phone_num")){
@@ -174,7 +173,7 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                                 reportToError = true;
                         }else{
                             loadReportToAddress(wellMan);
-                            wellMan.getReportToAddress().setWorkPhone(auxData.getValue());
+                            wellMan.getPrivateWell().getReportToAddress().setWorkPhone(auxData.getValue());
                         }
                         
                     }else if(analyteId.equals("report_to_fax_num")){
@@ -183,29 +182,29 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                                 reportToError = true;
                         }else{
                             loadReportToAddress(wellMan);
-                            wellMan.getReportToAddress().setFaxPhone(auxData.getValue());
+                            wellMan.getPrivateWell().getReportToAddress().setFaxPhone(auxData.getValue());
                         }
                         
                     }else if(analyteId.equals("location")){
                         ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().setLocation(auxData.getValue());
                     }else if(analyteId.equals("loc_mult_unit")){
                         ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().
-                        getLocationAddressDO().setMultipleUnit(auxData.getValue());
+                        getLocationAddress().setMultipleUnit(auxData.getValue());
                     }else if(analyteId.equals("loc_street_address")){
                         ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().
-                        getLocationAddressDO().setStreetAddress(auxData.getValue());
+                        getLocationAddress().setStreetAddress(auxData.getValue());
                     }else if(analyteId.equals("loc_city")){
                         ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().
-                        getLocationAddressDO().setCity(auxData.getValue());
+                        getLocationAddress().setCity(auxData.getValue());
                     }else if(analyteId.equals("loc_state")){
                         if(validateDropdownValue(auxData.getValue(), "state"))
                             ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().
-                                getLocationAddressDO().setState(auxData.getValue());
+                                getLocationAddress().setState(auxData.getValue());
                         else if(auxData.getValue() != null)
                             errorsList.add(new FormErrorException("orderImportError", "state", auxData.getValue()));
                     }else if(analyteId.equals("loc_zip_code")){
                         ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().
-                        getLocationAddressDO().setZipCode(auxData.getValue());
+                        getLocationAddress().setZipCode(auxData.getValue());
                     }else if(analyteId.equals("owner")){
                         ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell().setOwner(auxData.getValue());
                     }else if(analyteId.equals("collector")){
@@ -263,21 +262,11 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
         orderDO = orderMan.getOrder();
         orgDO = orderDO.getReportTo();
         
-        wellMan.removeAddress();
         if(orgDO != null){
             wellDO.setOrganizationId(orgDO.getId());
-            wellDO.setOrgName(orgDO.getName());
-            wellDO.setReportToName(null);
-            wellDO.setReportToAddressId(null);
-            
-            wellMan.setOrganizationAddress(orgDO.getAddress());
+            wellDO.getOrganization().setName(orgDO.getName());           
         }else{
             wellDO.setOrganizationId(null);
-            wellDO.setOrgName(null);
-            wellDO.setReportToName(null);
-            wellDO.setReportToAddressId(null);
-            
-            wellMan.setReportToAddress(new AddressDO());
         }
         
         //bill to
@@ -296,9 +285,8 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
     }
     
     private void loadReportToAddress(SamplePrivateWellManager man) {
-        if(man.getReportToAddress() == null){
-            man.removeAddress();
-            man.setReportToAddress(new AddressDO());
+        if(man.getPrivateWell().getReportToAddress().getId() == null){
+            //man.setReportToAddress(new AddressDO());
         }
     }
     

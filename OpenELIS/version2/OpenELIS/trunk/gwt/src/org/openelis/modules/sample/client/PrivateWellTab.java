@@ -72,10 +72,10 @@ import com.google.gwt.user.client.Window;
 public class PrivateWellTab extends Screen {
 
     private TextBox                        addressMultipleUnit, reportToAttn, addressStreetAddress,
-                    addressCity, addressWorkPhone, addressZipCode, addressFaxPhone, wellLocation,
-                    locationAddrMultipleUnit, locationAddrStreetAddress, locationAddrCity,
-                    locationAddrZipCode, wellOwner, wellCollector;
-    private TextBox<Integer>               wellOrganizationId, wellWellNumber;
+                                           addressCity, addressWorkPhone, addressZipCode, addressFaxPhone, wellLocation,
+                                           locationAddrMultipleUnit, locationAddrStreetAddress, locationAddrCity,
+                                           locationAddrZipCode, wellOwner, wellCollector;
+    private TextBox<Integer>               wellOrganizationId, wellNumber;
     private AutoComplete<String>           orgName;
     private AutoComplete<Integer>          billTo;
     private Dropdown<String>               addressState, locationAddrState;
@@ -93,27 +93,20 @@ public class PrivateWellTab extends Screen {
 
     protected boolean                      loaded = false;
 
-    public PrivateWellTab(ScreenDefInt def, ScreenWindow window) {
-        setDefinition(def);
-        setWindow(window);
-
-        orgService = new ScreenService(
-                                       "controller?service=org.openelis.modules.organization.server.OrganizationService");
-        projectService = new ScreenService(
-                                           "controller?service=org.openelis.modules.project.server.ProjectService");
-
-        initialize();
-        initializeDropdowns();
+    public PrivateWellTab(ScreenWindow window) throws Exception {        
+        this(null, window);
     }
 
-    public PrivateWellTab(ScreenWindow window) throws Exception {
-        drawScreen((ScreenDefInt)GWT.create(PrivateWellTabDef.class));
+    public PrivateWellTab(ScreenDefInt def, ScreenWindow window) throws Exception {
+        if (def == null)
+            drawScreen((ScreenDefInt)GWT.create(PrivateWellTabDef.class));
+        else
+            setDefinition(def);
+
         setWindow(window);
 
-        orgService = new ScreenService(
-                                       "controller?service=org.openelis.modules.organization.server.OrganizationService");
-        projectService = new ScreenService(
-                                           "controller?service=org.openelis.modules.project.server.ProjectService");
+        orgService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
+        projectService = new ScreenService("controller?service=org.openelis.modules.project.server.ProjectService");
 
         initialize();
         initializeDropdowns();
@@ -130,8 +123,8 @@ public class PrivateWellTab extends Screen {
                                                 .contains(state));
 
                 } else {
-                    orgName.setSelection(getManager().getPrivateWell().getOrgName(),
-                                         getManager().getPrivateWell().getOrgName());
+                    orgName.setSelection(getManager().getPrivateWell().getOrganization().getName(),
+                                         getManager().getPrivateWell().getOrganization().getName());
                     enableReportToFields(false);
                 }
             }
@@ -149,63 +142,36 @@ public class PrivateWellTab extends Screen {
                     orgDO = null;
 
                 wellDO = getManager().getPrivateWell();
-                if (orgDO != null) { // its an org record
-                    wellOrganizationId.setValue(Util.toString(event.getValue()));
-                    addressMultipleUnit.setValue(orgDO.getAddress().getMultipleUnit());
-                    addressStreetAddress.setValue(orgDO.getAddress().getStreetAddress());
-                    addressCity.setValue(orgDO.getAddress().getCity());
-                    addressState.setValue(orgDO.getAddress().getState());
-                    addressZipCode.setValue(orgDO.getAddress().getZipCode());
-                    addressWorkPhone.setValue(orgDO.getAddress().getWorkPhone());
-                    addressFaxPhone.setValue(orgDO.getAddress().getFaxPhone());
-                    enableAddressValues = false;
+                if (orgDO != null) { // it's an org record
+                    wellOrganizationId.setValue(orgDO.getId());
+                    setAddress(orgDO.getAddress());                    
 
                     wellDO.setOrganizationId(orgDO.getId());
-                    wellDO.setOrgName(orgDO.getName());
-                    wellDO.setReportToName(null);
-                    wellDO.setReportToAddressId(null);
-
-                    getManager().removeAddress();
-                    getManager().setOrganizationAddress(orgDO.getAddress());
-
-                } else if (selectedRow != null) { // its a free text entry
-                    // we only want to clear out the address values if it was an
-                    // org before
-                    if (getManager().getReportToAddress() == null) {
-                        addressMultipleUnit.setValue(null);
-                        addressStreetAddress.setValue(null);
-                        addressCity.setValue(null);
-                        addressState.setValue(null);
-                        addressZipCode.setValue(null);
-                        addressWorkPhone.setValue(null);
-                        addressFaxPhone.setValue(null);
-
-                        getManager().removeAddress();
-                        getManager().setReportToAddress(new AddressDO());
-                    }
-                    wellOrganizationId.setValue(Util.toString(null));
-
+                    wellDO.setOrganization(orgDO);
+                    enableAddressValues = false;                    
+                } else if (selectedRow != null) { 
+                    //
+                    // it's a free text entry we only want to clear out the
+                    // address values if it was an org before
+                    //
+                    if (getManager().getPrivateWell().getOrganizationId() != null) 
+                        setAddress(null);
+                    
+                    wellOrganizationId.setValue("");
                     wellDO.setReportToName(event.getValue());
                     wellDO.setOrganizationId(null);
 
                     enableAddressValues = true;
-                } else { // its a clear out
-                    wellOrganizationId.setValue(Util.toString(null));
-                    addressMultipleUnit.setValue(null);
-                    addressStreetAddress.setValue(null);
-                    addressCity.setValue(null);
-                    addressState.setValue(null);
-                    addressZipCode.setValue(null);
-                    addressWorkPhone.setValue(null);
-                    addressFaxPhone.setValue(null);
+                } else { // it's a clear out
+                    wellOrganizationId.setValue("");
+                    setAddress(null);
 
-                    wellDO.setReportToName(event.getValue());
-                    wellDO.setReportToAddressId(null);
+                    wellDO.setReportToName(null);
+                    wellDO.getReportToAddress().setId(null);
                     wellDO.setOrganizationId(null);
-                    wellDO.setOrgName(null);
+                    wellDO.getOrganization().setName(null);
 
-                    getManager().removeAddress();
-                    getManager().setReportToAddress(new AddressDO());
+
                     enableAddressValues = true;
                 }
 
@@ -266,8 +232,7 @@ public class PrivateWellTab extends Screen {
         wellOrganizationId = (TextBox<Integer>)def.getWidget(SampleMeta.getWellOrganizationId());
         addScreenHandler(wellOrganizationId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                wellOrganizationId.setValue(Util.toString(getManager().getPrivateWell()
-                                                                      .getOrganizationId()));
+                wellOrganizationId.setValue(getManager().getPrivateWell().getOrganizationId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -283,11 +248,23 @@ public class PrivateWellTab extends Screen {
         addressMultipleUnit = (TextBox)def.getWidget(SampleMeta.getWellReportToAddressMultipleUnit());
         addScreenHandler(addressMultipleUnit, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                addressMultipleUnit.setValue(getManager().getAddress().getMultipleUnit());
+                if (getManager().getPrivateWell().getOrganizationId() == null) {
+                    addressMultipleUnit.setValue(getManager().getPrivateWell()
+                                                 .getReportToAddress()
+                                                 .getMultipleUnit());
+                    enableReportToFields(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                                .contains(state));
+
+                } else {
+                    addressMultipleUnit.setValue(getManager().getPrivateWell().getOrganization().getAddress().getMultipleUnit());
+                    enableReportToFields(false);
+                }
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getManager().getAddress().setMultipleUnit(event.getValue());
+                getManager().getPrivateWell()
+                            .getReportToAddress()
+                            .setMultipleUnit(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -300,7 +277,7 @@ public class PrivateWellTab extends Screen {
         reportToAttn = (TextBox)def.getWidget(SampleMeta.getWellReportToAttention());
         addScreenHandler(reportToAttn, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                reportToAttn.setValue(getManager().getPrivateWell().getReportToAttention());
+                reportToAttn.setValue(getManager().getPrivateWell().getReportToAttention());                
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -316,12 +293,24 @@ public class PrivateWellTab extends Screen {
 
         addressStreetAddress = (TextBox)def.getWidget(SampleMeta.getWellReportToAddressStreetAddress());
         addScreenHandler(addressStreetAddress, new ScreenEventHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                addressStreetAddress.setValue(getManager().getAddress().getStreetAddress());
+            public void onDataChange(DataChangeEvent event) {               
+                if (getManager().getPrivateWell().getOrganizationId() == null) {
+                    addressStreetAddress.setValue(getManager().getPrivateWell()
+                                                 .getReportToAddress()
+                                                 .getStreetAddress());
+                    enableReportToFields(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                                .contains(state));
+
+                } else {
+                    addressStreetAddress.setValue(getManager().getPrivateWell().getOrganization().getAddress().getStreetAddress());
+                    enableReportToFields(false);
+                }
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getManager().getAddress().setStreetAddress(event.getValue());
+                getManager().getPrivateWell()
+                            .getReportToAddress()
+                            .setStreetAddress(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -334,11 +323,21 @@ public class PrivateWellTab extends Screen {
         addressCity = (TextBox)def.getWidget(SampleMeta.getWellReportToAddressCity());
         addScreenHandler(addressCity, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                addressCity.setValue(getManager().getAddress().getCity());
+                if (getManager().getPrivateWell().getOrganizationId() == null) {
+                    addressCity.setValue(getManager().getPrivateWell()
+                                                 .getReportToAddress()
+                                                 .getCity());
+                    enableReportToFields(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                                .contains(state));
+
+                } else {
+                    addressCity.setValue(getManager().getPrivateWell().getOrganization().getAddress().getCity());
+                    enableReportToFields(false);
+                }
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getManager().getAddress().setCity(event.getValue());
+                getManager().getPrivateWell().getReportToAddress().setCity(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -350,12 +349,22 @@ public class PrivateWellTab extends Screen {
 
         addressWorkPhone = (TextBox)def.getWidget(SampleMeta.getWellReportToAddressWorkPhone());
         addScreenHandler(addressWorkPhone, new ScreenEventHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                addressWorkPhone.setValue(getManager().getAddress().getWorkPhone());
+            public void onDataChange(DataChangeEvent event) {                
+                if (getManager().getPrivateWell().getOrganizationId() == null) {
+                    addressWorkPhone.setValue(getManager().getPrivateWell()
+                                                 .getReportToAddress()
+                                                 .getWorkPhone());
+                    enableReportToFields(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                                .contains(state));
+
+                } else {
+                    addressWorkPhone.setValue(getManager().getPrivateWell().getOrganization().getAddress().getWorkPhone());
+                    enableReportToFields(false);
+                }
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getManager().getAddress().setWorkPhone(event.getValue());
+                getManager().getPrivateWell().getReportToAddress().setWorkPhone(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -368,11 +377,20 @@ public class PrivateWellTab extends Screen {
         addressState = (Dropdown)def.getWidget(SampleMeta.getWellReportToAddressState());
         addScreenHandler(addressState, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                addressState.setSelection(getManager().getAddress().getState());
+                if (getManager().getPrivateWell().getOrganizationId() == null) {
+                    addressState.setValue(getManager().getPrivateWell()
+                                                 .getReportToAddress()
+                                                 .getState());
+                    enableReportToFields(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                                .contains(state));
+                } else {
+                    addressState.setValue(getManager().getPrivateWell().getOrganization().getAddress().getState());
+                    enableReportToFields(false);
+                }
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getManager().getAddress().setState(event.getValue());
+                getManager().getPrivateWell().getReportToAddress().setState(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -385,11 +403,20 @@ public class PrivateWellTab extends Screen {
         addressZipCode = (TextBox)def.getWidget(SampleMeta.getWellReportToAddressZipCode());
         addScreenHandler(addressZipCode, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                addressZipCode.setValue(getManager().getAddress().getZipCode());
+                if (getManager().getPrivateWell().getOrganizationId() == null) {
+                    addressZipCode.setValue(getManager().getPrivateWell()
+                                                 .getReportToAddress()
+                                                 .getZipCode());
+                    enableReportToFields(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                                .contains(state));
+                } else {
+                    addressZipCode.setValue(getManager().getPrivateWell().getOrganization().getAddress().getZipCode());
+                    enableReportToFields(false);
+                }
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getManager().getAddress().setZipCode(event.getValue());
+                getManager().getPrivateWell().getReportToAddress().setZipCode(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -402,11 +429,23 @@ public class PrivateWellTab extends Screen {
         addressFaxPhone = (TextBox)def.getWidget(SampleMeta.getWellReportToAddressFaxPhone());
         addScreenHandler(addressFaxPhone, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                addressFaxPhone.setValue(getManager().getAddress().getFaxPhone());
+                addressFaxPhone.setValue(getManager().getPrivateWell()
+                                                     .getReportToAddress()
+                                                     .getFaxPhone());
+                if (getManager().getPrivateWell().getOrganizationId() == null) {
+                    addressFaxPhone.setValue(getManager().getPrivateWell()
+                                                 .getReportToAddress()
+                                                 .getFaxPhone());
+                    enableReportToFields(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                                .contains(state));
+                } else {
+                    addressFaxPhone.setValue(getManager().getPrivateWell().getOrganization().getAddress().getFaxPhone());
+                    enableReportToFields(false);
+                }
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getManager().getAddress().setFaxPhone(event.getValue());
+                getManager().getPrivateWell().getReportToAddress().setFaxPhone(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -437,13 +476,13 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(locationAddrMultipleUnit, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 locationAddrMultipleUnit.setValue(getManager().getPrivateWell()
-                                                              .getLocationAddressDO()
+                                                              .getLocationAddress()
                                                               .getMultipleUnit());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 getManager().getPrivateWell()
-                            .getLocationAddressDO()
+                            .getLocationAddress()
                             .setMultipleUnit(event.getValue());
             }
 
@@ -458,13 +497,13 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(locationAddrStreetAddress, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 locationAddrStreetAddress.setValue(getManager().getPrivateWell()
-                                                               .getLocationAddressDO()
+                                                               .getLocationAddress()
                                                                .getStreetAddress());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 getManager().getPrivateWell()
-                            .getLocationAddressDO()
+                            .getLocationAddress()
                             .setStreetAddress(event.getValue());
             }
 
@@ -479,12 +518,12 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(locationAddrCity, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 locationAddrCity.setValue(getManager().getPrivateWell()
-                                                      .getLocationAddressDO()
+                                                      .getLocationAddress()
                                                       .getCity());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getManager().getPrivateWell().getLocationAddressDO().setCity(event.getValue());
+                getManager().getPrivateWell().getLocationAddress().setCity(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -498,12 +537,12 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(locationAddrState, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 locationAddrState.setSelection(getManager().getPrivateWell()
-                                                           .getLocationAddressDO()
+                                                           .getLocationAddress()
                                                            .getState());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getManager().getPrivateWell().getLocationAddressDO().setState(event.getValue());
+                getManager().getPrivateWell().getLocationAddress().setState(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -517,12 +556,12 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(locationAddrZipCode, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 locationAddrZipCode.setValue(getManager().getPrivateWell()
-                                                         .getLocationAddressDO()
+                                                         .getLocationAddress()
                                                          .getZipCode());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getManager().getPrivateWell().getLocationAddressDO().setZipCode(event.getValue());
+                getManager().getPrivateWell().getLocationAddress().setZipCode(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -566,10 +605,10 @@ public class PrivateWellTab extends Screen {
             }
         });
 
-        wellWellNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getWellWellNumber());
-        addScreenHandler(wellWellNumber, new ScreenEventHandler<Integer>() {
+        wellNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getWellWellNumber());
+        addScreenHandler(wellNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                wellWellNumber.setValue(Util.toString(getManager().getPrivateWell().getWellNumber()));
+                wellNumber.setValue(Util.toString(getManager().getPrivateWell().getWellNumber()));
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -577,9 +616,9 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                wellWellNumber.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                wellNumber.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                              .contains(event.getState()));
-                wellWellNumber.setQueryMode(event.getState() == State.QUERY);
+                wellNumber.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -898,7 +937,7 @@ public class PrivateWellTab extends Screen {
         addressState.setModel(model);
         locationAddrState.setModel(model);
     }
-    
+
     public void showErrors(ValidationErrorsList errors) {
         TableFieldErrorException tableE;
         FieldErrorException fieldE;
@@ -907,14 +946,14 @@ public class PrivateWellTab extends Screen {
 
         for (Exception ex : errors.getErrorList()) {
             if (ex instanceof TableFieldErrorException) {
-                tableE = (TableFieldErrorException) ex;
+                tableE = (TableFieldErrorException)ex;
                 tableWid = (TableWidget)def.getWidget(tableE.getTableKey());
                 tableWid.setCellException(tableE.getRowIndex(), tableE.getFieldName(), tableE);
             } else if (ex instanceof FieldErrorException) {
                 fieldE = (FieldErrorException)ex;
                 field = (HasField)def.getWidget(fieldE.getFieldName());
-                
-                if(field != null)
+
+                if (field != null)
                     field.addException(fieldE);
             }
         }
@@ -932,5 +971,18 @@ public class PrivateWellTab extends Screen {
         }
 
         return wellManager;
+    }
+    
+    private void setAddress(AddressDO address) {
+        if (address == null)
+            address = new AddressDO();
+        
+        addressMultipleUnit.setValue(address.getMultipleUnit());
+        addressStreetAddress.setValue(address.getStreetAddress());
+        addressCity.setValue(address.getCity());
+        addressState.setValue(address.getState());
+        addressZipCode.setValue(address.getZipCode());
+        addressWorkPhone.setValue(address.getWorkPhone());
+        addressFaxPhone.setValue(address.getFaxPhone());
     }
 }

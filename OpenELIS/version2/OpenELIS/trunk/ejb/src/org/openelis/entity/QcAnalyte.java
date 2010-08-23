@@ -164,8 +164,8 @@ public class QcAnalyte implements Auditable, Cloneable {
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("qc_id", qcId, original.qcId)
-                 .setField("analyte_id", analyteId, original.analyteId)
-                 .setField("type_id", typeId, original.typeId)
+                 .setField("analyte_id", analyteId, original.analyteId, ReferenceTable.ANALYTE)
+                 .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
                  .setField("value", value, original.value)
                  .setField("is_trendable", isTrendable, original.isTrendable);
 

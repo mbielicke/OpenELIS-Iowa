@@ -115,7 +115,7 @@ public class OrderTest implements Auditable, Cloneable {
             audit.setField("id", id, original.id)
                  .setField("order_id", orderId, original.orderId)
                  .setField("sequence", sortOrder, original.sortOrder)
-                 .setField("test_id", testId, original.testId);
+                 .setField("test_id", testId, original.testId, ReferenceTable.TEST);
 
         return audit;
     }

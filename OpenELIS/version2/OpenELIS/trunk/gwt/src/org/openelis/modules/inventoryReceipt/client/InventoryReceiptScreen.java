@@ -27,13 +27,12 @@ package org.openelis.modules.inventoryReceipt.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.InventoryItemCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InventoryItemDO;
-import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.domain.InventoryReceiptViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.gwt.common.Datetime;
@@ -117,7 +116,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
     private TabPanel                                  tabPanel;
     
     private ArrayList<TableDataRow>                   receiptModel; 
-    private HashMap<Integer, InventoryItemViewDO>     inventoryItemMap;  
+    //private HashMap<Integer, InventoryItemViewDO>     inventoryItemMap;  
     private Query                                     query; 
     private String                                    upcQuery;
     private int                                       newManagerIndex;              
@@ -334,6 +333,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                 index = bundle.getManagerIndex();
                 man = bundle.getManager();                
                 data = man.getReceiptAt(index);
+                item = null;
                 
                 switch(c) {                        
                     case 2:
@@ -346,7 +346,12 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                             data.setUpc(upcData.getName());
                             if (!upcData.getId().equals(-1)) {
                                 tmpRow = new TableDataRow(upcData.getId(), upcData.getDescription());
-                                item = getInventoryItem(upcData.getId());
+                                try {
+                                    item = InventoryItemCache.getActiveInventoryItemFromId(upcData.getId());
+                                } catch (Exception e) {
+                                    Window.alert("Inventory Item Cache error:" + e.getMessage());
+                                    e.printStackTrace();
+                                }
                                 tmpRow.data = item;
                                 exceptions = tableRow.cells.get(4).getExceptions();
                                 if (exceptions != null) {
@@ -676,7 +681,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
         });
         
         screen = this;
-        inventoryItemMap = new HashMap<Integer, InventoryItemViewDO>();
+        //inventoryItemMap = new HashMap<Integer, InventoryItemViewDO>();
     }
     
     protected void query() {    
@@ -857,7 +862,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
         }
     }
     
-    protected InventoryItemViewDO getInventoryItem(Integer id) {
+    /*protected InventoryItemViewDO getInventoryItem(Integer id) {
         InventoryItemViewDO data;         
                     
         data = inventoryItemMap.get(id);
@@ -872,7 +877,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
         }
         
         return data;        
-    }   
+    }*/   
     
     private void drawTabs() {                
         switch (tab) {
@@ -1021,7 +1026,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                                 row.cells.get(1).setValue(data.getOrderItemOrderExternalOrderNumber());
                                 row.cells.get(2).setValue(data.getReceivedDate());
 
-                                invItem = getInventoryItem(data.getInventoryItemId());
+                                invItem = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());
                                 if (invItem != null) {
                                     row.cells.get(3).setValue(new TableDataRow(invItem.getId(), data.getUpc()));
                                     row.cells.get(4).setValue(new TableDataRow(invItem.getId(), invItem.getName()));

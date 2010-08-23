@@ -211,9 +211,9 @@ public class InventoryLocation implements Auditable, Cloneable {
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("inventory_item_id", inventoryItemId, original.inventoryItemId)
+                 .setField("inventory_item_id", inventoryItemId, original.inventoryItemId, ReferenceTable.INVENTORY_ITEM)
                  .setField("lot_number", lotNumber, original.lotNumber)
-                 .setField("storage_location_id", storageLocationId, original.storageLocationId)
+                 .setField("storage_location_id", storageLocationId, original.storageLocationId, ReferenceTable.STORAGE_LOCATION)
                  .setField("quantity_onhand", quantityOnhand, original.quantityOnhand)
                  .setField("expiration_date", expirationDate, original.expirationDate);
 

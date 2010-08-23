@@ -160,8 +160,8 @@ public class InventoryXPut implements Auditable, Cloneable {
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("inventory_receipt_id", inventoryReceiptId, original.inventoryReceiptId)
-                 .setField("inventory_location_id", inventoryLocationId, original.inventoryLocationId)
+                 .setField("inventory_receipt_id", inventoryReceiptId, original.inventoryReceiptId, ReferenceTable.INVENTORY_X_PUT)
+                 .setField("inventory_location_id", inventoryLocationId, original.inventoryLocationId, ReferenceTable.INVENTORY_LOCATION)
                  .setField("quantity", quantity, original.quantity);
 
         return audit;

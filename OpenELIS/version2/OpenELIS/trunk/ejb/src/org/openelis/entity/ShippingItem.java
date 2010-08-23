@@ -48,10 +48,7 @@ import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({
-    /*@NamedQuery( name = "ShippingItem.ShippingItem",
-                query = "select new org.openelis.domain.ShippingItemDO(s.id, s.shippingId, s.referenceTableId, s.referenceId, oi.quantity, loc.id, trans.id) "
-                      + " from ShippingItem s LEFT JOIN s.orderItem oi LEFT JOIN oi.inventoryXUse trans LEFT JOIN trans.inventoryLocation loc where s.shippingId = :id")*/
+@NamedQueries({    
     @NamedQuery( name = "ShippingItem.FetchByShippingId",
                  query = "select new org.openelis.domain.ShippingItemDO(s.id, s.shippingId, s.referenceTableId, s.referenceId, s.quantity, s.description) "
                        + " from ShippingItem s where s.shippingId = :id")})

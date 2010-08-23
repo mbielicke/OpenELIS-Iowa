@@ -254,12 +254,12 @@ public class Instrument implements Auditable, Cloneable {
                  .setField("description", description, original.description)
                  .setField("model_number", modelNumber, original.modelNumber)
                  .setField("serial_number", serialNumber, original.serialNumber)
-                 .setField("type_id", typeId, original.typeId)
+                 .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
                  .setField("location", location, original.location)
                  .setField("is_active", isActive, original.isActive)
                  .setField("active_begin", activeBegin, original.activeBegin)
                  .setField("active_end", activeEnd, original.activeEnd)
-                 .setField("scriptlet_id", scriptletId, original.scriptletId);
+                 .setField("scriptlet_id", scriptletId, original.scriptletId, ReferenceTable.SCRIPTLET);
 
         return audit;
 

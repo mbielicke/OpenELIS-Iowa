@@ -112,7 +112,20 @@ public class HistoryScreen extends Screen {
         
         historyTree.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                event.cancel();                
+                TreeDataItem item;
+                Integer refTable, refId;
+                String fieldName;
+                IdNameVO data;
+                
+                event.cancel(); 
+                item = historyTree.getSelection();
+                if (item.data != null && event.getCol() == 1) {
+                    refTable = Integer.valueOf((String)item.data);
+                    refId = Integer.valueOf((String)item.cells.get(1).getValue()); 
+                    fieldName = (String)item.cells.get(0).getValue();
+                    data = new IdNameVO(refId, fieldName + ": "+ refId.toString());                    
+                    showHistory(consts.get("history"), refTable, data);
+                }                                                  
             }            
         });
         
@@ -189,23 +202,19 @@ public class HistoryScreen extends Screen {
     }
     
     private void addHistoryItems(int index, TreeDataItem parent) {
-        ArrayList<TreeDataItem> model;
+        Integer activityId;
         ArrayList<HistoryVO> list;
         IdNameVO refVO;
         TreeDataItem item, child;
         Document doc;
         String changes, operation;
         NodeList nodes;
-        Node root, node;
+        Node root, node, refTable;
         Query query;
         QueryData field; 
-        Integer activityId;
 
-        model = (ArrayList<TreeDataItem>)parent.data;
-        if(model != null)
-            return;
-        
-        model = new ArrayList<TreeDataItem>();
+        if(parent.getItems().size() > 0)
+            return;       
         
         query = new Query();
 
@@ -242,16 +251,21 @@ public class HistoryScreen extends Screen {
                     nodes = root.getChildNodes();
                     for (int i = 0; i < nodes.getLength(); i++ ) {
                         node = nodes.item(i);
-                        child = new TreeDataItem(2);
-                        child.leafType = "fields";
+                        refTable = node.getAttributes().getNamedItem("refTable");                        
+                        child = new TreeDataItem(2);                        
                         child.cells.get(0).setValue(node.getNodeName());
                         child.cells.get(1).setValue(node.getFirstChild().getNodeValue());
+                        if (refTable != null) { 
+                            child.data = refTable.getNodeValue();          
+                            child.leafType = "linkfields";
+                        } else {
+                            child.leafType = "fields";
+                        }
                         item.addItem(child);
                     }
 
                 }
                 parent.addItem(item);                     
-                model.add(item);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -260,8 +274,7 @@ public class HistoryScreen extends Screen {
         }
         
         window.setDone(consts.get("loadCompleteMessage"));
-        parent.data = model;
-        if(model.size() == 0) {
+        if(parent.getItems().size() == 0) {
             parent.checkForChildren(false);
             historyTree.refresh(true);
             window.setStatus(consts.get("noRecordsFound"), "");

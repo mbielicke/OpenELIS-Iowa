@@ -30,87 +30,102 @@ import org.openelis.utilcommon.DataBaseUtil;
 public class SamplePrivateWellDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id, sampleId, organizationId, reportToAddressId, 
-                     locationAddressId, wellNumber;
-    protected String reportToName, reportToAttention, location, owner, collector;
-    
-    protected AddressDO locationAddressDO;
-    
-    public SamplePrivateWellDO(){
-        locationAddressDO = new AddressDO();
+
+    protected Integer         id, sampleId, organizationId,  wellNumber;
+    protected String          reportToName, reportToAttention, location, owner, collector;
+
+    protected AddressDO       locationAddress, reportToAddress;
+
+    public SamplePrivateWellDO() {
+        locationAddress = new AddressDO();
+        reportToAddress = new AddressDO();
     }
-    
-    public SamplePrivateWellDO(Integer id, Integer sampleId, Integer organizationId, String reportToName, String reportToAttention, Integer reportToAddressId, 
-                               String location, Integer locationAddressId, String locationMultipleUnit, String locationStreetAddress, 
-                               String locationCity, String locationState, String locationZipCode, String owner, String collector, Integer wellNumber){
+
+    public SamplePrivateWellDO(Integer id, Integer sampleId, Integer organizationId,
+                               String reportToName, String reportToAttention,
+                               Integer reportToAddressId, String location,
+                               Integer locationAddressId, String owner, String collector,
+                               Integer wellNumber, String reportToMultipleUnit,
+                               String reportToStreetAddress, String reportToCity,
+                               String reportToState, String reportToZipCode,
+                               String reportToWorkPhone, String reportToHomePhone,
+                               String reportToCellPhone, String reportToFaxPhone,
+                               String reportToEmail, String reportToCountry,
+                               String locationMultipleUnit, String locationStreetAddress,
+                               String locationCity, String locationState, String locationZipCode,
+                               String locationWorkPhone, String locationHomePhone,
+                               String locationCellPhone, String locationFaxPhone,
+                               String locationEmail, String locationCountry) {
         setId(id);
         setSampleId(sampleId);
         setOrganizationId(organizationId);
         setReportToName(reportToName);
         setReportToAttention(reportToAttention);
-        setReportToAddressId(reportToAddressId);
         setLocation(location);
-        setLocationAddressId(locationAddressId);
         setOwner(owner);
         setCollector(collector);
         setWellNumber(wellNumber);
         
-        locationAddressDO = new AddressDO(locationAddressId, locationMultipleUnit, locationStreetAddress, 
-                                          locationCity, locationState, locationZipCode, null, null, null,
-                                          null, null, null);
+        reportToAddress = new AddressDO(reportToAddressId, reportToMultipleUnit,
+                                        reportToStreetAddress, reportToCity, reportToState,
+                                        reportToZipCode, reportToWorkPhone, reportToHomePhone,
+                                        reportToCellPhone, reportToFaxPhone, reportToEmail,
+                                        reportToCountry);
+        
+        locationAddress = new AddressDO(locationAddressId, locationMultipleUnit,
+                                        locationStreetAddress, locationCity, locationState,
+                                        locationZipCode, locationWorkPhone, locationHomePhone,
+                                        locationCellPhone, locationFaxPhone, locationEmail,
+                                        locationCountry);
         _changed = false;
     }
-    
+
     public Integer getId() {
         return id;
     }
+
     public void setId(Integer id) {
         this.id = id;
         _changed = true;
     }
+
     public Integer getSampleId() {
         return sampleId;
     }
+
     public void setSampleId(Integer sampleId) {
         this.sampleId = sampleId;
         _changed = true;
     }
+
     public Integer getOrganizationId() {
         return organizationId;
     }
+
     public void setOrganizationId(Integer organizationId) {
         this.organizationId = organizationId;
         _changed = true;
     }
-    public Integer getReportToAddressId() {
-        return reportToAddressId;
-    }
-    public void setReportToAddressId(Integer reportToAddressId) {
-        this.reportToAddressId = reportToAddressId;
-        _changed = true;
-    }
-    public Integer getLocationAddressId() {
-        return locationAddressId;
-    }
-    public void setLocationAddressId(Integer locationAddressId) {
-        this.locationAddressId = locationAddressId;
-        _changed = true;
-    }
+
+
     public Integer getWellNumber() {
         return wellNumber;
     }
+
     public void setWellNumber(Integer wellNumber) {
         this.wellNumber = wellNumber;
         _changed = true;
     }
+
     public String getReportToName() {
         return reportToName;
     }
+
     public void setReportToName(String reportToName) {
         this.reportToName = DataBaseUtil.trim(reportToName);
         _changed = true;
     }
+
     public String getReportToAttention() {
         return reportToAttention;
     }
@@ -118,28 +133,39 @@ public class SamplePrivateWellDO extends DataObject {
     public void setReportToAttention(String reportToAttention) {
         this.reportToAttention = DataBaseUtil.trim(reportToAttention);
     }
+
     public String getLocation() {
         return location;
     }
+
     public void setLocation(String location) {
         this.location = DataBaseUtil.trim(location);
         _changed = true;
     }
+
     public String getOwner() {
         return owner;
     }
+
     public void setOwner(String owner) {
         this.owner = DataBaseUtil.trim(owner);
         _changed = true;
     }
+
     public String getCollector() {
         return collector;
     }
+
     public void setCollector(String collector) {
         this.collector = DataBaseUtil.trim(collector);
         _changed = true;
     }
-    public AddressDO getLocationAddressDO() {
-        return locationAddressDO;
+
+    public AddressDO getLocationAddress() {
+        return locationAddress;
+    }
+
+    public AddressDO getReportToAddress() {
+        return reportToAddress;
     }
 }

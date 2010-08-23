@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.CompleteReleaseVO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.gwt.common.Datetime;
@@ -1129,7 +1128,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
         }
         service.call("getProgress", new AsyncCallback<ReportProgress>() {
             public void onSuccess(ReportProgress fp) {
-                window.setBusy("Generating Report...");
+                window.setBusy(consts.get("generatingReport"));
                 window.setProgress(fp.generated);
                 Timer timer = new Timer() {
                     public void run() {
@@ -1195,7 +1194,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
             
             } catch (EntityLockedException e) {
                 hash.put(man.getSample().getId(), new Item(man, -1));
-                Window.alert("Error with sample accession #" + man.getSample().getAccessionNumber() + ":\n\n"+e.getMessage());
+                Window.alert(consts.get("errorSampleAccNum") + man.getSample().getAccessionNumber() + ":\n\n"+e.getMessage());
             } catch (ValidationErrorsList e){
                 String errorMsg;
 
@@ -1215,7 +1214,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
                 }
                 
             } catch (Exception e) {
-                    Window.alert("Error with sample accession #" + man.getSample().getAccessionNumber() + ":\n\n"+e.getMessage());
+                    Window.alert(consts.get("errorSampleAccNum") + man.getSample().getAccessionNumber() + ":\n\n"+e.getMessage());
             }
         }
         
@@ -1273,7 +1272,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
 
             } catch (EntityLockedException e) {
                 hash.put(man.getSample().getId(), new Item(man, -1));
-                Window.alert("Error with sample accession #" +
+                Window.alert(consts.get("errorSampleAccNum") +
                              man.getSample().getAccessionNumber() + ":\n\n" + e.getMessage());
             } catch (ValidationErrorsList e) {
                 String errorMsg;
@@ -1298,7 +1297,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
                 }
 
             } catch (Exception e) {
-                Window.alert("Error with sample accession #" +
+                Window.alert(consts.get("errorSampleAccNum") +
                              man.getSample().getAccessionNumber() + ":\n\n" + e.getMessage());
             }
         }
@@ -1307,11 +1306,8 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
     }
     
     private void unrelease(){
-        if(completeReleaseTable.getSelections().size() > 1){
-            Window.alert("Please select exactly 1 row to unrelease.");
-            return;
-        }else if(completeReleaseTable.getSelections().size() == 0){
-            Window.alert("Please select a row to unrelease.");
+         if(completeReleaseTable.getSelections().size() != 1){
+            Window.alert(consts.get("selOneRowUnrelease"));
             return;
         }
     }
@@ -1341,7 +1337,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
                                           .getAnalysisAt(bundle.getAnalysisIndex()));
 
             } catch (Exception e) {
-                Window.alert("Error with sample accession #" +
+                Window.alert(consts.get("errorSampleAccNum") +
                              bundle.getSampleManager().getSample().getAccessionNumber() + ":\n\n" +
                              e.getMessage());
             }

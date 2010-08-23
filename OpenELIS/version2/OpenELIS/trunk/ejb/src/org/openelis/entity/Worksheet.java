@@ -29,11 +29,11 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "Worksheet.FetchById",
-                query = "select new org.openelis.domain.WorksheetDO(w.id,w.createdDate,w.systemUserId,w.statusId,w.formatId,w.batchCapacity,w.relatedWorksheetId) "+
-                        "from Worksheet w where w.id = :id"),
+                query = "select new org.openelis.domain.WorksheetDO(w.id,w.createdDate,w.systemUserId,w.statusId,w.formatId,w.batchCapacity,w.relatedWorksheetId) "
+                      + " from Worksheet w where w.id = :id"),
     @NamedQuery( name = "Worksheet.FetchByAnalysisId",
-                query = "select distinct new org.openelis.domain.WorksheetViewDO(w.id,w.createdDate,w.systemUserId,w.statusId,w.formatId,w.batchCapacity,w.relatedWorksheetId) "+
-                        "from Worksheet w left join w.worksheetItem wi left join wi.worksheetAnalysis wa where wa.analysisId = :id")})
+                query = "select distinct new org.openelis.domain.WorksheetViewDO(w.id,w.createdDate,w.systemUserId,w.statusId,w.formatId,w.batchCapacity,w.relatedWorksheetId) "
+                      + " from Worksheet w left join w.worksheetItem wi left join wi.worksheetAnalysis wa where wa.analysisId = :id")})
 
 @Entity
 @Table(name = "worksheet")
@@ -159,10 +159,10 @@ public class Worksheet implements Auditable, Cloneable {
             audit.setField("id", id, original.id)
                  .setField("created_date", createdDate, original.createdDate)
                  .setField("system_user_id", systemUserId, original.systemUserId)
-                 .setField("status_id", statusId, original.statusId)
-                 .setField("format_id", formatId, original.formatId)
+                 .setField("status_id", statusId, original.statusId, ReferenceTable.DICTIONARY)
+                 .setField("format_id", formatId, original.formatId, ReferenceTable.DICTIONARY)
                  .setField("batch_capacity", batchCapacity, original.batchCapacity)
-                 .setField("related_worksheet_id", relatedWorksheetId, original.relatedWorksheetId);
+                 .setField("related_worksheet_id", relatedWorksheetId, original.relatedWorksheetId, ReferenceTable.WORKSHEET);
 
         return audit;
     }

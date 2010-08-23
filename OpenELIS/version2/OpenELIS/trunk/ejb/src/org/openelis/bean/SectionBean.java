@@ -28,10 +28,8 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -70,9 +68,6 @@ public class SectionBean implements SectionRemote {
     @PersistenceContext(unitName = "openelis")
     private EntityManager               manager;
 
-    @Resource
-    private SessionContext              ctx;
-
     private static final SectionMeta    meta = new SectionMeta();
 
     @EJB
@@ -107,7 +102,7 @@ public class SectionBean implements SectionRemote {
 
     public ArrayList<SectionDO> fetchList() throws Exception {
         Query query;
-        List<SectionViewDO> sections;
+        List<SectionDO> sections;
 
         query = manager.createNamedQuery("Section.FetchList");
         sections = query.getResultList();

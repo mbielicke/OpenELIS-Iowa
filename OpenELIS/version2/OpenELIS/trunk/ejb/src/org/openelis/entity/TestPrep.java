@@ -154,7 +154,7 @@ public class TestPrep implements Auditable, Cloneable {
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("test_id", testId, original.testId)
-                 .setField("prep_test_id", prepTestId, original.prepTestId)
+                 .setField("prep_test_id", prepTestId, original.prepTestId, ReferenceTable.TEST)
                  .setField("is_optional", isOptional, original.isOptional);
 
         return audit;

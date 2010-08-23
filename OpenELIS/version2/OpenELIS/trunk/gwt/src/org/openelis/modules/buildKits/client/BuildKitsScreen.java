@@ -28,10 +28,10 @@ package org.openelis.modules.buildKits.client;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.InventoryItemCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryComponentViewDO;
 import org.openelis.domain.InventoryItemDO;
@@ -104,7 +104,6 @@ public class BuildKitsScreen extends Screen {
     private Dropdown<Integer>                     dispensedUnitsId;
     private ScreenService                         inventoryItemService, inventoryLocationService,
                                                   storageService;
-    private HashMap<Integer, InventoryItemViewDO> inventoryItemMap;
     
     public BuildKitsScreen() throws Exception {
         super((ScreenDefInt)GWT.create(BuildKitsDef.class));
@@ -735,7 +734,6 @@ public class BuildKitsScreen extends Screen {
         });
         
         screen = this;
-        inventoryItemMap = new HashMap<Integer, InventoryItemViewDO>();
     }
     
     private void initializeDropdowns() {
@@ -870,6 +868,9 @@ public class BuildKitsScreen extends Screen {
         InventoryItemDO toItem, fromItem;
                 
         selRows = componentTable.getSelectedRows();
+        toItem = null;
+        fromItem = null;
+        
         if (selRows.length == 0) {
             Window.alert(consts.get("selRowsToTransfer"));
             return null;
@@ -882,10 +883,12 @@ public class BuildKitsScreen extends Screen {
             Arrays.sort(selRows);
             for (int i = 0; i < selRows.length; i++) {
                 comp = icman.getComponentAt(selRows[i]);
-                itman.addTransfer();            
-                toItem = getInventoryItem(comp.getComponentId());
-                itman.setToInventoryItemAt(toItem, i);
-                fromItem = getInventoryItem(toItem.getParentInventoryItemId());
+                itman.addTransfer();           
+                
+                toItem = InventoryItemCache.getActiveInventoryItemFromId(comp.getComponentId());
+                fromItem = InventoryItemCache.getActiveInventoryItemFromId(toItem.getParentInventoryItemId());                
+                
+                itman.setToInventoryItemAt(toItem, i);                
                 itman.setFromInventoryItemAt(fromItem, i);
                 row = (TableDataRow)componentTable.getObject(selRows[i], 1);
                 if (row != null) 
@@ -898,23 +901,6 @@ public class BuildKitsScreen extends Screen {
             return null;
         }
         return itman;
-    }
-    
-    private InventoryItemViewDO getInventoryItem(Integer id) {
-        InventoryItemViewDO data;         
-                    
-        data = inventoryItemMap.get(id);
-        if (data == null && id != null) {
-            try {
-                data  = inventoryItemService.call("fetchInventoryItemById", id);                
-                inventoryItemMap.put(id, data);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Window.alert(e.getMessage());
-            }
-        }
-        
-        return data;        
     }
     
     private void setTotalInComponents(Integer val) {

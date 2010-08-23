@@ -87,26 +87,20 @@ public class EnvironmentalTab extends Screen {
 
     protected boolean                      loaded = false;
 
-    public EnvironmentalTab(ScreenDefInt def, ScreenWindow window) {
-        setDefinition(def);
-        setWindow(window);
-
-        orgService = new ScreenService(
-                                       "controller?service=org.openelis.modules.organization.server.OrganizationService");
-        projectService = new ScreenService(
-                                           "controller?service=org.openelis.modules.project.server.ProjectService");
-
-        initialize();
-    }
-
     public EnvironmentalTab(ScreenWindow window) throws Exception {
-        drawScreen((ScreenDefInt)GWT.create(EnvironmentalTabDef.class));
+        this(null, window);
+    }
+    
+    public EnvironmentalTab(ScreenDefInt def, ScreenWindow window) throws Exception {
+        if (def == null)
+            drawScreen((ScreenDefInt)GWT.create(EnvironmentalTabDef.class));
+        else
+            setDefinition(def);
+        
         setWindow(window);
 
-        orgService = new ScreenService(
-                                       "controller?service=org.openelis.modules.organization.server.OrganizationService");
-        projectService = new ScreenService(
-                                           "controller?service=org.openelis.modules.project.server.ProjectService");
+        orgService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
+        projectService = new ScreenService("controller?service=org.openelis.modules.project.server.ProjectService");
 
         initialize();
     }

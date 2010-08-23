@@ -38,8 +38,8 @@ import com.google.gwt.user.client.Window;
 public class SectionCache {
     protected static final String SECTION_CACHE_SERVICE_URL = "org.openelis.server.cache.SectionCacheService";
     protected ScreenService service;
-    HashMap<String, ArrayList<SectionDO>> nameList;
-    HashMap<Integer, SectionViewDO> idList;
+    protected HashMap<String, ArrayList<SectionDO>> nameList;
+    protected HashMap<Integer, SectionViewDO> idList;
     private static SectionCache instance;
     
     public static ArrayList<SectionDO> getSectionList() {

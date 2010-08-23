@@ -36,19 +36,20 @@ public class SampleEnvironmentalDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, sampleId, priority, locationAddressId;
-    protected String          isHazardous, description, collector, collectorPhone,
-                              location;
-    protected AddressDO       locationAddressDO        = new AddressDO();
+    protected Integer         id, sampleId, priority;
+    protected String          isHazardous, description, collector, collectorPhone, location;
+    protected AddressDO       locationAddress;
 
     public SampleEnvironmentalDO() {
+        locationAddress = new AddressDO();
     }
 
-    public SampleEnvironmentalDO(Integer id, Integer sampleId, String isHazardous, Integer priority,
-                                 String description, String collector, String collectorPhone,
-                                 String location, Integer locationAddressId, String multipleUnit,
-                                 String streetAddress, String city, String state, String zipCode,
-                                 String country) {
+    public SampleEnvironmentalDO(Integer id, Integer sampleId, String isHazardous,
+                                 Integer priority, String description, String collector,
+                                 String collectorPhone, String location, Integer locationAddressId,
+                                 String multipleUnit, String streetAddress, String city,
+                                 String state, String zipCode, String workPhone, String homePhone,
+                                 String cellPhone, String faxPhone, String email, String country) {
         setId(id);
         setSampleId(sampleId);
         setIsHazardous(isHazardous);
@@ -57,10 +58,10 @@ public class SampleEnvironmentalDO extends DataObject {
         setCollector(collector);
         setCollectorPhone(collectorPhone);
         setLocation(location);
-        setLocationAddressId(locationAddressId);
 
-        locationAddressDO = new AddressDO(locationAddressId, multipleUnit, streetAddress, city,
-                                          state, zipCode, null, null, null, null, null, country);
+        locationAddress = new AddressDO(locationAddressId, multipleUnit, streetAddress, city,
+                                        state, zipCode, workPhone, homePhone, cellPhone, faxPhone,
+                                        email, country);
         _changed = false;
     }
 
@@ -127,24 +128,15 @@ public class SampleEnvironmentalDO extends DataObject {
         _changed = true;
     }
 
-    public Integer getLocationAddressId() {
-        return locationAddressId;
-    }
-
-    public void setLocationAddressId(Integer locationAddressId) {
-        this.locationAddressId = locationAddressId;
-        _changed = true;
-    }
-
-    public AddressDO getLocationAddressDO() {
-        return locationAddressDO;
-    }
-
     public Integer getPriority() {
         return priority;
     }
 
     public void setPriority(Integer priority) {
         this.priority = priority;
+    }
+
+    public AddressDO getLocationAddress() {
+        return locationAddress;
     }
 }

@@ -232,7 +232,7 @@ public class Project implements Auditable, Cloneable {
                  .setField("is_active", isActive, original.isActive)
                  .setField("reference_to", referenceTo, original.referenceTo)
                  .setField("owner_id", ownerId, original.ownerId)
-                 .setField("scriptlet_id", scriptletId, original.scriptletId);
+                 .setField("scriptlet_id", scriptletId, original.scriptletId, ReferenceTable.SCRIPTLET);
 
         return audit;
     }

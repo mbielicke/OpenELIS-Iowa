@@ -55,11 +55,11 @@ import org.openelis.utils.Auditable;
 @NamedQueries({
     @NamedQuery( name = "Organization.FetchById",
                 query = "select new org.openelis.domain.OrganizationViewDO(o.id,o.parentOrganizationId," +
-                		"o.name,o.isActive,o.address.id,o.address.multipleUnit,o.address.streetAddress," +
-                		"o.address.city,o.address.state,o.address.zipCode,o.address.workPhone," +
-                		"o.address.homePhone,o.address.cellPhone,o.address.faxPhone,o.address.email," +
-                		"o.address.country, p.name)"
-                	  + " from Organization o left join o.parentOrganization p where o.id = :id"),
+                        "o.name,o.isActive,o.address.id,o.address.multipleUnit,o.address.streetAddress," +
+                        "o.address.city,o.address.state,o.address.zipCode,o.address.workPhone," +
+                        "o.address.homePhone,o.address.cellPhone,o.address.faxPhone,o.address.email," +
+                        "o.address.country, p.name)"
+                      + " from Organization o left join o.parentOrganization p where o.id = :id"),
     @NamedQuery( name = "Organization.FetchByIds",
                 query = "select new org.openelis.domain.OrganizationViewDO(o.id,o.parentOrganizationId," +
                         "o.name,o.isActive,o.address.id,o.address.multipleUnit,o.address.streetAddress," +
@@ -120,12 +120,11 @@ public class Organization implements Auditable, Cloneable {
     @JoinColumn(name = "parent_organization_id", insertable = false, updatable = false)
     private Organization                    parentOrganization;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reference_id", insertable = false, updatable = false)
-    private Collection<Note>                note;
-
     @Transient
     private Organization original;
+    
+    @Transient
+    private boolean auditAddressId;
 
     public Integer getId() {
         return id;
@@ -171,7 +170,10 @@ public class Organization implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(addressId, this.addressId))
             this.addressId = addressId;
     }
-
+    
+    /*
+     * support lookup entities
+     */
     public Collection<OrganizationContact> getOrganizationContact() {
         return organizationContact;
     }
@@ -188,14 +190,6 @@ public class Organization implements Auditable, Cloneable {
         this.organizationParameter = organizationParameter;
     }
 
-    public Collection<Note> getNote() {
-        return note;
-    }
-
-    public void setNote(Collection<Note> note) {
-        this.note = note;
-    }
-
     public Organization getParentOrganization() {
         return parentOrganization;
     }
@@ -208,10 +202,13 @@ public class Organization implements Auditable, Cloneable {
         return address;
     }
 
-    public void setAddress(Address address) {
-        this.address = address;
+    /*
+     * Audit support
+     */
+    public void setAuditAddressId(boolean changed) {
+        auditAddressId = changed;
     }
-
+    
     public void setClone() {
         try {
             original = (Organization)this.clone();
@@ -228,10 +225,12 @@ public class Organization implements Auditable, Cloneable {
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("parent_organization_id", parentOrganizationId, original.parentOrganizationId)
+                 .setField("parent_organization_id", parentOrganizationId,
+                           original.parentOrganizationId,ReferenceTable.ORGANIZATION)
                  .setField("name", name, original.name)
                  .setField("is_active", isActive, original.isActive)
-                 .setField("address_id", addressId, original.addressId);
+                 .setField("address_id", (auditAddressId ? null : addressId), original.addressId,
+                           ReferenceTable.ADDRESS);
 
         return audit;
     }

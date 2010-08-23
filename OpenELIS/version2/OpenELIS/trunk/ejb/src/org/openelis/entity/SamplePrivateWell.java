@@ -46,10 +46,11 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "SamplePrivateWell.FetchBySampleId",
-                query = "select new org.openelis.domain.SamplePrivateWellViewDO(s.id,s.sampleId,s.organizationId, s.reportToName, "+
-                        " s.reportToAttention, s.reportToAddressId, s.location, s.locationAddressId, a.multipleUnit, " +
-                        " a.streetAddress,a.city,a.state,a.zipCode,s.owner, s.collector, s.wellNumber, o.name, o.addressId) "
-                      + " from SamplePrivateWell s LEFT JOIN s.locationAddress a LEFT JOIN s.organization o where s.sampleId = :id")})
+                query = "select new org.openelis.domain.SamplePrivateWellViewDO(s.id, s.sampleId, s.organizationId, s.reportToName, s.reportToAttention," +
+                		"s.reportToAddressId, s.location, s.locationAddressId, s.owner, s.collector, s.wellNumber, r.multipleUnit, r.streetAddress, r.city," +
+                		"r.state, r.zipCode, r.workPhone, r.homePhone, r.cellPhone, r.faxPhone, r.email, r.country,l.multipleUnit, l.streetAddress, l.city," +
+                		"l.state, l.zipCode, l.workPhone,l.homePhone, l.cellPhone, l.faxPhone, l.email, l.country) "
+                      + " from SamplePrivateWell s left join s.locationAddress l left join s.reportToAddress r where s.sampleId = :id")})
 
 @Entity
 @Table(name = "sample_private_well")
@@ -109,6 +110,9 @@ public class SamplePrivateWell implements Auditable, Cloneable {
 
     @Transient
     private SamplePrivateWell original;
+    
+    @Transient
+    private boolean           auditLocationAddressId, auditReportToAddressId;
 
     public Integer getId() {
         return id;
@@ -209,22 +213,36 @@ public class SamplePrivateWell implements Auditable, Cloneable {
             this.wellNumber = wellNumber;
     }
 
+    /*
+     * support lookup entities
+     */
     public Address getLocationAddress() {
         return locationAddress;
-    }
-
-    public void setLocationAddress(Address locationAddress) {
-        this.locationAddress = locationAddress;
     }
 
     public Sample getSample() {
         return sample;
     }
 
-    public void setSample(Sample sample) {
-        this.sample = sample;
+    public Organization getOrganization() {
+        return organization;
     }
 
+    public Address getReportToAddress() {
+        return reportToAddress;
+    }
+
+    /*
+     * Audit support
+     */
+    public void setAuditLocationAddressId(boolean changed) {
+        auditLocationAddressId = changed;
+    }
+    
+    public void setAuditReportToAddressId(boolean changed) {
+        auditReportToAddressId = changed;
+    }
+    
     public void setClone() {
         try {
             original = (SamplePrivateWell)this.clone();
@@ -241,33 +259,21 @@ public class SamplePrivateWell implements Auditable, Cloneable {
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("sample_id", sampleId, original.sampleId)
-                 .setField("organization_id", organizationId, original.organizationId)
+                 .setField("sample_id", sampleId, original.sampleId, ReferenceTable.SAMPLE)
+                 .setField("organization_id", organizationId, original.organizationId, ReferenceTable.ORGANIZATION)
                  .setField("report_to_name", reportToName, original.reportToName)
                  .setField("report_to_attention", reportToAttention, original.reportToAttention)
-                 .setField("report_to_address_id", reportToAddressId, original.reportToAddressId)
+                 .setField("report_to_address_id", (auditReportToAddressId ? null : reportToAddressId), original.reportToAddressId,
+                           ReferenceTable.ADDRESS)
                  .setField("location", location, original.location)
-                 .setField("location_address_id", locationAddressId, original.locationAddressId)
+                 .setField("location_address_id", (auditLocationAddressId ? null : locationAddressId), original.locationAddressId,
+                           ReferenceTable.ADDRESS)
                  .setField("owner", owner, original.owner)
                  .setField("collector", collector, original.collector)
                  .setField("well_number", wellNumber, original.wellNumber);
 
+
+
         return audit;
     }
-
-    public Organization getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
-    }
-
-    public Address getReportToAddress() {
-        return reportToAddress;
-    }
-
-    public void setReportToAddress(Address reportToAddress) {
-        this.reportToAddress = reportToAddress;
-    }    
 }

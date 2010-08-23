@@ -162,9 +162,9 @@ public class SampleOrganization implements Auditable, Cloneable {
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("sample_id", sampleId, original.sampleId)
-                 .setField("organization_id", organizationId, original.organizationId)
+                 .setField("organization_id", organizationId, original.organizationId, ReferenceTable.ORGANIZATION)
                  .setField("organization_attention", organizationAttention, original.organizationAttention)
-                 .setField("type_id", typeId, original.typeId);
+                 .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY);
 
         return audit;
     }

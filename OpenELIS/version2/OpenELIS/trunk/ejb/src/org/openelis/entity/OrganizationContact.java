@@ -83,6 +83,9 @@ public class OrganizationContact implements Auditable, Cloneable {
 
     @Transient
     private OrganizationContact original;
+    
+    @Transient
+    private boolean             auditAddressId;
 
     public Integer getId() {
         return id;
@@ -136,6 +139,13 @@ public class OrganizationContact implements Auditable, Cloneable {
     public void setAddressTable(Address addressTable) {
         this.address = addressTable;
     }
+    
+    /*
+     * Audit support
+     */
+    public void setAuditAddressId(boolean changed) {
+        auditAddressId = changed;
+    }
 
     public void setClone() {
         try {
@@ -154,9 +164,10 @@ public class OrganizationContact implements Auditable, Cloneable {
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("organization_id", organizationId, original.organizationId)
-                 .setField("contact_type_id", contactTypeId, original.contactTypeId)
+                 .setField("contact_type_id", contactTypeId, original.contactTypeId, ReferenceTable.DICTIONARY)
                  .setField("name", name, original.name)
-                 .setField("address_id", addressId, original.addressId);
+                 .setField("address_id", (auditAddressId ? null : addressId), original.addressId,
+                           ReferenceTable.ADDRESS);
 
         return audit;
     }

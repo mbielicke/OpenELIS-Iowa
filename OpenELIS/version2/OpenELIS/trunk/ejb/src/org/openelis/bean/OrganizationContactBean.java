@@ -78,9 +78,9 @@ public class OrganizationContactBean implements OrganizationContactLocal {
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        addressBean.add(data.getAddressDO());
+        addressBean.add(data.getAddress());
         entity = new OrganizationContact();
-        entity.setAddressId(data.getAddressDO().getId());
+        entity.setAddressId(data.getAddress().getId());
         entity.setOrganizationId(data.getOrganizationId());
         entity.setContactTypeId(data.getContactTypeId());
         entity.setName(data.getName());
@@ -99,7 +99,7 @@ public class OrganizationContactBean implements OrganizationContactLocal {
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        addressBean.update(data.getAddressDO());
+        addressBean.update(data.getAddress());
         entity = manager.find(OrganizationContact.class, data.getId());
         entity.setContactTypeId(data.getContactTypeId());
         entity.setName(data.getName());
@@ -112,7 +112,7 @@ public class OrganizationContactBean implements OrganizationContactLocal {
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        addressBean.delete(data.getAddressDO());
+        addressBean.delete(data.getAddress());
         entity = manager.find(OrganizationContact.class, data.getId());
         if (entity != null)
             manager.remove(entity);

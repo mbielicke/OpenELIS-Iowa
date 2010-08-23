@@ -112,8 +112,8 @@ public class TestSection implements Auditable, Cloneable {
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("test_id", testId, original.testId)
-                 .setField("section_id", sectionId, original.sectionId)
-                 .setField("flag_id", flagId, original.flagId);
+                 .setField("section_id", sectionId, original.sectionId, ReferenceTable.SECTION)
+                 .setField("flag_id", flagId, original.flagId, ReferenceTable.DICTIONARY);
 
         return audit;
     }
