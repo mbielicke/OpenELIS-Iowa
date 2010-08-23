@@ -51,9 +51,9 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-	@NamedQuery( name = "Provider.FetchById", 
-			    query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.typeId,p.npi)"                                                                                                  
-					  + " from Provider p where p.id = :id")
+    @NamedQuery( name = "Provider.FetchById", 
+                query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.typeId,p.npi)"                                                                                                  
+                      + " from Provider p where p.id = :id")
 })
 
 @Entity
@@ -168,7 +168,7 @@ public class Provider implements Auditable, Cloneable {
              .setField("last_name", lastName, original.lastName)
              .setField("first_name", firstName, original.firstName)
              .setField("middle_name", middleName, original.middleName)
-             .setField("type_id", typeId, original.typeId)
+             .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
              .setField("npi", npi, original.npi);
 
         return audit;

@@ -146,13 +146,13 @@ UIRF Software License are applicable instead of those above.
                 <label style="topMenuBarItem" text="{resource:getString($constants,'inventoryOrder')}" />
               </menuDisplay>
               <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                <code>if(OpenELIS.security.hasModule("order","SELECT")){</code>
+                <code>if(OpenELIS.security.hasModule("internalorder","SELECT")){</code>
                 <menuItem key="internalOrder" description="{resource:getString($constants,'internalOrderDescription')}" enable="true" icon="internalOrderIcon" label="{resource:getString($constants,'internalOrder')}" />
                 <code>}</code>
-                <code>if(OpenELIS.security.hasModule("order","SELECT")){</code>
+                <code>if(OpenELIS.security.hasModule("vendororder","SELECT")){</code>
                 <menuItem key="vendorOrder" description="{resource:getString($constants,'vendorOrderDescription')}" enable="true" icon="vendorOrderIcon" label="{resource:getString($constants,'vendorOrder')}" />
                 <code>}</code>
-                <code>if(OpenELIS.security.hasModule("order","SELECT")){</code>
+                <code>if(OpenELIS.security.hasModule("sendoutorder","SELECT")){</code>
                 <menuItem key="kitOrder" description="{resource:getString($constants,'kitOrderDescription')}" enable="true" icon="kitOrderIcon" label="{resource:getString($constants,'kitOrder')}" />
                 <code>}</code>
                 <html>&lt;hr/&gt;</html>

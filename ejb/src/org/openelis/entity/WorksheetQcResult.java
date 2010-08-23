@@ -25,9 +25,9 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "WorksheetQcResult.FetchByWorksheetAnalysisId",
-                query = "select new org.openelis.domain.WorksheetQcResultViewDO(wqr.id,wqr.worksheetAnalysisId,wqr.sortOrder,wqr.qcAnalyteId,wqr.typeId,wqr.value,a.name) "+
-                        "from WorksheetQcResult wqr LEFT JOIN wqr.qcAnalyte qca LEFT JOIN qca.analyte a "+
-                        "where wqr.worksheetAnalysisId = :id order by wqr.sortOrder")})
+                query = "select new org.openelis.domain.WorksheetQcResultViewDO(wqr.id,wqr.worksheetAnalysisId,wqr.sortOrder,wqr.qcAnalyteId,wqr.typeId,wqr.value,a.name) "
+                      + " from WorksheetQcResult wqr LEFT JOIN wqr.qcAnalyte qca LEFT JOIN qca.analyte a "+
+                        " where wqr.worksheetAnalysisId = :id order by wqr.sortOrder")})
 @Entity
 @Table(name = "worksheet_qc_result")
 @EntityListeners( {AuditUtil.class})
@@ -138,10 +138,10 @@ public class WorksheetQcResult implements Auditable, Cloneable {
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("worksheet_analysis_id", worksheetAnalysisId, original.worksheetAnalysisId)
+                 .setField("worksheet_analysis_id", worksheetAnalysisId, original.worksheetAnalysisId, ReferenceTable.WORKSHEET_ANALYSIS)
                  .setField("sort_order", sortOrder, original.sortOrder)
-                 .setField("qc_analyte_id", qcAnalyteId, original.qcAnalyteId)
-                 .setField("type_id", typeId, original.typeId)
+                 .setField("qc_analyte_id", qcAnalyteId, original.qcAnalyteId, ReferenceTable.QC_ANALYTE)
+                 .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
                  .setField("value", value, original.value);
 
         return audit;

@@ -1,9 +1,8 @@
-
 package org.openelis.entity;
 
 /**
-  * Result Entity POJO for database 
-  */
+ * Result Entity POJO for database
+ */
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -24,174 +23,190 @@ import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({@NamedQuery(name = "Result.FetchByAnalysisId", query = "select new org.openelis.domain.ResultViewDO(r.id,r.analysisId,r.testAnalyteId,r.testResultId, " + 
-                        " r.isColumn, r.sortOrder, r.isReportable, r.analyteId, r.typeId, r.value, a.name, ta.rowGroup, ta.resultGroup) "+
-                        " from Result r LEFT JOIN r.analysis an LEFT JOIN an.test t LEFT JOIN r.analyte a LEFT JOIN r.testAnalyte ta " + 
-                        " where r.analysisId = :id order by r.sortOrder"),
-               @NamedQuery(name = "Result.FetchAnalyteByAnalysisId", query = "select new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId) "+
-                        " from Result r LEFT JOIN r.analyte a where r.analysisId = :id order by r.sortOrder")})
-
+@NamedQueries( {
+    @NamedQuery( name = "Result.FetchByAnalysisId",
+                query = "select new org.openelis.domain.ResultViewDO(r.id,r.analysisId,r.testAnalyteId,r.testResultId," +
+                        "r.isColumn, r.sortOrder, r.isReportable, r.analyteId, r.typeId, r.value, a.name, ta.rowGroup, ta.resultGroup)"
+                      + " from Result r LEFT JOIN r.analysis an LEFT JOIN an.test t LEFT JOIN r.analyte a LEFT JOIN r.testAnalyte ta "
+                      + " where r.analysisId = :id order by r.sortOrder"),
+                @NamedQuery( name = "Result.FetchAnalyteByAnalysisId",
+                            query = "select new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId) "
+                                  + " from Result r LEFT JOIN r.analyte a where r.analysisId = :id order by r.sortOrder")})
 @Entity
-@Table(name="result")
-@EntityListeners({AuditUtil.class})
+@Table(name = "result")
+@EntityListeners( {AuditUtil.class})
 public class Result implements Auditable, Cloneable {
-  
-  @Id
-  @GeneratedValue
-  @Column(name="id")
-  private Integer id;             
 
-  @Column(name="analysis_id")
-  private Integer analysisId;             
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private Integer     id;
 
-  @Column(name="test_analyte_id")
-  private Integer testAnalyteId;             
+    @Column(name = "analysis_id")
+    private Integer     analysisId;
 
-  @Column(name="test_result_id")
-  private Integer testResultId;             
+    @Column(name = "test_analyte_id")
+    private Integer     testAnalyteId;
 
-  @Column(name="is_column")
-  private String isColumn;             
+    @Column(name = "test_result_id")
+    private Integer     testResultId;
 
-  @Column(name="sort_order")
-  private Integer sortOrder;             
+    @Column(name = "is_column")
+    private String      isColumn;
 
-  @Column(name="is_reportable")
-  private String isReportable;             
+    @Column(name = "sort_order")
+    private Integer     sortOrder;
 
-  @Column(name="analyte_id")
-  private Integer analyteId;             
+    @Column(name = "is_reportable")
+    private String      isReportable;
 
-  @Column(name="type_id")
-  private Integer typeId;             
+    @Column(name = "analyte_id")
+    private Integer     analyteId;
 
-  @Column(name="value")
-  private String value;             
-  
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "analysis_id", insertable = false, updatable = false)
-  private Analysis analysis;
-  
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "analyte_id", insertable = false, updatable = false)
-  private Analyte analyte;
-  
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "test_analyte_id", insertable = false, updatable = false)
-  private TestAnalyte testAnalyte;
+    @Column(name = "type_id")
+    private Integer     typeId;
 
-  @Transient
-  private Result original;
+    @Column(name = "value")
+    private String      value;
 
-  
-  public Integer getId() {
-    return id;
-  }
-  protected void setId(Integer id) {
-    if(DataBaseUtil.isDifferent(id, this.id))
-      this.id = id;
-  }
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "analysis_id", insertable = false, updatable = false)
+    private Analysis    analysis;
 
-  public Integer getAnalysisId() {
-    return analysisId;
-  }
-  public void setAnalysisId(Integer analysisId) {
-    if(DataBaseUtil.isDifferent(analysisId, this.analysisId))
-      this.analysisId = analysisId;
-  }
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "analyte_id", insertable = false, updatable = false)
+    private Analyte     analyte;
 
-  public Integer getTestAnalyteId() {
-    return testAnalyteId;
-  }
-  public void setTestAnalyteId(Integer testAnalyteId) {
-    if(DataBaseUtil.isDifferent(testAnalyteId, this.testAnalyteId))
-      this.testAnalyteId = testAnalyteId;
-  }
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "test_analyte_id", insertable = false, updatable = false)
+    private TestAnalyte testAnalyte;
 
-  public Integer getTestResultId() {
-    return testResultId;
-  }
-  public void setTestResultId(Integer testResultId) {
-    if(DataBaseUtil.isDifferent(testResultId, this.testResultId))
-      this.testResultId = testResultId;
-  }
+    @Transient
+    private Result      original;
 
-  public String getIsColumn() {
-    return isColumn;
-  }
-  public void setIsColumn(String isColumn) {
-    if(DataBaseUtil.isDifferent(isColumn, this.isColumn))
-      this.isColumn = isColumn;
-  }
-
-  public Integer getSortOrder() {
-    return sortOrder;
-  }
-  public void setSortOrder(Integer sortOrder) {
-    if(DataBaseUtil.isDifferent(sortOrder, this.sortOrder))
-      this.sortOrder = sortOrder;
-  }
-
-  public String getIsReportable() {
-    return isReportable;
-  }
-  public void setIsReportable(String isReportable) {
-    if(DataBaseUtil.isDifferent(isReportable, this.isReportable))
-      this.isReportable = isReportable;
-  }
-
-  public Integer getAnalyteId() {
-    return analyteId;
-  }
-  public void setAnalyteId(Integer analyteId) {
-    if(DataBaseUtil.isDifferent(analyteId, this.analyteId))
-      this.analyteId = analyteId;
-  }
-
-  public Integer getTypeId() {
-    return typeId;
-  }
-  public void setTypeId(Integer typeId) {
-    if(DataBaseUtil.isDifferent(typeId, this.typeId))
-      this.typeId = typeId;
-  }
-
-  public String getValue() {
-    return value;
-  }
-  public void setValue(String value) {
-    if(DataBaseUtil.isDifferent(value, this.value))
-      this.value = value;
-  }
-
-  public Analyte getAnalyte() {
-      return analyte;
-  }
-  public void setAnalyte(Analyte analyte) {
-      this.analyte = analyte;
-  }
-  public TestAnalyte getTestAnalyte() {
-      return testAnalyte;
-  }
-  public void setTestAnalyte(TestAnalyte testAnalyte) {
-      this.testAnalyte = testAnalyte;
-  }
-  public Analysis getAnalysis() {
-      return analysis;
-  }
-  public void setAnalysis(Analysis analysis) {
-      this.analysis = analysis;
-  }
-  
-  public void setClone() {
-    try {
-        original = (Result)this.clone();
-    }catch(Exception e){
-        e.printStackTrace();
+    public Integer getId() {
+        return id;
     }
-  }
-  
-  public Audit getAudit() {
+
+    protected void setId(Integer id) {
+        if (DataBaseUtil.isDifferent(id, this.id))
+            this.id = id;
+    }
+
+    public Integer getAnalysisId() {
+        return analysisId;
+    }
+
+    public void setAnalysisId(Integer analysisId) {
+        if (DataBaseUtil.isDifferent(analysisId, this.analysisId))
+            this.analysisId = analysisId;
+    }
+
+    public Integer getTestAnalyteId() {
+        return testAnalyteId;
+    }
+
+    public void setTestAnalyteId(Integer testAnalyteId) {
+        if (DataBaseUtil.isDifferent(testAnalyteId, this.testAnalyteId))
+            this.testAnalyteId = testAnalyteId;
+    }
+
+    public Integer getTestResultId() {
+        return testResultId;
+    }
+
+    public void setTestResultId(Integer testResultId) {
+        if (DataBaseUtil.isDifferent(testResultId, this.testResultId))
+            this.testResultId = testResultId;
+    }
+
+    public String getIsColumn() {
+        return isColumn;
+    }
+
+    public void setIsColumn(String isColumn) {
+        if (DataBaseUtil.isDifferent(isColumn, this.isColumn))
+            this.isColumn = isColumn;
+    }
+
+    public Integer getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        if (DataBaseUtil.isDifferent(sortOrder, this.sortOrder))
+            this.sortOrder = sortOrder;
+    }
+
+    public String getIsReportable() {
+        return isReportable;
+    }
+
+    public void setIsReportable(String isReportable) {
+        if (DataBaseUtil.isDifferent(isReportable, this.isReportable))
+            this.isReportable = isReportable;
+    }
+
+    public Integer getAnalyteId() {
+        return analyteId;
+    }
+
+    public void setAnalyteId(Integer analyteId) {
+        if (DataBaseUtil.isDifferent(analyteId, this.analyteId))
+            this.analyteId = analyteId;
+    }
+
+    public Integer getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(Integer typeId) {
+        if (DataBaseUtil.isDifferent(typeId, this.typeId))
+            this.typeId = typeId;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        if (DataBaseUtil.isDifferent(value, this.value))
+            this.value = value;
+    }
+
+    public Analyte getAnalyte() {
+        return analyte;
+    }
+
+    public void setAnalyte(Analyte analyte) {
+        this.analyte = analyte;
+    }
+
+    public TestAnalyte getTestAnalyte() {
+        return testAnalyte;
+    }
+
+    public void setTestAnalyte(TestAnalyte testAnalyte) {
+        this.testAnalyte = testAnalyte;
+    }
+
+    public Analysis getAnalysis() {
+        return analysis;
+    }
+
+    public void setAnalysis(Analysis analysis) {
+        this.analysis = analysis;
+    }
+
+    public void setClone() {
+        try {
+            original = (Result)this.clone();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Audit getAudit() {
         Audit audit;
 
         audit = new Audit();
@@ -199,16 +214,16 @@ public class Result implements Auditable, Cloneable {
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("analysis_id", analysisId, original.analysisId)
-                 .setField("test_analyte_id", testAnalyteId, original.testAnalyteId)
-                 .setField("test_result_id", testResultId, original.testResultId)
+                 .setField("analysis_id", analysisId, original.analysisId, ReferenceTable.ANALYSIS)
+                 .setField("test_analyte_id", testAnalyteId, original.testAnalyteId, ReferenceTable.TEST_ANALYTE)
+                 .setField("test_result_id", testResultId, original.testResultId, ReferenceTable.TEST_RESULT)
                  .setField("is_column", isColumn, original.isColumn)
                  .setField("sort_order", sortOrder, original.sortOrder)
                  .setField("is_reportable", isReportable, original.isReportable)
-                 .setField("analyte_id", analyteId, original.analyteId)
-                 .setField("type_id", typeId, original.typeId)
+                 .setField("analyte_id", analyteId, original.analyteId, ReferenceTable.ANALYTE)
+                 .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
                  .setField("value", value, original.value);
 
         return audit;
-  }
-}   
+    }
+}

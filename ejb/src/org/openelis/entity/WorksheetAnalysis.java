@@ -120,11 +120,11 @@ public class WorksheetAnalysis implements Auditable, Cloneable {
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("worksheet_item_id", worksheetItemId, original.worksheetItemId)
+                 .setField("worksheet_item_id", worksheetItemId, original.worksheetItemId, ReferenceTable.WORKSHEET_ITEM)
                  .setField("accession_number", accessionNumber, original.accessionNumber)
-                 .setField("analysis_id", analysisId, original.analysisId)
-                 .setField("qc_id", qcId, original.qcId)
-                 .setField("worksheet_analysis_id", worksheetAnalysisId, original.worksheetAnalysisId);
+                 .setField("analysis_id", analysisId, original.analysisId, ReferenceTable.ANALYSIS)
+                 .setField("qc_id", qcId, original.qcId, ReferenceTable.QC)
+                 .setField("worksheet_analysis_id", worksheetAnalysisId, original.worksheetAnalysisId, ReferenceTable.WORKSHEET_ANALYSIS);
 
         return audit;
     }

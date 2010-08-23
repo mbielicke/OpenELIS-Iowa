@@ -281,6 +281,14 @@ public class AuxField implements Auditable, Cloneable {
     public void setUnitOfMeasure(Dictionary unitOfMeasure) {
         this.unitOfMeasure = unitOfMeasure;
     }
+    
+    public AuxFieldGroup getAuxFieldGroup() {
+        return auxFieldGroup;
+    }
+
+    public void setAuxFieldGroup(AuxFieldGroup auxFieldGroup) {
+        this.auxFieldGroup = auxFieldGroup;
+    }
 
     public void setClone() {
         try {
@@ -300,24 +308,16 @@ public class AuxField implements Auditable, Cloneable {
             audit.setField("id", id, original.id)
                  .setField("aux_field_group_id", auxFieldGroupId, original.auxFieldGroupId)
                  .setField("sort_order", sortOrder, original.sortOrder)
-                 .setField("analyte_id", analyteId, original.analyteId)
+                 .setField("analyte_id", analyteId, original.analyteId, ReferenceTable.ANALYTE)
                  .setField("description", description, original.description)
-                 .setField("method_id", methodId, original.methodId)
-                 .setField("unit_of_measure_id", unitOfMeasureId, original.unitOfMeasureId)
+                 .setField("method_id", methodId, original.methodId, ReferenceTable.METHOD)
+                 .setField("unit_of_measure_id", unitOfMeasureId, original.unitOfMeasureId, ReferenceTable.METHOD)
                  .setField("is_required", isRequired, original.isRequired)
                  .setField("is_active", isActive, original.isActive)
                  .setField("is_reportable", isReportable, original.isReportable)
-                 .setField("scriptlet_id", scriptletId, original.scriptletId);
+                 .setField("scriptlet_id", scriptletId, original.scriptletId, ReferenceTable.SCRIPTLET);
 
         return audit;
-    }
-
-    public AuxFieldGroup getAuxFieldGroup() {
-        return auxFieldGroup;
-    }
-
-    public void setAuxFieldGroup(AuxFieldGroup auxFieldGroup) {
-        this.auxFieldGroup = auxFieldGroup;
     }
 
 }

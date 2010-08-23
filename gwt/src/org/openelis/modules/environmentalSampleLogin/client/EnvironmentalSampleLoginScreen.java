@@ -97,14 +97,14 @@ import com.google.gwt.user.client.ui.TabPanel;
 
 public class EnvironmentalSampleLoginScreen extends Screen implements HasActionHandlers {
 
-    public enum Tabs {
+    private enum Tabs {
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
         AUX_DATA
     };
 
     protected Tabs                         tab;
-    private Integer                        sampleLoggedInId, sampleErrorStatusId, sampleReleasedId,
-                    userId;
+    private Integer                        sampleLoggedInId, sampleErrorStatusId,
+                                           sampleReleasedId, userId;
 
     private SampleItemAnalysisTreeTab      treeTab;
     private EnvironmentalTab               environmentalTab;
@@ -126,15 +126,15 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
     protected Dropdown<Integer>            statusId;
     protected CalendarLookUp               collectedDate, receivedDate;
     protected MenuItem                     historySample, historySampleEnvironmental,
-                    historySampleProject, historySampleOrganization, historySampleItem,
-                    historyAnalysis, historyCurrentResult, historyStorage, historySampleQA,
-                    historyAnalysisQA, historyAuxData;
+                                           historySampleProject, historySampleOrganization, historySampleItem,
+                                           historyAnalysis, historyCurrentResult, historyStorage, historySampleQA,
+                                           historyAnalysisQA, historyAuxData;
 
     protected AppButton                    queryButton, addButton, updateButton, nextButton,
-                    prevButton, commitButton, abortButton;
+                                           prevButton, commitButton, abortButton;
     protected TabPanel                     tabs;
 
-    ScreenNavigator                        nav;
+    private ScreenNavigator                nav;
     private SecurityModule                 security;
 
     private SampleEnvironmentalImportOrder envOrderImport;
@@ -143,8 +143,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
     public EnvironmentalSampleLoginScreen() throws Exception {
         // Call base to get ScreenDef and draw screen
         super((ScreenDefInt)GWT.create(EnvironmentalSampleLoginDef.class));
-        service = new ScreenService(
-                                    "controller?service=org.openelis.modules.sample.server.SampleService");
+        service = new ScreenService("controller?service=org.openelis.modules.sample.server.SampleService");
 
         security = OpenELIS.security.getModule("sampleenvironmental");
 
@@ -632,7 +631,11 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         });
 
         // environmental section of the screen
-        environmentalTab = new EnvironmentalTab(def, window);
+        try {
+            environmentalTab = new EnvironmentalTab(def, window);
+        } catch (Exception e) {
+            Window.alert("environmental tab initialize: " + e.getMessage());
+        }
 
         addScreenHandler(environmentalTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {

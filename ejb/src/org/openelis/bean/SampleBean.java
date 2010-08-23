@@ -164,8 +164,6 @@ public class SampleBean implements SampleLocal, SampleRemote {
         if (!data.isChanged())
             return data;
         
-        lockBean.validateLock(sampleRefTableId, data.getId());
-        
         manager.setFlushMode(FlushModeType.COMMIT);
         
         entity = manager.find(Sample.class, data.getId());
@@ -183,8 +181,6 @@ public class SampleBean implements SampleLocal, SampleRemote {
         entity.setPackageId(data.getPackageId());
         entity.setClientReference(data.getClientReference());
         entity.setReleasedDate(data.getReleasedDate());
-        
-        lockBean.giveUpLock(sampleRefTableId, data.getId());
         
         return data;
     }

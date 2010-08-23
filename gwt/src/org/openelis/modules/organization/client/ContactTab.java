@@ -90,37 +90,37 @@ public class ContactTab extends Screen {
                         data.setName((String)val);
                         break;
                     case 2:
-                        data.getAddressDO().setMultipleUnit((String)val);
+                        data.getAddress().setMultipleUnit((String)val);
                         break;
                     case 3:
-                        data.getAddressDO().setStreetAddress((String)val);
+                        data.getAddress().setStreetAddress((String)val);
                         break;
                     case 4:
-                        data.getAddressDO().setCity((String)val);
+                        data.getAddress().setCity((String)val);
                         break;
                     case 5:
-                        data.getAddressDO().setState((String)val);
+                        data.getAddress().setState((String)val);
                         break;
                     case 6:
-                        data.getAddressDO().setZipCode((String)val);
+                        data.getAddress().setZipCode((String)val);
                         break;
                     case 7:
-                        data.getAddressDO().setCountry((String)val);
+                        data.getAddress().setCountry((String)val);
                         break;
                     case 8:
-                        data.getAddressDO().setWorkPhone((String)val);
+                        data.getAddress().setWorkPhone((String)val);
                         break;
                     case 9:
-                        data.getAddressDO().setHomePhone((String)val);
+                        data.getAddress().setHomePhone((String)val);
                         break;
                     case 10:
-                        data.getAddressDO().setCellPhone((String)val);
+                        data.getAddress().setCellPhone((String)val);
                         break;
                     case 11:
-                        data.getAddressDO().setFaxPhone((String)val);
+                        data.getAddress().setFaxPhone((String)val);
                         break;
                     case 12:
-                        data.getAddressDO().setEmail((String)val);
+                        data.getAddress().setEmail((String)val);
                         break;
                 }
             }
@@ -237,17 +237,17 @@ public class ContactTab extends Screen {
                 row = new TableDataRow(13);
                 row.cells.get(0).value = data.getContactTypeId();
                 row.cells.get(1).value = data.getName();
-                row.cells.get(2).value = data.getAddressDO().getMultipleUnit();
-                row.cells.get(3).value = data.getAddressDO().getStreetAddress();
-                row.cells.get(4).value = data.getAddressDO().getCity();
-                row.cells.get(5).value = data.getAddressDO().getState();
-                row.cells.get(6).value = data.getAddressDO().getZipCode();
-                row.cells.get(7).value = data.getAddressDO().getCountry();
-                row.cells.get(8).value = data.getAddressDO().getWorkPhone();
-                row.cells.get(9).value = data.getAddressDO().getHomePhone();
-                row.cells.get(10).value = data.getAddressDO().getCellPhone();
-                row.cells.get(11).value = data.getAddressDO().getFaxPhone();
-                row.cells.get(12).value = data.getAddressDO().getEmail();
+                row.cells.get(2).value = data.getAddress().getMultipleUnit();
+                row.cells.get(3).value = data.getAddress().getStreetAddress();
+                row.cells.get(4).value = data.getAddress().getCity();
+                row.cells.get(5).value = data.getAddress().getState();
+                row.cells.get(6).value = data.getAddress().getZipCode();
+                row.cells.get(7).value = data.getAddress().getCountry();
+                row.cells.get(8).value = data.getAddress().getWorkPhone();
+                row.cells.get(9).value = data.getAddress().getHomePhone();
+                row.cells.get(10).value = data.getAddress().getCellPhone();
+                row.cells.get(11).value = data.getAddress().getFaxPhone();
+                row.cells.get(12).value = data.getAddress().getEmail();
                 model.add(row);
             }
         } catch (Exception e) {

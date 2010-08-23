@@ -30,9 +30,7 @@ import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.ResultViewDO;
-import org.openelis.domain.TestAnalyteDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
@@ -66,7 +64,6 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.SampleDataBundle;
-import org.openelis.manager.AnalysisResultManager.TestAnalyteListItem;
 import org.openelis.modules.test.client.TestAnalyteDisplayManager;
 
 import com.google.gwt.core.client.GWT;

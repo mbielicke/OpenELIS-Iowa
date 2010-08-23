@@ -25,9 +25,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.InventoryItemCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryItemDO;
-import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderViewDO;
@@ -111,7 +111,6 @@ public class OrderFillScreen extends Screen {
     private Integer                               status_pending, status_processed;
     private HashMap<TableDataRow, OrderViewDO>    orderMap;
     private HashMap<Integer, OrderManager>        combinedMap;
-    private HashMap<Integer, InventoryItemViewDO> inventoryItemMap;
 
     private ScreenService                         shippingService, inventoryItemService;  
         
@@ -462,9 +461,7 @@ public class OrderFillScreen extends Screen {
                     window.setError(consts.get("mustCommitOrAbort"));
                 }
             }
-        });
-        
-        inventoryItemMap = new HashMap<Integer, InventoryItemViewDO>();
+        });       
     }
     
     private void initializeDropdowns() {
@@ -695,13 +692,19 @@ public class OrderFillScreen extends Screen {
         locationSumMap = new HashMap<Integer, Integer>();
         list = new ValidationErrorsList();
         locIds = new ArrayList<Integer>();
+        invItem = null;
 
         for (i = 0; i < model.size(); i++ ) {
             parent = model.get(i);
             ordItem = (OrderItemViewDO)parent.key;
-            invItem = getInventoryItem(ordItem.getInventoryItemId());
+            try {
+                invItem = InventoryItemCache.getActiveInventoryItemFromId(ordItem.getInventoryItemId());
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                e.printStackTrace();
+            }
             
-            if ("Y".equals(invItem.getIsNotInventoried())) 
+            if (invItem == null || "Y".equals(invItem.getIsNotInventoried())) 
                 continue;
             
             if (!parent.open)
@@ -760,24 +763,7 @@ public class OrderFillScreen extends Screen {
         window.clearStatus();
         
         return man;
-    }
-    
-    protected InventoryItemViewDO getInventoryItem(Integer id) {
-        InventoryItemViewDO data;         
-                    
-        data = inventoryItemMap.get(id);
-        if (data == null && id != null) {
-            try {
-                data  = inventoryItemService.call("fetchInventoryItemById", id);                
-                inventoryItemMap.put(id, data);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Window.alert(e.getMessage());
-            }
-        }
-        
-        return data;        
-    }
+    }   
     
     private void drawTabs() {                
         switch (tab) {
@@ -969,7 +955,7 @@ public class OrderFillScreen extends Screen {
         OrderItemManager orderItemMan;
         OrderFillManager fillMan;
         OrderItemViewDO orderItemData;
-        InventoryItemViewDO invItemData;
+        InventoryItemDO invItem;
         InventoryXUseViewDO data;
         ShippingItemDO shippingItem;
         Set<Integer> set; 
@@ -982,7 +968,8 @@ public class OrderFillScreen extends Screen {
         try {                   
             man = manager.getItems();
             set = combinedMap.keySet();
-            iter = set.iterator();            
+            iter = set.iterator();  
+            invItem = null;
                                     
             while (iter.hasNext()) {
                 orderMan = combinedMap.get(iter.next());
@@ -991,7 +978,12 @@ public class OrderFillScreen extends Screen {
 
                 for (i = 0; i < orderItemMan.count(); i++ ) {
                     orderItemData = orderItemMan.getItemAt(i);
-                    invItemData = getInventoryItem(orderItemData.getInventoryItemId());
+                    try {
+                        invItem = InventoryItemCache.getActiveInventoryItemFromId(orderItemData.getInventoryItemId());
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        e.printStackTrace();
+                    }
                     //
                     // Since order items that have their inventory items flagged
                     // as "is not inventoried" don't get inventory x use records 
@@ -1002,7 +994,7 @@ public class OrderFillScreen extends Screen {
                     // inventory item a shipping item gets created for it from 
                     // the information in the order item itself.
                     //
-                    if ("Y".equals(invItemData.getIsNotInventoried())) {
+                    if (invItem != null && "Y".equals(invItem.getIsNotInventoried())) {
                         index = man.addItem();
                         shippingItem = man.getItemAt(index);
                         shippingItem.setQuantity(orderItemData.getQuantity());

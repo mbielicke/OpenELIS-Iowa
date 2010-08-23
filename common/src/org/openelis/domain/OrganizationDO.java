@@ -53,6 +53,7 @@ public class OrganizationDO extends DataObject {
         setParentOrganizationId(parentOrganizationId);
         setName(name);
         setIsActive(isActive);
+        
         address = new AddressDO(addressId, multipleUnit, streetAddress, city, state, zipCode,
                                   workPhone, homePhone, cellPhone, faxPhone, email, country);
         _changed = false;

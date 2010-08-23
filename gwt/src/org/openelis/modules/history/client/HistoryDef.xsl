@@ -77,6 +77,14 @@ UIRF Software License are applicable instead of those above.
                       <label field="String" />
                     </col>
                   </leaf>
+                  <leaf key="linkfields">
+                    <col>
+                      <label field="String" />
+                    </col>
+                    <col>
+                      <label field="String" style = "ScreenLabelLink"/>
+                    </col>
+                  </leaf>
                 </tree>
               </widget>
             </VerticalPanel>

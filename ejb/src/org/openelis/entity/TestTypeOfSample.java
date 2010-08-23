@@ -29,11 +29,6 @@ package org.openelis.entity;
  * TestTypeOfSample Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.domain.ReferenceTable;
-import org.openelis.util.XMLUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -47,14 +42,16 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries( {@NamedQuery(name = "TestTypeOfSample.FetchByTestId",
-                            query = "select distinct new org.openelis.domain.TestTypeOfSampleDO(ts.id, ts.testId, ts.typeOfSampleId,ts.unitOfMeasureId) "
-                            + "  from TestTypeOfSample ts where ts.testId = :id")})
+@NamedQueries( {
+    @NamedQuery( name = "TestTypeOfSample.FetchByTestId",
+                query = "select distinct new org.openelis.domain.TestTypeOfSampleDO(ts.id, ts.testId, ts.typeOfSampleId,ts.unitOfMeasureId) "
+                      + " from TestTypeOfSample ts where ts.testId = :id")})
 @Entity
 @Table(name = "test_type_of_sample")
 @EntityListeners( {AuditUtil.class})
@@ -142,8 +139,8 @@ public class TestTypeOfSample implements Auditable, Cloneable {
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("test_id", testId, original.testId)
-                 .setField("type_of_sample_id", typeOfSampleId, original.typeOfSampleId)
-                 .setField("unit_of_measure_id", unitOfMeasureId, original.unitOfMeasureId);
+                 .setField("type_of_sample_id", typeOfSampleId, original.typeOfSampleId, ReferenceTable.DICTIONARY)
+                 .setField("unit_of_measure_id", unitOfMeasureId, original.unitOfMeasureId, ReferenceTable.DICTIONARY);
 
         return audit;
     }

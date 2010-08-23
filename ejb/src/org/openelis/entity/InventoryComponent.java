@@ -143,8 +143,8 @@ public class InventoryComponent implements Auditable, Cloneable {
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("inventory_item_id", inventoryItemId, original.inventoryItemId)
-                 .setField("component_id", componentId, original.componentId)
+                 .setField("inventory_item_id", inventoryItemId, original.inventoryItemId, ReferenceTable.INVENTORY_ITEM)
+                 .setField("component_id", componentId, original.componentId, ReferenceTable.INVENTORY_ITEM)
                  .setField("quantity", quantity, original.quantity);
 
         return audit;

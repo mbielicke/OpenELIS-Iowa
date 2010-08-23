@@ -39,5 +39,9 @@ public interface AddressLocal {
     public AddressDO update(AddressDO data) throws Exception;
 
     public void delete(AddressDO data) throws Exception;
+    
+    public void delete(Integer id) throws Exception;
+    
+    public boolean isEmpty(AddressDO data) throws Exception;
 
 }

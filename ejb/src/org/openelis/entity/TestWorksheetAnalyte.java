@@ -149,9 +149,9 @@ public class TestWorksheetAnalyte implements Auditable, Cloneable {
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("test_id", testId, original.testId)
-                 .setField("test_Analyte_id", testAnalyteId, original.testAnalyteId)
+                 .setField("test_Analyte_id", testAnalyteId, original.testAnalyteId, ReferenceTable.TEST_ANALYTE)
                  .setField("repeat", repeat, original.repeat)
-                 .setField("flag_id", flagId, original.flagId);
+                 .setField("flag_id", flagId, original.flagId, ReferenceTable.DICTIONARY);
 
         return audit;
     }

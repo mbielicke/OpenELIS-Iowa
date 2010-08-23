@@ -1,9 +1,8 @@
-
 package org.openelis.entity;
 
 /**
-  * AnalysisQaevent Entity POJO for database 
-  */
+ * AnalysisQaevent Entity POJO for database
+ */
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -24,96 +23,102 @@ import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries( {
-    @NamedQuery(name = "AnalysisQaevent.FetchByAnalysisId", query = "select new org.openelis.domain.AnalysisQaEventViewDO(q.id, q.analysisId, q.qaeventId, " + 
-                " q.typeId, q.isBillable, q.qaEvent.name) from AnalysisQaevent q where q.analysisId = :id order by q.id")})
-                
+@NamedQueries({
+    @NamedQuery( name = "AnalysisQaevent.FetchByAnalysisId",
+                query = "select new org.openelis.domain.AnalysisQaEventViewDO(q.id, q.analysisId, q.qaeventId, " +
+                        "q.typeId, q.isBillable, q.qaEvent.name)"
+                      + " from AnalysisQaevent q where q.analysisId = :id order by q.id")})
 @Entity
-@Table(name="analysis_qaevent")
-@EntityListeners({AuditUtil.class})
+@Table(name = "analysis_qaevent")
+@EntityListeners( {AuditUtil.class})
 public class AnalysisQaevent implements Auditable, Cloneable {
-  
-  @Id
-  @GeneratedValue
-  @Column(name="id")
-  private Integer id;             
 
-  @Column(name="analysis_id")
-  private Integer analysisId;             
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private Integer         id;
 
-  @Column(name="qaevent_id")
-  private Integer qaeventId;             
+    @Column(name = "analysis_id")
+    private Integer         analysisId;
 
-  @Column(name="type_id")
-  private Integer typeId;             
+    @Column(name = "qaevent_id")
+    private Integer         qaeventId;
 
-  @Column(name="is_billable")
-  private String isBillable;             
+    @Column(name = "type_id")
+    private Integer         typeId;
 
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "qaevent_id", insertable = false, updatable = false)
-  private QaEvent qaEvent;
-  
-  @Transient
-  private AnalysisQaevent original;
+    @Column(name = "is_billable")
+    private String          isBillable;
 
-  
-  public Integer getId() {
-    return id;
-  }
-  protected void setId(Integer id) {
-    if(DataBaseUtil.isDifferent(id, this.id))
-      this.id = id;
-  }
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "qaevent_id", insertable = false, updatable = false)
+    private QaEvent         qaEvent;
 
-  public Integer getAnalysisId() {
-    return analysisId;
-  }
-  public void setAnalysisId(Integer analysisId) {
-    if(DataBaseUtil.isDifferent(analysisId, this.analysisId))
-      this.analysisId = analysisId;
-  }
+    @Transient
+    private AnalysisQaevent original;
 
-  public Integer getQaeventId() {
-    return qaeventId;
-  }
-  public void setQaeventId(Integer qaeventId) {
-    if(DataBaseUtil.isDifferent(qaeventId, this.qaeventId))
-      this.qaeventId = qaeventId;
-  }
-
-  public Integer getTypeId() {
-    return typeId;
-  }
-  public void setTypeId(Integer typeId) {
-    if(DataBaseUtil.isDifferent(typeId, this.typeId));
-      this.typeId = typeId;
-  }
-
-  public String getIsBillable() {
-    return isBillable;
-  }
-  public void setIsBillable(String isBillable) {
-    if(DataBaseUtil.isDifferent(isBillable, this.isBillable))
-      this.isBillable = isBillable;
-  }
-
-  public QaEvent getQaEvent() {
-      return qaEvent;
-  }
-  public void setQaEvent(QaEvent qaEvent) {
-      this.qaEvent = qaEvent;
-  }
-  
-  public void setClone() {
-    try {
-        original = (AnalysisQaevent)this.clone();
-    }catch(Exception e){
-        e.printStackTrace();
+    public Integer getId() {
+        return id;
     }
-  }
-   
-  public Audit getAudit() {
+
+    protected void setId(Integer id) {
+        if (DataBaseUtil.isDifferent(id, this.id))
+            this.id = id;
+    }
+
+    public Integer getAnalysisId() {
+        return analysisId;
+    }
+
+    public void setAnalysisId(Integer analysisId) {
+        if (DataBaseUtil.isDifferent(analysisId, this.analysisId))
+            this.analysisId = analysisId;
+    }
+
+    public Integer getQaeventId() {
+        return qaeventId;
+    }
+
+    public void setQaeventId(Integer qaeventId) {
+        if (DataBaseUtil.isDifferent(qaeventId, this.qaeventId))
+            this.qaeventId = qaeventId;
+    }
+
+    public Integer getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(Integer typeId) {
+        if (DataBaseUtil.isDifferent(typeId, this.typeId))            
+            this.typeId = typeId;
+    }
+
+    public String getIsBillable() {
+        return isBillable;
+    }
+
+    public void setIsBillable(String isBillable) {
+        if (DataBaseUtil.isDifferent(isBillable, this.isBillable))
+            this.isBillable = isBillable;
+    }
+
+    public QaEvent getQaEvent() {
+        return qaEvent;
+    }
+
+    public void setQaEvent(QaEvent qaEvent) {
+        this.qaEvent = qaEvent;
+    }
+
+    public void setClone() {
+        try {
+            original = (AnalysisQaevent)this.clone();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Audit getAudit() {
         Audit audit;
 
         audit = new Audit();
@@ -121,13 +126,12 @@ public class AnalysisQaevent implements Auditable, Cloneable {
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("analysis_id", analysisId, original.analysisId)
-                 .setField("qaevent_id", qaeventId, original.qaeventId)
-                 .setField("type_id", typeId, original.typeId)
+                 .setField("analysis_id", analysisId, original.analysisId, ReferenceTable.ANALYSIS)
+                 .setField("qaevent_id", qaeventId, original.qaeventId, ReferenceTable.QAEVENT)
+                 .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
                  .setField("is_billable", isBillable, original.isBillable);
 
         return audit;
     }
 
-  
-}   
+}

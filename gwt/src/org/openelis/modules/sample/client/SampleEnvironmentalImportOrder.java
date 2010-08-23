@@ -118,27 +118,27 @@ public class SampleEnvironmentalImportOrder extends ImportOrder {
                         ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().setLocation(auxData.getValue());
                     else if(analyteId.equals("loc_mult_unit"))
                         ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().
-                        getLocationAddressDO().setMultipleUnit(auxData.getValue());
+                        getLocationAddress().setMultipleUnit(auxData.getValue());
                     else if(analyteId.equals("loc_street_address"))
                         ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().
-                        getLocationAddressDO().setStreetAddress(auxData.getValue());
+                        getLocationAddress().setStreetAddress(auxData.getValue());
                     else if(analyteId.equals("loc_city"))
                         ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().
-                        getLocationAddressDO().setCity(auxData.getValue());
+                        getLocationAddress().setCity(auxData.getValue());
                     else if(analyteId.equals("loc_state")){
                         if(validateDropdownValue(auxData.getValue(), "state"))
                             ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().
-                                getLocationAddressDO().setState(auxData.getValue());
+                                getLocationAddress().setState(auxData.getValue());
                         else if(auxData.getValue() != null)
                             errorsList.add(new FormErrorException("orderImportError", "state", auxData.getValue()));
                             
                     }else if(analyteId.equals("loc_zip_code"))
                         ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().
-                        getLocationAddressDO().setZipCode(auxData.getValue());
+                        getLocationAddress().setZipCode(auxData.getValue());
                     else if(analyteId.equals("loc_country")){
                         if(validateDropdownValue(auxData.getValue(), "country"))
                             ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().
-                                getLocationAddressDO().setCountry(auxData.getValue());
+                                getLocationAddress().setCountry(auxData.getValue());
                         else if(auxData.getValue() != null)
                             errorsList.add(new FormErrorException("orderImportError", "country", auxData.getValue()));
                     }else if(analyteId.equals("priority"))

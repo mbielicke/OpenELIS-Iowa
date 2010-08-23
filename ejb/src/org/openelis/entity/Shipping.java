@@ -253,12 +253,12 @@ public class Shipping implements Auditable, Cloneable {
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("status_id", statusId, original.statusId)
-                 .setField("shipped_from_id", shippedFromId, original.shippedFromId)
-                 .setField("shipped_to_id", shippedToId, original.shippedToId)
+                 .setField("status_id", statusId, original.statusId, ReferenceTable.DICTIONARY)
+                 .setField("shipped_from_id", shippedFromId, original.shippedFromId, ReferenceTable.DICTIONARY)
+                 .setField("shipped_to_id", shippedToId, original.shippedToId, ReferenceTable.ORGANIZATION)
                  .setField("processed_by", processedBy, original.processedBy)
                  .setField("processed_date", processedDate, original.processedDate)
-                 .setField("shipped_method_id", shippedMethodId, original.shippedMethodId)
+                 .setField("shipped_method_id", shippedMethodId, original.shippedMethodId, ReferenceTable.DICTIONARY)
                  .setField("shipped_date", shippedDate, original.shippedDate)
                  .setField("number_of_packages", numberOfPackages, original.numberOfPackages)
                  .setField("cost", cost, original.cost);

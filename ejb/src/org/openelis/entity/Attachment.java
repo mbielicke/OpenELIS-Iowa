@@ -38,6 +38,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -73,17 +74,15 @@ public class Attachment implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    if((id == null && this.id != null) || 
-       (id != null && !id.equals(this.id)))
-      this.id = id;
+      if (DataBaseUtil.isDifferent(id, this.id))
+          this.id = id;
   }
 
   public Integer getTypeId() {
     return typeId;
   }
   public void setTypeId(Integer typeId) {
-    if((typeId == null && this.typeId != null) || 
-       (typeId != null && !typeId.equals(this.typeId)))
+    if(DataBaseUtil.isDifferent(typeId,this.typeId))
       this.typeId = typeId;
   }
 
@@ -91,8 +90,7 @@ public class Attachment implements Auditable, Cloneable {
     return filename;
   }
   public void setFilename(String filename) {
-    if((filename == null && this.filename != null) || 
-       (filename != null && !filename.equals(this.filename)))
+    if(DataBaseUtil.isDifferent(filename,this.filename))
       this.filename = filename;
   }
 
@@ -100,8 +98,7 @@ public class Attachment implements Auditable, Cloneable {
     return description;
   }
   public void setDescription(String description) {
-    if((description == null && this.description != null) || 
-       (description != null && !description.equals(this.description)))
+    if(DataBaseUtil.isDifferent(description,this.description))
       this.description = description;
   }
 
@@ -109,8 +106,7 @@ public class Attachment implements Auditable, Cloneable {
     return storageReference;
   }
   public void setStorageReference(String storageReference) {
-    if((storageReference == null && this.storageReference != null) || 
-       (storageReference != null && !storageReference.equals(this.storageReference)))
+    if(DataBaseUtil.isDifferent(storageReference,this.storageReference))
       this.storageReference = storageReference;
   }
 
@@ -131,7 +127,7 @@ public class Attachment implements Auditable, Cloneable {
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("type_id", typeId, original.typeId)
+                 .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
                  .setField("filename", filename, original.filename)
                  .setField("description", description, original.description)
                  .setField("storage_reference", storageReference, original.storageReference);

@@ -111,7 +111,7 @@ public class InternalOrderScreen extends Screen {
 
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
 
-        security = OpenELIS.security.getModule("order");
+        security = OpenELIS.security.getModule("internalorder");
         if (security == null)
             throw new SecurityException("screenPermException", "Internal Order Screen");
 

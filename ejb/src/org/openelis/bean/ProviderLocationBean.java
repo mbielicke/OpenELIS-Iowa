@@ -56,6 +56,7 @@ public class ProviderLocationBean implements ProviderLocationLocal {
         manager.setFlushMode(FlushModeType.COMMIT);
 
         addressBean.add(data.getAddress());
+        
         entity = new ProviderLocation();
         entity.setAddressId(data.getAddress().getId());
         entity.setLocation(data.getLocation());
@@ -70,21 +71,20 @@ public class ProviderLocationBean implements ProviderLocationLocal {
 
     public ProviderLocationDO update(ProviderLocationDO data) throws Exception {
         ProviderLocation entity;
-        AddressDO address;
 
-        if (data.isChanged()) {
-            manager.setFlushMode(FlushModeType.COMMIT);            
-            entity = manager.find(ProviderLocation.class, data.getId());
-            entity.setLocation(data.getLocation());
-            entity.setExternalId(data.getExternalId());
+        if (!data.isChanged() && !data.getAddress().isChanged())
+            return data;
+        
+        manager.setFlushMode(FlushModeType.COMMIT);            
+        entity = manager.find(ProviderLocation.class, data.getId());
+        entity.setLocation(data.getLocation());
+        entity.setExternalId(data.getExternalId());
 
-            if (data.getAddress().getId() == null) {
-                address = addressBean.add(data.getAddress());
-                entity.setAddressId(address.getId());
-            } else {
-                addressBean.update(data.getAddress());
-            }
+        if (data.getAddress().isChanged()) {
+            entity.setAuditAddressId(true);
+            addressBean.update(data.getAddress());
         }
+
         return data;
     }
 

@@ -38,8 +38,7 @@ public class TestSectionManager implements RPC {
     private static final long                          serialVersionUID = 1L;
 
     protected Integer                                  testId;
-    protected ArrayList<TestSectionViewDO>             sections;
-    protected ArrayList<TestSectionViewDO>             deleted;
+    protected ArrayList<TestSectionViewDO>             sections, deleted;
 
     protected transient static TestSectionManagerProxy proxy;
 

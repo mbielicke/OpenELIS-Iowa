@@ -204,8 +204,8 @@ public class QaEvent implements Auditable, Cloneable {
             audit.setField("id", id, original.id)
                  .setField("name", name, original.name)
                  .setField("description", description, original.description)
-                 .setField("test_id", testId, original.testId)
-                 .setField("type_id", typeId, original.typeId)
+                 .setField("test_id", testId, original.testId, ReferenceTable.TEST)
+                 .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
                  .setField("is_billable", isBillable, original.isBillable)
                  .setField("reporting_sequence", reportingSequence, original.reportingSequence)
                  .setField("reporting_text", reportingText, original.reportingText);

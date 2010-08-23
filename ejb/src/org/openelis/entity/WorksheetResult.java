@@ -25,9 +25,9 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "WorksheetResult.FetchByWorksheetAnalysisId",
-                query = "select new org.openelis.domain.WorksheetResultViewDO(wr.id,wr.worksheetAnalysisId,wr.testAnalyteId,wr.testResultId,wr.isColumn,wr.sortOrder,wr.analyteId,wr.typeId,wr.value,a.name,ta.resultGroup) "+
-                        "from WorksheetResult wr LEFT JOIN wr.analyte a LEFT JOIN wr.testAnalyte ta "+
-                        "where wr.worksheetAnalysisId = :id order by wr.sortOrder")})
+                query = "select new org.openelis.domain.WorksheetResultViewDO(wr.id,wr.worksheetAnalysisId,wr.testAnalyteId,wr.testResultId,wr.isColumn,wr.sortOrder,wr.analyteId,wr.typeId,wr.value,a.name,ta.resultGroup) "
+                      + " from WorksheetResult wr LEFT JOIN wr.analyte a LEFT JOIN wr.testAnalyte ta "+
+                        " where wr.worksheetAnalysisId = :id order by wr.sortOrder")})
 @Entity
 @Table(name = "worksheet_result")
 @EntityListeners( {AuditUtil.class})
@@ -186,13 +186,13 @@ public class WorksheetResult implements Auditable, Cloneable {
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("worksheet_analysis_id", worksheetAnalysisId, original.worksheetAnalysisId)
-                 .setField("test_analyte_id", testAnalyteId, original.testAnalyteId)
-                 .setField("test_result_id", testResultId, original.testResultId)
+                 .setField("worksheet_analysis_id", worksheetAnalysisId, original.worksheetAnalysisId, ReferenceTable.WORKSHEET_ANALYSIS)
+                 .setField("test_analyte_id", testAnalyteId, original.testAnalyteId, ReferenceTable.TEST_ANALYTE)
+                 .setField("test_result_id", testResultId, original.testResultId, ReferenceTable.TEST_RESULT)
                  .setField("is_column", isColumn, original.isColumn)
                  .setField("sort_order", sortOrder, original.sortOrder)
-                 .setField("analyte_id", analyteId, original.analyteId)
-                 .setField("type_id", typeId, original.typeId)
+                 .setField("analyte_id", analyteId, original.analyteId, ReferenceTable.ANALYTE)
+                 .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
                  .setField("value", value, original.value);
 
         return audit;

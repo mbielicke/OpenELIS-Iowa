@@ -180,11 +180,11 @@ public class Section implements Auditable, Cloneable {
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("parent_section_id", parentSectionId, original.parentSectionId)
+                 .setField("parent_section_id", parentSectionId, original.parentSectionId, ReferenceTable.SECTION)
                  .setField("name", name, original.name)
                  .setField("description", description, original.description)
                  .setField("is_external", isExternal, original.isExternal)
-                 .setField("organization_id", organizationId, original.organizationId);
+                 .setField("organization_id", organizationId, original.organizationId, ReferenceTable.ORGANIZATION);
 
         return audit;
     }

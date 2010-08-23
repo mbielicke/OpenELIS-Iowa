@@ -181,7 +181,7 @@ public class Category implements Auditable, Cloneable {
                  .setField("system_name", systemName, original.systemName)
                  .setField("name", name, original.name)
                  .setField("description", description, original.description)
-                 .setField("section_id", sectionId, original.sectionId)
+                 .setField("section_id", sectionId, original.sectionId, ReferenceTable.SECTION)
                  .setField("is_system", isSystem, original.isSystem);
 
         return audit;

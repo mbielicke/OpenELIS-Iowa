@@ -111,9 +111,9 @@ public class OrderContainer implements Auditable, Cloneable {
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("order_id", orderId, original.orderId)
-                 .setField("container_id", containerId, original.containerId)
+                 .setField("container_id", containerId, original.containerId, ReferenceTable.DICTIONARY)
                  .setField("number_of_containers", numberOfContainers, original.numberOfContainers)
-                 .setField("type_of_sample_id", typeOfSampleId, original.typeOfSampleId);
+                 .setField("type_of_sample_id", typeOfSampleId, original.typeOfSampleId, ReferenceTable.DICTIONARY);
 
         return audit;
     }

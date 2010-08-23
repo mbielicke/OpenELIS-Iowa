@@ -28,7 +28,9 @@ package org.openelis.modules.inventoryReceipt.client;
 import java.util.ArrayList;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.InventoryItemCache;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryReceiptViewDO;
@@ -96,14 +98,14 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
         inventoryItemDescription = (TextBox)def.getWidget(InventoryReceiptMeta.getInventoryItemDescription());
         addScreenHandler(inventoryItemDescription, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                InventoryItemViewDO item;
+                InventoryItemDO item;
                 InventoryReceiptViewDO data;      
                 
                 item = null;
                 if (manager != null && index != -1) {
                     try {
                         data = manager.getReceiptAt(index);
-                        item = inventoryReceiptScreen.getInventoryItem(data.getInventoryItemId());                        
+                        item = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());                        
                     } catch(Exception ex) {
                         ex.printStackTrace();
                         Window.alert(ex.getMessage());
@@ -129,7 +131,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
         addToExisting = (CheckBox)def.getWidget("addToExisting");
         addScreenHandler(addToExisting, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                InventoryItemViewDO item;
+                InventoryItemDO item;
                 InventoryReceiptViewDO data;      
                 boolean enable;
                 
@@ -137,7 +139,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                 if (manager != null && index != -1) {
                     try {
                         data = manager.getReceiptAt(index);
-                        item = inventoryReceiptScreen.getInventoryItem(data.getInventoryItemId()); 
+                        item = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId()); 
                     } catch(Exception ex) {
                         ex.printStackTrace();
                         Window.alert(ex.getMessage());
@@ -173,7 +175,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                InventoryItemViewDO item;
+                InventoryItemDO item;
                 InventoryReceiptViewDO data;
                                            
                 item = null;
@@ -182,7 +184,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                 } else if (manager != null &&  index != -1) {
                     try {
                         data = manager.getReceiptAt(index);
-                        item = inventoryReceiptScreen.getInventoryItem(data.getInventoryItemId());                        
+                        item = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());                        
                     } catch(Exception ex) {
                         ex.printStackTrace();
                         Window.alert(ex.getMessage());
@@ -199,7 +201,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
         inventoryItemStore = (TextBox)def.getWidget(InventoryReceiptMeta.getInventoryItemStoreId());
         addScreenHandler(inventoryItemStore, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                InventoryItemViewDO item;
+                InventoryItemDO item;
                 InventoryReceiptViewDO data;      
                 DictionaryDO dict;
                 
@@ -208,7 +210,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                 if (manager != null && index != -1) {
                     try {
                         data = manager.getReceiptAt(index);
-                        item = inventoryReceiptScreen.getInventoryItem(data.getInventoryItemId());
+                        item = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());
                         if (item != null)
                             dict = DictionaryCache.getEntryFromId(item.getStoreId());
                     } catch(Exception ex) {
@@ -236,7 +238,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
         inventoryItemDispensedUnits = (TextBox)def.getWidget(InventoryReceiptMeta.getInventoryItemDispensedUnitsId());
         addScreenHandler(inventoryItemDispensedUnits, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                InventoryItemViewDO item;
+                InventoryItemDO item;
                 InventoryReceiptViewDO data;      
                 DictionaryDO dict;
                 
@@ -245,7 +247,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                 if (manager != null && index != -1) {
                     try {
                         data = manager.getReceiptAt(index);
-                        item = inventoryReceiptScreen.getInventoryItem(data.getInventoryItemId());
+                        item = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());
                         if (item != null && item.getDispensedUnitsId() != null)
                             dict = DictionaryCache.getEntryFromId(item.getDispensedUnitsId());
                     } catch(Exception ex) {
@@ -467,7 +469,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
             }
 
             public void onStateChange(StateChangeEvent<State> event) {                
-                InventoryItemViewDO item;
+                InventoryItemDO item;
                 InventoryReceiptViewDO data;                     
                 
                 item = null;
@@ -475,7 +477,12 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                     inventoryLocationLotNumber.enable(false);
                 } else if (manager != null && index != -1) {                    
                     data = manager.getReceiptAt(index);
-                    item = inventoryReceiptScreen.getInventoryItem(data.getInventoryItemId());                                                                
+                    try {
+                        item = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());
+                    } catch (Exception e) {
+                        Window.alert("Inventory Item Cache error:" + e.getMessage());
+                        e.printStackTrace();
+                    }
                     if(item != null) 
                         inventoryLocationLotNumber.enable("N".equals(item.getIsBulk()));                    
                 } else {
@@ -548,7 +555,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                InventoryItemViewDO item;
+                InventoryItemDO item;
                 InventoryReceiptViewDO data;                     
                 
                 item = null;
@@ -557,7 +564,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                 } else if(manager != null && index != -1) {
                     try {
                         data = manager.getReceiptAt(index);
-                        item = inventoryReceiptScreen.getInventoryItem(data.getInventoryItemId());                        
+                        item = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());                        
                     } catch(Exception ex) {
                         ex.printStackTrace();
                         Window.alert(ex.getMessage());

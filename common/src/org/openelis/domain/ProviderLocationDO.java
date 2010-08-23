@@ -52,6 +52,7 @@ public class ProviderLocationDO extends DataObject {
         setLocation(location);
         setExternalId(externalId);
         setProviderId(providerId);
+        
         addressDO = new AddressDO(addressId, multipleUnit, streetAddress, city, state, zipCode,
                                   workPhone, homePhone, cellPhone, faxPhone, email, country);
         _changed = false;

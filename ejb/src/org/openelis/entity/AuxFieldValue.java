@@ -130,7 +130,7 @@ public class AuxFieldValue implements Auditable, Cloneable {
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("aux_field_id", auxFieldId, original.auxFieldId)
-                 .setField("type_id", typeId, original.typeId)
+                 .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
                  .setField("value", value, original.value);
 
         return audit;

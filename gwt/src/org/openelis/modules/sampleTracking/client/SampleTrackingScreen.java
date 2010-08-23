@@ -45,6 +45,7 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CalendarLookUp;
+import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.HasField;
 import org.openelis.gwt.widget.Label;
@@ -102,7 +103,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
     private SampleManager        manager;
-    private SecurityModule       security;
+    private SecurityModule       security, unrelease;
 
     private EnvironmentalTab     environmentalTab;
     private PrivateWellTab       wellTab;
@@ -122,12 +123,12 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     private TextBox<Datetime>    collectedTime;
     private Dropdown<Integer>    statusId;
     private AppButton            prevPage, nextPage, similarButton, expandButton, collapseButton,
-                    queryButton, updateButton, commitButton, abortButton, addTestButton,
-                    cancelTestButton;
+                                 queryButton, updateButton, commitButton, abortButton, addTestButton,
+                                 cancelTestButton;
     private MenuItem             envMenuQuery, wellMenuQuery, sdwisMenuQuery, unreleaseSample, historySample,
-                    historySampleSpec, historySampleProject, historySampleOrganization,
-                    historySampleItem, historyAnalysis, historyCurrentResult, historyStorage,
-                    historySampleQA, historyAnalysisQA, historyAuxData;
+                                 historySampleSpec, historySampleProject, historySampleOrganization,
+                                 historySampleItem, historyAnalysis, historyCurrentResult, historyStorage,
+                                 historySampleQA, historyAnalysisQA, historyAuxData;
     private CalendarLookUp       collectedDate, receivedDate;
 
     private Tabs                 tab;
@@ -147,8 +148,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
     public SampleTrackingScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SampleTrackingDef.class));
-        service = new ScreenService(
-                                    "controller?service=org.openelis.modules.sampleTracking.server.SampleTrackingService");
+        service = new ScreenService("controller?service=org.openelis.modules.sampleTracking.server.SampleTrackingService");
 
         security = OpenELIS.security.getModule("sampletracking");
         if (security == null)
@@ -272,7 +272,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         updateButton = (AppButton)def.getWidget("update");
         addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                update();
+                update(false);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -335,6 +335,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             }
         };
         
+        unrelease = OpenELIS.security.getModule("sampleunrelease");
         unreleaseSample = (MenuItem)def.getWidget("unreleaseSample");
         addScreenHandler(unreleaseSample, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -342,7 +343,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                unreleaseSample.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                unreleaseSample.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) && unrelease != null);
             }
         });
 
@@ -619,9 +620,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 if (state == State.UPDATE && event.getProposedSelect() != null) {
                     key = (SampleDataBundle)event.getProposedSelect().data;
 
-                    if ( !key.getSampleManager().getSample().getId().equals(
-                                                                            manager.getSample()
-                                                                                   .getId())) {
+                    if ( !key.getSampleManager().getSample().getId().equals(manager.getSample().getId())) {
                         event.cancel();
                         return;
                     }
@@ -1289,7 +1288,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         window.setDone(consts.get("enterFieldsToQuery"));
     }
 
-    protected void update() {
+    protected void update(boolean unrelease) {
         int topLevelIndex;
         TreeDataItem sampleRow;
         
@@ -1302,6 +1301,8 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
         try {
             manager = manager.fetchForUpdate();
+            if (unrelease)
+                manager.unrelease();
             treeUtil.setManager(manager);
             
             topLevelIndex = getTopLevelIndex(trackingTree.getSelection());
@@ -1902,7 +1903,34 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     }
     
     private void unrelease(){
+        Confirm confirm;
+               
+        if (!sampleReleasedId.equals(manager.getSample().getStatusId())) {
+            Window.alert(consts.get("wrongStatusUnrelease"));
+            return;
+        } 
         
+        confirm = new Confirm(Confirm.Type.QUESTION,
+                              consts.get("unreleaseSampleCaption"),
+                              consts.get("unreleaseSampleMessage"),
+                              "Cancel", "OK"); 
+        confirm.addSelectionHandler(new SelectionHandler<Integer>() {
+            public void onSelection(SelectionEvent<Integer> event) {
+                switch (event.getSelectedItem().intValue()) {
+                    case 0:
+                        //do nothing
+                        break;
+                    case 1:
+                        try {                            
+                            update(true);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                        break;
+                }
+            }
+        });
     }
 
     public HandlerRegistration addActionHandler(ActionHandler handler) {

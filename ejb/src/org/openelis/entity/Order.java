@@ -68,26 +68,6 @@ import org.openelis.utils.Auditable;
                         "o.type,o.externalOrderNumber,o.reportToId,o.reportToAttention,o.billToId,o.billToAttention,o.shipFromId)"
                       + " from Order o left join o.orderItem i "
                       +	" where i.id = (select s.referenceId from ShippingItem s where s.referenceTableId = org.openelis.domain.ReferenceTable.ORDER_ITEM and s.referenceId = :id)")})
-/*
-    @NamedQuery(name = "Order.OrderExternalKit", query = "select new org.openelis.domain.OrderDO(o.id, o.statusId, o.orderedDate, o.neededInDays, o.requestedBy, o.costCenterId, o.organizationId, " +
-                            " oo.name, oo.address.multipleUnit, oo.address.streetAddress, oo.address.city, oo.address.state, oo.address.zipCode, o.isExternal, o.externalOrderNumber, " +
-                            " o.reportToId, o.billToId, o.shipFromId, o.description) from Order o left join o.organization oo where o.id = :id"),
-    @NamedQuery(name = "Order.ReportToBillTo", query = "select new org.openelis.domain.BillToReportToDO(o.billToId, o.billTo.name, o.billTo.address.multipleUnit, o.billTo.address.streetAddress," +
-                            " o.billTo.address.city, o.billTo.address.state, o.billTo.address.zipCode, o.reportToId, o.reportTo.name, o.reportTo.address.multipleUnit, o.reportTo.address.streetAddress, " +
-                            " o.reportTo.address.city, o.reportTo.address.state, o.reportTo.address.zipCode) from Order o where o.id = :id"),
-    @NamedQuery(name = "Order.ReceiptsForOrder", query = "select new org.openelis.domain.InventoryReceiptDO(r.id,r.inventoryItemId, r.inventoryItem.name,r.organizationId,r.receivedDate,r.quantityReceived, " +
-                            " r.unitCost,r.qcReference,r.externalReference,r.upc) from InventoryReceipt r left join r.orderItems o where o.orderId = :id " +
-                            " order by r.receivedDate desc "),
-    @NamedQuery(name = "Order.LocsForOrder", query = "select new org.openelis.domain.InventoryLocationDO(loc.id, loc.inventoryItemId, loc.inventoryItem.name, loc.lotNumber, childLoc.name,childLoc.location, "+
-                            " parentLoc.name, childLoc.storageUnit.description, trans.quantity, loc.expirationDate) " +
-                            " from InventoryXUse trans left join trans.orderItem oi left join trans.inventoryLocation loc left join loc.storageLocation childLoc " +
-                            " left join childLoc.parentStorageLocation parentLoc where oi.orderId = :id " +
-                            " order by trans.id "),
-    @NamedQuery(name = "Order.descriptionAutoLookup", query = "select distinct new org.openelis.domain.IdNameDO(o.description) from Order o where o.description like :desc"),
-    @NamedQuery(name = "Order.FillOrderSubInfo", query = "select new org.openelis.domain.FillOrderDO(o.requestedBy, o.costCenterId, add.multipleUnit, " +
-            " add.streetAddress, add.city, add.state, add.zipCode) from Order o LEFT JOIN o.organization orgz LEFT JOIN orgz.address add" + 
-            " where o.id = :id ")})
-*/  
 
 @Entity
 @Table(name = "order")

@@ -116,10 +116,6 @@ public class InventoryReceipt implements Auditable, Cloneable {
     @JoinColumn(name = "inventory_receipt_id", insertable = false, updatable = false)
     private Collection<InventoryXPut> inventoryXPut;
 
-//    @OneToMany(fetch = FetchType.LAZY)
-//    @JoinTable(name = "inventory_receipt_order_item", joinColumns = {@JoinColumn(name = "inventory_receipt_id")}, inverseJoinColumns = {@JoinColumn(name = "order_item_id")})
-//    private Collection<OrderItem>     orderItems;
-
     @Transient
     private InventoryReceipt          original;
 
@@ -257,9 +253,9 @@ public class InventoryReceipt implements Auditable, Cloneable {
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("inventory_item_id", inventoryItemId, original.inventoryItemId)
-                 .setField("order_item_id", orderItemId, original.orderItemId)
-                 .setField("organization_id", organizationId, original.organizationId)
+                 .setField("inventory_item_id", inventoryItemId, original.inventoryItemId, ReferenceTable.INVENTORY_ITEM)
+                 .setField("order_item_id", orderItemId, original.orderItemId, ReferenceTable.ORDER_ITEM)
+                 .setField("organization_id", organizationId, original.organizationId, ReferenceTable.ORGANIZATION)
                  .setField("received_date", receivedDate, original.receivedDate)
                  .setField("quantity_received", quantityReceived, original.quantityReceived)
                  .setField("unit_cost", unitCost, original.unitCost)

@@ -31,13 +31,11 @@ import java.util.HashMap;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FieldErrorWarning;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalysisLocal;
@@ -45,41 +43,44 @@ import org.openelis.local.DictionaryLocal;
 import org.openelis.local.SampleItemLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SampleManagerLocal;
-import org.openelis.local.SystemVariableLocal;
 import org.openelis.meta.SampleMeta;
 
 public class SampleManagerProxy {
     public SampleManager fetchById(Integer sampleId) throws Exception {
         SampleDO sampleDO;
-        SampleManager sm;
-        
+        SampleManager man;
+
         sampleDO = sampleLocal().fetchById(sampleId);
 
-        sm = SampleManager.getInstance();
-        sm.setSample(sampleDO);
+        man = SampleManager.getInstance();
+        man.setSample(sampleDO);
 
-        sm.getDomainManager();
-        sm.getOrganizations();
-        sm.getProjects();
-        sm.getSampleItems();
+        man.getDomainManager();
+        man.getOrganizations();
+        man.getProjects();
+        man.getSampleItems();
+        
+        loadDictionaryEntries(man);
 
-        return sm;
+        return man;
     }
 
     public SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception {
         SampleDO sampleDO;
-        SampleManager sm;
+        SampleManager man;
+
+        sampleDO = sampleLocal().fetchByAccessionNumber(accessionNumber);
+
+        man = SampleManager.getInstance();
+        man.setSample(sampleDO);
+        man.getDomainManager();
+        man.getOrganizations();
+        man.getProjects();
+        man.getSampleItems();
         
-        sampleDO= sampleLocal().fetchByAccessionNumber(accessionNumber);
+        loadDictionaryEntries(man);
 
-        sm = SampleManager.getInstance();
-        sm.setSample(sampleDO);
-        sm.getDomainManager();
-        sm.getOrganizations();
-        sm.getProjects();
-        sm.getSampleItems();
-
-        return sm;
+        return man;
     }
 
     public SampleManager fetchWithItemsAnalyses(Integer sampleId) throws Exception {
@@ -92,7 +93,7 @@ public class SampleManagerProxy {
         HashMap<Integer, AnalysisManager> anaMap;
         AnalysisViewDO anDO;
         AnalysisManager am;
-        
+
         sampleDO = sampleLocal().fetchById(sampleId);
 
         sm = SampleManager.getInstance();
@@ -123,28 +124,27 @@ public class SampleManagerProxy {
         }
 
         // fetch analyses
-        try{
+        try {
             analyses = (ArrayList<AnalysisViewDO>)analysisLocal().fetchBySampleId(sampleId);
             for (int i = 0; i < analyses.size(); i++ ) {
                 anDO = analyses.get(i);
                 am = anaMap.get(anDO.getSampleItemId());
                 am.addAnalysis(anDO);
             }
-        }catch(NotFoundException e){
-            //ignore
+        } catch (NotFoundException e) {
+            // ignore
         }
 
         return sm;
     }
 
     public SampleManager add(SampleManager man) throws Exception {
-        Integer sampleId, sampleRefId;
-        
+        Integer sampleId;
+
         sampleLocal().add(man.getSample());
         sampleId = man.getSample().getId();
-        sampleRefId = ReferenceTable.SAMPLE;
 
-        if(man.getDomainManager() != null){
+        if (man.getDomainManager() != null) {
             man.getDomainManager().setSampleId(sampleId);
             man.getDomainManager().add();
         }
@@ -168,19 +168,19 @@ public class SampleManagerProxy {
         }
 
         if (man.auxData != null) {
-            man.getAuxData().setReferenceTableId(sampleRefId);
+            man.getAuxData().setReferenceTableId(ReferenceTable.SAMPLE);
             man.getAuxData().setReferenceId(sampleId);
             man.getAuxData().add();
         }
 
         if (man.sampleInternalNotes != null) {
-            man.getInternalNotes().setReferenceTableId(sampleRefId);
+            man.getInternalNotes().setReferenceTableId(ReferenceTable.SAMPLE);
             man.getInternalNotes().setReferenceId(sampleId);
             man.getInternalNotes().add();
         }
 
         if (man.sampleExternalNote != null) {
-            man.getExternalNote().setReferenceTableId(sampleRefId);
+            man.getExternalNote().setReferenceTableId(ReferenceTable.SAMPLE);
             man.getExternalNote().setReferenceId(sampleId);
             man.getExternalNote().add();
         }
@@ -189,11 +189,10 @@ public class SampleManagerProxy {
     }
 
     public SampleManager update(SampleManager man) throws Exception {
-        Integer sampleId, sampleRefId;
-        
+        Integer sampleId;
+
         sampleLocal().update(man.getSample());
         sampleId = man.getSample().getId();
-        sampleRefId = ReferenceTable.SAMPLE;
 
         if (man.sampleDomain != null) {
             man.getDomainManager().setSampleId(sampleId);
@@ -221,19 +220,19 @@ public class SampleManagerProxy {
         }
 
         if (man.auxData != null) {
-            man.getAuxData().setReferenceTableId(sampleRefId);
+            man.getAuxData().setReferenceTableId(ReferenceTable.SAMPLE);
             man.getAuxData().setReferenceId(sampleId);
             man.getAuxData().update();
         }
 
         if (man.sampleInternalNotes != null) {
-            man.getInternalNotes().setReferenceTableId(sampleRefId);
+            man.getInternalNotes().setReferenceTableId(ReferenceTable.SAMPLE);
             man.getInternalNotes().setReferenceId(sampleId);
             man.getInternalNotes().update();
         }
 
         if (man.sampleExternalNote != null) {
-            man.getExternalNote().setReferenceTableId(sampleRefId);
+            man.getExternalNote().setReferenceTableId(ReferenceTable.SAMPLE);
             man.getExternalNote().setReferenceId(sampleId);
             man.getExternalNote().update();
         }
@@ -284,16 +283,16 @@ public class SampleManagerProxy {
             anaMap.put(siDO.getId(), am);
         }
 
-        // fetch analyses for update
-        try{
+        // fetch analysess
+        try {
             analyses = (ArrayList<AnalysisViewDO>)analysisLocal().fetchBySampleId(sampleId);
             testCache = new HashMap<Integer, TestManager>();
             for (int i = 0; i < analyses.size(); i++ ) {
                 anDO = analyses.get(i);
-    
+
                 am = anaMap.get(anDO.getSampleItemId());
                 addedIndex = am.addAnalysis(anDO);
-    
+
                 tm = testCache.get(anDO.getTestId());
                 if (tm == null) {
                     tm = TestManager.fetchWithPrepTestsSampleTypes(anDO.getTestId());
@@ -301,8 +300,8 @@ public class SampleManagerProxy {
                 }
                 am.setTestAt(tm, addedIndex);
             }
-        }catch(NotFoundException e){
-            //ignore
+        } catch (NotFoundException e) {
+            // ignore
         }
 
         return sm;
@@ -313,46 +312,75 @@ public class SampleManagerProxy {
         return null;
     }
 
-    public Integer getIdFromSystemName(String systemName) throws Exception {
-        DictionaryDO dictDO;
-        
-        dictDO = dictionaryLocal().fetchBySystemName(systemName);
-        return dictDO.getId();
-    }
-    
     public Datetime getCurrentDatetime(byte begin, byte end) throws Exception {
-        return Datetime.getInstance(begin,end);    
+        return Datetime.getInstance(begin, end);
     }
 
     public void validate(SampleManager man, ValidationErrorsList errorsList) throws Exception {
         boolean quickEntry;
         SampleDO sampleDO;
 
-        //revalidate accession number
+        // revalidate accession number
         validateAccessionNumber(man.getSample(), errorsList);
-        
+
         sampleDO = man.getSample();
         quickEntry = SampleManager.QUICK_ENTRY.equals(sampleDO.getDomain());
-        
-        if(sampleDO.getCollectionDate() != null && sampleDO.getReceivedDate() != null){
-            if(sampleDO.getCollectionDate().compareTo(sampleDO.getReceivedDate()) == 1)
-                errorsList.add(new FieldErrorException("collectedDateInvalidError", SampleMeta.getReceivedDate()));
-       }
-        
-       if(man.sampleItems != null)
-           man.getSampleItems().validate(errorsList);
+
+        if (sampleDO.getCollectionDate() != null && sampleDO.getReceivedDate() != null) {
+            if (sampleDO.getCollectionDate().compareTo(sampleDO.getReceivedDate()) == 1)
+                errorsList.add(new FieldErrorException("collectedDateInvalidError",
+                                                       SampleMeta.getReceivedDate()));
+        }
+
+        if (man.sampleItems != null)
+            man.getSampleItems().validate(errorsList);
+
+        if ( !quickEntry && man.organizations != null)
+            man.getOrganizations().validate(man.getSample().getDomain(), errorsList);
+
+        if ( !quickEntry && man.projects != null)
+            man.getProjects().validate(errorsList);
+
+        if ( !quickEntry && man.qaEvents != null)
+            man.getQaEvents().validate(errorsList);
+
+        if ( !quickEntry && man.auxData != null)
+            man.getAuxData().validate(errorsList);
+    }
+    
+    private void validateAccessionNumber(SampleDO sampleDO, ValidationErrorsList errorsList) throws Exception {
+        try {
+            sampleManagerLocal().validateAccessionNumber(sampleDO);
+
+        } catch (ValidationErrorsList e) {
+            ArrayList<Exception> errors = e.getErrorList();
+
+            for (int i = 0; i < errors.size(); i++ )
+                errorsList.add(errors.get(i));
+        }
+    }
        
-       if(!quickEntry && man.organizations != null)
-           man.getOrganizations().validate(man.getSample().getDomain(), errorsList);
-       
-       if(!quickEntry && man.projects != null)
-           man.getProjects().validate(errorsList);
-       
-       if(!quickEntry && man.qaEvents != null)
-           man.getQaEvents().validate(errorsList);
-       
-       if(!quickEntry && man.auxData != null)
-           man.getAuxData().validate(errorsList);
+    private void loadDictionaryEntries(SampleManager man) throws Exception {
+        DictionaryLocal dl;
+        if (man.anLoggedInId == null) {
+            dl = dictionaryLocal();
+            man.anLoggedInId = dl.fetchBySystemName("analysis_logged_in").getId();
+            man.anInitiatedId = dl.fetchBySystemName("analysis_initiated").getId();
+            man.anCompletedId = dl.fetchBySystemName("analysis_completed").getId();
+            man.anReleasedId = dl.fetchBySystemName("analysis_released").getId();
+            man.anInPrepId = dl.fetchBySystemName("analysis_inprep").getId();
+            man.anOnHoldId = dl.fetchBySystemName("analysis_on_hold").getId();
+            man.anRequeueId = dl.fetchBySystemName("analysis_requeue").getId();
+            man.anCancelledId = dl.fetchBySystemName("analysis_cancelled").getId();
+            man.anErrorLoggedInId = dl.fetchBySystemName("analysis_error_logged_in").getId();
+            man.anErrorInitiatedId = dl.fetchBySystemName("analysis_error_initiated").getId();
+            man.anErrorInPrepId = dl.fetchBySystemName("analysis_error_inprep").getId();
+            man.anErrorCompletedId = dl.fetchBySystemName("analysis_error_completed").getId();
+            man.samLoggedInId = dl.fetchBySystemName("sample_logged_in").getId();
+            man.samCompletedId = dl.fetchBySystemName("sample_completed").getId();
+            man.samReleasedId = dl.fetchBySystemName("sample_released").getId();
+            man.samErrorId = dl.fetchBySystemName("sample_error").getId();
+        }
     }
 
     private SampleLocal sampleLocal() {
@@ -362,18 +390,6 @@ public class SampleManagerProxy {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
-        }
-    }
-    
-    private void validateAccessionNumber(SampleDO sampleDO, ValidationErrorsList errorsList) throws Exception {
-        try{
-            sampleManagerLocal().validateAccessionNumber(sampleDO);
-    
-        }catch(ValidationErrorsList e){
-            ArrayList<Exception> errors = e.getErrorList();
-            
-            for(int i=0; i<errors.size(); i++)
-                errorsList.add(errors.get(i));
         }
     }
 
@@ -386,7 +402,7 @@ public class SampleManagerProxy {
             return null;
         }
     }
-    
+
     private SampleItemLocal sampleItemLocal() {
         try {
             InitialContext ctx = new InitialContext();
@@ -401,16 +417,6 @@ public class SampleManagerProxy {
         try {
             InitialContext ctx = new InitialContext();
             return (AnalysisLocal)ctx.lookup("openelis/AnalysisBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private SystemVariableLocal sysVariableLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (SystemVariableLocal)ctx.lookup("openelis/SystemVariableBean/local");
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;

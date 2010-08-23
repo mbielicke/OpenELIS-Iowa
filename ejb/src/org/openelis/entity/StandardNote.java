@@ -149,7 +149,7 @@ public class StandardNote implements Auditable, Cloneable {
             audit.setField("id", id, original.id)
                  .setField("name", name, original.name)
                  .setField("description", description, original.description)
-                 .setField("type_id", typeId, original.typeId)
+                 .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
                  .setField("text", text, original.text);
 
         return audit;

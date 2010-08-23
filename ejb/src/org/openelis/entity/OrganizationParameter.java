@@ -101,7 +101,7 @@ public class OrganizationParameter implements Auditable, Cloneable {
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("organization_id", organizationId, original.organizationId)
-                 .setField("type_id", typeId, original.typeId)
+                 .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
                  .setField("value", value, original.value);
 
         return audit;

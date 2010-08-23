@@ -201,7 +201,7 @@ public class Storage implements Auditable, Cloneable {
             audit.setField("id", id, original.id)
                  .setField("reference_id", referenceId, original.referenceId)
                  .setField("reference_table_id", referenceTableId, original.referenceTableId)
-                 .setField("storage_location_id", storageLocationId, original.storageLocationId)
+                 .setField("storage_location_id", storageLocationId, original.storageLocationId, ReferenceTable.STORAGE_LOCATION)
                  .setField("checkin", checkin, original.checkin)
                  .setField("checkout", checkout, original.checkout)
                  .setField("system_user_id", systemUserId, original.systemUserId);

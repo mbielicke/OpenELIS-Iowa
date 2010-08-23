@@ -122,7 +122,7 @@ public class VendorOrderScreen extends Screen {
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
         organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
         
-        security = OpenELIS.security.getModule("order");
+        security = OpenELIS.security.getModule("vendororder");
         if (security == null)
             throw new SecurityException("screenPermException", "Vendor Order Screen");
 

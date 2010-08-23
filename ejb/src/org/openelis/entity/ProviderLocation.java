@@ -81,6 +81,9 @@ public class ProviderLocation implements Auditable, Cloneable {
 
     @Transient
     private ProviderLocation original;
+    
+    @Transient
+    private boolean          auditAddressId;
 
     public Integer getId() {
         return id;
@@ -135,6 +138,13 @@ public class ProviderLocation implements Auditable, Cloneable {
         this.address = address;
     }
 
+    /*
+     * Audit support
+     */
+    public void setAuditAddressId(boolean changed) {
+        auditAddressId = changed;
+    }
+
     public void setClone() {
         try {
             original = (ProviderLocation)this.clone();
@@ -154,7 +164,8 @@ public class ProviderLocation implements Auditable, Cloneable {
                  .setField("location", location, original.location)
                  .setField("external_id", externalId, original.externalId)
                  .setField("provider_id", providerId, original.providerId)
-                 .setField("address_id", addressId, original.addressId);
+                 .setField("address_id", (auditAddressId ? null : addressId), original.addressId,
+                           ReferenceTable.ADDRESS);
 
         return audit;
     }

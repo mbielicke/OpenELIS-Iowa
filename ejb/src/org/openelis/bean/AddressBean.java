@@ -38,6 +38,7 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.AddressLocal;
 import org.openelis.remote.AddressRemote;
+import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 public class AddressBean implements AddressRemote, AddressLocal {
@@ -119,5 +120,30 @@ public class AddressBean implements AddressRemote, AddressLocal {
         entity = manager.find(Address.class, data.getId());
 
         manager.remove(entity);
+    }
+    
+    public void delete(Integer id) throws Exception {
+        Address entity;
+        
+        manager.setFlushMode(FlushModeType.COMMIT);
+
+        entity = manager.find(Address.class, id);
+
+        manager.remove(entity);
+    }
+
+    public boolean isEmpty(AddressDO data) throws Exception {
+        if (data == null)
+            return true;
+        
+        if (DataBaseUtil.isEmpty(data.getCellPhone()) && DataBaseUtil.isEmpty(data.getCity())  &&
+            DataBaseUtil.isEmpty(data.getCountry()) && DataBaseUtil.isEmpty(data.getEmail()) &&
+            DataBaseUtil.isEmpty(data.getFaxPhone()) && DataBaseUtil.isEmpty(data.getHomePhone()) && 
+            DataBaseUtil.isEmpty(data.getMultipleUnit()) && DataBaseUtil.isEmpty(data.getState()) &&
+            DataBaseUtil.isEmpty(data.getStreetAddress()) && DataBaseUtil.isEmpty(data.getWorkPhone()) &&
+            DataBaseUtil.isEmpty(data.getZipCode()))
+            return true;
+                        
+        return false;
     }
 }

@@ -42,11 +42,12 @@ public class Audit {
 
     protected class Field {
         boolean changed;
+        Integer linkedTableId;
         String  name;
         Object  value;
     }
 
-    protected Integer          referenceId, referenceTableId;
+    protected Integer          referenceId, referenceTableId; 
     protected ArrayList<Field> fields;
 
     /**
@@ -84,10 +85,20 @@ public class Audit {
      * to the list of xml elements, that can later retrieved through getXML(boolean)  
      */
     public Audit setField(String fieldName, Object currentValue, Object originalValue) {
+        return setField(fieldName, currentValue, originalValue, null);
+    }
+
+    /**
+     * Adds a field given by field name, current and original values, and the reference table id
+     * to the list of xml elements. The linked table id is used to specify the referenced table id
+     * that the field value points to.
+     */
+    public Audit setField(String fieldName, Object currentValue, Object originalValue, Integer linkedTableId) {
         Field field;
 
         field = new Field();
         field.changed = isDifferent(currentValue, originalValue);
+        field.linkedTableId = linkedTableId;
         field.name = fieldName;
         field.value = originalValue;
 
@@ -115,6 +126,8 @@ public class Audit {
                 for (Field f : fields) {
                     if ( (f.changed || !withDifferences) && f.value != null) {
                         elem = doc.createElement(f.name);
+                        if (f.linkedTableId != null)
+                            elem.setAttribute("refTable", f.linkedTableId.toString());
                         elem.appendChild(doc.createTextNode(f.value.toString()));
                         doc.getDocumentElement().appendChild(elem);
                     }

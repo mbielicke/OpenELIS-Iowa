@@ -135,7 +135,7 @@ public class TestWorksheetItem implements Auditable, Cloneable {
             audit.setField("id", id, original.id)
                  .setField("test_worksheet_id", testWorksheetId, original.testWorksheetId)
                  .setField("position", position, original.position)
-                 .setField("type_id", typeId, original.typeId)
+                 .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
                  .setField("qc_name", qcName, original.qcName);
 
         return audit;

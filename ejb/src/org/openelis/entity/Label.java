@@ -159,8 +159,8 @@ public class Label implements Auditable, Cloneable {
             audit.setField("id", id, original.id)
                  .setField("name", name, original.name)
                  .setField("description", description, original.description)
-                 .setField("printer_type_id", printerTypeId, original.printerTypeId)
-                 .setField("scriptlet_id", scriptletId, original.scriptletId);
+                 .setField("printer_type_id", printerTypeId, original.printerTypeId, ReferenceTable.DICTIONARY)
+                 .setField("scriptlet_id", scriptletId, original.scriptletId, ReferenceTable.SCRIPTLET);
         
         return audit;
     }

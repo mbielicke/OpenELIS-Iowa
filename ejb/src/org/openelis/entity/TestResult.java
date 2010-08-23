@@ -216,12 +216,12 @@ public class TestResult implements Auditable, Cloneable {
                  .setField("test_id", testId, original.testId)
                  .setField("result_group", resultGroup, original.resultGroup)
                  .setField("sort_order", sortOrder, original.sortOrder)
-                 .setField("unit_of_measure_id", unitOfMeasureId, original.unitOfMeasureId)
-                 .setField("type_id", typeId, original.typeId)
+                 .setField("unit_of_measure_id", unitOfMeasureId, original.unitOfMeasureId, ReferenceTable.DICTIONARY)
+                 .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
                  .setField("value", value, original.value)
                  .setField("significant_digits", significantDigits, original.significantDigits)
-                 .setField("rounding_method_id", roundingMethodId, original.roundingMethodId)
-                 .setField("flags_id", flagsId, original.flagsId);
+                 .setField("rounding_method_id", roundingMethodId, original.roundingMethodId, ReferenceTable.DICTIONARY)
+                 .setField("flags_id", flagsId, original.flagsId, ReferenceTable.DICTIONARY);
 
         return audit;
 

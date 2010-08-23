@@ -52,7 +52,7 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "SampleEnvironmental.FetchBySampleId",
                 query = "select new org.openelis.domain.SampleEnvironmentalDO(s.id,s.sampleId,s.isHazardous, s.priority, "+
                         "s.description,s.collector,s.collectorPhone,s.location,s.locationAddressId,a.multipleUnit," +
-                        "a.streetAddress,a.city,a.state,a.zipCode,a.country)"
+                        "a.streetAddress,a.city,a.state,a.zipCode,a.workPhone,a.homePhone,a.cellPhone, a.faxPhone, a.email,a.country)"
                       + " from SampleEnvironmental s LEFT JOIN s.locationAddress a where s.sampleId = :id")})
 @Entity
 @Table(name = "sample_environmental")
@@ -98,6 +98,9 @@ public class SampleEnvironmental implements Auditable, Cloneable {
 
     @Transient
     private SampleEnvironmental original;
+    
+    @Transient
+    private boolean             auditLocationAddressId;
 
     public Integer getId() {
         return id;
@@ -186,7 +189,7 @@ public class SampleEnvironmental implements Auditable, Cloneable {
 
     public void setLocationAddress(Address locationAddress) {
         this.locationAddress = locationAddress;
-    }
+    }        
 
     public Sample getSample() {
         return sample;
@@ -196,6 +199,13 @@ public class SampleEnvironmental implements Auditable, Cloneable {
         this.sample = sample;
     }
 
+    /*
+     * Audit support
+     */
+    public void setLocationAuditAddressId(boolean changed) {
+        auditLocationAddressId = changed;
+    }
+    
     public void setClone() {
         try {
             original = (SampleEnvironmental)this.clone();
@@ -212,14 +222,15 @@ public class SampleEnvironmental implements Auditable, Cloneable {
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("sample_id", sampleId, original.sampleId)
+                 .setField("sample_id", sampleId, original.sampleId, ReferenceTable.SAMPLE)
                  .setField("is_hazardous", isHazardous, original.isHazardous)
                  .setField("priority", priority, original.priority)
                  .setField("description", description, original.description)
                  .setField("collector", collector, original.collector)
                  .setField("collector_phone", collectorPhone, original.collectorPhone)
                  .setField("location", location, original.location)
-                 .setField("location_address_id", locationAddressId, original.locationAddressId);
+                 .setField("address_id", (auditLocationAddressId ? null : locationAddressId), original.locationAddressId,
+                           ReferenceTable.ADDRESS);
 
         return audit;
     }

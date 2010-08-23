@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.InventoryItemCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryLocationViewDO;
@@ -538,17 +539,24 @@ public class ItemTab extends Screen {
                 int row;
                                 
                 item = itemsTree.getSelection();
+                invItem = null;
+                
                 if(item == null) 
                     return;           
                 
                 itemsTree.finishEditing();
                 if("top".equals(item.leafType)) {
-                    data = (OrderItemViewDO)item.key;
-                    invItem = orderFillScreen.getInventoryItem(data.getInventoryItemId());                    
+                    data = (OrderItemViewDO)item.key;                  
+                    try {
+                        invItem = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        e.printStackTrace();
+                    }
                     if(!item.open)
                         itemsTree.toggle(item);
                     
-                    if ("Y".equals(invItem.getIsNotInventoried())) {
+                    if (invItem != null && "Y".equals(invItem.getIsNotInventoried())) {
                         Window.alert(consts.get("itemFlagDontInvCantBeFilled"));
                         return;
                     }
@@ -614,6 +622,7 @@ public class ItemTab extends Screen {
         int i;
         
         validate = true;
+        invItem = null;
         
         if (combinedMap != null && combinedMap.get(manager.getOrder().getId()) != null) {
             itemsTree.finishEditing();
@@ -622,9 +631,14 @@ public class ItemTab extends Screen {
             for (i = 0; i < model.size(); i++ ) {
                 parent = model.get(i);
                 item = (OrderItemViewDO)parent.key;
-                invItem = orderFillScreen.getInventoryItem(item.getInventoryItemId());
+                try {
+                    invItem = InventoryItemCache.getActiveInventoryItemFromId(item.getInventoryItemId());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    e.printStackTrace();
+                }
                 
-                if ("Y".equals(invItem.getIsNotInventoried())) 
+                if (invItem != null && "Y".equals(invItem.getIsNotInventoried())) 
                     continue;
                 
                 if ( !parent.open)
@@ -850,15 +864,21 @@ public class ItemTab extends Screen {
         boolean valid;
         Integer qty;
         OrderItemViewDO data;
-        InventoryItemDO invItemData;
+        InventoryItemDO invItem;
         
+        invItem = null;
         data = (OrderItemViewDO)item.key;
-        invItemData = orderFillScreen.getInventoryItem(data.getInventoryItemId());
+        try {
+            invItem = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
         qty = data.getQuantity();
         
         item.cells.get(1).clearExceptions();
         
-        if ("Y".equals(invItemData.getIsNotInventoried())) {
+        if (invItem != null && "Y".equals(invItem.getIsNotInventoried())) {
             if (qty == null || qty < 0) {
                 if (r > -1)
                     itemsTree.setCellException(r,1, new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));

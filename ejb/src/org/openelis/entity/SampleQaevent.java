@@ -1,9 +1,8 @@
-
 package org.openelis.entity;
 
 /**
-  * SampleQaevent Entity POJO for database 
-  */
+ * SampleQaevent Entity POJO for database
+ */
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,96 +24,100 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-    @NamedQuery(name = "SampleQaevent.FetchBySampleId", query = "select new org.openelis.domain.SampleQaEventViewDO(q.id, q.sampleId, q.qaeventId, " + 
-                " q.typeId, q.isBillable, q.qaEvent.name) from SampleQaevent q where q.sampleId = :id order by q.id")})
-                
+    @NamedQuery( name = "SampleQaevent.FetchBySampleId",
+                query = "select new org.openelis.domain.SampleQaEventViewDO(q.id, q.sampleId, q.qaeventId, q.typeId, q.isBillable, q.qaEvent.name)"
+                      + " from SampleQaevent q where q.sampleId = :id order by q.id")})
 @Entity
-@Table(name="sample_qaevent")
-@EntityListeners({AuditUtil.class})
+@Table(name = "sample_qaevent")
+@EntityListeners( {AuditUtil.class})
 public class SampleQaevent implements Auditable, Cloneable {
-  
-  @Id
-  @GeneratedValue
-  @Column(name="id")
-  private Integer id;             
 
-  @Column(name="sample_id")
-  private Integer sampleId;             
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private Integer       id;
 
-  @Column(name="qaevent_id")
-  private Integer qaeventId;             
+    @Column(name = "sample_id")
+    private Integer       sampleId;
 
-  @Column(name="type_id")
-  private Integer typeId;             
+    @Column(name = "qaevent_id")
+    private Integer       qaeventId;
 
-  @Column(name="is_billable")
-  private String isBillable;    
-  
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "qaevent_id", insertable = false, updatable = false)
-  private QaEvent qaEvent;
+    @Column(name = "type_id")
+    private Integer       typeId;
 
-  @Transient
-  private SampleQaevent original;
+    @Column(name = "is_billable")
+    private String        isBillable;
 
-  
-  public Integer getId() {
-    return id;
-  }
-  protected void setId(Integer id) {
-    if(DataBaseUtil.isDifferent(id, this.id))
-      this.id = id;
-  }
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "qaevent_id", insertable = false, updatable = false)
+    private QaEvent       qaEvent;
 
-  public Integer getSampleId() {
-    return sampleId;
-  }
-  public void setSampleId(Integer sampleId) {
-    if(DataBaseUtil.isDifferent(sampleId, this.sampleId))
-      this.sampleId = sampleId;
-  }
+    @Transient
+    private SampleQaevent original;
 
-  public Integer getQaeventId() {
-    return qaeventId;
-  }
-  public void setQaeventId(Integer qaeventId) {
-    if(DataBaseUtil.isDifferent(qaeventId, this.qaeventId))
-      this.qaeventId = qaeventId;
-  }
-
-  public Integer getTypeId() {
-    return typeId;
-  }
-  public void setTypeId(Integer typeId) {
-    if(DataBaseUtil.isDifferent(typeId, this.typeId))
-      this.typeId = typeId;
-  }
-
-  public String getIsBillable() {
-    return isBillable;
-  }
-  public void setIsBillable(String isBillable) {
-    if(DataBaseUtil.isDifferent(isBillable, this.isBillable))
-      this.isBillable = isBillable;
-  }
-  
-  public QaEvent getQaEvent() {
-      return qaEvent;
-  }
-  
-  public void setQaEvent(QaEvent qaEvent) {
-      this.qaEvent = qaEvent;
-  }
-  
-  public void setClone() {
-    try {
-        original = (SampleQaevent)this.clone();
-    }catch(Exception e){
-        e.printStackTrace();
+    public Integer getId() {
+        return id;
     }
-  }
-  
-  public Audit getAudit() {
+
+    protected void setId(Integer id) {
+        if (DataBaseUtil.isDifferent(id, this.id))
+            this.id = id;
+    }
+
+    public Integer getSampleId() {
+        return sampleId;
+    }
+
+    public void setSampleId(Integer sampleId) {
+        if (DataBaseUtil.isDifferent(sampleId, this.sampleId))
+            this.sampleId = sampleId;
+    }
+
+    public Integer getQaeventId() {
+        return qaeventId;
+    }
+
+    public void setQaeventId(Integer qaeventId) {
+        if (DataBaseUtil.isDifferent(qaeventId, this.qaeventId))
+            this.qaeventId = qaeventId;
+    }
+
+    public Integer getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(Integer typeId) {
+        if (DataBaseUtil.isDifferent(typeId, this.typeId))
+            this.typeId = typeId;
+    }
+
+    public String getIsBillable() {
+        return isBillable;
+    }
+
+    public void setIsBillable(String isBillable) {
+        if (DataBaseUtil.isDifferent(isBillable, this.isBillable))
+            this.isBillable = isBillable;
+    }
+
+    public QaEvent getQaEvent() {
+        return qaEvent;
+    }
+
+    public void setQaEvent(QaEvent qaEvent) {
+        this.qaEvent = qaEvent;
+    }
+
+    public void setClone() {
+        try {
+            original = (SampleQaevent)this.clone();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Audit getAudit() {
         Audit audit;
 
         audit = new Audit();
@@ -123,10 +126,10 @@ public class SampleQaevent implements Auditable, Cloneable {
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("sample_id", sampleId, original.sampleId)
-                 .setField("qaevent_id", qaeventId, original.qaeventId)
-                 .setField("type_id", typeId, original.typeId)
+                 .setField("qaevent_id", qaeventId, original.qaeventId, ReferenceTable.QAEVENT)
+                 .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
                  .setField("is_billable", isBillable, original.isBillable);
 
         return audit;
-  }
-}   
+    }
+}

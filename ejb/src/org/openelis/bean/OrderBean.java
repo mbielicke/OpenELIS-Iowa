@@ -57,7 +57,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("order-select")
+@RolesAllowed({"order-select", "internalorder-select", "vendororder-select", "sendoutorder-select"})
 public class OrderBean implements OrderRemote, OrderLocal {
 
     @PersistenceContext(unitName = "openelis")

@@ -541,7 +541,7 @@ public class Test implements Auditable, Cloneable {
                  .setField("name", name, original.name)
                  .setField("description", description, original.description)
                  .setField("reporting_description", reportingDescription, original.reportingDescription)
-                 .setField("method_id", methodId, original.methodId)
+                 .setField("method_id", methodId, original.methodId, ReferenceTable.METHOD)
                  .setField("is_active", isActive, original.isActive)
                  .setField("active_begin", activeBegin, original.activeBegin)
                  .setField("active_end", activeEnd, original.activeEnd)
@@ -551,15 +551,16 @@ public class Test implements Auditable, Cloneable {
                  .setField("time_ta_average", timeTaAverage, original.timeTaAverage)
                  .setField("time_ta_warning", timeTaWarning, original.timeTaWarning)
                  .setField("time_ta_max", timeTaMax, original.timeTaMax)
-                 .setField("label_id", labelId, original.labelId)
+                 .setField("label_id", labelId, original.labelId, ReferenceTable.LABEL)
                  .setField("label_qty", labelQty, original.labelQty)
-                 .setField("test_trailer_id", testTrailerId, original.testTrailerId)
-                 .setField("scriptlet_id", scriptletId, original.scriptletId)
-                 .setField("test_format_id", testFormatId, original.testFormatId)
-                 .setField("revision_method_id", revisionMethodId, original.revisionMethodId)
-                 .setField("reporting_method_id", reportingMethodId, original.reportingMethodId)
-                 .setField("sorting_method_id", sortingMethodId, original.sortingMethodId)
+                 .setField("test_trailer_id", testTrailerId, original.testTrailerId, ReferenceTable.TEST_TRAILER)
+                 .setField("scriptlet_id", scriptletId, original.scriptletId, ReferenceTable.SCRIPTLET)
+                 .setField("test_format_id", testFormatId, original.testFormatId, ReferenceTable.DICTIONARY)
+                 .setField("revision_method_id", revisionMethodId, original.revisionMethodId, ReferenceTable.DICTIONARY)
+                 .setField("reporting_method_id", reportingMethodId, original.reportingMethodId, ReferenceTable.DICTIONARY)
+                 .setField("sorting_method_id", sortingMethodId, original.sortingMethodId, ReferenceTable.DICTIONARY)
                  .setField("reporting_sequence", reportingSequence, original.reportingSequence);
+                 
 
         return audit;
 

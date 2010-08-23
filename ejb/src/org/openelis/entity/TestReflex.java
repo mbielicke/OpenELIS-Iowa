@@ -220,10 +220,10 @@ public class TestReflex implements Auditable, Cloneable {
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("test_id", testId, original.testId)
-                 .setField("test_analyte_id", testAnalyteId, original.testAnalyteId)
-                 .setField("test_result_id", testResultId, original.testResultId)
-                 .setField("flags_id", flagsId, original.flagsId)
-                 .setField("add_test_id", addTestId, original.addTestId);
+                 .setField("test_analyte_id", testAnalyteId, original.testAnalyteId, ReferenceTable.TEST_ANALYTE)
+                 .setField("test_result_id", testResultId, original.testResultId, ReferenceTable.TEST_RESULT)
+                 .setField("flags_id", flagsId, original.flagsId, ReferenceTable.DICTIONARY)
+                 .setField("add_test_id", addTestId, original.addTestId, ReferenceTable.TEST);
 
         return audit;
     }
