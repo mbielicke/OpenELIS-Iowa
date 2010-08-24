@@ -35,4 +35,11 @@ UIRF Software License are applicable instead of those above.
          <property name="hibernate.dialect" value="org.hibernate.dialect.InformixDialect"/>
       </properties>
    </persistence-unit>
+      <persistence-unit name="newsecurity">
+      <jta-data-source>java:/SecurityDS</jta-data-source>
+      <properties>
+        <!-- <property name="hibernate.hbm2ddl.auto">update</property> -->
+         <property name="hibernate.dialect" value="org.hibernate.dialect.InformixDialect"/>
+      </properties>
+   </persistence-unit>
 </persistence>
