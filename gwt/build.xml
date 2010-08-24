@@ -49,6 +49,7 @@
       <jvmarg value="-Xmx2048M"/>
       <!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
       <arg value="org.openelis.OpenELIS"/>
+      <arg value="-draftCompile"/>
     </java>
   </target>
 
@@ -84,7 +85,6 @@
     	       <include name="org/openelis/manager/*.class"/>
  	  	       <include name="org/openelis/messages/*.class"/>
      	       <include name="org/openelis/meta/*.class"/>
- 	  	       <include name="org/openelis/metamap/*.class"/>
 	  	       <include name="org/openelis/remote/*.class"/>
   	  	       <include name="org/openelis/utilcommon/*.class"/>
 	  	    </fileset>
