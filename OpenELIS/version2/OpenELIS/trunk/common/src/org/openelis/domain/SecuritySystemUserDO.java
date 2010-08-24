@@ -25,7 +25,7 @@
  */
 package org.openelis.domain;
 
-import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.*;
 
 public class SecuritySystemUserDO implements RPC {
 
