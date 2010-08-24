@@ -31,11 +31,11 @@
 	    	       <include name="org/openelis/manager/*.class"/>
 	 	  	       <include name="org/openelis/messages/*.class"/>
 	     	       <include name="org/openelis/meta/*.class"/>
-	 	  	       <include name="org/openelis/metamap/*.class"/>
 		  	       <include name="org/openelis/remote/*.class"/>
 	  	  	       <include name="org/openelis/utilcommon/*.class"/>
 			</fileset>
 		</jar>
+		<copy file="../OpenELIS-Security/build/security-client.jar" tofile="./lib/security-client.jar" overwrite="true" />
 		<delete file="build/openelis.ear"/>
 		<jar jarfile="build/openelis.ear">
 			<fileset dir="${src.resources}/">
@@ -50,9 +50,9 @@
 			</fileset>
 			<fileset dir=".">
 				<include name="lib/openelis-lib.jar" />
-				<include name="lib/security.jar" />
 				<include name="lib/poi-3.6-20091214.jar" />
-			</fileset>
+				<include name="lib/security-client.jar"/>
+		    </fileset>
 		</jar>
 	</target>
 
