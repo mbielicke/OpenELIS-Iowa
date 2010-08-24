@@ -140,6 +140,7 @@ public class StaticFilter implements Filter {
                     SessionManager.getSession().setAttribute("jndiProps", props);
                     SessionManager.getSession().setAttribute("USER_NAME", username);
                     authLog.info("Login attempt for "+username+" succeeded");
+                 
                     /*try {
                         Document doc = XMLUtil.createNew("login");
                         Element action = doc.createElement("action");
