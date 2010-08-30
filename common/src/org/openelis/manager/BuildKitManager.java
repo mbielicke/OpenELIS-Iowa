@@ -26,9 +26,9 @@
 package org.openelis.manager;
 
 import org.openelis.domain.InventoryReceiptViewDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.utilcommon.DataBaseUtil;
 
 public class BuildKitManager implements RPC {
 

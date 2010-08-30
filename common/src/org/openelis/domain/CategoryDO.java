@@ -25,7 +25,7 @@
  */
 package org.openelis.domain;
 
-import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.gwt.common.DataBaseUtil;
 
 /**
  * Class represents the fields in database table category.

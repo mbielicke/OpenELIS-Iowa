@@ -27,7 +27,7 @@ package org.openelis.domain;
 
 import java.util.Date;
 
-import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.gwt.common.DataBaseUtil;
 
 /**
  * The class extends analysis DO and carries several commonly used fields such

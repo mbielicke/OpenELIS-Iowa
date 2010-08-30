@@ -25,8 +25,8 @@
  */
 package org.openelis.domain;
 
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.RPC;
-import org.openelis.utilcommon.DataBaseUtil;
 
 public class PanelVO implements RPC {
     private static final long serialVersionUID = 1L;

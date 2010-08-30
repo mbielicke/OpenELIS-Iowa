@@ -25,8 +25,8 @@
  */
 package org.openelis.domain;
 
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.RPC;
-import org.openelis.utilcommon.DataBaseUtil;
 
 /**
  * The class is used to carry id, name, and store id fields for query returns, for left 

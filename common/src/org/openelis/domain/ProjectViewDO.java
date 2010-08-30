@@ -27,7 +27,7 @@ package org.openelis.domain;
 
 import java.util.Date;
 
-import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.gwt.common.DataBaseUtil;
 
 /**
  * The class extends the project DO and carries additional scriptlet and owner

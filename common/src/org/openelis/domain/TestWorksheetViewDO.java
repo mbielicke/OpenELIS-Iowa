@@ -25,7 +25,7 @@
  */
 package org.openelis.domain;
 
-import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.gwt.common.DataBaseUtil;
 
 /**
  * The class extends test worksheet DO and adds a commonly used field scriptlet

@@ -25,7 +25,7 @@
  */
 package org.openelis.domain;
 
-import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.gwt.common.DataBaseUtil;
 
 /**
  * The class extends qaevent DO and carries a commonly used field testName. The

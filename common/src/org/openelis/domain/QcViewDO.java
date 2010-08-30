@@ -27,7 +27,7 @@ package org.openelis.domain;
 
 import java.util.Date;
 
-import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.gwt.common.DataBaseUtil;
 
 /**
  * The class extends qc DO and carries a commonly used field inventory_item

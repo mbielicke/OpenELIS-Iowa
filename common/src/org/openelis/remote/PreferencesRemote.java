@@ -34,6 +34,6 @@ public interface PreferencesRemote {
     
     public PreferencesDO getPreferences(String key);
     
-    public void storePreferences(PreferencesDO prefs);
+    public void setPreferences(PreferencesDO prefs);
 
 }

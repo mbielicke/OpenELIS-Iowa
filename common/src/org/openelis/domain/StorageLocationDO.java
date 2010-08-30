@@ -29,7 +29,7 @@ package org.openelis.domain;
  * Class represents the fields in database table storage_location.
  */
 
-import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.gwt.common.DataBaseUtil;
 
 public class StorageLocationDO extends DataObject {
 
