@@ -26,9 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -38,14 +36,13 @@ import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisUserViewDO;
-import org.openelis.domain.StorageViewDO;
 import org.openelis.entity.AnalysisUser;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.local.AnalysisUserLocal;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.remote.*;
-import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.PermissionInterceptor;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -53,12 +50,10 @@ public class AnalysisUserBean implements AnalysisUserLocal {
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
     
-    @EJB (mappedName="security/SystemUserUtilBean") private SystemUserUtilRemote sysUser;
-
     public AnalysisUserViewDO fetchById(Integer id) throws Exception {
         Query query;
         AnalysisUserViewDO anUserDO;
-        SystemUserDO user;
+        SystemUserVO user;
         
         query = manager.createNamedQuery("AnalysisUser.FetchById");
         query.setParameter("id", id);
@@ -67,13 +62,11 @@ public class AnalysisUserBean implements AnalysisUserLocal {
             anUserDO = (AnalysisUserViewDO)query.getSingleResult();
             
             if (anUserDO.getSystemUserId() != null) {
-                user = sysUser.getSystemUser(anUserDO.getSystemUserId());
+                user = PermissionInterceptor.getSystemUser(anUserDO.getSystemUserId());
                 if (user != null)
                     anUserDO.setSystemUser(user.getLoginName());
             }
-            
             return anUserDO;
-            
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -85,18 +78,17 @@ public class AnalysisUserBean implements AnalysisUserLocal {
         Query query;
         ArrayList<AnalysisUserViewDO> returnList;
         AnalysisUserViewDO anUserDO;
-        SystemUserDO user;
+        SystemUserVO user;
         
         query = manager.createNamedQuery("AnalysisUser.FetchByAnalysisId");
         query.setParameter("id", analysisId);
         
         returnList = DataBaseUtil.toArrayList(query.getResultList());
-        
         for (int i = 0; i < returnList.size(); i++ ) {
             anUserDO = returnList.get(i);
 
             if (anUserDO.getSystemUserId() != null) {
-                user = sysUser.getSystemUser(anUserDO.getSystemUserId());
+                user = PermissionInterceptor.getSystemUser(anUserDO.getSystemUserId());
                 if (user != null)
                     anUserDO.setSystemUser(user.getLoginName());
             }

@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -38,23 +37,22 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InventoryAdjustmentDO;
 import org.openelis.domain.InventoryAdjustmentViewDO;
 import org.openelis.entity.InventoryAdjustment;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.InventoryAdjustmentLocal;
 import org.openelis.meta.InventoryAdjustmentMeta;
 import org.openelis.remote.InventoryAdjustmentRemote;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.remote.*;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.PermissionInterceptor;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -64,21 +62,18 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote, Inven
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
        
-    @EJB (mappedName="security/SystemUserUtilBean") private SystemUserUtilRemote systemUserBean;
-
-    
     private static final InventoryAdjustmentMeta meta = new InventoryAdjustmentMeta();
     
     public InventoryAdjustmentViewDO fetchById(Integer id) throws Exception {
         Query query;
         InventoryAdjustmentViewDO data;
-        SystemUserDO user;
+        SystemUserVO user;
         
         query = manager.createNamedQuery("InventoryAdjustment.FetchById");
         query.setParameter("id", id);
         try {
             data = (InventoryAdjustmentViewDO)query.getSingleResult();            
-            user = systemUserBean.getSystemUser(data.getSystemUserId());
+            user = PermissionInterceptor.getSystemUser(data.getSystemUserId());
             data.setSystemUserName(user.getLoginName());
         } catch (NoResultException e) {
             throw new NotFoundException();

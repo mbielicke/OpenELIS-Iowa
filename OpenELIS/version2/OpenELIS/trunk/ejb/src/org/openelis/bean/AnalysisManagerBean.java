@@ -37,8 +37,6 @@ import org.openelis.remote.AnalysisManagerRemote;
 public class AnalysisManagerBean implements AnalysisManagerRemote {
     
     public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
-        AnalysisManager man = AnalysisManager.fetchBySampleItemId(sampleItemId);   
-        
-        return man;
+        return AnalysisManager.fetchBySampleItemId(sampleItemId);   
     }
 }

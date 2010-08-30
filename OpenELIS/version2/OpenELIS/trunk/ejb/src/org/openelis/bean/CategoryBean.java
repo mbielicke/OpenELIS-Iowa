@@ -40,6 +40,7 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.CategoryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.entity.Category;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
@@ -50,7 +51,6 @@ import org.openelis.local.CategoryLocal;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")

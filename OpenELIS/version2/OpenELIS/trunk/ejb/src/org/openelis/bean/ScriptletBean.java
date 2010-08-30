@@ -34,8 +34,8 @@ import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.remote.ScriptletRemote;
-import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")

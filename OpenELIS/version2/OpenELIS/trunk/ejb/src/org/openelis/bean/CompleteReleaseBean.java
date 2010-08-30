@@ -12,6 +12,7 @@ import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.CompleteReleaseVO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.QueryData;
@@ -22,7 +23,6 @@ import org.openelis.meta.CompleteReleaseMeta;
 import org.openelis.meta.SampleMeta;
 import org.openelis.remote.CompleteReleaseRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 

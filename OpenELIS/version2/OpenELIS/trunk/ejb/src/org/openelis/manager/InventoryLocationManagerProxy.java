@@ -30,9 +30,9 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.InventoryLocationViewDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.InventoryLocationLocal;
-import org.openelis.utilcommon.DataBaseUtil;
 
 public class InventoryLocationManagerProxy {
 

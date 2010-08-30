@@ -29,9 +29,9 @@ import javax.naming.InitialContext;
 
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.OrderLocal;
-import org.openelis.utilcommon.DataBaseUtil;
 
 public class OrderManagerProxy {
 

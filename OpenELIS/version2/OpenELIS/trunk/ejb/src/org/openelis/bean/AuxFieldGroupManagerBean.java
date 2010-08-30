@@ -36,13 +36,13 @@ import javax.transaction.UserTransaction;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
-import org.openelis.gwt.common.SecurityModule.ModuleFlags;
+import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.local.LockLocal;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.AuxFieldValueManager;
 import org.openelis.remote.AuxFieldGroupManagerRemote;
-import org.openelis.utils.SecurityInterceptor;
+import org.openelis.utils.PermissionInterceptor;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -134,6 +134,6 @@ public class AuxFieldGroupManagerBean implements AuxFieldGroupManagerRemote {
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity("auxiliary", flag);
+        PermissionInterceptor.applyPermission("auxiliary", flag);
     }    
 }

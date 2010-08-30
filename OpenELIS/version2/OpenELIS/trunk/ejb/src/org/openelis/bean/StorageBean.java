@@ -42,39 +42,38 @@ import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.entity.Storage;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AnalysisLocal;
-import org.openelis.local.LoginLocal;
 import org.openelis.local.SampleItemLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.StorageLocal;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.remote.*;
-import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.PermissionInterceptor;
 
 @Stateless
 @SecurityDomain("openelis")
 @RolesAllowed("storage-select")
 public class StorageBean implements StorageLocal {
-    @PersistenceContext(unitName = "openelis")
-    private EntityManager            manager;
 
-    @EJB (mappedName="security/SystemUserUtilBean") private SystemUserUtilRemote sysUser;
-    
-    @EJB private LoginLocal               login;
-    
-    @EJB private SampleItemLocal          sampleItem;
-    
-    @EJB private AnalysisLocal            analysis;
-    
-    @EJB private SampleLocal              sample;    
+    @PersistenceContext(unitName = "openelis")
+    private EntityManager   manager;
+
+    @EJB
+    private SampleItemLocal sampleItem;
+
+    @EJB
+    private AnalysisLocal   analysis;
+
+    @EJB
+    private SampleLocal     sample;
 
     public ArrayList<StorageViewDO> fetchByRefId(Integer refTableId, Integer refId) throws Exception {
-        SystemUserDO user;
-        StorageViewDO storage;
         Query query;
+        SystemUserVO user;
+        StorageViewDO data;
         ArrayList<StorageViewDO> list;
 
         query = manager.createNamedQuery("Storage.FetchById");
@@ -82,14 +81,13 @@ public class StorageBean implements StorageLocal {
         query.setParameter("id", refId);
 
         list = DataBaseUtil.toArrayList(query.getResultList());
-
         for (int i = 0; i < list.size(); i++ ) {
-            storage = list.get(i);
+            data = list.get(i);
 
-            if (storage.getSystemUserId() != null) {
-                user = sysUser.getSystemUser(storage.getSystemUserId());
+            if (data.getSystemUserId() != null) {
+                user = PermissionInterceptor.getSystemUser(data.getSystemUserId());
                 if (user != null)
-                    storage.setUserName(user.getLoginName());
+                    data.setUserName(user.getLoginName());
             }
         }
 
@@ -98,14 +96,14 @@ public class StorageBean implements StorageLocal {
 
         return list;
     }
-    
+
     public ArrayList<StorageViewDO> fetchCurrentByLocationId(Integer id) throws Exception {
-        SystemUserDO user;
+        Query query;
+        SystemUserVO user;
         StorageViewDO data;
         AnalysisViewDO anaDO;
-        SampleItemViewDO itemDO; 
+        SampleItemViewDO itemDO;
         SampleDO sampleDO;
-        Query query;
         Integer refTableId, sampleItemId, analysisId;
         ArrayList<StorageViewDO> list;
         String description, container;
@@ -117,32 +115,32 @@ public class StorageBean implements StorageLocal {
         query.setParameter("id", id);
 
         list = DataBaseUtil.toArrayList(query.getResultList());
-
         for (int i = 0; i < list.size(); i++ ) {
             data = list.get(i);
             refTableId = data.getReferenceTableId();
 
             if (data.getSystemUserId() != null) {
-                user = sysUser.getSystemUser(data.getSystemUserId());
+                user = PermissionInterceptor.getSystemUser(data.getSystemUserId());
                 if (user != null)
                     data.setUserName(user.getLoginName());
             }
 
             if (sampleItemId.equals(refTableId)) {
-                itemDO = sampleItem.fetchById(data.getReferenceId()); 
+                itemDO = sampleItem.fetchById(data.getReferenceId());
                 sampleDO = sample.fetchById(itemDO.getSampleId());
-                description = sampleDO.getAccessionNumber()+" - "+itemDO.getItemSequence();
+                description = sampleDO.getAccessionNumber() + " - " + itemDO.getItemSequence();
                 container = itemDO.getContainer();
-                if(container != null)
-                    data.setItemDescription(description+","+container);       
-                else 
+                if (container != null)
+                    data.setItemDescription(description + "," + container);
+                else
                     data.setItemDescription(description);
             } else if (analysisId.equals(refTableId)) {
                 anaDO = analysis.fetchById(data.getReferenceId());
-                itemDO = sampleItem.fetchById(anaDO.getSampleItemId()); 
+                itemDO = sampleItem.fetchById(anaDO.getSampleItemId());
                 sampleDO = sample.fetchById(itemDO.getSampleId());
-                data.setItemDescription(sampleDO.getAccessionNumber()+" - "+ itemDO.getItemSequence()
-                                        +","+ anaDO.getTestName()+" : "+anaDO.getMethodName());
+                data.setItemDescription(sampleDO.getAccessionNumber() + " - " +
+                                        itemDO.getItemSequence() + "," + anaDO.getTestName() +
+                                        " : " + anaDO.getMethodName());
             }
 
         }
@@ -153,11 +151,13 @@ public class StorageBean implements StorageLocal {
         return list;
     }
 
-    public ArrayList<StorageViewDO> fetchHistoryByLocationId(ArrayList<QueryData> fields, int first, int max) throws Exception {
-        SystemUserDO user;
+    public ArrayList<StorageViewDO> fetchHistoryByLocationId(ArrayList<QueryData> fields,
+                                                             int first,
+                                                             int max) throws Exception {
+        SystemUserVO user;
         StorageViewDO data;
         AnalysisViewDO anaDO;
-        SampleItemViewDO itemDO; 
+        SampleItemViewDO itemDO;
         SampleDO sampleDO;
         Query query;
         Integer refTableId, sampleItemId, analysisId, id;
@@ -177,6 +177,7 @@ public class StorageBean implements StorageLocal {
         list = DataBaseUtil.toArrayList(query.getResultList());
         if (list.isEmpty())
             throw new NotFoundException();
+
         list = (ArrayList<StorageViewDO>)DataBaseUtil.subList(list, first, max);
         if (list == null)
             throw new LastPageException();
@@ -186,26 +187,26 @@ public class StorageBean implements StorageLocal {
             refTableId = data.getReferenceTableId();
 
             if (data.getSystemUserId() != null) {
-                user = sysUser.getSystemUser(data.getSystemUserId());
+                user = PermissionInterceptor.getSystemUser(data.getSystemUserId());
                 if (user != null)
                     data.setUserName(user.getLoginName());
             }
-            
+
             if (sampleItemId.equals(refTableId)) {
-                itemDO = sampleItem.fetchById(data.getReferenceId()); 
+                itemDO = sampleItem.fetchById(data.getReferenceId());
                 sampleDO = sample.fetchById(itemDO.getSampleId());
-                description = sampleDO.getAccessionNumber()+","+itemDO.getItemSequence();
+                description = sampleDO.getAccessionNumber() + "," + itemDO.getItemSequence();
                 container = itemDO.getContainer();
-                if(container != null)
-                    data.setItemDescription(description+","+container);       
-                else 
+                if (container != null)
+                    data.setItemDescription(description + "," + container);
+                else
                     data.setItemDescription(description);
             } else if (analysisId.equals(refTableId)) {
                 anaDO = analysis.fetchById(data.getReferenceId());
-                itemDO = sampleItem.fetchById(anaDO.getSampleItemId()); 
+                itemDO = sampleItem.fetchById(anaDO.getSampleItemId());
                 sampleDO = sample.fetchById(itemDO.getSampleId());
-                data.setItemDescription(sampleDO.getAccessionNumber()+","+
-                                        anaDO.getTestName()+" : "+anaDO.getMethodName());
+                data.setItemDescription(sampleDO.getAccessionNumber() + "," + anaDO.getTestName() +
+                                        " : " + anaDO.getMethodName());
             }
 
         }
@@ -224,7 +225,7 @@ public class StorageBean implements StorageLocal {
         entity.setStorageLocationId(data.getStorageLocationId());
         entity.setCheckin(data.getCheckin());
         entity.setCheckout(data.getCheckout());
-        entity.setSystemUserId(login.getSystemUserId());
+        entity.setSystemUserId(PermissionInterceptor.getSystemUserId());
 
         manager.persist(entity);
         data.setId(entity.getId());
@@ -246,8 +247,9 @@ public class StorageBean implements StorageLocal {
         entity.setStorageLocationId(data.getStorageLocationId());
         entity.setCheckin(data.getCheckin());
         entity.setCheckout(data.getCheckout());
-        entity.setSystemUserId(login.getSystemUserId());
-        
+        // will not need to update the user id
+        // entity.setSystemUserId(data.getSystemUserId());
+
         return data;
     }
 

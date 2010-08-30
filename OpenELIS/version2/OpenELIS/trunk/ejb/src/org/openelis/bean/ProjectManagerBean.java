@@ -11,12 +11,12 @@ import javax.transaction.UserTransaction;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
-import org.openelis.gwt.common.SecurityModule.ModuleFlags;
+import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.local.LockLocal;
 import org.openelis.manager.ProjectManager;
 import org.openelis.manager.ProjectParameterManager;
 import org.openelis.remote.ProjectManagerRemote;
-import org.openelis.utils.SecurityInterceptor;
+import org.openelis.utils.PermissionInterceptor;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -98,6 +98,6 @@ public class ProjectManagerBean implements ProjectManagerRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity("project", flag);
+        PermissionInterceptor.applyPermission("project", flag);
     }
 }

@@ -41,13 +41,13 @@ import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryXAdjustViewDO;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryXAdjust;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.InventoryLocationLocal;
 import org.openelis.local.InventoryXAdjustLocal;
 import org.openelis.meta.InventoryAdjustmentMeta;
-import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")

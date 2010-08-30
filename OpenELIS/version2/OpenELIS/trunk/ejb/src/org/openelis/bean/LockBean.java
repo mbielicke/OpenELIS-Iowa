@@ -25,20 +25,9 @@
  */
 package org.openelis.bean;
 
-import org.openelis.entity.Lock;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.EntityLockedException;
-import org.openelis.local.LockLocal;
-import org.openelis.local.LoginLocal;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.remote.*;
-
 import java.util.Calendar;
 import java.util.Date;
 
-import javax.annotation.Resource;
-import javax.ejb.EJB;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
@@ -46,19 +35,19 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.openelis.entity.Lock;
+import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.EntityLockedException;
+import org.openelis.gwt.common.SystemUserVO;
+import org.openelis.local.LockLocal;
+import org.openelis.utils.PermissionInterceptor;
+
 @Stateless
 public class LockBean implements LockLocal {
 
     @PersistenceContext
     private EntityManager       manager;
-
-    @Resource
-    private SessionContext      ctx;
-
-    @EJB
-    private LoginLocal          login;
-
-    @EJB (mappedName="security/SystemUserUtilBean") private SystemUserUtilRemote sysUser;
 
     /**
      * This method returns true if an un-expired lock is found in the table and
@@ -70,14 +59,24 @@ public class LockBean implements LockLocal {
 
     public boolean isLocked(Integer table, Integer row, String session) {
         Lock lock;
+        Integer userId;
         
-        lock = checkForLock(table, row);
-        if (lock != null &&
-            lock.getExpires().getDate().after(new Date()) &&
-            !lock.getSystemUserId().equals(getSystemUserId()) &&
-            (lock.getSessionId() == null || "".equals(lock.getSessionId()) || 
-            !lock.getSessionId().equals(session)))
+        lock = fetchLock(table, row, null, null);
+        try {
+            userId = PermissionInterceptor.getSystemUserId();
+            if (lock != null) {
+                return lock.getExpires().after(new Date()) &&
+                       DataBaseUtil.isDifferent(lock.getSystemUserId(), userId) &&
+                       DataBaseUtil.isDifferent(lock.getSessionId(), session); 
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            //
+            // we want to prevent locking if we get an exception
+            //
             return true;
+        }
+
         return false;
     }
 
@@ -92,17 +91,17 @@ public class LockBean implements LockLocal {
         validateLock(table, row, "");
     }
 
-    public void validateLock(Integer table, Integer row, String sessionId) throws Exception {
-        Lock lock = null;
+    public void validateLock(Integer table, Integer row, String session) throws Exception {
+        Lock lock;
+        Integer userId;
+        
         try {
-            Query query = manager.createQuery("from Lock where referenceTableId = " + table +
-                                              " and referenceId = " + row + " and systemUserId = " +
-                                              getSystemUserId() + " and sessionId = '" + sessionId +
-                                              "'");
-            lock = (Lock)query.getSingleResult();
+            userId = PermissionInterceptor.getSystemUserId();
+            lock = fetchLock(table, row, userId, session);
         } catch (Exception e) {
-
+            lock = null;
         }
+
         if (lock == null)
             throw new EntityLockedException("expiredLockException");
     }
@@ -118,19 +117,21 @@ public class LockBean implements LockLocal {
     public Integer getLock(Integer table, Integer row, String session) throws Exception {
         Lock lock;
         String name;
-        SystemUserDO user;
+        SystemUserVO user;
+        Calendar now;
         
-        lock = checkForLock(table, row);
+        lock = fetchLock(table, row, null, null);
+        user = PermissionInterceptor.getSystemUser();
+        now  = Calendar.getInstance();
         if (lock != null) {
-            if (lock.getExpires().getDate().after(Calendar.getInstance().getTime()) &&
-                !lock.getSystemUserId().equals(getSystemUserId()) &&
-                (lock.getSessionId() == null || "".equals(lock.getSessionId()) || 
-                !lock.getSessionId().equals(session))) {
-                user = (SystemUserDO)sysUser.getSystemUser(lock.getSystemUserId());
-                if (user.getLastName() == null || user.getLastName().length() == 0) 
-                    name = user.getLoginName().trim();
+            if (lock.getExpires().after(now.getTime()) &&
+                DataBaseUtil.isDifferent(lock.getSystemUserId(), user.getId()) &&
+                DataBaseUtil.isDifferent(lock.getSessionId(), session)) { 
+
+                if (DataBaseUtil.isEmpty(user.getLastName())) 
+                    name = user.getLoginName();
                 else
-                    name = user.getFirstName().trim() + " " + user.getLastName().trim();
+                    name = user.getFirstName() + " " + user.getLastName();
                 throw new EntityLockedException("entityLockException", name,
                                                 lock.getExpires().toString());
             } else {
@@ -138,31 +139,21 @@ public class LockBean implements LockLocal {
                 manager.flush();
             }
         }
+
+        //
+        // create a new lock and set it to expire in 15 minutes
+        //
+        now.add(Calendar.MINUTE, 15);
+
         lock = new Lock();
         lock.setReferenceTableId(table);
         lock.setReferenceId(row);
-        lock.setSystemUserId(getSystemUserId());
+        lock.setSystemUserId(user.getId());
         lock.setSessionId(session);
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.MINUTE, 10);
-        Date expires = cal.getTime();
-        lock.setExpires(new Datetime(Datetime.YEAR, Datetime.MINUTE, expires));
+        lock.setExpires(new Datetime(Datetime.YEAR, Datetime.MINUTE, now.getTime()));
         manager.persist(lock);
 
         return lock.getId();
-    }
-
-    /**
-     * Returns a lock for this entity by any user.
-     */
-    private Lock checkForLock(Integer table, Integer row) {
-        Query query = manager.createQuery("from Lock where referenceTableId = " + table +
-                                          " and referenceId = " + row);
-        try {
-            return (Lock)query.getSingleResult();
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     /**
@@ -173,13 +164,13 @@ public class LockBean implements LockLocal {
     }
 
     public void giveUpLock(Integer table, Integer row, String session) {
+        Lock lock;
+        Integer userId;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         try {
-            Query query = manager.createQuery("from Lock where referenceTableId = " + table +
-                                              " and referenceId = " + row + " and systemUserId = " +
-                                              getSystemUserId() + " and sessionId = '" + session +
-                                              "'");
-            Lock lock = (Lock)query.getSingleResult();
+            userId = PermissionInterceptor.getSystemUserId();
+            lock = fetchLock(table, row, userId, session);
             manager.remove(lock);
         } catch (EntityNotFoundException e) {
         } catch (Exception e) {
@@ -187,14 +178,23 @@ public class LockBean implements LockLocal {
         }
     }
 
-    /**
-     * @private
+    /*
+     * Returns a lock for this entity by any user.
      */
-    public Integer getSystemUserId() {
+    private Lock fetchLock(Integer table, Integer row, Integer userId, String session) {
+        Query q;
+        String s;
+        
+        s = "from Lock where referenceTableId=" + table + " and referenceId=" + row; 
+        if (! DataBaseUtil.isEmpty(userId))
+            s += " and systemUserId=" + userId;
+        if (!DataBaseUtil.isEmpty(session))
+            s += " and sessionId='" + session + "'";
+        
         try {
-            return login.getSystemUserId();
+            q = manager.createQuery(s);
+            return (Lock)q.getSingleResult();
         } catch (Exception e) {
-            e.printStackTrace();
             return null;
         }
     }

@@ -31,10 +31,10 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.WorksheetResultViewDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.WorksheetResultLocal;
 import org.openelis.manager.WorksheetResultManager;
-import org.openelis.utilcommon.DataBaseUtil;
 
 public class WorksheetResultManagerProxy {
     

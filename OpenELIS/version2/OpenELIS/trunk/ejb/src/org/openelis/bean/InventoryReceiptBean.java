@@ -58,6 +58,7 @@ import org.openelis.entity.InventoryReceipt;
 import org.openelis.entity.InventoryXPut;
 import org.openelis.entity.Order;
 import org.openelis.entity.OrderItem;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
@@ -78,7 +79,6 @@ import org.openelis.manager.OrderManager;
 import org.openelis.meta.InventoryReceiptMeta;
 import org.openelis.remote.InventoryReceiptRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")

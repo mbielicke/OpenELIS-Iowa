@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -42,19 +41,19 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QcDO;
 import org.openelis.domain.QcViewDO;
 import org.openelis.entity.Qc;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.QcLocal;
 import org.openelis.meta.QcMeta;
 import org.openelis.remote.QcRemote;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.remote.*;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.PermissionInterceptor;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -64,21 +63,19 @@ public class QcBean implements QcRemote, QcLocal {
     @PersistenceContext(unitName = "openelis")
     private EntityManager                    manager;
 
-    @EJB (mappedName="security/SystemUserUtilBean") private SystemUserUtilRemote sysUser;
-
     private static final QcMeta meta = new QcMeta();
 
     public QcViewDO fetchById(Integer id) throws Exception {
         Query query;
         QcViewDO data;
-        SystemUserDO user;
+        SystemUserVO user;
         
         query = manager.createNamedQuery("Qc.FetchById");
         query.setParameter("id", id);
         try {
             data = (QcViewDO)query.getSingleResult();
             if (data.getPreparedById() != null) {
-                user = sysUser.getSystemUser(data.getPreparedById());
+                user = PermissionInterceptor.getSystemUser(data.getPreparedById());
                 if (user != null)
                     data.setPreparedByName(user.getLoginName());
             }

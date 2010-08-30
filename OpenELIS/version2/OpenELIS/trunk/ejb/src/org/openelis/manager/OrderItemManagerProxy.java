@@ -30,11 +30,11 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.OrderItemViewDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.OrderItemLocal;
 import org.openelis.meta.OrderMeta;
-import org.openelis.utilcommon.DataBaseUtil;
 
 public class OrderItemManagerProxy {
 

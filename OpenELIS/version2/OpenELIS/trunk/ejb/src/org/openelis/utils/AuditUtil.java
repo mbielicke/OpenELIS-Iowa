@@ -35,7 +35,6 @@ import javax.persistence.PostUpdate;
 
 import org.openelis.domain.HistoryVO;
 import org.openelis.local.HistoryLocal;
-import org.openelis.local.LoginLocal;
 
 public class AuditUtil {
     
@@ -96,16 +95,11 @@ public class AuditUtil {
      * Returns the user id within this transaction. 
      */
     private Integer getSystemUserId() {
-        InitialContext ctx;
-        LoginLocal login;
-
         try {
-            ctx = new InitialContext();
-            login = (LoginLocal)ctx.lookup("openelis/LoginBean/local");
+            return PermissionInterceptor.getSystemUserId();
         } catch (Exception e) {
             return null;
         }
-        return login.getSystemUserId();
     }
 
     private HistoryLocal local() {

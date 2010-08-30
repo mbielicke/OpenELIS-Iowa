@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -42,19 +41,19 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.ProjectViewDO;
 import org.openelis.entity.Project;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.ProjectLocal;
 import org.openelis.meta.ProjectMeta;
 import org.openelis.remote.ProjectRemote;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.remote.*;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.PermissionInterceptor;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -66,15 +65,10 @@ public class ProjectBean implements ProjectLocal, ProjectRemote {
 
     private static ProjectMeta  meta = new ProjectMeta();
 
-    @EJB (mappedName="security/SystemUserUtilBean") private SystemUserUtilRemote sysUser;
-
-    public ProjectBean() {
-    }
-
     public ProjectViewDO fetchById(Integer id) throws Exception {
         Query query;
         ProjectViewDO data;
-        SystemUserDO user;
+        SystemUserVO user;
 
         query = manager.createNamedQuery("Project.FetchById");
         query.setParameter("id", id);
@@ -82,7 +76,7 @@ public class ProjectBean implements ProjectLocal, ProjectRemote {
         try {
             data = (ProjectViewDO)query.getSingleResult();
             if (data.getOwnerId() != null) {
-                user = sysUser.getSystemUser(data.getOwnerId());
+                user = PermissionInterceptor.getSystemUser(data.getOwnerId());
                 if (user != null)
                     data.setOwnerName(user.getLoginName());
             }

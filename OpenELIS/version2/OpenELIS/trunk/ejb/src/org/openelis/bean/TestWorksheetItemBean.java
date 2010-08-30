@@ -43,12 +43,12 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestWorksheetItemDO;
 import org.openelis.entity.TestWorksheetItem;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.TestWorksheetItemLocal;
 import org.openelis.meta.TestMeta;
 import org.openelis.local.DictionaryLocal;
-import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")

@@ -28,7 +28,6 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -37,11 +36,11 @@ import javax.persistence.Query;
 
 import org.openelis.domain.HistoryVO;
 import org.openelis.entity.History;
+import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.local.HistoryLocal;
 import org.openelis.remote.HistoryRemote;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.remote.*;
-import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.PermissionInterceptor;
 
 @Stateless
 public class HistoryBean implements HistoryRemote, HistoryLocal {
@@ -49,13 +48,10 @@ public class HistoryBean implements HistoryRemote, HistoryLocal {
     @PersistenceContext(unitName = "openelis")
     EntityManager               manager;
 
-
-    @EJB (mappedName="security/SystemUserUtilBean") private SystemUserUtilRemote sysUser;
-
     @SuppressWarnings("unchecked")
     public ArrayList<HistoryVO> fetchByReferenceIdAndTable(Integer referenceId, Integer referenceTableId) throws Exception{
         Query query;
-        SystemUserDO user;
+        SystemUserVO user;
         List<HistoryVO> list;
 
         query = manager.createNamedQuery("History.FetchByReferenceIdAndTable");
@@ -65,7 +61,7 @@ public class HistoryBean implements HistoryRemote, HistoryLocal {
         list = query.getResultList();
         for (HistoryVO h : list) {
             if (h.getSystemUserId() != null) {
-                user = sysUser.getSystemUser(h.getSystemUserId());
+                user = PermissionInterceptor.getSystemUser(h.getSystemUserId());
                 if (user != null)
                     h.setSystemUserLoginName(user.getLoginName());
             }

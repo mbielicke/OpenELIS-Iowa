@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
@@ -43,10 +42,12 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.WorksheetDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.entity.Worksheet;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AnalysisLocal;
@@ -57,10 +58,8 @@ import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetManagerProxy;
 import org.openelis.meta.WorksheetCompletionMeta;
 import org.openelis.remote.WorksheetRemote;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.remote.SystemUserUtilRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.PermissionInterceptor;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -71,8 +70,6 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
     private EntityManager manager;
 	
     private static final WorksheetCompletionMeta meta = new WorksheetCompletionMeta();
-    
-    @EJB (mappedName="security/SystemUserUtilBean") private SystemUserUtilRemote sysUser;
     
 	public WorksheetDO fetchById(Integer id) throws Exception {		
 		Query       query;
@@ -95,7 +92,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
         int                        i;
         Query                      query;
         ArrayList<WorksheetViewDO> data;
-        SystemUserDO               user;
+        SystemUserVO               user;
         WorksheetViewDO            worksheet;
 
         query = manager.createNamedQuery("Worksheet.FetchByAnalysisId");
@@ -105,7 +102,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
             for (i = 0; i < data.size(); i++) {
                 worksheet = data.get(i);
                 if (worksheet.getSystemUserId() != null) {
-                    user = sysUser.getSystemUser(worksheet.getSystemUserId());
+                    user = PermissionInterceptor.getSystemUser(worksheet.getSystemUserId());
                     if (user != null)
                         worksheet.setSystemUser(user.getLoginName());
                 }
@@ -127,7 +124,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
         ArrayList<AnalysisViewDO>       waList;
         ArrayList<WorksheetViewDO>      list;
         HashMap<String, AnalysisViewDO> analysisMap;
-        SystemUserDO                    user;
+        SystemUserVO                    user;
         AnalysisViewDO                  aVDO;
         WorksheetAnalysisManager        waManager;
         WorksheetItemManager            wiManager;
@@ -160,7 +157,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
             worksheet = list.get(i);
             
             if (worksheet.getSystemUserId() != null) {
-                user = sysUser.getSystemUser(worksheet.getSystemUserId());
+                user = PermissionInterceptor.getSystemUser(worksheet.getSystemUserId());
                 if (user != null)
                     worksheet.setSystemUser(user.getLoginName());
             }

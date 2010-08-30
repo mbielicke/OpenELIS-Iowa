@@ -14,8 +14,8 @@ import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.AuditUtil;
 
 @NamedQuery(name = "PwsMonitor.FetchByTinwsysIsNumber",
