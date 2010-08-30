@@ -38,8 +38,8 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.SecurityException;
-import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
@@ -95,14 +95,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
 
 public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers {
-    public enum Tabs {
-        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
-        AUX_DATA
-    };
-
+    private SampleManager             manager;
     protected Tabs                    tab;
-    private Integer                   sampleLoggedInId, sampleErrorStatusId, sampleReleasedId,
-                    userId;
+    private Integer                   sampleLoggedInId, sampleErrorStatusId, sampleReleasedId;
 
     private SampleItemAnalysisTreeTab treeTab;
     private SDWISTab                  sdwisTab;
@@ -124,31 +119,30 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     protected Dropdown<Integer>       statusId;
     protected CalendarLookUp          collectedDate, receivedDate;
     protected MenuItem                historySample, historySampleSdwis, historySampleOrganization,
-                    historySampleItem, historyAnalysis, historyCurrentResult, historyStorage,
-                    historySampleQA, historyAnalysisQA, historyAuxData;
+                                      historySampleItem, historyAnalysis, historyCurrentResult, historyStorage,
+                                      historySampleQA, historyAnalysisQA, historyAuxData;
 
     protected AppButton               queryButton, addButton, updateButton, nextButton, prevButton,
-                    commitButton, abortButton;
+                                      commitButton, abortButton;
     protected TabPanel                tabs;
 
     ScreenNavigator                   nav;
-    private SecurityModule            security;
+    private ModulePermission          userPermission;
 
     private SampleSDWISImportOrder    sdwisOrderImport;
-    private SampleManager             manager;
+
+    public enum Tabs {
+        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
+        AUX_DATA
+    };
 
     public SDWISSampleLoginScreen() throws Exception {
-        // Call base to get ScreenDef and draw screen
         super((ScreenDefInt)GWT.create(SDWISSampleLoginDef.class));
-        service = new ScreenService(
-                                    "controller?service=org.openelis.modules.sample.server.SampleService");
+        service = new ScreenService("controller?service=org.openelis.modules.sample.server.SampleService");
 
-        security = OpenELIS.security.getModule("samplesdwis");
-
-        if (security == null)
-            throw new SecurityException("screenPermException", "SDWIS Sample Login Screen");
-
-        userId = OpenELIS.security.getSystemUserId();
+        userPermission = OpenELIS.getSystemUserPermission().getModule("samplesdwis");
+        if (userPermission == null)
+            throw new PermissionException("screenPermException", "SDWIS Sample Login Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -173,8 +167,8 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                                                          "sample_container", "unit_of_measure",
                                                          "qaevent_type", "aux_field_value_type",
                                                          "organization_type", "user_action",
-                                                         "sdwis_lead_sample_type", "worksheet_status",
-                                                         "sdwis_repeat_code",
+                                                         "sdwis_lead_sample_type",
+                                                         "worksheet_status", "sdwis_repeat_code",
                                                          "sdwis_sample_category",
                                                          "sdwis_sample_type");
         } catch (Exception e) {
@@ -201,7 +195,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
             public void onStateChange(StateChangeEvent<State> event) {
                 if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                    security.hasSelectPermission())
+                    userPermission.hasSelectPermission())
                     queryButton.enable(true);
                 else if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
@@ -240,7 +234,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
             public void onStateChange(StateChangeEvent<State> event) {
                 if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                    security.hasAddPermission())
+                    userPermission.hasAddPermission())
                     addButton.enable(true);
                 else if (EnumSet.of(State.ADD).contains(event.getState()))
                     addButton.setState(ButtonState.LOCK_PRESSED);
@@ -257,7 +251,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
             public void onStateChange(StateChangeEvent<State> event) {
                 if (EnumSet.of(State.DISPLAY).contains(event.getState()) &&
-                    security.hasUpdatePermission())
+                    userPermission.hasUpdatePermission())
                     updateButton.enable(true);
                 else if (EnumSet.of(State.UPDATE).contains(event.getState()))
                     updateButton.setState(ButtonState.LOCK_PRESSED);
@@ -486,29 +480,30 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 ValidationErrorsList errors;
-                
+
                 manager.getSample().setOrderId(event.getValue());
-                
-                 if (sdwisOrderImport == null) 
-                     sdwisOrderImport = new SampleSDWISImportOrder(); 
-                 
-                 try {
-                     errors = sdwisOrderImport.importOrderInfo(event.getValue(), manager);
-                     DataChangeEvent.fire(sdwisScreen); 
-                     
-                     ArrayList<OrderTestViewDO> orderTests = sdwisOrderImport.getTestsFromOrder(event.getValue());
-                     
-                     if(orderTests != null && orderTests.size() > 0)
-                         ActionEvent.fire(sdwisScreen, AnalysisTab.Action.ORDER_LIST_ADDED, orderTests);
-                     
-                     if(errors != null)
-                         showErrors(errors);
-                     
-                 } catch (NotFoundException e) { 
-                     //ignore 
-                 } catch (Exception e) {
-                     Window.alert(e.getMessage()); 
-                 }
+
+                if (sdwisOrderImport == null)
+                    sdwisOrderImport = new SampleSDWISImportOrder();
+
+                try {
+                    errors = sdwisOrderImport.importOrderInfo(event.getValue(), manager);
+                    DataChangeEvent.fire(sdwisScreen);
+
+                    ArrayList<OrderTestViewDO> orderTests = sdwisOrderImport.getTestsFromOrder(event.getValue());
+
+                    if (orderTests != null && orderTests.size() > 0)
+                        ActionEvent.fire(sdwisScreen, AnalysisTab.Action.ORDER_LIST_ADDED,
+                                         orderTests);
+
+                    if (errors != null)
+                        showErrors(errors);
+
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -777,7 +772,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                     ActionEvent.fire(sdwisScreen, event.getAction(), event.getData());
             }
         });
-        
+
         testResultsTab.addActionHandler(new ActionHandler<ResultTab.Action>() {
             public void onAction(ActionEvent<ResultTab.Action> event) {
                 if (state != State.QUERY)
@@ -882,7 +877,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         // default the form
         try {
             manager.setDefaults();
-            manager.getSample().setReceivedById(userId);
+            manager.getSample().setReceivedById(OpenELIS.getSystemUserPermission().getSystemUserId());
 
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -901,13 +896,13 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         try {
             manager = manager.fetchForUpdate();
             setState(State.UPDATE);
-            
-            if (!canEdit()){
+
+            if ( !canEdit()) {
                 abort();
                 window.setError(consts.get("cantUpdateReleasedException"));
                 return;
             }
-            
+
             DataChangeEvent.fire(this);
             setFocus(orderNumber);
             window.clearStatus();
@@ -1190,7 +1185,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     private boolean canEdit() {
         return ( !sampleReleasedId.equals(manager.getSample().getStatusId()));
     }
-    
+
     public boolean validate() {
         return super.validate() & storageTab.validate();
     }

@@ -27,23 +27,13 @@ package org.openelis.modules.worksheet.client;
 
 import java.util.ArrayList;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.SecuritySystemUserDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -73,6 +63,16 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.meta.WorksheetCompletionMeta;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class WorksheetLookupScreen extends Screen implements HasActionHandlers<WorksheetLookupScreen.Action> {
 
@@ -148,16 +148,16 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
         systemUserId.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
-                ArrayList<SecuritySystemUserDO> users;
+                ArrayList<SystemUserVO> users;
                 ArrayList<TableDataRow> model;
                 
                 parser = new QueryFieldUtil();
                 parser.parse(event.getMatch());
 
                 try {
-                    users = userService.callList("fetchByLogin", parser.getParameter().get(0));
+                    users = userService.callList("fetchByLoginName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
-                    for (SecuritySystemUserDO user : users)
+                    for (SystemUserVO user : users)
                         model.add(new TableDataRow(user.getId(), user.getLoginName()));
                     systemUserId.showAutoMatches(model);
                 } catch (Exception e) {

@@ -36,6 +36,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.GridFieldErrorException;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.NotFoundException;
@@ -83,7 +84,6 @@ import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.meta.TestMeta;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
-import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utilcommon.ResultRangeNumeric;
 import org.openelis.utilcommon.ResultRangeTiter;
 

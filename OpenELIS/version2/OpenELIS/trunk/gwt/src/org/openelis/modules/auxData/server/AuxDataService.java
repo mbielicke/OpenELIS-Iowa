@@ -48,11 +48,11 @@ public class AuxDataService {
         return remote().fetchGroupIdBySystemVariable(sysVariableKey);
     }
     
-    protected AuxDataRemote remote(){
+    private AuxDataRemote remote(){
         return (AuxDataRemote)EJBFactory.lookup("openelis/AuxDataBean/remote");
     }
     
-    protected AuxDataManagerRemote managerRemote(){
+    private AuxDataManagerRemote managerRemote(){
         return (AuxDataManagerRemote)EJBFactory.lookup("openelis/AuxDataManagerBean/remote");
     }
 }

@@ -27,17 +27,15 @@ package org.openelis.modules.inventoryTransfer.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.InventoryItemCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryItemDO;
-import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.StorageLocationViewDO;
-import org.openelis.gwt.common.SecurityException;
-import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.ModulePermission;
+import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -83,7 +81,7 @@ import com.google.gwt.user.client.Window;
 
 public class InventoryTransferScreen extends Screen {
 
-    private SecurityModule                        security;
+    private ModulePermission                      userPermission;
     private InventoryTransferScreen               screen;
     private InventoryTransferManager              manager;
     private boolean                               openedFromMenu, reloadTable;
@@ -101,33 +99,33 @@ public class InventoryTransferScreen extends Screen {
     
     public InventoryTransferScreen() throws Exception {
         super((ScreenDefInt)GWT.create(InventoryTransferDef.class));
-        init();
+
+        InventoryTransferScreenImpl(true);
+    }
+    
+    public InventoryTransferScreen(ScreenWindow window) throws Exception {
+        super((ScreenDefInt)GWT.create(InventoryTransferDef.class));
+        this.window = window;
+
+        InventoryTransferScreenImpl(false);
+    }
+    
+    private void InventoryTransferScreenImpl(boolean fromMenu) throws Exception {
+        service = new ScreenService("controller?service=org.openelis.modules.inventoryTransfer.server.InventoryTransferService");
+        storageService = new ScreenService("controller?service=org.openelis.modules.storage.server.StorageService");
+        inventoryItemService = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");        
+        inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");
+
+        userPermission = OpenELIS.getSystemUserPermission().getModule("inventorytransfer");
+        if (userPermission == null)
+            throw new PermissionException("screenPermException", "Inventory Transfer Screen");
+        
+        openedFromMenu = fromMenu;
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 postConstructor();
             }
         });
-        openedFromMenu = true;
-    }
-    
-    public InventoryTransferScreen(ScreenWindow window) throws Exception {
-        super((ScreenDefInt)GWT.create(InventoryTransferDef.class));
-        init();
-        this.window = window;
-        postConstructor();
-        openedFromMenu = false;
-    }
-    
-    private void init() throws Exception {
-        service = new ScreenService("controller?service=org.openelis.modules.inventoryTransfer.server.InventoryTransferService");
-        
-        security = OpenELIS.security.getModule("inventorytransfer");
-        if (security == null)
-            throw new SecurityException("screenPermException", "Inventory Transfer Screen");
-        
-        inventoryItemService = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");        
-        inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");
-        storageService = new ScreenService("controller?service=org.openelis.modules.storage.server.StorageService");
     } 
     
     /**
@@ -153,7 +151,7 @@ public class InventoryTransferScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && security.hasAddPermission());
+                                     && userPermission.hasAddPermission());
                 if (event.getState() == State.ADD)
                     addButton.setState(ButtonState.LOCK_PRESSED);
             }

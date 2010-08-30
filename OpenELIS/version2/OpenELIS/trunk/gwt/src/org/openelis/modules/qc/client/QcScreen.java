@@ -32,18 +32,18 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.InstrumentLogDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.ReferenceTable;
-import org.openelis.domain.SecuritySystemUserDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.LocalizedException;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.SecurityException;
-import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -59,7 +59,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -80,7 +79,6 @@ import org.openelis.gwt.widget.table.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
-import org.openelis.manager.InstrumentLogManager;
 import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.QcManager;
 import org.openelis.meta.CategoryMeta;
@@ -88,7 +86,6 @@ import org.openelis.meta.QcMeta;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
-import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utilcommon.ResultRangeNumeric;
 import org.openelis.utilcommon.ResultRangeTiter;
 
@@ -102,7 +99,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class QcScreen extends Screen {
     private QcManager                   manager;
-    private SecurityModule              security;
+    private ModulePermission            userPermission;
 
     private AppButton                   queryButton, previousButton, nextButton, addButton,
                                         updateButton, commitButton, abortButton, addAnalyteButton,
@@ -132,9 +129,9 @@ public class QcScreen extends Screen {
         inventoryService = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
         dictionaryService = new ScreenService("controller?service=org.openelis.modules.dictionary.server.DictionaryService");
 
-        security = OpenELIS.security.getModule("qc");
-        if (security == null)
-            throw new SecurityException("screenPermException", "QC Screen");
+        userPermission = OpenELIS.getSystemUserPermission().getModule("qc");
+        if (userPermission == null)
+            throw new PermissionException("screenPermException", "QC Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -174,7 +171,7 @@ public class QcScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                           .contains(event.getState()) &&
-                                   security.hasSelectPermission());
+                                   userPermission.hasSelectPermission());
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -211,7 +208,7 @@ public class QcScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                         .contains(event.getState()) &&
-                                 security.hasAddPermission());
+                                 userPermission.hasAddPermission());
                 if (event.getState() == State.ADD)
                     addButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -225,7 +222,7 @@ public class QcScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
-                                    security.hasUpdatePermission());
+                                    userPermission.hasUpdatePermission());
                 if (event.getState() == State.UPDATE)
                     updateButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -480,16 +477,16 @@ public class QcScreen extends Screen {
         preparedBy.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
-                ArrayList<SecuritySystemUserDO> users;
+                ArrayList<SystemUserVO> users;
                 ArrayList<TableDataRow> model;
 
                 parser = new QueryFieldUtil();
                 parser.parse(event.getMatch());
 
                 try {
-                    users = userService.callList("fetchByLogin", parser.getParameter().get(0));
+                    users = userService.callList("fetchByLoginName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
-                    for (SecuritySystemUserDO user : users)
+                    for (SystemUserVO user : users)
                         model.add(new TableDataRow(user.getId(), user.getLoginName()));
                     preparedBy.showAutoMatches(model);
                 } catch (Exception e) {
@@ -746,7 +743,7 @@ public class QcScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
                 enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                         security.hasSelectPermission();
+                         userPermission.hasSelectPermission();
                 atoz.enable(enable);
                 nav.enable(enable);
             }

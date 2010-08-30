@@ -33,8 +33,8 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.SecurityException;
-import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
@@ -78,26 +78,26 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
     public enum Action {
         SELECT
     };
-    
-    private PwsManager      manager;
-    protected Tabs          tab;
-    private SecurityModule  security;
 
-    private ScreenNavigator nav;
+    private PwsManager       manager;
+    protected Tabs           tab;
+    private ModulePermission userPermission;
 
-    private CalendarLookUp  effBeginDt, effEndDt;
-    private TextBox         number0, alternateStNum, name, dPrinCitySvdNm, dPrinCntySvdNm,
-                    dPwsStTypeCd, activityStatusCd, dPopulationCount, startDay, startMonth, endDay,
-                    endMonth;
-    private TextArea        activityRsnTxt;
-    private AppButton       queryButton, previousButton, nextButton, commitButton, abortButton,
-                    selectButton;
-    private TabPanel        tabPanel;
-    private ButtonGroup     atoz;
-    private MonitorTab      monitorTab;
-    private FacilityTab     facilityTab;
-    private AddressTab      addressTab;
-    private String         pwsId;
+    private ScreenNavigator  nav;
+
+    private CalendarLookUp   effBeginDt, effEndDt;
+    private TextBox          number0, alternateStNum, name, dPrinCitySvdNm, dPrinCntySvdNm,
+                             dPwsStTypeCd, activityStatusCd, dPopulationCount, startDay, startMonth, endDay,
+                             endMonth;
+    private TextArea         activityRsnTxt;
+    private AppButton        queryButton, previousButton, nextButton, commitButton, abortButton,
+                             selectButton;
+    private TabPanel         tabPanel;
+    private ButtonGroup      atoz;
+    private MonitorTab       monitorTab;
+    private FacilityTab      facilityTab;
+    private AddressTab       addressTab;
+    private String           pwsId;
 
     private enum Tabs {
         FACILITY, ADDRESS, MONITOR
@@ -111,12 +111,11 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
         super((ScreenDefInt)GWT.create(PwsDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.pws.server.PwsService");
 
+        userPermission = OpenELIS.getSystemUserPermission().getModule("pws");
+        if (userPermission == null)
+            throw new PermissionException("screenPermException", "PWS Screen");
+
         this.pwsId = pwsId;
-
-        security = OpenELIS.security.getModule("pws");
-        if (security == null)
-            throw new SecurityException("screenPermException", "PWS Screen");
-
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 postConstructor();
@@ -135,8 +134,8 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
         initialize();
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
-        
-        if(pwsId != null)
+
+        if (pwsId != null)
             queryByPwsId();
     }
 
@@ -150,7 +149,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             public void onStateChange(StateChangeEvent<State> event) {
                 queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                           .contains(event.getState()) &&
-                                   security.hasSelectPermission());
+                                   userPermission.hasSelectPermission());
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -561,7 +560,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
                 enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                         security.hasSelectPermission();
+                         userPermission.hasSelectPermission();
                 atoz.enable(enable);
                 nav.enable(enable);
             }
@@ -689,7 +688,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
         number0.setValue(pwsId);
         commit();
     }
-    
+
     private void drawTabs() {
         switch (tab) {
             case FACILITY:

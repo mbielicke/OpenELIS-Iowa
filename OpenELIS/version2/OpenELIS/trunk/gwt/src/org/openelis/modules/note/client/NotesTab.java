@@ -38,8 +38,8 @@ public class NotesTab extends Screen {
         setDefinition(def);
         setWindow(window);
 
-        userName = OpenELIS.security.getSystemUserName();
-        userId = OpenELIS.security.getSystemUserId();
+        userName = OpenELIS.getSystemUserPermission().getLoginName();
+        userId = OpenELIS.getSystemUserPermission().getSystemUserId();
         this.notesPanelKey = notesPanelKey;
         this.editButtonKey = editButtonKey;
 

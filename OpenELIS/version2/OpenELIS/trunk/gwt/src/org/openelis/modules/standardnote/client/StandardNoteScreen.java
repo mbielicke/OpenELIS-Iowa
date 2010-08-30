@@ -34,10 +34,10 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.SecurityException;
-import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -49,7 +49,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonGroup;
@@ -74,7 +73,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class StandardNoteScreen extends Screen {
     private StandardNoteDO      data;
-    private SecurityModule      security;
+    private ModulePermission    userPermission;
 
     private TextBox             name, description;
     private TextArea            text;
@@ -89,9 +88,9 @@ public class StandardNoteScreen extends Screen {
         super((ScreenDefInt)GWT.create(StandardNoteDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.standardnote.server.StandardNoteService");
 
-        security = OpenELIS.security.getModule("standardnote");
-        if (security == null)
-            throw new SecurityException("screenPermException", "Standard Note Screen");
+        userPermission = OpenELIS.getSystemUserPermission().getModule("standardnote");
+        if (userPermission == null)
+            throw new PermissionException("screenPermException", "Standard Note Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -126,7 +125,7 @@ public class StandardNoteScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                           .contains(event.getState()) &&
-                                   security.hasSelectPermission());
+                                   userPermission.hasSelectPermission());
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -163,7 +162,7 @@ public class StandardNoteScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                         .contains(event.getState()) &&
-                                 security.hasAddPermission());
+                                 userPermission.hasAddPermission());
                 if (event.getState() == State.ADD)
                     addButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -177,7 +176,7 @@ public class StandardNoteScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
-                                    security.hasUpdatePermission());
+                                    userPermission.hasUpdatePermission());
                 if (event.getState() == State.UPDATE)
                     updateButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -191,7 +190,7 @@ public class StandardNoteScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 deleteButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
-                                    security.hasDeletePermission());
+                                    userPermission.hasDeletePermission());
                 if (event.getState() == State.DELETE)
                     deleteButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -349,7 +348,7 @@ public class StandardNoteScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
                 enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                         security.hasSelectPermission();
+                         userPermission.hasSelectPermission();
                 atoz.enable(enable);
                 nav.enable(enable);
             }

@@ -32,6 +32,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.HistoryVO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -49,7 +50,6 @@ import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.gwt.widget.tree.event.BeforeLeafOpenEvent;
 import org.openelis.gwt.widget.tree.event.BeforeLeafOpenHandler;
 import org.openelis.modules.main.client.openelis.OpenELIS;
-import org.openelis.utilcommon.DataBaseUtil;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
@@ -70,27 +70,10 @@ public class HistoryScreen extends Screen {
     protected AppButton                nextButton, previousButton;
     protected static HistoryScreen     instance;     
     
-    public static void showHistory(String title, Integer referenceTableId, IdNameVO... referenceId) {        
-        if (instance == null) {
-            try {
-                instance = new HistoryScreen();
-            } catch (Exception e) {
-                e.printStackTrace();
-                Window.alert(e.getMessage());
-                return;
-            }
-        }
-        instance.initializeWindow(title);
-        instance.setReferenceVoList(referenceId);
-        instance.setReferenceTableId(referenceTableId);
-        DataChangeEvent.fire(instance); 
-    }
-    
     protected HistoryScreen() throws Exception {
         super((ScreenDefInt)GWT.create(HistoryDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.history.server.HistoryService");
         
-        // Setup link between Screen and widget Handlers
         initialize();
         setState(State.DEFAULT);
         initializeDropdowns();
@@ -155,8 +138,24 @@ public class HistoryScreen extends Screen {
         }
     }
 
-    private void initializeWindow(String title) {
-    	OpenELIS.browser.addScreen(this);
+    public static void showHistory(String title, Integer referenceTableId, IdNameVO... referenceId) {        
+        if (instance == null) {
+            try {
+                instance = new HistoryScreen();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Window.alert(e.getMessage());
+                return;
+            }
+        }
+        instance.initializeWindow(title);
+        instance.setReferenceVoList(referenceId);
+        instance.setReferenceTableId(referenceTableId);
+        DataChangeEvent.fire(instance); 
+    }
+    
+    protected void initializeWindow(String title) {
+        OpenELIS.getBrowser().addScreen(this);
     }
     
     protected void setReferenceVoList(IdNameVO[] referenceVOList) {

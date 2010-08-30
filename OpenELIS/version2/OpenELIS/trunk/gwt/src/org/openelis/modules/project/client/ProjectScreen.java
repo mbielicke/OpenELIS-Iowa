@@ -33,13 +33,13 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ProjectParameterDO;
 import org.openelis.domain.ReferenceTable;
-import org.openelis.domain.SecuritySystemUserDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.SecurityException;
-import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
@@ -92,7 +92,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class ProjectScreen extends Screen {
     private ProjectManager        manager;
-    private SecurityModule        security;
+    private ModulePermission      userPermission;
 
     private CalendarLookUp        startedDate, completedDate;
     private TextBox<Integer>      id;
@@ -114,9 +114,9 @@ public class ProjectScreen extends Screen {
         userService = new ScreenService("controller?service=org.openelis.server.SystemUserService");
         scriptletService = new ScreenService("controller?service=org.openelis.modules.scriptlet.server.ScriptletService");
 
-        security = OpenELIS.security.getModule("project");
-        if (security == null)
-            throw new SecurityException("screenPermException", "Project Screen");
+        userPermission = OpenELIS.getSystemUserPermission().getModule("project");
+        if (userPermission == null)
+            throw new PermissionException("screenPermException", "Project Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -151,7 +151,7 @@ public class ProjectScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                           .contains(event.getState()) &&
-                                   security.hasSelectPermission());
+                                   userPermission.hasSelectPermission());
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -188,7 +188,7 @@ public class ProjectScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                         .contains(event.getState()) &&
-                                 security.hasAddPermission());
+                                 userPermission.hasAddPermission());
                 if (event.getState() == State.ADD)
                     addButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -202,7 +202,7 @@ public class ProjectScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
-                                    security.hasUpdatePermission());
+                                    userPermission.hasUpdatePermission());
                 if (event.getState() == State.UPDATE)
                     updateButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -327,16 +327,16 @@ public class ProjectScreen extends Screen {
         ownerId.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
-                ArrayList<SecuritySystemUserDO> users;
+                ArrayList<SystemUserVO> users;
                 ArrayList<TableDataRow> model;
                 
                 parser = new QueryFieldUtil();
                 parser.parse(event.getMatch());
 
                 try {
-                    users = userService.callList("fetchByLogin", parser.getParameter().get(0));
+                    users = userService.callList("fetchByLoginName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
-                    for (SecuritySystemUserDO user : users)
+                    for (SystemUserVO user : users)
                         model.add(new TableDataRow(user.getId(), user.getLoginName()));
                     ownerId.showAutoMatches(model);
                 } catch (Exception e) {
@@ -602,7 +602,7 @@ public class ProjectScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
                 enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                         security.hasSelectPermission();
+                         userPermission.hasSelectPermission();
                 atoz.enable(enable);
                 nav.enable(enable);
             }
