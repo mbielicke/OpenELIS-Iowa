@@ -27,10 +27,10 @@ package org.openelis.domain;
 
 import java.util.Date;
 
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.RPC;
 import org.openelis.manager.SampleManager;
-import org.openelis.utilcommon.DataBaseUtil;
 
 public class WorksheetCreationVO implements RPC {
     private static final long serialVersionUID = 1L;

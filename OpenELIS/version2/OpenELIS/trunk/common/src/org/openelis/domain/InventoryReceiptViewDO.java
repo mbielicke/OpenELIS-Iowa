@@ -28,7 +28,7 @@ package org.openelis.domain;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.gwt.common.DataBaseUtil;
 
 public class InventoryReceiptViewDO extends InventoryReceiptDO {
 

@@ -39,7 +39,7 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.SecurityUtil;
+import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.common.ValidationErrorsList;
 
 import com.google.gwt.user.client.Window;
@@ -48,105 +48,101 @@ public class AnalysisManager implements RPC {
     private static final long                       serialVersionUID = 1L;
 
     protected Integer                               sampleItemId;
-    protected transient Integer                     anLoggedInId, anInitiatedId, anCompletedId,
-                    anReleasedId, anInPrepId, anOnHoldId, anRequeueId, anCancelledId,
-                    anErrorLoggedInId, anErrorInitiatedId, anErrorInPrepId, anErrorCompletedId;
-
     protected ArrayList<AnalysisListItem>           items, deletedList;
     protected SampleDataBundle                      sampleItemBundle;
     protected SampleItemManager                     sampleItemManager;
+
     protected transient static AnalysisManagerProxy proxy;
 
     public static AnalysisManager getInstance() {
-        AnalysisManager am;
+        AnalysisManager m;
 
-        am = new AnalysisManager();
-        am.items = new ArrayList<AnalysisListItem>();
+        m = new AnalysisManager();
+        m.items = new ArrayList<AnalysisListItem>();
 
-        return am;
+        return m;
     }
 
-    // analysis
     public AnalysisViewDO getAnalysisAt(int i) {
         return getItemAt(i).analysis;
-
     }
 
     public ArrayList<AnalysisViewDO> getAnalysisList() {
-        ArrayList<AnalysisViewDO> returnList;
-        
-        returnList = new ArrayList<AnalysisViewDO>();
-        for(int i=0; i<count(); i++)
-            returnList.add(getItemAt(i).analysis);
-        
-        return returnList;
+        ArrayList<AnalysisViewDO> l;
+
+        l = new ArrayList<AnalysisViewDO>();
+        for (int i = 0; i < count(); i++ )
+            l.add(getItemAt(i).analysis);
+
+        return l;
 
     }
-    
+
     public void setAnalysisAt(AnalysisViewDO analysis, int i) {
         getItemAt(i).analysis = analysis;
     }
 
     public int addAnalysis() {
-        AnalysisListItem item;
-        AnalysisViewDO analysis;
+        AnalysisListItem i;
+        AnalysisViewDO a;
 
-        item = new AnalysisListItem();
-        analysis = new AnalysisViewDO();
+        i = new AnalysisListItem();
+        a = new AnalysisViewDO();
 
-        item.analysis = analysis;
-        items.add(item);
-        
-        setDefaultsAt(count()-1);
+        i.analysis = a;
+        items.add(i);
+        setDefaultsAt(count() - 1);
 
         return count() - 1;
     }
 
     /**
-     * Adds an empty prep analysis and links the actual analysis with the 
-     * newly added prep test.
+     * Adds an empty prep analysis and links the actual analysis with the newly
+     * added prep test.
      * 
-     * @param linkIndex Is the index of the actual analysis that is going to be linked
-     * to the new prep analysis
+     * @param linkIndex
+     *        Is the index of the actual analysis that is going to be linked to
+     *        the new prep analysis
      * @return
      */
     public int addPreAnalysis(int linkIndex) {
-        int addedIndex;
+        int i;
         AnalysisViewDO prep, old;
 
-        addedIndex = addAnalysis();
-        prep = getAnalysisAt(addedIndex);
+        i = addAnalysis();
+        prep = getAnalysisAt(i);
         old = getAnalysisAt(linkIndex);
 
         // set the old analysis parameters according to new prep
-        old.setStatusId(anInPrepId);
+        old.setStatusId(proxy().anInPrepId);
         old.setAvailableDate(null);
         old.setPreAnalysisId(prep.getId());
 
-        return addedIndex;
+        return i;
     }
 
     /**
-     * Unlinks the actual analysis from the prep analysis.  The actual analysis
+     * Unlinks the actual analysis from the prep analysis. The actual analysis
      * is updated with status 'Logged In' and an available data and time is set.
+     * 
      * @param index
      */
     public void unlinkPrepTest(int index) {
-        AnalysisViewDO anDO;
+        AnalysisViewDO data;
 
-        anDO = getItemAt(index).analysis;
-        anDO.setPreAnalysisId(null);
-        anDO.setPreAnalysisTest(null);
-        anDO.setPreAnalysisMethod(null);
-        anDO.setStatusId(anLoggedInId);
-        
-        try{
-            anDO.setAvailableDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
-        }catch(Exception e){
-            anDO.setAvailableDate(null);
+        data = getItemAt(index).analysis;
+        data.setPreAnalysisId(null);
+        data.setPreAnalysisTest(null);
+        data.setPreAnalysisMethod(null);
+        data.setStatusId(proxy().anLoggedInId);
+
+        try {
+            data.setAvailableDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
+        } catch (Exception e) {
+            data.setAvailableDate(null);
         }
     }
-    
+
     public int addReflexAnalysis(Integer parentAnalysisId, Integer parentResultId) {
         int addedIndex;
         AnalysisViewDO reflex;
@@ -160,18 +156,16 @@ public class AnalysisManager implements RPC {
 
         return addedIndex;
     }
-    
-    
 
     public void removeAnalysisAt(int index) {
         AnalysisListItem tmpList;
         SampleDataBundle bundle;
-        
+
         if (items == null || index >= items.size())
             return;
 
         tmpList = items.remove(index);
-        
+
         // renumber sample bundle analyses indexes
         // when a node is removed
         for (int i = index; i < items.size(); i++ ) {
@@ -192,151 +186,165 @@ public class AnalysisManager implements RPC {
         AnalysisViewDO anDO;
         SectionViewDO section;
         ValidationErrorsList errorsList;
-        SecurityUtil security;
-        
-        security = proxy().getSecurityUtil();
-        anDO  = items.get(index).analysis;
+        SystemUserPermission perm;
+
+        perm = proxy().getSystemUserPermission();
+        anDO = items.get(index).analysis;
         section = proxy().getSectionFromId(anDO.getSectionId());
-        
-        if(security.getSection(section.getName()) == null || !security.getSection(section.getName()).hasCancelPermission()){
+
+        if (perm.getSection(section.getName()) == null ||
+            !perm.getSection(section.getName()).hasCancelPermission()) {
             errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("insufficientPrivilegesCancelAnalysis", anDO.getTestName(), anDO.getMethodName()));
+            errorsList.add(new FormErrorException("insufficientPrivilegesCancelAnalysis",
+                                                  anDO.getTestName(), anDO.getMethodName()));
             throw errorsList;
         }
-        
+
         try {
-            loadDictionaryEntries();
-            anDO.setStatusId(anCancelledId);
+            anDO.setStatusId(proxy().anCancelledId);
             SectionCache.getSectionFromId(anDO.getSectionId());
             anDO.setPreAnalysisId(null);
-            
+
         } catch (Exception e) {
             return;
         }
     }
-    
+
     public void completeAnalysisAt(int index) throws Exception {
         AnalysisViewDO anDO;
-        SecurityUtil security;
+        SystemUserPermission perm;
         SectionViewDO section;
         TestManager testMan;
         SampleDataBundle bundle;
         ValidationErrorsList errorsList;
-        
-        anDO  = items.get(index).analysis;
+
+        anDO = items.get(index).analysis;
         assert anDO.getSectionId() != null : "section id is null";
-        loadDictionaryEntries();
-        
-        if(anCompletedId.equals(anDO.getStatusId())){ //make sure status is not already complete
+
+        if (proxy().anCompletedId.equals(anDO.getStatusId())) { // make sure status is
+            // not already complete
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("analysisAlreadyComplete"));
             throw errorsList;
-            
-        } else if(!anOnHoldId.equals(anDO.getStatusId()) && !anInitiatedId.equals(anDO.getStatusId())){ //make sure the status is initiated or on hold
+
+        } else if ( !proxy().anOnHoldId.equals(anDO.getStatusId()) &&
+                   !proxy().anInitiatedId.equals(anDO.getStatusId())) { // make sure the
+            // status is
+            // initiated or
+            // on hold
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("wrongStatusNoComplete"));
             throw errorsList;
-            
+
         }
-        
-        //make sure the user has complete permission for the section
+
+        // make sure the user has complete permission for the section
         section = proxy().getSectionFromId(anDO.getSectionId());
-        security = proxy().getSecurityUtil();
-        if(security.getSection(section.getName()) == null || !security.getSection(section.getName()).hasCompletePermission()){
+        perm = proxy().getSystemUserPermission();
+        if (perm.getSection(section.getName()) == null ||
+            !perm.getSection(section.getName()).hasCompletePermission()) {
             errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("insufficientPrivilegesCompleteAnalysis", anDO.getTestName(), anDO.getMethodName()));
+            errorsList.add(new FormErrorException("insufficientPrivilegesCompleteAnalysis",
+                                                  anDO.getTestName(), anDO.getMethodName()));
             throw errorsList;
         }
-        
-        //validate the sample type
+
+        // validate the sample type
         testMan = getTestAt(index);
         bundle = getBundleAt(index);
-        if (!testMan.getSampleTypes().hasType(sampleItemManager.getSampleItemAt(bundle.getSampleItemIndex()).getTypeOfSampleId())){
+        if ( !testMan.getSampleTypes()
+                     .hasType(
+                              sampleItemManager.getSampleItemAt(bundle.getSampleItemIndex())
+                                               .getTypeOfSampleId())) {
             errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("sampleTypeInvalid", anDO.getTestName(), anDO.getMethodName()));
+            errorsList.add(new FormErrorException("sampleTypeInvalid", anDO.getTestName(),
+                                                  anDO.getMethodName()));
             throw errorsList;
         }
-        
-        //if the sample/analysis has an overriding QA event go ahead and complete the analysis
-        //make sure all required results are filled, and all results are valid
-        //this method will throw an exception if it finds and error
-        if(!getQAEventAt(index).hasResultOverrideQA() && !getSampleItemManager().getSampleManager().getQaEvents().hasResultOverrideQA())
+
+        // if the sample/analysis has an overriding QA event go ahead and
+        // complete the analysis
+        // make sure all required results are filled, and all results are valid
+        // this method will throw an exception if it finds and error
+        if ( !getQAEventAt(index).hasResultOverrideQA() &&
+            !getSampleItemManager().getSampleManager().getQaEvents().hasResultOverrideQA())
             getAnalysisResultAt(index).validateForComplete(anDO);
-        
-        anDO.setStatusId(anCompletedId);
-        if(anDO.getStartedDate() == null)
+
+        anDO.setStatusId(proxy().anCompletedId);
+        if (anDO.getStartedDate() == null)
             anDO.setStartedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
 
         anDO.setCompletedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
 
-        try{
-            //add an analysis user record
+        try {
+            // add an analysis user record
             getAnalysisUserAt(index).addCompleteRecord();
-            
-        }catch(Exception e){
-            //do nothing
+
+        } catch (Exception e) {
+            // do nothing
         }
-        
+
     }
-    
+
     public void releaseAnalyssisAt(int index) throws Exception {
-        AnalysisViewDO anDO;
-        SecurityUtil security;
+        AnalysisViewDO data;
         SectionViewDO section;
+        SystemUserPermission perm;
         ValidationErrorsList errorsList;
-        
-        anDO  = items.get(index).analysis;
-        assert anDO.getSectionId() != null : "section id is null";
-        loadDictionaryEntries();
-        
-        //make sure the status is completed
-        if(anReleasedId.equals(anDO.getStatusId())){
+
+        data = items.get(index).analysis;
+        assert data.getSectionId() != null : "section id is null";
+
+        // make sure the status is completed
+        if (proxy().anReleasedId.equals(data.getStatusId())) {
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("analysisAlreadyReleased"));
             throw errorsList;
-        }else if(!anCompletedId.equals(anDO.getStatusId())){
+        } else if ( !proxy().anCompletedId.equals(data.getStatusId())) {
             errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("completeStatusRequiredToRelease", anDO.getTestName(), anDO.getMethodName()));
+            errorsList.add(new FormErrorException("completeStatusRequiredToRelease",
+                                                  data.getTestName(), data.getMethodName()));
             throw errorsList;
         }
-        
-        //make sure the user has release permission for the section
-        security = proxy().getSecurityUtil();
-        section = proxy().getSectionFromId(anDO.getSectionId());
-        if(security.getSection(section.getName()) == null || !security.getSection(section.getName()).hasReleasePermission()){
-            errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("insufficientPrivilegesReleaseAnalysis", anDO.getTestName(), anDO.getMethodName()));
-            throw errorsList;
-        }
-        
-        anDO.setStatusId(anReleasedId);
-        anDO.setReleasedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
 
-        try{
-            //add an analysis user record
+        // make sure the user has release permission for the section
+        perm = proxy().getSystemUserPermission();
+        section = proxy().getSectionFromId(data.getSectionId());
+        if (perm.getSection(section.getName()) == null ||
+            !perm.getSection(section.getName()).hasReleasePermission()) {
+            errorsList = new ValidationErrorsList();
+            errorsList.add(new FormErrorException("insufficientPrivilegesReleaseAnalysis",
+                                                  data.getTestName(), data.getMethodName()));
+            throw errorsList;
+        }
+
+        data.setStatusId(proxy().anReleasedId);
+        data.setReleasedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
+
+        try {
+            // add an analysis user record
             getAnalysisUserAt(index).addReleaseRecord();
-            
-        }catch(Exception e){
-            //do nothing
+
+        } catch (Exception e) {
+            // do nothing
         }
     }
-    
+
     public void unreleaseAnalysisAt(int index) throws Exception {
-        AnalysisViewDO anDO;
+        AnalysisViewDO data;
         ValidationErrorsList errorsList;
-        
-        anDO  = items.get(index).analysis;
-        loadDictionaryEntries();
-        
-        if(!anReleasedId.equals(anDO.getStatusId())){
+
+        data = items.get(index).analysis;
+
+        if ( !proxy().anReleasedId.equals(data.getStatusId())) {
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("wrongStatusUnrelease"));
             throw errorsList;
         }
-            
-        anDO.setStatusId(anCompletedId);
-        anDO.setReleasedDate(null);
-        anDO.setRevision(anDO.getRevision()+1);
+
+        data.setStatusId(proxy().anCompletedId);
+        data.setReleasedDate(null);
+        data.setRevision(data.getRevision() + 1);
     }
 
     public int count() {
@@ -396,10 +404,9 @@ public class AnalysisManager implements RPC {
         AnalysisViewDO analysis;
 
         try {
-            loadDictionaryEntries();
             analysis = getItemAt(index).analysis;
             analysis.setId(sampleItemManager.getNextTempId());
-            analysis.setStatusId(anLoggedInId);
+            analysis.setStatusId(proxy().anLoggedInId);
             analysis.setRevision(0);
             analysis.setAvailableDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
         } catch (Exception e) {
@@ -407,7 +414,6 @@ public class AnalysisManager implements RPC {
         }
     }
 
-    // item
     public AnalysisListItem getItemAt(int i) {
         return items.get(i);
     }
@@ -447,11 +453,9 @@ public class AnalysisManager implements RPC {
         if (item.analysisInternalNotes == null) {
             if (item.analysis != null && item.analysis.getId() != null) {
                 try {
-                    item.analysisInternalNotes = NoteManager.fetchByRefTableRefIdIsExt(
-                                                                                       ReferenceTable.ANALYSIS,
+                    item.analysisInternalNotes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.ANALYSIS,
                                                                                        item.analysis.getId(),
                                                                                        false);
-
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
@@ -478,11 +482,9 @@ public class AnalysisManager implements RPC {
         if (item.analysisExternalNote == null) {
             if (item.analysis != null && item.analysis.getId() != null) {
                 try {
-                    item.analysisExternalNote = NoteManager.fetchByRefTableRefIdIsExt(
-                                                                                      ReferenceTable.ANALYSIS,
+                    item.analysisExternalNote = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.ANALYSIS,
                                                                                       item.analysis.getId(),
                                                                                       true);
-
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
@@ -529,8 +531,7 @@ public class AnalysisManager implements RPC {
     public void setStorageAt(StorageManager storage, int i) {
         getItemAt(i).storages = storage;
     }
-    
-    //analysis user
+
     public AnalysisUserManager getAnalysisUserAt(int i) throws Exception {
         AnalysisListItem item = getItemAt(i);
 
@@ -555,7 +556,7 @@ public class AnalysisManager implements RPC {
     public void setAnalysisUserAt(AnalysisUserManager analysisUser, int i) {
         getItemAt(i).analysisUsers = analysisUser;
     }
-    
+
     // analysis test result
     public AnalysisResultManager getAnalysisResultAt(int i) throws Exception {
         AnalysisListItem item = getItemAt(i);
@@ -564,9 +565,8 @@ public class AnalysisManager implements RPC {
             if (item.analysis != null) {
                 if (item.analysis.getId() != null && item.analysis.getId() > 0) {
                     try {
-                        item.analysisResult = AnalysisResultManager.fetchForUpdateWithAnalysisId(
-                                                                                   item.analysis.getId(),
-                                                                                   item.analysis.getTestId());
+                        item.analysisResult = AnalysisResultManager.fetchForUpdateWithAnalysisId(item.analysis.getId(),
+                                                                                                 item.analysis.getTestId());
                     } catch (NotFoundException e) {
                         // ignore
                     } catch (Exception e) {
@@ -574,7 +574,8 @@ public class AnalysisManager implements RPC {
                     }
                 } else if (item.analysis.getTestId() != null) {
                     try {
-                        item.analysisResult = AnalysisResultManager.fetchForUpdateWithTestId(item.analysis.getTestId(), item.analysis.getUnitOfMeasureId());
+                        item.analysisResult = AnalysisResultManager.fetchForUpdateWithTestId(item.analysis.getTestId(),
+                                                                                             item.analysis.getUnitOfMeasureId());
                     } catch (NotFoundException e) {
                         // ignore
                     } catch (Exception e) {
@@ -612,11 +613,11 @@ public class AnalysisManager implements RPC {
 
         return item.analysisResult;
     }
-    
-    public boolean hasAnalysisResultsAt(int index){ 
+
+    public boolean hasAnalysisResultsAt(int index) {
         return getItemAt(index).analysisResult != null;
     }
-    
+
     public void setAnalysisResultAt(AnalysisResultManager analysisResult, int i) {
         getItemAt(i).analysisResult = analysisResult;
     }
@@ -630,14 +631,14 @@ public class AnalysisManager implements RPC {
         Integer typeOfSample;
         ArrayList<AnalysisViewDO> preAnalysisList;
         String oldTestName, oldMethodName;
-        
+
         getItemAt(index).tests = testMan;
         anDO = getItemAt(index).analysis;
         test = testMan.getTest();
-        
+
         oldTestName = anDO.getTestName();
         oldMethodName = anDO.getMethodName();
-        
+
         anDO.setTestId(test.getId());
         anDO.setTestName(test.getName());
         anDO.setMethodId(test.getMethodId());
@@ -647,7 +648,8 @@ public class AnalysisManager implements RPC {
         // if there is only 1 unit then set it
         units = null;
         try {
-            typeOfSample = sampleItemManager.getSampleItemAt(getBundleAt(index).getSampleItemIndex()).getTypeOfSampleId();
+            typeOfSample = sampleItemManager.getSampleItemAt(getBundleAt(index).getSampleItemIndex())
+                                            .getTypeOfSampleId();
             units = testMan.getSampleTypes().getTypesBySampleType(typeOfSample);
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -668,39 +670,38 @@ public class AnalysisManager implements RPC {
 
         if (defaultDO != null)
             anDO.setSectionId(defaultDO.getSectionId());
-        
-        //set preanalyses data
+
+        // set preanalyses data
         preAnalysisList = getPreAnalysisList(anDO.getId());
-        
-        for(int i=0; i<preAnalysisList.size(); i++){
+
+        for (int i = 0; i < preAnalysisList.size(); i++ ) {
             preAnDO = preAnalysisList.get(i);
             preAnDO.setPreAnalysisTest(test.getName());
             preAnDO.setPreAnalysisMethod(test.getMethodName());
         }
-        
-        //merge results if needed
-        if(getItemAt(index).analysisResult != null && 
-                        anDO.getTestName().equals(oldTestName) && 
-                        !anDO.getMethodName().equals(oldMethodName)){
-            try{
+
+        // merge results if needed
+        if (getItemAt(index).analysisResult != null && anDO.getTestName().equals(oldTestName) &&
+            !anDO.getMethodName().equals(oldMethodName)) {
+            try {
                 mergeAt(index, anDO.getTestId());
-            }catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
-    
-    public void removeTestAt(int index){
+
+    public void removeTestAt(int index) {
         AnalysisListItem item;
         AnalysisViewDO anDO, preAnDO;
         ArrayList<AnalysisViewDO> preAnalysisList;
-        
+
         item = getItemAt(index);
-        
+
         item.tests = null;
         item.analysisResult = null;
         anDO = item.analysis;
-        
+
         anDO.setTestId(null);
         anDO.setTestName(null);
         anDO.setMethodId(null);
@@ -708,11 +709,11 @@ public class AnalysisManager implements RPC {
         anDO.setIsReportable(null);
         anDO.setUnitOfMeasureId(null);
         anDO.setSectionId(null);
-        
-      //set preanalyses data
+
+        // set preanalyses data
         preAnalysisList = getPreAnalysisList(anDO.getId());
-        
-        for(int i=0; i<preAnalysisList.size(); i++){
+
+        for (int i = 0; i < preAnalysisList.size(); i++ ) {
             preAnDO = preAnalysisList.get(i);
             preAnDO.setPreAnalysisTest(null);
             preAnDO.setPreAnalysisMethod(null);
@@ -743,15 +744,6 @@ public class AnalysisManager implements RPC {
     //
     // helper methods
     //
-    public Integer getAnalysisIdByTestId(Integer testId) {
-        Integer id = null;
-
-        for (int i = 0; i < count(); i++ ) {
-
-        }
-
-        return id;
-    }
 
     protected void updateAnalysisStatusAt(int index, Integer sampleTypeId) throws Exception {
         TestManager testMan;
@@ -759,11 +751,10 @@ public class AnalysisManager implements RPC {
         AnalysisViewDO anDO;
         Integer currentStatus;
 
-        loadDictionaryEntries();
         anDO = getItemAt(index).analysis;
 
         // if the analysis is cancelled stop now
-        if (anCancelledId.equals(anDO.getStatusId()))
+        if (proxy().anCancelledId.equals(anDO.getStatusId()))
             return;
 
         testMan = getTestAt(index);
@@ -774,34 +765,34 @@ public class AnalysisManager implements RPC {
             error = true;
 
         if (error) {
-            if (currentStatus.equals(anLoggedInId))
-                anDO.setStatusId(anErrorLoggedInId);
-            else if (currentStatus.equals(anInitiatedId))
-                anDO.setStatusId(anErrorInitiatedId);
-            else if (currentStatus.equals(anCompletedId))
-                anDO.setStatusId(anErrorCompletedId);
-            else if (currentStatus.equals(anInPrepId))
-                anDO.setStatusId(anErrorInPrepId);
+            if (currentStatus.equals(proxy().anLoggedInId))
+                anDO.setStatusId(proxy().anErrorLoggedInId);
+            else if (currentStatus.equals(proxy().anInitiatedId))
+                anDO.setStatusId(proxy().anErrorInitiatedId);
+            else if (currentStatus.equals(proxy().anCompletedId))
+                anDO.setStatusId(proxy().anErrorCompletedId);
+            else if (currentStatus.equals(proxy().anInPrepId))
+                anDO.setStatusId(proxy().anErrorInPrepId);
         } else {
-            if (currentStatus.equals(anErrorLoggedInId))
-                anDO.setStatusId(anLoggedInId);
-            else if (currentStatus.equals(anErrorInitiatedId))
-                anDO.setStatusId(anInitiatedId);
-            else if (currentStatus.equals(anErrorCompletedId))
-                anDO.setStatusId(anCompletedId);
-            else if (currentStatus.equals(anErrorInPrepId))
-                anDO.setStatusId(anInPrepId);
+            if (currentStatus.equals(proxy().anErrorLoggedInId))
+                anDO.setStatusId(proxy().anLoggedInId);
+            else if (currentStatus.equals(proxy().anErrorInitiatedId))
+                anDO.setStatusId(proxy().anInitiatedId);
+            else if (currentStatus.equals(proxy().anErrorCompletedId))
+                anDO.setStatusId(proxy().anCompletedId);
+            else if (currentStatus.equals(proxy().anErrorInPrepId))
+                anDO.setStatusId(proxy().anInPrepId);
         }
     }
 
     protected void removeAnalysisAtNoDelete(int index) {
         SampleDataBundle bundle;
-        
+
         if (items == null || index >= items.size())
             return;
 
         items.remove(index);
-        
+
         // renumber sample bundle analyses indexes
         // when a node is removed
         for (int i = index; i < items.size(); i++ ) {
@@ -857,7 +848,7 @@ public class AnalysisManager implements RPC {
         for (int i = 0; i < count(); i++ ) {
             an = getItemAt(i).analysis;
 
-            if (anReleasedId.equals(an.getStatusId())) {
+            if (proxy().anReleasedId.equals(an.getStatusId())) {
                 released = true;
                 break;
             }
@@ -875,16 +866,16 @@ public class AnalysisManager implements RPC {
 
         return items.size() - 1;
     }
-    
+
     private void mergeAt(int index, Integer testId) throws Exception {
         AnalysisListItem item;
         AnalysisResultManager resultMan;
-        
+
         item = getItemAt(index);
         resultMan = getAnalysisResultAt(index);
         resultMan.setMergeTestId(testId);
         resultMan.setMergeUnitId(item.analysis.getUnitOfMeasureId());
-        
+
         try {
             item.analysisResult = AnalysisResultManager.merge(resultMan);
         } catch (NotFoundException e) {
@@ -894,36 +885,19 @@ public class AnalysisManager implements RPC {
         }
     }
 
-    private ArrayList<AnalysisViewDO> getPreAnalysisList(Integer preAnalysisId){
+    private ArrayList<AnalysisViewDO> getPreAnalysisList(Integer preAnalysisId) {
         ArrayList<AnalysisViewDO> returnList;
         AnalysisViewDO anDO;
-        
+
         returnList = new ArrayList<AnalysisViewDO>();
-        for(int i=0; i<count(); i++){
+        for (int i = 0; i < count(); i++ ) {
             anDO = getItemAt(i).analysis;
-            
-            if(preAnalysisId.equals(anDO.getPreAnalysisId()))
+
+            if (preAnalysisId.equals(anDO.getPreAnalysisId()))
                 returnList.add(anDO);
         }
-        
-        return returnList;
-    }
 
-    private void loadDictionaryEntries() throws Exception {
-        if (anLoggedInId == null) {
-            anLoggedInId = proxy().getIdFromSystemName("analysis_logged_in");
-            anInitiatedId = proxy().getIdFromSystemName("analysis_initiated");
-            anCompletedId = proxy().getIdFromSystemName("analysis_completed");
-            anReleasedId = proxy().getIdFromSystemName("analysis_released");
-            anInPrepId = proxy().getIdFromSystemName("analysis_inprep");
-            anOnHoldId = proxy().getIdFromSystemName("analysis_on_hold");
-            anRequeueId = proxy().getIdFromSystemName("analysis_requeue");
-            anCancelledId = proxy().getIdFromSystemName("analysis_cancelled");
-            anErrorLoggedInId = proxy().getIdFromSystemName("analysis_error_logged_in");
-            anErrorInitiatedId = proxy().getIdFromSystemName("analysis_error_initiated");
-            anErrorInPrepId = proxy().getIdFromSystemName("analysis_error_inprep");
-            anErrorCompletedId = proxy().getIdFromSystemName("analysis_error_completed");
-        }
+        return returnList;
     }
 
     private static AnalysisManagerProxy proxy() {

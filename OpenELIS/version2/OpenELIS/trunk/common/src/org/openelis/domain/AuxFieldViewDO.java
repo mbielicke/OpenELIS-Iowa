@@ -1,6 +1,6 @@
 package org.openelis.domain;
 
-import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.gwt.common.DataBaseUtil;
 
 public class AuxFieldViewDO extends AuxFieldDO {
 

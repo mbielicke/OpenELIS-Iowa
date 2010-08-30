@@ -1,7 +1,7 @@
 package org.openelis.domain;
 
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.RPC;
-import org.openelis.utilcommon.DataBaseUtil;
 
 public class TestMethodSampleTypeVO implements RPC {
 

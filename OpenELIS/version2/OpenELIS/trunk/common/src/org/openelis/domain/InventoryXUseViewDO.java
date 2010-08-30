@@ -27,8 +27,8 @@ package org.openelis.domain;
 
 import java.util.Date;
 
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.utilcommon.DataBaseUtil;
 
 /**
  * The class extends the label DO and carries an additional scriptlet name

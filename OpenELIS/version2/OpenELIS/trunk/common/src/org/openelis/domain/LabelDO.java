@@ -29,7 +29,7 @@ package org.openelis.domain;
  * Class represents the fields in database table label.  
  */
 
-import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.gwt.common.DataBaseUtil;
 
 public class LabelDO extends DataObject {
 

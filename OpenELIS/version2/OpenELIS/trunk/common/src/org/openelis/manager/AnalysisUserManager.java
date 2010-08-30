@@ -23,12 +23,13 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
- package org.openelis.manager;
+package org.openelis.manager;
 
 import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
 
 public class AnalysisUserManager implements RPC {
@@ -36,20 +37,19 @@ public class AnalysisUserManager implements RPC {
     private static final long                           serialVersionUID = 1L;
     protected Integer                                   analysisId;
     protected ArrayList<AnalysisUserViewDO>             analysisUserList, deletedList;
-    protected transient Integer                     actionCompletedId, actionReleasedId;
+    protected transient Integer                         actionCompletedId, actionReleasedId;
 
     protected transient static AnalysisUserManagerProxy proxy;
+
+    protected AnalysisUserManager() {
+        analysisUserList = new ArrayList<AnalysisUserViewDO>();
+    }
 
     /**
      * Creates a new instance of this object.
      */
     public static AnalysisUserManager getInstance() {
-        AnalysisUserManager aum;
-
-        aum = new AnalysisUserManager();
-        aum.analysisUserList = new ArrayList<AnalysisUserViewDO>();
-
-        return aum;
+        return new AnalysisUserManager();
     }
 
     public AnalysisUserViewDO getAnalysisUserAt(int i) {
@@ -57,100 +57,74 @@ public class AnalysisUserManager implements RPC {
     }
 
     public int addAnalysisUser(AnalysisUserViewDO analysisUser) {
-        if (analysisUserList == null)
-            analysisUserList = new ArrayList<AnalysisUserViewDO>();
-
         analysisUserList.add(analysisUser);
-        
         return count() - 1;
     }
-    
+
     public int addCompleteRecord() throws Exception {
-        String userName;
-        Integer userId;
-        AnalysisUserViewDO user;
-        
-        loadDictionaryEntries();
-        
-        if (analysisUserList == null)
-            analysisUserList = new ArrayList<AnalysisUserViewDO>();
-        
-        userName = proxy().getSystemUserName();
-        userId = proxy().getSystemUserId();
-        
-        //if this user has already completed this record, dont add another one
-        if(completeRecordAlreadyExists(userId))
+        SystemUserVO user;
+        AnalysisUserViewDO data;
+
+        user = proxy().getSystemUser();
+        proxy().loadDictionaryEntries(this);
+
+        // if this user has already completed this record, don't add another one
+        if (getIndex(actionCompletedId, user.getId()) >= 0)
             return -1;
-        
-        //multiples allowed
-        user = new AnalysisUserViewDO();
-        user.setActionId(actionCompletedId);
-        user.setSystemUserId(userId);
-        user.setSystemUser(userName);
-        
-        return addAnalysisUser(user);
+
+        // multiples allowed
+        data = new AnalysisUserViewDO();
+        data.setActionId(actionCompletedId);
+        data.setSystemUserId(user.getId());
+        data.setSystemUser(user.getLoginName());
+
+        return addAnalysisUser(data);
     }
-    
+
     public int addReleaseRecord() throws Exception {
-        int releaseIndex;
-        String userName;
-        Integer userId;
-        AnalysisUserViewDO user;
-        
-        loadDictionaryEntries();
-        
-        if (analysisUserList == null)
-            analysisUserList = new ArrayList<AnalysisUserViewDO>();
-        
-        userName = proxy().getSystemUserName();
-        userId = proxy().getSystemUserId();
-        
-        releaseIndex = releasedRecordIndex();
-        
-        //if a release entry already exists delete it, and create the new one
-        if(releaseIndex != -1)
-            removeAnalysisUserAt(releaseIndex);
-        
-        user = new AnalysisUserViewDO();
-        user.setActionId(actionReleasedId);
-        user.setSystemUserId(userId);
-        user.setSystemUser(userName);
-        
-        return addAnalysisUser(user);
+        int i;
+        SystemUserVO user;
+        AnalysisUserViewDO data;
+
+        user = proxy().getSystemUser();
+        proxy().loadDictionaryEntries(this);
+
+        // if a release entry already exists delete it, and create the new one
+        i = getIndex(actionReleasedId, null);
+        if (i != -1)
+            removeAnalysisUserAt(i);
+            
+        data = new AnalysisUserViewDO();
+        data.setActionId(actionReleasedId);
+        data.setSystemUserId(user.getId());
+        data.setSystemUser(user.getLoginName());
+
+        return addAnalysisUser(data);
     }
 
     public void removeAnalysisUserAt(int i) {
-        if (analysisUserList == null || i >= analysisUserList.size())
+        AnalysisUserViewDO data;
+
+        if (i >= analysisUserList.size())
             return;
 
-        AnalysisUserViewDO tmpDO = analysisUserList.remove(i);
-
-        if (deletedList == null)
-            deletedList = new ArrayList<AnalysisUserViewDO>();
-
-        if (tmpDO.getId() != null)
-            deletedList.add(tmpDO);
-    }
-
-    public int count() {
-        if (analysisUserList == null)
-            return 0;
-
-        return analysisUserList.size();
-    }
-
-    public static AnalysisUserManager fetchByAnalysisId(Integer analysisId) throws Exception {
-        return proxy().fetchByAnalysisId(analysisId);
-    }
-    
-    private void loadDictionaryEntries() throws Exception {
-        if (actionCompletedId == null) {
-            actionCompletedId = proxy().getIdFromSystemName("an_user_ac_completed");
-            actionReleasedId = proxy().getIdFromSystemName("an_user_ac_released");
+        data = analysisUserList.remove(i);
+        if (data.getId() != null) {
+            if (deletedList == null)
+                deletedList = new ArrayList<AnalysisUserViewDO>();
+            deletedList.add(data);
         }
     }
 
+    public int count() {
+        return analysisUserList.size();
+    }
+
     // service methods
+    public static AnalysisUserManager fetchByAnalysisId(Integer analysisId) throws Exception {
+        return proxy().fetchByAnalysisId(analysisId);
+    }
+
     public AnalysisUserManager add() throws Exception {
         return proxy().add(this);
     }
@@ -170,32 +144,6 @@ public class AnalysisUserManager implements RPC {
 
     public void validate(ValidationErrorsList errorsList) throws Exception {
         proxy().validate(this, errorsList);
-    }
-    
-    private boolean completeRecordAlreadyExists(Integer systemUserId){
-        AnalysisUserViewDO anDO;
-        
-        for(int i=0; i<analysisUserList.size(); i++){
-            anDO = analysisUserList.get(i);
-            
-            if(actionCompletedId.equals(anDO.getActionId()) && systemUserId.equals(anDO.getSystemUserId()))
-                return true;
-        }
-        
-        return false;
-    }
-    
-    private int releasedRecordIndex(){
-        AnalysisUserViewDO anDO;
-        
-        for(int i=0; i<analysisUserList.size(); i++){
-            anDO = analysisUserList.get(i);
-            
-            if(actionReleasedId.equals(anDO.getActionId()))
-                return i;
-        }
-        
-        return -1;
     }
 
     // these are friendly methods so only managers and proxies can call this
@@ -225,6 +173,19 @@ public class AnalysisUserManager implements RPC {
 
     AnalysisUserViewDO getDeletedAt(int i) {
         return deletedList.get(i);
+    }
+
+    private int getIndex(Integer actionId, Integer systemUserId) {
+        AnalysisUserViewDO data;
+
+        for (int i = 0; i < analysisUserList.size(); i++ ) {
+            data = analysisUserList.get(i);
+
+            if (actionId.equals(data.getActionId()) &&
+                (systemUserId == null || systemUserId.equals(data.getSystemUserId())))
+                return i;
+        }
+        return -1;
     }
 
     private static AnalysisUserManagerProxy proxy() {

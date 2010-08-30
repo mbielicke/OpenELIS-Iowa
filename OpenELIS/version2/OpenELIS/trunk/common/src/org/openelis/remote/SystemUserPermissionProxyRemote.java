@@ -23,54 +23,23 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.domain;
+package org.openelis.remote;
 
-import org.openelis.gwt.common.DataBaseUtil;
+import java.util.ArrayList;
 
-/**
- * Class represents the fields in database table system_variable.
- */
+import javax.ejb.Remote;
 
-public class SystemVariableDO extends DataObject {
+import org.openelis.gwt.common.SystemUserPermission;
+import org.openelis.gwt.common.SystemUserVO;
 
-    private static final long serialVersionUID = 1L;
+@Remote
+public interface SystemUserPermissionProxyRemote {
 
-    protected Integer         id;
-    protected String          name, value;
+    public SystemUserPermission login();
 
-    public SystemVariableDO() {
-    }
+    public void logout();
 
-    public SystemVariableDO(Integer id, String name, String value) {
-        setId(id);
-        setName(name);
-        setValue(value);
-        _changed = false;
-    }
+    public SystemUserVO fetchById(Integer id) throws Exception;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = DataBaseUtil.trim(name);
-        _changed = true;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = DataBaseUtil.trim(value);
-        _changed = true;
-    }
+    public ArrayList<SystemUserVO> fetchByLoginName(String loginName, int max) throws Exception;
 }

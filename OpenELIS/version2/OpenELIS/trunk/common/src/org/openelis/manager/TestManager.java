@@ -29,7 +29,8 @@ import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.SecurityUtil;
+import org.openelis.gwt.common.SectionPermission;
+import org.openelis.gwt.common.SystemUserPermission;
 
 public class TestManager implements RPC {
 
@@ -72,7 +73,7 @@ public class TestManager implements RPC {
         tm.testSections = new TestSectionManager();
         return tm;
     }
-    
+
     public TestViewDO getTest() {
         return test;
     }
@@ -104,7 +105,7 @@ public class TestManager implements RPC {
     public static TestManager fetchWithWorksheet(Integer id) throws Exception {
         return proxy().fetchWithWorksheet(id);
     }
-    
+
     // service methods
     public TestManager add() throws Exception {
         return proxy().add(this);
@@ -121,7 +122,7 @@ public class TestManager implements RPC {
     public TestManager fetchForUpdate() throws Exception {
         return proxy().fetchForUpdate(test.getId());
     }
-    
+
     public void validate() throws Exception {
         proxy().validate(this);
     }
@@ -136,13 +137,13 @@ public class TestManager implements RPC {
                     sampleTypes = TestTypeOfSampleManager.fetchByTestId(test.getId());
                 } catch (NotFoundException e) {
                     // ignore
-                } catch (Exception e) {                    
+                } catch (Exception e) {
                     throw e;
                 }
             }
             if (sampleTypes == null)
                 sampleTypes = TestTypeOfSampleManager.getInstance();
-        }        
+        }
 
         return sampleTypes;
     }
@@ -158,10 +159,10 @@ public class TestManager implements RPC {
                     throw e;
                 }
             }
-        
+
             if (testAnalytes == null)
                 testAnalytes = TestAnalyteManager.getInstance();
-        }        
+        }
 
         return testAnalytes;
     }
@@ -179,7 +180,7 @@ public class TestManager implements RPC {
             }
             if (testResults == null)
                 testResults = TestResultManager.getInstance();
-        }        
+        }
 
         return testResults;
     }
@@ -197,7 +198,7 @@ public class TestManager implements RPC {
             }
             if (prepTests == null)
                 prepTests = TestPrepManager.getInstance();
-        }        
+        }
 
         return prepTests;
     }
@@ -215,7 +216,7 @@ public class TestManager implements RPC {
             }
             if (reflexTests == null)
                 reflexTests = TestReflexManager.getInstance();
-        }        
+        }
 
         return reflexTests;
     }
@@ -233,7 +234,7 @@ public class TestManager implements RPC {
             }
             if (worksheet == null)
                 worksheet = TestWorksheetManager.getInstance();
-        }       
+        }
 
         return worksheet;
     }
@@ -241,24 +242,24 @@ public class TestManager implements RPC {
     public TestSectionManager getTestSections() {
         return testSections;
     }
-    
-    public boolean canAssign(){
-        TestSectionViewDO section;
-        SecurityUtil security;
-        
-        security = proxy().getSecurityUtil();
-        
-        for(int i=0; i<testSections.count(); i++){
-            section = testSections.getSectionAt(i);
-            
-            if(security.getSection(section.getSection()) != null && 
-                            security.getSection(section.getSection()).hasAssignPermission())
+
+    public boolean canAssign() {
+        TestSectionViewDO data;
+        SystemUserPermission perm;
+        SectionPermission sp;
+
+        perm = proxy().getSystemUserPermission();
+
+        for (int i = 0; i < testSections.count(); i++ ) {
+            data = testSections.getSectionAt(i);
+            sp = perm.getSection(data.getSection());
+
+            if (sp != null && sp.hasAssignPermission())
                 return true;
         }
-        
         return false;
     }
-    
+
     private static TestManagerProxy proxy() {
         if (proxy == null)
             proxy = new TestManagerProxy();
