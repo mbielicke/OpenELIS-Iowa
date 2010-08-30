@@ -327,7 +327,7 @@ public class CurrentTab extends Screen {
                                 list = storageCurrentTree.getSelections();
                                 current = Calendar.getCurrentDatetime(Datetime.YEAR,
                                                                       Datetime.MINUTE);
-                                userId = OpenELIS.security.getSystemUserId();
+                                userId = OpenELIS.getSystemUserPermission().getSystemUserId();
                                 for (int i = 0; i < list.size(); i++ ) {
                                     item = list.get(i);
                                     oldstorage = (StorageViewDO)item.data;

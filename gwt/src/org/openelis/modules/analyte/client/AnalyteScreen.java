@@ -33,10 +33,10 @@ import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.SecurityException;
-import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -75,7 +75,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class AnalyteScreen extends Screen {
     private AnalyteViewDO         data;
-    private SecurityModule        security;
+    private ModulePermission      userPermission;
 
     private TextBox               name, externalId;
     private CheckBox              isActive;
@@ -90,9 +90,9 @@ public class AnalyteScreen extends Screen {
         super((ScreenDefInt)GWT.create(AnalyteDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.analyte.server.AnalyteService");
 
-        security = OpenELIS.security.getModule("analyte");
-        if (security == null)
-            throw new SecurityException("screenPermException", "Analyte Screen");
+        userPermission = OpenELIS.getSystemUserPermission().getModule("analyte");
+        if (userPermission == null)
+            throw new PermissionException("screenPermException", "Analyte Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -124,7 +124,7 @@ public class AnalyteScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                           .contains(event.getState()) &&
-                                   security.hasSelectPermission());
+                                   userPermission.hasSelectPermission());
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -161,7 +161,7 @@ public class AnalyteScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                         .contains(event.getState()) &&
-                                 security.hasAddPermission());
+                                 userPermission.hasAddPermission());
                 if (event.getState() == State.ADD)
                     addButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -175,7 +175,7 @@ public class AnalyteScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
-                                    security.hasUpdatePermission());
+                                    userPermission.hasUpdatePermission());
                 if (event.getState() == State.UPDATE)
                     updateButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -360,7 +360,7 @@ public class AnalyteScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
                 enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                         security.hasSelectPermission();
+                         userPermission.hasSelectPermission();
                 atoz.enable(enable);
                 nav.enable(enable);
             }

@@ -41,8 +41,8 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.SecurityException;
-import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
@@ -106,28 +106,22 @@ public class QuickEntryScreen extends Screen {
     private TableWidget                     quickEntryTable;
     private TableDataRow                    rowToBeAdded;
 
-    private Integer                         userId, sampleLoggedInId;
+    private Integer                         sampleLoggedInId;
     private Datetime                        todaysDate;
     private AccessionNumberUtility          accNumUtil;
     private ScreenService                   calendarService;
-    private SecurityModule                  security;
+    private ModulePermission                userPermission;
     private HashMap<Integer, SampleManager> managers;
 
     public QuickEntryScreen() throws Exception {
-        // Call base to get ScreenDef and draw screen
         super((ScreenDefInt)GWT.create(QuickEntryDef.class));
-        service = new ScreenService(
-                                    "controller?service=org.openelis.modules.quickEntry.server.QuickEntryService");
-        calendarService = new ScreenService(
-                                            "controller?service=org.openelis.gwt.server.CalendarService");
+        service = new ScreenService("controller?service=org.openelis.modules.quickEntry.server.QuickEntryService");
+        calendarService = new ScreenService("controller?service=org.openelis.gwt.server.CalendarService");
 
-        security = OpenELIS.security.getModule("quickentry");
-        
-        if (security == null)
-            throw new SecurityException("screenPermException", "Quick Entry Screen");
+        userPermission = OpenELIS.getSystemUserPermission().getModule("quickentry");
+        if (userPermission == null)
+            throw new PermissionException("screenPermException", "Quick Entry Screen");
 
-        userId = OpenELIS.security.getSystemUserId();
-        
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 postConstructor();
@@ -659,7 +653,7 @@ public class QuickEntryScreen extends Screen {
 
                 sampleMan.getSample().setDomain(SampleManager.QUICK_ENTRY);
                 sampleMan.setDefaults();
-                sampleMan.getSample().setReceivedById(userId);
+                sampleMan.getSample().setReceivedById(OpenELIS.getSystemUserPermission().getSystemUserId());
                 sampleMan.getSample().setAccessionNumber(accessionNum);
                 sampleMan.getSample().setReceivedDate(receivedDate.getValue());
             }

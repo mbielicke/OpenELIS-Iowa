@@ -26,18 +26,6 @@
 package org.openelis.modules.worksheetCreation.client;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
@@ -47,10 +35,10 @@ import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.SecurityException;
-import org.openelis.gwt.common.SecurityModule;
-import org.openelis.gwt.common.SecurityUtil;
+import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.SectionPermission;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
@@ -81,12 +69,23 @@ import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.meta.WorksheetCreationMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 public class WorksheetCreationLookupScreen extends Screen 
                                            implements HasActionHandlers<WorksheetCreationLookupScreen.Action> {
 
     private Integer                 statusReleased, statusCancelled;
     private ScreenService           testService;
-    private SecurityModule          security;
+    private ModulePermission        userPermission;
 
     protected AppButton             searchButton, addButton, selectAllButton;
     protected AutoComplete<Integer> testId;
@@ -105,9 +104,9 @@ public class WorksheetCreationLookupScreen extends Screen
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
         testService = new ScreenService("OpenELISServlet?service=org.openelis.modules.test.server.TestService");
         
-        security = OpenELIS.security.getModule("worksheet");
-        if (security == null)
-            throw new SecurityException("screenPermException", "Worksheet Creation Lookup Screen");
+        userPermission = OpenELIS.getSystemUserPermission().getModule("worksheet");
+        if (userPermission == null)
+            throw new PermissionException("screenPermException", "Worksheet Creation Lookup Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -536,17 +535,16 @@ public class WorksheetCreationLookupScreen extends Screen
     private boolean canAddTest(WorksheetCreationVO analysisRow) {
         boolean       allow;
         SectionViewDO section;
-        SecurityUtil  securityUtil;
+        SectionPermission perm;
 
         allow = false;
         if (analysisRow == null)
             return allow;
 
-        securityUtil = OpenELIS.security;
         try {
             section = SectionCache.getSectionFromId(analysisRow.getSectionId());
-            if (securityUtil.getSection(section.getName()) != null &&
-                securityUtil.getSection(section.getName()).hasCompletePermission())
+            perm = OpenELIS.getSystemUserPermission().getSection(section.getName()); 
+            if (perm != null && perm.hasCompletePermission())
                 allow = true;
         } catch (Exception anyE) {
             Window.alert(anyE.getMessage());

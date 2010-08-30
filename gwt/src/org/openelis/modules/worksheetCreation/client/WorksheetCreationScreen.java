@@ -49,8 +49,8 @@ import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.SecurityException;
-import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -100,7 +100,7 @@ public class WorksheetCreationScreen extends Screen {
                                                   typeRand, typeLastWell, typeLastRun,
                                                   typeLastBoth;
     private ScreenService                         qcService;
-    private SecurityModule                        security;
+    private ModulePermission                      userPermission;
     private WorksheetManager                      manager;
 
     private AppButton                             lookupWorksheetButton, saveButton,
@@ -126,13 +126,12 @@ public class WorksheetCreationScreen extends Screen {
     
     public WorksheetCreationScreen() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetCreationDef.class));
-
         service   = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
         qcService = new ScreenService("OpenELISServlet?service=org.openelis.modules.qc.server.QcService");
 
-        security = OpenELIS.security.getModule("worksheet");
-        if (security == null)
-            throw new SecurityException("screenPermException", "Worksheet Creation Screen");
+        userPermission = OpenELIS.getSystemUserPermission().getModule("worksheet");
+        if (userPermission == null)
+            throw new PermissionException("screenPermException", "Worksheet Creation Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -499,7 +498,7 @@ public class WorksheetCreationScreen extends Screen {
                     }
                 });
                 
-                OpenELIS.browser.addScreen(wcLookupScreen);
+                OpenELIS.getBrowser().addScreen(wcLookupScreen);
             } catch (Exception e) {
                 e.printStackTrace();
                 Window.alert("error: " + e.getMessage());
@@ -534,7 +533,7 @@ public class WorksheetCreationScreen extends Screen {
 
         wDO = manager.getWorksheet();
         wDO.setCreatedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-        wDO.setSystemUserId(OpenELIS.security.getSystemUserId());
+        wDO.setSystemUserId(OpenELIS.getSystemUserPermission().getSystemUserId());
         wDO.setStatusId(statusWorking);
         wDO.setFormatId(testWorksheetDO.getFormatId());
         if (formatBatch.equals(wDO.getFormatId()))

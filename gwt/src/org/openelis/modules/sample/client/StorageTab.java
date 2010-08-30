@@ -75,8 +75,6 @@ public class StorageTab extends Screen {
     protected AutoComplete<Integer> location;
     protected TableWidget           storageTable;
     protected AppButton             addStorageButton, removeStorageButton;
-    protected Integer               userId;
-    protected String                userName;
 
     protected SampleDataBundle      bundle;
     protected StorageManager        manager;
@@ -87,9 +85,6 @@ public class StorageTab extends Screen {
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.storage.server.StorageService");
         setDefinition(def);
         setWindow(window);
-
-        userName = OpenELIS.security.getSystemUserName();
-        userId = OpenELIS.security.getSystemUserId();
 
         initialize();
         initializeDropdowns();
@@ -185,8 +180,8 @@ public class StorageTab extends Screen {
                     TableDataRow selectedRow = storageTable.getRow(0);
                     StorageViewDO storageDO = new StorageViewDO();
                     storageDO.setCheckin((Datetime)selectedRow.cells.get(2).value);
-                    storageDO.setSystemUserId(userId);
-                    storageDO.setUserName(userName);
+                    storageDO.setSystemUserId(OpenELIS.getSystemUserPermission().getSystemUserId());
+                    storageDO.setUserName(OpenELIS.getSystemUserPermission().getLoginName());
 
                     manager.addStorage(storageDO);
                     removeStorageButton.enable(true);
@@ -258,7 +253,7 @@ public class StorageTab extends Screen {
                 }
 
                 TableDataRow newRow = new TableDataRow(4);
-                newRow.cells.get(0).value = userName;
+                newRow.cells.get(0).value = OpenELIS.getSystemUserPermission().getLoginName();
                 newRow.cells.get(2).value = date;
                 storageTable.addRow(0, newRow);
                 storageTable.selectRow(0);

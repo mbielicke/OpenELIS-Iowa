@@ -1,17 +1,27 @@
 /**
  * Exhibit A - UIRF Open-source Based Public Software License.
  * 
- * The contents of this file are subject to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
  * 
- * Software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the specific language governing rights and limitations under the License.
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
  * 
  * The Original Code is OpenELIS code.
  * 
- * The Initial Developer of the Original Code is The University of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. All Rights Reserved.
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
  * 
  * Contributor(s): ______________________________________.
  * 
- * Alternatively, the contents of this file marked "Separately-Licensed" may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions of a UIRF Software License are applicable instead of those above.
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
  */
 
 package org.openelis.modules.orderFill.client;
@@ -35,12 +45,13 @@ import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ShippingItemDO;
 import org.openelis.domain.ShippingViewDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.SecurityException;
-import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.event.BeforeCloseEvent;
@@ -77,7 +88,6 @@ import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.order.client.CustomerNoteTab;
 import org.openelis.modules.order.client.ShipNoteTab;
 import org.openelis.modules.shipping.client.ShippingScreen;
-import org.openelis.utilcommon.DataBaseUtil;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -90,45 +100,42 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.SyncCallback;
 
 public class OrderFillScreen extends Screen {
-    private SecurityModule                        security;
+    private ModulePermission                   userPermission;
 
-    private ItemTab                               itemTab;
-    private CustomerNoteTab                       custNoteTab;
-    private ShipNoteTab                           shipNoteTab;
-    private Tabs                                  tab;
+    private ItemTab                            itemTab;
+    private CustomerNoteTab                    custNoteTab;
+    private ShipNoteTab                        shipNoteTab;
+    private Tabs                               tab;
 
-    private AppButton                             queryButton, updateButton, processButton,
-                                                  commitButton, abortButton;
-    private MenuItem                              shippingInfo;
-    private TableWidget                           orderTable;
-    private TreeWidget                            itemsTree;
-    private TabPanel                              tabPanel;
+    private AppButton                          queryButton, updateButton, processButton,
+                    commitButton, abortButton;
+    private MenuItem                           shippingInfo;
+    private TableWidget                        orderTable;
+    private TreeWidget                         itemsTree;
+    private TabPanel                           tabPanel;
 
-    private ShippingManager                       shippingManager;
-    private ShippingScreen                        shippingScreen;
+    private ShippingManager                    shippingManager;
+    private ShippingScreen                     shippingScreen;
 
-    private boolean                               treeValid;
-    private Integer                               status_pending, status_processed;
-    private HashMap<TableDataRow, OrderViewDO>    orderMap;
-    private HashMap<Integer, OrderManager>        combinedMap;
+    private boolean                            treeValid;
+    private Integer                            status_pending, status_processed;
+    private HashMap<TableDataRow, OrderViewDO> orderMap;
+    private HashMap<Integer, OrderManager>     combinedMap;
 
-    private ScreenService                         shippingService, inventoryItemService;  
-        
-    
+    private ScreenService                      shippingService;
+
     private enum Tabs {
         ITEM, SHIP_NOTE, CUSTOMER_NOTE
     };
-    
+
     public OrderFillScreen() throws Exception {
         super((ScreenDefInt)GWT.create(OrderFillDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
         shippingService = new ScreenService("controller?service=org.openelis.modules.shipping.server.ShippingService");
-        inventoryItemService = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
-    
-        security = OpenELIS.security.getModule("fillorder");
-        if (security == null)
-            throw new SecurityException("screenPermException", "Order Fill Screen");
 
+        userPermission = OpenELIS.getSystemUserPermission().getModule("fillorder");
+        if (userPermission == null)
+            throw new PermissionException("screenPermException", "Order Fill Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -136,26 +143,27 @@ public class OrderFillScreen extends Screen {
             }
         });
     }
-    
+
     /**
      * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred command.
+     * screen is attached to the browser. It is usually called in deferred
+     * command.
      */
     private void postConstructor() {
         tab = Tabs.ITEM;
-        
+
         try {
             DictionaryCache.preloadByCategorySystemNames("order_status", "order_ship_from");
         } catch (Exception e) {
             Window.alert("Order Fill Screen: missing dictionary entry; " + e.getMessage());
             window.close();
         }
-        
-        initialize(); 
+
+        initialize();
         setState(State.DEFAULT);
         initializeDropdowns();
         DataChangeEvent.fire(this);
-    }    
+    }
 
     private void initialize() {
         //
@@ -168,34 +176,35 @@ public class OrderFillScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && security.hasSelectPermission());
+                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                          .contains(event.getState()) &&
+                                   userPermission.hasSelectPermission());
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
         });
-        
+
         updateButton = (AppButton)def.getWidget("update");
         addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 update();
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {               
-                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState())
-                                    && security.hasUpdatePermission());
-               if (event.getState() == State.UPDATE)
-                   updateButton.setState(ButtonState.LOCK_PRESSED);
+            public void onStateChange(StateChangeEvent<State> event) {
+                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
+                                    userPermission.hasUpdatePermission());
+                if (event.getState() == State.UPDATE)
+                    updateButton.setState(ButtonState.LOCK_PRESSED);
             }
         });
-        
+
         processButton = (AppButton)def.getWidget("process");
         addScreenHandler(processButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 commit();
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {               
+            public void onStateChange(StateChangeEvent<State> event) {
                 processButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
             }
         });
@@ -221,7 +230,7 @@ public class OrderFillScreen extends Screen {
                 abortButton.enable(EnumSet.of(State.QUERY, State.UPDATE).contains(event.getState()));
             }
         });
-        
+
         shippingInfo = (MenuItem)def.getWidget("shippingInfo");
         addScreenHandler(shippingInfo, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -234,99 +243,102 @@ public class OrderFillScreen extends Screen {
         });
 
         orderTable = (TableWidget)def.getWidget("orderTable");
-        
+
         addScreenHandler(orderTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 TableColumn process;
-                ArrayList list;               
-                
-                orderTable.enable(true);                
+                ArrayList list;
+
+                orderTable.enable(true);
                 orderTable.setQueryMode(event.getState() == State.QUERY);
-                
-                if(state == State.QUERY) {                   
+
+                if (state == State.QUERY) {
                     process = orderTable.getColumns().get(0);
-                    process.enable(false);        
-                    
+                    process.enable(false);
+
                     list = new ArrayList<Integer>();
                     list.add(status_pending);
                     orderTable.setCell(0, 2, list);
-                }               
+                }
             }
-        });            
-        
+        });
+
         orderTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
-            public void onBeforeCellEdited(BeforeCellEditedEvent event) {     
-                int r,c;
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                int r, c;
                 TableDataRow row;
                 OrderManager man;
                 OrderViewDO data, prevSelData;
                 String val, type;
                 boolean cancel;
                 Integer status;
-                
-                if(orderMap == null) { 
+
+                if (orderMap == null) {
                     event.cancel();
                     return;
                 }
-                
+
                 c = event.getCol();
                 r = event.getRow();
                 row = orderTable.getRow(r);
                 data = orderMap.get(row);
                 val = (String)orderTable.getObject(r, 0);
-                cancel = false; 
+                cancel = false;
                 status = data.getStatusId();
-                type = data.getType();                                                   
-                
-                if(state == State.UPDATE) {
-                    if (c > 0){
-                        cancel = true;    
-                        if("Y".equals(val))
+                type = data.getType();
+
+                if (state == State.UPDATE) {
+                    if (c > 0) {
+                        cancel = true;
+                        if ("Y".equals(val))
                             custNoteTab.setState(State.UPDATE);
                         else
                             custNoteTab.setState(State.DISPLAY);
-                    } else {                    
-                        prevSelData = getProcessShipData();                                                       
-                        if((prevSelData != null) && ("N".equals(val)) &&
-                                        DataBaseUtil.isDifferent(data.getOrganizationId(), prevSelData.getOrganizationId())) {
+                    } else {
+                        prevSelData = getProcessShipData();
+                        if ( (prevSelData != null) &&
+                            ("N".equals(val)) &&
+                            DataBaseUtil.isDifferent(data.getOrganizationId(),
+                                                     prevSelData.getOrganizationId())) {
                             Window.alert(consts.get("sameShipToOrderCombined"));
                             custNoteTab.setState(State.DISPLAY);
-                            cancel = true;                           
-                        }                    
-                    }                                        
+                            cancel = true;
+                        }
+                    }
                 } else {
-                    if(status_processed.equals(status) && OrderManager.TYPE_SEND_OUT.equals(type))
+                    if (status_processed.equals(status) && OrderManager.TYPE_SEND_OUT.equals(type))
                         shippingInfo.enable(true);
                     else
                         shippingInfo.enable(false);
-                    cancel = true;                       
+                    cancel = true;
                 }
-                
+
                 shipNoteTab.setState(State.DISPLAY);
-                
+
                 //
-                // this logic makes sure that whenever we disallow a user from 
-                // editing a cell, we fill the tabs with data stored in the OrderManager
+                // this logic makes sure that whenever we disallow a user from
+                // editing a cell, we fill the tabs with data stored in the
+                // OrderManager
                 // set as "data" of this row, we have to do this here because
                 // CellEditedEvent won't be fired
                 //                
-                if(cancel) {
-                    man = null;                    
-                                        
-                    if(row.data == null) 
-                        row.data = fetchById(data);                        
-                               
+                if (cancel) {
+                    man = null;
+
+                    if (row.data == null)
+                        row.data = fetchById(data);
+
                     man = (OrderManager)row.data;
-                    itemTab.setManager(man, combinedMap);                    
-                    shipNoteTab.setManager(man);                    
+                    itemTab.setManager(man, combinedMap);
+                    shipNoteTab.setManager(man);
                     custNoteTab.setManager(man);
-                                        
+
                     drawTabs();
-                    event.cancel();        
-                } 
-            }                         
+                    event.cancel();
+                }
+            }
         });
-                
+
         orderTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
@@ -345,32 +357,34 @@ public class OrderFillScreen extends Screen {
 
                     if ("Y".equals(val) && (combinedMap.get(data.getId()) == null)) {
                         try {
-                            man = (OrderManager)row.data;                            
-                            if(man == null) {
+                            man = (OrderManager)row.data;
+                            if (man == null) {
                                 man = OrderManager.getInstance();
-                                man.setOrder(data);                                     
-                            }               
-                            
+                                man.setOrder(data);
+                            }
+
                             window.setBusy(consts.get("lockForUpdate"));
                             row.data = man.fetchForUpdate();
                             man = (OrderManager)row.data;
                             window.clearStatus();
-                            
+
                             combinedMap.put(data.getId(), man);
                             itemTab.setManager(man, combinedMap);
-                            
+
                             //
-                            // we do this here in order to make sure that the tree 
-                            // showing order items always gets loaded so that 
-                            // validation for processing always takes place because
+                            // we do this here in order to make sure that the
+                            // tree
+                            // showing order items always gets loaded so that
+                            // validation for processing always takes place
+                            // because
                             // it relies on the data in the tree
                             //
-                            if(tab != Tabs.ITEM)
+                            if (tab != Tabs.ITEM)
                                 itemTab.draw();
-                            
+
                             shipNoteTab.setManager(man);
-                            
-                            if(OrderManager.TYPE_SEND_OUT.equals(data.getType()))
+
+                            if (OrderManager.TYPE_SEND_OUT.equals(data.getType()))
                                 custNoteTab.setState(State.UPDATE);
                             else
                                 custNoteTab.setState(State.DISPLAY);
@@ -385,10 +399,10 @@ public class OrderFillScreen extends Screen {
                         removeFromCombined(row, data);
                         window.setDone(consts.get("updateAborted"));
                     }
-                }              
+                }
             }
         });
-        
+
         //
         // tabs
         //
@@ -407,10 +421,11 @@ public class OrderFillScreen extends Screen {
                 window.setBusy();
                 drawTabs();
                 row = orderTable.getSelection();
-                if(row != null) {
+                if (row != null) {
                     man = (OrderManager)row.data;
-                    if(i == 0 && !treeValid && combinedMap != null && combinedMap.get(man.getOrder().getId()) != null) 
-                        itemTab.validate();                    
+                    if (i == 0 && !treeValid && combinedMap != null &&
+                        combinedMap.get(man.getOrder().getId()) != null)
+                        itemTab.validate();
                 }
                 window.clearStatus();
             }
@@ -427,7 +442,7 @@ public class OrderFillScreen extends Screen {
                 itemTab.setState(event.getState());
             }
         });
-        
+
         itemsTree = (TreeWidget)def.getWidget("itemsTree");
 
         shipNoteTab = new ShipNoteTab(def, window, "notesPanel", "standardNoteButton");
@@ -452,115 +467,115 @@ public class OrderFillScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 custNoteTab.setState(event.getState());
             }
-        });        
-        
+        });
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
                 }
             }
-        });       
+        });
     }
-    
+
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         List<DictionaryDO> list;
         TableDataRow row;
         Dropdown<Integer> status, shipFrom, type;
-        
+
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("order_status");        
-        for (DictionaryDO resultDO : list)  {        
+        list = DictionaryCache.getListByCategorySystemName("order_status");
+        for (DictionaryDO resultDO : list) {
             row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
             row.enabled = ("Y".equals(resultDO.getIsActive()));
             model.add(row);
         }
-        
-        status = ((Dropdown<Integer>)orderTable.getColumnWidget(OrderMeta.getStatusId()));        
+
+        status = ((Dropdown<Integer>)orderTable.getColumnWidget(OrderMeta.getStatusId()));
         status.setModel(model);
-        
+
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         list = DictionaryCache.getListByCategorySystemName("order_ship_from");
         for (DictionaryDO resultDO : list) {
-           row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
-           row.enabled = ("Y".equals(resultDO.getIsActive()));
-           model.add(row);
+            row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
+            row.enabled = ("Y".equals(resultDO.getIsActive()));
+            model.add(row);
         }
-        
+
         shipFrom = ((Dropdown<Integer>)orderTable.getColumnWidget(OrderMeta.getShipFromId()));
         shipFrom.setModel(model);
-        
+
         model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));   
+        model.add(new TableDataRow(null, ""));
         model.add(new TableDataRow(OrderManager.TYPE_INTERNAL, consts.get("internal")));
         model.add(new TableDataRow(OrderManager.TYPE_SEND_OUT, consts.get("sendOut")));
-        
+
         type = ((Dropdown<Integer>)orderTable.getColumnWidget(OrderMeta.getType()));
         type.setModel(model);
-        
+
         try {
-            status_pending = DictionaryCache.getIdFromSystemName("order_status_pending");            
+            status_pending = DictionaryCache.getIdFromSystemName("order_status_pending");
             status_processed = DictionaryCache.getIdFromSystemName("order_status_processed");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
         }
     }
-    
+
     protected void query() {
         OrderManager man;
-        
+
         man = OrderManager.getInstance();
-        
+
         setState(State.QUERY);
-        DataChangeEvent.fire(this);       
-        
+        DataChangeEvent.fire(this);
+
         itemTab.setManager(man, combinedMap);
         shipNoteTab.setManager(man);
         custNoteTab.setManager(man);
-        
+
         itemTab.draw();
         shipNoteTab.draw();
         custNoteTab.draw();
-        
-        orderMap = null;
-        window.setDone(consts.get("enterFieldsToQuery"));       
-    }
-    
-    protected void update() {
-        setState(State.UPDATE);  
-        shipNoteTab.setState(State.DISPLAY);
-        custNoteTab.setState(State.DISPLAY);        
-    }    
 
-   protected void commit() {        
+        orderMap = null;
+        window.setDone(consts.get("enterFieldsToQuery"));
+    }
+
+    protected void update() {
+        setState(State.UPDATE);
+        shipNoteTab.setState(State.DISPLAY);
+        custNoteTab.setState(State.DISPLAY);
+    }
+
+    protected void commit() {
         Query query;
-        Set<Integer> set; 
+        Set<Integer> set;
         Iterator<Integer> iter;
-        OrderManager man;   
-        OrderViewDO data;        
+        OrderManager man;
+        OrderViewDO data;
         ArrayList<TreeDataItem> model;
-        ShippingManager shippingManager; 
-        
-        shippingManager = null;               
-        
-        if (!validate()) {         
+        ShippingManager shippingManager;
+
+        shippingManager = null;
+
+        if ( !validate()) {
             window.setError(consts.get("correctErrors"));
             return;
-        }       
+        }
 
-        if (state == State.QUERY) {            
+        if (state == State.QUERY) {
             query = new Query();
-            query.setFields(getQueryFields());           
-            
-            executeQuery(query); 
+            query.setFields(getQueryFields());
+
+            executeQuery(query);
             combinedMap = new HashMap<Integer, OrderManager>();
             setState(State.DISPLAY);
-        } else if(state == State.UPDATE) {
+        } else if (state == State.UPDATE) {
             data = getProcessShipData();
             if (data == null) {
                 Window.alert(consts.get("noOrdersSelectForProcess"));
@@ -574,105 +589,106 @@ public class OrderFillScreen extends Screen {
                     return;
                 }
             }
-            window.setBusy(consts.get("updating"));                
+            window.setBusy(consts.get("updating"));
             set = combinedMap.keySet();
-            iter = set.iterator();                    
-            try {      
+            iter = set.iterator();
+            try {
                 validateQuantityOnHand();
-                while (iter.hasNext())  {                                                                        
+                while (iter.hasNext()) {
                     man = combinedMap.get(iter.next());
                     man.getOrder().setStatusId(status_processed);
                     man = man.update();
-                }          
+                }
                 shippingManager = getShippingManager(data);
-                
+
                 releaseLocks();
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.setDone(consts.get("updatingComplete"));
-                                
+
                 showShippingScreen(shippingManager, State.ADD);
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
                 Window.alert("commitUpdate(): " + e.getMessage());
                 window.clearStatus();
-            }            
-        }        
+            }
+        }
     }
-    
-   protected void abort() {
-       OrderManager man;
-       
-       man = OrderManager.getInstance();
-       
-       setFocus(null);
-       clearErrors();
-       window.setBusy(consts.get("cancelChanges"));
 
-       if (state == State.QUERY) {
-           itemTab.setManager(man, combinedMap);
-           shipNoteTab.setManager(man);
-           custNoteTab.setManager(man);
-           
-           setState(State.DEFAULT);
-           DataChangeEvent.fire(this);
-           window.setDone(consts.get("queryAborted"));
-       } else if (state == State.UPDATE) {
-           releaseLocks();
-           setState(State.DISPLAY);
-           DataChangeEvent.fire(this);
-           window.setDone(consts.get("updateAborted"));
-       }             
-   } 
-   
-   protected void shippingInfo() {
-       OrderManager order;
-       OrderViewDO data;
-       TableDataRow row;
-       
-       try {
-           row = orderTable.getSelection();
-           order = (OrderManager)row.data;     
-           data = order.getOrder();
-                              
-           window.setBusy(consts.get("fetching"));            
-           
-           shippingService.call("fetchByOrderId", data.getId(), new SyncCallback<ShippingViewDO>() {
-               public void onSuccess(ShippingViewDO result) {                                    
-                   try {
-                       if(result != null)
-                           shippingManager = ShippingManager.fetchById(result.getId());
-                       else
-                           shippingManager = null;
-                   } catch (Throwable e) {
-                       shippingManager = null;
-                       e.printStackTrace();
-                       Window.alert(e.getMessage());
-                       window.clearStatus();
-                   }                                        
-               }
-               
-               public void onFailure(Throwable error) {    
-                   shippingManager = null;
-                   error.printStackTrace();
-                   Window.alert("Error: Fetch failed; " + error.getMessage());                    
-                   window.clearStatus();
-               }
-           });    
-           
-           showShippingScreen(shippingManager, State.DISPLAY);
-       } catch (Throwable e) {
-           e.printStackTrace();
-           Window.alert(e.getMessage());
-           window.clearStatus();
-           return;
-       }               
-       
-       window.clearStatus();
-   }
-   
-    private void validateQuantityOnHand() throws ValidationErrorsList{
+    protected void abort() {
+        OrderManager man;
+
+        man = OrderManager.getInstance();
+
+        setFocus(null);
+        clearErrors();
+        window.setBusy(consts.get("cancelChanges"));
+
+        if (state == State.QUERY) {
+            itemTab.setManager(man, combinedMap);
+            shipNoteTab.setManager(man);
+            custNoteTab.setManager(man);
+
+            setState(State.DEFAULT);
+            DataChangeEvent.fire(this);
+            window.setDone(consts.get("queryAborted"));
+        } else if (state == State.UPDATE) {
+            releaseLocks();
+            setState(State.DISPLAY);
+            DataChangeEvent.fire(this);
+            window.setDone(consts.get("updateAborted"));
+        }
+    }
+
+    protected void shippingInfo() {
+        OrderManager order;
+        OrderViewDO data;
+        TableDataRow row;
+
+        try {
+            row = orderTable.getSelection();
+            order = (OrderManager)row.data;
+            data = order.getOrder();
+
+            window.setBusy(consts.get("fetching"));
+
+            shippingService.call("fetchByOrderId", data.getId(),
+                                 new SyncCallback<ShippingViewDO>() {
+                                     public void onSuccess(ShippingViewDO result) {
+                                         try {
+                                             if (result != null)
+                                                 shippingManager = ShippingManager.fetchById(result.getId());
+                                             else
+                                                 shippingManager = null;
+                                         } catch (Throwable e) {
+                                             shippingManager = null;
+                                             e.printStackTrace();
+                                             Window.alert(e.getMessage());
+                                             window.clearStatus();
+                                         }
+                                     }
+
+                                     public void onFailure(Throwable error) {
+                                         shippingManager = null;
+                                         error.printStackTrace();
+                                         Window.alert("Error: Fetch failed; " + error.getMessage());
+                                         window.clearStatus();
+                                     }
+                                 });
+
+            showShippingScreen(shippingManager, State.DISPLAY);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            window.clearStatus();
+            return;
+        }
+
+        window.clearStatus();
+    }
+
+    private void validateQuantityOnHand() throws ValidationErrorsList {
         TreeDataItem parent, child;
         ArrayList<TreeDataItem> model, items;
         OrderItemViewDO ordItem;
@@ -703,16 +719,16 @@ public class OrderFillScreen extends Screen {
                 Window.alert(e.getMessage());
                 e.printStackTrace();
             }
-            
-            if (invItem == null || "Y".equals(invItem.getIsNotInventoried())) 
+
+            if (invItem == null || "Y".equals(invItem.getIsNotInventoried()))
                 continue;
-            
-            if (!parent.open)
+
+            if ( !parent.open)
                 itemsTree.toggle(parent);
             items = parent.getItems();
 
             if (items != null && items.size() > 0) {
-                for (int j = 0; j < items.size(); j++) {
+                for (int j = 0; j < items.size(); j++ ) {
                     child = items.get(j);
                     data = (InventoryXUseViewDO)child.data;
                     locationId = data.getInventoryLocationId();
@@ -723,8 +739,8 @@ public class OrderFillScreen extends Screen {
 
                     sum += data.getQuantity();
 
-                    if (sum > data.getInventoryLocationQuantityOnhand()) {                       
-                        if(!locIds.contains(locationId)) {
+                    if (sum > data.getInventoryLocationQuantityOnhand()) {
+                        if ( !locIds.contains(locationId)) {
                             name = new String[2];
                             name[0] = data.getInventoryItemName();
                             name[1] = data.getStorageLocationName();
@@ -736,55 +752,55 @@ public class OrderFillScreen extends Screen {
                 }
             }
         }
-                
+
         for (i = 0; i < names.size(); i++ ) {
             exc = new FormErrorException("totalItemsMoreThanQtyOnHandException", names.get(i));
             list.add(exc);
-        }        
-        
-        if(list.size() > 0) 
+        }
+
+        if (list.size() > 0)
             throw list;
     }
-    
+
     private OrderManager fetchById(OrderViewDO data) {
         OrderManager man;
-        
+
         man = null;
         window.setBusy(consts.get("fetching"));
-        try {                            
-            man = OrderManager.fetchById(data.getId());                                    
-        }catch (NotFoundException e) {
+        try {
+            man = OrderManager.fetchById(data.getId());
+        } catch (NotFoundException e) {
             man = OrderManager.getInstance();
-            window.setDone(consts.get("noRecordsFound"));                            
-        }  catch (Exception e) {
+            window.setDone(consts.get("noRecordsFound"));
+        } catch (Exception e) {
             Window.alert(consts.get("fetchFailed") + e.getMessage());
             e.printStackTrace();
-        }    
+        }
         window.clearStatus();
-        
+
         return man;
-    }   
-    
-    private void drawTabs() {                
+    }
+
+    private void drawTabs() {
         switch (tab) {
-            case ITEM:  
-                itemTab.draw();                 
+            case ITEM:
+                itemTab.draw();
                 break;
             case SHIP_NOTE:
                 shipNoteTab.draw();
                 break;
             case CUSTOMER_NOTE:
                 custNoteTab.draw();
-                break;   
+                break;
         }
     }
-    
-    public boolean validate() {   
-        treeValid = itemTab.validate();        
-        return treeValid && super.validate();             
+
+    public boolean validate() {
+        treeValid = itemTab.validate();
+        return treeValid && super.validate();
     }
-    
-    private void executeQuery(Query query) {                
+
+    private void executeQuery(Query query) {
         window.setBusy(consts.get("querying"));
 
         service.callList("queryOrderFill", query, new AsyncCallback<ArrayList<OrderViewDO>>() {
@@ -795,27 +811,27 @@ public class OrderFillScreen extends Screen {
 
                 orderTable.setQueryMode(false);
                 model = null;
-                
+
                 now = null;
-                
+
                 if (result != null) {
-                    model = new ArrayList<TableDataRow>();                    
+                    model = new ArrayList<TableDataRow>();
                     try {
                         now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
                     } catch (Exception e) {
-                        Window.alert("Order Fill Datetime: " +e.getMessage());
+                        Window.alert("Order Fill Datetime: " + e.getMessage());
                     }
-                    
+
                     orderMap = new HashMap<TableDataRow, OrderViewDO>();
-                    
+
                     for (OrderViewDO data : result) {
                         row = addByLeastNumDaysLeft(data, model, now);
-                        orderMap.put(row, data);                        
+                        orderMap.put(row, data);
                     }
-                    
+
                     orderTable.load(model);
                 }
-                
+
                 window.clearStatus();
             }
 
@@ -827,129 +843,133 @@ public class OrderFillScreen extends Screen {
                 } else if (error instanceof LastPageException) {
                     window.setError(consts.get("noMoreRecordInDir"));
                 } else {
-                    Window.alert("Error: Order call query failed; " +
-                                 error.getMessage());
+                    Window.alert("Error: Order call query failed; " + error.getMessage());
                     window.setError(consts.get("queryFailed"));
                 }
             }
         });
     }
-    
+
     private int daysBetween(Date startDate, Date endDate) {
-        return (int)((endDate.getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000));  
-    } 
-    
+        return (int) ( (endDate.getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000));
+    }
+
     /**
-     * This method adds new rows to the model for the table displaying order records
-     * by the number of days left between the desired order processing date and 
-     * the current date, in a descending order; it also return the newly added row 
+     * This method adds new rows to the model for the table displaying order
+     * records by the number of days left between the desired order processing
+     * date and the current date, in a descending order; it also return the
+     * newly added row
      */
-    private TableDataRow addByLeastNumDaysLeft(OrderViewDO data, ArrayList<TableDataRow> model, Datetime now) {
+    private TableDataRow addByLeastNumDaysLeft(OrderViewDO data,
+                                               ArrayList<TableDataRow> model,
+                                               Datetime now) {
         TableDataRow row, modelRow;
         Datetime ordDate;
-        int num,diff,val,mrowVal,size;
-        
-        row = getOrderRowFromOrder(data, now, null);        
-        ordDate = data.getOrderedDate();                                
-        num = data.getNeededInDays();        
+        int num, diff, val, mrowVal, size;
+
+        row = getOrderRowFromOrder(data, now, null);
+        ordDate = data.getOrderedDate();
+        num = data.getNeededInDays();
         diff = daysBetween(ordDate.getDate(), now.getDate());
-        
-        // days left between the desired order processing date and the current date
-        val = num - diff;        
+
+        // days left between the desired order processing date and the current
+        // date
+        val = num - diff;
         size = model.size();
-        
-        if(size == 0) {                   
-            model.add(row);            
+
+        if (size == 0) {
+            model.add(row);
         } else {
-            for(int i = 0; i < size; i++) {
+            for (int i = 0; i < size; i++ ) {
                 modelRow = model.get(i);
                 mrowVal = (Integer)modelRow.cells.get(9).getValue();
-                if(val <= mrowVal) {                    
+                if (val <= mrowVal) {
                     model.add(i, row);
                     break;
-                } else if(i == size -1) {
+                } else if (i == size - 1) {
                     model.add(row);
                 }
             }
         }
         return row;
-    }      
-        
+    }
+
     private void releaseLocks() {
         String val;
         ArrayList<TableDataRow> model;
         TableDataRow row;
         OrderViewDO data;
-        
+
         model = orderTable.getData();
-        
-        for(int i = 0; i < model.size(); i++) {
+
+        for (int i = 0; i < model.size(); i++ ) {
             row = model.get(i);
             val = (String)row.cells.get(0).getValue();
-                        
-            if("Y".equals(val)) {
+
+            if ("Y".equals(val)) {
                 data = orderMap.get(row);
                 removeFromCombined(row, data);
-                orderTable.setCell(i, 0, "N");                
+                orderTable.setCell(i, 0, "N");
             }
-        }        
+        }
     }
-    
+
     private void removeFromCombined(TableDataRow row, OrderViewDO data) {
-        OrderManager man;       
+        OrderManager man;
         Datetime now;
-        
+
         try {
             man = (OrderManager)row.data;
-            man = man.abortUpdate();            
+            man = man.abortUpdate();
             row.data = man;
-            combinedMap.remove(data.getId());             
+            combinedMap.remove(data.getId());
             itemTab.setManager(man, combinedMap);
             shipNoteTab.setManager(man);
             custNoteTab.setManager(man);
-            drawTabs();    
+            drawTabs();
             try {
-                now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);              
-                getOrderRowFromOrder(man.getOrder(), now, row);                
+                now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
+                getOrderRowFromOrder(man.getOrder(), now, row);
                 orderMap.put(row, man.getOrder());
             } catch (Exception e) {
-                Window.alert("OrderAdd Datetime: " +e.getMessage());
+                Window.alert("OrderAdd Datetime: " + e.getMessage());
             }
-                   
+
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
         }
-    }    
-    
+    }
+
     private OrderViewDO getProcessShipData() {
-        OrderViewDO data, order;        
-        Set<Integer> set; 
+        OrderViewDO data, order;
+        Set<Integer> set;
         Iterator<Integer> iter;
         OrderManager man;
-        
+
         data = null;
-        
-        if(combinedMap == null || combinedMap.size() == 0) 
-            return data;        
-        
+
+        if (combinedMap == null || combinedMap.size() == 0)
+            return data;
+
         set = combinedMap.keySet();
-        iter = set.iterator(); 
-                                                                           
+        iter = set.iterator();
+
         man = combinedMap.get(iter.next());
         order = man.getOrder();
-        
+
         data = new OrderViewDO();
         data.setId(order.getId());
         data.setShipFromId(order.getShipFromId());
         data.setOrganizationId(order.getOrganizationId());
         data.setOrganization(order.getOrganization());
         data.setType(order.getType());
-        data.setStatusId(order.getStatusId());        
-        return data;                        
+        data.setStatusId(order.getStatusId());
+        return data;
     }
-    
-    private void createShippingItems(ShippingManager manager, HashMap<Integer, OrderManager> combinedMap) {
+
+    private void createShippingItems(ShippingManager manager,
+                                     HashMap<Integer, OrderManager> combinedMap) {
         ShippingItemManager man;
         OrderManager orderMan;
         OrderItemManager orderItemMan;
@@ -958,19 +978,19 @@ public class OrderFillScreen extends Screen {
         InventoryItemDO invItem;
         InventoryXUseViewDO data;
         ShippingItemDO shippingItem;
-        Set<Integer> set; 
+        Set<Integer> set;
         Iterator<Integer> iter;
-        int  i, j, index;
-        
-        if(combinedMap == null)
-            return;              
-        
-        try {                   
+        int i, j, index;
+
+        if (combinedMap == null)
+            return;
+
+        try {
             man = manager.getItems();
             set = combinedMap.keySet();
-            iter = set.iterator();  
+            iter = set.iterator();
             invItem = null;
-                                    
+
             while (iter.hasNext()) {
                 orderMan = combinedMap.get(iter.next());
                 orderItemMan = orderMan.getItems();
@@ -986,12 +1006,13 @@ public class OrderFillScreen extends Screen {
                     }
                     //
                     // Since order items that have their inventory items flagged
-                    // as "is not inventoried" don't get inventory x use records 
-                    // created for them, they won't get diplayed in one of the 
+                    // as "is not inventoried" don't get inventory x use records
+                    // created for them, they won't get diplayed in one of the
                     // shipping items if only inventory x use records were to be
-                    // used to create shipping items. Thus the following code makes
-                    // sure that if an order item is associated with such an 
-                    // inventory item a shipping item gets created for it from 
+                    // used to create shipping items. Thus the following code
+                    // makes
+                    // sure that if an order item is associated with such an
+                    // inventory item a shipping item gets created for it from
                     // the information in the order item itself.
                     //
                     if (invItem != null && "Y".equals(invItem.getIsNotInventoried())) {
@@ -1017,52 +1038,52 @@ public class OrderFillScreen extends Screen {
                                                         data.getInventoryItemName());
                             shippingItem.setReferenceId(data.getOrderItemId());
                             shippingItem.setReferenceTableId(ReferenceTable.ORDER_ITEM);
-                        }                        
+                        }
                     }
                 }
-            } 
+            }
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
         }
-        
+
     }
-    
+
     private void loadProcessRows() {
         TableDataRow row;
         OrderManager man;
-        
+
         row = orderTable.getSelection();
         man = null;
-        
-        if(row != null && "Y".equals(row.cells.get(0).getValue())) {
+
+        if (row != null && "Y".equals(row.cells.get(0).getValue())) {
             man = (OrderManager)row.data;
         } else {
-            for(int i = 0; i < orderTable.numRows(); i++) {
+            for (int i = 0; i < orderTable.numRows(); i++ ) {
                 row = orderTable.getRow(i);
-                if("Y".equals(row.cells.get(0).getValue())) {
+                if ("Y".equals(row.cells.get(0).getValue())) {
                     man = (OrderManager)row.data;
                     orderTable.selectRow(i);
                     break;
                 }
             }
         }
-        
-        if(man != null) {
+
+        if (man != null) {
             itemTab.setManager(man, combinedMap);
             custNoteTab.setManager(man);
             shipNoteTab.setManager(man);
-            
+
             drawTabs();
-        }        
+        }
     }
-    
+
     private TableDataRow getOrderRowFromOrder(OrderViewDO data, Datetime now, TableDataRow row) {
         OrganizationDO organization;
         Datetime ordDate;
-        int num,diff,val, index;        
-        
-        if(row == null) {
+        int num, diff, val, index;
+
+        if (row == null) {
             row = new TableDataRow(11);
             row.key = data.getId();
             row.cells.get(0).setValue("N");
@@ -1089,7 +1110,7 @@ public class OrderFillScreen extends Screen {
 
             row.cells.get(9).setValue(val);
             row.cells.get(10).setValue(data.getType());
-        } else {            
+        } else {
             index = orderTable.getData().indexOf(row);
             row.key = data.getId();
             orderTable.setCell(index, 0, "N");
@@ -1119,37 +1140,38 @@ public class OrderFillScreen extends Screen {
         }
         return row;
     }
-    
-    private ShippingManager getShippingManager(OrderViewDO data){
+
+    private ShippingManager getShippingManager(OrderViewDO data) {
         ShippingManager shippingManager;
         ShippingViewDO shipping;
-        
+
         shippingManager = null;
-        if(OrderManager.TYPE_SEND_OUT.equals(data.getType()) && status_pending.equals(data.getStatusId())) {
+        if (OrderManager.TYPE_SEND_OUT.equals(data.getType()) &&
+            status_pending.equals(data.getStatusId())) {
             shipping = new ShippingViewDO();
             shipping.setShippedFromId(data.getShipFromId());
-            shipping.setShippedToId(data.getOrganizationId()); 
+            shipping.setShippedToId(data.getOrganizationId());
             shipping.setShippedTo(data.getOrganization());
             shippingManager = ShippingManager.getInstance();
-            shippingManager.setShipping(shipping);    
-            createShippingItems(shippingManager, combinedMap);  
-        } 
-                                                                                                                                       
-        return shippingManager;        
-    } 
-    
-    private void showShippingScreen(ShippingManager manager, State state) throws Exception{
+            shippingManager.setShipping(shipping);
+            createShippingItems(shippingManager, combinedMap);
+        }
+
+        return shippingManager;
+    }
+
+    private void showShippingScreen(ShippingManager manager, State state) throws Exception {
         ScreenWindow modal;
-        if(manager != null) {
+        if (manager != null) {
             modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
             modal.setName(consts.get("shipping"));
             if (shippingScreen == null)
                 shippingScreen = new ShippingScreen(modal);
-                            
+
             modal.setContent(shippingScreen);
-            shippingScreen.loadShippingData(manager, state);                        
+            shippingScreen.loadShippingData(manager, state);
             window.clearStatus();
         }
     }
-        
+
 }

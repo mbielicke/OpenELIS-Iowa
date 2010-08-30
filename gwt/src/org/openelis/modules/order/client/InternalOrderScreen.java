@@ -37,10 +37,10 @@ import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.SecurityException;
-import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -83,7 +83,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class InternalOrderScreen extends Screen {
     private OrderManager      manager;
-    private SecurityModule    security;
+    private ModulePermission  userPermission;
 
     private ButtonGroup       atoz;
     private ScreenNavigator   nav;
@@ -108,12 +108,11 @@ public class InternalOrderScreen extends Screen {
 
     public InternalOrderScreen() throws Exception {
         super((ScreenDefInt)GWT.create(InternalOrderDef.class));
-
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
 
-        security = OpenELIS.security.getModule("internalorder");
-        if (security == null)
-            throw new SecurityException("screenPermException", "Internal Order Screen");
+        userPermission = OpenELIS.getSystemUserPermission().getModule("internalorder");
+        if (userPermission == null)
+            throw new PermissionException("screenPermException", "Internal Order Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -152,7 +151,7 @@ public class InternalOrderScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && security.hasSelectPermission());
+                                     && userPermission.hasSelectPermission());
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -188,7 +187,7 @@ public class InternalOrderScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && security.hasAddPermission());
+                                     && userPermission.hasAddPermission());
                 if (event.getState() == State.ADD)
                     addButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -202,7 +201,7 @@ public class InternalOrderScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState())
-                                     && security.hasUpdatePermission());
+                                     && userPermission.hasUpdatePermission());
                 if (event.getState() == State.UPDATE)
                     updateButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -480,7 +479,7 @@ public class InternalOrderScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
                 enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                         security.hasSelectPermission();
+                         userPermission.hasSelectPermission();
                 atoz.enable(enable);
                 nav.enable(enable);
             }
@@ -588,7 +587,7 @@ public class InternalOrderScreen extends Screen {
         data = manager.getOrder();
         data.setStatusId(status_pending);
         data.setOrderedDate(now);
-        data.setRequestedBy(OpenELIS.security.getSystemUserName());
+        data.setRequestedBy(OpenELIS.getSystemUserPermission().getLoginName());
         data.setType(OrderManager.TYPE_INTERNAL);
 
         setState(State.ADD);
@@ -714,7 +713,7 @@ public class InternalOrderScreen extends Screen {
             data = manager.getOrder();
             data.setStatusId(status_pending);
             data.setOrderedDate(now);
-            data.setRequestedBy(OpenELIS.security.getSystemUserName());
+            data.setRequestedBy(OpenELIS.getSystemUserPermission().getLoginName());
             data.setType(OrderManager.TYPE_INTERNAL);           
             
             itemTab.setManager(manager);            

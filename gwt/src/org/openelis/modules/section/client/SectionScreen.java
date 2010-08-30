@@ -34,10 +34,10 @@ import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SectionDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.SecurityException;
-import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -51,7 +51,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -76,8 +75,8 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class SectionScreen extends Screen {
-    private SectionViewDO         data;
-    private SecurityModule        security;
+    private SectionViewDO    data;
+    private ModulePermission userPermission;
 
     private AutoComplete<Integer> parentName, organizationName;
     private TextBox               name, description;
@@ -87,16 +86,16 @@ public class SectionScreen extends Screen {
     protected MenuItem            history;
     private ButtonGroup           atoz;
     private ScreenNavigator       nav;
-    private ScreenService         organizationService;     
-    
-    public SectionScreen()  throws Exception {
+    private ScreenService         organizationService;
+
+    public SectionScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SectionDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.section.server.SectionService");
         organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
-        
-        security = OpenELIS.security.getModule("section");
-        if (security == null)
-            throw new SecurityException("screenPermException", "Section Screen");
+
+        userPermission = OpenELIS.getSystemUserPermission().getModule("section");
+        if (userPermission == null)
+            throw new PermissionException("screenPermException", "Section Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -107,16 +106,17 @@ public class SectionScreen extends Screen {
 
     /**
      * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred command.
+     * screen is attached to the browser. It is usually called in deferred
+     * command.
      */
     private void postConstructor() {
         data = new SectionViewDO();
-        
-        initialize(); 
+
+        initialize();
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
     }
-    
+
     private void initialize() {
         queryButton = (AppButton)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
@@ -125,8 +125,9 @@ public class SectionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && security.hasSelectPermission());
+                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                          .contains(event.getState()) &&
+                                   userPermission.hasSelectPermission());
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -161,8 +162,9 @@ public class SectionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && security.hasAddPermission());
+                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                        .contains(event.getState()) &&
+                                 userPermission.hasAddPermission());
                 if (event.getState() == State.ADD)
                     addButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -175,8 +177,8 @@ public class SectionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState())
-                                     && security.hasUpdatePermission());
+                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
+                                    userPermission.hasUpdatePermission());
                 if (event.getState() == State.UPDATE)
                     updateButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -189,7 +191,8 @@ public class SectionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                           .contains(event.getState()));
             }
         });
 
@@ -200,10 +203,11 @@ public class SectionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
             }
         });
-        
+
         history = (MenuItem)def.getWidget("sectionHistory");
         addScreenHandler(history, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -226,7 +230,8 @@ public class SectionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                name.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                name.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                   .contains(event.getState()));
                 name.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -242,7 +247,8 @@ public class SectionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                description.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                description.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
                 description.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -258,7 +264,8 @@ public class SectionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isExternal.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                isExternal.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                         .contains(event.getState()));
                 isExternal.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -266,8 +273,7 @@ public class SectionScreen extends Screen {
         organizationName = (AutoComplete)def.getWidget(SectionMeta.getOrganizationName());
         addScreenHandler(organizationName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                organizationName.setSelection(data.getOrganizationId(),
-                                  data.getOrganizationName());
+                organizationName.setSelection(data.getOrganizationId(), data.getOrganizationName());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -276,7 +282,8 @@ public class SectionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationName.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                organizationName.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                               .contains(event.getState()));
                 organizationName.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -284,8 +291,7 @@ public class SectionScreen extends Screen {
         parentName = (AutoComplete)def.getWidget(SectionMeta.getParentSectionName());
         addScreenHandler(parentName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                parentName.setSelection(data.getParentSectionId(),
-                                        data.getParentSectionName());
+                parentName.setSelection(data.getParentSectionId(), data.getParentSectionName());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -294,11 +300,12 @@ public class SectionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                parentName.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                parentName.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                         .contains(event.getState()));
                 parentName.setQueryMode(event.getState() == State.QUERY);
             }
-        });    
-        
+        });
+
         parentName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
@@ -313,9 +320,9 @@ public class SectionScreen extends Screen {
                 try {
                     list = service.callList("fetchByName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
-                    for (int i = 0; i < list.size(); i++ ) {                        
+                    for (int i = 0; i < list.size(); i++ ) {
                         data = list.get(i);
-                        model.add(new TableDataRow(data.getId(),data.getName()));
+                        model.add(new TableDataRow(data.getId(), data.getName()));
                     }
                     parentName.showAutoMatches(model);
                 } catch (Throwable e) {
@@ -325,7 +332,7 @@ public class SectionScreen extends Screen {
                 window.clearStatus();
             }
         });
-        
+
         organizationName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
@@ -339,7 +346,8 @@ public class SectionScreen extends Screen {
 
                 window.setBusy();
                 try {
-                    list = organizationService.callList("fetchByIdOrName", parser.getParameter().get(0));
+                    list = organizationService.callList("fetchByIdOrName", parser.getParameter()
+                                                                                 .get(0));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
@@ -361,7 +369,7 @@ public class SectionScreen extends Screen {
                 window.clearStatus();
             }
         });
-        
+
         //
         // left hand navigation panel
         //
@@ -382,8 +390,7 @@ public class SectionScreen extends Screen {
                         } else if (error instanceof LastPageException) {
                             window.setError(consts.get("noMoreRecordInDir"));
                         } else {
-                            Window.alert("Error: Section call query failed; " +
-                                         error.getMessage());
+                            Window.alert("Error: Section call query failed; " + error.getMessage());
                             window.setError(consts.get("queryFailed"));
                         }
                     }
@@ -408,13 +415,13 @@ public class SectionScreen extends Screen {
                 return model;
             }
         };
-        
+
         atoz = (ButtonGroup)def.getWidget("atozButtons");
         addScreenHandler(atoz, new ScreenEventHandler<Object>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
                 enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                         security.hasSelectPermission();
+                         userPermission.hasSelectPermission();
                 atoz.enable(enable);
                 nav.enable(enable);
             }
@@ -433,9 +440,9 @@ public class SectionScreen extends Screen {
                 nav.setQuery(query);
             }
         });
-        
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
@@ -443,7 +450,7 @@ public class SectionScreen extends Screen {
             }
         });
     }
-    
+
     /*
      * basic button methods
      */
@@ -467,7 +474,7 @@ public class SectionScreen extends Screen {
     protected void add() {
         data = new SectionViewDO();
         data.setIsExternal("N");
-        
+
         setState(State.ADD);
         DataChangeEvent.fire(this);
 
@@ -532,7 +539,7 @@ public class SectionScreen extends Screen {
                 Window.alert("commitUpdate(): " + e.getMessage());
                 window.clearStatus();
             }
-        } 
+        }
     }
 
     protected void abort() {
@@ -556,14 +563,14 @@ public class SectionScreen extends Screen {
                 fetchById(null);
             }
             window.setDone(consts.get("updateAborted"));
-        }  else {
+        } else {
             window.clearStatus();
         }
     }
-    
+
     protected void history() {
         IdNameVO hist;
-        
+
         hist = new IdNameVO(data.getId(), data.getName());
         HistoryScreen.showHistory(consts.get("sectionHistory"), ReferenceTable.SECTION, hist);
     }

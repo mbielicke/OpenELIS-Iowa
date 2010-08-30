@@ -41,8 +41,8 @@ import org.openelis.domain.InventoryReceiptViewDO;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.SecurityException;
-import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -89,7 +89,7 @@ import com.google.gwt.user.client.Window;
 
 public class BuildKitsScreen extends Screen {
     
-    private SecurityModule                        security;
+    private ModulePermission                      userPermission;
     private BuildKitsScreen                       screen;
     private InventoryTransferScreen               inventoryTransferScreen;
     private BuildKitManager                       manager;
@@ -112,9 +112,9 @@ public class BuildKitsScreen extends Screen {
         inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");
         storageService = new ScreenService("controller?service=org.openelis.modules.storage.server.StorageService");
         
-        security = OpenELIS.security.getModule("buildkits");
-        if (security == null)
-            throw new SecurityException("screenPermException", "Build Kits Screen");
+        userPermission = OpenELIS.getSystemUserPermission().getModule("buildkits");
+        if (userPermission == null)
+            throw new PermissionException("screenPermException", "Build Kits Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -155,7 +155,7 @@ public class BuildKitsScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && security.hasAddPermission());
+                                     && userPermission.hasAddPermission());
                 if (event.getState() == State.ADD)
                     addButton.setState(ButtonState.LOCK_PRESSED);
             }

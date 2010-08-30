@@ -18,8 +18,8 @@ import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.SecurityException;
-import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -103,7 +103,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
     private SampleManager        manager;
-    private SecurityModule       security, unrelease;
+    private ModulePermission     userPermission, unrelease;
 
     private EnvironmentalTab     environmentalTab;
     private PrivateWellTab       wellTab;
@@ -150,9 +150,10 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         super((ScreenDefInt)GWT.create(SampleTrackingDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.sampleTracking.server.SampleTrackingService");
 
-        security = OpenELIS.security.getModule("sampletracking");
-        if (security == null)
-            throw new SecurityException("screenPermException", "Sample Tracking Screen");
+        userPermission = OpenELIS.getSystemUserPermission().getModule("sampletracking");
+        unrelease = OpenELIS.getSystemUserPermission().getModule("sampleunrelease");
+        if (userPermission == null)
+            throw new PermissionException("screenPermException", "Sample Tracking Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -242,7 +243,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             public void onStateChange(StateChangeEvent<State> event) {
                 queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                           .contains(event.getState()) &&
-                                   security.hasSelectPermission());
+                                   userPermission.hasSelectPermission());
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -277,7 +278,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
-                                    security.hasUpdatePermission());
+                                    userPermission.hasUpdatePermission());
                 if (event.getState() == State.UPDATE)
                     updateButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -335,7 +336,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             }
         };
         
-        unrelease = OpenELIS.security.getModule("sampleunrelease");
         unreleaseSample = (MenuItem)def.getWidget("unreleaseSample");
         addScreenHandler(unreleaseSample, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {

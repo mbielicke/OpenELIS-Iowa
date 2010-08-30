@@ -36,10 +36,10 @@ import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.SecurityException;
-import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
@@ -104,7 +104,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
     protected Tabs                         tab;
     private Integer                        sampleLoggedInId, sampleErrorStatusId,
-                                           sampleReleasedId, userId;
+                                           sampleReleasedId;
 
     private SampleItemAnalysisTreeTab      treeTab;
     private EnvironmentalTab               environmentalTab;
@@ -135,22 +135,18 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
     protected TabPanel                     tabs;
 
     private ScreenNavigator                nav;
-    private SecurityModule                 security;
+    private ModulePermission               userPermission;
 
     private SampleEnvironmentalImportOrder envOrderImport;
     private SampleManager                  manager;
 
     public EnvironmentalSampleLoginScreen() throws Exception {
-        // Call base to get ScreenDef and draw screen
         super((ScreenDefInt)GWT.create(EnvironmentalSampleLoginDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.sample.server.SampleService");
 
-        security = OpenELIS.security.getModule("sampleenvironmental");
-
-        if (security == null)
-            throw new SecurityException("screenPermException", "Environmental Sample Login Screen");
-
-        userId = OpenELIS.security.getSystemUserId();
+        userPermission = OpenELIS.getSystemUserPermission().getModule("sampleenvironmental");
+        if (userPermission == null)
+            throw new PermissionException("screenPermException", "Environmental Sample Login Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -199,7 +195,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
             public void onStateChange(StateChangeEvent<State> event) {
                 if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                    security.hasSelectPermission())
+                    userPermission.hasSelectPermission())
                     queryButton.enable(true);
                 else if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
@@ -238,7 +234,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
             public void onStateChange(StateChangeEvent<State> event) {
                 if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                    security.hasAddPermission())
+                    userPermission.hasAddPermission())
                     addButton.enable(true);
                 else if (EnumSet.of(State.ADD).contains(event.getState()))
                     addButton.setState(ButtonState.LOCK_PRESSED);
@@ -255,7 +251,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
             public void onStateChange(StateChangeEvent<State> event) {
                 if (EnumSet.of(State.DISPLAY).contains(event.getState()) &&
-                    security.hasUpdatePermission())
+                    userPermission.hasUpdatePermission())
                     updateButton.enable(true);
                 else if (EnumSet.of(State.UPDATE).contains(event.getState()))
                     updateButton.setState(ButtonState.LOCK_PRESSED);
@@ -901,7 +897,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         try {
             manager.setDefaults();
 
-            manager.getSample().setReceivedById(userId);
+            manager.getSample().setReceivedById(OpenELIS.getSystemUserPermission().getSystemUserId());
             ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
                                                                     .setIsHazardous("N");
 

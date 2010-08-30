@@ -27,14 +27,14 @@ UIRF Software License are applicable instead of those above.
 
 <web-app>
  <display-name>OpenELIS Web Application v0.0</display-name>
- <description>Initial Development of OpenELIS Web Applciation</description>
+ <description>Initial Development of OpenELIS Web Application</description>
   
    <filter>
         <filter-name>Login Filter</filter-name>
-        <filter-class>org.openelis.server.JUnitFilter</filter-class>
+        <filter-class>org.openelis.server.HostedFilter</filter-class>
         <init-param>
             <param-name>AppRoot</param-name>
-            <param-value>/home/tschmidt/workspace/OpenELIS-GWT/war/openelis</param-value>
+            <param-value>workspace/OpenELIS-GWT/war/openelis</param-value>
         </init-param>
         <init-param>
             <param-name>User</param-name>

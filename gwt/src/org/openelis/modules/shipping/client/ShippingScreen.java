@@ -40,8 +40,8 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.SecurityException;
-import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.event.BeforeCloseEvent;
@@ -89,7 +89,7 @@ import com.google.gwt.user.client.ui.TabPanel;
 
 public class ShippingScreen extends Screen {
     private ShippingManager                manager;
-    private SecurityModule                 security;
+    private ModulePermission               userPermission;
 
     private ScreenNavigator                nav;
 
@@ -120,30 +120,31 @@ public class ShippingScreen extends Screen {
     
     public ShippingScreen() throws Exception {
         super((ScreenDefInt)GWT.create(ShippingDef.class));
-        init();
+
+        ShippingScreenImpl(true);
+    }
+
+    public ShippingScreen(ScreenWindow window) throws Exception {
+        super((ScreenDefInt)GWT.create(ShippingDef.class));
+        this.window = window;
+
+        ShippingScreenImpl(false);
+    }
+    
+    private void ShippingScreenImpl(boolean fromMenu) throws Exception {
+        service = new ScreenService("controller?service=org.openelis.modules.shipping.server.ShippingService");
+        organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");        
+        
+        userPermission = OpenELIS.getSystemUserPermission().getModule("shipping");
+        if (userPermission == null)
+            throw new PermissionException("screenPermException", "Shipping Screen");
+
+        openedFromMenu = fromMenu;
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                postConstructor();
             }
         });
-        openedFromMenu = true;
-    }
-
-    public ShippingScreen(ScreenWindow window) throws Exception {
-    	 super((ScreenDefInt)GWT.create(ShippingDef.class));
-    	 init();
-    	 this.window = window;
-    	 postConstructor();
-    	 openedFromMenu = false;
-    }
-    
-    private void init() throws Exception {
-        service = new ScreenService("controller?service=org.openelis.modules.shipping.server.ShippingService");
-        organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");        
-        
-        security = OpenELIS.security.getModule("shipping");
-        if (security == null)
-            throw new SecurityException("screenPermException", "Shipping Screen");
     }   
 
     /**
@@ -181,7 +182,7 @@ public class ShippingScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && security.hasSelectPermission());
+                                     && userPermission.hasSelectPermission());
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -217,7 +218,7 @@ public class ShippingScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && security.hasAddPermission());
+                                     && userPermission.hasAddPermission());
                 if (event.getState() == State.ADD)
                     addButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -231,7 +232,7 @@ public class ShippingScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState())
-                                     && security.hasUpdatePermission());
+                                     && userPermission.hasUpdatePermission());
                 if (event.getState() == State.UPDATE)
                     updateButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -832,7 +833,7 @@ public class ShippingScreen extends Screen {
         data = this.manager.getShipping();
         data.setStatusId(status_processed);
         data.setProcessedDate(now);
-        data.setProcessedBy(OpenELIS.security.getSystemUserName());
+        data.setProcessedBy(OpenELIS.getSystemUserPermission().getLoginName());
         
         setState(State.ADD);
         DataChangeEvent.fire(this);

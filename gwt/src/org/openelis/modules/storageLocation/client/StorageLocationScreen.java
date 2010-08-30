@@ -34,8 +34,8 @@ import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.SecurityException;
-import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -85,7 +85,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class StorageLocationScreen extends Screen {
     private StorageLocationManager manager;
-    private SecurityModule         security;
+    private ModulePermission       userPermission;
 
     private AutoComplete<Integer>  storageUnit, childStorageUnit;
     private TextBox                name, location;
@@ -104,9 +104,9 @@ public class StorageLocationScreen extends Screen {
         service = new ScreenService("controller?service=org.openelis.modules.storageLocation.server.StorageLocationService");
         storageUnitService = new ScreenService("controller?service=org.openelis.modules.storageunit.server.StorageUnitService");
 
-        security = OpenELIS.security.getModule("storagelocation");
-        if (security == null)
-            throw new SecurityException("screenPermException", "StorageLocation Screen");
+        userPermission = OpenELIS.getSystemUserPermission().getModule("storagelocation");
+        if (userPermission == null)
+            throw new PermissionException("screenPermException", "StorageLocation Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -144,7 +144,7 @@ public class StorageLocationScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                           .contains(event.getState()) &&
-                                   security.hasSelectPermission());
+                                   userPermission.hasSelectPermission());
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -181,7 +181,7 @@ public class StorageLocationScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                         .contains(event.getState()) &&
-                                 security.hasAddPermission());
+                                 userPermission.hasAddPermission());
                 if (event.getState() == State.ADD)
                     addButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -195,7 +195,7 @@ public class StorageLocationScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
-                                    security.hasUpdatePermission());
+                                    userPermission.hasUpdatePermission());
                 if (event.getState() == State.UPDATE)
                     updateButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -556,7 +556,7 @@ public class StorageLocationScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
                 enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                         security.hasSelectPermission();
+                         userPermission.hasSelectPermission();
                 atoz.enable(enable);
                 nav.enable(enable);
             }

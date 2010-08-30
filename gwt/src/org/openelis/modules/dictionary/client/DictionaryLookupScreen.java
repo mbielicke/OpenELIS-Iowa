@@ -28,6 +28,7 @@ package org.openelis.modules.dictionary.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -47,7 +48,6 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.meta.CategoryMeta;
-import org.openelis.utilcommon.DataBaseUtil;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;

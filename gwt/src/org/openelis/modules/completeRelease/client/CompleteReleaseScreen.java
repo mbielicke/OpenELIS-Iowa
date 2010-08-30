@@ -16,8 +16,8 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ReportProgress;
-import org.openelis.gwt.common.SecurityException;
-import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -103,10 +103,10 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
 
     protected CalendarLookUp         collectedDate, receivedDate;
 
-    private SecurityModule           security;
     protected AccessionNumberUtility accessionNumUtil;
     protected SampleHistoryUtility   historyUtility;
 
+    private ModulePermission         userPermission;
     private SampleManager            manager;
     private SampleDataBundle         dataBundle;
     private TabPanel                 sampleContent;
@@ -131,12 +131,11 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
 
     public CompleteReleaseScreen() throws Exception {
         super((ScreenDefInt)GWT.create(CompleteReleaseDef.class));
-        service = new ScreenService(
-                                    "controller?service=org.openelis.modules.completeRelease.server.CompleteReleaseService");
+        service = new ScreenService("controller?service=org.openelis.modules.completeRelease.server.CompleteReleaseService");
 
-        security = OpenELIS.security.getModule("samplecompleterelease");
-        if (security == null)
-            throw new SecurityException("screenPermException", "Complete and Release Screen");
+        userPermission = OpenELIS.getSystemUserPermission().getModule("samplecompleterelease");
+        if (userPermission == null)
+            throw new PermissionException("screenPermException", "Complete and Release Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -181,7 +180,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                    security.hasSelectPermission())
+                    userPermission.hasSelectPermission())
                     queryButton.enable(true);
                 else if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
@@ -198,7 +197,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 if (EnumSet.of(State.DISPLAY).contains(event.getState()) &&
-                    security.hasUpdatePermission())
+                    userPermission.hasUpdatePermission())
                     updateButton.enable(true);
                 else if (EnumSet.of(State.UPDATE).contains(event.getState()))
                     updateButton.setState(ButtonState.LOCK_PRESSED);

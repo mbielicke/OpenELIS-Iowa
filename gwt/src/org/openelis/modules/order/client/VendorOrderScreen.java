@@ -40,8 +40,8 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.SecurityException;
-import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -88,17 +88,18 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class VendorOrderScreen extends Screen {
 
-    private OrderManager      manager;
-    private SecurityModule    security;
-    
-    private ButtonGroup       atoz;
-    private ScreenNavigator   nav;
-    
-    private CalendarLookUp    orderedDate;
+    private OrderManager     manager;
+    private ModulePermission userPermission;
+
+    private ButtonGroup      atoz;
+    private ScreenNavigator  nav;
+
+    private CalendarLookUp   orderedDate;
     private Dropdown<Integer> statusId, costCenterId;
-    private TextBox           id, neededInDays,organizationAttention, organizationAddressMultipleUnit, 
-                              requestedBy, organizationAddressStreetAddress, organizationAddressCity,
-                              externalOrderNumber, organizationAddressState, organizationAddressZipCode;
+    private TextBox           id, neededInDays, organizationAttention,
+                    organizationAddressMultipleUnit, requestedBy, organizationAddressStreetAddress,
+                    organizationAddressCity, externalOrderNumber, organizationAddressState,
+                    organizationAddressZipCode;
     private ItemTab           itemTab;
     private FillTab           fillTab;
     private ShipNoteTab       shipNoteTab;
@@ -106,11 +107,11 @@ public class VendorOrderScreen extends Screen {
 
     private AutoComplete      organizationName;
     private AppButton         queryButton, previousButton, nextButton, addButton, updateButton,
-                              commitButton, abortButton;
+                    commitButton, abortButton;
     private MenuItem          duplicate, orderHistory, itemHistory;
     private TabPanel          tabPanel;
     private Integer           status_pending;
-    
+
     protected ScreenService   organizationService;
 
     private enum Tabs {
@@ -119,12 +120,14 @@ public class VendorOrderScreen extends Screen {
 
     public VendorOrderScreen() throws Exception {
         super((ScreenDefInt)GWT.create(VendorOrderDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
-        organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
-        
-        security = OpenELIS.security.getModule("vendororder");
-        if (security == null)
-            throw new SecurityException("screenPermException", "Vendor Order Screen");
+        service = new ScreenService(
+                                    "controller?service=org.openelis.modules.order.server.OrderService");
+        organizationService = new ScreenService(
+                                                "controller?service=org.openelis.modules.organization.server.OrganizationService");
+
+        userPermission = OpenELIS.getSystemUserPermission().getModule("vendororder");
+        if (userPermission == null)
+            throw new PermissionException("screenPermException", "Vendor Order Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -144,13 +147,13 @@ public class VendorOrderScreen extends Screen {
             Window.alert("OrderSreen: missing dictionary entry; " + e.getMessage());
             window.close();
         }
-        
+
         initialize();
         setState(State.DEFAULT);
         initializeDropdowns();
         DataChangeEvent.fire(this);
     }
-    
+
     private void initialize() {
         //
         // button panel buttons
@@ -162,8 +165,9 @@ public class VendorOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && security.hasSelectPermission());
+                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                          .contains(event.getState()) &&
+                                   userPermission.hasSelectPermission());
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -198,8 +202,9 @@ public class VendorOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && security.hasAddPermission());
+                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                        .contains(event.getState()) &&
+                                 userPermission.hasAddPermission());
                 if (event.getState() == State.ADD)
                     addButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -212,8 +217,8 @@ public class VendorOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState())
-                                     && security.hasUpdatePermission());
+                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
+                                    userPermission.hasUpdatePermission());
                 if (event.getState() == State.UPDATE)
                     updateButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -226,7 +231,8 @@ public class VendorOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                           .contains(event.getState()));
             }
         });
 
@@ -237,10 +243,11 @@ public class VendorOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
             }
         });
-        
+
         duplicate = (MenuItem)def.getWidget("duplicateRecord");
         addScreenHandler(duplicate, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -251,7 +258,7 @@ public class VendorOrderScreen extends Screen {
                 duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
-        
+
         orderHistory = (MenuItem)def.getWidget("orderHistory");
         addScreenHandler(orderHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -262,7 +269,7 @@ public class VendorOrderScreen extends Screen {
                 orderHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
-        
+
         itemHistory = (MenuItem)def.getWidget("itemHistory");
         addScreenHandler(itemHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -304,7 +311,8 @@ public class VendorOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                neededInDays.enable(EnumSet.of(State.QUERY,State.ADD, State.UPDATE).contains(event.getState()));
+                neededInDays.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                           .contains(event.getState()));
                 neededInDays.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -324,7 +332,7 @@ public class VendorOrderScreen extends Screen {
                 statusId.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
+
         organizationAttention = (TextBox)def.getWidget(OrderMeta.getOrganizationAttention());
         addScreenHandler(organizationAttention, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -336,7 +344,8 @@ public class VendorOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationAttention.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                organizationAttention.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                                    .contains(event.getState()));
                 organizationAttention.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -344,26 +353,26 @@ public class VendorOrderScreen extends Screen {
         organizationName = (AutoComplete)def.getWidget(OrderMeta.getOrganizationName());
         addScreenHandler(organizationName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                OrderViewDO data;                                    
-                
+                OrderViewDO data;
+
                 data = manager.getOrder();
                 if (data.getOrganization() != null) {
-                    organizationName.setSelection(data.getOrganizationId(),
-                                                  data.getOrganization().getName());
+                    organizationName.setSelection(data.getOrganizationId(), data.getOrganization()
+                                                                                .getName());
                 } else {
-                    organizationName.setSelection(null,"");
+                    organizationName.setSelection(null, "");
                 }
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 OrganizationDO data;
-                
-                if(organizationName.getSelection() != null) {
-                    data = (OrganizationDO) organizationName.getSelection().data;
-                    
+
+                if (organizationName.getSelection() != null) {
+                    data = (OrganizationDO)organizationName.getSelection().data;
+
                     manager.getOrder().setOrganizationId(data.getId());
                     manager.getOrder().setOrganization(data);
-                    
+
                     organizationAddressMultipleUnit.setValue(data.getAddress().getMultipleUnit());
                     organizationAddressStreetAddress.setValue(data.getAddress().getStreetAddress());
                     organizationAddressCity.setValue(data.getAddress().getCity());
@@ -372,7 +381,7 @@ public class VendorOrderScreen extends Screen {
                 } else {
                     manager.getOrder().setOrganizationId(null);
                     manager.getOrder().setOrganization(null);
-                    
+
                     organizationAddressMultipleUnit.setValue(null);
                     organizationAddressStreetAddress.setValue(null);
                     organizationAddressCity.setValue(null);
@@ -382,12 +391,12 @@ public class VendorOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationName.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                organizationName.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                               .contains(event.getState()));
                 organizationName.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
-        
+
         organizationName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
@@ -401,7 +410,8 @@ public class VendorOrderScreen extends Screen {
 
                 window.setBusy();
                 try {
-                    list = organizationService.callList("fetchByIdOrName", parser.getParameter().get(0));
+                    list = organizationService.callList("fetchByIdOrName", parser.getParameter()
+                                                                                 .get(0));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
@@ -412,9 +422,9 @@ public class VendorOrderScreen extends Screen {
                         row.cells.get(1).value = data.getAddress().getStreetAddress();
                         row.cells.get(2).value = data.getAddress().getCity();
                         row.cells.get(3).value = data.getAddress().getState();
-                        
+
                         row.data = data;
-                        
+
                         model.add(row);
                     }
                     organizationName.showAutoMatches(model);
@@ -423,11 +433,11 @@ public class VendorOrderScreen extends Screen {
                     Window.alert(e.getMessage());
                 }
                 window.clearStatus();
-                
+
             }
-            
+
         });
-        
+
         orderedDate = (CalendarLookUp)def.getWidget(OrderMeta.getOrderedDate());
         addScreenHandler(orderedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
@@ -439,7 +449,8 @@ public class VendorOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orderedDate.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                orderedDate.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
                 orderedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -448,11 +459,13 @@ public class VendorOrderScreen extends Screen {
         addScreenHandler(organizationAddressMultipleUnit, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 OrderViewDO data;
-                
+
                 data = manager.getOrder();
-                if (data.getOrganization() != null) 
-                    organizationAddressMultipleUnit.setValue(data.getOrganization().getAddress().getMultipleUnit());
-                else 
+                if (data.getOrganization() != null)
+                    organizationAddressMultipleUnit.setValue(data.getOrganization()
+                                                                 .getAddress()
+                                                                 .getMultipleUnit());
+                else
                     organizationAddressMultipleUnit.setValue(null);
             }
 
@@ -477,7 +490,8 @@ public class VendorOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                requestedBy.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                requestedBy.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
                 requestedBy.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -486,11 +500,13 @@ public class VendorOrderScreen extends Screen {
         addScreenHandler(organizationAddressStreetAddress, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 OrderViewDO data;
-                
+
                 data = manager.getOrder();
                 if (data.getOrganization() != null)
-                    organizationAddressStreetAddress.setValue(data.getOrganization().getAddress().getStreetAddress());
-                else 
+                    organizationAddressStreetAddress.setValue(data.getOrganization()
+                                                                  .getAddress()
+                                                                  .getStreetAddress());
+                else
                     organizationAddressStreetAddress.setValue(null);
             }
 
@@ -515,7 +531,8 @@ public class VendorOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                costCenterId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                costCenterId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                           .contains(event.getState()));
                 costCenterId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -524,16 +541,16 @@ public class VendorOrderScreen extends Screen {
         addScreenHandler(organizationAddressCity, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 OrderViewDO data;
-                
+
                 data = manager.getOrder();
                 if (data.getOrganization() != null)
                     organizationAddressCity.setValue(data.getOrganization().getAddress().getCity());
-                else 
+                else
                     organizationAddressCity.setValue(null);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-             // this is a read only and the value will not change
+                // this is a read only and the value will not change
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -544,8 +561,8 @@ public class VendorOrderScreen extends Screen {
 
         externalOrderNumber = (TextBox)def.getWidget(OrderMeta.getExternalOrderNumber());
         addScreenHandler(externalOrderNumber, new ScreenEventHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {                         
-                externalOrderNumber.setValue(manager.getOrder().getExternalOrderNumber());                
+            public void onDataChange(DataChangeEvent event) {
+                externalOrderNumber.setValue(manager.getOrder().getExternalOrderNumber());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -553,7 +570,8 @@ public class VendorOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                externalOrderNumber.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                externalOrderNumber.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                                  .contains(event.getState()));
                 externalOrderNumber.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -562,11 +580,13 @@ public class VendorOrderScreen extends Screen {
         addScreenHandler(organizationAddressState, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 OrderViewDO data;
-                
+
                 data = manager.getOrder();
                 if (data.getOrganization() != null)
-                    organizationAddressState.setValue(data.getOrganization().getAddress().getState());
-                else 
+                    organizationAddressState.setValue(data.getOrganization()
+                                                          .getAddress()
+                                                          .getState());
+                else
                     organizationAddressState.setValue(null);
             }
 
@@ -584,10 +604,12 @@ public class VendorOrderScreen extends Screen {
         addScreenHandler(organizationAddressZipCode, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 OrderViewDO data;
-                
+
                 data = manager.getOrder();
                 if (data.getOrganization() != null)
-                    organizationAddressZipCode.setValue(data.getOrganization().getAddress().getZipCode());
+                    organizationAddressZipCode.setValue(data.getOrganization()
+                                                            .getAddress()
+                                                            .getZipCode());
                 else
                     organizationAddressZipCode.setValue(null);
             }
@@ -654,7 +676,7 @@ public class VendorOrderScreen extends Screen {
                 shipNoteTab.setState(event.getState());
             }
         });
-        
+
         //
         // left hand navigation panel
         //
@@ -683,8 +705,7 @@ public class VendorOrderScreen extends Screen {
                         } else if (error instanceof LastPageException) {
                             window.setError("No more records in this direction");
                         } else {
-                            Window.alert("Error: Order call query failed; " +
-                                         error.getMessage());
+                            Window.alert("Error: Order call query failed; " + error.getMessage());
                             window.setError(consts.get("queryFailed"));
                         }
                     }
@@ -692,7 +713,7 @@ public class VendorOrderScreen extends Screen {
             }
 
             public boolean fetch(RPC entry) {
-                return fetchById((entry == null) ? null : ((IdNameVO)entry).getId());
+                return fetchById( (entry == null) ? null : ((IdNameVO)entry).getId());
             }
 
             public ArrayList<TableDataRow> getModel() {
@@ -715,7 +736,7 @@ public class VendorOrderScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
                 enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                         security.hasSelectPermission();
+                         userPermission.hasSelectPermission();
                 atoz.enable(enable);
                 nav.enable(enable);
             }
@@ -734,9 +755,9 @@ public class VendorOrderScreen extends Screen {
                 nav.setQuery(query);
             }
         });
-        
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
@@ -744,7 +765,7 @@ public class VendorOrderScreen extends Screen {
             }
         });
     }
-    
+
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         ArrayList<DictionaryDO> list;
@@ -754,7 +775,7 @@ public class VendorOrderScreen extends Screen {
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         list = DictionaryCache.getListByCategorySystemName("order_status");
-        for (DictionaryDO d : list) {         
+        for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
             model.add(row);
@@ -765,14 +786,14 @@ public class VendorOrderScreen extends Screen {
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         list = DictionaryCache.getListByCategorySystemName("cost_centers");
-        for (DictionaryDO d : list) {         
+        for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
             model.add(row);
         }
 
-        costCenterId.setModel(model);       
-        
+        costCenterId.setModel(model);
+
         try {
             status_pending = DictionaryCache.getIdFromSystemName("order_status_pending");
         } catch (Exception e) {
@@ -780,7 +801,7 @@ public class VendorOrderScreen extends Screen {
             window.close();
         }
     }
-    
+
     /*
      * basic button methods
      */
@@ -793,8 +814,8 @@ public class VendorOrderScreen extends Screen {
 
         // clear all the tabs
         itemTab.draw();
-        shipNoteTab.draw();   
-        
+        shipNoteTab.draw();
+
         setFocus(id);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
@@ -806,7 +827,7 @@ public class VendorOrderScreen extends Screen {
     protected void next() {
         nav.next();
     }
-    
+
     protected void add() {
         Datetime now;
         OrderViewDO data;
@@ -814,15 +835,15 @@ public class VendorOrderScreen extends Screen {
         try {
             now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
         } catch (Exception e) {
-            Window.alert("OrderAdd Datetime: " +e.getMessage());
+            Window.alert("OrderAdd Datetime: " + e.getMessage());
             return;
         }
-        
+
         manager = OrderManager.getInstance();
         data = manager.getOrder();
         data.setStatusId(status_pending);
         data.setOrderedDate(now);
-        data.setRequestedBy(OpenELIS.security.getSystemUserName());
+        data.setRequestedBy(OpenELIS.getSystemUserPermission().getLoginName());
         data.setType(OrderManager.TYPE_VENDOR);
 
         setState(State.ADD);
@@ -837,7 +858,7 @@ public class VendorOrderScreen extends Screen {
 
         try {
             manager = manager.fetchForUpdate();
-            if (! status_pending.equals(manager.getOrder().getStatusId())) {
+            if ( !status_pending.equals(manager.getOrder().getStatusId())) {
                 Window.alert(consts.get("orderStatusNotPendingForUpdate"));
                 manager = manager.abortUpdate();
             } else {
@@ -929,41 +950,41 @@ public class VendorOrderScreen extends Screen {
             window.clearStatus();
         }
     }
-    
+
     protected void duplicate() {
         Datetime now;
         OrderViewDO data;
-        
+
         try {
             manager = OrderManager.fetchById(manager.getOrder().getId());
 
             try {
                 now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
             } catch (Exception e) {
-                Window.alert("OrderAdd Datetime: " +e.getMessage());
+                Window.alert("OrderAdd Datetime: " + e.getMessage());
                 return;
             }
-            
+
             data = manager.getOrder();
             data.setStatusId(status_pending);
             data.setOrderedDate(now);
-            data.setRequestedBy(OpenELIS.security.getSystemUserName());
-            data.setType(OrderManager.TYPE_VENDOR);           
-            
-            itemTab.setManager(manager);            
-            //fillTab.setManager(manager);
+            data.setRequestedBy(OpenELIS.getSystemUserPermission().getLoginName());
+            data.setType(OrderManager.TYPE_VENDOR);
+
+            itemTab.setManager(manager);
+            // fillTab.setManager(manager);
             shipNoteTab.setManager(manager);
-            
+
             manager.getItems();
-            //manager.getFills();
-            manager.getShippingNotes();            
-            
+            // manager.getFills();
+            manager.getShippingNotes();
+
             clearKeys();
-            
+
             itemTab.draw();
-            //fillTab.draw();
+            // fillTab.draw();
             shipNoteTab.draw();
-            
+
             setState(State.ADD);
             DataChangeEvent.fire(this);
 
@@ -971,17 +992,16 @@ public class VendorOrderScreen extends Screen {
             window.setDone(consts.get("enterInformationPressCommit"));
         } catch (Exception e) {
             Window.alert(e.getMessage());
-        }                  
-    }   
+        }
+    }
 
     protected void orderHistory() {
         IdNameVO hist;
-        
+
         hist = new IdNameVO(manager.getOrder().getId(), manager.getOrder().getId().toString());
-        HistoryScreen.showHistory(consts.get("orderHistory"),
-                                  ReferenceTable.ORDER, hist);                
+        HistoryScreen.showHistory(consts.get("orderHistory"), ReferenceTable.ORDER, hist);
     }
-    
+
     protected void itemHistory() {
         int i, count;
         IdNameVO refVoList[];
@@ -1002,10 +1022,10 @@ public class VendorOrderScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("orderItemHistory"),
-                                  ReferenceTable.ORDER_ITEM, refVoList);
+        HistoryScreen.showHistory(consts.get("orderItemHistory"), ReferenceTable.ORDER_ITEM,
+                                  refVoList);
     }
-    
+
     protected boolean fetchById(Integer id) {
         if (id == null) {
             manager = OrderManager.getInstance();
@@ -1015,15 +1035,15 @@ public class VendorOrderScreen extends Screen {
             try {
                 switch (tab) {
                     case ITEM:
-                      manager = OrderManager.fetchWithItems(id);
-                      break;
+                        manager = OrderManager.fetchWithItems(id);
+                        break;
                     case FILL:
-                      manager = OrderManager.fetchWithFills(id);
-                      break;
-                    case SHIP_NOTE: 
-                      manager = OrderManager.fetchWithNotes(id);
-                      break;                        
-                        
+                        manager = OrderManager.fetchWithFills(id);
+                        break;
+                    case SHIP_NOTE:
+                        manager = OrderManager.fetchWithNotes(id);
+                        break;
+
                 }
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
@@ -1042,52 +1062,52 @@ public class VendorOrderScreen extends Screen {
 
         return true;
     }
-    
+
     private void drawTabs() {
         switch (tab) {
             case ITEM:
                 itemTab.draw();
-                break;  
+                break;
             case FILL:
                 fillTab.draw();
-                break;    
+                break;
             case SHIP_NOTE:
                 shipNoteTab.draw();
-                break;   
+                break;
         }
     }
-    
+
     private void clearKeys() {
         OrderItemManager iman;
         OrderItemViewDO item;
         NoteViewDO note;
         NoteManager nman;
         int i, count;
-        
+
         manager.getOrder().setId(null);
-        
+
         try {
             iman = manager.getItems();
             count = iman.count();
-            
-            for(i = 0; i < count; i++) {
+
+            for (i = 0; i < count; i++ ) {
                 item = iman.getItemAt(i);
                 item.setId(null);
                 item.setOrderId(null);
-            } 
-            
+            }
+
             nman = manager.getShippingNotes();
             count = nman.count();
-            
-            for(i = 0; i < count; i++) {
+
+            for (i = 0; i < count; i++ ) {
                 note = nman.getNoteAt(i);
                 note.setId(null);
                 note.setReferenceId(null);
                 note.setReferenceTableId(null);
-            } 
+            }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
-        }      
+        }
     }
 }

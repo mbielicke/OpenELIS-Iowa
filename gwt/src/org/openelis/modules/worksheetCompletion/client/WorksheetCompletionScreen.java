@@ -28,16 +28,6 @@ package org.openelis.modules.worksheetCompletion.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.TabPanel;
-
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.domain.AnalysisViewDO;
@@ -46,17 +36,17 @@ import org.openelis.domain.InstrumentViewDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SectionDO;
-import org.openelis.domain.SecuritySystemUserDO;
 import org.openelis.domain.WorksheetAnalysisDO;
-import org.openelis.domain.WorksheetResultViewDO;
-import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.domain.WorksheetItemDO;
+import org.openelis.domain.WorksheetQcResultViewDO;
+import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.SecurityException;
-import org.openelis.gwt.common.SecurityModule;
-import org.openelis.gwt.common.SecuritySection;
+import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.SectionPermission;
+import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -98,13 +88,23 @@ import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.note.client.NotesTab;
 import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.TabPanel;
+
 public class WorksheetCompletionScreen extends Screen {
 
     private boolean              closeWindow, isPopup;
     private Integer              formatBatch, formatTotal;
     private ArrayList<SectionDO> sections;
     private ScreenService        instrumentService, userService;
-    private SecurityModule       security;
+    private ModulePermission     userPermission;
     private WorksheetManager     manager;
 
     private AppButton   lookupWorksheetButton, printButton, updateButton, commitButton,
@@ -144,9 +144,9 @@ public class WorksheetCompletionScreen extends Screen {
         instrumentService = new ScreenService("OpenELISServlet?service=org.openelis.modules.instrument.server.InstrumentService");
         userService       = new ScreenService("controller?service=org.openelis.server.SystemUserService");
 
-        security = OpenELIS.security.getModule("worksheet");
-        if (security == null)
-            throw new SecurityException("screenPermException", "Worksheet Completion Screen");
+        userPermission = OpenELIS.getSystemUserPermission().getModule("worksheet");
+        if (userPermission == null)
+            throw new PermissionException("screenPermException", "Worksheet Completion Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -207,7 +207,7 @@ public class WorksheetCompletionScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
-                                    security.hasUpdatePermission() &&
+                                    userPermission.hasUpdatePermission() &&
                                     canEditAny());
                 if (event.getState() == State.UPDATE)
                     updateButton.setState(ButtonState.LOCK_PRESSED);
@@ -342,16 +342,16 @@ public class WorksheetCompletionScreen extends Screen {
         defaultUser.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
-                ArrayList<SecuritySystemUserDO> users;
+                ArrayList<SystemUserVO> users;
                 ArrayList<TableDataRow> model;
                 
                 parser = new QueryFieldUtil();
                 parser.parse(event.getMatch());
 
                 try {
-                    users = userService.callList("fetchByLogin", parser.getParameter().get(0));
+                    users = userService.callList("fetchByLoginName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
-                    for (SecuritySystemUserDO user : users)
+                    for (SystemUserVO user : users)
                         model.add(new TableDataRow(user.getId(), user.getLoginName()));
                     defaultUser.showAutoMatches(model);
                 } catch (Exception e) {
@@ -912,7 +912,7 @@ public class WorksheetCompletionScreen extends Screen {
     private boolean canEditAny() {
         int             i;
         SectionDO       section;
-        SecuritySection secSection;
+        SectionPermission secSection;
 /*        
         for (i = 0; i < sections.size(); i++) {
             section = sections.get(i);

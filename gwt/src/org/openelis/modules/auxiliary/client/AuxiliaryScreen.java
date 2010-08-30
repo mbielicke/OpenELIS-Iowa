@@ -37,16 +37,17 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.GridFieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.LocalizedException;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.SecurityException;
-import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
@@ -100,7 +101,6 @@ import org.openelis.meta.CategoryMeta;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
-import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utilcommon.ResultRangeNumeric;
 
 import com.google.gwt.core.client.GWT;
@@ -115,7 +115,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class AuxiliaryScreen extends Screen {
     private AuxFieldGroupManager               manager;
-    private SecurityModule                     security;
+    private ModulePermission                   userPermission;
 
     private ButtonGroup                        atoz;
     private ScreenNavigator                    nav; 
@@ -146,9 +146,9 @@ public class AuxiliaryScreen extends Screen {
         analyteService = new ScreenService("controller?service=org.openelis.modules.analyte.server.AnalyteService");
         dictionaryService = new ScreenService("controller?service=org.openelis.modules.dictionary.server.DictionaryService");
         
-        security = OpenELIS.security.getModule("auxiliary");
-        if (security == null)
-            throw new SecurityException("screenPermException", "Auxiliary Screen");
+        userPermission = OpenELIS.getSystemUserPermission().getModule("auxiliary");
+        if (userPermission == null)
+            throw new PermissionException("screenPermException", "Auxiliary Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -185,7 +185,7 @@ public class AuxiliaryScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                           .contains(event.getState()) &&
-                                   security.hasSelectPermission());
+                                   userPermission.hasSelectPermission());
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -222,7 +222,7 @@ public class AuxiliaryScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                         .contains(event.getState()) &&
-                                 security.hasAddPermission());
+                                 userPermission.hasAddPermission());
                 if (event.getState() == State.ADD)
                     addButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -236,7 +236,7 @@ public class AuxiliaryScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
-                                    security.hasUpdatePermission());
+                                    userPermission.hasUpdatePermission());
                 if (event.getState() == State.UPDATE)
                     updateButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -926,7 +926,7 @@ public class AuxiliaryScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
                 enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                         security.hasSelectPermission();
+                         userPermission.hasSelectPermission();
                 atoz.enable(enable);
                 nav.enable(enable);
             }

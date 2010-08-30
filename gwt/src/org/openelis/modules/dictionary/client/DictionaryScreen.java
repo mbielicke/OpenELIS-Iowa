@@ -36,11 +36,12 @@ import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SectionDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.SecurityException;
-import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -89,7 +90,6 @@ import org.openelis.manager.DictionaryManager;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
-import org.openelis.utilcommon.DataBaseUtil;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -101,13 +101,13 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class DictionaryScreen extends Screen {
     private CategoryManager       manager;
-    private SecurityModule        security;
+    private ModulePermission      userPermission;
 
-    private DictionaryScreen      screen; 
+    private DictionaryScreen      screen;
     private DictionaryComparator  comparator;
     private TextBox               name, description, systemName;
     private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
-                                  commitButton, abortButton, removeEntryButton, addEntryButton;
+                    commitButton, abortButton, removeEntryButton, addEntryButton;
     protected MenuItem            dictionaryHistory, categoryHistory;
     private Dropdown<Integer>     sectionId;
     private AutoComplete<Integer> relatedEntry;
@@ -116,50 +116,14 @@ public class DictionaryScreen extends Screen {
     private ButtonGroup           atoz;
     private ScreenNavigator       nav;
 
-    private class DictionaryComparator implements Comparator<DictionaryViewDO> {
-        boolean ascending;
-
-        public void setSortAscending(boolean ascending) {
-            this.ascending = ascending;
-        }
-
-        public int compare(DictionaryViewDO data1, DictionaryViewDO data2) {
-            String entry1, entry2;
-
-            entry1 = data1.getEntry();
-            entry2 = data2.getEntry();            
-            
-            if(ascending) {
-                return compare(entry1, entry2);
-            } else {
-                return (compare(entry1, entry2) * -1);
-            }
-        }
-        
-        private int compare(String entry1, String entry2) {
-            if(DataBaseUtil.isEmpty(entry1)) {
-                if (DataBaseUtil.isEmpty(entry2))
-                    return 0;
-                else
-                    return 1;
-            } else {
-                if(DataBaseUtil.isEmpty(entry2))
-                    return -1;          
-                else 
-                    return entry1.compareTo(entry2);
-            }
-        }
-
-    }
-    
     public DictionaryScreen() throws Exception {
         super((ScreenDefInt)GWT.create(DictionaryDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.dictionary.server.DictionaryService");
+        service = new ScreenService(
+                                    "controller?service=org.openelis.modules.dictionary.server.DictionaryService");
 
-        security = OpenELIS.security.getModule("dictionary");
-        if (security == null)
-            throw new SecurityException("screenPermException", "Dictionary Screen");
-
+        userPermission = OpenELIS.getSystemUserPermission().getModule("dictionary");
+        if (userPermission == null)
+            throw new PermissionException("screenPermException", "Dictionary Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -182,9 +146,9 @@ public class DictionaryScreen extends Screen {
         DataChangeEvent.fire(this);
     }
 
-    private void initialize() {        
-        screen = this; 
-        
+    private void initialize() {
+        screen = this;
+
         queryButton = (AppButton)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -194,7 +158,7 @@ public class DictionaryScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                           .contains(event.getState()) &&
-                                   security.hasSelectPermission());
+                                   userPermission.hasSelectPermission());
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -231,7 +195,7 @@ public class DictionaryScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                         .contains(event.getState()) &&
-                                 security.hasAddPermission());
+                                 userPermission.hasAddPermission());
                 if (event.getState() == State.ADD)
                     addButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -245,7 +209,7 @@ public class DictionaryScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
-                                    security.hasUpdatePermission());
+                                    userPermission.hasUpdatePermission());
                 if (event.getState() == State.UPDATE)
                     updateButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -274,7 +238,7 @@ public class DictionaryScreen extends Screen {
                                           .contains(event.getState()));
             }
         });
-        
+
         categoryHistory = (MenuItem)def.getWidget("categoryHistory");
         addScreenHandler(categoryHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -285,7 +249,7 @@ public class DictionaryScreen extends Screen {
                 categoryHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
-        
+
         dictionaryHistory = (MenuItem)def.getWidget("dictionaryHistory");
         addScreenHandler(dictionaryHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -385,8 +349,7 @@ public class DictionaryScreen extends Screen {
         });
 
         dictTable = (TableWidget)def.getWidget("dictEntTable");
-        relatedEntry = (AutoComplete<Integer>)dictTable.getColumnWidget(
-                           CategoryMeta.getDictionaryRelatedEntryEntry());
+        relatedEntry = (AutoComplete<Integer>)dictTable.getColumnWidget(CategoryMeta.getDictionaryRelatedEntryEntry());
         addScreenHandler(dictTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
                 if (state != State.QUERY)
@@ -395,7 +358,7 @@ public class DictionaryScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
-                
+
                 dictTable.enable(true);
                 dictTable.setQueryMode(event.getState() == State.QUERY);
 
@@ -404,12 +367,12 @@ public class DictionaryScreen extends Screen {
                 dictTable.enableDrop(enable);
             }
         });
-        
+
         dictTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
-            public void onBeforeCellEdited(BeforeCellEditedEvent event) {                
-                if(state != State.ADD && state != State.UPDATE && state != State.QUERY)  
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                if (state != State.ADD && state != State.UPDATE && state != State.QUERY)
                     event.cancel();
-            }            
+            }
         });
 
         dictTable.addCellEditedHandler(new CellEditedHandler() {
@@ -421,7 +384,7 @@ public class DictionaryScreen extends Screen {
 
                 r = event.getRow();
                 c = event.getCol();
-                val = dictTable.getObject(r,c);
+                val = dictTable.getObject(r, c);
 
                 try {
                     data = manager.getEntries().getEntryAt(r);
@@ -483,71 +446,71 @@ public class DictionaryScreen extends Screen {
                 }
             }
         });
-        
-        dictTable.addSortHandler(new SortHandler(){
+
+        dictTable.addSortHandler(new SortHandler() {
             public void onSort(SortEvent event) {
                 SortDirection direction;
-                
+
                 direction = event.getDirection();
-                
+
                 try {
-                    if(direction == SortEvent.SortDirection.ASCENDING)
-                        sort(manager.getEntries().getEntries(),true);
-                    else 
-                        sort(manager.getEntries().getEntries(),false);
-                    
+                    if (direction == SortEvent.SortDirection.ASCENDING)
+                        sort(manager.getEntries().getEntries(), true);
+                    else
+                        sort(manager.getEntries().getEntries(), false);
+
                     DataChangeEvent.fire(screen, dictTable);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
-            }            
+            }
         });
-        
+
         dictTable.addRowMovedHandler(new RowMovedHandler() {
             public void onRowMoved(RowMovedEvent event) {
                 try {
                     manager.getEntries().moveEntry(event.getOldIndex(), event.getNewIndex());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
-                }                
-            }            
+                }
+            }
         });
-        
+
         dictTable.enableDrag(true);
         dictTable.enableDrop(true);
         dictTable.addTarget(dictTable);
-        
-        dictTable.addBeforeDragStartHandler(new BeforeDragStartHandler<TableRow>(){
+
+        dictTable.addBeforeDragStartHandler(new BeforeDragStartHandler<TableRow>() {
             public void onBeforeDragStart(BeforeDragStartEvent<TableRow> event) {
                 TableDataRow row;
                 Label label;
                 String value;
-                
+
                 try {
                     row = event.getDragObject().row;
                     value = (String)row.cells.get(3).value;
-                    if(value == null)
+                    if (value == null)
                         value = "";
                     label = new Label(value);
                     label.setStyleName("ScreenLabel");
                     label.setWordWrap(false);
                     event.setProxy(label);
-                } catch(Exception e){
-                    Window.alert("table beforeDragStart: "+e.getMessage());
+                } catch (Exception e) {
+                    Window.alert("table beforeDragStart: " + e.getMessage());
                 }
             }
-            
+
         });
-                
+
         relatedEntry.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
                 ArrayList<TableDataRow> model;
                 ArrayList<DictionaryDO> list;
-    
+
                 parser = new QueryFieldUtil();
                 parser.parse(event.getMatch());
-    
+
                 try {
                     list = service.callList("fetchByEntry", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
@@ -564,19 +527,19 @@ public class DictionaryScreen extends Screen {
         addScreenHandler(removeEntryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int r;
-                
-                r = dictTable.getSelectedRow();                
+
+                r = dictTable.getSelectedRow();
                 try {
                     if (r > -1 && dictTable.numRows() > 0) {
-                        window.setBusy(consts.get("validatingDelete"));        
+                        window.setBusy(consts.get("validatingDelete"));
                         validateForDelete(manager.getEntries().getEntryAt(r));
-                        dictTable.deleteRow(r);                        
+                        dictTable.deleteRow(r);
                     }
-                } catch(ValidationErrorsList e) {
+                } catch (ValidationErrorsList e) {
                     Window.alert(consts.get("dictionaryDeleteException"));
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
-                    e.printStackTrace();                   
+                    e.printStackTrace();
                 }
                 window.clearStatus();
             }
@@ -634,7 +597,7 @@ public class DictionaryScreen extends Screen {
             }
 
             public boolean fetch(RPC entry) {
-                return fetchByCategoryId((entry == null) ? null : ((IdNameVO)entry).getId());
+                return fetchByCategoryId( (entry == null) ? null : ((IdNameVO)entry).getId());
             }
 
             public ArrayList<TableDataRow> getModel() {
@@ -656,7 +619,7 @@ public class DictionaryScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
                 enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                         security.hasSelectPermission();
+                         userPermission.hasSelectPermission();
                 atoz.enable(enable);
                 nav.enable(enable);
             }
@@ -675,9 +638,9 @@ public class DictionaryScreen extends Screen {
                 nav.setQuery(query);
             }
         });
-        
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
@@ -685,7 +648,7 @@ public class DictionaryScreen extends Screen {
             }
         });
     }
-    
+
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         ArrayList<SectionDO> list;
@@ -701,10 +664,10 @@ public class DictionaryScreen extends Screen {
 
     protected void query() {
         manager = CategoryManager.getInstance();
-        
+
         setState(State.QUERY);
         DataChangeEvent.fire(this);
-        
+
         setFocus(name);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
@@ -720,7 +683,7 @@ public class DictionaryScreen extends Screen {
     protected void add() {
         manager = CategoryManager.getInstance();
         manager.getCategory().setIsSystem("N");
-        
+
         setState(State.ADD);
         DataChangeEvent.fire(this);
 
@@ -813,14 +776,14 @@ public class DictionaryScreen extends Screen {
             window.clearStatus();
         }
     }
-    
+
     protected void categoryHistory() {
         IdNameVO hist;
-        
+
         hist = new IdNameVO(manager.getCategory().getId(), manager.getCategory().getName());
-        HistoryScreen.showHistory(consts.get("categoryHistory"), ReferenceTable.CATEGORY, hist);        
+        HistoryScreen.showHistory(consts.get("categoryHistory"), ReferenceTable.CATEGORY, hist);
     }
-    
+
     protected void dictionaryHistory() {
         int count;
         IdNameVO list[];
@@ -866,9 +829,9 @@ public class DictionaryScreen extends Screen {
 
         return true;
     }
-    
-    private void sort(ArrayList<DictionaryViewDO> list, boolean ascending) {       
-        if(comparator == null)
+
+    private void sort(ArrayList<DictionaryViewDO> list, boolean ascending) {
+        if (comparator == null)
             comparator = new DictionaryComparator();
         comparator.setSortAscending(ascending);
         Collections.sort(list, comparator);
@@ -886,11 +849,10 @@ public class DictionaryScreen extends Screen {
         try {
             for (int i = 0; i < manager.getEntries().count(); i++ ) {
                 data = manager.getEntries().getEntryAt(i);
-                row  = new TableDataRow(data.getId(), data.getIsActive(),
-                              data.getSystemName(), data.getLocalAbbrev(),
-                              data.getEntry(),
-                              new TableDataRow(data.getRelatedEntryId(),
-                                               data.getRelatedEntryName()));
+                row = new TableDataRow(data.getId(), data.getIsActive(), data.getSystemName(),
+                                       data.getLocalAbbrev(), data.getEntry(),
+                                       new TableDataRow(data.getRelatedEntryId(),
+                                                        data.getRelatedEntryName()));
                 row.data = data.getCategoryId();
                 model.add(row);
             }
@@ -899,11 +861,50 @@ public class DictionaryScreen extends Screen {
             e.printStackTrace();
         }
         return model;
-    }    
-    
-    private void validateForDelete(DictionaryViewDO data) throws Exception{        
-        if(data.getId() == null)
-            return;                           
-        service.call("validateForDelete", data);            
+    }
+
+    private void validateForDelete(DictionaryViewDO data) throws Exception {
+        if (data.getId() == null)
+            return;
+        service.call("validateForDelete", data);
+    }
+
+    //
+    // Sort for table
+    //
+    private class DictionaryComparator implements Comparator<DictionaryViewDO> {
+        boolean ascending;
+
+        public void setSortAscending(boolean ascending) {
+            this.ascending = ascending;
+        }
+
+        public int compare(DictionaryViewDO data1, DictionaryViewDO data2) {
+            String entry1, entry2;
+
+            entry1 = data1.getEntry();
+            entry2 = data2.getEntry();
+
+            if (ascending) {
+                return compare(entry1, entry2);
+            } else {
+                return (compare(entry1, entry2) * -1);
+            }
+        }
+
+        private int compare(String entry1, String entry2) {
+            if (DataBaseUtil.isEmpty(entry1)) {
+                if (DataBaseUtil.isEmpty(entry2))
+                    return 0;
+                else
+                    return 1;
+            } else {
+                if (DataBaseUtil.isEmpty(entry2))
+                    return -1;
+                else
+                    return entry1.compareTo(entry2);
+            }
+        }
+
     }
 }

@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.order.client;
 
 import java.util.ArrayList;
@@ -41,10 +41,10 @@ import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.SecurityException;
-import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -96,7 +96,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class SendoutOrderScreen extends Screen {
 
     private OrderManager          manager;
-    private SecurityModule        security;
+    private ModulePermission      userPermission;
 
     private ButtonGroup           atoz;
     private ScreenNavigator       nav;
@@ -111,11 +111,12 @@ public class SendoutOrderScreen extends Screen {
     private Tabs                  tab;
 
     private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
-                                  commitButton, abortButton;
-    private MenuItem              duplicate, orderHistory, itemHistory, testHistory, containerHistory;
-    private TextBox               id, neededInDays, requestedBy, organizationAttention,organizationAddressMultipleUnit,
-                                  organizationAddressStreetAddress, organizationAddressCity,
-                                  organizationAddressState, organizationAddressZipCode;
+                    commitButton, abortButton;
+    private MenuItem              duplicate, orderHistory, itemHistory, testHistory,
+                    containerHistory;
+    private TextBox               id, neededInDays, requestedBy, organizationAttention,
+                    organizationAddressMultipleUnit, organizationAddressStreetAddress,
+                    organizationAddressCity, organizationAddressState, organizationAddressZipCode;
     private CalendarLookUp        orderedDate;
     private Dropdown<Integer>     statusId, shipFromId, costCenterId;
     private AutoComplete<Integer> organizationName;
@@ -123,40 +124,42 @@ public class SendoutOrderScreen extends Screen {
     private TabPanel              tabPanel;
     private Integer               status_pending;
     private String                descQuery;
-    
+
     protected ScreenService       userService, organizationService;
 
     private enum Tabs {
         ITEM, FILL, SHIP_NOTE, CUSTOMER_NOTE, REPORT_TO, CONTAINER, AUX_DATA
     };
-    
-    
+
     public SendoutOrderScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SendoutOrderDef.class));
-        init();
+
+        SendoutOrderScreenImpl();
+    }
+
+    public SendoutOrderScreen(ScreenWindow window) throws Exception {
+        super((ScreenDefInt)GWT.create(SendoutOrderDef.class));
+        this.window = window;
+
+        SendoutOrderScreenImpl();
+    }
+
+    private void SendoutOrderScreenImpl() throws Exception {
+        service = new ScreenService(
+                                    "controller?service=org.openelis.modules.order.server.OrderService");
+        userService = new ScreenService("controller?service=org.openelis.server.SystemUserService");
+        organizationService = new ScreenService(
+                                                "controller?service=org.openelis.modules.organization.server.OrganizationService");
+
+        userPermission = OpenELIS.getSystemUserPermission().getModule("sendoutorder");
+        if (userPermission == null)
+            throw new PermissionException("screenPermException", "Send-out Order Screen");
+
         DeferredCommand.addCommand(new Command() {
             public void execute() {
-               postConstructor();
+                postConstructor();
             }
         });
-    }    
-
-    public SendoutOrderScreen(ScreenWindow window) throws Exception{
-        super((ScreenDefInt)GWT.create(SendoutOrderDef.class));
-        init();
-        this.window = window;        
-        postConstructor();
-    }
-    
-    private void init() throws Exception {
-        service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
-        userService = new ScreenService("controller?service=org.openelis.server.SystemUserService");
-        organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
-
-        security = OpenELIS.security.getModule("sendoutorder");
-        if (security == null)
-            throw new SecurityException("screenPermException", "Send-out Order Screen");
-        
     }
 
     private void postConstructor() {
@@ -166,13 +169,13 @@ public class SendoutOrderScreen extends Screen {
         try {
             DictionaryCache.preloadByCategorySystemNames("order_status", "cost_centers",
                                                          "inventory_store", "inventory_unit",
-                                                         "order_ship_from","sample_container",
+                                                         "order_ship_from", "sample_container",
                                                          "type_of_sample");
         } catch (Exception e) {
             Window.alert("OrderSreen: missing dictionary entry; " + e.getMessage());
             window.close();
         }
-        
+
         initialize();
         setState(State.DEFAULT);
         initializeDropdowns();
@@ -190,8 +193,9 @@ public class SendoutOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && security.hasSelectPermission());
+                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                          .contains(event.getState()) &&
+                                   userPermission.hasSelectPermission());
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -226,8 +230,9 @@ public class SendoutOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && security.hasAddPermission());
+                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                        .contains(event.getState()) &&
+                                 userPermission.hasAddPermission());
                 if (event.getState() == State.ADD)
                     addButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -240,8 +245,8 @@ public class SendoutOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState())
-                                     && security.hasUpdatePermission());
+                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
+                                    userPermission.hasUpdatePermission());
                 if (event.getState() == State.UPDATE)
                     updateButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -254,7 +259,8 @@ public class SendoutOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                           .contains(event.getState()));
             }
         });
 
@@ -265,17 +271,18 @@ public class SendoutOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
             }
         });
-        
+
         duplicate = (MenuItem)def.getWidget("duplicateRecord");
         addScreenHandler(duplicate, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 duplicate();
             }
 
-               public void onStateChange(StateChangeEvent<State> event) {
+            public void onStateChange(StateChangeEvent<State> event) {
                 duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
@@ -290,7 +297,7 @@ public class SendoutOrderScreen extends Screen {
                 orderHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
-        
+
         itemHistory = (MenuItem)def.getWidget("itemHistory");
         addScreenHandler(itemHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -301,7 +308,7 @@ public class SendoutOrderScreen extends Screen {
                 itemHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
-        
+
         testHistory = (MenuItem)def.getWidget("testHistory");
         addScreenHandler(testHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -312,7 +319,7 @@ public class SendoutOrderScreen extends Screen {
                 testHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
-        
+
         containerHistory = (MenuItem)def.getWidget("containerHistory");
         addScreenHandler(containerHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -354,7 +361,8 @@ public class SendoutOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                neededInDays.enable(EnumSet.of(State.QUERY,State.ADD, State.UPDATE).contains(event.getState()));
+                neededInDays.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                           .contains(event.getState()));
                 neededInDays.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -370,11 +378,12 @@ public class SendoutOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                shipFromId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                shipFromId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                         .contains(event.getState()));
                 shipFromId.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
+
         organizationAttention = (TextBox)def.getWidget(OrderMeta.getOrganizationAttention());
         addScreenHandler(organizationAttention, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -386,7 +395,8 @@ public class SendoutOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationAttention.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                organizationAttention.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                                    .contains(event.getState()));
                 organizationAttention.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -394,26 +404,26 @@ public class SendoutOrderScreen extends Screen {
         organizationName = (AutoComplete)def.getWidget(OrderMeta.getOrganizationName());
         addScreenHandler(organizationName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                OrderViewDO data;                                    
-                
+                OrderViewDO data;
+
                 data = manager.getOrder();
                 if (data.getOrganization() != null) {
-                    organizationName.setSelection(data.getOrganizationId(),
-                                                  data.getOrganization().getName());
+                    organizationName.setSelection(data.getOrganizationId(), data.getOrganization()
+                                                                                .getName());
                 } else {
-                    organizationName.setSelection(null,"");
+                    organizationName.setSelection(null, "");
                 }
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 OrganizationDO data;
-                
-                if(organizationName.getSelection() != null) {
-                    data = (OrganizationDO) organizationName.getSelection().data;
-                    
+
+                if (organizationName.getSelection() != null) {
+                    data = (OrganizationDO)organizationName.getSelection().data;
+
                     manager.getOrder().setOrganizationId(data.getId());
                     manager.getOrder().setOrganization(data);
-                    
+
                     organizationAddressMultipleUnit.setValue(data.getAddress().getMultipleUnit());
                     organizationAddressStreetAddress.setValue(data.getAddress().getStreetAddress());
                     organizationAddressCity.setValue(data.getAddress().getCity());
@@ -422,7 +432,7 @@ public class SendoutOrderScreen extends Screen {
                 } else {
                     manager.getOrder().setOrganizationId(null);
                     manager.getOrder().setOrganization(null);
-                    
+
                     organizationAddressMultipleUnit.setValue(null);
                     organizationAddressStreetAddress.setValue(null);
                     organizationAddressCity.setValue(null);
@@ -432,12 +442,12 @@ public class SendoutOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationName.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                organizationName.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                               .contains(event.getState()));
                 organizationName.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
-        
+
         organizationName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
@@ -451,7 +461,8 @@ public class SendoutOrderScreen extends Screen {
 
                 window.setBusy();
                 try {
-                    list = organizationService.callList("fetchByIdOrName", parser.getParameter().get(0));
+                    list = organizationService.callList("fetchByIdOrName", parser.getParameter()
+                                                                                 .get(0));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
@@ -462,9 +473,9 @@ public class SendoutOrderScreen extends Screen {
                         row.cells.get(1).value = data.getAddress().getStreetAddress();
                         row.cells.get(2).value = data.getAddress().getCity();
                         row.cells.get(3).value = data.getAddress().getState();
-                        
+
                         row.data = data;
-                        
+
                         model.add(row);
                     }
                     organizationName.showAutoMatches(model);
@@ -473,9 +484,9 @@ public class SendoutOrderScreen extends Screen {
                     Window.alert(e.getMessage());
                 }
                 window.clearStatus();
-                
+
             }
-            
+
         });
 
         statusId = (Dropdown)def.getWidget(OrderMeta.getStatusId());
@@ -498,11 +509,13 @@ public class SendoutOrderScreen extends Screen {
         addScreenHandler(organizationAddressMultipleUnit, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 OrderViewDO data;
-                
+
                 data = manager.getOrder();
-                if (data.getOrganization() != null) 
-                    organizationAddressMultipleUnit.setValue(data.getOrganization().getAddress().getMultipleUnit());
-                else 
+                if (data.getOrganization() != null)
+                    organizationAddressMultipleUnit.setValue(data.getOrganization()
+                                                                 .getAddress()
+                                                                 .getMultipleUnit());
+                else
                     organizationAddressMultipleUnit.setValue(null);
             }
 
@@ -527,7 +540,8 @@ public class SendoutOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orderedDate.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                orderedDate.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
                 orderedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -536,11 +550,13 @@ public class SendoutOrderScreen extends Screen {
         addScreenHandler(organizationAddressStreetAddress, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 OrderViewDO data;
-                
+
                 data = manager.getOrder();
                 if (data.getOrganization() != null)
-                    organizationAddressStreetAddress.setValue(data.getOrganization().getAddress().getStreetAddress());
-                else 
+                    organizationAddressStreetAddress.setValue(data.getOrganization()
+                                                                  .getAddress()
+                                                                  .getStreetAddress());
+                else
                     organizationAddressStreetAddress.setValue(null);
             }
 
@@ -565,7 +581,8 @@ public class SendoutOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                requestedBy.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                requestedBy.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
                 requestedBy.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -574,16 +591,16 @@ public class SendoutOrderScreen extends Screen {
         addScreenHandler(organizationAddressCity, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 OrderViewDO data;
-                
+
                 data = manager.getOrder();
                 if (data.getOrganization() != null)
                     organizationAddressCity.setValue(data.getOrganization().getAddress().getCity());
-                else 
+                else
                     organizationAddressCity.setValue(null);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-             // this is a read only and the value will not change
+                // this is a read only and the value will not change
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -603,20 +620,23 @@ public class SendoutOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                costCenterId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                costCenterId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                           .contains(event.getState()));
                 costCenterId.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
+
         organizationAddressState = (TextBox)def.getWidget(OrderMeta.getOrganizationAddressState());
         addScreenHandler(organizationAddressState, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 OrderViewDO data;
-                
+
                 data = manager.getOrder();
                 if (data.getOrganization() != null)
-                    organizationAddressState.setValue(data.getOrganization().getAddress().getState());
-                else 
+                    organizationAddressState.setValue(data.getOrganization()
+                                                          .getAddress()
+                                                          .getState());
+                else
                     organizationAddressState.setValue(null);
             }
 
@@ -634,10 +654,12 @@ public class SendoutOrderScreen extends Screen {
         addScreenHandler(organizationAddressZipCode, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 OrderViewDO data;
-                
+
                 data = manager.getOrder();
                 if (data.getOrganization() != null)
-                    organizationAddressZipCode.setValue(data.getOrganization().getAddress().getZipCode());
+                    organizationAddressZipCode.setValue(data.getOrganization()
+                                                            .getAddress()
+                                                            .getZipCode());
                 else
                     organizationAddressZipCode.setValue(null);
             }
@@ -656,7 +678,7 @@ public class SendoutOrderScreen extends Screen {
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 String desc;
-                
+
                 desc = manager.getOrder().getDescription();
                 description.setSelection(desc, desc);
             }
@@ -666,57 +688,59 @@ public class SendoutOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                description.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                description.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
                 description.setQueryMode(event.getState() == State.QUERY);
                 descQuery = null;
             }
-        });        
+        });
 
         description.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 TableDataRow row;
-                ArrayList<TableDataRow> model;                
+                ArrayList<TableDataRow> model;
                 QueryFieldUtil parser;
                 IdNameVO data;
-                ArrayList<IdNameVO> dataList;  
+                ArrayList<IdNameVO> dataList;
                 ArrayList<String> matchList;
                 String match, name;
-                
+
                 dataList = null;
                 match = event.getMatch();
                 window.setBusy();
-                
+
                 try {
                     model = new ArrayList<TableDataRow>();
-                    
+
                     row = new TableDataRow(match, match);
                     model.add(row);
-                    
-                    if(descQuery == null || (!(match.indexOf(descQuery) == 0))) {
+
+                    if (descQuery == null || ( ! (match.indexOf(descQuery) == 0))) {
                         parser = new QueryFieldUtil();
                         parser.parse(match);
-                        dataList = service.callList("fetchByDescription", parser.getParameter().get(0));
+                        dataList = service.callList("fetchByDescription", parser.getParameter()
+                                                                                .get(0));
                         matchList = new ArrayList<String>();
                         for (int i = 0; i < dataList.size(); i++ ) {
                             data = dataList.get(i);
                             name = data.getName();
-                            if (!matchList.contains(name)) {
-                                row = new TableDataRow(name, name);                  
+                            if ( !matchList.contains(name)) {
+                                row = new TableDataRow(name, name);
                                 model.add(row);
                                 matchList.add(name);
                             }
-                        } 
-                        
-                        if(dataList.size() == 0)
+                        }
+
+                        if (dataList.size() == 0)
                             descQuery = match;
-                    }                                                                                    
-                    
+                    }
+
                     description.showAutoMatches(model);
                 } catch (Throwable e) {
                     e.printStackTrace();
                     Window.alert(e.getMessage());
                 }
-                window.clearStatus();                            
+                window.clearStatus();
             }
 
         });
@@ -791,7 +815,7 @@ public class SendoutOrderScreen extends Screen {
                 custNoteTab.setState(event.getState());
             }
         });
-        
+
         reportToBillToTab = new ReportToBillToTab(def, window);
         addScreenHandler(reportToBillToTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -804,7 +828,7 @@ public class SendoutOrderScreen extends Screen {
                 reportToBillToTab.setState(event.getState());
             }
         });
-        
+
         auxDataTab = new AuxDataTab(def, window);
         addScreenHandler(auxDataTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -817,8 +841,8 @@ public class SendoutOrderScreen extends Screen {
                 auxDataTab.setState(event.getState());
             }
         });
-        
-        containerTab  = new ContainerTab(def, window);
+
+        containerTab = new ContainerTab(def, window);
         addScreenHandler(containerTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 containerTab.setManager(manager);
@@ -859,8 +883,7 @@ public class SendoutOrderScreen extends Screen {
                         } else if (error instanceof LastPageException) {
                             window.setError(consts.get("noMoreRecordInDir"));
                         } else {
-                            Window.alert("Error: Order call query failed; " +
-                                         error.getMessage());
+                            Window.alert("Error: Order call query failed; " + error.getMessage());
                             window.setError(consts.get("queryFailed"));
                         }
                     }
@@ -891,7 +914,7 @@ public class SendoutOrderScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
                 enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                         security.hasSelectPermission();
+                         userPermission.hasSelectPermission();
                 atoz.enable(enable);
                 nav.enable(enable);
             }
@@ -910,9 +933,9 @@ public class SendoutOrderScreen extends Screen {
                 nav.setQuery(query);
             }
         });
-        
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
@@ -920,7 +943,7 @@ public class SendoutOrderScreen extends Screen {
             }
         });
     }
-    
+
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         ArrayList<DictionaryDO> list;
@@ -948,18 +971,18 @@ public class SendoutOrderScreen extends Screen {
         }
 
         costCenterId.setModel(model);
-        
+
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list =  DictionaryCache.getListByCategorySystemName("order_ship_from");
+        list = DictionaryCache.getListByCategorySystemName("order_ship_from");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
             model.add(row);
         }
-        
+
         shipFromId.setModel(model);
-        
+
         try {
             status_pending = DictionaryCache.getIdFromSystemName("order_status_pending");
         } catch (Exception e) {
@@ -969,7 +992,7 @@ public class SendoutOrderScreen extends Screen {
     }
 
     public void setManager(OrderManager manager) {
-        this.manager = manager;     
+        this.manager = manager;
         itemTab.setManager(manager);
         fillTab.setManager(manager);
         shipNoteTab.setManager(manager);
@@ -977,19 +1000,19 @@ public class SendoutOrderScreen extends Screen {
         reportToBillToTab.setManager(manager);
         auxDataTab.setManager(manager);
         containerTab.setManager(manager);
-        
+
         itemTab.draw();
         fillTab.draw();
         shipNoteTab.draw();
         custNoteTab.draw();
-        reportToBillToTab.draw();  
+        reportToBillToTab.draw();
         containerTab.draw();
         auxDataTab.draw();
-        
+
         setState(State.DISPLAY);
         DataChangeEvent.fire(this);
     }
-    
+
     /*
      * basic button methods
      */
@@ -1005,8 +1028,8 @@ public class SendoutOrderScreen extends Screen {
         fillTab.draw();
         shipNoteTab.draw();
         custNoteTab.draw();
-        reportToBillToTab.draw();        
-        
+        reportToBillToTab.draw();
+
         setFocus(id);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
@@ -1026,15 +1049,15 @@ public class SendoutOrderScreen extends Screen {
         try {
             now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
         } catch (Exception e) {
-            Window.alert("OrderAdd Datetime: " +e.getMessage());
+            Window.alert("OrderAdd Datetime: " + e.getMessage());
             return;
         }
-        
+
         manager = OrderManager.getInstance();
         data = manager.getOrder();
         data.setStatusId(status_pending);
         data.setOrderedDate(now);
-        data.setRequestedBy(OpenELIS.security.getSystemUserName());
+        data.setRequestedBy(OpenELIS.getSystemUserPermission().getLoginName());
         data.setType(OrderManager.TYPE_SEND_OUT);
 
         setState(State.ADD);
@@ -1049,14 +1072,14 @@ public class SendoutOrderScreen extends Screen {
 
         try {
             manager = manager.fetchForUpdate();
-            if (! status_pending.equals(manager.getOrder().getStatusId())) {
+            if ( !status_pending.equals(manager.getOrder().getStatusId())) {
                 Window.alert(consts.get("orderStatusNotPendingForUpdate"));
                 manager = manager.abortUpdate();
             } else {
                 setState(State.UPDATE);
                 setFocus(neededInDays);
             }
-            
+
             DataChangeEvent.fire(this);
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -1142,54 +1165,53 @@ public class SendoutOrderScreen extends Screen {
             window.clearStatus();
         }
     }
-    
+
     protected void duplicate() {
         Datetime now;
         OrderViewDO data;
-        
+
         try {
             manager = OrderManager.fetchById(manager.getOrder().getId());
 
             try {
                 now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
             } catch (Exception e) {
-                Window.alert("OrderAdd Datetime: " +e.getMessage());
+                Window.alert("OrderAdd Datetime: " + e.getMessage());
                 return;
             }
-            
+
             data = manager.getOrder();
             data.setStatusId(status_pending);
             data.setOrderedDate(now);
-            data.setRequestedBy(OpenELIS.security.getSystemUserName());
-            data.setType(OrderManager.TYPE_SEND_OUT);           
-            
-            itemTab.setManager(manager);            
-            //fillTab.setManager(manager);
+            data.setRequestedBy(OpenELIS.getSystemUserPermission().getLoginName());
+            data.setType(OrderManager.TYPE_SEND_OUT);
+
+            itemTab.setManager(manager);
+            // fillTab.setManager(manager);
             shipNoteTab.setManager(manager);
             custNoteTab.setManager(manager);
-            reportToBillToTab.setManager(manager);  
-            containerTab.setManager(manager);      
-            auxDataTab.setManager(manager);            
-            
-            
+            reportToBillToTab.setManager(manager);
+            containerTab.setManager(manager);
+            auxDataTab.setManager(manager);
+
             manager.getItems();
-            //manager.getFills();
-            manager.getShippingNotes();       
+            // manager.getFills();
+            manager.getShippingNotes();
             manager.getCustomerNotes();
             manager.getTests();
             manager.getContainers();
             manager.getAuxData();
-            
+
             clearKeys();
-            
+
             itemTab.draw();
-            //fillTab.draw();
+            // fillTab.draw();
             shipNoteTab.draw();
             custNoteTab.draw();
-            reportToBillToTab.draw();  
+            reportToBillToTab.draw();
             containerTab.draw();
             auxDataTab.draw();
-            
+
             setState(State.ADD);
             DataChangeEvent.fire(this);
 
@@ -1197,17 +1219,16 @@ public class SendoutOrderScreen extends Screen {
             window.setDone(consts.get("enterInformationPressCommit"));
         } catch (Exception e) {
             Window.alert(e.getMessage());
-        }                  
+        }
     }
-    
+
     protected void orderHistory() {
         IdNameVO hist;
-        
+
         hist = new IdNameVO(manager.getOrder().getId(), manager.getOrder().getId().toString());
-        HistoryScreen.showHistory(consts.get("orderHistory"),
-                                  ReferenceTable.ORDER, hist);                
+        HistoryScreen.showHistory(consts.get("orderHistory"), ReferenceTable.ORDER, hist);
     }
-    
+
     protected void itemHistory() {
         int i, count;
         IdNameVO refVoList[];
@@ -1228,10 +1249,10 @@ public class SendoutOrderScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("orderItemHistory"),
-                                  ReferenceTable.ORDER_ITEM, refVoList);
+        HistoryScreen.showHistory(consts.get("orderItemHistory"), ReferenceTable.ORDER_ITEM,
+                                  refVoList);
     }
-    
+
     protected void testHistory() {
         int i, count;
         IdNameVO refVoList[];
@@ -1252,11 +1273,11 @@ public class SendoutOrderScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("orderTestHistory"),
-                                  ReferenceTable.ORDER_TEST, refVoList);
-        
+        HistoryScreen.showHistory(consts.get("orderTestHistory"), ReferenceTable.ORDER_TEST,
+                                  refVoList);
+
     }
-    
+
     protected void containerHistory() {
         int i, count;
         IdNameVO refVoList[];
@@ -1281,7 +1302,7 @@ public class SendoutOrderScreen extends Screen {
 
         HistoryScreen.showHistory(consts.get("orderContainerHistory"),
                                   ReferenceTable.ORDER_CONTAINER, refVoList);
-        
+
     }
 
     protected boolean fetchById(Integer id) {
@@ -1307,11 +1328,11 @@ public class SendoutOrderScreen extends Screen {
                         break;
                     case CONTAINER:
                         manager = OrderManager.fetchWithTestsAndContainers(id);
-                        break;     
+                        break;
                     case AUX_DATA:
                         manager = OrderManager.fetchById(id);
-                        break;    
-                        
+                        break;
+
                 }
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
@@ -1330,38 +1351,38 @@ public class SendoutOrderScreen extends Screen {
 
         return true;
     }
-    
+
     public ArrayList<QueryData> getQueryFields() {
         ArrayList<QueryData> returnList;
         ArrayList<IdNameVO> auxFields;
         QueryData queryData;
         IdNameVO idName;
-        
+
         returnList = super.getQueryFields();
-        
-        //add aux data values if necessary
+
+        // add aux data values if necessary
         auxFields = auxDataTab.getAuxQueryFields();
-        
-        if(auxFields.size() > 0){
-            //add ref table
+
+        if (auxFields.size() > 0) {
+            // add ref table
             queryData = new QueryData();
             queryData.key = OrderMeta.getAuxDataReferenceTableId();
             queryData.type = QueryData.Type.INTEGER;
             queryData.query = String.valueOf(ReferenceTable.ORDER);
             returnList.add(queryData);
-            
-            //add aux fields
-            for(int i=0; i<auxFields.size(); i++){
+
+            // add aux fields
+            for (int i = 0; i < auxFields.size(); i++ ) {
                 idName = auxFields.get(i);
-                
-                //aux data id
+
+                // aux data id
                 queryData = new QueryData();
                 queryData.key = OrderMeta.getAuxDataAuxFieldId();
                 queryData.type = QueryData.Type.INTEGER;
                 queryData.query = String.valueOf(idName.getId());
                 returnList.add(queryData);
-                
-                //aux data value
+
+                // aux data value
                 queryData = new QueryData();
                 queryData.key = OrderMeta.getAuxDataValue();
                 queryData.type = QueryData.Type.STRING;
@@ -1369,7 +1390,7 @@ public class SendoutOrderScreen extends Screen {
                 returnList.add(queryData);
             }
         }
-        
+
         return returnList;
     }
 
@@ -1389,16 +1410,16 @@ public class SendoutOrderScreen extends Screen {
                 break;
             case REPORT_TO:
                 reportToBillToTab.draw();
-                break;   
+                break;
             case CONTAINER:
                 containerTab.draw();
-                break;    
+                break;
             case AUX_DATA:
                 auxDataTab.draw();
-                break;    
+                break;
         }
     }
-    
+
     private void clearKeys() {
         OrderItemManager iman;
         NoteManager snman, cnman;
@@ -1411,70 +1432,70 @@ public class SendoutOrderScreen extends Screen {
         OrderContainerDO container;
         AuxDataViewDO aux;
         int i, count;
-        
+
         manager.getOrder().setId(null);
-        
+
         try {
             iman = manager.getItems();
             count = iman.count();
-            
-            for(i = 0; i < count; i++) {
+
+            for (i = 0; i < count; i++ ) {
                 item = iman.getItemAt(i);
                 item.setId(null);
                 item.setOrderId(null);
-            } 
-            
+            }
+
             snman = manager.getShippingNotes();
             count = snman.count();
-            
-            for(i = 0; i < count; i++) {
+
+            for (i = 0; i < count; i++ ) {
                 snote = snman.getNoteAt(i);
                 snote.setId(null);
                 snote.setReferenceId(null);
                 snote.setReferenceTableId(null);
-            } 
-            
+            }
+
             cnman = manager.getCustomerNotes();
             count = cnman.count();
-            
-            for(i = 0; i < count; i++) {
+
+            for (i = 0; i < count; i++ ) {
                 cnote = cnman.getNoteAt(i);
                 cnote.setId(null);
                 cnote.setReferenceId(null);
                 cnote.setReferenceTableId(null);
-            } 
-            
+            }
+
             otman = manager.getTests();
             count = otman.count();
-            
-            for(i = 0; i < count; i++) {
+
+            for (i = 0; i < count; i++ ) {
                 test = otman.getTestAt(i);
                 test.setId(null);
                 test.setOrderId(null);
             }
-            
+
             ocman = manager.getContainers();
             count = ocman.count();
-            
-            for(i = 0; i < count; i++) {
+
+            for (i = 0; i < count; i++ ) {
                 container = ocman.getContainerAt(i);
                 container.setId(null);
                 container.setOrderId(null);
             }
-            
+
             adman = manager.getAuxData();
             count = adman.count();
-            
-            for(i = 0; i < count; i++) {
+
+            for (i = 0; i < count; i++ ) {
                 aux = adman.getAuxDataAt(i);
                 aux.setId(null);
                 aux.setReferenceId(null);
                 aux.setReferenceTableId(null);
             }
-            
+
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
-        }      
+        }
     }
 }
