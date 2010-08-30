@@ -42,6 +42,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.domain.ShippingViewDO;
 import org.openelis.entity.Shipping;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
@@ -53,7 +54,6 @@ import org.openelis.local.ShippingLocal;
 import org.openelis.meta.ShippingMeta;
 import org.openelis.remote.ShippingRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")

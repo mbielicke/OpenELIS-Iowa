@@ -42,6 +42,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.entity.Dictionary;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
@@ -51,7 +52,6 @@ import org.openelis.local.DictionaryLocal;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.remote.DictionaryRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")

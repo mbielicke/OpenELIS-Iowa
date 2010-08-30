@@ -31,11 +31,11 @@ import java.util.List;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.TestPrepViewDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.TestPrepLocal;
 import org.openelis.meta.TestMeta;
-import org.openelis.utilcommon.DataBaseUtil;
 
 public class TestPrepManagerProxy {
 

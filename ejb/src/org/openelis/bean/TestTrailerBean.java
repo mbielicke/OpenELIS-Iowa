@@ -44,20 +44,20 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestTrailerDO;
 import org.openelis.entity.TestTrailer;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.SecurityModule.ModuleFlags;
+import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.TestTrailerMeta;
 import org.openelis.remote.TestTrailerRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utilcommon.DataBaseUtil;
-import org.openelis.utils.SecurityInterceptor;
+import org.openelis.utils.PermissionInterceptor;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -235,6 +235,6 @@ public class TestTrailerBean implements TestTrailerRemote{
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity("testtrailer", flag);
+        PermissionInterceptor.applyPermission("testtrailer", flag);
     }
 }

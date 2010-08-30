@@ -40,6 +40,7 @@ import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.domain.WorksheetResultViewDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.SampleLocal;
@@ -47,7 +48,6 @@ import org.openelis.local.SampleManagerLocal;
 import org.openelis.local.WorksheetAnalysisLocal;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetAnalysisManager.WorksheetAnalysisListItem;
-import org.openelis.utilcommon.DataBaseUtil;
 
 public class WorksheetAnalysisManagerProxy {
     

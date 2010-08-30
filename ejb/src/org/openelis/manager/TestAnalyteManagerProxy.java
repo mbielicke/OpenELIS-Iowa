@@ -36,12 +36,12 @@ import javax.naming.InitialContext;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultViewDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.GridFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestAnalyteLocal;
 import org.openelis.meta.TestMeta;
-import org.openelis.utilcommon.DataBaseUtil;
 
 public class TestAnalyteManagerProxy {
 

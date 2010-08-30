@@ -30,9 +30,9 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.InventoryComponentViewDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.InventoryComponentLocal;
-import org.openelis.utilcommon.DataBaseUtil;
 
 public class InventoryComponentManagerProxy {
 

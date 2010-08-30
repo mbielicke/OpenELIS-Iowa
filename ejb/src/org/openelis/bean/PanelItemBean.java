@@ -39,12 +39,12 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.PanelItemDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.entity.PanelItem;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.PanelItemLocal;
 import org.openelis.meta.PanelMeta;
-import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")

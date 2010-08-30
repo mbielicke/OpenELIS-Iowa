@@ -28,9 +28,9 @@ package org.openelis.manager;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.InventoryAdjustmentViewDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.InventoryAdjustmentLocal;
-import org.openelis.utilcommon.DataBaseUtil;
 
 public class InventoryAdjustmentManagerProxy {
 

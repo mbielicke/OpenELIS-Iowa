@@ -32,6 +32,7 @@ package org.openelis.entity;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.util.XMLUtil;
 
 import javax.persistence.Column;
@@ -44,7 +45,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;

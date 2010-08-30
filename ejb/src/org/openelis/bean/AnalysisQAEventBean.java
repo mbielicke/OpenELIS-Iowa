@@ -37,9 +37,9 @@ import javax.persistence.Query;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.entity.AnalysisQaevent;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.AnalysisQAEventLocal;
-import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 

@@ -31,12 +31,12 @@ import java.util.List;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.InstrumentLogDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.InstrumentLogLocal;
 import org.openelis.meta.InstrumentMeta;
-import org.openelis.utilcommon.DataBaseUtil;
 
 public class InstrumentLogManagerProxy {
     

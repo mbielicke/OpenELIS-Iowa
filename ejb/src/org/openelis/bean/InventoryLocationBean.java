@@ -42,6 +42,7 @@ import org.openelis.domain.InventoryLocationDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.InventoryLocation;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
@@ -50,7 +51,6 @@ import org.openelis.local.InventoryLocationLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.InventoryItemMeta;
 import org.openelis.remote.InventoryLocationRemote;
-import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")

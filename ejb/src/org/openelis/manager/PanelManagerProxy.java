@@ -28,9 +28,9 @@ package org.openelis.manager;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.PanelDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.PanelLocal;
-import org.openelis.utilcommon.DataBaseUtil;
 
 public class PanelManagerProxy {
 

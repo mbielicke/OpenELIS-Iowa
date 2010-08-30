@@ -45,13 +45,13 @@ import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.QcAnalyteDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.entity.QcAnalyte;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.QcAnalyteLocal;
 import org.openelis.meta.QcMeta;
-import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")

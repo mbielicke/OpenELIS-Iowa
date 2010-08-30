@@ -32,19 +32,19 @@ import org.openelis.domain.QaEventVO;
 import org.openelis.domain.QaEventViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.QaEvent;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.SecurityModule.ModuleFlags;
+import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.QaEventMeta;
 import org.openelis.remote.QaEventRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utilcommon.DataBaseUtil;
-import org.openelis.utils.SecurityInterceptor;
+import org.openelis.utils.PermissionInterceptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -247,6 +247,6 @@ public class QaEventBean implements QaEventRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity("qaevent", flag);
+        PermissionInterceptor.applyPermission("qaevent", flag);
     }
 }

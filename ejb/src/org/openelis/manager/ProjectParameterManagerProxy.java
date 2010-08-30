@@ -30,10 +30,10 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.ProjectParameterDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.ProjectParameterLocal;
 import org.openelis.manager.ProjectParameterManager;
-import org.openelis.utilcommon.DataBaseUtil;
 
 public class ProjectParameterManagerProxy {
 

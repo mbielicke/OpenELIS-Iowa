@@ -27,7 +27,6 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -39,26 +38,21 @@ import org.openelis.domain.NoteViewDO;
 import org.openelis.entity.Note;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.LoginLocal;
+import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.local.NoteLocal;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.remote.*;
+import org.openelis.utils.PermissionInterceptor;
 
 @Stateless
 @SecurityDomain("openelis")
 public class NoteBean implements NoteLocal {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager manager;
-
-
-    @EJB (mappedName="security/SystemUserUtilBean") private SystemUserUtilRemote sysUser;
-    @EJB         LoginLocal            login;
+    private EntityManager          manager;
 
     public ArrayList<NoteViewDO> fetchByRefTableRefId(Integer refTableId, Integer refId) throws Exception {
         Query query;
         NoteViewDO note;
-        SystemUserDO user;
+        SystemUserVO user;
         ArrayList<NoteViewDO> list;
 
         // TODO
@@ -72,24 +66,26 @@ public class NoteBean implements NoteLocal {
         list = (ArrayList<NoteViewDO>)query.getResultList();
         if (list.size() == 0)
             throw new NotFoundException();
-        
-        for(int i=0; i<list.size(); i++){
+
+        for (int i = 0; i < list.size(); i++ ) {
             note = list.get(i);
 
             if (note.getSystemUserId() != null) {
-                user = sysUser.getSystemUser(note.getSystemUserId());
+                user = PermissionInterceptor.getSystemUser(note.getSystemUserId());
                 if (user != null)
                     note.setSystemUser(user.getLoginName());
             }
         }
-        
+
         return list;
     }
-    
-    public ArrayList<NoteViewDO> fetchByRefTableRefIdIsExt(Integer refTableId, Integer refId, String isExternal) throws Exception {
+
+    public ArrayList<NoteViewDO> fetchByRefTableRefIdIsExt(Integer refTableId,
+                                                           Integer refId,
+                                                           String isExternal) throws Exception {
         Query query;
         NoteViewDO note;
-        SystemUserDO user;
+        SystemUserVO user;
         ArrayList<NoteViewDO> list;
 
         // TODO
@@ -104,17 +100,17 @@ public class NoteBean implements NoteLocal {
         list = (ArrayList<NoteViewDO>)query.getResultList();
         if (list.size() == 0)
             throw new NotFoundException();
-        
-        for(int i=0; i<list.size(); i++){
+
+        for (int i = 0; i < list.size(); i++ ) {
             note = list.get(i);
 
             if (note.getSystemUserId() != null) {
-                user = sysUser.getSystemUser(note.getSystemUserId());
+                user = PermissionInterceptor.getSystemUser(note.getSystemUserId());
                 if (user != null)
                     note.setSystemUser(user.getLoginName());
             }
         }
-        
+
         return list;
     }
 
@@ -128,7 +124,7 @@ public class NoteBean implements NoteLocal {
         entity.setReferenceId(data.getReferenceId());
         entity.setReferenceTableId(data.getReferenceTableId());
         entity.setSubject(data.getSubject());
-        entity.setSystemUserId(login.getSystemUserId());
+        entity.setSystemUserId(PermissionInterceptor.getSystemUserId());
         entity.setText(data.getText());
         entity.setTimestamp(Datetime.getInstance());
 
@@ -151,7 +147,7 @@ public class NoteBean implements NoteLocal {
         entity.setReferenceId(data.getReferenceId());
         entity.setReferenceTableId(data.getReferenceTableId());
         entity.setSubject(data.getSubject());
-        entity.setSystemUserId(login.getSystemUserId());
+        entity.setSystemUserId(PermissionInterceptor.getSystemUserId());
         entity.setText(data.getText());
         entity.setTimestamp(Datetime.getInstance());
 

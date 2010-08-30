@@ -30,12 +30,12 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.InventoryXAdjustViewDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.InventoryLocationLocal;
 import org.openelis.local.InventoryXAdjustLocal;
 import org.openelis.meta.InventoryAdjustmentMeta;
-import org.openelis.utilcommon.DataBaseUtil;
 
 public class InventoryXAdjustManagerProxy {
 

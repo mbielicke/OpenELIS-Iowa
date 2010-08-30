@@ -42,11 +42,11 @@ import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.entity.AuxData;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.AuxDataLocal;
 import org.openelis.remote.AuxDataRemote;
-import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")

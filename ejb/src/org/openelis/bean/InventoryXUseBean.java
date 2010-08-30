@@ -39,10 +39,10 @@ import org.openelis.domain.OrderItemViewDO;
 import org.openelis.entity.InventoryItem;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryXUse;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.InventoryXUseLocal;
-import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 public class InventoryXUseBean implements InventoryXUseLocal {

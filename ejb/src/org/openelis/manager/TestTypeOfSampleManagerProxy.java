@@ -30,10 +30,10 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.TestTypeOfSampleDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.TestTypeOfSampleLocal;
-import org.openelis.utilcommon.DataBaseUtil;
 
 public class TestTypeOfSampleManagerProxy {   
     

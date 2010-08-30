@@ -39,6 +39,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestResultViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.exception.ParseException;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.GridFieldErrorException;
 import org.openelis.gwt.common.InconsistencyException;
@@ -46,7 +47,6 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestResultLocal;
 import org.openelis.meta.TestMeta;
-import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utilcommon.ResultRangeNumeric;
 import org.openelis.utilcommon.ResultRangeTiter;
 

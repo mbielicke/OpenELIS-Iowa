@@ -19,7 +19,7 @@ public class FinalReportBean implements FinalReportBeanRemote {
 	int progress;
 	
 	@EJB
-	SessionManagerInt session;
+	SessionCacheInt session;
 	
 	public byte[] doFinalReport() throws Exception {
 		File pdfFile = new File("/home/tschmidt/jfreechart-1.0.0-rc1-US.pdf");

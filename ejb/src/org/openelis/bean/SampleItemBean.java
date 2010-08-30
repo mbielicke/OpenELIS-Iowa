@@ -40,11 +40,11 @@ import javax.persistence.Query;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.entity.SampleItem;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.LockLocal;
 import org.openelis.local.SampleItemLocal;
-import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @EJBs({

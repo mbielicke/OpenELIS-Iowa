@@ -42,6 +42,7 @@ import org.openelis.domain.IdNameStoreVO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.entity.InventoryItem;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
@@ -54,7 +55,6 @@ import org.openelis.messages.InventoryItemCacheMessage;
 import org.openelis.meta.InventoryItemMeta;
 import org.openelis.remote.InventoryItemRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")

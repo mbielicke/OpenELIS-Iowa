@@ -34,11 +34,11 @@ import javax.persistence.Query;
 
 import org.openelis.domain.AddressDO;
 import org.openelis.entity.Address;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.AddressLocal;
 import org.openelis.remote.AddressRemote;
-import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 public class AddressBean implements AddressRemote, AddressLocal {

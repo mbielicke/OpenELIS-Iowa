@@ -35,13 +35,13 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryReceiptViewDO;
 import org.openelis.domain.OrderItemViewDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.InventoryLocationLocal;
 import org.openelis.local.InventoryReceiptLocal;
 import org.openelis.meta.InventoryReceiptMeta;
-import org.openelis.utilcommon.DataBaseUtil;
 
 
 public class InventoryReceiptManagerProxy {    

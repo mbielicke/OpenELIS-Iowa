@@ -11,12 +11,12 @@ import javax.transaction.UserTransaction;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
-import org.openelis.gwt.common.SecurityModule.ModuleFlags;
+import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.local.LockLocal;
 import org.openelis.manager.ProviderLocationManager;
 import org.openelis.manager.ProviderManager;
 import org.openelis.remote.ProviderManagerRemote;
-import org.openelis.utils.SecurityInterceptor;
+import org.openelis.utils.PermissionInterceptor;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -100,6 +100,6 @@ public class ProviderManagerBean implements ProviderManagerRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity("provider", flag);
+        PermissionInterceptor.applyPermission("provider", flag);
     }
 }

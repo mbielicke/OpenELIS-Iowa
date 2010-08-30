@@ -37,7 +37,7 @@ import javax.transaction.UserTransaction;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
-import org.openelis.gwt.common.SecurityModule.ModuleFlags;
+import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.local.LockLocal;
 import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
@@ -47,7 +47,7 @@ import org.openelis.manager.TestResultManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.manager.TestWorksheetManager;
 import org.openelis.remote.TestManagerRemote;
-import org.openelis.utils.SecurityInterceptor;
+import org.openelis.utils.PermissionInterceptor;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -166,7 +166,7 @@ public class TestManagerBean implements TestManagerRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity("test", flag);
+        PermissionInterceptor.applyPermission("test", flag);
     }
 
 }

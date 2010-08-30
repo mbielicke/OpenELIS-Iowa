@@ -32,6 +32,7 @@ import javax.naming.InitialContext;
 import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -40,7 +41,6 @@ import org.openelis.local.DictionaryLocal;
 import org.openelis.local.JMSMessageProducerLocal;
 import org.openelis.messages.DictionaryCacheMessage;
 import org.openelis.meta.CategoryMeta;
-import org.openelis.utilcommon.DataBaseUtil;
 
 public class DictionaryManagerProxy {
 

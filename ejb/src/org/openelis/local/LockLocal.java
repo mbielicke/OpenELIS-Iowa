@@ -45,6 +45,4 @@ public interface LockLocal {
     public void validateLock(Integer table, Integer row) throws Exception;
     
     public void validateLock(Integer table, Integer row, String session) throws Exception; 
-
-    public Integer getSystemUserId();
 }

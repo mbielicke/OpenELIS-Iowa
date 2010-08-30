@@ -30,10 +30,10 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.OrganizationContactDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.OrganizationContactLocal;
 import org.openelis.manager.OrganizationContactManager;
-import org.openelis.utilcommon.DataBaseUtil;
 
 public class OrganizationContactManagerProxy {
 

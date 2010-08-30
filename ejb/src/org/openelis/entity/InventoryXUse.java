@@ -43,7 +43,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
-import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.utils.Audit;
 
 @NamedQueries({

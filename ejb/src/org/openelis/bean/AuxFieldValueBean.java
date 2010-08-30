@@ -43,13 +43,13 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.entity.AuxFieldValue;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AuxFieldValueLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.meta.AuxFieldGroupMeta;
-import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")

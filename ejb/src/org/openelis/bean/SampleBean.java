@@ -41,6 +41,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
 import org.openelis.entity.Sample;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.QueryData;
@@ -51,7 +52,6 @@ import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.remote.SampleRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 

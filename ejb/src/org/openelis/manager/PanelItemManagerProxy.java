@@ -30,10 +30,10 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.PanelItemDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.PanelItemLocal;
-import org.openelis.utilcommon.DataBaseUtil;
 
 public class PanelItemManagerProxy {
     
