@@ -27,7 +27,6 @@ UIRF Software License are applicable instead of those above.
 -->
 
 <jboss-app>
-
   <loader-repository>
     org.openelis:loader=openelis.ear
     <loader-repository-config>

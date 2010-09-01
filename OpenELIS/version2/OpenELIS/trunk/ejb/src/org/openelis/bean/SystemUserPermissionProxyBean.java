@@ -33,6 +33,7 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.local.SystemUserPermissionProxyLocal;
@@ -40,6 +41,7 @@ import org.openelis.remote.SystemUserPermissionProxyRemote;
 import org.openelis.security.remote.SystemUserPermissionRemote;
 
 @Stateless
+@SecurityDomain("openelis")
 public class SystemUserPermissionProxyBean implements SystemUserPermissionProxyRemote,
                                                       SystemUserPermissionProxyLocal {
 

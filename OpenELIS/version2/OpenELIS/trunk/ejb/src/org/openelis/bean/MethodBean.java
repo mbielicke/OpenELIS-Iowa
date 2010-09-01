@@ -28,10 +28,8 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -60,15 +58,12 @@ import org.openelis.util.QueryBuilderV2;
 import org.openelis.utils.PermissionInterceptor;
 
 @Stateless
-@RolesAllowed("method-select")
 @SecurityDomain("openelis")
+@RolesAllowed("method-select")
 public class MethodBean implements MethodRemote {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
-
-    @Resource
-    private SessionContext ctx;
 
     @EJB
     private LockLocal lockBean;
