@@ -34,7 +34,7 @@ UIRF Software License are applicable instead of those above.
         <filter-class>org.openelis.server.HostedFilter</filter-class>
         <init-param>
             <param-name>AppRoot</param-name>
-            <param-value>workspace/OpenELIS-GWT/war/openelis</param-value>
+            <param-value>workspace/OpenELIS-GWT/war/openelis/</param-value>
         </init-param>
         <init-param>
             <param-name>User</param-name>

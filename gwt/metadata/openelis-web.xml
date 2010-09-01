@@ -27,7 +27,7 @@ UIRF Software License are applicable instead of those above.
 
 <web-app>
  <display-name>OpenELIS Web Application v0.0</display-name>
- <description>Initial Development of OpenELIS Web Applciation</description>
+ <description>Initial Development of OpenELIS Web Application</description>
   
    <filter>
         <filter-name>Login Filter</filter-name>
