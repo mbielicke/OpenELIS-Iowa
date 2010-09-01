@@ -23,6 +23,7 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
+
 package org.openelis.domain;
 
 import java.util.ArrayList;
@@ -30,31 +31,22 @@ import java.util.ArrayList;
 import org.openelis.gwt.common.RPC;
 
 /**
- * Class is used to send/receive a category dictionary entry and all the
- * associated dictionary entries.
+ * Class is used to send and receive number of category dictionary entries for
+ * dictionary cache.
  */
-public class DictionaryCacheCategoryVO implements RPC {
-    private static final long         serialVersionUID = 1L;
+public class DictionaryCacheCategoryListVO implements RPC {
+    private static final long                      serialVersionUID = 1L;
 
-    protected String                  systemName;
-    protected ArrayList<DictionaryDO> dictionaryList;
+    protected ArrayList<DictionaryCacheCategoryVO> list;
 
-    public DictionaryCacheCategoryVO() {
+    public DictionaryCacheCategoryListVO() {
     }
 
-    public String getSystemName() {
-        return systemName;
+    public ArrayList<DictionaryCacheCategoryVO> getList() {
+        return list;
     }
 
-    public void setSystemName(String systemName) {
-        this.systemName = systemName;
-    }
-
-    public ArrayList<DictionaryDO> getDictionaryList() {
-        return dictionaryList;
-    }
-
-    public void setDictionaryList(ArrayList<DictionaryDO> dictionaryList) {
-        this.dictionaryList = dictionaryList;
+    public void setList(ArrayList<DictionaryCacheCategoryVO> list) {
+        this.list = list;
     }
 }
