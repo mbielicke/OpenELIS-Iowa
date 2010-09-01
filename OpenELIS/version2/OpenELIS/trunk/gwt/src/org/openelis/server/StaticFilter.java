@@ -28,7 +28,6 @@ package org.openelis.server;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 
 import javax.naming.Context;
@@ -36,7 +35,6 @@ import javax.naming.InitialContext;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -44,21 +42,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.SystemUserPermission;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.persistence.CachingManager;
+import org.openelis.modules.main.server.OpenELISScreenService;
 import org.openelis.persistence.JMSMessageConsumer;
 import org.openelis.remote.SystemUserPermissionProxyRemote;
-import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-// import edu.uiowa.uhl.security.remote.SecurityRemote;
-
-// import org.openelis.tt.server.security.SecurityService;
 /**
  * Elis controller is the entry point for Elis Web Application. This object
  * controls the workflow for processing request and response.
@@ -66,25 +60,16 @@ import org.w3c.dom.Element;
  */
 public class StaticFilter implements Filter {
 
-    private int                  userTrys, ipTrys;
     private static final long    serialVersionUID = 1L;
     private static Logger        log              = Logger.getLogger(StaticFilter.class.getName());
     private static Logger        authLog          = Logger.getLogger("org.openelis.auth");
 
-    public static ServletContext servletCtx;
-
     public void init(FilterConfig config) throws ServletException {
         log.debug("Initializing the Application.");
 
-        Constants.APP_ROOT = config.getInitParameter("AppRoot");
-        userTrys = Integer.parseInt(config.getInitParameter("userTrys"));
-        ipTrys = Integer.parseInt(config.getInitParameter("ipTrys"));
-
-        SessionManager.init("OpenELIS");
         ServiceUtils.props = "org.openelis.constants.OpenELISConstants";
-        CachingManager.init(Constants.APP_ROOT);
+        OpenELISScreenService.APP_ROOT = config.getInitParameter("AppRoot");
         JMSMessageConsumer.startListener("topic/openelisTopic");
-        servletCtx = config.getServletContext();
 
         log.debug("getting out");
     }
@@ -93,7 +78,11 @@ public class StaticFilter implements Filter {
         String error = null;
         HttpServletRequest hreq = (HttpServletRequest)req;
 
-        if (hreq.getRequestURI().endsWith(".jpg") || hreq.getRequestURI().endsWith(".gif")) {
+        //
+        // pass-through for images and if we are logged-in
+        //
+        if (hreq.getRequestURI().endsWith(".jpg") || hreq.getRequestURI().endsWith(".gif") ||
+            hreq.getSession().getAttribute("USER_NAME") != null) {
             try {
                 chain.doFilter(req, response);
             } catch (Exception e) {
@@ -102,125 +91,113 @@ public class StaticFilter implements Filter {
             return;
         }
 
+        //
+        // used for language binding
+        //
         if (hreq.getParameter("locale") != null)
             hreq.getSession().setAttribute("locale", req.getParameter("locale"));
-        
-        SessionManager.setSession(hreq.getSession());
 
-        if (hreq.getParameter("username") != null) {
-            String username = hreq.getParameter("username");
-            String ip = hreq.getRemoteAddr();
+        //
+        // check to see if we are coming from login screen
+        //
+        if (hreq.getParameter("username") != null) {            
+            try {
+                login(hreq, hreq.getParameter("username"), req.getParameter("password"),  
+                      hreq.getRemoteAddr());
+                //
+                // register the session so we can access it statically in gwt code
+                //
+                SessionManager.setSession(hreq.getSession());
 
-            if (CachingManager.getElement("usernameLockout", username) == null &&
-                CachingManager.getElement("ipLockout", ip) == null) {
-                System.out.println("Checking Credentials");
-                String password = req.getParameter("password");
-                File propFile = null;
-                InputStream is = null;
-                Properties props = new Properties();
                 try {
-                    InitialContext initCtx = new InitialContext();
-                    propFile = new File((String)initCtx.lookup( ("java:comp/env/openelisJNDI")));
-                    is = new FileInputStream(propFile);
-
-                    props.load(is);
-                    props.setProperty(InitialContext.INITIAL_CONTEXT_FACTORY,
-                                      "org.jboss.security.jndi.LoginInitialContextFactory");
-                    props.setProperty(InitialContext.SECURITY_PROTOCOL, "other");
-                    props.setProperty(InitialContext.SECURITY_CREDENTIALS, password);
-                    props.setProperty(Context.SECURITY_PRINCIPAL, username);
-
-                    InitialContext ctx = new InitialContext(props);
-                    SystemUserPermissionProxyRemote remote = (SystemUserPermissionProxyRemote)ctx.lookup("openelis/SystemUserPermissionProxyBean/remote");
-                    SystemUserPermission perm = remote.login();
-                    SessionManager.getSession().setAttribute("UserPermission", perm);
-                    if (!perm.hasConnectPermission()) {
-                        ((HttpServletResponse)response).sendRedirect("NoPermission.html");
-                        return;
-                    }
-                    SessionManager.getSession().setAttribute("jndiProps", props);
-                    SessionManager.getSession().setAttribute("USER_NAME", username);
-                    authLog.info("Login attempt for " + username + " succeeded");
-
+                    chain.doFilter(req, response);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    error = "authFailure";
-                    Integer ipAttempt = (Integer)CachingManager.getElement("ipAttempts", ip);
-                    Integer userAttempt = (Integer)CachingManager.getElement("usernameAttempts",
-                                                                             username);
-                    if (userAttempt == null)
-                        userAttempt = new Integer(1);
-                    else {
-                        int temp = userAttempt.intValue() + 1;
-                        userAttempt = new Integer(temp);
-                    }
-                    authLog.info("Login attempt for " + username + " failed " + userAttempt +
-                                 " times");
-                    CachingManager.putElement("usernameAttempts", username, userAttempt);
-                    if (ipAttempt == null)
-                        ipAttempt = new Integer(1);
-                    else {
-                        int temp = ipAttempt.intValue() + 1;
-                        ipAttempt = new Integer(temp);
-                    }
-                    authLog.info("Login attempt from ip " + ip + " failed " + ipAttempt + " times");
-                    CachingManager.putElement("ipAttempts", ip, ipAttempt);
-                    if (userAttempt >= userTrys) {
-                        CachingManager.putElement("usernameLockout", username, "locked");
-                        authLog.info("Locking out username " + username);
-                    }
-                    if (ipAttempt >= ipTrys) {
-                        CachingManager.putElement("ipLockout", ip, "locked");
-                        authLog.info("Locking out ip " + ip);
-                    }
                 }
-            } else {
-                error = "authFailure";
-                if (CachingManager.getElement("usernameLockout", username) != null) {
-                    CachingManager.putElement("usernameLockout", username, "locked");
-                    authLog.info("Ignored attempt from username " + username);
-                }
-                if (CachingManager.getElement("ipLockout", ip) != null) {
-                    CachingManager.putElement("ipLockout", ip, "locked");
-                    authLog.info("Ignored attempt from ip " + ip);
-                }
-            }
-        }
-
-        if (SessionManager.getSession().getAttribute("USER_NAME") == null) {
-            try {
-                Document doc = XMLUtil.createNew("login");
-                Element action = doc.createElement("action");
-                action.appendChild(doc.createTextNode(hreq.getRequestURI()));
-                doc.getDocumentElement().appendChild(action);
-                if (error != null) {
-                    Element errorEL = doc.createElement("error");
-                    errorEL.appendChild(doc.createTextNode(error));
-                    doc.getDocumentElement().appendChild(errorEL);
-                }
-                ((HttpServletResponse)response).setHeader("pragma", "no-cache");
-                ((HttpServletResponse)response).setHeader("Cache-Control", "no-cache");
-                ((HttpServletResponse)response).setHeader("Cache-Control", "no-store");
-                ((HttpServletResponse)response).setDateHeader("Expires", 0);
-                ((HttpServletResponse)response).setContentType("text/html");
-                ((HttpServletResponse)response).setCharacterEncoding("UTF-8");
-                response.getWriter().write(ServiceUtils.getXML(Constants.APP_ROOT + "login.xsl",
-                                                               doc));
+                return;
+            } catch (PermissionException p) {
+                ((HttpServletResponse)response).sendRedirect("NoPermission.html");
+                return;
             } catch (Exception e) {
-                e.printStackTrace();
+                error = "authFailure";
             }
-            return;
         }
-
+        //
+        // ask them to authenticate
+        //
         try {
-            chain.doFilter(req, response);
+            Document doc;
+            Element action;
+            
+            doc = XMLUtil.createNew("login");
+            action = doc.createElement("action");
+            action.appendChild(doc.createTextNode(hreq.getRequestURI()));
+            doc.getDocumentElement().appendChild(action);
+            if (error != null) {
+                Element errorEL = doc.createElement("error");
+                errorEL.appendChild(doc.createTextNode(error));
+                doc.getDocumentElement().appendChild(errorEL);
+            }
+            ((HttpServletResponse)response).setHeader("pragma", "no-cache");
+            ((HttpServletResponse)response).setHeader("Cache-Control", "no-cache");
+            ((HttpServletResponse)response).setHeader("Cache-Control", "no-store");
+            ((HttpServletResponse)response).setDateHeader("Expires", 0);
+            ((HttpServletResponse)response).setContentType("text/html");
+            ((HttpServletResponse)response).setCharacterEncoding("UTF-8");
+            response.getWriter().write(ServiceUtils.getXML(OpenELISScreenService.APP_ROOT + "login.xsl",
+                                                           doc));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+    
 
     public void destroy() {
-        CachingManager.destroy();
         JMSMessageConsumer.stopListener();
+    }
+
+    /*
+     * log the user into the system by sending its credentials to JBOSS for
+     * authentication
+     */
+    
+    private void login(HttpServletRequest req, String name, String password, String ipAddress) throws Exception {
+        InitialContext localctx, remotectx;
+        File propFile;
+        Properties props;
+        SystemUserPermissionProxyRemote remote;
+        SystemUserPermission perm;
+        
+        System.out.println("Checking Credentials");
+
+        try {
+            localctx = new InitialContext();
+            propFile = new File((String)localctx.lookup( ("java:comp/env/openelisJNDI")));
+            props = new Properties();
+            props.load(new FileInputStream(propFile));
+            props.setProperty(InitialContext.INITIAL_CONTEXT_FACTORY, "org.jboss.security.jndi.LoginInitialContextFactory");
+            props.setProperty(InitialContext.SECURITY_PROTOCOL, "other");
+            props.setProperty(Context.SECURITY_PRINCIPAL, name);
+            props.setProperty(InitialContext.SECURITY_CREDENTIALS, password);
+
+            remotectx = new InitialContext(props);
+            remote = (SystemUserPermissionProxyRemote)remotectx.lookup("openelis/SystemUserPermissionProxyBean/remote");
+            perm = remote.login();
+            //
+            // check to see if she has connect permission
+            //
+            if (!perm.hasConnectPermission())
+                throw new PermissionException("NoPermission.html");
+
+            req.getSession().setAttribute("UserPermission", perm);
+            req.getSession().setAttribute("jndiProps", props);
+            req.getSession().setAttribute("USER_NAME", name);
+
+            authLog.info("Login attempt for " + name + " succeeded");
+        } catch (Exception e) {
+            e.printStackTrace();
+            authLog.info("Login attempt for " + name + " failed ");
+            throw e;
+        }
     }
 }

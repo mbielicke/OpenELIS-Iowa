@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.domain.DictionaryCacheCategoryVO;
-import org.openelis.domain.DictionaryCacheVO;
+import org.openelis.domain.DictionaryCacheCategoryListVO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.modules.main.client.openelis.OpenELIS;
@@ -149,55 +149,45 @@ public class DictionaryCache {
     }
 
     protected void preloadByCategorySystemNamesInt(final String... systemNames) throws Exception {
-        DictionaryDO data;
-        ArrayList<DictionaryDO> list;
-        ArrayList<DictionaryCacheCategoryVO> catList;
-        DictionaryCacheVO dictVO;
-        DictionaryCacheCategoryVO catVO;
+        DictionaryCacheCategoryListVO cats;
 
         try {
-            catList = new ArrayList<DictionaryCacheCategoryVO>();
-            for (int i = 0; i < systemNames.length; i++ ) {
-                list = categoryNameList.get(systemNames[i]);
+            //
+            // make a list of category system names that we don't have in the
+            // cache
+            cats = new DictionaryCacheCategoryListVO();
+            cats.setList(new ArrayList<DictionaryCacheCategoryVO>());
 
-                if (list == null) {
-                    catVO = new DictionaryCacheCategoryVO();
-                    catVO.setSystemName(systemNames[i]);
-                    catList.add(catVO);
+            for (int i = 0; i < systemNames.length; i++ ) {
+                if ( !categoryNameList.containsKey(systemNames[i])) {
+                    DictionaryCacheCategoryVO cat;
+
+                    cat = new DictionaryCacheCategoryVO();
+                    cat.setSystemName(systemNames[i]);
+                    cats.getList().add(cat);
                 }
             }
 
-            dictVO = new DictionaryCacheVO();
-            dictVO.setList(new ArrayList<DictionaryCacheCategoryVO>());
-            if (catList.size() > 0) {
-                dictVO.setList(catList);
-                dictVO = service.call("preloadByCategorySystemNames", dictVO);
-            }
+            if (cats.getList().size() > 0)
+                cats = service.call("preloadByCategorySystemNames", cats);
 
             // put the new values in the screen cache
-            catList = dictVO.getList();
-            for (int i = 0; i < catList.size(); i++ ) {
-                catVO = catList.get(i);
-                list = catVO.getDictionaryList();
-                categoryNameList.put(catVO.getSystemName(), catVO.getDictionaryList());
+            for (DictionaryCacheCategoryVO cat : cats.getList()) {
+                categoryNameList.put(cat.getSystemName(), cat.getDictionaryList());
 
                 // iterate through the results and insert them into the other
                 // lists
-                for (int j = 0; j < list.size(); j++ ) {
-                    data = (DictionaryDO)list.get(j);
-
+                for (DictionaryDO data : cat.getDictionaryList()) {
                     systemNameList.put(data.getSystemName(), data);
                     idList.put(data.getId(), data);
                 }
             }
-
         } catch (Exception e) {
             throw new Exception("DictionaryCache.preloadByCategorySystemNamesInt error.");
         }
     }
 
-    protected ArrayList<DictionaryDO> getListFromCategorySystemName(final String systemName) {
-        DictionaryDO data;
+    protected ArrayList<DictionaryDO> getListFromCategorySystemName(String systemName) {
         ArrayList<DictionaryDO> list;
 
         list = categoryNameList.get(systemName);
@@ -213,9 +203,7 @@ public class DictionaryCache {
 
                 // iterate through the results and insert them into the other
                 // lists
-                for (int i = 0; i < list.size(); i++ ) {
-                    data = (DictionaryDO)list.get(i);
-
+                for (DictionaryDO data : list) {
                     systemNameList.put(data.getSystemName(), data);
                     idList.put(data.getId(), data);
                 }
