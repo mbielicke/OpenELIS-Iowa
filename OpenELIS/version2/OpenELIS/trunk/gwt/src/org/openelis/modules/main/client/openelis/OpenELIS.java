@@ -139,7 +139,7 @@ public class OpenELIS extends Screen {
             public void onClick(ClickEvent event) {
                 try {
                     service.call("logout");
-                    Window.open("http://www.uhl.uiowa.edu", "_self", null);
+                    Window.open("OpenELIS.html", "_self", null);
                 } catch (Throwable e) {
                     e.printStackTrace();
                     Window.alert(e.getMessage());

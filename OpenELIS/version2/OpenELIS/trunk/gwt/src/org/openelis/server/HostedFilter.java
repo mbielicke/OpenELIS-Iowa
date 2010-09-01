@@ -48,6 +48,7 @@ import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.modules.main.server.OpenELISScreenService;
 import org.openelis.persistence.CachingManager;
 import org.openelis.remote.SystemUserPermissionProxyRemote;
+import org.openelis.util.SessionManager;
 
 public class HostedFilter implements Filter {
     private static final long serialVersionUID = 1L;

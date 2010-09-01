@@ -70,7 +70,7 @@ public class StaticFilter implements Filter {
         ServiceUtils.props = "org.openelis.constants.OpenELISConstants";
         OpenELISScreenService.APP_ROOT = config.getInitParameter("AppRoot");
         JMSMessageConsumer.startListener("topic/openelisTopic");
-
+        
         log.debug("getting out");
     }
 
@@ -98,16 +98,18 @@ public class StaticFilter implements Filter {
             hreq.getSession().setAttribute("locale", req.getParameter("locale"));
 
         //
+        // register this session with SessionManager so we can access it
+        // statically in gwt code
+        //
+        SessionManager.setSession(hreq.getSession());
+
+        //
         // check to see if we are coming from login screen
         //
         if (hreq.getParameter("username") != null) {            
             try {
                 login(hreq, hreq.getParameter("username"), req.getParameter("password"),  
                       hreq.getRemoteAddr());
-                //
-                // register the session so we can access it statically in gwt code
-                //
-                SessionManager.setSession(hreq.getSession());
 
                 try {
                     chain.doFilter(req, response);
@@ -131,7 +133,7 @@ public class StaticFilter implements Filter {
             
             doc = XMLUtil.createNew("login");
             action = doc.createElement("action");
-            action.appendChild(doc.createTextNode(hreq.getRequestURI()));
+            action.appendChild(doc.createTextNode("OpenELIS.html"));
             doc.getDocumentElement().appendChild(action);
             if (error != null) {
                 Element errorEL = doc.createElement("error");
@@ -195,7 +197,6 @@ public class StaticFilter implements Filter {
 
             authLog.info("Login attempt for " + name + " succeeded");
         } catch (Exception e) {
-            e.printStackTrace();
             authLog.info("Login attempt for " + name + " failed ");
             throw e;
         }
