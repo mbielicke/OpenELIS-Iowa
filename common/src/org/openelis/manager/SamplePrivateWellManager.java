@@ -25,7 +25,7 @@ public class SamplePrivateWellManager implements RPC, SampleDomainInt {
     }
 
     public static SamplePrivateWellManager fetchBySampleId(Integer sampleId) throws Exception {
-        return proxy().fetch(sampleId);
+        return proxy().fetchBySampleId(sampleId);
     }
 
     // setters/getters
