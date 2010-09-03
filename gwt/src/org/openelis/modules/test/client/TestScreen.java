@@ -1240,7 +1240,7 @@ public class TestScreen extends Screen {
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         List<DictionaryDO> list;
-        List<SectionDO> sectList;
+        List<SectionViewDO> sectList;
         TableDataRow row;
 
         model = new ArrayList<TableDataRow>();
@@ -1296,7 +1296,7 @@ public class TestScreen extends Screen {
         model = new ArrayList<TableDataRow>();
         sectList = SectionCache.getSectionList();
         model.add(new TableDataRow(null, ""));
-        for (SectionDO resultDO : sectList) {
+        for (SectionViewDO resultDO : sectList) {
             model.add(new TableDataRow(resultDO.getId(), resultDO.getName()));
         }
         ((Dropdown<Integer>)sectionTable.getColumnWidget(TestMeta.getSectionSectionId())).setModel(model);

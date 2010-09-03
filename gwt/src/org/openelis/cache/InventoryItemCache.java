@@ -32,32 +32,26 @@ import org.openelis.gwt.services.ScreenService;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 public class InventoryItemCache {
-    protected static final String INVENTORY_ITEM_CACHE_SERVICE_URL = "org.openelis.server.cache.InventoryItemCacheService";
-    protected ScreenService service;
+    protected static final String               INVENTORY_ITEM_CACHE_SERVICE_URL = "org.openelis.server.cache.InventoryItemCacheService";
+    protected ScreenService                     service;
     protected HashMap<Integer, InventoryItemDO> idList;
-    private static InventoryItemCache instance;   
+    private static InventoryItemCache           instance = new InventoryItemCache();  
     
-    public InventoryItemCache() {
+    protected InventoryItemCache() {
         service = new ScreenService("OpenELISServlet?service="+INVENTORY_ITEM_CACHE_SERVICE_URL);
         
-        idList = (HashMap<Integer, InventoryItemDO>)OpenELIS.getCacheList().get("InventoryItemsCache-id");
-                        
-        if(idList == null){
-            idList = new HashMap<Integer, InventoryItemDO>();
-            OpenELIS.getCacheList().put("InventoryItemsCache-id", idList);
-        }
+        idList = new HashMap<Integer, InventoryItemDO>();
+        OpenELIS.getCacheList().put("InventoryItemsCache-id", idList);
     }
     
     public static InventoryItemDO getActiveInventoryItemFromId(Integer id) throws Exception {
-        if(instance == null)
-            instance = new InventoryItemCache();
-        
         return instance.getActiveInventoryItemFromIdInt(id);
     }   
 
     protected InventoryItemDO getActiveInventoryItemFromIdInt(Integer id) throws Exception {
-        InventoryItemDO data = idList.get(id);
+        InventoryItemDO data;
         
+        data = idList.get(id);
         if(data == null){
             try{
                 data = (InventoryItemDO)service.call("fetchActiveInventoryItemById", id);

@@ -34,8 +34,6 @@ import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
@@ -72,7 +70,7 @@ public class EnvironmentalTab extends Screen {
     protected TextBox<Integer>             priority;
     protected AutoComplete<Integer>        project, reportTo, billTo;
     protected AppButton                    billToLookup, reportToLookup, projectLookup,
-                    locationLookup;
+                                           locationLookup;
     protected CheckBox                     isHazardous;
 
     private SampleLocationLookupScreen     locationScreen;

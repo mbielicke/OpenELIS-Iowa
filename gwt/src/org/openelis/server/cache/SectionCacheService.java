@@ -27,13 +27,12 @@ package org.openelis.server.cache;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.SectionDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.server.handlers.SectionCacheHandler;
 
 public class SectionCacheService {
     
-    public ArrayList<SectionDO> fetchSectionList(String name) throws Exception {
+    public ArrayList<SectionViewDO> fetchSectionList(String name) throws Exception {
         return SectionCacheHandler.getSectionList();
     }
     

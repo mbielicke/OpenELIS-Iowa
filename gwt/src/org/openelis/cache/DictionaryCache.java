@@ -183,7 +183,7 @@ public class DictionaryCache {
                 }
             }
         } catch (Exception e) {
-            throw new Exception("DictionaryCache.preloadByCategorySystemNamesInt error.");
+            throw new Exception("DictionaryCache.preloadByCategorySystemNamesInt error."+ e.getMessage());
         }
     }
 

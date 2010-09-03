@@ -69,37 +69,34 @@ import com.google.gwt.user.client.Window;
 public class SDWISTab extends Screen {
     private Dropdown<Integer>              sDWISSampleTypeId, sDWISSampleCategoryId;
     private TextBox                        sDWISPwsId, pwsName, sDWISFacilityId,
-                    sDWISSamplePointId, pointDesc, sDWISCollector;
+                                           sDWISSamplePointId, pointDesc, sDWISCollector;
     private TextBox<Integer>               sDWISStateLabId;
     private AutoComplete<Integer>          reportTo, billTo;
     private AppButton                      pwsButton, reportToLookup, billToLookup;
 
     private SampleOrganizationLookupScreen organizationScreen;
 
-    protected ScreenService                orgService;
+    protected ScreenService                orgService, pwsService;
 
     private SampleManager                  manager;
     private SampleSDWISManager             sdwisManager;
 
     protected boolean                      loaded = false;
 
-    public SDWISTab(ScreenDefInt def, ScreenWindow window) {
-        setDefinition(def);
-        setWindow(window);
-
-        orgService = new ScreenService(
-                                       "controller?service=org.openelis.modules.organization.server.OrganizationService");
-
-        initialize();
-        initializeDropdowns();
-    }
-
     public SDWISTab(ScreenWindow window) throws Exception {
-        drawScreen((ScreenDefInt)GWT.create(SDWISTabDef.class));
+        this(null, window);
+    }
+    
+    public SDWISTab(ScreenDefInt def, ScreenWindow window) throws Exception {
+        if (def == null)
+            drawScreen((ScreenDefInt)GWT.create(SDWISTabDef.class));
+        else
+            setDefinition(def);
+        
         setWindow(window);
-
-        orgService = new ScreenService(
-                                       "controller?service=org.openelis.modules.organization.server.OrganizationService");
+        
+        orgService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
+        pwsService = new ScreenService("controller?service=org.openelis.modules.pws.server.PwsService");
 
         initialize();
         initializeDropdowns();
@@ -113,15 +110,15 @@ public class SDWISTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                PwsDO pwsDO;
+                PwsDO data;
 
                 getSDWISManager().getSDWIS().setPwsId(event.getValue());
 
                 if (getSDWISManager().getSDWIS().getPwsId() != null) {
                     try {
-                        pwsDO = getSDWISManager().validatePwsId(event.getValue());
-                        getSDWISManager().getSDWIS().setPwsName(pwsDO.getName());
-                        pwsName.setValue(pwsDO.getName());
+                        data = pwsService.call("fetchByPwsId", getSDWISManager().getSDWIS().getPwsId());
+                        getSDWISManager().getSDWIS().setPwsName(data.getName());
+                        pwsName.setValue(data.getName());
 
                     } catch (ValidationErrorsList e) {
                         showErrors(e);
@@ -461,6 +458,7 @@ public class SDWISTab extends Screen {
 
     private void openPwsScreen() {
         PwsScreen pwsScreen;
+        ScreenWindow modal;
 
         try {
             final SDWISTab sdwis = this;
@@ -484,7 +482,7 @@ public class SDWISTab extends Screen {
                 }
             });
 
-            ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+            modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
             modal.setName(consts.get("pwsInformation"));
             modal.setContent(pwsScreen);
 

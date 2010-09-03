@@ -763,8 +763,8 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
             fields = getQueryFields();
 
             query.setFields(fields);
-            setState(State.DISPLAY);
             executeQuery(query);
+            setState(State.DISPLAY);            
             DataChangeEvent.fire(this);
         } else if (state == State.ADD) {
             window.setBusy(consts.get("adding"));
@@ -861,24 +861,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
             window.setDone(consts.get("updateAborted"));
         }
     }
-    
-    /*protected InventoryItemViewDO getInventoryItem(Integer id) {
-        InventoryItemViewDO data;         
-                    
-        data = inventoryItemMap.get(id);
-        if (data == null && id != null) {
-            try {
-                data  = inventoryItemService.call("fetchInventoryItemById", id);                
-                inventoryItemMap.put(id, data);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Window.alert(e.getMessage());
-            }
-        }
         
-        return data;        
-    }*/   
-    
     private void drawTabs() {                
         switch (tab) {
             case ITEM:  

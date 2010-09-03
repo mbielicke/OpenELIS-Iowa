@@ -28,11 +28,10 @@ package org.openelis.server.handlers;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.openelis.domain.DictionaryCacheCategoryVO;
 import org.openelis.domain.DictionaryCacheCategoryListVO;
+import org.openelis.domain.DictionaryCacheCategoryVO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.messages.DictionaryCacheMessage;
-import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.persistence.MessageHandler;
 import org.openelis.remote.DictionaryRemote;
@@ -184,12 +183,6 @@ public class DictionaryCacheHandler implements MessageHandler<DictionaryCacheMes
                 idValues.put(dictDO.getId(), dictDO);
             }
         }
-
-        // put the lists back in the cache
-        CachingManager.putElement("InitialData", "dictCategoryNameListValues",
-                                  categoryNameListValues);
-        CachingManager.putElement("InitialData", "dictSystemNameValues", systemNameValues);
-        CachingManager.putElement("InitialData", "dictIdValues", idValues);
 
         return returnDO;
     }

@@ -96,12 +96,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
 
 public class EnvironmentalSampleLoginScreen extends Screen implements HasActionHandlers {
-
-    private enum Tabs {
-        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
-        AUX_DATA
-    };
-
+    private SampleManager                  manager;
     protected Tabs                         tab;
     private Integer                        sampleLoggedInId, sampleErrorStatusId,
                                            sampleReleasedId;
@@ -138,7 +133,11 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
     private ModulePermission               userPermission;
 
     private SampleEnvironmentalImportOrder envOrderImport;
-    private SampleManager                  manager;
+    
+    private enum Tabs {
+        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
+        AUX_DATA
+    };
 
     public EnvironmentalSampleLoginScreen() throws Exception {
         super((ScreenDefInt)GWT.create(EnvironmentalSampleLoginDef.class));
@@ -430,7 +429,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         //
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
             public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
-                if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
+                if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
                 }
@@ -937,6 +936,10 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
     }
 
     protected void commit() {
+        Query query;
+        QueryData domain;
+        ArrayList<QueryData> queryFields;
+        
         setFocus(null);
         clearErrors();
         
@@ -946,10 +949,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         }
 
         if (state == State.QUERY) {
-            Query query;
-            QueryData domain;
-
-            ArrayList<QueryData> queryFields = getQueryFields();
+            queryFields = getQueryFields();
             query = new Query();
             query.setFields(queryFields);
 
