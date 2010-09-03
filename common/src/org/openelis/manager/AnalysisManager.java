@@ -210,6 +210,52 @@ public class AnalysisManager implements RPC {
         }
     }
 
+    public void initiateAnalysisAt(int index) throws Exception {
+        AnalysisViewDO anDO;
+        SystemUserPermission perm;
+        SectionViewDO section;
+        TestManager testMan;
+        SampleDataBundle bundle;
+        ValidationErrorsList errorsList;
+
+        anDO  = items.get(index).analysis;
+        assert anDO.getSectionId() != null : "section id is null";
+
+        //make sure the status is not released, cancelled, or in prep
+        if (proxy().anErrorInPrepId.equals(anDO.getStatusId()) || proxy().anInPrepId.equals(anDO.getStatusId()) ||
+            proxy().anReleasedId.equals(anDO.getStatusId()) || proxy().anCancelledId.equals(anDO.getStatusId())) {
+            errorsList = new ValidationErrorsList();
+            errorsList.add(new FormErrorException("wrongStatusNoInitiate"));
+            throw errorsList;
+        }
+
+        //make sure the user has complete permission for the section
+        section = proxy().getSectionFromId(anDO.getSectionId());
+        perm = proxy().getSystemUserPermission();
+        if (perm.getSection(section.getName()) == null || !perm.getSection(section.getName()).hasCompletePermission()) {
+            errorsList = new ValidationErrorsList();
+            errorsList.add(new FormErrorException("insufficientPrivilegesInitiateAnalysis", anDO.getTestName(), anDO.getMethodName()));
+            throw errorsList;
+        }
+
+        //validate the sample type
+        testMan = getTestAt(index);
+        bundle = getBundleAt(index);
+        if (!testMan.getSampleTypes().hasType(sampleItemManager.getSampleItemAt(bundle.getSampleItemIndex()).getTypeOfSampleId())) {
+            errorsList = new ValidationErrorsList();
+            errorsList.add(new FormErrorException("sampleTypeInvalid", anDO.getTestName(), anDO.getMethodName()));
+            throw errorsList;
+        }
+
+        if (proxy().anLoggedInId.equals(anDO.getStatusId()))
+            anDO.setStatusId(proxy().anInitiatedId);
+        else if (proxy().anErrorLoggedInId.equals(anDO.getStatusId()))
+            anDO.setStatusId(proxy().anErrorInitiatedId);
+
+        if (anDO.getStartedDate() == null)
+            anDO.setStartedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
+    }
+
     public void completeAnalysisAt(int index) throws Exception {
         AnalysisViewDO anDO;
         SystemUserPermission perm;
@@ -221,14 +267,9 @@ public class AnalysisManager implements RPC {
         anDO = items.get(index).analysis;
         assert anDO.getSectionId() != null : "section id is null";
 
-        if (proxy().anCompletedId.equals(anDO.getStatusId())) { // make sure status is
-            // not already complete
-            errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("analysisAlreadyComplete"));
-            throw errorsList;
-
-        } else if ( !proxy().anOnHoldId.equals(anDO.getStatusId()) &&
-                   !proxy().anInitiatedId.equals(anDO.getStatusId())) { // make sure the
+        if (!proxy().anOnHoldId.equals(anDO.getStatusId()) &&
+            !proxy().anInitiatedId.equals(anDO.getStatusId()) &&
+            !proxy().anCompletedId.equals(anDO.getStatusId())) { // make sure the
             // status is
             // initiated or
             // on hold

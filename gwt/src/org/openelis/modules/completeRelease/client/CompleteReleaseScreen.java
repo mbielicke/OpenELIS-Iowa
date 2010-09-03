@@ -12,6 +12,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.NotFoundException;
@@ -83,7 +84,8 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 
 public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
 
-    private Integer sampleLoggedInId, sampleErrorStatusId, sampleReleasedId, analysisOnHold;
+    private Integer sampleLoggedInId, sampleErrorStatusId, sampleReleasedId, analysisOnHoldId,
+                    analysisCompletedId;
 
     public enum Tabs {
         BLANK, SAMPLE, ENVIRONMENT, PRIVATE_WELL, SDWIS, SAMPLE_ITEM, ANALYSIS, TEST_RESULT,
@@ -1011,7 +1013,8 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
             sampleLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
             sampleErrorStatusId = DictionaryCache.getIdFromSystemName("sample_error");
             sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
-            analysisOnHold = DictionaryCache.getIdFromSystemName("analysis_on_hold");
+            analysisOnHoldId = DictionaryCache.getIdFromSystemName("analysis_on_hold");
+            analysisCompletedId = DictionaryCache.getIdFromSystemName("analysis_completed");
 
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -1230,7 +1233,8 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
         HashMap<Integer, Item> hash;
         AnalysisManager anMan;
         AnalysisViewDO anDO;
-
+        ValidationErrorsList errorsList;
+        
         bundle = null;
         rows = completeReleaseTable.getSelections();
         indexList = completeReleaseTable.getSelectedRows();
@@ -1259,7 +1263,13 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers {
                               .getSampleItems()
                               .getAnalysisAt(bundle.getSampleItemIndex());
                 anDO = anMan.getAnalysisAt(bundle.getAnalysisIndex());
-                if ( !analysisOnHold.equals(anDO.getStatusId()) ||
+                if (analysisCompletedId.equals(anDO.getStatusId())) {
+                    errorsList = new ValidationErrorsList();
+                    errorsList.add(new FormErrorException("analysisAlreadyComplete"));
+                    throw errorsList;
+                }
+
+                if ( !analysisOnHoldId.equals(anDO.getStatusId()) ||
                     Window.confirm(consts.get("onHoldWarning"))) {
                     bundle = getCurrentRowBundle(row, man);
                     row.data = bundle;
