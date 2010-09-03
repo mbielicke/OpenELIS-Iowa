@@ -28,8 +28,6 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.naming.InitialContext;
 
@@ -46,23 +44,22 @@ import org.openelis.meta.TestMeta;
 
 public class TestReflexManagerProxy {
     
-    private static int               typeDefault; 
-    
-    private static final Logger      log  = Logger.getLogger(TestReflexManagerProxy.class.getName());
-    
+    private static int  typeDefault;
+        
     public TestReflexManagerProxy() {
         DictionaryDO data;
         DictionaryLocal dl;
-        
-        dl = dictLocal();        
-        
-        try {
-            data = dl.fetchBySystemName("test_res_type_default");
-            typeDefault = data.getId();
-        } catch (Throwable e) {
-            typeDefault = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='test_res_type_default'", e);
+
+        dl = dictLocal();
+
+        if (typeDefault == 0) {
+            try {
+                data = dl.fetchBySystemName("test_res_type_default");
+                typeDefault = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeDefault = 0;
+            }
         }
     }
     
@@ -144,12 +141,10 @@ public class TestReflexManagerProxy {
                          boolean anaListValid,boolean resListValid,
                          HashMap<Integer, Integer> anaResGrpMap,
                          HashMap<Integer, List<TestResultViewDO>> resGrpRsltMap) throws Exception{
+        int i;
         TestReflexViewDO data;
-        TestResultViewDO result;
         List<List<Integer>> idsList;
         List<Integer> ids;
-        List<TestResultViewDO> resList;
-        int i, j;
         String fieldName;
         ArrayList<TestReflexViewDO> testReflexDOList;
         ValidationErrorsList list;

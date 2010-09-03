@@ -50,14 +50,14 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {@NamedQuery(name = "Section.FetchList",
-                            query = "select distinct new org.openelis.domain.SectionDO(s.id,s.parentSectionId,s.name,s.description,s.isExternal,s.organizationId)" +
-                            		" from Section s order by s.name"),
+                            query = "select distinct new org.openelis.domain.SectionViewDO(s.id,s.parentSectionId,s.name,s.description,s.isExternal,s.organizationId,ps.name,o.name)"
+                                +   " from Section s left join s.organization o left join s.parentSection ps"),
                 @NamedQuery(name = "Section.FetchByName", 
-                            query = "select distinct new org.openelis.domain.SectionDO(s.id,s.parentSectionId,s.name,s.description,s.isExternal,s.organizationId) " +
-                            		"from Section s where s.name like :name order by s.name"),
+                            query = "select distinct new org.openelis.domain.SectionDO(s.id,s.parentSectionId,s.name,s.description,s.isExternal,s.organizationId)"
+                                +   " from Section s where s.name like :name order by s.name"),
                 @NamedQuery(name = "Section.FetchById",
-                            query = "select distinct new org.openelis.domain.SectionViewDO(s.id,s.parentSectionId,s.name,s.description,s.isExternal,s.organizationId,ps.name,o.name)" +
-                            		" from Section s left join s.organization o left join s.parentSection ps where s.id = :id")})
+                            query = "select distinct new org.openelis.domain.SectionViewDO(s.id,s.parentSectionId,s.name,s.description,s.isExternal,s.organizationId,ps.name,o.name)"
+                                  + " from Section s left join s.organization o left join s.parentSection ps where s.id = :id")})
 @Entity
 @Table(name = "section")
 @EntityListeners( {AuditUtil.class})

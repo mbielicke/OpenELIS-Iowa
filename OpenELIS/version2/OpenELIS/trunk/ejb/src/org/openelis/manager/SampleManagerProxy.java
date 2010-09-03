@@ -46,6 +46,40 @@ import org.openelis.local.SampleManagerLocal;
 import org.openelis.meta.SampleMeta;
 
 public class SampleManagerProxy {
+    protected static Integer anLoggedInId, anInitiatedId, anCompletedId, anReleasedId, anInPrepId,
+                    anOnHoldId, anRequeueId, anCancelledId, anErrorLoggedInId, anErrorInitiatedId,
+                    anErrorInPrepId, anErrorCompletedId, samLoggedInId, samCompletedId,
+                    samReleasedId, samErrorId;
+
+    public SampleManagerProxy() {
+        DictionaryLocal l;
+        if (anLoggedInId == null) {
+            l = dictionaryLocal();
+
+            try {
+                anLoggedInId = l.fetchBySystemName("analysis_logged_in").getId();
+                anInitiatedId = l.fetchBySystemName("analysis_initiated").getId();
+                anCompletedId = l.fetchBySystemName("analysis_completed").getId();
+                anReleasedId = l.fetchBySystemName("analysis_released").getId();
+                anInPrepId = l.fetchBySystemName("analysis_inprep").getId();
+                anOnHoldId = l.fetchBySystemName("analysis_on_hold").getId();
+                anRequeueId = l.fetchBySystemName("analysis_requeue").getId();
+                anCancelledId = l.fetchBySystemName("analysis_cancelled").getId();
+                anErrorLoggedInId = l.fetchBySystemName("analysis_error_logged_in").getId();
+                anErrorInitiatedId = l.fetchBySystemName("analysis_error_initiated").getId();
+                anErrorInPrepId = l.fetchBySystemName("analysis_error_inprep").getId();
+                anErrorCompletedId = l.fetchBySystemName("analysis_error_completed").getId();
+                samLoggedInId = l.fetchBySystemName("sample_logged_in").getId();
+                samCompletedId = l.fetchBySystemName("sample_completed").getId();
+                samReleasedId = l.fetchBySystemName("sample_released").getId();
+                samErrorId = l.fetchBySystemName("sample_error").getId();
+            } catch (Exception e) {
+                e.printStackTrace();
+                anLoggedInId = null;
+            }
+        }
+    }
+
     public SampleManager fetchById(Integer sampleId) throws Exception {
         SampleDO sampleDO;
         SampleManager man;
@@ -59,8 +93,6 @@ public class SampleManagerProxy {
         man.getOrganizations();
         man.getProjects();
         man.getSampleItems();
-        
-        loadDictionaryEntries(man);
 
         return man;
     }
@@ -77,8 +109,6 @@ public class SampleManagerProxy {
         man.getOrganizations();
         man.getProjects();
         man.getSampleItems();
-        
-        loadDictionaryEntries(man);
 
         return man;
     }
@@ -347,8 +377,9 @@ public class SampleManagerProxy {
         if ( !quickEntry && man.auxData != null)
             man.getAuxData().validate(errorsList);
     }
-    
-    private void validateAccessionNumber(SampleDO sampleDO, ValidationErrorsList errorsList) throws Exception {
+
+    private void validateAccessionNumber(SampleDO sampleDO, ValidationErrorsList errorsList)
+                                                                                            throws Exception {
         try {
             sampleManagerLocal().validateAccessionNumber(sampleDO);
 
@@ -357,29 +388,6 @@ public class SampleManagerProxy {
 
             for (int i = 0; i < errors.size(); i++ )
                 errorsList.add(errors.get(i));
-        }
-    }
-       
-    private void loadDictionaryEntries(SampleManager man) throws Exception {
-        DictionaryLocal dl;
-        if (man.anLoggedInId == null) {
-            dl = dictionaryLocal();
-            man.anLoggedInId = dl.fetchBySystemName("analysis_logged_in").getId();
-            man.anInitiatedId = dl.fetchBySystemName("analysis_initiated").getId();
-            man.anCompletedId = dl.fetchBySystemName("analysis_completed").getId();
-            man.anReleasedId = dl.fetchBySystemName("analysis_released").getId();
-            man.anInPrepId = dl.fetchBySystemName("analysis_inprep").getId();
-            man.anOnHoldId = dl.fetchBySystemName("analysis_on_hold").getId();
-            man.anRequeueId = dl.fetchBySystemName("analysis_requeue").getId();
-            man.anCancelledId = dl.fetchBySystemName("analysis_cancelled").getId();
-            man.anErrorLoggedInId = dl.fetchBySystemName("analysis_error_logged_in").getId();
-            man.anErrorInitiatedId = dl.fetchBySystemName("analysis_error_initiated").getId();
-            man.anErrorInPrepId = dl.fetchBySystemName("analysis_error_inprep").getId();
-            man.anErrorCompletedId = dl.fetchBySystemName("analysis_error_completed").getId();
-            man.samLoggedInId = dl.fetchBySystemName("sample_logged_in").getId();
-            man.samCompletedId = dl.fetchBySystemName("sample_completed").getId();
-            man.samReleasedId = dl.fetchBySystemName("sample_released").getId();
-            man.samErrorId = dl.fetchBySystemName("sample_error").getId();
         }
     }
 

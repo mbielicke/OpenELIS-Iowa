@@ -32,7 +32,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.SamplePrivateWellLocal;
 
 public class SamplePrivateWellManagerProxy {
-    public SamplePrivateWellManager fetch(Integer sampleId) throws Exception {
+    public SamplePrivateWellManager fetchBySampleId(Integer sampleId) throws Exception {
         SamplePrivateWellManager man;
         SamplePrivateWellViewDO data;        
         

@@ -100,9 +100,9 @@ public class SectionBean implements SectionRemote {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
-    public ArrayList<SectionDO> fetchList() throws Exception {
+    public ArrayList<SectionViewDO> fetchList() throws Exception {
         Query query;
-        List<SectionDO> sections;
+        List<SectionViewDO> sections;
 
         query = manager.createNamedQuery("Section.FetchList");
         sections = query.getResultList();

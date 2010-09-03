@@ -111,7 +111,7 @@ public class LockBean implements LockLocal {
      * this is locked by the calling user it will refresh the lock.
      */
     public Integer getLock(Integer table, Integer row) throws Exception {
-        return getLock(table, row, "");
+        return getLock(table, row, null);
     }
 
     public Integer getLock(Integer table, Integer row, String session) throws Exception {
@@ -160,7 +160,7 @@ public class LockBean implements LockLocal {
      * This method will remove the given lock from the table.
      */
     public void giveUpLock(Integer table, Integer row) {
-        giveUpLock(table, row, "");
+        giveUpLock(table, row, null);
     }
 
     public void giveUpLock(Integer table, Integer row, String session) {

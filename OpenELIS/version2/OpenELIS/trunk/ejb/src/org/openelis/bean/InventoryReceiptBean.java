@@ -89,26 +89,24 @@ public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryRe
     private EntityManager                     manager;
 
     @EJB
-    private LockLocal                         lockBean;
+    private LockLocal                         lock;
 
     @EJB
-    private DictionaryLocal                   dictionaryBean;
+    private DictionaryLocal                   dictionary;
 
     @EJB
-    private OrganizationLocal                 organizationBean;
+    private OrganizationLocal                 organization;
 
     @EJB
-    private InventoryItemLocal                inventoryItemBean;
+    private InventoryItemLocal                inventoryItem;
 
     @EJB
-    private InventoryLocationLocal            inventoryLocationBean;
+    private InventoryLocationLocal            inventoryLocation;
 
     @EJB
-    private InventoryXPutLocal                inventoryXPutBean;
+    private InventoryXPutLocal                inventoryXPut;
 
     private static int                        statusPending, statusBackOrdered;
-
-    private static final Logger               log  = Logger.getLogger(InventoryReceiptBean.class.getName());
 
     private static final InventoryReceiptMeta meta = new InventoryReceiptMeta();
 
@@ -116,24 +114,25 @@ public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryRe
     public void init() {
         DictionaryDO data;
 
-        try {
-            data = dictionaryBean.fetchBySystemName("order_status_pending");
-            statusPending = data.getId();
-        } catch (Throwable e) {
-            statusPending = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='order_status_pending'", e);
+        if (statusPending == 0) {
+            try {
+                data = dictionary.fetchBySystemName("order_status_pending");
+                statusPending = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                statusPending = 0;
+            }
         }
 
-        try {
-            data = dictionaryBean.fetchBySystemName("order_status_back_ordered");
-            statusBackOrdered = data.getId();
-        } catch (Throwable e) {
-            statusBackOrdered = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='order_status_back_ordered'",
-                    e);
-        }        
+        if (statusBackOrdered == 0) {
+            try {
+                data = dictionary.fetchBySystemName("order_status_back_ordered");
+                statusBackOrdered = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                statusBackOrdered = 0;
+            }
+        }
     }
 
     public InventoryReceiptViewDO fetchById(Integer id) throws Exception {
@@ -244,7 +243,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryRe
         manager.persist(entity);
         data.setId(entity.getId());
 
-        item = inventoryItemBean.fetchById(data.getInventoryItemId());
+        item = inventoryItem.fetchById(data.getInventoryItemId());
         if ("Y".equals(item.getIsSerialMaintained())) {
             //
             // The unique identifier for each lot is the inventory location id.
@@ -328,8 +327,8 @@ public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryRe
 
         currQ = data.getQuantityReceived();
 
-        itemData = inventoryItemBean.fetchById(data.getInventoryItemId());
-        xputs = inventoryXPutBean.fetchByInventoryReceiptId(data.getId());
+        itemData = inventoryItem.fetchById(data.getInventoryItemId());
+        xputs = inventoryXPut.fetchByInventoryReceiptId(data.getId());
 
         oldEntityLocation = null;
         entityXPut = null;
@@ -459,12 +458,12 @@ public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryRe
     
 
     public InventoryReceiptViewDO fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(ReferenceTable.INVENTORY_RECEIPT, id);
+        lock.getLock(ReferenceTable.INVENTORY_RECEIPT, id);
         return fetchById(id);
     }
 
     public InventoryReceiptViewDO abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.INVENTORY_RECEIPT, id);
+        lock.giveUpLock(ReferenceTable.INVENTORY_RECEIPT, id);
         return fetchById(id);
     }
 
@@ -497,7 +496,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryRe
             if (data.getId() == null)
                 list.add(new FieldErrorException("fieldRequiredException", InventoryReceiptMeta.getInventoryItemName()));
         } else {
-            item = inventoryItemBean.fetchById(data.getInventoryItemId());            
+            item = inventoryItem.fetchById(data.getInventoryItemId());            
         }
             
         if (data.getOrganizationId() == null)
@@ -563,7 +562,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryRe
                 if (orgId != null) {
                     org = orgMap.get(orgId);
                     if (org == null)
-                        org = organizationBean.fetchById(orgId);
+                        org = organization.fetchById(orgId);
                     data.setOrganization(org);
                     orgMap.put(orgId, org);
                 }
@@ -592,7 +591,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryRe
                     data.setOrganizationId(order.getOrganizationId());
                 }
                 
-                org = organizationBean.fetchById(order.getOrganizationId());
+                org = organization.fetchById(order.getOrganizationId());
                 data.setOrganization(org);               
                 //
                 // an additional DO is added after the DOs that show a received 
@@ -622,7 +621,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryRe
                 man.addReceipt(data);
             }
             if (data.getId() != null) {
-                locations = inventoryLocationBean.fetchByInventoryReceiptId(data.getId());
+                locations = inventoryLocation.fetchByInventoryReceiptId(data.getId());
                 data.setInventoryLocations(locations);
             }
             

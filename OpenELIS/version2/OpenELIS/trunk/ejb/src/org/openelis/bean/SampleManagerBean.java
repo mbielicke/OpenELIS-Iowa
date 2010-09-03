@@ -35,7 +35,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
@@ -67,32 +66,29 @@ import org.openelis.utils.PermissionInterceptor;
 @SecurityDomain("openelis")
 @RolesAllowed("sample-select")
 public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLocal {
-
-    @PersistenceContext(unitName = "openelis")
     
     @Resource
     private SessionContext ctx;
     
-    @EJB private LockLocal lockBean;
-    @EJB private SystemVariableLocal sysVariable;
-    @EJB private SampleLocal sampleLocal;
+    @EJB
+    private LockLocal lock;
+    
+    @EJB
+    private SystemVariableLocal systemVariable;
+    
+    @EJB
+    private SampleLocal sample;
 
     public SampleManager fetchById(Integer sampleId) throws Exception {
-        SampleManager man = SampleManager.fetchById(sampleId);
-        
-        return man;
+        return SampleManager.fetchById(sampleId);
     }
 
     public SampleManager fetchWithItemsAnalysis(Integer sampleId) throws Exception {
-        SampleManager man = SampleManager.fetchWithItemsAnalyses(sampleId);
-        
-        return man;
+        return SampleManager.fetchWithItemsAnalyses(sampleId);
     }
 
     public SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception {
-        SampleManager man = SampleManager.fetchByAccessionNumber(accessionNumber);
-        
-        return man;
+        return SampleManager.fetchByAccessionNumber(accessionNumber);
     }
 
     public SampleManager add(SampleManager man) throws Exception {
@@ -125,9 +121,9 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.validateLock(ReferenceTable.SAMPLE, man.getSample().getId());
+            lock.validateLock(ReferenceTable.SAMPLE, man.getSample().getId());
             man.update();
-            lockBean.giveUpLock(ReferenceTable.SAMPLE, man.getSample().getId());  
+            lock.giveUpLock(ReferenceTable.SAMPLE, man.getSample().getId());  
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -138,7 +134,7 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
     }
 
     public SampleManager fetchForUpdate(Integer sampleId) throws Exception {
-        lockBean.getLock(ReferenceTable.SAMPLE, sampleId);
+        lock.getLock(ReferenceTable.SAMPLE, sampleId);
         
         SampleManager man = SampleManager.getInstance();
         man.getSample().setId(sampleId);
@@ -147,7 +143,7 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
     }
 
     public SampleManager abortUpdate(Integer sampleId) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.SAMPLE, sampleId);
+        lock.giveUpLock(ReferenceTable.SAMPLE, sampleId);
         
         return fetchWithItemsAnalysis(sampleId);
     }
@@ -178,7 +174,7 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
 
         // check for dups, if it is quick login return the manager
         try {
-            checkSample = sampleLocal.fetchByAccessionNumber(sampleDO.getAccessionNumber());
+            checkSample = sample.fetchByAccessionNumber(sampleDO.getAccessionNumber());
 
             if (checkSample != null && !checkSample.getId().equals(sampleDO.getId())){
                 if(SampleManager.QUICK_ENTRY.equals(checkSample.getDomain())){
@@ -212,7 +208,7 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
         }
         
         // get system variable
-        sysVarList = sysVariable.fetchByName("last_accession_number", 1);
+        sysVarList = systemVariable.fetchByName("last_accession_number", 1);
         sysVarDO = sysVarList.get(0);
 
         // we need to set the error

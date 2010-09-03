@@ -105,7 +105,7 @@ public class PermissionInterceptor {
     }
     
     public static SystemUserPermission getSystemUserPermission() {
-        return (SystemUserPermission)session.getAttribute("UserPermssion");
+        return (SystemUserPermission)session.getAttribute("UserPermission");
     }
     
     private static SystemUserPermissionProxyLocal local() {

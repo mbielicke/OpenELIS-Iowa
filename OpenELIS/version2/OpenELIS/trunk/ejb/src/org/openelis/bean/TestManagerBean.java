@@ -32,7 +32,6 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
-import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
@@ -55,15 +54,11 @@ import org.openelis.utils.PermissionInterceptor;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class TestManagerBean implements TestManagerRemote {
 
-    @PersistenceContext(unitName = "openelis")
     @Resource
     private SessionContext ctx;
 
     @EJB
     private LockLocal      lockBean;
-
-    public TestManagerBean() {
-    }
 
     public TestManager fetchById(Integer testId) throws Exception {
         return TestManager.fetchById(testId);
