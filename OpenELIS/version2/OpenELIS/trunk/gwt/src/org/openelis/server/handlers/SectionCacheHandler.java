@@ -28,71 +28,54 @@ package org.openelis.server.handlers;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.SectionDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.messages.SectionCacheMessage;
-import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.persistence.MessageHandler;
 import org.openelis.remote.SectionRemote;
 
-
 public class SectionCacheHandler implements MessageHandler<SectionCacheMessage> {
 
-    public void handle(SectionCacheMessage message) {  
-        ArrayList<SectionViewDO> sectList;
-        HashMap<Integer, SectionViewDO> idHash;
-        SectionViewDO data;
-        
-        idHash = (HashMap<Integer, SectionViewDO>)CachingManager.getElement("InitialData", "sectionIdValues");        
-        sectList = (ArrayList<SectionViewDO>)CachingManager.getElement("InitialData", "sectionList");        
-        
-        if(sectList != null) {
-            if(idHash != null) {
-                data = idHash.get(message.getSectionDO().getId());
-                if(data != null)
-                    idHash.remove(data);
-            }
-            CachingManager.remove("InitialData", "sectionList");
-        }
-        
+    protected static ArrayList<SectionViewDO> sectionList;
+    protected static HashMap<Integer, SectionViewDO> idValues;
+    
+    static {
+        sectionList = new ArrayList<SectionViewDO>();
+        idValues = new HashMap<Integer, SectionViewDO>();
     }
     
-    public static ArrayList<SectionDO> getSectionList() {
-        SectionRemote remote;
-        ArrayList<SectionDO> sectList; 
+    public void handle(SectionCacheMessage message) {  
+        SectionViewDO data;
+        Integer id;
         
-        sectList = (ArrayList<SectionDO>)CachingManager.getElement("InitialData", "sectionList");
-        if(sectList == null) {
-            remote = (SectionRemote)EJBFactory.lookup("openelis/SectionBean/remote");
+        id = message.getSectionDO().getId();
+        data = idValues.get(id);
+        if(data != null)
+            idValues.remove(data);
+        sectionList.clear();     
+    }
+    
+    public static ArrayList<SectionViewDO> getSectionList() {
+        if (sectionList.size() == 0) {
             try {
-                sectList = (ArrayList<SectionDO>)remote.fetchList();
+                sectionList = (ArrayList<SectionViewDO>)remote().fetchList();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            CachingManager.putElement("InitialData", "sectionList", sectList);
-        }       
-        return sectList;
+        }
+        return sectionList;
     }
 
     public static SectionViewDO getSectionDOFromId(Integer id) {       
-        HashMap<Integer, SectionViewDO> idHash;
         SectionViewDO data;
         
-        idHash = (HashMap<Integer, SectionViewDO>)CachingManager.getElement("InitialData", "sectionIdValues");
-        if(idHash == null)
-            idHash = new HashMap<Integer, SectionViewDO>();           
-        
-        data = idHash.get(id);
+        data = idValues.get(id);
         if(data == null){
             try {
-                data = remote().fetchById(id);
+                data = remote().fetchById(id);                
+                if(data != null)
+                    idValues.put(id, data);
                 
-                if(data != null){
-                    idHash.put(id, data);
-                    CachingManager.putElement("InitialData", "sectionIdValues", idHash);
-                }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

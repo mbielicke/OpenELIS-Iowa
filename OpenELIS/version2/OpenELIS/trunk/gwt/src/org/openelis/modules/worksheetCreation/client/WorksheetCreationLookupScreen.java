@@ -327,7 +327,7 @@ public class WorksheetCreationLookupScreen extends Screen
     @SuppressWarnings("unchecked")
     private void initializeDropdowns() {
         ArrayList<DictionaryDO> dictList;
-        ArrayList<SectionDO>    sectList;
+        ArrayList<SectionViewDO> sectList;
         ArrayList<TableDataRow> model;
 
         try {
@@ -344,7 +344,7 @@ public class WorksheetCreationLookupScreen extends Screen
         sectList  = SectionCache.getSectionList();
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (SectionDO resultDO : sectList)
+        for (SectionViewDO resultDO : sectList)
             model.add(new TableDataRow(resultDO.getId(),resultDO.getName()));
         sectionId.setModel(model);
         ((Dropdown<Integer>)analysesTable.getColumns().get(4).getColumnWidget()).setModel(model);

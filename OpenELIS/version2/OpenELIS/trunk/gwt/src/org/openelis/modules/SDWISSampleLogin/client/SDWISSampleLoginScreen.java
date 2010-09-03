@@ -126,12 +126,12 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                                       commitButton, abortButton;
     protected TabPanel                tabs;
 
-    ScreenNavigator                   nav;
+    private ScreenNavigator           nav;
     private ModulePermission          userPermission;
 
     private SampleSDWISImportOrder    sdwisOrderImport;
 
-    public enum Tabs {
+    private enum Tabs {
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
         AUX_DATA
     };
@@ -417,7 +417,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         //
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
             public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
-                if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
+                if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
                 }
@@ -612,7 +612,12 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         });
 
         // sdwis section of the screen
-        sdwisTab = new SDWISTab(def, window);
+        try {
+            sdwisTab = new SDWISTab(def, window);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+        }
         addScreenHandler(sdwisTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 sdwisTab.setData(manager);
@@ -915,6 +920,10 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     }
 
     protected void commit() {
+        Query query;
+        QueryData domain;
+        ArrayList<QueryData> queryFields;
+        
         setFocus(null);
         clearErrors();
 
@@ -924,10 +933,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         }
 
         if (state == State.QUERY) {
-            Query query;
-            QueryData domain;
-
-            ArrayList<QueryData> queryFields = getQueryFields();
+            queryFields = getQueryFields();
             query = new Query();
             query.setFields(queryFields);
 

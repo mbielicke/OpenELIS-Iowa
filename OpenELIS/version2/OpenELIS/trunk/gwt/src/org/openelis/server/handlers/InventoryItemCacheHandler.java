@@ -29,46 +29,36 @@ import java.util.HashMap;
 
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.messages.InventoryItemCacheMessage;
-import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.persistence.MessageHandler;
 import org.openelis.remote.InventoryItemRemote;
 
 public class InventoryItemCacheHandler implements MessageHandler<InventoryItemCacheMessage> {
 
+    protected static HashMap<Integer, InventoryItemDO> idValues;
+    
+    static {
+        idValues = new HashMap<Integer, InventoryItemDO>();         
+    }
+    
     public void handle(InventoryItemCacheMessage message) {
-        HashMap<Integer, InventoryItemDO> idHash;
         InventoryItemDO data;
 
-        idHash = (HashMap<Integer, InventoryItemDO>)CachingManager.getElement("InitialData",
-                                                                                  "inventoryItemIdValues");
-
-        if (idHash != null) {
-            data = idHash.get(message.getInventoryItemDO().getId());
-            if (data != null)
-                idHash.remove(data);
-        }
-        CachingManager.remove("InitialData", "inventoryItemIdValues");
-
+        data = idValues.get(message.getInventoryItemDO().getId());
+        if (data != null)
+            idValues.remove(data);
     }
 
     public static InventoryItemDO getActiveInventoryItemDOFromId(Integer id) {
-        HashMap<Integer, InventoryItemDO> idHash;
         InventoryItemDO data;
 
-        idHash = (HashMap<Integer, InventoryItemDO>)CachingManager.getElement("InitialData",
-                                                                                  "inventoryItemIdValues");
-        if (idHash == null)
-            idHash = new HashMap<Integer, InventoryItemDO>();
-
-        data = idHash.get(id);
+        data = idValues.get(id);
         if (data == null) {
             try {
                 data = remote().fetchActiveById(id);
 
                 if (data != null) {
-                    idHash.put(id, data);
-                    CachingManager.putElement("InitialData", "inventoryItemIdValues", idHash);
+                    idValues.put(id, data);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

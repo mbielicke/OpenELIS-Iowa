@@ -36,6 +36,7 @@ import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SectionDO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
@@ -651,13 +652,13 @@ public class DictionaryScreen extends Screen {
 
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
-        ArrayList<SectionDO> list;
+        ArrayList<SectionViewDO> list;
 
         model = new ArrayList<TableDataRow>();
         list = SectionCache.getSectionList();
 
         model.add(new TableDataRow(null, ""));
-        for (SectionDO data : list)
+        for (SectionViewDO data : list)
             model.add(new TableDataRow(data.getId(), data.getName()));
         sectionId.setModel(model);
     }

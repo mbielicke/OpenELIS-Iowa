@@ -27,6 +27,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.SampleDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
@@ -39,9 +40,37 @@ import org.openelis.meta.SampleMeta;
 public class SampleManagerProxy {
     protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.sample.server.SampleService";
     protected ScreenService       service;
+    protected static Integer      anLoggedInId, anInitiatedId, anCompletedId, anReleasedId,
+                                  anInPrepId, anOnHoldId, anRequeueId, anCancelledId, anErrorLoggedInId,
+                                  anErrorInitiatedId, anErrorInPrepId, anErrorCompletedId, samLoggedInId,
+                                  samCompletedId, samReleasedId, samErrorId;
 
     public SampleManagerProxy() {
         service = new ScreenService("OpenELISServlet?service=" + SAMPLE_SERVICE_URL);
+
+        if (anLoggedInId == null) {
+            try {
+                anLoggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
+                anInitiatedId = DictionaryCache.getIdFromSystemName("analysis_initiated");
+                anCompletedId = DictionaryCache.getIdFromSystemName("analysis_completed");
+                anReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
+                anInPrepId = DictionaryCache.getIdFromSystemName("analysis_inprep");
+                anOnHoldId = DictionaryCache.getIdFromSystemName("analysis_on_hold");
+                anRequeueId = DictionaryCache.getIdFromSystemName("analysis_requeue");
+                anCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
+                anErrorLoggedInId = DictionaryCache.getIdFromSystemName("analysis_error_logged_in");
+                anErrorInitiatedId = DictionaryCache.getIdFromSystemName("analysis_error_initiated");
+                anErrorInPrepId = DictionaryCache.getIdFromSystemName("analysis_error_inprep");
+                anErrorCompletedId = DictionaryCache.getIdFromSystemName("analysis_error_completed");
+                samLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
+                samCompletedId = DictionaryCache.getIdFromSystemName("sample_completed");
+                samReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
+                samErrorId = DictionaryCache.getIdFromSystemName("sample_error");
+            } catch (Exception e) {
+                e.printStackTrace();
+                anLoggedInId = null;
+            }
+        }
     }
 
     public SampleManager fetchById(Integer sampleId) throws Exception {
@@ -127,7 +156,8 @@ public class SampleManagerProxy {
             man.getAuxData().validate(errorsList);
     }
 
-    private void validateAccessionNumber(SampleDO data, ValidationErrorsList errorsList) throws Exception {
+    private void validateAccessionNumber(SampleDO data, ValidationErrorsList errorsList)
+                                                                                        throws Exception {
         ArrayList<Exception> errors;
         try {
             service.call("validateAccessionNumber", data);

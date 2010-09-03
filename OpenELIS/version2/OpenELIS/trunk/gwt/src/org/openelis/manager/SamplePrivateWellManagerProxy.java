@@ -31,17 +31,18 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.SampleMeta;
 
 public class SamplePrivateWellManagerProxy {
+    
+    public SamplePrivateWellManager fetchBySampleId(Integer sampleId) throws Exception {
+        assert false : "not supported";
+        return null;
+    }
+    
     public SamplePrivateWellManager add(SamplePrivateWellManager man) throws Exception {
         assert false : "not supported";
         return null;
     }
 
     public SamplePrivateWellManager update(SamplePrivateWellManager man) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
-    
-    public SamplePrivateWellManager fetch(Integer sampleId) throws Exception {
         assert false : "not supported";
         return null;
     }
