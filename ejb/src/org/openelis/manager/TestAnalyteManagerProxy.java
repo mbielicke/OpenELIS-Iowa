@@ -28,8 +28,6 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.naming.InitialContext;
 
@@ -45,9 +43,7 @@ import org.openelis.meta.TestMeta;
 
 public class TestAnalyteManagerProxy {
 
-    private static int               typeSuppl;
-
-    private static final Logger      log  = Logger.getLogger(TestResultManagerProxy.class.getName());
+    private static int typeSuppl;
 
     public TestAnalyteManagerProxy() {
         DictionaryDO data;
@@ -55,13 +51,14 @@ public class TestAnalyteManagerProxy {
 
         dl = dictLocal();
 
-        try {
-            data = dl.fetchBySystemName("test_analyte_suplmtl");
-            typeSuppl = data.getId();
-        } catch (Throwable e) {
-            typeSuppl = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='test_analyte_suplmtl'", e);
+        if (typeSuppl == 0) {
+            try {
+                data = dl.fetchBySystemName("test_analyte_suplmtl");
+                typeSuppl = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeSuppl = 0;
+            }
         }
     }
 
@@ -77,7 +74,8 @@ public class TestAnalyteManagerProxy {
         return tam;
     }
 
-    public TestAnalyteManager add(TestAnalyteManager man, HashMap<Integer, Integer> idMap) throws Exception {
+    public TestAnalyteManager add(TestAnalyteManager man, HashMap<Integer, Integer> idMap)
+                                                                                          throws Exception {
         TestAnalyteLocal al;
         ArrayList<TestAnalyteViewDO> list;
         ArrayList<ArrayList<TestAnalyteViewDO>> grid;
@@ -174,21 +172,21 @@ public class TestAnalyteManagerProxy {
                 rg = data.getResultGroup();
                 if (j == 0 && !DataBaseUtil.isEmpty(rg))
                     anaResGrpMap.put(data.getId(), rg);
-                
+
                 try {
                     al.validate(data);
-                    
+
                     if (rg > results.size()) {
                         exc = new GridFieldErrorException("invalidResultGroupException", i, j,
                                                           TestMeta.getAnalyteResultGroup(),
                                                           "analyteTable");
                         list.add(exc);
                     }
-                    
-                    if(j > 0 && DataBaseUtil.isSame(typeSuppl,data.getTypeId())) {
+
+                    if (j > 0 && DataBaseUtil.isSame(typeSuppl, data.getTypeId())) {
                         exc = new GridFieldErrorException("columnAnalyteSupplException", i, j,
                                                           TestMeta.getAnalyteTypeId(),
-                                                          "analyteTable");                        
+                                                          "analyteTable");
                         list.add(exc);
                     }
                 } catch (Exception e) {

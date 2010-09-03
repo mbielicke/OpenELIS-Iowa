@@ -30,8 +30,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.naming.InitialContext;
 
@@ -51,83 +49,86 @@ import org.openelis.utilcommon.ResultRangeNumeric;
 import org.openelis.utilcommon.ResultRangeTiter;
 
 public class TestResultManagerProxy {
-    
-    private static int               typeDict, typeNumeric, typeTiter, typeDefault,
-                                     typeAlphaLower, typeAlphaUpper, typeAlphaMixed; 
-    
-    private static final Logger      log  = Logger.getLogger(TestResultManagerProxy.class.getName());
-    
+
+    private static int typeDict, typeNumeric, typeTiter, typeDefault, typeAlphaLower,
+                       typeAlphaUpper, typeAlphaMixed;
+
     public TestResultManagerProxy() {
         DictionaryDO data;
         DictionaryLocal dl;
-        
-        dl = dictLocal();
-        
-        try {
-            data = dl.fetchBySystemName("test_res_type_dictionary");
-            typeDict = data.getId();
-        } catch (Throwable e) {
-            typeDict = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='test_res_type_dictionary'", e);
-        }
-        
-        try {
-            data = dl.fetchBySystemName("test_res_type_numeric");
-            typeNumeric = data.getId();
-        } catch (Throwable e) {
-            typeNumeric = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='test_res_type_numeric'", e);
-        }
-        
-        try {
-            data = dl.fetchBySystemName("test_res_type_titer");
-            typeTiter = data.getId();
-        } catch (Throwable e) {
-            typeTiter = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='test_res_type_titer'", e);
-        }
-        
-        try {
-            data = dl.fetchBySystemName("test_res_type_default");
-            typeDefault = data.getId();
-        } catch (Throwable e) {
-            typeDefault = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='test_res_type_default'", e);
-        }
-        
-        try {
-            data = dl.fetchBySystemName("test_res_type_alpha_lower");
-            typeAlphaLower = data.getId();
-        } catch (Throwable e) {
-            typeAlphaLower = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='test_res_type_alpha_lower'", e);
-        }
-        
-        try {
-            data = dl.fetchBySystemName("test_res_type_alpha_upper");
-            typeAlphaUpper = data.getId();
-        } catch (Throwable e) {
-            typeAlphaUpper = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='test_res_type_alpha_upper'", e);
-        }
-        
-        try {
-            data = dl.fetchBySystemName("test_res_type_alpha_mixed");
-            typeAlphaMixed = data.getId();
-        } catch (Throwable e) {
-            typeAlphaMixed = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='test_res_type_alpha_mixed'", e);
-        }
-                
-    }
 
+        dl = dictLocal();
+
+        if (typeDict == 0) {
+            try {
+                data = dl.fetchBySystemName("test_res_type_dictionary");
+                typeDict = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeDict = 0;
+            }
+        }
+
+        if (typeNumeric == 0) {
+            try {
+                data = dl.fetchBySystemName("test_res_type_numeric");
+                typeNumeric = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeNumeric = 0;
+            }
+        }
+
+        if (typeTiter == 0) {
+            try {
+                data = dl.fetchBySystemName("test_res_type_titer");
+                typeTiter = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeTiter = 0;
+            }
+        }
+
+        if (typeDefault == 0) {
+            try {
+                data = dl.fetchBySystemName("test_res_type_default");
+                typeDefault = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeDefault = 0;
+            }
+        }
+
+        if (typeAlphaLower == 0) {
+            try {
+                data = dl.fetchBySystemName("test_res_type_alpha_lower");
+                typeAlphaLower = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeAlphaLower = 0;
+            }
+        }
+
+        if (typeAlphaUpper == 0) {
+            try {
+                data = dl.fetchBySystemName("test_res_type_alpha_upper");
+                typeAlphaUpper = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeAlphaUpper = 0;
+            }
+        }
+
+        if (typeAlphaMixed == 0) {
+            try {
+                data = dl.fetchBySystemName("test_res_type_alpha_mixed");
+                typeAlphaMixed = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeAlphaMixed = 0;
+            }
+        }
+    }
 
     public TestResultManager fetchByTestId(Integer testId) throws Exception {
         TestResultManager trm;
@@ -141,8 +142,8 @@ public class TestResultManagerProxy {
         return trm;
     }
 
-    public TestResultManager add(TestResultManager man,
-                                 HashMap<Integer, Integer> idMap) throws Exception {
+    public TestResultManager add(TestResultManager man, HashMap<Integer, Integer> idMap)
+                                                                                        throws Exception {
         TestResultLocal rl;
         TestResultViewDO data;
         int i, j, size, negId;
@@ -163,10 +164,10 @@ public class TestResultManagerProxy {
             }
         }
         return man;
-    }       
+    }
 
-    public TestResultManager update(TestResultManager man,
-                                    HashMap<Integer, Integer> idMap) throws Exception {
+    public TestResultManager update(TestResultManager man, HashMap<Integer, Integer> idMap)
+                                                                                           throws Exception {
         TestResultLocal rl;
         TestResultViewDO data;
         int i, j, size, negId;
@@ -194,13 +195,14 @@ public class TestResultManagerProxy {
         }
         return man;
     }
-    
-    public void validate(TestResultManager trm,TestTypeOfSampleManager ttsm,
-                         HashMap<Integer, List<TestResultViewDO>> resGrpRsltMap) throws Exception{
+
+    public void validate(TestResultManager trm,
+                         TestTypeOfSampleManager ttsm,
+                         HashMap<Integer, List<TestResultViewDO>> resGrpRsltMap) throws Exception {
         ValidationErrorsList list;
         TestResultViewDO data, tmpData;
         Integer typeId, unitId, entryId;
-        int i, j, k, defCount, size;        
+        int i, j, k, defCount, size;
         String value, fieldName, unitText;
         boolean alphaPresent, alphaErrorAdded, defErrorAdded;
         ResultRangeNumeric nr;
@@ -208,14 +210,14 @@ public class TestResultManagerProxy {
         HashMap<Integer, List<ResultRangeTiter>> trMap;
         HashMap<Integer, List<ResultRangeNumeric>> nrMap;
         HashMap<Integer, List<TestResultViewDO>> unitTypeMap;
-        List<Integer> dictList;        
+        List<Integer> dictList;
         List<TestResultViewDO> resDataList, typeDataList;
         DictionaryLocal dl;
         TestResultLocal rl;
-        Set<Integer> set; 
+        Set<Integer> set;
         Iterator<Integer> iter;
-        
-        list = new ValidationErrorsList();                
+
+        list = new ValidationErrorsList();
         value = null;
         dl = dictLocal();
         rl = local();
@@ -225,84 +227,88 @@ public class TestResultManagerProxy {
         dictList = new ArrayList<Integer>();
         typeDataList = new ArrayList<TestResultViewDO>();
         unitTypeMap = new HashMap<Integer, List<TestResultViewDO>>();
-        
-        for (i = 0; i < trm.groupCount(); i++) {
+
+        for (i = 0; i < trm.groupCount(); i++ ) {
             trMap.clear();
             nrMap.clear();
             dictList.clear();
             unitTypeMap.clear();
             typeDataList.clear();
-            resDataList = new ArrayList<TestResultViewDO>();        
-            resGrpRsltMap.put(i+1, resDataList);
-            alphaPresent = false; 
+            resDataList = new ArrayList<TestResultViewDO>();
+            resGrpRsltMap.put(i + 1, resDataList);
+            alphaPresent = false;
             alphaErrorAdded = false;
             defErrorAdded = false;
-            
-            for (j = 0; j < trm.getResultGroupSize(i+1); j++) {
-                data = trm.getResultAt(i+1, j);
+
+            for (j = 0; j < trm.getResultGroupSize(i + 1); j++ ) {
+                data = trm.getResultAt(i + 1, j);
                 value = data.getValue();
                 typeId = data.getTypeId();
-                unitId = data.getUnitOfMeasureId();    
-                
+                unitId = data.getUnitOfMeasureId();
+
                 resDataList.add(data);
-                
+
                 //
                 // units need to be valid for every result type because
                 // their use is dependent on the unit
                 //
-                if (!unitIsValid(unitId, ttsm.getTypes())) {                    
+                if ( !unitIsValid(unitId, ttsm.getTypes())) {
                     unitText = dl.fetchById(unitId).getEntry();
-                    
+
                     list.add(new GridFieldErrorException("illegalUnitOfMeasureException", i, j,
                                                          TestMeta.getResultUnitOfMeasureId(),
-                                                                  "resultTable",unitText));    
+                                                         "resultTable", unitText));
                     continue;
                 }
 
                 fieldName = TestMeta.getResultValue();
-                
-                try {                    
-                    rl.validate(data);                    
-                } catch(Exception e) {
+
+                try {
+                    rl.validate(data);
+                } catch (Exception e) {
                     DataBaseUtil.mergeException(list, e, "resultTable", i, j);
                     continue;
                 }
 
-                try {                    
+                try {
                     typeDataList = unitTypeMap.get(unitId);
-                    if(typeDataList == null) 
-                        typeDataList = new ArrayList<TestResultViewDO>();                        
-                
+                    if (typeDataList == null)
+                        typeDataList = new ArrayList<TestResultViewDO>();
+
                     typeDataList.add(data);
-                    unitTypeMap.put(unitId, typeDataList);                                                            
-                    
-                    if (DataBaseUtil.isSame(typeNumeric,typeId)) {
+                    unitTypeMap.put(unitId, typeDataList);
+
+                    if (DataBaseUtil.isSame(typeNumeric, typeId)) {
                         nr = new ResultRangeNumeric();
                         nr.setRange(value);
                         addNumericIfNoOverLap(nrMap, unitId, nr);
-                    } else if (DataBaseUtil.isSame(typeTiter,typeId)) {
+                    } else if (DataBaseUtil.isSame(typeTiter, typeId)) {
                         tr = new ResultRangeTiter();
                         tr.setRange(value);
                         addTiterIfNoOverLap(trMap, unitId, tr);
-                    } else if (DataBaseUtil.isSame(typeDict,typeId)) {
+                    } else if (DataBaseUtil.isSame(typeDict, typeId)) {
                         entryId = Integer.parseInt(value);
                         if (entryId == null)
                             throw new ParseException("illegalDictEntryException");
 
-                        if (!dictList.contains(entryId)) {
+                        if ( !dictList.contains(entryId)) {
                             dictList.add(entryId);
-                        } else { 
+                        } else {
                             //
-                            // this exception is added directly to the list here as opposed to getting thrown and caught
-                            // as in all the previous cases because we want its message to show at the bottom of Test screen
+                            // this exception is added directly to the list here
+                            // as opposed to getting thrown and caught
+                            // as in all the previous cases because we want its
+                            // message to show at the bottom of Test screen
                             // and not in the table
                             //
-                            list.add(new FieldErrorException("testDictEntryNotUniqueException", null,String.valueOf(i+1)));
+                            list.add(new FieldErrorException("testDictEntryNotUniqueException",
+                                                             null, String.valueOf(i + 1)));
                         }
                     } else if (DataBaseUtil.isSame(typeDefault, typeId)) {
                         //
                         // here we try to check whether this result group
-                        // has more than one value of type default for a given unit
+                        // has more than one value of type default for a given
+                        // unit
                         // and if it is the case then an exception is added for
                         // this DO to the list of exceptions
                         //
@@ -316,72 +322,86 @@ public class TestResultManagerProxy {
                             if (defCount > 1 && !defErrorAdded) {
                                 fieldName = TestMeta.getResultTypeId();
                                 //
-                                // this exception is added directly to the list here as opposed to getting thrown and caught
-                                // as in all the previous cases because we want its message to show at the bottom of Test screen
+                                // this exception is added directly to the list
+                                // here as opposed to getting thrown and caught
+                                // as in all the previous cases because we want
+                                // its message to show at the bottom of Test
+                                // screen
                                 // and not in the table
                                 //
-                                list.add(new FieldErrorException("testMoreThanOneDefaultForUnitException", null,String.valueOf(i+1)));
-                                 
+                                list.add(new FieldErrorException(
+                                                                 "testMoreThanOneDefaultForUnitException",
+                                                                 null, String.valueOf(i + 1)));
+
                                 defErrorAdded = true;
                             }
                         }
-                    } else if(DataBaseUtil.isSame(typeAlphaLower,typeId) || DataBaseUtil.isSame(typeAlphaUpper,typeId) ||
-                                    DataBaseUtil.isSame(typeAlphaMixed,typeId)) {
-                        if(alphaPresent && !alphaErrorAdded) {
+                    } else if (DataBaseUtil.isSame(typeAlphaLower, typeId) ||
+                               DataBaseUtil.isSame(typeAlphaUpper, typeId) ||
+                               DataBaseUtil.isSame(typeAlphaMixed, typeId)) {
+                        if (alphaPresent && !alphaErrorAdded) {
                             fieldName = TestMeta.getResultTypeId();
                             //
-                            // this exception is added directly to the list here as opposed to getting thrown and caught
-                            // as in all the previous cases because we want its message to show at the bottom of Test screen
+                            // this exception is added directly to the list here
+                            // as opposed to getting thrown and caught
+                            // as in all the previous cases because we want its
+                            // message to show at the bottom of Test screen
                             // and not in the table
                             //
-                            list.add(new FieldErrorException("testMoreThanOneAlphaTypeException", null , String.valueOf(i+1)));
+                            list.add(new FieldErrorException("testMoreThanOneAlphaTypeException",
+                                                             null, String.valueOf(i + 1)));
                             alphaErrorAdded = true;
                         }
                         alphaPresent = true;
                     }
-                } catch (ParseException ex) {                 
-                    list.add(new GridFieldErrorException(ex.getKey(), i, j, fieldName, "resultTable"));
+                } catch (ParseException ex) {
+                    list.add(new GridFieldErrorException(ex.getKey(), i, j, fieldName,
+                                                         "resultTable"));
 
                 } catch (InconsistencyException ex) {
-                    list.add(new GridFieldErrorException(ex.getMessage(), i, j, fieldName, "resultTable"));
+                    list.add(new GridFieldErrorException(ex.getMessage(), i, j, fieldName,
+                                                         "resultTable"));
 
-                }  
+                }
             }
-            
+
             set = unitTypeMap.keySet();
-            iter = set.iterator();                        
-            
+            iter = set.iterator();
+
             //
-            // Here we try to check whether for each result group and for a given
-            // unit it is the case that there is a value of type default but no 
+            // Here we try to check whether for each result group and for a
+            // given
+            // unit it is the case that there is a value of type default but no
             // value of any other type. We have to do this check here as opposed
             // to in the loop above because we need to have the information
-            // about the whole result group before making any decision about whether
-            // or not this condition is true and this will be considerably difficult
+            // about the whole result group before making any decision about
+            // whether
+            // or not this condition is true and this will be considerably
+            // difficult
             // to do in the loop above because there we at any moment have the
-            // information only of the records encountered upto a certain point 
-            // in the result group.            
+            // information only of the records encountered upto a certain point
+            // in the result group.
             //
-            while (iter.hasNext())  {                                                                        
+            while (iter.hasNext()) {
                 unitId = iter.next();
                 typeDataList = unitTypeMap.get(unitId);
                 size = typeDataList.size();
-                for(k = 0; k < size; k++) {
+                for (k = 0; k < size; k++ ) {
                     tmpData = typeDataList.get(k);
-                    if(DataBaseUtil.isSame(typeDefault, tmpData.getTypeId()) && size == 1) {
+                    if (DataBaseUtil.isSame(typeDefault, tmpData.getTypeId()) && size == 1) {
                         tmpData = typeDataList.get(0);
                         list.add(new FieldErrorException("testDefaultWithNoOtherTypeException",
-                                                         null , String.valueOf(tmpData.getResultGroup())));                    
+                                                         null,
+                                                         String.valueOf(tmpData.getResultGroup())));
                     }
                 }
-                
-            }           
+
+            }
         }
-                        
+
         if (list.size() > 0)
             throw list;
-    }  
-    
+    }
 
     private TestResultLocal local() {
         try {
@@ -392,7 +412,7 @@ public class TestResultManagerProxy {
             return null;
         }
     }
-    
+
     private DictionaryLocal dictLocal() {
         try {
             InitialContext ctx = new InitialContext();
@@ -402,9 +422,9 @@ public class TestResultManagerProxy {
             return null;
         }
     }
-    
-    private void addTiterIfNoOverLap(HashMap<Integer, 
-                                     List<ResultRangeTiter>> trMap,Integer unitId,
+
+    private void addTiterIfNoOverLap(HashMap<Integer, List<ResultRangeTiter>> trMap,
+                                     Integer unitId,
                                      ResultRangeTiter tr) throws InconsistencyException {
         ResultRangeTiter lr;
         List<ResultRangeTiter> trList;
@@ -424,8 +444,8 @@ public class TestResultManagerProxy {
         }
     }
 
-    private void addNumericIfNoOverLap(HashMap<Integer,
-                                       List<ResultRangeNumeric>> nrMap,Integer unitId,
+    private void addNumericIfNoOverLap(HashMap<Integer, List<ResultRangeNumeric>> nrMap,
+                                       Integer unitId,
                                        ResultRangeNumeric nr) throws InconsistencyException {
         ResultRangeNumeric lr;
         List<ResultRangeNumeric> nrList;
@@ -444,7 +464,7 @@ public class TestResultManagerProxy {
             nrMap.put(unitId, nrList);
         }
     }
-    
+
     /**
      * This method checks to see if a unit of measure (resultUnitId) assigned to
      * a test result belongs to the list of units added to the test

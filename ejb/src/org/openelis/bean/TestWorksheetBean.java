@@ -37,9 +37,9 @@ import javax.persistence.Query;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.TestWorksheetViewDO;
 import org.openelis.entity.TestWorksheet;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.TestWorksheetLocal;
 import org.openelis.meta.TestMeta;
@@ -132,30 +132,30 @@ public class TestWorksheetBean implements TestWorksheetLocal {
 
         list = new ValidationErrorsList();
         
-        if (data.getBatchCapacity() == null) {
+        if (DataBaseUtil.isEmpty(data.getBatchCapacity())) {
             list.add(new FieldErrorException("fieldRequiredException",
                                              TestMeta.getWorksheetBatchCapacity()));
             checkForMultiple = false;
         }
-        if (data.getTotalCapacity() == null) {
+        if (DataBaseUtil.isEmpty(data.getTotalCapacity())) {
             list.add(new FieldErrorException("fieldRequiredException",
                                              TestMeta.getWorksheetTotalCapacity()));
             checkForMultiple = false;
         }
 
-        if (data.getBatchCapacity() != null && data.getBatchCapacity() <= 0) {
+        if (DataBaseUtil.isEmpty(data.getBatchCapacity()) && data.getBatchCapacity() <= 0) {
             list.add(new FieldErrorException("batchCapacityMoreThanZeroException",
                                              TestMeta.getWorksheetBatchCapacity()));
             checkForMultiple = false;
         }
 
-        if (data.getTotalCapacity() != null && data.getTotalCapacity() <= 0) {
+        if (DataBaseUtil.isEmpty(data.getTotalCapacity()) && data.getTotalCapacity() <= 0) {
             list.add(new FieldErrorException("totalCapacityMoreThanZeroException",
                                              TestMeta.getWorksheetTotalCapacity()));
             checkForMultiple = false;
         }
 
-        if (data.getFormatId() == null) {
+        if (DataBaseUtil.isEmpty(data.getFormatId())) {
             list.add(new FieldErrorException("fieldRequiredException",
                                              TestMeta.getWorksheetFormatId()));
         }

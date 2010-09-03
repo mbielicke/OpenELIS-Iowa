@@ -31,6 +31,18 @@ import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.local.SampleEnvironmentalLocal;
 
 public class SampleEnvironmentalManagerProxy {
+    public SampleEnvironmentalManager fetchBySampleId(Integer sampleId) throws Exception {
+        SampleEnvironmentalDO envDO;
+        SampleEnvironmentalManager em;
+        
+        envDO = local().fetchBySampleId(sampleId);
+        em = SampleEnvironmentalManager.getInstance();
+        
+        em.setEnvironmental(envDO);
+        
+        return em;
+    }
+    
     public SampleEnvironmentalManager add(SampleEnvironmentalManager man) throws Exception {
         man.getEnvironmental().setSampleId(man.getSampleId());
         local().add(man.getEnvironmental());
@@ -50,18 +62,6 @@ public class SampleEnvironmentalManagerProxy {
             local().update(envDO);
         
         return man;
-    }
-    
-    public SampleEnvironmentalManager fetch(Integer sampleId) throws Exception {
-        SampleEnvironmentalDO envDO;
-        SampleEnvironmentalManager em;
-        
-        envDO = local().fetchBySampleId(sampleId);
-        em = SampleEnvironmentalManager.getInstance();
-        
-        em.setEnvironmental(envDO);
-        
-        return em;
     }
     
     private SampleEnvironmentalLocal local(){

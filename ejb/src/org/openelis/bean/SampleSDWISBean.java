@@ -56,16 +56,16 @@ public class SampleSDWISBean implements SampleSDWISLocal {
     
     public SampleSDWISViewDO fetchBySampleId(Integer sampleId) throws Exception {
         Query query;
-        SampleSDWISViewDO sdwisDO;
-        PwsDO pwsDO;
+        SampleSDWISViewDO data;
+        PwsDO pws;
         
         query = manager.createNamedQuery("SampleSDWIS.FetchBySampleId");
         query.setParameter("id", sampleId);
 
         try{
-            sdwisDO = (SampleSDWISViewDO) query.getSingleResult();
-            pwsDO = pwsBean.fetchByNumber0(sdwisDO.getPwsId());
-            sdwisDO.setPwsName(pwsDO.getName());
+            data = (SampleSDWISViewDO) query.getSingleResult();
+            pws = pwsBean.fetchByNumber0(data.getPwsId());
+            data.setPwsName(pws.getName());
             
         } catch (NoResultException e) {
             throw new NotFoundException();
@@ -73,7 +73,7 @@ public class SampleSDWISBean implements SampleSDWISLocal {
             throw new DatabaseException(e);
         }
         
-        return sdwisDO;
+        return data;
     }
     
     public void add(SampleSDWISViewDO data) throws Exception {

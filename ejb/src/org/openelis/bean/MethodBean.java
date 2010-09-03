@@ -66,15 +66,9 @@ public class MethodBean implements MethodRemote {
     private EntityManager manager;
 
     @EJB
-    private LockLocal lockBean;
+    private LockLocal lock;
 
-    private static final MethodMeta meta = new MethodMeta();
-
-    private static Integer methodRefTableId; 
-    
-    public MethodBean() {
-        methodRefTableId = ReferenceTable.METHOD;
-    } 
+    private static final MethodMeta meta = new MethodMeta(); 
     
     public MethodDO fetchById(Integer id) throws Exception {
     	Query query;
@@ -183,7 +177,7 @@ public class MethodBean implements MethodRemote {
     	
         validate(data);
     	
-        lockBean.validateLock(methodRefTableId, data.getId());
+        lock.validateLock(ReferenceTable.METHOD, data.getId());
            
         manager.setFlushMode(FlushModeType.COMMIT);
         
@@ -195,18 +189,18 @@ public class MethodBean implements MethodRemote {
         entity.setName(data.getName());
         entity.setReportingDescription(data.getReportingDescription());
 
-        lockBean.giveUpLock(methodRefTableId, data.getId());            
+        lock.giveUpLock(ReferenceTable.METHOD, data.getId());            
         
         return data;
     }
     
     public MethodDO fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(methodRefTableId, id);
+        lock.getLock(ReferenceTable.METHOD, id);
         return fetchById(id);
     }
     
     public MethodDO abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(methodRefTableId, id);
+        lock.giveUpLock(ReferenceTable.METHOD, id);
         return fetchById(id);
     }
     

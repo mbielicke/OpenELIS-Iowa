@@ -43,33 +43,33 @@ import org.openelis.local.TestSectionLocal;
 import org.openelis.meta.TestMeta;
 
 public class TestSectionManagerProxy {
-    
-    private static int               typeDefault, typeMatch; 
-    
-    private static final Logger      log  = Logger.getLogger(TestSectionManagerProxy.class.getName());
-    
+
+    private static int typeDefault, typeMatch;
+
     public TestSectionManagerProxy() {
         DictionaryDO data;
         DictionaryLocal dl;
-        
-        dl = dictLocal();        
-        
-        try {
-            data = dl.fetchBySystemName("test_section_default");
-            typeDefault = data.getId();
-        } catch (Throwable e) {
-            typeDefault = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='test_section_default'", e);
+
+        dl = dictLocal();
+
+        if (typeDefault == 0) {
+            try {
+                data = dl.fetchBySystemName("test_section_default");
+                typeDefault = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeDefault = 0;
+            }
         }
-        
-        try {
-            data = dl.fetchBySystemName("test_section_match");
-            typeMatch = data.getId();
-        } catch (Throwable e) {
-            typeMatch = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='test_section_match'", e);
+
+        if (typeMatch == 0) {
+            try {
+                data = dl.fetchBySystemName("test_section_match");
+                typeMatch = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeMatch = 0;
+            }
         }
     }
 
@@ -95,7 +95,7 @@ public class TestSectionManagerProxy {
 
         tl = local();
 
-        for (int i = 0; i < man.deleteCount(); i++)
+        for (int i = 0; i < man.deleteCount(); i++ )
             tl.delete(man.getDeletedAt(i));
 
         for (int i = 0; i < man.count(); i++ ) {
@@ -125,9 +125,9 @@ public class TestSectionManagerProxy {
         sl = local();
         sectionList = man.getSections();
         list = new ValidationErrorsList();
-        
+
         if (man.count() == 0) {
-            list.add(new FieldErrorException("atleastOneSection",null));
+            list.add(new FieldErrorException("atleastOneSection", null));
             throw list;
         }
 
@@ -149,9 +149,9 @@ public class TestSectionManagerProxy {
                 DataBaseUtil.mergeException(list, e, "sectionTable", i);
             }
 
-            if (idList.contains(sectId)) {                
-                exc = new TableFieldErrorException("fieldUniqueOnlyException",i,
-                                                   TestMeta.getSectionSectionId(),"sectionTable");
+            if (idList.contains(sectId)) {
+                exc = new TableFieldErrorException("fieldUniqueOnlyException", i,
+                                                   TestMeta.getSectionSectionId(), "sectionTable");
                 list.add(exc);
             } else {
                 idList.add(sectId);
@@ -159,68 +159,69 @@ public class TestSectionManagerProxy {
 
             if (flagId == null) {
                 numBlank++ ;
-            } else if (DataBaseUtil.isSame(typeDefault,flagId)) {
+            } else if (DataBaseUtil.isSame(typeDefault, flagId)) {
                 numDef++ ;
             } else if (DataBaseUtil.isSame(typeMatch, flagId)) {
                 numMatch++ ;
             }
         }
-        
+
         if (numDef > 1) {
             //
-            // exactly one section can be set as "default" 
+            // exactly one section can be set as "default"
             //
             for (i = 0; i < man.count(); i++ ) {
                 data = sectionList.get(i);
                 flagId = data.getFlagId();
                 if (flagId != null) {
-                    exc = new TableFieldErrorException("allSectBlankIfDefException",i,
-                                                       TestMeta.getSectionFlagId(),"sectionTable");
+                    exc = new TableFieldErrorException("allSectBlankIfDefException", i,
+                                                       TestMeta.getSectionFlagId(), "sectionTable");
                     list.add(exc);
                 }
             }
         } else if (numDef == 1 && numBlank != (man.count() - 1)) {
             //
-            // if one section has been marked as "default" then all the others must
+            // if one section has been marked as "default" then all the others
+            // must
             // be set to blank
             //
             for (i = 0; i < man.count(); i++ ) {
                 data = sectionList.get(i);
                 flagId = data.getFlagId();
-                if (!DataBaseUtil.isSame(typeDefault, flagId)) {
-                    exc = new TableFieldErrorException("allSectBlankIfDefException",i,
-                                                       TestMeta.getSectionFlagId(),"sectionTable");
+                if ( !DataBaseUtil.isSame(typeDefault, flagId)) {
+                    exc = new TableFieldErrorException("allSectBlankIfDefException", i,
+                                                       TestMeta.getSectionFlagId(), "sectionTable");
                     list.add(exc);
                 }
             }
         } else if (numMatch > 0 && numMatch != man.count()) {
             //
-            // if one section has been set as "match user location" then all 
+            // if one section has been set as "match user location" then all
             // the others must be set to that option
             //
             for (i = 0; i < man.count(); i++ ) {
                 data = sectionList.get(i);
                 flagId = data.getFlagId();
 
-                if (!DataBaseUtil.isSame(typeMatch, flagId)) {
-                    exc = new TableFieldErrorException("allSectMatchFlagException",i,
-                                                       TestMeta.getSectionFlagId(),"sectionTable");
+                if ( !DataBaseUtil.isSame(typeMatch, flagId)) {
+                    exc = new TableFieldErrorException("allSectMatchFlagException", i,
+                                                       TestMeta.getSectionFlagId(), "sectionTable");
                     list.add(exc);
                 }
             }
-        } 
-        
+        }
+
         if (list.size() > 0)
             throw list;
-    }    
-    
-    public Integer getIdFromSystemName(String systemName) throws Exception{
+    }
+
+    public Integer getIdFromSystemName(String systemName) throws Exception {
         DictionaryDO data;
-        
-        data = dictLocal().fetchBySystemName(systemName);        
+
+        data = dictLocal().fetchBySystemName(systemName);
         return data.getId();
     }
-    
+
     private TestSectionLocal local() {
         try {
             InitialContext ctx = new InitialContext();
@@ -229,8 +230,8 @@ public class TestSectionManagerProxy {
             System.out.println(e.getMessage());
             return null;
         }
-    }   
-    
+    }
+
     private DictionaryLocal dictLocal() {
         try {
             InitialContext ctx = new InitialContext();

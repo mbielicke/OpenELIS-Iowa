@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.bean;
 
 import java.util.ArrayList;
@@ -55,41 +55,40 @@ import org.openelis.meta.TestMeta;
 @SecurityDomain("openelis")
 @RolesAllowed("test-select")
 public class TestReflexBean implements TestReflexLocal {
-    
+
     @PersistenceContext(unitName = "openelis")
-    private EntityManager            manager;
-    
+    private EntityManager   manager;
+
     @EJB
-    private DictionaryLocal          dictionary;    
-    
-    private static int               typeDict;
-    
-    private static final Logger      log  = Logger.getLogger(TestReflexBean.class.getName());
-    
+    private DictionaryLocal dictionary;
+
+    private static int      typeDict;
+
     @PostConstruct
     public void init() {
         DictionaryDO data;
 
-        try {
-            data = dictionary.fetchBySystemName("test_res_type_dictionary");
-            typeDict = data.getId();                       
-        } catch (Throwable e) {
-            typeDict = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='test_res_type_dictionary'", e);
+        if (typeDict == 0) {
+            try {
+                data = dictionary.fetchBySystemName("test_res_type_dictionary");
+                typeDict = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeDict = 0;
+            }
         }
     }
-    
+
     public ArrayList<TestReflexViewDO> fetchByTestId(Integer testId) throws Exception {
         Query query;
         List<TestReflexViewDO> list;
         TestReflexViewDO data;
-        DictionaryViewDO dict;        
-        
+        DictionaryViewDO dict;
+
         query = manager.createNamedQuery("TestReflex.FetchByTestId");
         query.setParameter("testId", testId);
-        list = query.getResultList();                
-        
+        list = query.getResultList();
+
         try {
             for (int i = 0; i < list.size(); i++ ) {
                 data = list.get(i);
@@ -104,68 +103,67 @@ public class TestReflexBean implements TestReflexLocal {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-        }            
-        
-        
+        }
+
         return DataBaseUtil.toArrayList(list);
     }
 
     public TestReflexViewDO add(TestReflexViewDO data) throws Exception {
-        TestReflex testReflex;
+        TestReflex entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        testReflex = new TestReflex();
+        entity = new TestReflex();
 
-        testReflex.setTestId(data.getTestId());
-        testReflex.setAddTestId(data.getAddTestId());
-        testReflex.setTestAnalyteId(data.getTestAnalyteId());
-        testReflex.setTestResultId(data.getTestResultId());
-        testReflex.setFlagsId(data.getFlagsId());
+        entity.setTestId(data.getTestId());
+        entity.setAddTestId(data.getAddTestId());
+        entity.setTestAnalyteId(data.getTestAnalyteId());
+        entity.setTestResultId(data.getTestResultId());
+        entity.setFlagsId(data.getFlagsId());
 
-        manager.persist(testReflex);
+        manager.persist(entity);
 
-        data.setId(testReflex.getId());
-        
+        data.setId(entity.getId());
+
         return data;
     }
-    
-    public TestReflexViewDO update(TestReflexViewDO data) throws Exception {
-        TestReflex testReflex;
 
-        if(!data.isChanged())
-            return data;               
-        
+    public TestReflexViewDO update(TestReflexViewDO data) throws Exception {
+        TestReflex entity;
+
+        if ( !data.isChanged())
+            return data;
+
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        testReflex = manager.find(TestReflex.class, data.getId());
+        entity = manager.find(TestReflex.class, data.getId());
 
-        testReflex.setTestId(data.getTestId());
-        testReflex.setAddTestId(data.getAddTestId());        
-        testReflex.setTestAnalyteId(data.getTestAnalyteId());
-        testReflex.setTestResultId(data.getTestResultId());
-        testReflex.setFlagsId(data.getFlagsId());
-        
+        entity.setTestId(data.getTestId());
+        entity.setAddTestId(data.getAddTestId());
+        entity.setTestAnalyteId(data.getTestAnalyteId());
+        entity.setTestResultId(data.getTestResultId());
+        entity.setFlagsId(data.getFlagsId());
+
         return data;
     }
 
     public void delete(TestReflexViewDO data) throws Exception {
-        TestReflex testReflex;
+        TestReflex entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        testReflex = manager.find(TestReflex.class, data.getId());
+        entity = manager.find(TestReflex.class, data.getId());
 
-        if (testReflex != null)
-            manager.remove(testReflex);
+        if (entity != null)
+            manager.remove(entity);
     }
 
     public void validate(TestReflexViewDO data) throws Exception {
         ValidationErrorsList list;
-        
+
         list = new ValidationErrorsList();
-                
-        if (data.getAddTestId() == null) {           
+
+        if (data.getAddTestId() == null) {
             list.add(new FieldErrorException("fieldRequiredException",
                                              TestMeta.getReflexAddTestName()));
         }
@@ -175,19 +173,18 @@ public class TestReflexBean implements TestReflexLocal {
                                              TestMeta.getReflexTestAnalyteName()));
         }
 
-        if (data.getTestResultId() == null) {            
+        if (data.getTestResultId() == null) {
             list.add(new FieldErrorException("fieldRequiredException",
                                              TestMeta.getReflexTestResultValue()));
-        } 
+        }
 
         if (data.getFlagsId() == null) {
-            list.add(new FieldErrorException("fieldRequiredException",
-                                             TestMeta.getReflexFlagsId()));
+            list.add(new FieldErrorException("fieldRequiredException", TestMeta.getReflexFlagsId()));
         }
-        
-        if(list.size() > 0)
+
+        if (list.size() > 0)
             throw list;
 
-    }   
+    }
 
 }

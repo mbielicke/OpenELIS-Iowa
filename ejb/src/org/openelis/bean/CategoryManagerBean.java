@@ -50,7 +50,6 @@ import org.openelis.utils.PermissionInterceptor;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class CategoryManagerBean implements CategoryManagerRemote {
 
-    @PersistenceContext(unitName = "openelis")
     @Resource
     private SessionContext ctx;
 

@@ -27,8 +27,6 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
@@ -57,101 +55,107 @@ import org.openelis.meta.TestMeta;
 public class TestResultBean implements TestResultLocal {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager            manager;
+    private EntityManager   manager;
 
     @EJB
-    private DictionaryLocal          dictionary;
+    private DictionaryLocal dictionary;
 
-    private static int               typeDict, typeNumeric, typeTiter, typeDate,
-                                     typeDateTime, typeTime, typeAlphaLower, typeAlphaUpper,
-                                     typeAlphaMixed;
-    private static final Logger      log  = Logger.getLogger(TestResultBean.class.getName());
-    
+    private static int      typeDict, typeNumeric, typeTiter, typeDate, typeDateTime, typeTime,
+                    typeAlphaLower, typeAlphaUpper, typeAlphaMixed;
+
     @PostConstruct
     public void init() {
         DictionaryDO data;
 
-        try {
-            data = dictionary.fetchBySystemName("test_res_type_dictionary");
-            typeDict = data.getId();
-        } catch (Throwable e) {
-            typeDict = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='test_res_type_dictionary'", e);
+        if (typeDict == 0) {
+            try {
+                data = dictionary.fetchBySystemName("test_res_type_dictionary");
+                typeDict = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeDict = 0;
+            }
         }
-        
-        try {
-            data = dictionary.fetchBySystemName("test_res_type_numeric");
-            typeNumeric = data.getId();
-        } catch (Throwable e) {
-            typeNumeric = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='test_res_type_numeric'", e);
+
+        if (typeNumeric == 0) {
+            try {
+                data = dictionary.fetchBySystemName("test_res_type_numeric");
+                typeNumeric = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeNumeric = 0;
+            }
         }
-        
-        try {
-            data = dictionary.fetchBySystemName("test_res_type_titer");
-            typeTiter = data.getId();
-        } catch (Throwable e) {
-            typeTiter = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='test_res_type_titer'", e);
+
+        if (typeTiter == 0) {
+            try {
+                data = dictionary.fetchBySystemName("test_res_type_titer");
+                typeTiter = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeTiter = 0;
+            }
         }
-        
-        try {
-            data = dictionary.fetchBySystemName("test_res_type_date");
-            typeDate = data.getId();
-        } catch (Throwable e) {
-            typeDate = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='test_res_type_date'", e);
+
+        if (typeDate == 0) {
+            try {
+                data = dictionary.fetchBySystemName("test_res_type_date");
+                typeDate = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeDate = 0;
+            }
         }
-        
-        try {
-            data = dictionary.fetchBySystemName("test_res_type_date_time");
-            typeDateTime = data.getId();
-        } catch (Throwable e) {
-            typeDateTime = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='test_res_type_date_time'", e);
+
+        if (typeDateTime == 0) {
+            try {
+                data = dictionary.fetchBySystemName("test_res_type_date_time");
+                typeDateTime = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeDateTime = 0;
+            }
         }
-        
-        try {
-            data = dictionary.fetchBySystemName("test_res_type_time");
-            typeTime = data.getId();
-        } catch (Throwable e) {
-            typeTime = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='test_res_type_time'", e);
-        }       
-        
-        try {
-            data = dictionary.fetchBySystemName("test_res_type_alpha_lower");
-            typeAlphaLower = data.getId();
-        } catch (Throwable e) {
-            typeAlphaLower = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='test_res_type_alpha_lower'", e);
+
+        if (typeTime == 0) {
+            try {
+                data = dictionary.fetchBySystemName("test_res_type_time");
+                typeTime = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeTime = 0;
+            }
         }
-        
-        try {
-            data = dictionary.fetchBySystemName("test_res_type_alpha_upper");
-            typeAlphaUpper = data.getId();
-        } catch (Throwable e) {
-            typeAlphaUpper = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='test_res_type_alpha_upper'", e);
+
+        if (typeAlphaLower == 0) {
+            try {
+                data = dictionary.fetchBySystemName("test_res_type_alpha_lower");
+                typeAlphaLower = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeAlphaLower = 0;
+            }
         }
-        
-        try {
-            data = dictionary.fetchBySystemName("test_res_type_alpha_mixed");
-            typeAlphaMixed = data.getId();
-        } catch (Throwable e) {
-            typeAlphaMixed = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='test_res_type_alpha_mixed'", e);
+
+        if (typeAlphaUpper == 0) {
+            try {
+                data = dictionary.fetchBySystemName("test_res_type_alpha_upper");
+                typeAlphaUpper = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeAlphaUpper = 0;
+            }
         }
-        
+
+        if (typeAlphaMixed == 0) {
+            try {
+                data = dictionary.fetchBySystemName("test_res_type_alpha_mixed");
+                typeAlphaMixed = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeAlphaMixed = 0;
+            }
+        }
     }
 
     public ArrayList<ArrayList<TestResultViewDO>> fetchByTestId(Integer testId) throws Exception {
@@ -177,12 +181,13 @@ public class TestResultBean implements TestResultLocal {
                     rg = null;
                     break;
                 }
-               
+
                 list = DataBaseUtil.toArrayList(list);
                 for (int i = 0; i < list.size(); i++ ) {
                     data = (TestResultViewDO)list.get(i);
                     //
-                    // for entries that are dictionary, we want to fetch the dictionary
+                    // for entries that are dictionary, we want to fetch the
+                    // dictionary
                     // text and set it for display
                     //
                     if (DataBaseUtil.isSame(typeDict, data.getTypeId())) {
@@ -227,7 +232,7 @@ public class TestResultBean implements TestResultLocal {
     public TestResultViewDO update(TestResultViewDO data) throws Exception {
         TestResult entity;
 
-        if (!data.isChanged())
+        if ( !data.isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -271,21 +276,26 @@ public class TestResultBean implements TestResultLocal {
 
         value = data.getValue();
         typeId = data.getTypeId();
-        
-        if(DataBaseUtil.isEmpty(typeId)) 
-            list.add(new FieldErrorException("fieldRequiredException", TestMeta.getResultTypeId()));        
+
+        if (DataBaseUtil.isEmpty(typeId))
+            list.add(new FieldErrorException("fieldRequiredException", TestMeta.getResultTypeId()));
         //
         // dictionary, titers, numeric require a value
         //
         if (DataBaseUtil.isEmpty(value) &&
-            (DataBaseUtil.isSame(typeNumeric,typeId) || DataBaseUtil.isSame(typeTiter,typeId)
-                            || DataBaseUtil.isSame(typeDict,typeId))) {
+            (DataBaseUtil.isSame(typeNumeric, typeId) || DataBaseUtil.isSame(typeTiter, typeId) || DataBaseUtil.isSame(
+                                                                                                                       typeDict,
+                                                                                                                       typeId))) {
             list.add(new FieldErrorException("fieldRequiredException", TestMeta.getResultValue()));
-        } else if (!DataBaseUtil.isEmpty(value) &&
-                  (DataBaseUtil.isSame(typeDateTime,typeId) || DataBaseUtil.isSame(typeTime,typeId) ||
-                   DataBaseUtil.isSame(typeDate,typeId) || DataBaseUtil.isSame(typeAlphaLower,typeId) ||
-                   DataBaseUtil.isSame(typeAlphaUpper,typeId) || DataBaseUtil.isSame(typeAlphaMixed,typeId))) {
-            list.add(new FieldErrorException("valuePresentForTypeException", TestMeta.getResultValue()));
+        } else if ( !DataBaseUtil.isEmpty(value) &&
+                   (DataBaseUtil.isSame(typeDateTime, typeId) ||
+                    DataBaseUtil.isSame(typeTime, typeId) ||
+                    DataBaseUtil.isSame(typeDate, typeId) ||
+                    DataBaseUtil.isSame(typeAlphaLower, typeId) ||
+                    DataBaseUtil.isSame(typeAlphaUpper, typeId) || DataBaseUtil.isSame(typeAlphaMixed,
+                                                                                       typeId))) {
+            list.add(new FieldErrorException("valuePresentForTypeException",
+                                             TestMeta.getResultValue()));
         }
 
         if (list.size() > 0)

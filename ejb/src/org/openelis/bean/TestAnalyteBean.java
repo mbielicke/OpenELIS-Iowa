@@ -53,12 +53,11 @@ public class TestAnalyteBean implements TestAnalyteLocal {
     private EntityManager            manager;
 
     public ArrayList<ArrayList<TestAnalyteViewDO>> fetchByTestId(Integer testId) throws Exception {
+        int i, j, rg;
         Query query;
         ArrayList<ArrayList<TestAnalyteViewDO>> grid;
-        ArrayList<TestAnalyteViewDO> list;
-        int i, j, rg;
-        TestAnalyteViewDO ado;
-        ArrayList<TestAnalyteViewDO> ar;
+        ArrayList<TestAnalyteViewDO> list, ar;
+        TestAnalyteViewDO data;
 
         j = -1;
         ar = null;
@@ -73,83 +72,92 @@ public class TestAnalyteBean implements TestAnalyteLocal {
 
         grid = new ArrayList<ArrayList<TestAnalyteViewDO>>();
 
+        //
+        // This code creates a two dimensional "grid" of TestAnalyteViewDOs. 
+        // If a test analyte is marked as not being a column analyte, a list of 
+        // DOs is created with it being the first element in the the list and the
+        // list is added as a new row to the grid. If a test analyte is marked as 
+        // being a column analyte it is added to an existing row that has as its
+        // first element a DO representing a test analyte with the same row group
+        // as this one and which is marked as not being a column analyte. 
+        //
         for (i = 0; i < list.size(); i++ ) {
-            ado = list.get(i);
-            rg = ado.getRowGroup();
+            data = list.get(i);
+            rg = data.getRowGroup();
 
             if (j != rg) {
                 ar = new ArrayList<TestAnalyteViewDO>(1);
-                ar.add(ado);
+                ar.add(data);
                 grid.add(ar);
                 j = rg;
                 continue;
             }
-            if ("N".equals(ado.getIsColumn())) {
+            if ("N".equals(data.getIsColumn())) {
                 ar = new ArrayList<TestAnalyteViewDO>(1);
-                ar.add(ado);
+                ar.add(data);
                 grid.add(ar);
                 continue;
             }
 
-            ar.add(ado);
+            ar.add(data);
         }
 
         return grid;
     }
 
     public TestAnalyteViewDO add(TestAnalyteViewDO data) throws Exception {
-        TestAnalyte analyte;
+        TestAnalyte entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        analyte = new TestAnalyte();
+        entity = new TestAnalyte();
 
-        analyte.setRowGroup(data.getRowGroup());
-        analyte.setAnalyteId(data.getAnalyteId());
-        analyte.setIsReportable(data.getIsReportable());
-        analyte.setResultGroup(data.getResultGroup());
-        analyte.setScriptletId(data.getScriptletId());
-        analyte.setSortOrder(data.getSortOrder());
-        analyte.setTestId(data.getTestId());
-        analyte.setTypeId(data.getTypeId());
-        analyte.setIsColumn(data.getIsColumn());
+        entity.setRowGroup(data.getRowGroup());
+        entity.setAnalyteId(data.getAnalyteId());
+        entity.setIsReportable(data.getIsReportable());
+        entity.setResultGroup(data.getResultGroup());
+        entity.setScriptletId(data.getScriptletId());
+        entity.setSortOrder(data.getSortOrder());
+        entity.setTestId(data.getTestId());
+        entity.setTypeId(data.getTypeId());
+        entity.setIsColumn(data.getIsColumn());
 
-        manager.persist(analyte);
-        data.setId(analyte.getId());
+        manager.persist(entity);
+        data.setId(entity.getId());
 
         return data;
 
     }
 
     public TestAnalyteViewDO update(TestAnalyteViewDO data) throws Exception {
-        TestAnalyte analyte;
+        TestAnalyte entity;
 
         if ( !data.isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        analyte = manager.find(TestAnalyte.class, data.getId());
-        analyte.setRowGroup(data.getRowGroup());
-        analyte.setAnalyteId(data.getAnalyteId());
-        analyte.setIsReportable(data.getIsReportable());
-        analyte.setResultGroup(data.getResultGroup());
-        analyte.setScriptletId(data.getScriptletId());
-        analyte.setSortOrder(data.getSortOrder());
-        analyte.setTestId(data.getTestId());
-        analyte.setTypeId(data.getTypeId());
-        analyte.setIsColumn(data.getIsColumn());
+        entity = manager.find(TestAnalyte.class, data.getId());
+        entity.setRowGroup(data.getRowGroup());
+        entity.setAnalyteId(data.getAnalyteId());
+        entity.setIsReportable(data.getIsReportable());
+        entity.setResultGroup(data.getResultGroup());
+        entity.setScriptletId(data.getScriptletId());
+        entity.setSortOrder(data.getSortOrder());
+        entity.setTestId(data.getTestId());
+        entity.setTypeId(data.getTypeId());
+        entity.setIsColumn(data.getIsColumn());
 
         return data;
     }
 
     public void delete(TestAnalyteViewDO analyteDO) throws Exception {
-        TestAnalyte analyte;
+        TestAnalyte entity;
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        analyte = manager.find(TestAnalyte.class, analyteDO.getId());
-        if (analyte != null)
-            manager.remove(analyte);
+        entity = manager.find(TestAnalyte.class, analyteDO.getId());
+        if (entity != null)
+            manager.remove(entity);
 
     }
 
@@ -159,17 +167,19 @@ public class TestAnalyteBean implements TestAnalyteLocal {
 
         list = new ValidationErrorsList();
         
-        if (anaDO.getAnalyteId() == null) {
+        if (DataBaseUtil.isEmpty(anaDO.getAnalyteId())) {
             exc = new FieldErrorException("fieldRequiredException",
                                           TestMeta.getAnalyteAnalyteId());
             list.add(exc);
         }
-        if (anaDO.getTypeId() == null) {
+        
+        if (DataBaseUtil.isEmpty(anaDO.getTypeId())) {
             exc = new FieldErrorException("analyteTypeRequiredException",
                                           TestMeta.getAnalyteTypeId());
             list.add(exc);
         }
-        if (anaDO.getResultGroup() == null) {
+        
+        if (DataBaseUtil.isEmpty(anaDO.getResultGroup())) {
             exc = new FieldErrorException("fieldRequiredException",
                                           TestMeta.getAnalyteResultGroup());
             list.add(exc);
