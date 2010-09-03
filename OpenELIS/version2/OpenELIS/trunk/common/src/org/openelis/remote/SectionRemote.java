@@ -41,7 +41,7 @@ public interface SectionRemote {
     
     public ArrayList<SectionDO> fetchByName(String match, int maxResults) throws Exception; 
     
-    public ArrayList<SectionDO> fetchList() throws Exception;
+    public ArrayList<SectionViewDO> fetchList() throws Exception;
 
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int rowPP) throws Exception;
 

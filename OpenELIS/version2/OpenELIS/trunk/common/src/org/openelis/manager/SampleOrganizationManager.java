@@ -67,16 +67,17 @@ public class SampleOrganizationManager implements RPC {
     }
 
     public void removeOrganizationAt(int i) {
+        SampleOrganizationViewDO tmp;
         if (organizations == null || i >= organizations.size())
             return;
 
-        SampleOrganizationViewDO tmpDO = organizations.remove(i);
+        tmp = organizations.remove(i);
 
         if (deletedList == null)
             deletedList = new ArrayList<SampleOrganizationViewDO>();
 
-        if (tmpDO.getId() != null)
-            deletedList.add(tmpDO);
+        if (tmp.getId() != null)
+            deletedList.add(tmp);
     }
 
     //
@@ -119,9 +120,11 @@ public class SampleOrganizationManager implements RPC {
     }
 
     public SampleOrganizationViewDO getFirstSecondaryReportTo() {
-        Integer reportToId = proxy().getIdFromSystemName("org_second_report_to");
-        int i = 0;
+        Integer reportToId;
+        int i;
 
+        reportToId = proxy().getIdFromSystemName("org_second_report_to");
+        i = 0;
         while (i < organizations.size() &&
                !reportToId.equals( ((SampleOrganizationViewDO)organizations.get(i)).getTypeId()))
             i++ ;
@@ -198,11 +201,12 @@ public class SampleOrganizationManager implements RPC {
 
     protected int rowIndexFor(Integer typeId) {
         int i;
+        SampleOrganizationViewDO org;
 
         for (i = 0; i < organizations.size(); i++ ) {
-            SampleOrganizationViewDO orgDO = organizations.get(i);
+            org = organizations.get(i);
 
-            if (typeId.equals(orgDO.getTypeId()))
+            if (typeId.equals(org.getTypeId()))
                 return i;
         }
 

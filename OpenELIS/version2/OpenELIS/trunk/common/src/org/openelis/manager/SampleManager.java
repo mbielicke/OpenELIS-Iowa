@@ -49,11 +49,6 @@ public class SampleManager implements RPC, HasAuxDataInt {
     protected AuxDataManager                      auxData;
     protected SampleDataBundle                    bundle;
 
-    protected Integer                             anLoggedInId, anInitiatedId, anCompletedId,
-                                                  anReleasedId, anInPrepId, anOnHoldId, anRequeueId, anCancelledId,
-                                                  anErrorLoggedInId, anErrorInitiatedId, anErrorInPrepId, anErrorCompletedId,
-                                                  samLoggedInId, samCompletedId, samReleasedId, samErrorId;
-
 
     public static final String                    ENVIRONMENTAL_DOMAIN_FLAG = "E",
                                                   HUMAN_DOMAIN_FLAG = "H", ANIMAL_DOMAIN_FLAG = "A", NEWBORN_DOMAIN_FLAG = "N",
@@ -161,7 +156,7 @@ public class SampleManager implements RPC, HasAuxDataInt {
             sample.setRevision(0);
             sample.setEnteredDate(yToM);
             sample.setReceivedDate(yToM);
-            sample.setStatusId(samLoggedInId);
+            sample.setStatusId(proxy().samLoggedInId);
 
         } catch (Exception e) {
             // ignore, we catch this on the validation
@@ -171,13 +166,13 @@ public class SampleManager implements RPC, HasAuxDataInt {
     public void unrelease() throws Exception {
         ValidationErrorsList errorsList;
 
-        if ( !samReleasedId.equals(sample.getStatusId())) {
+        if ( !proxy().samReleasedId.equals(sample.getStatusId())) {
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("wrongStatusUnrelease"));
             throw errorsList;
         }
 
-        sample.setStatusId(samCompletedId);
+        sample.setStatusId(proxy().samCompletedId);
         sample.setReleasedDate(null);
         sample.setRevision(sample.getRevision() + 1);
     }
@@ -411,45 +406,45 @@ public class SampleManager implements RPC, HasAuxDataInt {
                 anDO = analysisMan.getAnalysisAt(a);
                 analysisStatusId = anDO.getStatusId();
 
-                if (analysisStatusId.equals(anErrorLoggedInId) ||
-                    analysisStatusId.equals(anErrorInitiatedId) ||
-                    analysisStatusId.equals(anErrorInPrepId) ||
-                    analysisStatusId.equals(anErrorCompletedId))
+                if (analysisStatusId.equals(proxy().anErrorLoggedInId) ||
+                    analysisStatusId.equals(proxy().anErrorInitiatedId) ||
+                    analysisStatusId.equals(proxy().anErrorInPrepId) ||
+                    analysisStatusId.equals(proxy().anErrorCompletedId))
                     e++ ;
-                else if (analysisStatusId.equals(anLoggedInId) ||
-                         analysisStatusId.equals(anInitiatedId) ||
-                         analysisStatusId.equals(anRequeueId) ||
-                         analysisStatusId.equals(anInPrepId))
+                else if (analysisStatusId.equals(proxy().anLoggedInId) ||
+                         analysisStatusId.equals(proxy().anInitiatedId) ||
+                         analysisStatusId.equals(proxy().anRequeueId) ||
+                         analysisStatusId.equals(proxy().anInPrepId))
                     l++ ;
-                else if (analysisStatusId.equals(anCompletedId) ||
-                         analysisStatusId.equals(anOnHoldId))
+                else if (analysisStatusId.equals(proxy().anCompletedId) ||
+                         analysisStatusId.equals(proxy().anOnHoldId))
                     c++ ;
-                else if (analysisStatusId.equals(anReleasedId) ||
-                         analysisStatusId.equals(anCancelledId))
+                else if (analysisStatusId.equals(proxy().anReleasedId) ||
+                         analysisStatusId.equals(proxy().anCancelledId))
                     r++ ;
             }
         }
 
         if (e > 0) {
-            statusId = samErrorId;
+            statusId = proxy().samErrorId;
         } else if (l > 0) {
-            statusId = samLoggedInId;
+            statusId = proxy().samLoggedInId;
         } else if (c > 0) {
             if (sample.getReleasedDate() != null)
                 sample.setReleasedDate(null);
-            statusId = samCompletedId;
+            statusId = proxy().samCompletedId;
 
-            if (oldStatusId.equals(samReleasedId))
+            if (oldStatusId.equals(proxy().samReleasedId))
                 sample.setRevision(sample.getRevision());
         } else if (r > 0) {
             if (sample.getReleasedDate() == null)
                 sample.setReleasedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
-            statusId = samReleasedId;
+            statusId = proxy().samReleasedId;
         }
 
         // if the sample is in error keep it that way
-        if (samErrorId.equals(sample.getStatusId()))
-            statusId = samErrorId;
+        if (proxy().samErrorId.equals(sample.getStatusId()))
+            statusId = proxy().samErrorId;
 
         sample.setStatusId(statusId);
     }

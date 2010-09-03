@@ -50,7 +50,7 @@ public class SampleEnvironmentalManager implements RPC, SampleDomainInt {
     }
 
     public static SampleEnvironmentalManager fetchBySampleId(Integer sampleId) throws Exception {
-        return proxy().fetch(sampleId);
+        return proxy().fetchBySampleId(sampleId);
     }
 
     // setters/getters

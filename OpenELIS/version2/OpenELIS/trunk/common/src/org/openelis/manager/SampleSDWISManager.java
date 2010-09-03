@@ -1,20 +1,15 @@
 package org.openelis.manager;
 
-import org.openelis.domain.PwsDO;
 import org.openelis.domain.SampleSDWISViewDO;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.meta.SampleMeta;
 
 public class SampleSDWISManager implements RPC, SampleDomainInt {
     private static final long                          serialVersionUID = 1L;
     protected Integer                                  sampleId;
     protected SampleSDWISViewDO                        sdwis;
 
-    protected transient static SampleSDWISManagerProxy proxy;
+    private transient static SampleSDWISManagerProxy proxy;
 
     /**
      * Creates a new instance of this object.
@@ -29,7 +24,7 @@ public class SampleSDWISManager implements RPC, SampleDomainInt {
     }
 
     public static SampleSDWISManager fetchBySampleId(Integer sampleId) throws Exception {
-        return proxy().fetch(sampleId);
+        return proxy().fetchBySampleId(sampleId);
     }
 
     // setters/getters
@@ -61,28 +56,11 @@ public class SampleSDWISManager implements RPC, SampleDomainInt {
     public SampleSDWISManager update() throws Exception {
         return proxy().update(this);
     }
-
-    public PwsDO validatePwsId(String pwsId) throws Exception {
-        PwsDO pwsDO;
-        
-        try{
-            pwsDO = proxy().fetchPwsByPwsId(pwsId);
-            
-        }catch(NotFoundException e){
-            ValidationErrorsList el = new ValidationErrorsList();
-            el.add(new FieldErrorException("invalidPwsException", SampleMeta.getSDWISPwsId()));
-            throw el;
-            
-        }catch(Exception e){
-            throw e;
-        }
-        
-        return pwsDO;
-    }
     
     public void validate() throws Exception {
-        ValidationErrorsList errorsList = new ValidationErrorsList();
+        ValidationErrorsList errorsList;
 
+        errorsList = new ValidationErrorsList();
         proxy().validate(this, errorsList);
 
         if (errorsList.size() > 0)
