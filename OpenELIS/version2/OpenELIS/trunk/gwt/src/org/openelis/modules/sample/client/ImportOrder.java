@@ -107,6 +107,14 @@ public class ImportOrder {
                     itemDO.setTypeOfSample(DictionaryCache.getEntryFromId(containerDO.getTypeOfSampleId()).getEntry());
             }
         }
+        
+        //
+        // if the order has tests specified and there are no sample items either
+        // preexisting or created above, a sample item must be added to which the
+        // tests can be assigned
+        //
+        if (orderMan.getTests().count() > 0 && itemMan.count() < 1)
+            itemMan.addSampleItem();
     }
     
     public ArrayList<OrderTestViewDO> getTestsFromOrder(Integer orderId) throws Exception {
