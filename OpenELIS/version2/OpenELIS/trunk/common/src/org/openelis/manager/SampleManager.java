@@ -35,6 +35,8 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
+import com.google.gwt.junit.client.WithProperties;
+
 public class SampleManager implements RPC, HasAuxDataInt {
     private static final long                     serialVersionUID          = 1L;
 
@@ -49,12 +51,12 @@ public class SampleManager implements RPC, HasAuxDataInt {
     protected AuxDataManager                      auxData;
     protected SampleDataBundle                    bundle;
 
-
     public static final String                    ENVIRONMENTAL_DOMAIN_FLAG = "E",
                                                   HUMAN_DOMAIN_FLAG = "H", ANIMAL_DOMAIN_FLAG = "A", NEWBORN_DOMAIN_FLAG = "N",
                                                   PT_DOMAIN_FLAG = "P", SDWIS_DOMAIN_FLAG = "S", WELL_DOMAIN_FLAG = "W",
                                                   QUICK_ENTRY = "Q";
 
+    protected transient boolean unreleaseSample, statusWithError;
     protected transient static SampleManagerProxy proxy;
 
     /**
@@ -137,30 +139,28 @@ public class SampleManager implements RPC, HasAuxDataInt {
 
         if (errorList.size() > 0)
             throw errorList;
-    }
-
-    public SampleDataBundle getBundle() {
-        if (bundle == null)
-            bundle = new SampleDataBundle(SampleDataBundle.Type.SAMPLE, this, null, -1);
-
-        return bundle;
+        
     }
 
     public void setDefaults() {
         Datetime yToM;
-
+    
         try {
             yToM = proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE);
-
+    
             sample.setNextItemSequence(0);
             sample.setRevision(0);
             sample.setEnteredDate(yToM);
             sample.setReceivedDate(yToM);
             sample.setStatusId(proxy().samLoggedInId);
-
+    
         } catch (Exception e) {
             // ignore, we catch this on the validation
         }
+    }
+
+    public void setStatusWithError(boolean withError) {
+        statusWithError = withError;
     }
 
     public void unrelease() throws Exception {
@@ -175,6 +175,14 @@ public class SampleManager implements RPC, HasAuxDataInt {
         sample.setStatusId(proxy().samCompletedId);
         sample.setReleasedDate(null);
         sample.setRevision(sample.getRevision() + 1);
+        unreleaseSample = true;
+    }
+
+    public SampleDataBundle getBundle() {
+        if (bundle == null)
+            bundle = new SampleDataBundle(SampleDataBundle.Type.SAMPLE, this, null, -1);
+    
+        return bundle;
     }
 
     //
@@ -389,12 +397,12 @@ public class SampleManager implements RPC, HasAuxDataInt {
         Integer oldStatusId, statusId, analysisStatusId;
 
         statusId = null;
+        e = l = c = r = 0;
         oldStatusId = sample.getStatusId();
-        e = 0;
-        l = 0; 
-        c = 0;
-        r = 0;
-
+        
+        //
+        // find the lowest common status between all the analysis
+        //
         itemMan = getSampleItems();
         for (int s = 0; s < itemMan.count(); s++ ) {
             sampleItemDO = itemMan.getSampleItemAt(s);
@@ -425,28 +433,26 @@ public class SampleManager implements RPC, HasAuxDataInt {
             }
         }
 
-        if (e > 0) {
+        //
+        // change the sample status to lowest
+        //
+        if (e > 0 || statusWithError)
             statusId = proxy().samErrorId;
-        } else if (l > 0) {
+        else if (l > 0)
             statusId = proxy().samLoggedInId;
-        } else if (c > 0) {
-            if (sample.getReleasedDate() != null)
-                sample.setReleasedDate(null);
+        else if (c > 0)
             statusId = proxy().samCompletedId;
-
-            if (oldStatusId.equals(proxy().samReleasedId))
-                sample.setRevision(sample.getRevision());
-        } else if (r > 0) {
-            if (sample.getReleasedDate() == null)
-                sample.setReleasedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
+        else if (r > 0)
             statusId = proxy().samReleasedId;
+
+        if (statusId != oldStatusId) {
+            if (statusId == proxy().samReleasedId) {
+                sample.setReleasedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
+            } else {
+                sample.setReleasedDate(null);
+            }
+            sample.setStatusId(statusId);
         }
-
-        // if the sample is in error keep it that way
-        if (proxy().samErrorId.equals(sample.getStatusId()))
-            statusId = proxy().samErrorId;
-
-        sample.setStatusId(statusId);
     }
 
     protected Integer getNextSequence() {
