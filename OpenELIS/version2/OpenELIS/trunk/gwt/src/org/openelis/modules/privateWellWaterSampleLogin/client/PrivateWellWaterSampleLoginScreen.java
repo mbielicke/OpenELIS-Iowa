@@ -896,7 +896,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             manager = manager.fetchForUpdate();
             setState(State.UPDATE);
 
-            if ( !canEdit()) {
+            if (sampleReleasedId.equals(manager.getSample().getStatusId())) {
                 abort();
                 window.setError(consts.get("cantUpdateReleasedException"));
                 return;
@@ -1182,10 +1182,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 auxDataTab.draw();
                 break;
         }
-    }
-
-    private boolean canEdit() {
-        return ( !sampleReleasedId.equals(manager.getSample().getStatusId()));
     }
 
     public boolean validate() {
