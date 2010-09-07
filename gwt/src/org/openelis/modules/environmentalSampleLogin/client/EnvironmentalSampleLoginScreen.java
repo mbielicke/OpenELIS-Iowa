@@ -918,7 +918,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             manager = manager.fetchForUpdate();
             setState(State.UPDATE);
             
-            if (!canEdit()){
+            if (sampleReleasedId.equals(manager.getSample().getStatusId())){
                 abort();
                 window.setError(consts.get("cantUpdateReleasedException"));
                 return;
@@ -942,6 +942,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         
         setFocus(null);
         clearErrors();
+        manager.setStatusWithError(false);
         
         if ( !validate()) {
             window.setError(consts.get("correctErrors"));
@@ -965,7 +966,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             window.setBusy(consts.get("adding"));
             try {
                 manager.validate();
-                manager.getSample().setStatusId(sampleLoggedInId);
                 manager = manager.add();
 
                 setState(Screen.State.DISPLAY);
@@ -984,7 +984,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             window.setBusy(consts.get("updating"));
             try {
                 manager.validate();
-                manager.getSample().setStatusId(sampleLoggedInId);
                 manager = manager.update();
 
                 setState(Screen.State.DISPLAY);
@@ -1003,7 +1002,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
     protected void commitWithWarnings() {
         clearErrors();
-        manager.getSample().setStatusId(sampleErrorStatusId);
+        manager.setStatusWithError(true);
 
         if (state == State.ADD) {
             window.setBusy(consts.get("adding"));
@@ -1204,11 +1203,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         }
     }
 
-    
-    private boolean canEdit() {
-        return ( !sampleReleasedId.equals(manager.getSample().getStatusId()));
-    }
-    
     public boolean validate() {
         return super.validate() & storageTab.validate();
     }

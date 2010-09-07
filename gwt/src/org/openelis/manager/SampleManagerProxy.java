@@ -32,6 +32,7 @@ import org.openelis.domain.SampleDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FieldErrorWarning;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.services.ScreenService;
@@ -108,19 +109,18 @@ public class SampleManagerProxy {
     public void validate(SampleManager man, ValidationErrorsList errorsList) throws Exception {
         SampleDO data;
 
-        // revalidate accession number
+        data = man.getSample();
+
+        // re-validate accession number
         validateAccessionNumber(man.getSample(), errorsList);
 
-        // sample validate code
-        data = man.getSample();
-        // validate the dates
         // received date required
         if (data.getReceivedDate() == null || data.getReceivedDate().getDate() == null)
             errorsList.add(new FieldErrorWarning("receivedDateRequiredException",
                                                  SampleMeta.getReceivedDate()));
         else if (data.getEnteredDate() != null &&
                  data.getReceivedDate().before(data.getEnteredDate().add( -180)))
-            // received cant be more than 180 days before entered
+            // received can't be more than 180 days before entered
             errorsList.add(new FieldErrorWarning("receivedTooOldWarning",
                                                  SampleMeta.getReceivedDate()));
 
@@ -137,6 +137,10 @@ public class SampleManagerProxy {
                 errorsList.add(new FieldErrorException("collectedDateInvalidError",
                                                        SampleMeta.getReceivedDate()));
         }
+        
+        // every unreleased sample needs an internal comment describing the reason
+        if (man.unreleaseSample && man.sampleInternalNotes == null || !man.sampleInternalNotes.hasEditingNote())
+            errorsList.add(new FormErrorException("unreleaseNoNoteException"));
 
         man.getDomainManager().validate(errorsList);
 
@@ -156,8 +160,7 @@ public class SampleManagerProxy {
             man.getAuxData().validate(errorsList);
     }
 
-    private void validateAccessionNumber(SampleDO data, ValidationErrorsList errorsList)
-                                                                                        throws Exception {
+    private void validateAccessionNumber(SampleDO data, ValidationErrorsList errorsList) throws Exception {
         ArrayList<Exception> errors;
         try {
             service.call("validateAccessionNumber", data);

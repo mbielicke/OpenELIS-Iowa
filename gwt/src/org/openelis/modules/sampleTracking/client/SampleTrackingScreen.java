@@ -103,7 +103,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
     private SampleManager        manager;
-    private ModulePermission     userPermission, unrelease;
+    private ModulePermission     userPermission, unreleasePermission;
 
     private EnvironmentalTab     environmentalTab;
     private PrivateWellTab       wellTab;
@@ -151,7 +151,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         service = new ScreenService("controller?service=org.openelis.modules.sampleTracking.server.SampleTrackingService");
 
         userPermission = OpenELIS.getSystemUserPermission().getModule("sampletracking");
-        unrelease = OpenELIS.getSystemUserPermission().getModule("sampleunrelease");
+        unreleasePermission = OpenELIS.getSystemUserPermission().getModule("sampleunrelease");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Sample Tracking Screen");
 
@@ -343,7 +343,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                unreleaseSample.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) && unrelease != null);
+                unreleaseSample.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) && unreleasePermission.hasSelectPermission());
             }
         });
 
@@ -1288,7 +1288,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         window.setDone(consts.get("enterFieldsToQuery"));
     }
 
-    protected void update(boolean unrelease) {
+    protected void update(boolean withUnrelease) {
         int topLevelIndex;
         TreeDataItem sampleRow;
         
@@ -1296,13 +1296,11 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             window.setError(consts.get("selectRecordToUpdate"));
             return;
         }
-
+        
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
             manager = manager.fetchForUpdate();
-            if (unrelease)
-                manager.unrelease();
             treeUtil.setManager(manager);
             
             topLevelIndex = getTopLevelIndex(trackingTree.getSelection());
@@ -1316,11 +1314,18 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             
             setState(State.UPDATE);
             
-            if (!canEdit()){
-                abort();
-                window.setError(consts.get("cantUpdateReleasedException"));
-                return;
-            }
+            //
+            // re-check the status to make sure it is still correct
+            //
+            if (sampleReleasedId.equals(manager.getSample().getStatusId())) {
+                if (withUnrelease) {
+                    manager.unrelease();
+                } else {
+                    abort();
+                    window.setError(consts.get("cantUpdateReleasedException"));
+                    return;
+                }
+            } 
             
             DataChangeEvent.fire(this);
             setFocus(collectedDate);
@@ -1332,73 +1337,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             Window.alert(e.getMessage());
         } catch (Exception e) {
             Window.alert(e.getMessage());
-        }
-    }
-
-    protected void addTest() {
-        addTest(null);
-    }
-        
-    protected void addTest(SampleDataBundle analysisBundle){
-        SampleDataBundle bundle;
-        AnalysisManager anMan;
-        TreeDataItem sampleItem;
-        int analysisIndex;
-        TreeDataItem results, analysis, storage, qaevent, note;
-
-        sampleItem = trackingTree.getSelection();
-        while ( !"sampleItem".equals(sampleItem.leafType))
-            sampleItem = sampleItem.parent;
-
-        bundle = (SampleDataBundle)sampleItem.data;
-
-        try {
-            anMan = manager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
-            
-            if(analysisBundle == null){
-                analysisIndex = anMan.addAnalysis();
-                analysisBundle = anMan.getBundleAt(analysisIndex);
-            }else
-                analysisIndex = analysisBundle.getAnalysisIndex();
-
-            results = new TreeDataItem();
-            results.open = true;
-            results.leafType = "analysis";
-            results.data = analysisBundle;
-            results.cells.add(new TableDataCell("<> : <>"));
-            results.cells.add(new TableDataCell(analysisLoggedInId));
-
-            analysis = new TreeDataItem();
-            analysis.leafType = "result";
-            analysis.data = analysisBundle;
-            analysis.cells.add(new TableDataCell(consts.get("analysis")));
-            results.addItem(analysis);
-
-            note = new TreeDataItem();
-            note.leafType = "note";
-            note.data = analysisBundle;
-            note.cells.add(new TableDataCell(consts.get("notes")));
-            results.addItem(note);
-
-            storage = new TreeDataItem();
-            storage.leafType = "storage";
-            storage.data = analysisBundle;
-            storage.cells.add(new TableDataCell(consts.get("storage")));
-            results.addItem(storage);
-
-            qaevent = new TreeDataItem();
-            qaevent.leafType = "qaevent";
-            qaevent.data = analysisBundle;
-            qaevent.cells.add(new TableDataCell(consts.get("qaEvents")));
-            results.addItem(qaevent);
-
-            trackingTree.addChildItem(sampleItem, results, analysisIndex);
-            trackingTree.select(analysis);
-            trackingTree.scrollToVisible();
-
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            return;
         }
     }
 
@@ -1453,7 +1391,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     window.setError(consts.get("correctErrors"));
                     return;
                 }
-                
+
                 manager.getSample().setStatusId(sampleLoggedInId);
                 manager = manager.update();
                 setState(Screen.State.DISPLAY);
@@ -1552,6 +1490,73 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
         query.setPage(page + 1);
         executeQuery(query);
+    }
+
+    protected void addTest() {
+        addTest(null);
+    }
+
+    protected void addTest(SampleDataBundle analysisBundle){
+        SampleDataBundle bundle;
+        AnalysisManager anMan;
+        TreeDataItem sampleItem;
+        int analysisIndex;
+        TreeDataItem results, analysis, storage, qaevent, note;
+    
+        sampleItem = trackingTree.getSelection();
+        while ( !"sampleItem".equals(sampleItem.leafType))
+            sampleItem = sampleItem.parent;
+    
+        bundle = (SampleDataBundle)sampleItem.data;
+    
+        try {
+            anMan = manager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
+            
+            if(analysisBundle == null){
+                analysisIndex = anMan.addAnalysis();
+                analysisBundle = anMan.getBundleAt(analysisIndex);
+            }else
+                analysisIndex = analysisBundle.getAnalysisIndex();
+    
+            results = new TreeDataItem();
+            results.open = true;
+            results.leafType = "analysis";
+            results.data = analysisBundle;
+            results.cells.add(new TableDataCell("<> : <>"));
+            results.cells.add(new TableDataCell(analysisLoggedInId));
+    
+            analysis = new TreeDataItem();
+            analysis.leafType = "result";
+            analysis.data = analysisBundle;
+            analysis.cells.add(new TableDataCell(consts.get("analysis")));
+            results.addItem(analysis);
+    
+            note = new TreeDataItem();
+            note.leafType = "note";
+            note.data = analysisBundle;
+            note.cells.add(new TableDataCell(consts.get("notes")));
+            results.addItem(note);
+    
+            storage = new TreeDataItem();
+            storage.leafType = "storage";
+            storage.data = analysisBundle;
+            storage.cells.add(new TableDataCell(consts.get("storage")));
+            results.addItem(storage);
+    
+            qaevent = new TreeDataItem();
+            qaevent.leafType = "qaevent";
+            qaevent.data = analysisBundle;
+            qaevent.cells.add(new TableDataCell(consts.get("qaEvents")));
+            results.addItem(qaevent);
+    
+            trackingTree.addChildItem(sampleItem, results, analysisIndex);
+            trackingTree.select(analysis);
+            trackingTree.scrollToVisible();
+    
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            return;
+        }
     }
 
     private void drawTabs() {
@@ -1841,11 +1846,8 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         return valid;
     }
     
-    private boolean canEdit() {
-        return ( !sampleReleasedId.equals(manager.getSample().getStatusId()));
-    }
-
     private void checkNode(TreeDataItem item) {
+        SampleDataBundle openKey;
         ArrayList<SampleDataBundle> openItems;
 
         if ( !item.open) {
@@ -1862,7 +1864,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         try {
             loadSampleItem(manager, item);
             while (openItems.size() > 0) {
-                SampleDataBundle openKey = openItems.remove(0);
+                openKey = openItems.remove(0);
                 searchForKey(openKey, item);
             }
             trackingTree.refreshRow(item);
@@ -1905,6 +1907,11 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     private void unrelease(){
         Confirm confirm;
                
+        if (trackingTree.getSelectedRow() == -1) {
+            window.setError(consts.get("selectRecordToUpdate"));
+            return;
+        }
+
         if (!sampleReleasedId.equals(manager.getSample().getStatusId())) {
             Window.alert(consts.get("wrongStatusUnrelease"));
             return;
@@ -1918,10 +1925,9 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             public void onSelection(SelectionEvent<Integer> event) {
                 switch (event.getSelectedItem().intValue()) {
                     case 0:
-                        //do nothing
                         break;
                     case 1:
-                        try {                            
+                        try {
                             update(true);
                         } catch (Exception e) {
                             e.printStackTrace();
