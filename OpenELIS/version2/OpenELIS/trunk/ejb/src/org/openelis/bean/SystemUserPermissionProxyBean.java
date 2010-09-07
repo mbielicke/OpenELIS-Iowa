@@ -45,9 +45,6 @@ import org.openelis.security.remote.SystemUserPermissionRemote;
 public class SystemUserPermissionProxyBean implements SystemUserPermissionProxyRemote,
                                                       SystemUserPermissionProxyLocal {
 
-    //@EJB (mappedName="security/SystemUserPermissionBean")
-    //private SystemUserPermissionRemote user;
-
     @EJB
     SessionCacheInt session;
 
