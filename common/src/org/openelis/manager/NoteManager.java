@@ -73,6 +73,7 @@ public class NoteManager implements RPC {
 
     public NoteViewDO getEditingNote() {
         NoteViewDO note;
+
         if (count() == 0 || ("N".equals(isExternal) && notes.get(0).getId() != null)){
             note = new NoteViewDO();
             note.setIsExternal(isExternal);
@@ -85,6 +86,10 @@ public class NoteManager implements RPC {
         }
 
         return getNoteAt(0);
+    }
+
+    public boolean hasEditingNote() {
+        return count() > 0 && ("Y".equals(isExternal) || notes.get(0).getId() == null); 
     }
 
     public void removeEditingNote() {
