@@ -51,17 +51,22 @@ public class SampleService {
         return managerRemote().fetchById(sampleId);
     }
 
-    public SampleManager fetchWithItemsAnalyses(Integer sampleId) throws Exception {
-        return managerRemote().fetchWithItemsAnalysis(sampleId);
-    }
-
     public SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception {
         return managerRemote().fetchByAccessionNumber(accessionNumber);
     }
+    
+    public SampleManager fetchWithItemsAnalyses(Integer sampleId) throws Exception {
+        return managerRemote().fetchWithItemsAnalysis(sampleId);
+    }
+    
+    public SampleManager fetchWithAllData(Integer sampleId) throws Exception {
+        return managerRemote().fetchWithAllData(sampleId);
+    }
 
     // sample methods
-    public ArrayList<IdAccessionVO> query(Query query) throws Exception {
+    public ArrayList<IdAccessionVO> query(Query query) throws Exception {          
         return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        
     }
 
     public SampleManager add(SampleManager man) throws Exception {

@@ -257,22 +257,23 @@ public class AnalysisManager implements RPC {
     }
 
     public void completeAnalysisAt(int index) throws Exception {
-        AnalysisViewDO anDO;
+        AnalysisViewDO data;
         SystemUserPermission perm;
         SectionViewDO section;
         TestManager testMan;
         SampleDataBundle bundle;
         ValidationErrorsList errorsList;
 
-        anDO = items.get(index).analysis;
-        assert anDO.getSectionId() != null : "section id is null";
+        data = items.get(index).analysis;
+        assert data.getSectionId() != null : "section id is null";
 
-        if (!proxy().anOnHoldId.equals(anDO.getStatusId()) &&
-            !proxy().anInitiatedId.equals(anDO.getStatusId()) &&
-            !proxy().anCompletedId.equals(anDO.getStatusId())) { // make sure the
-            // status is
-            // initiated or
-            // on hold
+        if (!proxy().anOnHoldId.equals(data.getStatusId()) &&
+            !proxy().anInitiatedId.equals(data.getStatusId()) &&
+            !proxy().anCompletedId.equals(data.getStatusId())&&
+            !proxy().anLoggedInId.equals(data.getStatusId())) { 
+            //
+            // make sure the status is initiated, on hold or logged-in
+            //
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("wrongStatusNoComplete"));
             throw errorsList;
@@ -280,26 +281,24 @@ public class AnalysisManager implements RPC {
         }
 
         // make sure the user has complete permission for the section
-        section = proxy().getSectionFromId(anDO.getSectionId());
+        section = proxy().getSectionFromId(data.getSectionId());
         perm = proxy().getSystemUserPermission();
         if (perm.getSection(section.getName()) == null ||
             !perm.getSection(section.getName()).hasCompletePermission()) {
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("insufficientPrivilegesCompleteAnalysis",
-                                                  anDO.getTestName(), anDO.getMethodName()));
+                                                  data.getTestName(), data.getMethodName()));
             throw errorsList;
         }
 
         // validate the sample type
         testMan = getTestAt(index);
         bundle = getBundleAt(index);
-        if ( !testMan.getSampleTypes()
-                     .hasType(
-                              sampleItemManager.getSampleItemAt(bundle.getSampleItemIndex())
+        if ( !testMan.getSampleTypes().hasType(sampleItemManager.getSampleItemAt(bundle.getSampleItemIndex())
                                                .getTypeOfSampleId())) {
             errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("sampleTypeInvalid", anDO.getTestName(),
-                                                  anDO.getMethodName()));
+            errorsList.add(new FormErrorException("sampleTypeInvalid", data.getTestName(),
+                                                  data.getMethodName()));
             throw errorsList;
         }
 
@@ -309,13 +308,13 @@ public class AnalysisManager implements RPC {
         // this method will throw an exception if it finds and error
         if ( !getQAEventAt(index).hasResultOverrideQA() &&
             !getSampleItemManager().getSampleManager().getQaEvents().hasResultOverrideQA())
-            getAnalysisResultAt(index).validateForComplete(anDO);
+            getAnalysisResultAt(index).validateForComplete(data);
 
-        anDO.setStatusId(proxy().anCompletedId);
-        if (anDO.getStartedDate() == null)
-            anDO.setStartedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
+        data.setStatusId(proxy().anCompletedId);
+        if (data.getStartedDate() == null)
+            data.setStartedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
 
-        anDO.setCompletedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
+        data.setCompletedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
 
         try {
             // add an analysis user record

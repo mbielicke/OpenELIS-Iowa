@@ -31,16 +31,15 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdAccessionVO;
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.ModulePermission;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
@@ -96,14 +95,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
 
 public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActionHandlers {
-
-    public enum Tabs {
-        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
-        AUX_DATA
-    };
-
+    private SampleManager                  manager;
     protected Tabs                         tab;
-    private Integer                        sampleLoggedInId, sampleErrorStatusId, sampleReleasedId;
+    private Integer                        sampleReleasedId;
     private SampleItemAnalysisTreeTab      treeTab;
     private PrivateWellTab                 privateWellTab;
     private SampleItemTab                  sampleItemTab;
@@ -123,18 +117,25 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
     protected TextBox<Datetime>            collectedTime;
     protected Dropdown<Integer>            statusId;
     protected CalendarLookUp               collectedDate, receivedDate;
-    protected AppButton                    queryButton, addButton, updateButton, nextButton,
-                    prevButton, commitButton, abortButton;
+    protected AppButton                    queryButton, addButton, updateButton, 
+                                           nextButton, prevButton, commitButton,
+                                           abortButton;
     protected MenuItem                     historySample, historySamplePrivateWell,
-                    historySampleProject, historySampleItem, historyAnalysis, historyCurrentResult,
-                    historyStorage, historySampleQA, historyAnalysisQA, historyAuxData;
+                                           historySampleProject, historySampleItem,
+                                           historyAnalysis, historyCurrentResult,
+                                           historyStorage, historySampleQA, historyAnalysisQA,
+                                           historyAuxData;
     protected TabPanel                     tabs;
 
-    ScreenNavigator                        nav;
+    private ScreenNavigator                nav;
     private ModulePermission               userPermission;
 
     protected SamplePrivateWellImportOrder wellOrderImport;
-    private SampleManager                  manager;
+    
+    private enum Tabs {
+        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
+        AUX_DATA
+    };
 
     public PrivateWellWaterSampleLoginScreen() throws Exception {
         super((ScreenDefInt)GWT.create(PrivateWellWaterSampleLoginDef.class));
@@ -915,35 +916,26 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
     }
 
     protected void commit() {
+        Query query;
+
         setFocus(null);
         clearErrors();
-
+        manager.setStatusWithError(false);
+        
         if ( !validate()) {
             window.setError(consts.get("correctErrors"));
             return;
         }
 
         if (state == State.QUERY) {
-            Query query;
-            QueryData domain;
-
-            ArrayList<QueryData> queryFields = getQueryFields();
             query = new Query();
-            query.setFields(queryFields);
-
-            // add the domain
-            domain = new QueryData();
-            domain.key = SampleMeta.getDomain();
-            domain.query = SampleManager.WELL_DOMAIN_FLAG;
-            domain.type = QueryData.Type.STRING;
-            query.getFields().add(domain);
+            query.setFields(getQueryFields());            
 
             nav.setQuery(query);
         } else if (state == State.ADD) {
             window.setBusy(consts.get("adding"));
             try {
                 manager.validate();
-                manager.getSample().setStatusId(sampleLoggedInId);
                 manager = manager.add();
 
                 setState(Screen.State.DISPLAY);
@@ -962,7 +954,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             window.setBusy(consts.get("updating"));
             try {
                 manager.validate();
-                manager.getSample().setStatusId(sampleLoggedInId);
                 manager = manager.update();
 
                 setState(Screen.State.DISPLAY);
@@ -981,7 +972,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
 
     protected void commitWithWarnings() {
         clearErrors();
-        manager.getSample().setStatusId(sampleErrorStatusId);
+        manager.setStatusWithError(true);
 
         if (state == State.ADD) {
             window.setBusy(consts.get("adding"));
@@ -1086,45 +1077,37 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
     }
 
     public ArrayList<QueryData> getQueryFields() {
-        ArrayList<QueryData> returnList;
-        ArrayList<IdNameVO> auxFields;
-        QueryData queryData;
-        IdNameVO idName;
+        ArrayList<QueryData> fields, auxFields;
+        QueryData field;
 
-        returnList = super.getQueryFields();
+        fields = super.getQueryFields();
 
         // add aux data values if necessary
-        auxFields = auxDataTab.getAuxQueryFields();
-
+        auxFields = auxDataTab.getQueryFields();
+        addPrivateWellFields(fields);
+        
+        // add the domain
+        field = new QueryData();
+        field.key = SampleMeta.getDomain();
+        field.query = SampleManager.WELL_DOMAIN_FLAG;
+        field.type = QueryData.Type.STRING;
+        fields.add(field);
+        
         if (auxFields.size() > 0) {
             // add ref table
-            queryData = new QueryData();
-            queryData.key = SampleMeta.getAuxDataReferenceTableId();
-            queryData.type = QueryData.Type.INTEGER;
-            queryData.query = String.valueOf(ReferenceTable.SAMPLE);
-            returnList.add(queryData);
+            field = new QueryData();
+            field.key = SampleMeta.getAuxDataReferenceTableId();
+            field.type = QueryData.Type.INTEGER;
+            field.query = String.valueOf(ReferenceTable.SAMPLE);
+            fields.add(field);
 
             // add aux fields
-            for (int i = 0; i < auxFields.size(); i++ ) {
-                idName = auxFields.get(i);
-
-                // aux data id
-                queryData = new QueryData();
-                queryData.key = SampleMeta.getAuxDataAuxFieldId();
-                queryData.type = QueryData.Type.INTEGER;
-                queryData.query = String.valueOf(idName.getId());
-                returnList.add(queryData);
-
-                // aux data value
-                queryData = new QueryData();
-                queryData.key = SampleMeta.getAuxDataValue();
-                queryData.type = QueryData.Type.STRING;
-                queryData.query = idName.getName();
-                returnList.add(queryData);
-            }
+            for (int i = 0; i < auxFields.size(); i++ ) {                
+                fields.add(auxFields.get(i));            
+            }                
         }
 
-        return returnList;
+        return fields;
     }
 
     private void initializeDropdowns() {
@@ -1133,12 +1116,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         // preload dictionary models and single entries, close the window if an
         // error is found
         try {
-            DictionaryCache.getIdFromSystemName("analysis_logged_in");
-            sampleLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
-            sampleErrorStatusId = DictionaryCache.getIdFromSystemName("sample_error");
-            DictionaryCache.getIdFromSystemName("analysis_cancelled");
-            DictionaryCache.getIdFromSystemName("analysis_released");
-            DictionaryCache.getIdFromSystemName("analysis_inprep");
             sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
 
             // sample status dropdown
@@ -1190,5 +1167,100 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
 
     public HandlerRegistration addActionHandler(ActionHandler handler) {
         return addHandler(handler, ActionEvent.getType());
+    }
+    
+    /**
+     * We need to add additional fields to the list of queried fields if it
+     * contains any field belonging to private well water's report to/organization.
+     * This is done in order to make sure that names and addresses belonging to 
+     * organizations as well as the ones that don't are searched.          
+     */
+    private void addPrivateWellFields(ArrayList<QueryData> fields){
+        int size;
+        String dataKey, orgName, addressMult, addressStreet, addressCity,
+               addressState, addressZip, addressWorkPhone, addressFaxPhone;
+        QueryData data;
+        
+        orgName = null;
+        addressMult = null;
+        addressStreet = null;
+        addressCity = null;
+        addressState = null;
+        addressZip = null;
+        addressWorkPhone = null;
+        addressFaxPhone = null;
+        
+        size = fields.size();
+        for(int i = size-1; i >= 0; i--){
+            data = fields.get(i);
+            dataKey = data.key;
+            
+            if (SampleMeta.getWellOrganizationName().equals(dataKey)) {
+                orgName = data.query;
+
+                data = new QueryData();
+                data.key = SampleMeta.getWellReportToName();
+                data.type = QueryData.Type.STRING;
+                data.query = orgName;
+                fields.add(data);
+            } else if (SampleMeta.getWellReportToAddressMultipleUnit().equals(dataKey)) {
+                addressMult = data.query;
+
+                data = new QueryData();
+                data.key = SampleMeta.getAddressMultipleUnit();
+                data.type = QueryData.Type.STRING;
+                data.query = addressMult;
+                fields.add(data);
+            } else if (SampleMeta.getWellReportToAddressStreetAddress().equals(dataKey)) {
+                addressStreet = data.query;
+
+                data = new QueryData();
+                data.key = SampleMeta.getAddressStreetAddress();
+                data.type = QueryData.Type.STRING;
+                data.query = addressStreet;
+                fields.add(data);
+            } else if (SampleMeta.getWellReportToAddressCity().equals(dataKey)) {
+                addressCity = data.query;
+
+                data = new QueryData();
+                data.key = SampleMeta.getAddressCity();
+                data.type = QueryData.Type.STRING;
+                data.query = addressCity;
+                fields.add(data);
+            } else if (SampleMeta.getWellReportToAddressState().equals(dataKey)) {
+                addressState = data.query;
+
+                data = new QueryData();
+                data.key = SampleMeta.getAddressState();
+                data.type = QueryData.Type.STRING;
+                data.query = addressState;
+                fields.add(data);
+            } else if (SampleMeta.getWellReportToAddressZipCode().equals(dataKey)) {
+                addressZip = data.query;
+
+                data = new QueryData();
+                data.key = SampleMeta.getAddressZipCode();
+                data.type = QueryData.Type.STRING;
+                data.query = addressZip;
+                fields.add(data);
+            } else if (SampleMeta.getWellReportToAddressWorkPhone().equals(dataKey)) {
+                addressWorkPhone = data.query;
+
+                data = new QueryData();
+                data.key = SampleMeta.getAddressWorkPhone();
+                data.type = QueryData.Type.STRING;
+                data.query = addressWorkPhone;
+                fields.add(data);
+            } else if (SampleMeta.getWellReportToAddressFaxPhone().equals(dataKey)) {
+                addressFaxPhone = data.query;
+
+                data = new QueryData();
+                data.key = SampleMeta.getAddressFaxPhone();
+                data.type = QueryData.Type.STRING;
+                data.query = addressFaxPhone;
+                fields.add(data);
+            }
+        }
+
     }
 }

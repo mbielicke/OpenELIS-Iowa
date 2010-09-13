@@ -134,7 +134,6 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                             if (data.getValue() != null)
                                 reportToError = true;
                         } else {
-                            loadReportToAddress(wellMan);
                             wellMan.getPrivateWell()
                                    .getReportToAddress()
                                    .setMultipleUnit(data.getValue());
@@ -145,7 +144,6 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                             if (data.getValue() != null)
                                 reportToError = true;
                         } else {
-                            loadReportToAddress(wellMan);
                             wellMan.getPrivateWell()
                                    .getReportToAddress()
                                    .setStreetAddress(data.getValue());
@@ -156,7 +154,6 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                             if (data.getValue() != null)
                                 reportToError = true;
                         } else {
-                            loadReportToAddress(wellMan);
                             wellMan.getPrivateWell().getReportToAddress().setCity(data.getValue());
                         }
 
@@ -165,7 +162,6 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                             if (data.getValue() != null)
                                 reportToError = true;
                         } else {
-                            loadReportToAddress(wellMan);
                             wellMan.getPrivateWell().getReportToAddress().setState(data.getValue());
                         }
 
@@ -174,7 +170,6 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                             if (data.getValue() != null)
                                 reportToError = true;
                         } else {
-                            loadReportToAddress(wellMan);
                             wellMan.getPrivateWell()
                                    .getReportToAddress()
                                    .setZipCode(data.getValue());
@@ -185,7 +180,6 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                             if (data.getValue() != null)
                                 reportToError = true;
                         } else {
-                            loadReportToAddress(wellMan);
                             wellMan.getPrivateWell()
                                    .getReportToAddress()
                                    .setWorkPhone(data.getValue());
@@ -196,7 +190,6 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                             if (data.getValue() != null)
                                 reportToError = true;
                         } else {
-                            loadReportToAddress(wellMan);
                             wellMan.getPrivateWell()
                                    .getReportToAddress()
                                    .setFaxPhone(data.getValue());
@@ -307,12 +300,6 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
             billTo.setOrganizationCity(org.getAddress().getCity());
             billTo.setOrganizationState(org.getAddress().getState());
             man.getOrganizations().addOrganization(billTo);
-        }
-    }
-
-    private void loadReportToAddress(SamplePrivateWellManager man) {
-        if (man.getPrivateWell().getReportToAddress().getId() == null) {
-            // man.setReportToAddress(new AddressDO());
         }
     }
 

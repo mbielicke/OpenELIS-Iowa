@@ -8,6 +8,7 @@ import java.util.List;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
@@ -17,9 +18,9 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.LocalizedException;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -1341,46 +1342,16 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     }
 
     protected void commit() {
-        ArrayList<QueryData> queryFields, tmpFields;
-        boolean addDomain;
-
         setFocus(null);
         
+        if ( !validate()) {
+            window.setError(consts.get("correctErrors"));
+            return;
+        }
+        
         if (state == State.QUERY) {
-            tmpFields = null;
-            addDomain = true;
-            
-            if ( !validate()) {
-                window.setError(consts.get("correctErrors"));
-                return;
-            }
-            
             query = new Query();
-            queryFields = getQueryFields();
-
-            if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(manager.getSample().getDomain()))
-                tmpFields = environmentalTab.getQueryFields();
-            else if (SampleManager.WELL_DOMAIN_FLAG.equals(manager.getSample().getDomain()))
-                tmpFields = wellTab.getQueryFields();
-            else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(manager.getSample().getDomain()))
-                tmpFields = sdwisTab.getQueryFields();
-
-            if (tmpFields.size() > 0) {
-                queryFields.addAll(tmpFields);
-                addDomain = false;
-            }
-
-            query.setFields(queryFields);
-
-            if (addDomain) {
-                // Added this Query Param to keep Quick Entry Samples out of
-                // query results
-                QueryData qd = new QueryData();
-                qd.query = "!Q";
-                qd.key = SampleMeta.getDomain();
-                qd.type = QueryData.Type.STRING;
-                query.setFields(qd);
-            }
+            query.setFields(getQueryFields());
 
             executeQuery(query);
 
@@ -1467,6 +1438,61 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         } else {
             window.clearStatus();
         }
+    }
+    
+    public ArrayList<QueryData> getQueryFields() {
+        boolean addDomain;
+        ArrayList<QueryData> fields, auxFields, tmpFields;
+        QueryData field;
+
+        fields = super.getQueryFields();
+        tmpFields = null;
+        addDomain = true;
+
+        // add aux data values if necessary
+        auxFields = auxDataTab.getQueryFields();                
+        
+        if (auxFields.size() > 0) {
+            // add ref table
+            field = new QueryData();
+            field.key = SampleMeta.getAuxDataReferenceTableId();
+            field.type = QueryData.Type.INTEGER;
+            field.query = String.valueOf(ReferenceTable.SAMPLE);
+            fields.add(field);
+
+            // add aux fields
+            for (int i = 0; i < auxFields.size(); i++ ) {                
+                fields.add(auxFields.get(i));            
+            } 
+        }
+        
+        if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(manager.getSample().getDomain())) {
+            tmpFields = environmentalTab.getQueryFields();
+        } else if (SampleManager.WELL_DOMAIN_FLAG.equals(manager.getSample().getDomain())) {
+            tmpFields = wellTab.getQueryFields();            
+        } else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(manager.getSample().getDomain())) {
+            tmpFields = sdwisTab.getQueryFields();
+        }
+
+        if (tmpFields.size() > 0) {
+            fields.addAll(tmpFields);
+            addDomain = false;
+        }
+        
+        addPrivateWellFields(fields);
+
+        if (addDomain) {
+            // Added this Query Param to keep Quick Entry Samples out of
+            // query results
+            field = new QueryData();
+            field.query = "!Q";
+            field.key = SampleMeta.getDomain();
+            field.query = manager.getSample().getDomain();
+            field.type = QueryData.Type.STRING;
+            fields.add(field);
+        }
+
+        return fields;
     }
 
     protected void previousPage() {
@@ -1921,18 +1947,14 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                               consts.get("unreleaseSampleCaption"),
                               consts.get("unreleaseSampleMessage"),
                               "Cancel", "OK"); 
+        confirm.show();
         confirm.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {
                 switch (event.getSelectedItem().intValue()) {
                     case 0:
                         break;
-                    case 1:
-                        try {
-                            update(true);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            Window.alert(e.getMessage());
-                        }
+                    case 1:                        
+                        update(true);
                         break;
                 }
             }
@@ -1941,5 +1963,100 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
     public HandlerRegistration addActionHandler(ActionHandler handler) {
         return addHandler(handler, ActionEvent.getType());
+    }
+    
+    /**
+     * We need to add additional fields to the list of queried fields if it
+     * contains any field belonging to private well water's report to/organization.
+     * This is done in order to make sure that names and addresses belonging to 
+     * organizations as well as the ones that don't are searched.          
+     */
+    private void addPrivateWellFields(ArrayList<QueryData> fields){
+        int size;
+        String dataKey, orgName, addressMult, addressStreet, addressCity,
+               addressState, addressZip, addressWorkPhone, addressFaxPhone;
+        QueryData data;
+        
+        orgName = null;
+        addressMult = null;
+        addressStreet = null;
+        addressCity = null;
+        addressState = null;
+        addressZip = null;
+        addressWorkPhone = null;
+        addressFaxPhone = null;
+        
+        size = fields.size();
+        for(int i = size-1; i >= 0; i--){
+            data = fields.get(i);
+            dataKey = data.key;
+            
+            if (SampleMeta.getWellOrganizationName().equals(dataKey)) {
+                orgName = data.query;
+
+                data = new QueryData();
+                data.key = SampleMeta.getWellReportToName();
+                data.type = QueryData.Type.STRING;
+                data.query = orgName;
+                fields.add(data);
+            } else if (SampleMeta.getWellReportToAddressMultipleUnit().equals(dataKey)) {
+                addressMult = data.query;
+
+                data = new QueryData();
+                data.key = SampleMeta.getAddressMultipleUnit();
+                data.type = QueryData.Type.STRING;
+                data.query = addressMult;
+                fields.add(data);
+            } else if (SampleMeta.getWellReportToAddressStreetAddress().equals(dataKey)) {
+                addressStreet = data.query;
+
+                data = new QueryData();
+                data.key = SampleMeta.getAddressStreetAddress();
+                data.type = QueryData.Type.STRING;
+                data.query = addressStreet;
+                fields.add(data);
+            } else if (SampleMeta.getWellReportToAddressCity().equals(dataKey)) {
+                addressCity = data.query;
+
+                data = new QueryData();
+                data.key = SampleMeta.getAddressCity();
+                data.type = QueryData.Type.STRING;
+                data.query = addressCity;
+                fields.add(data);
+            } else if (SampleMeta.getWellReportToAddressState().equals(dataKey)) {
+                addressState = data.query;
+
+                data = new QueryData();
+                data.key = SampleMeta.getAddressState();
+                data.type = QueryData.Type.STRING;
+                data.query = addressState;
+                fields.add(data);
+            } else if (SampleMeta.getWellReportToAddressZipCode().equals(dataKey)) {
+                addressZip = data.query;
+
+                data = new QueryData();
+                data.key = SampleMeta.getAddressZipCode();
+                data.type = QueryData.Type.STRING;
+                data.query = addressZip;
+                fields.add(data);
+            } else if (SampleMeta.getWellReportToAddressWorkPhone().equals(dataKey)) {
+                addressWorkPhone = data.query;
+
+                data = new QueryData();
+                data.key = SampleMeta.getAddressWorkPhone();
+                data.type = QueryData.Type.STRING;
+                data.query = addressWorkPhone;
+                fields.add(data);
+            } else if (SampleMeta.getWellReportToAddressFaxPhone().equals(dataKey)) {
+                addressFaxPhone = data.query;
+
+                data = new QueryData();
+                data.key = SampleMeta.getAddressFaxPhone();
+                data.type = QueryData.Type.STRING;
+                data.query = addressFaxPhone;
+                fields.add(data);
+            }
+        }
+
     }
 }

@@ -61,7 +61,7 @@ public class TestResultBean implements TestResultLocal {
     private DictionaryLocal dictionary;
 
     private static int      typeDict, typeNumeric, typeTiter, typeDate, typeDateTime, typeTime,
-                    typeAlphaLower, typeAlphaUpper, typeAlphaMixed;
+                            typeAlphaLower, typeAlphaUpper, typeAlphaMixed;
 
     @PostConstruct
     public void init() {

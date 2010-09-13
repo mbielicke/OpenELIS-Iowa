@@ -27,8 +27,6 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
@@ -66,82 +64,88 @@ public class AuxFieldValueBean implements AuxFieldValueLocal {
                                              typeDate, typeTime, typeAlphaLower,
                                              typeAlphaUpper, typeAlphaMixed;      
     
-    private static final Logger              log  = Logger.getLogger(AuxFieldValueBean.class.getName());
-    
     @PostConstruct
     public void init() {
         DictionaryDO data;
 
-        try {
-            data = dictionary.fetchBySystemName("aux_dictionary");
-            typeDict = data.getId();
-        } catch (Throwable e) {
-            typeDict = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='aux_dictionary'", e);
+        if (typeDict == 0) {
+            try {
+                data = dictionary.fetchBySystemName("aux_dictionary");
+                typeDict = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeDict = 0;
+            }
         }
-        
-        try {
-            data = dictionary.fetchBySystemName("aux_numeric");
-            typeNumeric = data.getId();
-        } catch (Throwable e) {
-            typeNumeric = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='aux_numeric'", e);
+
+        if (typeNumeric == 0) {
+            try {
+                data = dictionary.fetchBySystemName("aux_numeric");
+                typeNumeric = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeNumeric = 0;
+            }
         }
-        
-        try {
-            data = dictionary.fetchBySystemName("aux_date_time");
-            typeDateTime = data.getId();
-        } catch (Throwable e) {
-            typeDateTime = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='aux_date_time'", e);
+
+        if (typeDateTime == 0) {
+            try {
+                data = dictionary.fetchBySystemName("aux_date_time");
+                typeDateTime = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeDateTime = 0;
+            }
         }
-        
-        try {
-            data = dictionary.fetchBySystemName("aux_date");
-            typeDate = data.getId();
-        } catch (Throwable e) {
-            typeDate = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='aux_date'", e);
+
+        if (typeDate == 0) {
+            try {
+                data = dictionary.fetchBySystemName("aux_date");
+                typeDate = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeDate = 0;
+            }
         }
-        
-        try {
-            data = dictionary.fetchBySystemName("aux_time");
-            typeTime = data.getId();
-        } catch (Throwable e) {
-            typeTime = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='aux_time'", e);
+
+        if (typeTime == 0) {
+            try {
+                data = dictionary.fetchBySystemName("aux_time");
+                typeTime = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeTime = 0;
+            }
         }
-        
-        try {
-            data = dictionary.fetchBySystemName("aux_alpha_lower");
-            typeAlphaLower = data.getId();
-        } catch (Throwable e) {
-            typeAlphaLower = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='aux_alpha_lower'", e);
+
+        if (typeAlphaLower == 0) {
+            try {
+                data = dictionary.fetchBySystemName("aux_alpha_lower");
+                typeAlphaLower = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeAlphaLower = 0;
+            }
         }
-        
-        try {
-            data = dictionary.fetchBySystemName("aux_alpha_upper");
-            typeAlphaUpper = data.getId();
-        } catch (Throwable e) {
-            typeAlphaUpper = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='aux_alpha_upper'", e);
+
+        if (typeAlphaUpper == 0) {
+            try {
+                data = dictionary.fetchBySystemName("aux_alpha_upper");
+                typeAlphaUpper = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeAlphaUpper = 0;
+            }
         }
-        
-        try {
-            data = dictionary.fetchBySystemName("aux_alpha_mixed");
-            typeAlphaMixed = data.getId();
-        } catch (Throwable e) {
-            typeAlphaMixed = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='aux_alpha_mixed'", e);
+
+        if (typeAlphaMixed == 0) {
+            try {
+                data = dictionary.fetchBySystemName("aux_alpha_mixed");
+                typeAlphaMixed = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeAlphaMixed = 0;
+            }
         }
     }
 

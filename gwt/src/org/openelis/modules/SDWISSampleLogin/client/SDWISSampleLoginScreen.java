@@ -926,6 +926,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         
         setFocus(null);
         clearErrors();
+        manager.setStatusWithError(false);
 
         if ( !validate()) {
             window.setError(consts.get("correctErrors"));
@@ -935,21 +936,13 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         if (state == State.QUERY) {
             queryFields = getQueryFields();
             query = new Query();
-            query.setFields(queryFields);
-
-            // add the domain
-            domain = new QueryData();
-            domain.key = SampleMeta.getDomain();
-            domain.query = SampleManager.SDWIS_DOMAIN_FLAG;
-            domain.type = QueryData.Type.STRING;
-            query.getFields().add(domain);
+            query.setFields(queryFields);            
 
             nav.setQuery(query);
         } else if (state == State.ADD) {
             window.setBusy(consts.get("adding"));
             try {
                 manager.validate();
-                manager.getSample().setStatusId(sampleLoggedInId);
                 manager = manager.add();
 
                 setState(Screen.State.DISPLAY);
@@ -968,7 +961,6 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             window.setBusy(consts.get("updating"));
             try {
                 manager.validate();
-                manager.getSample().setStatusId(sampleLoggedInId);
                 manager = manager.update();
 
                 setState(Screen.State.DISPLAY);
@@ -987,7 +979,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
     protected void commitWithWarnings() {
         clearErrors();
-        manager.getSample().setStatusId(sampleErrorStatusId);
+        manager.setStatusWithError(true);
 
         if (state == State.ADD) {
             window.setBusy(consts.get("adding"));
@@ -1092,45 +1084,36 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     }
 
     public ArrayList<QueryData> getQueryFields() {
-        ArrayList<QueryData> returnList;
-        ArrayList<IdNameVO> auxFields;
-        QueryData queryData;
-        IdNameVO idName;
+        ArrayList<QueryData> fields, auxFields;
+        QueryData field;
 
-        returnList = super.getQueryFields();
+        fields = super.getQueryFields();
 
         // add aux data values if necessary
-        auxFields = auxDataTab.getAuxQueryFields();
-
+        auxFields = auxDataTab.getQueryFields();
+     
+        // add the domain
+        field = new QueryData();
+        field.key = SampleMeta.getDomain();
+        field.query = SampleManager.SDWIS_DOMAIN_FLAG;
+        field.type = QueryData.Type.STRING;
+        fields.add(field);
+        
         if (auxFields.size() > 0) {
             // add ref table
-            queryData = new QueryData();
-            queryData.key = SampleMeta.getAuxDataReferenceTableId();
-            queryData.type = QueryData.Type.INTEGER;
-            queryData.query = String.valueOf(ReferenceTable.SAMPLE);
-            returnList.add(queryData);
+            field = new QueryData();
+            field.key = SampleMeta.getAuxDataReferenceTableId();
+            field.type = QueryData.Type.INTEGER;
+            field.query = String.valueOf(ReferenceTable.SAMPLE);
+            fields.add(field);
 
             // add aux fields
-            for (int i = 0; i < auxFields.size(); i++ ) {
-                idName = auxFields.get(i);
-
-                // aux data id
-                queryData = new QueryData();
-                queryData.key = SampleMeta.getAuxDataAuxFieldId();
-                queryData.type = QueryData.Type.INTEGER;
-                queryData.query = String.valueOf(idName.getId());
-                returnList.add(queryData);
-
-                // aux data value
-                queryData = new QueryData();
-                queryData.key = SampleMeta.getAuxDataValue();
-                queryData.type = QueryData.Type.STRING;
-                queryData.query = idName.getName();
-                returnList.add(queryData);
-            }
+            for (int i = 0; i < auxFields.size(); i++ ) {                
+                fields.add(auxFields.get(i));            
+            } 
         }
 
-        return returnList;
+        return fields;
     }
 
     private void initializeDropdowns() {

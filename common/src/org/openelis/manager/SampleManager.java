@@ -110,6 +110,10 @@ public class SampleManager implements RPC, HasAuxDataInt {
     public static SampleManager fetchWithItemsAnalyses(Integer id) throws Exception {
         return proxy().fetchWithItemsAnalyses(id);
     }
+    
+    public static SampleManager fetchWithAllData(Integer id) throws Exception {
+        return proxy().fetchWithAllData(id);
+    }
 
     public SampleManager add() throws Exception {
         updateSampleStatus();
@@ -143,15 +147,15 @@ public class SampleManager implements RPC, HasAuxDataInt {
     }
 
     public void setDefaults() {
-        Datetime yToM;
+        Datetime date;
     
         try {
-            yToM = proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE);
+            date = proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE);
     
             sample.setNextItemSequence(0);
             sample.setRevision(0);
-            sample.setEnteredDate(yToM);
-            sample.setReceivedDate(yToM);
+            sample.setEnteredDate(date);
+            sample.setReceivedDate(date);
             sample.setStatusId(proxy().samLoggedInId);
     
         } catch (Exception e) {
@@ -392,8 +396,8 @@ public class SampleManager implements RPC, HasAuxDataInt {
         int e, l, c, r;
         SampleItemManager itemMan;
         AnalysisManager analysisMan;
-        SampleItemViewDO sampleItemDO;
-        AnalysisViewDO anDO;
+        SampleItemViewDO data;
+        AnalysisViewDO analysis;
         Integer oldStatusId, statusId, analysisStatusId;
 
         statusId = null;
@@ -405,14 +409,14 @@ public class SampleManager implements RPC, HasAuxDataInt {
         //
         itemMan = getSampleItems();
         for (int s = 0; s < itemMan.count(); s++ ) {
-            sampleItemDO = itemMan.getSampleItemAt(s);
+            data = itemMan.getSampleItemAt(s);
             analysisMan = itemMan.getAnalysisAt(s);
             for (int a = 0; a < analysisMan.count(); a++ ) {
                 // update the analysis status
-                analysisMan.updateAnalysisStatusAt(a, sampleItemDO.getTypeOfSampleId());
+                analysisMan.updateAnalysisStatusAt(a, data.getTypeOfSampleId());
 
-                anDO = analysisMan.getAnalysisAt(a);
-                analysisStatusId = anDO.getStatusId();
+                analysis = analysisMan.getAnalysisAt(a);
+                analysisStatusId = analysis.getStatusId();
 
                 if (analysisStatusId.equals(proxy().anErrorLoggedInId) ||
                     analysisStatusId.equals(proxy().anErrorInitiatedId) ||

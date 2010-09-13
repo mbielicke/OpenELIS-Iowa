@@ -39,9 +39,12 @@ import org.openelis.domain.PwsDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.entity.SampleSDWIS;
 import org.openelis.gwt.common.DatabaseException;
+import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.PwsLocal;
 import org.openelis.local.SampleSDWISLocal;
+import org.openelis.meta.SampleMeta;
 
 @Stateless
 
@@ -52,20 +55,21 @@ public class SampleSDWISBean implements SampleSDWISLocal {
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
     
-    @EJB private PwsLocal pwsBean;
+    @EJB
+    private PwsLocal pws;
     
     public SampleSDWISViewDO fetchBySampleId(Integer sampleId) throws Exception {
         Query query;
         SampleSDWISViewDO data;
-        PwsDO pws;
+        PwsDO pwsData;
         
         query = manager.createNamedQuery("SampleSDWIS.FetchBySampleId");
         query.setParameter("id", sampleId);
 
         try{
             data = (SampleSDWISViewDO) query.getSingleResult();
-            pws = pwsBean.fetchByNumber0(data.getPwsId());
-            data.setPwsName(pws.getName());
+            pwsData = pws.fetchByNumber0(data.getPwsId());
+            data.setPwsName(pwsData.getName());
             
         } catch (NoResultException e) {
             throw new NotFoundException();
@@ -76,7 +80,7 @@ public class SampleSDWISBean implements SampleSDWISLocal {
         return data;
     }
     
-    public void add(SampleSDWISViewDO data) throws Exception {
+    public SampleSDWISViewDO add(SampleSDWISViewDO data) throws Exception {
         SampleSDWIS entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -96,13 +100,15 @@ public class SampleSDWISBean implements SampleSDWISLocal {
         manager.persist(entity);
         
         data.setId(entity.getId());
+        
+        return data;
     }
 
-    public void update(SampleSDWISViewDO data) throws Exception {
+    public SampleSDWISViewDO update(SampleSDWISViewDO data) throws Exception {
         SampleSDWIS entity;
         
         if (!data.isChanged())
-            return;
+            return data;
         
         manager.setFlushMode(FlushModeType.COMMIT);
         
@@ -117,5 +123,22 @@ public class SampleSDWISBean implements SampleSDWISLocal {
         entity.setSamplePointId(data.getSamplePointId());
         entity.setLocation(data.getLocation());
         entity.setCollector(data.getCollector());
+        
+        return data;
+    }
+
+    public void validate(SampleSDWISViewDO data) throws Exception {
+        ValidationErrorsList list;
+             
+        list = new ValidationErrorsList();
+        try {
+            pws.fetchByNumber0(data.getPwsId());
+        } catch (NotFoundException e) {            
+            list.add(new FieldErrorException("invalidPwsException",
+                                                   SampleMeta.getSDWISPwsId()));
+        } 
+         
+        if (list.size() > 0)
+            throw list;
     }
 }

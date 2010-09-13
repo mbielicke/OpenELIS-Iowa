@@ -28,6 +28,7 @@ package org.openelis.manager;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.SampleSDWISViewDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -70,16 +71,17 @@ public class SampleSDWISManagerProxy {
     }
 
     public void validate(SampleSDWISManager man, ValidationErrorsList errorsList) throws Exception {
-        // validate that the pwsid is valid
+        ValidationErrorsList list;
+        
+        list = new ValidationErrorsList();
         try {
-            pwsLocal().fetchByNumber0(man.getSDWIS().getPwsId());
-
-        } catch (NotFoundException e) {
-            errorsList.add(new FieldErrorException("invalidPwsException",
-                                                   SampleMeta.getSDWISPwsId()));
+            local().validate(man.getSDWIS());
         } catch (Exception e) {
-            throw e;
+            DataBaseUtil.mergeException(list, e);
         }
+        
+        if (list.size() > 0)
+            throw list;
     }
 
     private SampleSDWISLocal local() {

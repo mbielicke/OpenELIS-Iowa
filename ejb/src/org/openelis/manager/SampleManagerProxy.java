@@ -47,9 +47,9 @@ import org.openelis.meta.SampleMeta;
 
 public class SampleManagerProxy {
     protected static Integer anLoggedInId, anInitiatedId, anCompletedId, anReleasedId, anInPrepId,
-                    anOnHoldId, anRequeueId, anCancelledId, anErrorLoggedInId, anErrorInitiatedId,
-                    anErrorInPrepId, anErrorCompletedId, samLoggedInId, samCompletedId,
-                    samReleasedId, samErrorId;
+                             anOnHoldId, anRequeueId, anCancelledId, anErrorLoggedInId, anErrorInitiatedId,
+                             anErrorInPrepId, anErrorCompletedId, samLoggedInId, samCompletedId,
+                             samReleasedId, samErrorId;
 
     public SampleManagerProxy() {
         DictionaryLocal l;
@@ -81,13 +81,13 @@ public class SampleManagerProxy {
     }
 
     public SampleManager fetchById(Integer sampleId) throws Exception {
-        SampleDO sampleDO;
+        SampleDO data;
         SampleManager man;
 
-        sampleDO = sampleLocal().fetchById(sampleId);
+        data = sampleLocal().fetchById(sampleId);
 
         man = SampleManager.getInstance();
-        man.setSample(sampleDO);
+        man.setSample(data);
 
         man.getDomainManager();
         man.getOrganizations();
@@ -98,13 +98,13 @@ public class SampleManagerProxy {
     }
 
     public SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception {
-        SampleDO sampleDO;
+        SampleDO data;
         SampleManager man;
 
-        sampleDO = sampleLocal().fetchByAccessionNumber(accessionNumber);
+        data = sampleLocal().fetchByAccessionNumber(accessionNumber);
 
         man = SampleManager.getInstance();
-        man.setSample(sampleDO);
+        man.setSample(data);
         man.getDomainManager();
         man.getOrganizations();
         man.getProjects();
@@ -114,58 +114,125 @@ public class SampleManagerProxy {
     }
 
     public SampleManager fetchWithItemsAnalyses(Integer sampleId) throws Exception {
-        SampleDO sampleDO;
-        SampleManager sm;
-        SampleItemManager sim;
-        SampleItemViewDO siDO;
+        SampleDO data;
+        SampleManager man;
+        SampleItemManager itemMan;
+        SampleItemViewDO item;
         ArrayList<SampleItemViewDO> items;
         ArrayList<AnalysisViewDO> analyses;
         HashMap<Integer, AnalysisManager> anaMap;
-        AnalysisViewDO anDO;
-        AnalysisManager am;
+        AnalysisViewDO analysis;
+        AnalysisManager anaMan;
 
-        sampleDO = sampleLocal().fetchById(sampleId);
+        data = sampleLocal().fetchById(sampleId);
 
-        sm = SampleManager.getInstance();
-        sm.setSample(sampleDO);
+        man = SampleManager.getInstance();
+        man.setSample(data);
 
-        sm.getDomainManager();
-        sm.getOrganizations();
-        sm.getProjects();
+        man.getDomainManager();
+        man.getOrganizations();
+        man.getProjects();
 
         // sample item
         items = (ArrayList<SampleItemViewDO>)sampleItemLocal().fetchBySampleId(sampleId);
-        sim = SampleItemManager.getInstance();
-        sim.setSampleId(sampleId);
-        sim.setSampleManager(sm);
-        sim.addSampleItems(items);
-        sm.sampleItems = sim;
+        itemMan = SampleItemManager.getInstance();
+        itemMan.setSampleId(sampleId);
+        itemMan.setSampleManager(man);
+        itemMan.addSampleItems(items);
+        man.sampleItems = itemMan;
 
         anaMap = new HashMap<Integer, AnalysisManager>();
-        for (int i = 0; i < sim.count(); i++ ) {
-            siDO = sim.getSampleItemAt(i);
-            am = AnalysisManager.getInstance();
-            am.setSampleItemId(siDO.getId());
-            am.setSampleItemManager(sim);
-            am.setSampleItemBundle(sim.getBundleAt(i));
-            sim.setAnalysisAt(am, i);
+        for (int i = 0; i < itemMan.count(); i++ ) {
+            item = itemMan.getSampleItemAt(i);
+            anaMan = AnalysisManager.getInstance();
+            anaMan.setSampleItemId(item.getId());
+            anaMan.setSampleItemManager(itemMan);
+            anaMan.setSampleItemBundle(itemMan.getBundleAt(i));
+            itemMan.setAnalysisAt(anaMan, i);
 
-            anaMap.put(siDO.getId(), am);
+            anaMap.put(item.getId(), anaMan);
         }
 
         // fetch analyses
         try {
             analyses = (ArrayList<AnalysisViewDO>)analysisLocal().fetchBySampleId(sampleId);
             for (int i = 0; i < analyses.size(); i++ ) {
-                anDO = analyses.get(i);
-                am = anaMap.get(anDO.getSampleItemId());
-                am.addAnalysis(anDO);
+                analysis = analyses.get(i);
+                anaMan = anaMap.get(analysis.getSampleItemId());
+                anaMan.addAnalysis(analysis);
             }
         } catch (NotFoundException e) {
             // ignore
         }
 
-        return sm;
+        return man;
+    }
+    
+    public SampleManager fetchWithAllData(Integer sampleId) throws Exception {
+        int addedIndex;
+        SampleDO data;
+        SampleManager man;
+        SampleItemManager itemMan;
+        SampleItemViewDO item;
+        ArrayList<SampleItemViewDO> items;
+        ArrayList<AnalysisViewDO> analyses;
+        HashMap<Integer, AnalysisManager> anaMap;
+        AnalysisViewDO analysis;
+        AnalysisManager anaMan;
+        HashMap<Integer, TestManager> testCache;
+        TestManager testMan;
+
+        data = sampleLocal().fetchById(sampleId);
+
+        man = SampleManager.getInstance();
+        man.setSample(data);
+
+        man.getDomainManager();
+        man.getOrganizations();
+        man.getProjects();
+
+        // sample item
+        items = (ArrayList<SampleItemViewDO>)sampleItemLocal().fetchBySampleId(sampleId);
+        itemMan = SampleItemManager.getInstance();
+        itemMan.setSampleId(sampleId);
+        itemMan.setSampleManager(man);
+        itemMan.addSampleItems(items);
+        man.sampleItems = itemMan;
+
+        anaMap = new HashMap<Integer, AnalysisManager>();
+        for (int i = 0; i < itemMan.count(); i++ ) {
+            item = itemMan.getSampleItemAt(i);
+            anaMan = AnalysisManager.getInstance();
+            anaMan.setSampleItemId(item.getId());
+            anaMan.setSampleItemManager(itemMan);
+            anaMan.setSampleItemBundle(itemMan.getBundleAt(i));
+            itemMan.setAnalysisAt(anaMan, i);
+
+            anaMap.put(item.getId(), anaMan);
+        }
+
+        // fetch analysess
+        try {
+            analyses = (ArrayList<AnalysisViewDO>)analysisLocal().fetchBySampleId(sampleId);
+            testCache = new HashMap<Integer, TestManager>();
+            for (int i = 0; i < analyses.size(); i++ ) {
+                analysis = analyses.get(i);
+
+                anaMan = anaMap.get(analysis.getSampleItemId());
+                addedIndex = anaMan.addAnalysis(analysis);
+
+                testMan = testCache.get(analysis.getTestId());
+                if (testMan == null) {
+                    testMan = TestManager.fetchWithPrepTestsSampleTypes(analysis.getTestId());
+                    testCache.put(analysis.getTestId(), testMan);
+                }
+                anaMan.setTestAt(testMan, addedIndex);
+            }
+        } catch (NotFoundException e) {
+            // ignore
+        }
+
+        return man;
     }
 
     public SampleManager add(SampleManager man) throws Exception {
@@ -271,70 +338,8 @@ public class SampleManagerProxy {
     }
 
     public SampleManager fetchForUpdate(Integer sampleId) throws Exception {
-        SampleDO sampleDO;
-        SampleManager sm;
-        SampleItemManager sim;
-        SampleItemViewDO siDO;
-        ArrayList<SampleItemViewDO> items;
-        ArrayList<AnalysisViewDO> analyses;
-        HashMap<Integer, AnalysisManager> anaMap;
-        AnalysisViewDO anDO;
-        AnalysisManager am;
-        HashMap<Integer, TestManager> testCache;
-        int addedIndex;
-        TestManager tm;
-
-        sampleDO = sampleLocal().fetchById(sampleId);
-
-        sm = SampleManager.getInstance();
-        sm.setSample(sampleDO);
-
-        sm.getDomainManager();
-        sm.getOrganizations();
-        sm.getProjects();
-
-        // sample item
-        items = (ArrayList<SampleItemViewDO>)sampleItemLocal().fetchBySampleId(sampleId);
-        sim = SampleItemManager.getInstance();
-        sim.setSampleId(sampleId);
-        sim.setSampleManager(sm);
-        sim.addSampleItems(items);
-        sm.sampleItems = sim;
-
-        anaMap = new HashMap<Integer, AnalysisManager>();
-        for (int i = 0; i < sim.count(); i++ ) {
-            siDO = sim.getSampleItemAt(i);
-            am = AnalysisManager.getInstance();
-            am.setSampleItemId(siDO.getId());
-            am.setSampleItemManager(sim);
-            am.setSampleItemBundle(sim.getBundleAt(i));
-            sim.setAnalysisAt(am, i);
-
-            anaMap.put(siDO.getId(), am);
-        }
-
-        // fetch analysess
-        try {
-            analyses = (ArrayList<AnalysisViewDO>)analysisLocal().fetchBySampleId(sampleId);
-            testCache = new HashMap<Integer, TestManager>();
-            for (int i = 0; i < analyses.size(); i++ ) {
-                anDO = analyses.get(i);
-
-                am = anaMap.get(anDO.getSampleItemId());
-                addedIndex = am.addAnalysis(anDO);
-
-                tm = testCache.get(anDO.getTestId());
-                if (tm == null) {
-                    tm = TestManager.fetchWithPrepTestsSampleTypes(anDO.getTestId());
-                    testCache.put(anDO.getTestId(), tm);
-                }
-                am.setTestAt(tm, addedIndex);
-            }
-        } catch (NotFoundException e) {
-            // ignore
-        }
-
-        return sm;
+        assert false : "not supported";
+        return null;
     }
 
     public SampleManager abortUpdate(Integer sampleId) throws Exception {
