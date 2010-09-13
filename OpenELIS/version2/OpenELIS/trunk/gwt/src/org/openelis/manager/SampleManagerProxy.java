@@ -85,6 +85,10 @@ public class SampleManagerProxy {
     public SampleManager fetchWithItemsAnalyses(Integer sampleId) throws Exception {
         return service.call("fetchWithItemsAnalyses", sampleId);
     }
+    
+    public SampleManager fetchWithAllData(Integer sampleId) throws Exception {        
+        return service.call("fetchWithAllData", sampleId);
+    }
 
     public SampleManager add(SampleManager man) throws Exception {
         return service.call("add", man);
@@ -112,7 +116,7 @@ public class SampleManagerProxy {
         data = man.getSample();
 
         // re-validate accession number
-        validateAccessionNumber(man.getSample(), errorsList);
+        validateAccessionNumber(data, errorsList);
 
         // received date required
         if (data.getReceivedDate() == null || data.getReceivedDate().getDate() == null)
@@ -139,8 +143,10 @@ public class SampleManagerProxy {
         }
         
         // every unreleased sample needs an internal comment describing the reason
-        if (man.unreleaseSample && man.sampleInternalNotes == null || !man.sampleInternalNotes.hasEditingNote())
-            errorsList.add(new FormErrorException("unreleaseNoNoteException"));
+        if (man.unreleaseSample) {
+            if (man.sampleInternalNotes == null || !man.sampleInternalNotes.hasEditingNote())
+                errorsList.add(new FormErrorException("unreleaseNoNoteException"));
+        }
 
         man.getDomainManager().validate(errorsList);
 

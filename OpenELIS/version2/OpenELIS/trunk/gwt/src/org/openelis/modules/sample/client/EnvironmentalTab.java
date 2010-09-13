@@ -66,19 +66,19 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Window;
 
 public class EnvironmentalTab extends Screen {
-    protected TextBox                      location, description, collector, collectorPhone;
-    protected TextBox<Integer>             priority;
-    protected AutoComplete<Integer>        project, reportTo, billTo;
-    protected AppButton                    billToLookup, reportToLookup, projectLookup,
-                                           locationLookup;
-    protected CheckBox                     isHazardous;
+    private TextBox                        location, description, collector, collectorPhone;
+    private TextBox<Integer>               priority;
+    private AutoComplete<Integer>          project, reportTo, billTo;
+    private AppButton                      billToLookup, reportToLookup, projectLookup,
+                    locationLookup;
+    private CheckBox                       isHazardous;
 
     private SampleLocationLookupScreen     locationScreen;
     private SampleOrganizationLookupScreen organizationScreen;
     private SampleProjectLookupScreen      projectScreen;
 
-    protected ScreenService                orgService;
-    protected ScreenService                projectService;
+    private ScreenService                  orgService;
+    private ScreenService                  projectService;
 
     private SampleManager                  manager;
     private SampleEnvironmentalManager     envManager;

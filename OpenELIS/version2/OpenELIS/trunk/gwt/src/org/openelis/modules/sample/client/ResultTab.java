@@ -83,7 +83,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
     private boolean                                 loaded;
 
     protected AppButton                             addResultButton, removeResultButton,
-                    suggestionsButton, popoutTable;
+                                                    suggestionsButton, popoutTable;
     protected TableWidget                           testResultsTable;
     private ArrayList<TableColumn>                  resultTableCols;
 
@@ -95,13 +95,14 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
     private TestAnalyteDisplayManager<ResultViewDO> displayManager;
     protected GetMatchesHandler                     resultMatchesHandler;
     protected AnalysisManager                       analysisMan;
-    protected AnalysisViewDO                        anDO;
+    protected AnalysisViewDO                        analysis;
     protected SampleDataBundle                      bundle;
-    private Screen                       parentScreen;
+    private Screen                                  parentScreen;
 
     private Integer                                 analysisCancelledId, analysisReleasedId,
-                    testAnalyteReadOnlyId, testAnalyteRequiredId, addedTestAnalyteId,
-                    addedAnalyteId, typeAlphaLower, typeAlphaUpper;
+                                                    testAnalyteReadOnlyId, testAnalyteRequiredId,
+                                                    addedTestAnalyteId, addedAnalyteId,
+                                                    typeAlphaLower, typeAlphaUpper;
     private String                                  addedAnalyteName;
 
     private ReflexTestUtility                       reflexTestUtil;
@@ -148,13 +149,13 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
         testResultsTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
             public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
-                if (anDO.getUnitOfMeasureId() == null) {
+                boolean isHeader;
+                TableDataRow row;
+                
+                if (analysis.getUnitOfMeasureId() == null) {
                     addResultButton.enable(false);
                     removeResultButton.enable(false);
                 }
-
-                TableDataRow row;
-                boolean isHeader;
 
                 row = event.getItem().row;
                 isHeader = ((Boolean)row.data).booleanValue();
@@ -167,13 +168,13 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         testResultsTable.addSelectionHandler(new SelectionHandler<TableRow>() {
             public void onSelection(SelectionEvent<TableRow> event) {
                 int row;
-                ResultViewDO resultDO;
+                ResultViewDO data;
 
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     row = testResultsTable.getSelectedRow();
-                    resultDO = displayManager.getObjectAt(row, 0);
+                    data = displayManager.getObjectAt(row, 0);
 
-                    if (testAnalyteRequiredId.equals(resultDO.getTypeId()))
+                    if (testAnalyteRequiredId.equals(data.getTypeId()))
                         removeResultButton.enable(false);
                     else
                         removeResultButton.enable(true);
@@ -189,7 +190,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                 boolean           isHeaderRow, enableButton;
                 int               r, c;
                 TableDataRow      row;
-                ResultViewDO      resultDO;
+                ResultViewDO      data;
                 TestAnalyteViewDO testAnalyte;
 
                 isHeaderRow  = false;
@@ -205,18 +206,18 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                     enableButton = false;
                 } else {
                     if (c < 2)
-                        resultDO = displayManager.getObjectAt(r, 0);
+                        data = displayManager.getObjectAt(r, 0);
                     else
-                        resultDO = displayManager.getObjectAt(r, c - 2);
+                        data = displayManager.getObjectAt(r, c - 2);
                     
-                    testAnalyte = manager.getTestAnalyte(resultDO.getRowGroup(), resultDO.getTestAnalyteId());
+                    testAnalyte = manager.getTestAnalyte(data.getRowGroup(), data.getTestAnalyteId());
                     if (testAnalyte == null || testAnalyteReadOnlyId.equals(testAnalyte.getTypeId())) {
                         if (testAnalyte == null)
                             window.setError(consts.get("testAnalyteDefinitionChanged"));
                         event.cancel();
                         enableButton = false;
-                    } else if (anDO.getUnitOfMeasureId() == null &&
-                               !manager.getResultValidator(resultDO.getResultGroup()).noUnitsSpecified()) {
+                    } else if (analysis.getUnitOfMeasureId() == null &&
+                               !manager.getResultValidator(data.getResultGroup()).noUnitsSpecified()) {
                         window.setError(consts.get("unitOfMeasureException"));
                         event.cancel();
                         enableButton = false;
@@ -233,36 +234,36 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                 int row, col;
                 String val;
                 TableDataRow tableRow;
-                ResultViewDO resultDO;
+                ResultViewDO data;
                 Integer testResultId;
-                TestResultDO testResultDo;
+                TestResultDO testResult;
 
                 row = event.getRow();
                 col = event.getCol();
-                resultDO = null;
+                data = null;
 
                 tableRow = testResultsTable.getRow(row);
                 val = (String)tableRow.cells.get(col).value;
 
                 if (col == 0)
-                    resultDO = displayManager.getObjectAt(row, 0);
+                    data = displayManager.getObjectAt(row, 0);
                 else
-                    resultDO = displayManager.getObjectAt(row, col - 2);
+                    data = displayManager.getObjectAt(row, col - 2);
 
                 if (col == 0) {
-                    resultDO.setIsReportable(val);
+                    data.setIsReportable(val);
 
                 } else if ( !"".equals(val)) {
                     try {
-                        testResultId = manager.validateResultValue(resultDO.getResultGroup(),
-                                                                   anDO.getUnitOfMeasureId(), val);
-                        testResultDo = manager.getTestResultList().get(testResultId);
+                        testResultId = manager.validateResultValue(data.getResultGroup(),
+                                                                   analysis.getUnitOfMeasureId(), val);
+                        testResult = manager.getTestResultList().get(testResultId);
 
-                        resultDO.setTypeId(testResultDo.getTypeId());
-                        resultDO.setTestResultId(testResultDo.getId());
-                        //if its alpha we need to set it to the right case
-                        val = formatValue(testResultDo, val);
-                        resultDO.setValue(val);
+                        data.setTypeId(testResult.getTypeId());
+                        data.setTestResultId(testResult.getId());
+                        //if it's alpha we need to set it to the right case
+                        val = formatValue(testResult, val);
+                        data.setValue(val);
                         testResultsTable.setCell(row, col, val);
 
                         if (reflexTestUtil == null){
@@ -276,33 +277,33 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                         }
 
                         reflexTestUtil.setScreen(parentScreen);
-                        reflexTestUtil.resultEntered(bundle, resultDO);
+                        reflexTestUtil.resultEntered(bundle, data);
 
                     } catch (ParseException e) {
                         testResultsTable.clearCellExceptions(row, col);
                         testResultsTable.setCellException(row, col, e);
-                        resultDO.setTypeId(null);
-                        resultDO.setTestResultId(null);
+                        data.setTypeId(null);
+                        data.setTestResultId(null);
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
                     }
                 } else {
                     testResultsTable.clearCellExceptions(row, col);
-                    resultDO.setValue(val);
-                    resultDO.setTypeId(null);
-                    resultDO.setTestResultId(null);
+                    data.setValue(val);
+                    data.setTypeId(null);
+                    data.setTestResultId(null);
                 }
             }
         });
 
         testResultsTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
-                TableDataRow row;
                 int index, prowIndex, numCols;
-                TestResultDO testResult;
                 Integer rowGroup;
-                ResultViewDO resultDO;
                 String val;
+                TableDataRow row;
+                ResultViewDO data;
+                TestResultDO testResult;
 
                 index = event.getIndex();
                 row = event.getRow();
@@ -319,32 +320,32 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
                 displayManager.setDataGrid(manager.getResults());
 
-                resultDO = null;
+                data = null;
                 numCols = displayManager.columnCount(index);
                 manager.setDefaultsLoaded(false);
                 for (int i = 2; i < numCols; i++ ) {
-                    resultDO = displayManager.getObjectAt(index, i - 2);
-                    row.key = resultDO.getId();
+                    data = displayManager.getObjectAt(index, i - 2);
+                    row.key = data.getId();
                     try {
-                        val = getDefaultValue(resultDO, anDO.getUnitOfMeasureId());
+                        val = getDefaultValue(data, analysis.getUnitOfMeasureId());
                         testResultsTable.setCell(index, i, val);   
                         
                         if (val != null && !"".equals(val)) {
-                            resultDO.setValue(val);
-                            displayManager.validateResultValue(manager, resultDO,
-                                                               anDO.getUnitOfMeasureId());
+                            data.setValue(val);
+                            displayManager.validateResultValue(manager, data,
+                                                               analysis.getUnitOfMeasureId());
                             
-                            testResult = displayManager.validateResultValue(manager, resultDO,
-                                                               anDO.getUnitOfMeasureId());
+                            testResult = displayManager.validateResultValue(manager, data,
+                                                               analysis.getUnitOfMeasureId());
                             val = formatValue(testResult, val);
-                            resultDO.setValue(val);
+                            data.setValue(val);
                             testResultsTable.setCell(index, i, val);   
                         }
                     } catch (ParseException e) {
                         testResultsTable.clearCellExceptions(index, i);
                         testResultsTable.setCellException(index, i, e);
-                        resultDO.setTypeId(null);
-                        resultDO.setTestResultId(null);
+                        data.setTypeId(null);
+                        data.setTestResultId(null);
 
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
@@ -426,13 +427,13 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         suggestionsButton = (AppButton)def.getWidget("suggestionsButton");
         addScreenHandler(suggestionsButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int row;
-                int col;
-                ResultViewDO resultDO;
+                int row, col;
+                ResultViewDO data;
+                Popup popUp;
 
                 row = testResultsTable.getSelectedRow();
                 col = testResultsTable.getSelectedCol();
-                resultDO = displayManager.getObjectAt(row, col - 2);
+                data = displayManager.getObjectAt(row, col - 2);
 
                 if (suggestionsScreen == null) {
                     try {
@@ -445,10 +446,10 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                     }
                 }
 
-                Popup popUp = new Popup(consts.get("suggestions"), suggestionsScreen);
+                popUp = new Popup(consts.get("suggestions"), suggestionsScreen);
 
-                suggestionsScreen.setValidator(manager.getResultValidator(resultDO.getResultGroup()),
-                                               anDO.getUnitOfMeasureId());
+                suggestionsScreen.setValidator(manager.getResultValidator(data.getResultGroup()),
+                                               analysis.getUnitOfMeasureId());
 
                 popUp.show();
             }
@@ -523,7 +524,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                     if (validateResults && val != null && !"".equals(val)) {
                         resultDO.setValue(val);
                         testResult = displayManager.validateResultValue(manager, resultDO,
-                                                           anDO.getUnitOfMeasureId());
+                                                           analysis.getUnitOfMeasureId());
                         val = formatValue(testResult, val);
                         resultDO.setValue(val);
                         row.cells.get(c + 2).setValue(val);
@@ -555,7 +556,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             val = resultDO.getValue();
 
         else
-            val = manager.getDefaultValue(resultDO.getResultGroup(), anDO.getUnitOfMeasureId());
+            val = manager.getDefaultValue(resultDO.getResultGroup(), analysis.getUnitOfMeasureId());
 
         return val;
     }
@@ -699,7 +700,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
     }
 
     private boolean canEdit() {
-        return (anDO != null && !analysisCancelledId.equals(anDO.getStatusId()) && !analysisReleasedId.equals(anDO.getStatusId()));
+        return (analysis != null && !analysisCancelledId.equals(analysis.getStatusId()) && !analysisReleasedId.equals(analysis.getStatusId()));
     }
     
     private String formatValue(TestResultDO testResultDO, String value){
@@ -721,13 +722,13 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                 analysisMan = data.getSampleManager()
                                   .getSampleItems()
                                   .getAnalysisAt(data.getSampleItemIndex());
-                anDO = analysisMan.getAnalysisAt(data.getAnalysisIndex());
+                analysis = analysisMan.getAnalysisAt(data.getAnalysisIndex());
 
                 if (state == State.ADD || state == State.UPDATE)
                     StateChangeEvent.fire(this, State.UPDATE);
             } else {
                 analysisMan = null;
-                anDO = new AnalysisViewDO();
+                analysis = new AnalysisViewDO();
                 StateChangeEvent.fire(this, State.DEFAULT);
             }
 
@@ -742,7 +743,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
     public void draw() {
         if ( !loaded) {
             try {
-                if (analysisMan == null || anDO.getTestId() == null)
+                if (analysisMan == null || analysis.getTestId() == null)
                     manager = AnalysisResultManager.getInstance();
                 else {
                     if (state == State.ADD || state == State.UPDATE)

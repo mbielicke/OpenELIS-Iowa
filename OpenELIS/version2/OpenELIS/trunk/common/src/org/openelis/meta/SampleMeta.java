@@ -922,7 +922,7 @@ public class SampleMeta implements Meta, MetaMap {
     public static String getAddressMultipleUnit(){
      return ADDR_MULTIPLE_UNIT;   
     }
-
+ 
     public static String getAddressStreetAddress(){
         return ADDR_STREET_ADDRESS;
     }

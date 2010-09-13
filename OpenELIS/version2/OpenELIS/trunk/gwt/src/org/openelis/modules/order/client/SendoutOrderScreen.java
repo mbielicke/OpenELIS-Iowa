@@ -1353,15 +1353,13 @@ public class SendoutOrderScreen extends Screen {
     }
 
     public ArrayList<QueryData> getQueryFields() {
-        ArrayList<QueryData> returnList;
-        ArrayList<IdNameVO> auxFields;
+        ArrayList<QueryData> returnList, auxFields;
         QueryData queryData;
-        IdNameVO idName;
 
         returnList = super.getQueryFields();
 
         // add aux data values if necessary
-        auxFields = auxDataTab.getAuxQueryFields();
+        auxFields = auxDataTab.getQueryFields();
 
         if (auxFields.size() > 0) {
             // add ref table
@@ -1372,23 +1370,9 @@ public class SendoutOrderScreen extends Screen {
             returnList.add(queryData);
 
             // add aux fields
-            for (int i = 0; i < auxFields.size(); i++ ) {
-                idName = auxFields.get(i);
-
-                // aux data id
-                queryData = new QueryData();
-                queryData.key = OrderMeta.getAuxDataAuxFieldId();
-                queryData.type = QueryData.Type.INTEGER;
-                queryData.query = String.valueOf(idName.getId());
-                returnList.add(queryData);
-
-                // aux data value
-                queryData = new QueryData();
-                queryData.key = OrderMeta.getAuxDataValue();
-                queryData.type = QueryData.Type.STRING;
-                queryData.query = idName.getName();
-                returnList.add(queryData);
-            }
+            for (int i = 0; i < auxFields.size(); i++ ) {                
+                returnList.add(auxFields.get(i));            
+            } 
         }
 
         return returnList;

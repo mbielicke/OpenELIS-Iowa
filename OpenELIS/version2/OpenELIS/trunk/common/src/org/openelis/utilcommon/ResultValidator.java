@@ -37,14 +37,14 @@ import org.openelis.gwt.common.RPC;
  */
 public class ResultValidator implements RPC {
     private static final long serialVersionUID = 1L;
+    
+    private HashMap<Integer, ArrayList<Item>>          units;
+    private HashMap<Integer, HashMap<String, Integer>> dictionary;
+    private HashMap<Integer, String>                   defaults;
 
     public enum Type {
         DATE, DATE_TIME, TIME, DICTIONARY, NUMERIC, TITER, ALPHA_LOWER, ALPHA_MIXED, ALPHA_UPPER, DEFAULT
     };
-
-    HashMap<Integer, ArrayList<Item>>          units;
-    HashMap<Integer, HashMap<String, Integer>> dictionary;
-    HashMap<Integer, String>                   defaults;
 
     public ResultValidator() {
         units = new HashMap<Integer, ArrayList<Item>>();

@@ -13,8 +13,9 @@ public interface SampleManagerRemote {
     public SampleManager update(SampleManager man) throws Exception;
     public SampleManager add(SampleManager man) throws Exception;
     public SampleManager fetchById(Integer sampleId) throws Exception;
-    public SampleManager fetchWithItemsAnalysis(Integer sampleId) throws Exception;
     public SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception;
+    public SampleManager fetchWithItemsAnalysis(Integer sampleId) throws Exception;
+    public SampleManager fetchWithAllData(Integer sampleId) throws Exception;
     
     public SampleManager fetchForUpdate(Integer sampleId) throws Exception;
     public SampleManager abortUpdate(Integer sampleId) throws Exception;
@@ -23,5 +24,6 @@ public interface SampleManagerRemote {
     public SampleProjectManager fetchSampleProjectsBySampleId(Integer sampleId) throws Exception;
     public SampleItemManager fetchSampleItemsBySampleId(Integer sampleId) throws Exception;
 
-    public SampleManager validateAccessionNumber(SampleDO sampleDO) throws Exception;
+    public SampleManager validateAccessionNumber(SampleDO data) throws Exception;
+    
 }

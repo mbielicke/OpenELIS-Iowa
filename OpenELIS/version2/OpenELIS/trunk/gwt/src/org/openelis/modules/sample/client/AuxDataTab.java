@@ -37,6 +37,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LocalizedException;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -65,6 +66,7 @@ import org.openelis.manager.AuxDataManager;
 import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.AuxFieldValueManager;
 import org.openelis.manager.HasAuxDataInt;
+import org.openelis.meta.SampleMeta;
 import org.openelis.utilcommon.ResultValidator;
 import org.openelis.utilcommon.ResultValidator.Type;
 
@@ -564,27 +566,37 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
         ((AutoComplete<Integer>)event.getSource()).showAutoMatches(model);
     }
 
-    public ArrayList<IdNameVO> getAuxQueryFields() {
-        ArrayList<IdNameVO> returnList;
+    public ArrayList<QueryData> getQueryFields() {
+        ArrayList<QueryData> fieldList;
         TableDataRow row;
         AuxDataBundle adb;
-        IdNameVO idName;
-        returnList = new ArrayList<IdNameVO>();
+        QueryData field;
+        
+        fieldList = new ArrayList<QueryData>();
 
         for (int i = 0; i < auxValsTable.numRows(); i++ ) {
             row = auxValsTable.getRow(i);
             adb = (AuxDataBundle)row.data;
 
-            if (row.cells.get(2).value != null) {
-                idName = new IdNameVO();
-                idName.setId(adb.fieldDO.getId());
-                idName.setName(getCorrectManValueByType(row.cells.get(2).value,
-                                                        adb.fieldDO.getTypeId()));
-                returnList.add(idName);
+            if (row.cells.get(2).value != null) {                                
+                
+                field = new QueryData();
+                field.key = SampleMeta.getAuxDataAuxFieldId();
+                field.type = QueryData.Type.INTEGER;
+                field.query = String.valueOf(adb.fieldDO.getId());
+                fieldList.add(field);
+
+                // aux data value
+                field = new QueryData();
+                field.key = SampleMeta.getAuxDataValue();
+                field.type = QueryData.Type.STRING;
+                field.query = getCorrectManValueByType(row.cells.get(2).value,
+                                                       adb.fieldDO.getTypeId());
+                fieldList.add(field);
             }
         }
 
-        return returnList;
+        return fieldList;
     }
 
     private void initializeDropdowns() {
