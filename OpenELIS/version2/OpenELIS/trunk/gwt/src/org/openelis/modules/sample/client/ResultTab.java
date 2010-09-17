@@ -34,6 +34,7 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeCloseEvent;
@@ -233,7 +234,6 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             public void onCellUpdated(CellEditedEvent event) {
                 int row, col;
                 String val;
-                TableDataRow tableRow;
                 ResultViewDO data;
                 Integer testResultId;
                 TestResultDO testResult;
@@ -242,8 +242,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                 col = event.getCol();
                 data = null;
 
-                tableRow = testResultsTable.getRow(row);
-                val = (String)tableRow.cells.get(col).value;
+                val = (String)testResultsTable.getObject(row, col);;
 
                 if (col == 0)
                     data = displayManager.getObjectAt(row, 0);
@@ -253,7 +252,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                 if (col == 0) {
                     data.setIsReportable(val);
 
-                } else if ( !"".equals(val)) {
+                } else if ( !DataBaseUtil.isEmpty(val)) {
                     try {
                         testResultId = manager.validateResultValue(data.getResultGroup(),
                                                                    analysis.getUnitOfMeasureId(), val);

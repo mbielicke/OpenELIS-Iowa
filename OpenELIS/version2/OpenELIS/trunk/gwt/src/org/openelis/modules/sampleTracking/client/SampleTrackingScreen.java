@@ -138,7 +138,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     private SampleTreeUtility    treeUtil;
     private SampleHistoryUtility historyUtility;
 
-    private Integer              analysisLoggedInId, sampleLoggedInId, sampleErrorStatusId, 
+    private Integer              analysisLoggedInId,  sampleErrorStatusId, 
                                  sampleReleasedId;
     private Query                query;
 
@@ -540,12 +540,8 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     if ( !treeItem.leafType.equals("analysis"))
                         event.cancel();
                     else {
-                        label = new Label(
-                                          treeItem.cells.get(0).value +
-                                                          " | " +
-                                                          DictionaryCache.getEntryFromId(
-                                                                                         (Integer)treeItem.cells.get(1).value)
-                                                                         .getEntry());
+                        label = new Label(treeItem.cells.get(0).value + " | " +
+                                          DictionaryCache.getEntryFromId((Integer)treeItem.cells.get(1).value).getEntry());
                         label.setStyleName("ScreenLabel");
                         label.setWordWrap(false);
                         event.setProxy(label);
@@ -1224,7 +1220,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         // error is found
         try {
             analysisLoggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
-            sampleLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
             sampleErrorStatusId = DictionaryCache.getIdFromSystemName("sample_error");
             sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
         } catch (Exception e) {
@@ -1363,7 +1358,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     return;
                 }
 
-                manager.getSample().setStatusId(sampleLoggedInId);
                 manager = manager.update();
                 setState(Screen.State.DISPLAY);
                 DataChangeEvent.fire(this);
@@ -1678,11 +1672,8 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 sample.data = sm.getBundle();
                 sample.cells.add(new TableDataCell(sm.getSample().getAccessionNumber()));
                 try {
-                    sample.cells.add(new TableDataCell(
-                                                       DictionaryCache.getEntryFromId(
-                                                                                      sm.getSample()
-                                                                                        .getStatusId())
-                                                                      .getEntry()));
+                    sample.cells.add(new TableDataCell(DictionaryCache.getEntryFromId(sm.getSample()
+                                                                                        .getStatusId()).getEntry()));
                 } catch (Exception e) {
                     sample.cells.add(new TableDataCell(sm.getSample().getStatusId()));
                 }

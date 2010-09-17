@@ -46,7 +46,7 @@ public class ScriptletBean implements ScriptletRemote {
     
     
     @SuppressWarnings("unchecked")
-	public ArrayList<IdNameVO> findByName(String match, int maxResults) {
+	public ArrayList<IdNameVO> fetchByName(String match, int maxResults) {
         Query query = manager.createNamedQuery("Scriptlet.ScriptletFindByName");
         query.setParameter("name", match);
         query.setMaxResults(maxResults);

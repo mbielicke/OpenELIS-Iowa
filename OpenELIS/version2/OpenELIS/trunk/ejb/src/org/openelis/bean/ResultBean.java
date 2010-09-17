@@ -44,6 +44,7 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.entity.Result;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.ResultLocal;
@@ -53,59 +54,119 @@ import org.openelis.utilcommon.ResultValidator.Type;
 
 @Stateless
 @SecurityDomain("openelis")
-// @RolesAllowed("LOCKINGtest")
 public class ResultBean implements ResultLocal {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager   manager;
 
     @EJB
-    private DictionaryLocal dictionaryBean;
+    private DictionaryLocal dictionary;
 
-    private static Integer  typeDictionary, typeRange, typeTiter, typeDate, typeDateTime, typeTime,
+    private static int  typeDictionary, typeNumeric, typeTiter, typeDate, typeDateTime, typeTime,
                     typeDefault, typeAlphaLower, typeAlphaUpper, typeAlphaMixed, supplementalTypeId;
 
     @PostConstruct
-    private void init() {
-        DictionaryDO dictDO;
-        try {
-            dictDO = dictionaryBean.fetchBySystemName("test_res_type_dictionary");
-            typeDictionary = dictDO.getId();
+    public void init() {
+        DictionaryDO data;
 
-            dictDO = dictionaryBean.fetchBySystemName("test_res_type_numeric");
-            typeRange = dictDO.getId();
+        if (typeDictionary == 0) {
+            try {
+                data = dictionary.fetchBySystemName("test_res_type_dictionary");
+                typeDictionary = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeDictionary = 0;
+            }
+        }
 
-            dictDO = dictionaryBean.fetchBySystemName("test_res_type_titer");
-            typeTiter = dictDO.getId();
+        if (typeNumeric == 0) {
+            try {
+                data = dictionary.fetchBySystemName("test_res_type_numeric");
+                typeNumeric = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeNumeric = 0;
+            }
+        }
 
-            dictDO = dictionaryBean.fetchBySystemName("test_res_type_date");
-            typeDate = dictDO.getId();
+        if (typeTiter == 0) {
+            try {
+                data = dictionary.fetchBySystemName("test_res_type_titer");
+                typeTiter = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeTiter = 0;
+            }
+        }
 
-            dictDO = dictionaryBean.fetchBySystemName("test_res_type_date_time");
-            typeDateTime = dictDO.getId();
+        if (typeDate == 0) {
+            try {
+                data = dictionary.fetchBySystemName("test_res_type_date");
+                typeDate = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeDate = 0;
+            }
+        }
 
-            dictDO = dictionaryBean.fetchBySystemName("test_res_type_time");
-            typeTime = dictDO.getId();
+        if (typeDateTime == 0) {
+            try {
+                data = dictionary.fetchBySystemName("test_res_type_date_time");
+                typeDateTime = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeDateTime = 0;
+            }
+        }
 
-            dictDO = dictionaryBean.fetchBySystemName("test_res_type_default");
-            typeDefault = dictDO.getId();
+        if (typeTime == 0) {
+            try {
+                data = dictionary.fetchBySystemName("test_res_type_time");
+                typeTime = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeTime = 0;
+            }
+        }
 
-            dictDO = dictionaryBean.fetchBySystemName("test_res_type_alpha_lower");
-            typeAlphaLower = dictDO.getId();
-            
-            dictDO = dictionaryBean.fetchBySystemName("test_res_type_alpha_upper");
-            typeAlphaUpper = dictDO.getId();
-            
-            dictDO = dictionaryBean.fetchBySystemName("test_res_type_alpha_mixed");
-            typeAlphaMixed = dictDO.getId();
-            
-            dictDO = dictionaryBean.fetchBySystemName("test_analyte_suplmtl");
-            supplementalTypeId = dictDO.getId();
-            
-            
+        if (typeAlphaLower == 0) {
+            try {
+                data = dictionary.fetchBySystemName("test_res_type_alpha_lower");
+                typeAlphaLower = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeAlphaLower = 0;
+            }
+        }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (typeAlphaUpper == 0) {
+            try {
+                data = dictionary.fetchBySystemName("test_res_type_alpha_upper");
+                typeAlphaUpper = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeAlphaUpper = 0;
+            }
+        }
+
+        if (typeAlphaMixed == 0) {
+            try {
+                data = dictionary.fetchBySystemName("test_res_type_alpha_mixed");
+                typeAlphaMixed = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeAlphaMixed = 0;
+            }
+        }
+        
+        if (supplementalTypeId == 0) {
+            try {
+                data = dictionary.fetchBySystemName("test_analyte_suplmtl");
+                supplementalTypeId = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                supplementalTypeId = 0;
+            }
         }
     }
 
@@ -118,11 +179,13 @@ public class ResultBean implements ResultLocal {
         List<AnalyteDO> analytes;
         List<TestResultDO> testResults;
         List<TestAnalyteViewDO> testAnalytes;
-        int i, j, rg;
+        int i, j, k, rg;
         Integer rowGroup;
-        TestAnalyteViewDO tado;
+        TestAnalyteViewDO data;
+        AnalyteDO analyte;
         TestAnalyteListItem taLI;
         ArrayList<ResultViewDO> ar;
+        TestResultDO testResult;
         ArrayList<TestAnalyteViewDO> tmpList;
         boolean suppRow;
 
@@ -143,18 +206,18 @@ public class ResultBean implements ResultLocal {
 
         // convert the lists to hashmaps
         analyteList.clear();
-        AnalyteDO analyteDO;
-        for (int k = 0; k < analytes.size(); k++ ) {
-            analyteDO = analytes.get(k);
-            analyteList.put(analyteDO.getId(), analyteDO);
+
+        for (k = 0; k < analytes.size(); k++ ) {
+            analyte = analytes.get(k);
+            analyteList.put(analyte.getId(), analyte);
         }
         
         rowGroup = -1;
         tmpList = null;
-        for (int k = 0; k < testAnalytes.size(); k++ ) {
-            tado = testAnalytes.get(k);
-            if(!rowGroup.equals(tado.getRowGroup())){
-                rowGroup = tado.getRowGroup();
+        for (k = 0; k < testAnalytes.size(); k++ ) {
+            data = testAnalytes.get(k);
+            if(!rowGroup.equals(data.getRowGroup())){
+                rowGroup = data.getRowGroup();
                 taLI = new TestAnalyteListItem();
                 tmpList = new ArrayList<TestAnalyteViewDO>();
 
@@ -162,14 +225,14 @@ public class ResultBean implements ResultLocal {
                 testAnalyteList.put(rowGroup, taLI);
             }
             
-            tmpList.add(tado);
+            tmpList.add(data);
         }
 
         testResultList.clear();
-        TestResultDO testResultDO;
-        for (int k = 0; k < testResults.size(); k++ ) {
-            testResultDO = testResults.get(k);
-            testResultList.put(testResultDO.getId(), testResultDO);
+
+        for (k = 0; k < testResults.size(); k++ ) {
+            testResult = testResults.get(k);
+            testResultList.put(testResult.getId(), testResult);
         }
 
         createTestResultHash(testResults, resultValidators);
@@ -184,9 +247,9 @@ public class ResultBean implements ResultLocal {
 
         suppRow = false;
         for (i = 0; i < testAnalytes.size(); i++ ) {
-            tado = testAnalytes.get(i);
+            data = testAnalytes.get(i);
 
-            if ("N".equals(tado.getIsColumn()))
+            if ("N".equals(data.getIsColumn()))
                 suppRow = false;
 
             //
@@ -194,18 +257,18 @@ public class ResultBean implements ResultLocal {
             //if there are only supplementals in a row group it will not
             //show a header so the user wont be able to add any analytes
             //
-            if ( !suppRow && !supplementalTypeId.equals(tado.getTypeId())) {
+            if ( !suppRow && !DataBaseUtil.isSame(supplementalTypeId, data.getTypeId())) {
                 // create a new resultDO
                 ResultViewDO resultDO = new ResultViewDO();
-                resultDO.setTestAnalyteId(tado.getId());
-                resultDO.setIsColumn(tado.getIsColumn());
-                resultDO.setIsReportable(tado.getIsReportable());
-                resultDO.setAnalyteId(tado.getAnalyteId());
-                resultDO.setAnalyte(tado.getAnalyteName());
-                resultDO.setTypeId(tado.getTypeId());
-                resultDO.setResultGroup(tado.getResultGroup());
+                resultDO.setTestAnalyteId(data.getId());
+                resultDO.setIsColumn(data.getIsColumn());
+                resultDO.setIsReportable(data.getIsReportable());
+                resultDO.setAnalyteId(data.getAnalyteId());
+                resultDO.setAnalyte(data.getAnalyteName());
+                resultDO.setTypeId(data.getTypeId());
+                resultDO.setResultGroup(data.getResultGroup());
                 
-                rg = tado.getRowGroup();
+                rg = data.getRowGroup();
                 resultDO.setRowGroup(rg);
                 
                 //we need to set the default
@@ -218,7 +281,7 @@ public class ResultBean implements ResultLocal {
                     j = rg;
                     continue;
                 }
-                if ("N".equals(tado.getIsColumn())) {
+                if ("N".equals(data.getIsColumn())) {
                     ar = new ArrayList<ResultViewDO>(1);
                     ar.add(resultDO);
                     results.add(ar);
@@ -233,7 +296,7 @@ public class ResultBean implements ResultLocal {
 
     public void fetchByAnalysisIdForDisplay(Integer analysisId, ArrayList<ArrayList<ResultViewDO>> results) throws Exception {
         int i, j, rg;
-        ResultViewDO rdo;
+        ResultViewDO data;
         ArrayList<ResultViewDO> ar;
         List<ResultViewDO> list;
 
@@ -252,25 +315,25 @@ public class ResultBean implements ResultLocal {
             throw new NotFoundException();
 
         for (i = 0; i < list.size(); i++ ) {
-            rdo = list.get(i);
+            data = list.get(i);
 
-            rg = rdo.getRowGroup();
+            rg = data.getRowGroup();
 
             if (j != rg) {
                 ar = new ArrayList<ResultViewDO>(1);
-                ar.add(rdo);
+                ar.add(data);
                 results.add(ar);
                 j = rg;
                 continue;
             }
-            if ("N".equals(rdo.getIsColumn())) {
+            if ("N".equals(data.getIsColumn())) {
                 ar = new ArrayList<ResultViewDO>(1);
-                ar.add(rdo);
+                ar.add(data);
                 results.add(ar);
                 continue;
             }
 
-            ar.add(rdo);
+            ar.add(data);
         }
     }
 
@@ -285,7 +348,7 @@ public class ResultBean implements ResultLocal {
         List<ResultViewDO> rslts;
         List<TestAnalyteViewDO> testAnalytes;
         Integer rowGroup;
-        TestAnalyteViewDO tado;
+        TestAnalyteViewDO data;
         TestAnalyteListItem taLI;
         ArrayList<ResultViewDO> ar;
         ArrayList<TestAnalyteViewDO> tmpList;
@@ -321,9 +384,9 @@ public class ResultBean implements ResultLocal {
         rowGroup = -1;
         tmpList = null;
         for (int k = 0; k < testAnalytes.size(); k++ ) {
-            tado = testAnalytes.get(k);
-            if(!rowGroup.equals(tado.getRowGroup())){
-                rowGroup = tado.getRowGroup();
+            data = testAnalytes.get(k);
+            if(!rowGroup.equals(data.getRowGroup())){
+                rowGroup = data.getRowGroup();
                 taLI = new TestAnalyteListItem();
                 tmpList = new ArrayList<TestAnalyteViewDO>();
 
@@ -331,7 +394,7 @@ public class ResultBean implements ResultLocal {
                 testAnalyteList.put(rowGroup, taLI);
             }
             
-            tmpList.add(tado);
+            tmpList.add(data);
         }
 
         testResultList.clear();
@@ -432,13 +495,12 @@ public class ResultBean implements ResultLocal {
 
     private void createTestResultHash(List<TestResultDO> testResultList,
                                       ArrayList<ResultValidator> resultValidators) {
-        Integer rg;
+        Integer rg, typeId;
         String validRange;
         ResultValidator rv;
-        TestResultDO testResult;
-        Integer typeId;
+        TestResultDO data;
         Type type;
-        DictionaryDO dictDO;
+        DictionaryDO dict;
         
         
         rg = null;
@@ -447,53 +509,53 @@ public class ResultBean implements ResultLocal {
         validRange = null;
         try {
             for (int i = 0; i < testResultList.size(); i++ ) {
-                testResult = testResultList.get(i);
+                data = testResultList.get(i);
 
-                if ( !testResult.getResultGroup().equals(rg)) {
+                if ( !data.getResultGroup().equals(rg)) {
                     rv = new ResultValidator();
-                    rg = testResult.getResultGroup();
+                    rg = data.getResultGroup();
                     
                     resultValidators.add(rv);
                 }
 
                 // need to figure this out by type id
-                typeId = testResult.getTypeId();
-                if(typeDictionary.equals(typeId)){
+                typeId = data.getTypeId();
+                if(DataBaseUtil.isSame(typeDictionary, typeId)) {
                     type = Type.DICTIONARY;
                     
                     // need to lookup the entry
-                    dictDO = dictionaryBean.fetchById(new Integer(testResult.getValue()));
-                    validRange = dictDO.getEntry();
-                }else if(typeRange.equals(typeId)){
+                    dict = dictionary.fetchById(new Integer(data.getValue()));
+                    validRange = dict.getEntry();
+                } else if(DataBaseUtil.isSame(typeNumeric, typeId)) {
                     type = Type.NUMERIC;
-                    validRange = testResult.getValue();
-                }else if(typeTiter.equals(typeId)){
+                    validRange = data.getValue();
+                } else if(DataBaseUtil.isSame(typeTiter, typeId)){
                     type = Type.TITER;
-                    validRange = testResult.getValue();
-                }else if(typeDate.equals(typeId)){
+                    validRange = data.getValue();
+                } else if(DataBaseUtil.isSame(typeDate, typeId)){
                     type = Type.DATE;
-                    validRange = testResult.getValue();
-                }else if(typeDateTime.equals(typeId)){                        
+                    validRange = data.getValue();
+                } else if(DataBaseUtil.isSame(typeDateTime, typeId)){                        
                     type = Type.DATE_TIME;
-                    validRange = testResult.getValue();
-                }else if(typeTime.equals(typeId)){                        
+                    validRange = data.getValue();
+                } else if(DataBaseUtil.isSame(typeTime, typeId)){                        
                     type = Type.TIME;
-                    validRange = testResult.getValue();
-                }else if(typeDefault.equals(typeId)){
+                    validRange = data.getValue();
+                } else if(DataBaseUtil.isSame(typeDefault, typeId)){
                     type = Type.DEFAULT;
-                    validRange = testResult.getValue();
-                }else if(typeAlphaLower.equals(typeId)){
+                    validRange = data.getValue();
+                } else if(DataBaseUtil.isSame(typeAlphaLower, typeId)){
                     type = Type.ALPHA_LOWER;
-                    validRange = testResult.getValue();
-                }else if(typeAlphaMixed.equals(typeId)){
+                    validRange = data.getValue();
+                } else if(DataBaseUtil.isSame(typeAlphaMixed, typeId)){
                     type = Type.ALPHA_MIXED;
-                    validRange = testResult.getValue();
-                }else if(typeAlphaUpper.equals(typeId)){
+                    validRange = data.getValue();
+                } else if(DataBaseUtil.isSame(typeAlphaUpper, typeId)){
                     type = Type.ALPHA_UPPER;
-                    validRange = testResult.getValue();
+                    validRange = data.getValue();
                 }
                 
-                rv.addResult(testResult.getId(), testResult.getUnitOfMeasureId(), type, validRange);
+                rv.addResult(data.getId(), data.getUnitOfMeasureId(), type, validRange);
             }
         } catch (Exception e) {
             resultValidators.clear();

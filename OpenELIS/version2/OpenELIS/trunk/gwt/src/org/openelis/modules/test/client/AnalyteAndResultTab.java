@@ -105,11 +105,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
     };
 
     private TestManager                                  manager;
-
-    private TestAnalyteManager                           testAnalyteManager;
-    private TestResultManager                            testResultManager;
-    private TestTypeOfSampleManager                      sampleTypeManager;
-
+    
     private AnalyteAndResultTab                          screen;
     private TestAnalyteDisplayManager<TestAnalyteViewDO> displayManager;
 
@@ -158,20 +154,6 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
     }
 
     private void initialize() {
-        addAnalyteRow = true;
-
-        anaSelCol = -1;
-
-        screen = this;
-
-        tempId = -1;
-
-        headerAddedInTheMiddle = false;
-
-        resultErrorList = null;
-
-        canAddRemoveColumn = false;
-
         analyteTable = (TableWidget)def.getWidget("analyteTable");
         addScreenHandler(analyteTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
@@ -387,8 +369,10 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 TestAnalyteViewDO data;
                 Integer key;
                 AutoComplete<Integer> auto;
+                TestAnalyteManager man;
 
                 key = null;
+                man = null;
                 r = event.getRow();
                 c = event.getCol();
                 row = analyteTable.getRow(r);
@@ -399,7 +383,14 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 rows = analyteTable.getSelectedRows();
                 
                 try {
-                    if ((Boolean)row.data) {
+                    man = manager.getTestAnalytes();
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    e.printStackTrace();
+                }
+                
+                try {
+                    if ((Boolean)row.data) {                        
                         numCol = displayManager.columnCount(r);
                         if (numCol < c) {
                             if (key != null) {
@@ -410,9 +401,9 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                                 // its value is not null
                                 //
                                 dindex = displayManager.getDataRowIndex(r);
-                                testAnalyteManager.addColumnAt(dindex, c - 1, key,
+                                man.addColumnAt(dindex, c - 1, key,
                                                                auto.getTextBoxDisplay());
-                                displayManager.setDataGrid(testAnalyteManager.getAnalytes());
+                                displayManager.setDataGrid(man.getAnalytes());
                             }
                         } else {
                             //
@@ -499,16 +490,19 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
             public void onRowAdded(RowAddedEvent event) {
                 TableDataRow prow, row, nrow, addrow;
                 int index, dindex;
+                TestAnalyteManager man;
 
+                man = null;
+                
                 try {
-                    //
-                    // the current row
-                    //
+                    man = manager.getTestAnalytes();
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    e.printStackTrace();
+                }
+                
+                try {
                     row = event.getRow();
-
-                    //
-                    // index of the current row in the table
-                    //
                     index = event.getIndex();
 
                     //
@@ -528,26 +522,17 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
 
                         //
                         // dindex can be returned as -1 if index-1 excceds the
-                        // size of
-                        // displayManager's index list because the list
-                        // corresponding
-                        // to the new row won't have been added to the grid
-                        // maintained
-                        // by TestAnalyteManager;so if the number of rows in the
-                        // table
-                        // is more than one (index > 0), we try to find dindex
-                        // for the
-                        // last row in displayManager's index list; if prow is a
-                        // header
-                        // and has been added in the middle of the table,
-                        // (headerAddedInTheMiddle == true), i.e. not at the
-                        // end, then this
-                        // means that the list corresponding to the row above
-                        // this one
-                        // which is the header row exists neither in
-                        // TestAnalyteManager
-                        // nor in displayManager,thus we need to look at the
-                        // list
+                        // size of displayManager's index list because the list
+                        // corresponding to the new row won't have been added to
+                        // the grid maintained by TestAnalyteManager;so if the
+                        // number of rows in the table is more than one (index > 0),
+                        // we try to find dindex for the last row in displayManager's
+                        // index list; if prow is a header and has been added in
+                        // the middle of the table, (headerAddedInTheMiddle == true),
+                        // i.e. not at the end, then this means that the list
+                        // corresponding to the row above this one which is the
+                        // header row exists neither in TestAnalyteManager nor in
+                        // displayManager,thus we need to look at the list
                         // corresponding to the row two places above (index-2)
                         // in the table
                         //                                                
@@ -572,9 +557,9 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                             if (index + 1 < analyteTable.numRows()) {
                                 nrow = analyteTable.getRow(index + 1);
                                 if ( !(Boolean)nrow.data) {
-                                    testAnalyteManager.addRowAt(dindex, false, false,
+                                    man.addRowAt(dindex, false, false,
                                                                 getNextTempId());
-                                    displayManager.setDataGrid(testAnalyteManager.getAnalytes());
+                                    displayManager.setDataGrid(man.getAnalytes());
                                     analyteTable.selectRow(index);
                                     return;
                                 }
@@ -584,7 +569,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                             // and thus the first boolean argument to addRowAt
                             // is true
                             //
-                            testAnalyteManager.addRowAt(dindex + 1, true, false, getNextTempId());
+                            man.addRowAt(dindex + 1, true, false, getNextTempId());
                         } else {
                             //
                             // if prow is an analyte row then the newly added row has
@@ -592,9 +577,9 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                             // look at row previous to it in the data grid to copy 
                             // data from look
                             //
-                            testAnalyteManager.addRowAt(dindex + 1, false, true, getNextTempId());
+                            man.addRowAt(dindex + 1, false, true, getNextTempId());
                         }
-                        displayManager.setDataGrid(testAnalyteManager.getAnalytes());
+                        displayManager.setDataGrid(man.getAnalytes());
                         analyteTable.selectRow(index);
                     } else if (addAnalyteRow) {
                         //
@@ -628,15 +613,24 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 int index, dindex;
                 TableDataRow row;
                 TestAnalyteViewDO data;
+                TestAnalyteManager man;
 
                 index = event.getIndex();
                 row = event.getRow();
+                man = null;
 
+                try {
+                    man = manager.getTestAnalytes();
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    e.printStackTrace();
+                }
+                
                 if ( !(Boolean)row.data) {
                     dindex = displayManager.getDataRowIndex(index);
-                    data = testAnalyteManager.getAnalyteAt(dindex, 0);
-                    testAnalyteManager.removeRowAt(dindex);
-                    displayManager.setDataGrid(testAnalyteManager.getAnalytes());
+                    data = man.getAnalyteAt(dindex, 0);
+                    man.removeRowAt(dindex);
+                    displayManager.setDataGrid(man.getAnalytes());
                     ActionEvent.fire(screen, Action.ANALYTE_DELETED, data);
                 }
             }
@@ -972,9 +966,18 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
         addScreenHandler(resultTabPanel, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 int numTabs;
+                TestResultManager man;
 
+                man = null;
+                try {
+                    man = manager.getTestResults();
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    e.printStackTrace();
+                }
+                
                 resultTabPanel.clearTabs();
-                numTabs = testResultManager.groupCount();
+                numTabs = man.groupCount();
 
                 for (int i = 0; i < numTabs; i++ )
                     resultTabPanel.addTab(String.valueOf(i + 1));
@@ -1053,12 +1056,22 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 int r, c, group;
                 TestResultViewDO data;
                 Object val;
+                TestResultManager man;
 
                 r = event.getRow();
                 c = event.getCol();
                 val = resultTable.getObject(r, c);
                 group = resultTabPanel.getTabBar().getSelectedTab();
-                data = testResultManager.getResultAt(group + 1, r);
+                
+                man = null;
+                try {
+                    man = manager.getTestResults();
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    e.printStackTrace();
+                }
+                
+                data = man.getResultAt(group + 1, r);
 
                 switch (c) {
                     case 0:
@@ -1118,12 +1131,21 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
         resultTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 int selTab;
+                TestResultManager man;
+                
+                man = null;
+                try {
+                    man = manager.getTestResults();
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    e.printStackTrace();
+                }
 
-                if (testResultManager.groupCount() == 0)
-                    testResultManager.addResultGroup();
+                if (man.groupCount() == 0)
+                    man.addResultGroup();
 
                 selTab = resultTabPanel.getTabBar().getSelectedTab();
-                testResultManager.addResult(selTab + 1, getNextTempId());
+                man.addResult(selTab + 1, getNextTempId());
             }
         });
 
@@ -1131,12 +1153,21 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
             public void onRowDeleted(RowDeletedEvent event) {
                 int r, selTab;
                 TestResultViewDO data;
+                TestResultManager man;
+                
+                man = null;
+                try {
+                    man = manager.getTestResults();
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    e.printStackTrace();
+                }
 
                 selTab = resultTabPanel.getTabBar().getSelectedTab();
                 r = event.getIndex();
-                data = testResultManager.getResultAt(selTab + 1, r);
+                data = man.getResultAt(selTab + 1, r);
 
-                testResultManager.removeResultAt(selTab + 1, r);
+                man.removeResultAt(selTab + 1, r);
 
                 ActionEvent.fire(screen, Action.RESULT_DELETED, data);
             }
@@ -1146,11 +1177,21 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
         addScreenHandler(addResultTabButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int count;
+                TestResultManager man;
+                
+                man = null;
+                try {
+                    man = manager.getTestResults();
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    e.printStackTrace();
+                }
+                
                 count = resultTabPanel.getTabBar().getTabCount();
 
                 resultTabPanel.addTab(String.valueOf(count + 1));
                 resultTabPanel.selectTab(count);
-                testResultManager.addResultGroup();
+                man.addResultGroup();
 
             }
 
@@ -1214,6 +1255,14 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                                                      .contains(event.getState()));
             }
         });
+        
+        addAnalyteRow = true;
+        anaSelCol = -1;
+        screen = this;
+        tempId = -1;
+        headerAddedInTheMiddle = false;
+        resultErrorList = null;
+        canAddRemoveColumn = false;
 
     }
 
@@ -1229,16 +1278,8 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
     public void draw() {
         if ( !loaded) {
             try {
-                if (manager != null) {
-                    testAnalyteManager = manager.getTestAnalytes();
-                    testResultManager = manager.getTestResults();
-                    if (state == State.UPDATE || state == State.ADD)
-                        sampleTypeManager = manager.getSampleTypes();
-                }
-
                 resultErrorList = null;
-                if (testAnalyteManager != null)
-                    displayManager.setDataGrid(testAnalyteManager.getAnalytes());
+                displayManager.setDataGrid(manager.getTestAnalytes().getAnalytes());
 
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -1635,15 +1676,24 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
         String entry;
         Integer unitId;
         ArrayList<Integer> unitList;
+        TestTypeOfSampleManager man;
 
         model = new ArrayList<TableDataRow>();
 
         model.add(new TableDataRow(null, ""));
 
-        if (sampleTypeManager != null && (state == State.ADD || state == State.UPDATE)) {
+        if (state == State.ADD || state == State.UPDATE) {
             unitList = new ArrayList<Integer>();
-            for (int i = 0; i < sampleTypeManager.count(); i++ ) {
-                data = sampleTypeManager.getTypeAt(i);
+            man = null;
+            try {
+                man = manager.getSampleTypes();
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                e.printStackTrace();
+            }
+            
+            for (int i = 0; i < man.count(); i++ ) {
+                data = man.getTypeAt(i);
                 unitId = data.getUnitOfMeasureId();
                 try {
                     if (unitId != null && !unitList.contains(unitId)) {
@@ -1676,6 +1726,13 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
         return false;
     }
 
+    /**
+     * This method adds a BeforeGetMatchesHandler and a GetMatchesHandler to all
+     * the cells in the table showing test analytes. This is done in a method like
+     * this and not through the standard way of adding these handlers to individual
+     * cells because the code for the handlers for multiple cells is the same and
+     * very similar across all the cells in the table   
+     */
     private void addMatchesHandlerToAnalyteCells() {
         AutoComplete<Integer> auto;
         ArrayList<TableColumn> columns;
@@ -1803,15 +1860,23 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
         ArrayList<TableDataRow> model;
         TableDataRow row;
         TestResultViewDO data;
-
+        TestResultManager man;
+        
+        man = null;
+        try {
+           man = manager.getTestResults();
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
         model = new ArrayList<TableDataRow>();
 
         if (manager == null)
             return model;
 
-        size = testResultManager.getResultGroupSize(group + 1);
+        size = man.getResultGroupSize(group + 1);
         for (int i = 0; i < size; i++ ) {
-            data = testResultManager.getResultAt(group + 1, i);
+            data = man.getResultAt(group + 1, i);
             row = new TableDataRow(6);
             row.cells.get(0).setValue(data.getUnitOfMeasureId());
             row.cells.get(1).setValue(data.getTypeId());
@@ -1954,6 +2019,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
 
     private void addColumn() {
         int r, index;
+        TestAnalyteManager testAnalyteManager;
 
         if ( !canAddRemoveColumn) {
             Window.alert(consts.get("cantAddColumn"));
@@ -1962,6 +2028,15 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
 
         r = analyteTable.getSelectedRow();
 
+        testAnalyteManager = null;
+        
+        try {
+            testAnalyteManager = manager.getTestAnalytes();
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
+        
         if (anaSelCol != -1 && r != -1) {
             index = displayManager.getDataRowIndex(r);
             testAnalyteManager.addColumnAt(index, anaSelCol - 1, null);
@@ -1977,12 +2052,21 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
 
     private void removeColumn() {
         int r, index;
+        TestAnalyteManager man;
 
         if ( !canAddRemoveColumn) {
             Window.alert(consts.get("cantRemoveColumn"));
             return;
         }
 
+        man = null;
+        try {
+            man = manager.getTestAnalytes();
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
+        
         r = analyteTable.getSelectedRow();
         if (anaSelCol != -1 && r != -1) {
             removeColumnFromRow(r);
@@ -1991,8 +2075,8 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
             analyteTable.refresh();
 
             index = displayManager.getDataRowIndex(r);
-            testAnalyteManager.removeColumnAt(index, anaSelCol - 1);
-            displayManager.setDataGrid(testAnalyteManager.getAnalytes());
+            man.removeColumnAt(index, anaSelCol - 1);
+            displayManager.setDataGrid(man.getAnalytes());
 
             anaSelCol = -1;
         }
@@ -2050,6 +2134,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
 
     private void showDictionary(String entry, ArrayList<IdNameVO> list) {
         ScreenWindow modal;
+        TestResultManager man;
 
         if (dictLookup == null) {
             try {
@@ -2058,14 +2143,33 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 e.printStackTrace();
                 Window.alert("DictionaryLookup error: " + e.getMessage());
                 return;
-            }
-
+            }            
+            
+            man = null;
+            
+            try {
+                man = manager.getTestResults();
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                e.printStackTrace();                
+            } 
+            
             dictLookup.addActionHandler(new ActionHandler<DictionaryLookupScreen.Action>() {
                 public void onAction(ActionEvent<DictionaryLookupScreen.Action> event) {
                     int selTab, r;
                     ArrayList<IdNameVO> list;
                     TestResultViewDO data;
                     IdNameVO entry;
+                    TestResultManager man;
+
+                    man = null;
+                        
+                    try {
+                        man = manager.getTestResults();
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        e.printStackTrace();                
+                    } 
 
                     selTab = resultTabPanel.getTabBar().getSelectedTab();
                     if (event.getAction() == DictionaryLookupScreen.Action.OK) {
@@ -2082,7 +2186,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                             // selected when the lookup screen was brought up 
                             // 
                             entry = list.get(0);
-                            data = testResultManager.getResultAt(selTab + 1, r);
+                            data = man.getResultAt(selTab + 1, r);
                             data.setValue(entry.getId().toString());
                             data.setDictionary(entry.getName());
                             data.setTypeId(typeDict);
@@ -2100,7 +2204,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                                 resultTable.addRow();
                                 entry = list.get(i);
                                 r = resultTable.numRows() - 1;
-                                data = testResultManager.getResultAt(selTab + 1, r);
+                                data = man.getResultAt(selTab + 1, r);
                                 data.setValue(entry.getId().toString());
                                 data.setDictionary(entry.getName());
                                 data.setTypeId(typeDict);
