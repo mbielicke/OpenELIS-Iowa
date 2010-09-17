@@ -108,7 +108,7 @@ public class OrderFillScreen extends Screen {
     private Tabs                               tab;
 
     private AppButton                          queryButton, updateButton, processButton,
-                    commitButton, abortButton;
+                                               commitButton, abortButton;
     private MenuItem                           shippingInfo;
     private TableWidget                        orderTable;
     private TreeWidget                         itemsTree;
@@ -290,14 +290,20 @@ public class OrderFillScreen extends Screen {
                 if (state == State.UPDATE) {
                     if (c > 0) {
                         cancel = true;
+                        //
+                        // if the order has been selected for processing, then
+                        // we set the state of the tab showing customer notes to
+                        // Update, so that the data in the widgets in it can be
+                        // edited, otherwise we set the state to Display, so that
+                        // the data can't be edited 
+                        //
                         if ("Y".equals(val))
                             custNoteTab.setState(State.UPDATE);
                         else
                             custNoteTab.setState(State.DISPLAY);
                     } else {
                         prevSelData = getProcessShipData();
-                        if ( (prevSelData != null) &&
-                            ("N".equals(val)) &&
+                        if ( (prevSelData != null) && ("N".equals(val)) &&
                             DataBaseUtil.isDifferent(data.getOrganizationId(),
                                                      prevSelData.getOrganizationId())) {
                             Window.alert(consts.get("sameShipToOrderCombined"));
@@ -317,10 +323,9 @@ public class OrderFillScreen extends Screen {
 
                 //
                 // this logic makes sure that whenever we disallow a user from
-                // editing a cell, we fill the tabs with data stored in the
-                // OrderManager
-                // set as "data" of this row, we have to do this here because
-                // CellEditedEvent won't be fired
+                // editing a cell, we fill the tabs with the data stored in the
+                // OrderManager that is set as "data" of this row, we have to do
+                // this here because CellEditedEvent won't be fired
                 //                
                 if (cancel) {
                     man = null;
@@ -373,11 +378,9 @@ public class OrderFillScreen extends Screen {
 
                             //
                             // we do this here in order to make sure that the
-                            // tree
-                            // showing order items always gets loaded so that
-                            // validation for processing always takes place
-                            // because
-                            // it relies on the data in the tree
+                            // tree showing order items always gets loaded so that
+                            // validation for processing orders always takes place
+                            // because it relies on the data in the tree
                             //
                             if (tab != Tabs.ITEM)
                                 itemTab.draw();

@@ -139,26 +139,22 @@ public class Method implements Auditable, Cloneable {
             this.isActive = isActive;
     }
 
-    public Datetime getActiveBegin() {
-        if (activeBegin == null)
-            return null;
-        return new Datetime(Datetime.YEAR, Datetime.DAY, activeBegin);
+    public Datetime getActiveBegin() {        
+        return DataBaseUtil.toYD(activeBegin);
     }
 
-    public void setActiveBegin(Datetime active_begin) {
-        if (DataBaseUtil.isDifferentYD(active_begin, this.activeBegin))
-            this.activeBegin = active_begin.getDate();
+    public void setActiveBegin(Datetime activeBegin) {
+        if (DataBaseUtil.isDifferentYD(activeBegin, this.activeBegin))
+            this.activeBegin = DataBaseUtil.toDate(activeBegin);
     }
 
-    public Datetime getActiveEnd() {
-        if (activeEnd == null)
-            return null;
-        return new Datetime(Datetime.YEAR, Datetime.DAY, activeEnd);
+    public Datetime getActiveEnd() {        
+        return DataBaseUtil.toYD(activeEnd);
     }
 
-    public void setActiveEnd(Datetime active_end) {
-        if (DataBaseUtil.isDifferentYD(active_end, this.activeEnd))
-            this.activeEnd = active_end.getDate();
+    public void setActiveEnd(Datetime activeEnd) {
+        if (DataBaseUtil.isDifferentYD(activeEnd, this.activeEnd))
+            this.activeEnd = DataBaseUtil.toDate(activeEnd);
     }
 
     public void setClone() {

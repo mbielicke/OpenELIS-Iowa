@@ -145,14 +145,14 @@ public class AnalysisManager implements RPC {
 
     public int addReflexAnalysis(Integer parentAnalysisId, Integer parentResultId) {
         int addedIndex;
-        AnalysisViewDO reflex;
+        AnalysisViewDO data;
 
         addedIndex = addAnalysis();
-        reflex = getAnalysisAt(addedIndex);
+        data = getAnalysisAt(addedIndex);
 
         // set the reflex analysis parent values
-        reflex.setParentAnalysisId(parentAnalysisId);
-        reflex.setParentResultId(parentResultId);
+        data.setParentAnalysisId(parentAnalysisId);
+        data.setParentResultId(parentResultId);
 
         return addedIndex;
     }
@@ -183,27 +183,27 @@ public class AnalysisManager implements RPC {
     }
 
     public void cancelAnalysisAt(int index) throws Exception {
-        AnalysisViewDO anDO;
+        AnalysisViewDO data;
         SectionViewDO section;
         ValidationErrorsList errorsList;
         SystemUserPermission perm;
 
         perm = proxy().getSystemUserPermission();
-        anDO = items.get(index).analysis;
-        section = proxy().getSectionFromId(anDO.getSectionId());
+        data = items.get(index).analysis;
+        section = proxy().getSectionFromId(data.getSectionId());
 
         if (perm.getSection(section.getName()) == null ||
             !perm.getSection(section.getName()).hasCancelPermission()) {
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("insufficientPrivilegesCancelAnalysis",
-                                                  anDO.getTestName(), anDO.getMethodName()));
+                                                  data.getTestName(), data.getMethodName()));
             throw errorsList;
         }
 
         try {
-            anDO.setStatusId(proxy().anCancelledId);
-            SectionCache.getSectionFromId(anDO.getSectionId());
-            anDO.setPreAnalysisId(null);
+            data.setStatusId(proxy().anCancelledId);
+            SectionCache.getSectionFromId(data.getSectionId());
+            data.setPreAnalysisId(null);
 
         } catch (Exception e) {
             return;
@@ -211,30 +211,30 @@ public class AnalysisManager implements RPC {
     }
 
     public void initiateAnalysisAt(int index) throws Exception {
-        AnalysisViewDO anDO;
+        AnalysisViewDO data;
         SystemUserPermission perm;
         SectionViewDO section;
         TestManager testMan;
         SampleDataBundle bundle;
         ValidationErrorsList errorsList;
 
-        anDO  = items.get(index).analysis;
-        assert anDO.getSectionId() != null : "section id is null";
+        data  = items.get(index).analysis;
+        assert data.getSectionId() != null : "section id is null";
 
         //make sure the status is not released, cancelled, or in prep
-        if (proxy().anErrorInPrepId.equals(anDO.getStatusId()) || proxy().anInPrepId.equals(anDO.getStatusId()) ||
-            proxy().anReleasedId.equals(anDO.getStatusId()) || proxy().anCancelledId.equals(anDO.getStatusId())) {
+        if (proxy().anErrorInPrepId.equals(data.getStatusId()) || proxy().anInPrepId.equals(data.getStatusId()) ||
+            proxy().anReleasedId.equals(data.getStatusId()) || proxy().anCancelledId.equals(data.getStatusId())) {
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("wrongStatusNoInitiate"));
             throw errorsList;
         }
 
         //make sure the user has complete permission for the section
-        section = proxy().getSectionFromId(anDO.getSectionId());
+        section = proxy().getSectionFromId(data.getSectionId());
         perm = proxy().getSystemUserPermission();
         if (perm.getSection(section.getName()) == null || !perm.getSection(section.getName()).hasCompletePermission()) {
             errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("insufficientPrivilegesInitiateAnalysis", anDO.getTestName(), anDO.getMethodName()));
+            errorsList.add(new FormErrorException("insufficientPrivilegesInitiateAnalysis", data.getTestName(), data.getMethodName()));
             throw errorsList;
         }
 
@@ -243,17 +243,17 @@ public class AnalysisManager implements RPC {
         bundle = getBundleAt(index);
         if (!testMan.getSampleTypes().hasType(sampleItemManager.getSampleItemAt(bundle.getSampleItemIndex()).getTypeOfSampleId())) {
             errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("sampleTypeInvalid", anDO.getTestName(), anDO.getMethodName()));
+            errorsList.add(new FormErrorException("sampleTypeInvalid", data.getTestName(), data.getMethodName()));
             throw errorsList;
         }
 
-        if (proxy().anLoggedInId.equals(anDO.getStatusId()))
-            anDO.setStatusId(proxy().anInitiatedId);
-        else if (proxy().anErrorLoggedInId.equals(anDO.getStatusId()))
-            anDO.setStatusId(proxy().anErrorInitiatedId);
+        if (proxy().anLoggedInId.equals(data.getStatusId()))
+            data.setStatusId(proxy().anInitiatedId);
+        else if (proxy().anErrorLoggedInId.equals(data.getStatusId()))
+            data.setStatusId(proxy().anErrorInitiatedId);
 
-        if (anDO.getStartedDate() == null)
-            anDO.setStartedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
+        if (data.getStartedDate() == null)
+            data.setStartedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
     }
 
     public void completeAnalysisAt(int index) throws Exception {
@@ -267,13 +267,12 @@ public class AnalysisManager implements RPC {
         data = items.get(index).analysis;
         assert data.getSectionId() != null : "section id is null";
 
+        //
+        // make sure the status is initiated, on hold or logged-in
+        //
         if (!proxy().anOnHoldId.equals(data.getStatusId()) &&
-            !proxy().anInitiatedId.equals(data.getStatusId()) &&
-            !proxy().anCompletedId.equals(data.getStatusId())&&
+            !proxy().anInitiatedId.equals(data.getStatusId()) &&            
             !proxy().anLoggedInId.equals(data.getStatusId())) { 
-            //
-            // make sure the status is initiated, on hold or logged-in
-            //
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("wrongStatusNoComplete"));
             throw errorsList;
@@ -326,7 +325,7 @@ public class AnalysisManager implements RPC {
 
     }
 
-    public void releaseAnalyssisAt(int index) throws Exception {
+    public void releaseAnalysisAt(int index) throws Exception {
         AnalysisViewDO data;
         SectionViewDO section;
         SystemUserPermission perm;
@@ -372,19 +371,44 @@ public class AnalysisManager implements RPC {
 
     public void unreleaseAnalysisAt(int index) throws Exception {
         AnalysisViewDO data;
+        SectionViewDO section;
         ValidationErrorsList errorsList;
+        SampleManager man;
+        SystemUserPermission perm;
+        NoteManager internalNotes; 
+        AnalysisListItem item;
+        
+        item = getItemAt(index);
 
-        data = items.get(index).analysis;
+        data = item.analysis;        
+        internalNotes = getInternalNotesAt(index);
+        errorsList = new ValidationErrorsList();
+        
+        if ( !proxy().anReleasedId.equals(data.getStatusId()))             
+            errorsList.add(new FormErrorException("wrongStatusUnrelease"));                   
+        
+        // make sure the user has release permission for the section
+        perm = proxy().getSystemUserPermission();
+        section = proxy().getSectionFromId(data.getSectionId());
+        if (perm.getSection(section.getName()) == null ||
+            !perm.getSection(section.getName()).hasReleasePermission()) 
+            errorsList.add(new FormErrorException("insufficientPrivilegesUnreleaseAnalysis",
+                                                  data.getTestName(), data.getMethodName()));        
 
-        if ( !proxy().anReleasedId.equals(data.getStatusId())) {
-            errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("wrongStatusUnrelease"));
+        if (internalNotes == null || !internalNotes.hasEditingNote()) 
+            errorsList.add(new FormErrorException("unreleaseNoNoteException"));
+        
+        if (errorsList.size() > 0)
             throw errorsList;
-        }
-
+            
         data.setStatusId(proxy().anCompletedId);
         data.setReleasedDate(null);
+        data.setPrintedDate(null);
         data.setRevision(data.getRevision() + 1);
+        
+        man = sampleItemBundle.getSampleManager();
+        if (proxy().sampleReleasedId.equals(man.getSample().getStatusId()))
+            man.unrelease();                        
     }
 
     public int count() {
@@ -463,7 +487,9 @@ public class AnalysisManager implements RPC {
     //
     // qaevents
     public AnalysisQaEventManager getQAEventAt(int i) throws Exception {
-        AnalysisListItem item = getItemAt(i);
+        AnalysisListItem item;
+        
+        item = getItemAt(i);
         if (item.qaEvents == null) {
             if (item.analysis != null && item.analysis.getId() != null) {
                 try {
@@ -489,7 +515,9 @@ public class AnalysisManager implements RPC {
 
     // internal notes
     public NoteManager getInternalNotesAt(int i) throws Exception {
-        AnalysisListItem item = getItemAt(i);
+        AnalysisListItem item;
+        
+        item = getItemAt(i);
         if (item.analysisInternalNotes == null) {
             if (item.analysis != null && item.analysis.getId() != null) {
                 try {
@@ -518,7 +546,9 @@ public class AnalysisManager implements RPC {
 
     // external note
     public NoteManager getExternalNoteAt(int i) throws Exception {
-        AnalysisListItem item = getItemAt(i);
+        AnalysisListItem item;
+        
+        item = getItemAt(i);
         if (item.analysisExternalNote == null) {
             if (item.analysis != null && item.analysis.getId() != null) {
                 try {
@@ -547,8 +577,9 @@ public class AnalysisManager implements RPC {
 
     // storage
     public StorageManager getStorageAt(int i) throws Exception {
-        AnalysisListItem item = getItemAt(i);
+        AnalysisListItem item;
 
+        item = getItemAt(i);
         if (item.storages == null) {
             if (item.analysis != null && item.analysis.getId() != null) {
                 try {
@@ -573,8 +604,9 @@ public class AnalysisManager implements RPC {
     }
 
     public AnalysisUserManager getAnalysisUserAt(int i) throws Exception {
-        AnalysisListItem item = getItemAt(i);
+        AnalysisListItem item;
 
+        item = getItemAt(i);
         if (item.analysisUsers == null) {
             if (item.analysis != null && item.analysis.getId() != null) {
                 try {
@@ -599,8 +631,9 @@ public class AnalysisManager implements RPC {
 
     // analysis test result
     public AnalysisResultManager getAnalysisResultAt(int i) throws Exception {
-        AnalysisListItem item = getItemAt(i);
+        AnalysisListItem item;
 
+        item = getItemAt(i);
         if (item.analysisResult == null) {
             if (item.analysis != null) {
                 if (item.analysis.getId() != null && item.analysis.getId() > 0) {
@@ -632,8 +665,9 @@ public class AnalysisManager implements RPC {
     }
 
     public AnalysisResultManager getDisplayAnalysisResultAt(int i) throws Exception {
-        AnalysisListItem item = getItemAt(i);
+        AnalysisListItem item;
 
+        item = getItemAt(i);
         if (item.analysisResult == null) {
             if (item.analysis != null) {
                 if (item.analysis.getId() != null && item.analysis.getId() > -1) {
@@ -665,66 +699,66 @@ public class AnalysisManager implements RPC {
     // test
     public void setTestAt(TestManager testMan, int index) {
         TestViewDO test;
-        AnalysisViewDO anDO, preAnDO;
+        AnalysisViewDO data, prevData;
         ArrayList<TestTypeOfSampleDO> units;
-        TestSectionViewDO defaultDO;
-        Integer typeOfSample;
+        TestSectionViewDO defaultSect;
+        Integer typeOfSampleId;
         ArrayList<AnalysisViewDO> preAnalysisList;
         String oldTestName, oldMethodName;
 
         getItemAt(index).tests = testMan;
-        anDO = getItemAt(index).analysis;
+        data = getItemAt(index).analysis;
         test = testMan.getTest();
 
-        oldTestName = anDO.getTestName();
-        oldMethodName = anDO.getMethodName();
+        oldTestName = data.getTestName();
+        oldMethodName = data.getMethodName();
 
-        anDO.setTestId(test.getId());
-        anDO.setTestName(test.getName());
-        anDO.setMethodId(test.getMethodId());
-        anDO.setMethodName(test.getMethodName());
-        anDO.setIsReportable(test.getIsReportable());
+        data.setTestId(test.getId());
+        data.setTestName(test.getName());
+        data.setMethodId(test.getMethodId());
+        data.setMethodName(test.getMethodName());
+        data.setIsReportable(test.getIsReportable());
 
         // if there is only 1 unit then set it
         units = null;
         try {
-            typeOfSample = sampleItemManager.getSampleItemAt(getBundleAt(index).getSampleItemIndex())
+            typeOfSampleId = sampleItemManager.getSampleItemAt(getBundleAt(index).getSampleItemIndex())
                                             .getTypeOfSampleId();
-            units = testMan.getSampleTypes().getTypesBySampleType(typeOfSample);
+            units = testMan.getSampleTypes().getTypesBySampleType(typeOfSampleId);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             return;
         }
 
         if (units.size() == 1)
-            anDO.setUnitOfMeasureId(units.get(0).getUnitOfMeasureId());
+            data.setUnitOfMeasureId(units.get(0).getUnitOfMeasureId());
 
         // if there is a default section then set it
-        defaultDO = null;
+        defaultSect = null;
         try {
-            defaultDO = testMan.getTestSections().getDefaultSection();
+            defaultSect = testMan.getTestSections().getDefaultSection();
         } catch (Exception e) {
             Window.alert(e.getMessage());
             return;
         }
 
-        if (defaultDO != null)
-            anDO.setSectionId(defaultDO.getSectionId());
+        if (defaultSect != null)
+            data.setSectionId(defaultSect.getSectionId());
 
         // set preanalyses data
-        preAnalysisList = getPreAnalysisList(anDO.getId());
+        preAnalysisList = getPreAnalysisList(data.getId());
 
         for (int i = 0; i < preAnalysisList.size(); i++ ) {
-            preAnDO = preAnalysisList.get(i);
-            preAnDO.setPreAnalysisTest(test.getName());
-            preAnDO.setPreAnalysisMethod(test.getMethodName());
+            prevData = preAnalysisList.get(i);
+            prevData.setPreAnalysisTest(test.getName());
+            prevData.setPreAnalysisMethod(test.getMethodName());
         }
 
         // merge results if needed
-        if (getItemAt(index).analysisResult != null && anDO.getTestName().equals(oldTestName) &&
-            !anDO.getMethodName().equals(oldMethodName)) {
+        if (getItemAt(index).analysisResult != null && data.getTestName().equals(oldTestName) &&
+            !data.getMethodName().equals(oldMethodName)) {
             try {
-                mergeAt(index, anDO.getTestId());
+                mergeAt(index, data.getTestId());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -733,36 +767,37 @@ public class AnalysisManager implements RPC {
 
     public void removeTestAt(int index) {
         AnalysisListItem item;
-        AnalysisViewDO anDO, preAnDO;
+        AnalysisViewDO data, preData;
         ArrayList<AnalysisViewDO> preAnalysisList;
 
         item = getItemAt(index);
 
         item.tests = null;
         item.analysisResult = null;
-        anDO = item.analysis;
+        data = item.analysis;
 
-        anDO.setTestId(null);
-        anDO.setTestName(null);
-        anDO.setMethodId(null);
-        anDO.setMethodName(null);
-        anDO.setIsReportable(null);
-        anDO.setUnitOfMeasureId(null);
-        anDO.setSectionId(null);
+        data.setTestId(null);
+        data.setTestName(null);
+        data.setMethodId(null);
+        data.setMethodName(null);
+        data.setIsReportable(null);
+        data.setUnitOfMeasureId(null);
+        data.setSectionId(null);
 
         // set preanalyses data
-        preAnalysisList = getPreAnalysisList(anDO.getId());
+        preAnalysisList = getPreAnalysisList(data.getId());
 
         for (int i = 0; i < preAnalysisList.size(); i++ ) {
-            preAnDO = preAnalysisList.get(i);
-            preAnDO.setPreAnalysisTest(null);
-            preAnDO.setPreAnalysisMethod(null);
+            preData = preAnalysisList.get(i);
+            preData.setPreAnalysisTest(null);
+            preData.setPreAnalysisMethod(null);
         }
     }
 
     public TestManager getTestAt(int i) throws Exception {
-        AnalysisListItem item = getItemAt(i);
+        AnalysisListItem item;
 
+        item = getItemAt(i);
         if (item.tests == null) {
             if (item.analysis != null && item.analysis.getTestId() != null) {
                 try {
@@ -787,41 +822,42 @@ public class AnalysisManager implements RPC {
 
     protected void updateAnalysisStatusAt(int index, Integer sampleTypeId) throws Exception {
         TestManager testMan;
-        boolean error = false;
-        AnalysisViewDO anDO;
-        Integer currentStatus;
+        boolean error;
+        AnalysisViewDO data;
+        Integer currentStatusId;
 
-        anDO = getItemAt(index).analysis;
+        data = getItemAt(index).analysis;
 
         // if the analysis is cancelled stop now
-        if (proxy().anCancelledId.equals(anDO.getStatusId()))
+        if (proxy().anCancelledId.equals(data.getStatusId()))
             return;
 
         testMan = getTestAt(index);
-        currentStatus = anDO.getStatusId();
-
+        currentStatusId = data.getStatusId();
+        error = false;
+        
         // sample item needs to match
         if ( !testMan.getSampleTypes().hasType(sampleTypeId))
             error = true;
 
         if (error) {
-            if (currentStatus.equals(proxy().anLoggedInId))
-                anDO.setStatusId(proxy().anErrorLoggedInId);
-            else if (currentStatus.equals(proxy().anInitiatedId))
-                anDO.setStatusId(proxy().anErrorInitiatedId);
-            else if (currentStatus.equals(proxy().anCompletedId))
-                anDO.setStatusId(proxy().anErrorCompletedId);
-            else if (currentStatus.equals(proxy().anInPrepId))
-                anDO.setStatusId(proxy().anErrorInPrepId);
+            if (currentStatusId.equals(proxy().anLoggedInId))
+                data.setStatusId(proxy().anErrorLoggedInId);
+            else if (currentStatusId.equals(proxy().anInitiatedId))
+                data.setStatusId(proxy().anErrorInitiatedId);
+            else if (currentStatusId.equals(proxy().anCompletedId))
+                data.setStatusId(proxy().anErrorCompletedId);
+            else if (currentStatusId.equals(proxy().anInPrepId))
+                data.setStatusId(proxy().anErrorInPrepId);
         } else {
-            if (currentStatus.equals(proxy().anErrorLoggedInId))
-                anDO.setStatusId(proxy().anLoggedInId);
-            else if (currentStatus.equals(proxy().anErrorInitiatedId))
-                anDO.setStatusId(proxy().anInitiatedId);
-            else if (currentStatus.equals(proxy().anErrorCompletedId))
-                anDO.setStatusId(proxy().anCompletedId);
-            else if (currentStatus.equals(proxy().anErrorInPrepId))
-                anDO.setStatusId(proxy().anInPrepId);
+            if (currentStatusId.equals(proxy().anErrorLoggedInId))
+                data.setStatusId(proxy().anLoggedInId);
+            else if (currentStatusId.equals(proxy().anErrorInitiatedId))
+                data.setStatusId(proxy().anInitiatedId);
+            else if (currentStatusId.equals(proxy().anErrorCompletedId))
+                data.setStatusId(proxy().anCompletedId);
+            else if (currentStatusId.equals(proxy().anErrorInPrepId))
+                data.setStatusId(proxy().anInPrepId);
         }
     }
 
@@ -927,14 +963,14 @@ public class AnalysisManager implements RPC {
 
     private ArrayList<AnalysisViewDO> getPreAnalysisList(Integer preAnalysisId) {
         ArrayList<AnalysisViewDO> returnList;
-        AnalysisViewDO anDO;
+        AnalysisViewDO data;
 
         returnList = new ArrayList<AnalysisViewDO>();
         for (int i = 0; i < count(); i++ ) {
-            anDO = getItemAt(i).analysis;
+            data = getItemAt(i).analysis;
 
-            if (preAnalysisId.equals(anDO.getPreAnalysisId()))
-                returnList.add(anDO);
+            if (preAnalysisId.equals(data.getPreAnalysisId()))
+                returnList.add(data);
         }
 
         return returnList;

@@ -36,6 +36,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
@@ -50,14 +51,15 @@ public class AnalysisResultManagerProxy {
         AnalysisResultManager man;
 
         results = new ArrayList<ArrayList<ResultViewDO>>();
-        local().fetchByAnalysisIdForDisplay(analysisId, results);
+        local().fetchByAnalysisIdForDisplay(analysisId, results);        
         man = AnalysisResultManager.getInstance();
         man.setResults(results);
 
         return man;
     }
 
-    public AnalysisResultManager fetchByAnalysisId(Integer analysisId, Integer testId) throws Exception {
+    public AnalysisResultManager fetchByAnalysisId(Integer analysisId, Integer testId)
+                                                                                      throws Exception {
         ArrayList<ArrayList<ResultViewDO>> results;
         HashMap<Integer, TestResultDO> testResultList;
         HashMap<Integer, AnalyteDO> analyteList;
@@ -188,8 +190,9 @@ public class AnalysisResultManagerProxy {
         return null;
     }
 
-    public void validate(AnalysisResultManager man, AnalysisViewDO anDO, ValidationErrorsList errorsList)
-                                                                                    throws Exception {
+    public void validate(AnalysisResultManager man,
+                         AnalysisViewDO anDO,
+                         ValidationErrorsList errorsList) throws Exception {
         ArrayList<ResultViewDO> results;
         ResultViewDO result;
         TestResultDO testResultDO;
@@ -221,8 +224,10 @@ public class AnalysisResultManagerProxy {
                                                   anDO.getTestName(), anDO.getMethodName()));
         }
     }
-    
-    public void validateForComplete(AnalysisResultManager man, AnalysisViewDO anDO, ValidationErrorsList errorsList) throws Exception {
+
+    public void validateForComplete(AnalysisResultManager man,
+                                    AnalysisViewDO anDO,
+                                    ValidationErrorsList errorsList) throws Exception {
         ArrayList<ResultViewDO> results;
         ResultViewDO result;
         TestResultDO testResultDO;
@@ -233,55 +238,48 @@ public class AnalysisResultManagerProxy {
 
         resultRequiredId = getIdFromSystemName("test_analyte_req");
         i = 0;
-        requiredEx = false;
-        invalidEx = false;
         // go through the results look for empty required and invalid results
-        while (i < man.rowCount() && ( !requiredEx || !invalidEx)) {
+        while (i < man.rowCount()) {
             results = man.getRowAt(i);
 
             j = 0;
-            while (j < results.size() && ( !requiredEx || !invalidEx)) {
+            while (j < results.size()) {
                 result = results.get(j);
 
                 // if required if needs to have a value
-                if ( !requiredEx && resultRequiredId.equals(result.getTypeId()) &&
-                    (result.getValue() == null || "".equals(result.getValue())))
-                    requiredEx = true;
+                if (resultRequiredId.equals(result.getTypeId()) &&
+                    (DataBaseUtil.isEmpty(result.getValue()))) {
+                    errorsList.add(new FormErrorException("completeStatusRequiredResultsException",
+                                                          anDO.getTestName(), anDO.getMethodName()));
+                }
 
                 // make sure the result is valid if its filled out
-                if ( !invalidEx) {
-                    try {
-                        if (result.getValue() != null && !"".equals(result.getValue())) {
-                            testResultId = man.validateResultValue(result.getResultGroup(),
-                                                                   anDO.getUnitOfMeasureId(),
-                                                                   result.getValue());
-                            testResultDO = man.getTestResultList().get(testResultId);
+                try {
+                    if (DataBaseUtil.isEmpty(result.getValue())) {
+                        testResultId = man.validateResultValue(result.getResultGroup(),
+                                                               anDO.getUnitOfMeasureId(),
+                                                               result.getValue());
+                        testResultDO = man.getTestResultList().get(testResultId);
 
-                            result.setTypeId(testResultDO.getTypeId());
-                            result.setTestResultId(testResultDO.getId());
-                        }
-                    } catch (ParseException e) {
-                        invalidEx = true;
+                        result.setTypeId(testResultDO.getTypeId());
+                        result.setTestResultId(testResultDO.getId());
                     }
+                } catch (ParseException e) {
+                    errorsList.add(new FormErrorException("completeStatusInvalidResultsException",
+                                                          anDO.getTestName(), anDO.getMethodName()));
                 }
+
                 j++ ;
             }
 
             i++ ;
         }
 
-        if (requiredEx)
-            errorsList.add(new FormErrorException("completeStatusRequiredResultsException",
-                                                  anDO.getTestName(), anDO.getMethodName()));
-
-        if (invalidEx)
-            errorsList.add(new FormErrorException("completeStatusInvalidResultsException",
-                                                  anDO.getTestName(), anDO.getMethodName()));
     }
-    
-    public Integer getIdFromSystemName(String systemName) throws Exception{
+
+    public Integer getIdFromSystemName(String systemName) throws Exception {
         DictionaryDO dictDO = dictionaryLocal().fetchBySystemName(systemName);
-        
+
         return dictDO.getId();
     }
 
@@ -305,7 +303,7 @@ public class AnalysisResultManagerProxy {
                     if (r1.getAnalyteId().equals(r2.getAnalyteId())) {
                         r1.setValue(r2.getValue());
                         found = true;
-                    }else if(k == 0)
+                    } else if (k == 0)
                         break;
 
                     k++ ;
@@ -317,16 +315,16 @@ public class AnalysisResultManagerProxy {
         }
     }
 
-    private static DictionaryLocal dictionaryLocal(){
-        try{
+    private static DictionaryLocal dictionaryLocal() {
+        try {
             InitialContext ctx = new InitialContext();
             return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
-        }catch(Exception e){
-             System.out.println(e.getMessage());
-             return null;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
         }
     }
-    
+
     private ResultLocal local() {
         try {
             InitialContext ctx = new InitialContext();

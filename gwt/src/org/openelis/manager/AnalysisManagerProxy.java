@@ -46,7 +46,7 @@ public class AnalysisManagerProxy {
     protected ScreenService       service;
     protected static Integer      anLoggedInId, anInitiatedId, anCompletedId, anReleasedId,
                                   anInPrepId, anOnHoldId, anRequeueId, anCancelledId, anErrorLoggedInId,
-                                  anErrorInitiatedId, anErrorInPrepId, anErrorCompletedId;
+                                  anErrorInitiatedId, anErrorInPrepId, anErrorCompletedId,sampleReleasedId;
 
     public AnalysisManagerProxy() {
         service = new ScreenService("OpenELISServlet?service=" + ANALYSIS_SERVICE_URL);
@@ -65,6 +65,7 @@ public class AnalysisManagerProxy {
                 anErrorInitiatedId = DictionaryCache.getIdFromSystemName("analysis_error_initiated");
                 anErrorInPrepId = DictionaryCache.getIdFromSystemName("analysis_error_inprep");
                 anErrorCompletedId = DictionaryCache.getIdFromSystemName("analysis_error_completed");
+                sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
             } catch (Exception e) {
                 e.printStackTrace();
                 anLoggedInId = null;
@@ -151,6 +152,7 @@ public class AnalysisManagerProxy {
 
             if ( !quickEntry && item.storages != null)
                 man.getStorageAt(i).validate(errorsList);
+                        
         }
     }
 

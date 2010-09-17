@@ -35,6 +35,7 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
@@ -55,23 +56,23 @@ public class AnalysisResultManagerProxy {
 
     public AnalysisResultManager fetchByAnalysisId(Integer analysisId, Integer testId)
                                                                                       throws Exception {
-        AnalysisDO anDO;
+        AnalysisDO data;
 
-        anDO = new AnalysisDO();
-        anDO.setTestId(testId);
-        anDO.setId(analysisId);
+        data = new AnalysisDO();
+        data.setTestId(testId);
+        data.setId(analysisId);
 
-        return service.call("fetchByAnalysisId", anDO);
+        return service.call("fetchByAnalysisId", data);
     }
 
     public AnalysisResultManager fetchByTestId(Integer testId, Integer unitId) throws Exception {
-        AnalysisDO anDO;
+        AnalysisDO data;
 
-        anDO = new AnalysisDO();
-        anDO.setTestId(testId);
-        anDO.setUnitOfMeasureId(unitId);
-        
-        return service.call("fetchByTestId", anDO);
+        data = new AnalysisDO();
+        data.setTestId(testId);
+        data.setUnitOfMeasureId(unitId);
+
+        return service.call("fetchByTestId", data);
     }
 
     public AnalysisResultManager add(AnalysisResultManager man) throws Exception {
@@ -108,11 +109,11 @@ public class AnalysisResultManagerProxy {
     }
 
     public void validate(AnalysisResultManager man,
-                         AnalysisViewDO anDO,
+                         AnalysisViewDO data,
                          ValidationErrorsList errorsList) throws Exception {
         ArrayList<ResultViewDO> results;
         ResultViewDO result;
-        TestResultDO testResultDO;
+        TestResultDO testResult;
         Integer testResultId;
 
         // go through the results and put a form error if one is found to be
@@ -126,82 +127,71 @@ public class AnalysisResultManagerProxy {
 
                     if (result.getValue() != null && !"".equals(result.getValue())) {
                         testResultId = man.validateResultValue(result.getResultGroup(),
-                                                               anDO.getUnitOfMeasureId(),
+                                                               data.getUnitOfMeasureId(),
                                                                result.getValue());
-                        testResultDO = man.getTestResultList().get(testResultId);
+                        testResult = man.getTestResultList().get(testResultId);
 
-                        result.setTypeId(testResultDO.getTypeId());
-                        result.setTestResultId(testResultDO.getId());
+                        result.setTypeId(testResult.getTypeId());
+                        result.setTestResultId(testResult.getId());
                     }
                 }
             }
 
         } catch (ParseException e) {
             errorsList.add(new FormErrorException("oneOrMoreResultValuesInvalid",
-                                                  anDO.getTestName(), anDO.getMethodName()));
+                                                  data.getTestName(), data.getMethodName()));
         }
     }
 
     public void validateForComplete(AnalysisResultManager man,
-                                    AnalysisViewDO anDO,
+                                    AnalysisViewDO data,
                                     ValidationErrorsList errorsList) throws Exception {
         ArrayList<ResultViewDO> results;
         ResultViewDO result;
-        TestResultDO testResultDO;
-        Integer testResultId;
-        Integer resultRequiredId;
-        boolean requiredEx, invalidEx;
+        TestResultDO testResult;
+        Integer testResultId, resultRequiredId;
         int i, j;
 
-        resultRequiredId = getIdFromSystemName("test_analyte_req");
+        resultRequiredId = DictionaryCache.getIdFromSystemName("test_analyte_req");
         i = 0;
-        requiredEx = false;
-        invalidEx = false;
         // go through the results look for empty required and invalid results
-        while (i < man.rowCount() && ( !requiredEx || !invalidEx)) {
+        while (i < man.rowCount()) {
             results = man.getRowAt(i);
 
             j = 0;
-            while (j < results.size() && ( !requiredEx || !invalidEx)) {
+            while (j < results.size()) {
                 result = results.get(j);
 
                 // if required if needs to have a value
-                if ( !requiredEx && resultRequiredId.equals(result.getTypeId()) &&
-                    (result.getValue() == null || "".equals(result.getValue())))
-                    requiredEx = true;
+                if (DataBaseUtil.isSame(resultRequiredId, result.getTypeId()) &&
+                    (DataBaseUtil.isEmpty(result.getValue()))) {
+                    errorsList.add(new FormErrorException("completeStatusRequiredResultsException",
+                                                          data.getTestName(), data.getMethodName()));
+                    throw errorsList;
+                }
 
                 // make sure the result is valid if its filled out
-                if ( !invalidEx) {
-                    try {
-                        if (result.getValue() != null && !"".equals(result.getValue())) {
-                            testResultId = man.validateResultValue(result.getResultGroup(),
-                                                                   anDO.getUnitOfMeasureId(),
-                                                                   result.getValue());
-                            testResultDO = man.getTestResultList().get(testResultId);
+                try {
+                    if (!DataBaseUtil.isEmpty(result.getValue())) {
+                        testResultId = man.validateResultValue(result.getResultGroup(),
+                                                               data.getUnitOfMeasureId(),
+                                                               result.getValue());
+                        testResult = man.getTestResultList().get(testResultId);
 
-                            result.setTypeId(testResultDO.getTypeId());
-                            result.setTestResultId(testResultDO.getId());
-                        }
-                    } catch (ParseException e) {
-                        invalidEx = true;
+                        result.setTypeId(testResult.getTypeId());
+                        result.setTestResultId(testResult.getId());
                     }
+                } catch (ParseException e) {
+                    errorsList.add(new FormErrorException("completeStatusInvalidResultsException",
+                                                          data.getTestName(), data.getMethodName()));
+                    throw errorsList;
                 }
+
                 j++ ;
             }
 
             i++ ;
         }
 
-        if (requiredEx)
-            errorsList.add(new FormErrorException("completeStatusRequiredResultsException",
-                                                  anDO.getTestName(), anDO.getMethodName()));
-
-        if (invalidEx)
-            errorsList.add(new FormErrorException("completeStatusInvalidResultsException",
-                                                  anDO.getTestName(), anDO.getMethodName()));
-    }
-
-    public Integer getIdFromSystemName(String systemName) throws Exception {
-        return DictionaryCache.getIdFromSystemName(systemName);
     }
 }

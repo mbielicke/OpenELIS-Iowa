@@ -23,16 +23,27 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.remote;
+package org.openelis.modules.scriptlet.server;
 
 import java.util.ArrayList;
 
-import javax.ejb.Remote;
-
 import org.openelis.domain.IdNameVO;
+import org.openelis.gwt.common.DatabaseException;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.ScriptletRemote;
 
-@Remote  
-public interface ScriptletRemote {
+public class ScriptletService {
     
-    public ArrayList<IdNameVO> fetchByName(String match, int maxResults);
+    public ArrayList<IdNameVO> fetchByName(String search)throws Exception {
+        try {
+            return remote().fetchByName(search+"%", 10);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+    
+    private ScriptletRemote remote() {
+        return (ScriptletRemote)EJBFactory.lookup("openelis/ScriptletBean/remote");
+    }
+
 }

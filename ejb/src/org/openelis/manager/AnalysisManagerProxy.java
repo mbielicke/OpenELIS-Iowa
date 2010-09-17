@@ -43,9 +43,10 @@ import org.openelis.manager.AnalysisManager.AnalysisListItem;
 import org.openelis.utils.PermissionInterceptor;
 
 public class AnalysisManagerProxy {
-    protected static Integer anLoggedInId, anInitiatedId, anCompletedId, anReleasedId, anInPrepId,
-                    anOnHoldId, anRequeueId, anCancelledId, anErrorLoggedInId, anErrorInitiatedId,
-                    anErrorInPrepId, anErrorCompletedId;
+    protected static Integer anLoggedInId, anInitiatedId, anCompletedId, anReleasedId,
+                             anInPrepId, anOnHoldId, anRequeueId, anCancelledId,
+                             anErrorLoggedInId, anErrorInitiatedId, anErrorInPrepId,
+                             anErrorCompletedId, sampleReleasedId;
 
     public AnalysisManagerProxy() {
         DictionaryLocal l;
@@ -66,6 +67,7 @@ public class AnalysisManagerProxy {
                 anErrorInitiatedId = l.fetchBySystemName("analysis_error_initiated").getId();
                 anErrorInPrepId = l.fetchBySystemName("analysis_error_inprep").getId();
                 anErrorCompletedId = l.fetchBySystemName("analysis_error_completed").getId();
+                sampleReleasedId = l.fetchBySystemName("sample_released").getId();
             } catch (Exception e) {
                 e.printStackTrace();
                 anLoggedInId = null;

@@ -353,16 +353,16 @@ public class SampleManagerProxy {
 
     public void validate(SampleManager man, ValidationErrorsList errorsList) throws Exception {
         boolean quickEntry;
-        SampleDO sampleDO;
+        SampleDO data;
 
         // revalidate accession number
         validateAccessionNumber(man.getSample(), errorsList);
 
-        sampleDO = man.getSample();
-        quickEntry = SampleManager.QUICK_ENTRY.equals(sampleDO.getDomain());
+        data = man.getSample();
+        quickEntry = SampleManager.QUICK_ENTRY.equals(data.getDomain());
 
-        if (sampleDO.getCollectionDate() != null && sampleDO.getReceivedDate() != null) {
-            if (sampleDO.getCollectionDate().compareTo(sampleDO.getReceivedDate()) == 1)
+        if (data.getCollectionDate() != null && data.getReceivedDate() != null) {
+            if (data.getCollectionDate().compareTo(data.getReceivedDate()) == 1)
                 errorsList.add(new FieldErrorException("collectedDateInvalidError",
                                                        SampleMeta.getReceivedDate()));
         }
@@ -383,10 +383,9 @@ public class SampleManagerProxy {
             man.getAuxData().validate(errorsList);
     }
 
-    private void validateAccessionNumber(SampleDO sampleDO, ValidationErrorsList errorsList)
-                                                                                            throws Exception {
+    private void validateAccessionNumber(SampleDO data, ValidationErrorsList errorsList) throws Exception {
         try {
-            sampleManagerLocal().validateAccessionNumber(sampleDO);
+            sampleManagerLocal().validateAccessionNumber(data);
 
         } catch (ValidationErrorsList e) {
             ArrayList<Exception> errors = e.getErrorList();

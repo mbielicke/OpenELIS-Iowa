@@ -112,6 +112,7 @@ public class SampleManagerProxy {
 
     public void validate(SampleManager man, ValidationErrorsList errorsList) throws Exception {
         SampleDO data;
+        NoteManager noteMan;
 
         data = man.getSample();
 
@@ -144,7 +145,8 @@ public class SampleManagerProxy {
         
         // every unreleased sample needs an internal comment describing the reason
         if (man.unreleaseSample) {
-            if (man.sampleInternalNotes == null || !man.sampleInternalNotes.hasEditingNote())
+            noteMan = man.getInternalNotes();
+            if (noteMan == null || noteMan.count() == 0)
                 errorsList.add(new FormErrorException("unreleaseNoNoteException"));
         }
 

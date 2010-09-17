@@ -220,26 +220,22 @@ public class Sample implements Auditable, Cloneable {
             this.orderId = orderId;
     }
 
-    public Datetime getEnteredDate() {
-        if (enteredDate == null)
-            return null;
-        return new Datetime(Datetime.YEAR, Datetime.MINUTE, enteredDate);
+    public Datetime getEnteredDate() {        
+        return DataBaseUtil.toYM(enteredDate);
     }
 
     public void setEnteredDate(Datetime enteredDate) {
         if (DataBaseUtil.isDifferentYM(enteredDate, this.enteredDate))
-            this.enteredDate = enteredDate.getDate();
+            this.enteredDate = DataBaseUtil.toDate(enteredDate);
     }
 
     public Datetime getReceivedDate() {
-        if (receivedDate == null)
-            return null;
-        return new Datetime(Datetime.YEAR, Datetime.MINUTE, receivedDate);
+        return DataBaseUtil.toYD(receivedDate);
     }
 
     public void setReceivedDate(Datetime receivedDate) {
         if (DataBaseUtil.isDifferentYM(receivedDate, this.receivedDate))
-            this.receivedDate = receivedDate.getDate();
+            this.receivedDate = DataBaseUtil.toDate(receivedDate);
     }
 
     public Integer getReceivedById() {

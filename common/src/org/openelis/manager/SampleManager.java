@@ -35,10 +35,8 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
-import com.google.gwt.junit.client.WithProperties;
-
 public class SampleManager implements RPC, HasAuxDataInt {
-    private static final long                     serialVersionUID          = 1L;
+    private static final long                     serialVersionUID = 1L;
 
     protected SampleDO                            sample;
     protected SampleItemManager                   sampleItems;
@@ -56,7 +54,7 @@ public class SampleManager implements RPC, HasAuxDataInt {
                                                   PT_DOMAIN_FLAG = "P", SDWIS_DOMAIN_FLAG = "S", WELL_DOMAIN_FLAG = "W",
                                                   QUICK_ENTRY = "Q";
 
-    protected transient boolean unreleaseSample, statusWithError;
+    protected transient boolean                   unreleaseSample, statusWithError;
     protected transient static SampleManagerProxy proxy;
 
     /**
@@ -304,8 +302,7 @@ public class SampleManager implements RPC, HasAuxDataInt {
         if (sampleInternalNotes == null) {
             if (sample.getId() != null) {
                 try {
-                    sampleInternalNotes = NoteManager.fetchByRefTableRefIdIsExt(
-                                                                                ReferenceTable.SAMPLE,
+                    sampleInternalNotes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.SAMPLE,
                                                                                 sample.getId(),
                                                                                 false);
                 } catch (NotFoundException e) {
@@ -328,8 +325,7 @@ public class SampleManager implements RPC, HasAuxDataInt {
         if (sampleExternalNote == null) {
             if (sample.getId() != null) {
                 try {
-                    sampleExternalNote = NoteManager.fetchByRefTableRefIdIsExt(
-                                                                               ReferenceTable.SAMPLE,
+                    sampleExternalNote = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.SAMPLE,
                                                                                sample.getId(), true);
                 } catch (NotFoundException e) {
                     // ignore

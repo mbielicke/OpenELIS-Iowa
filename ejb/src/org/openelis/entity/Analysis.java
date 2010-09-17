@@ -257,7 +257,7 @@ public class Analysis implements Auditable, Cloneable {
   
   public void setAvailableDate (Datetime availableDate){
       if(DataBaseUtil.isDifferentYM(availableDate, this.availableDate))
-          this.availableDate = availableDate.getDate();
+          this.availableDate = DataBaseUtil.toDate(availableDate);
   }
 
   public Datetime getStartedDate() {
@@ -266,7 +266,7 @@ public class Analysis implements Auditable, Cloneable {
   
   public void setStartedDate (Datetime startedDate){
       if(DataBaseUtil.isDifferentYM(startedDate, this.startedDate))
-          this.startedDate = startedDate.getDate();
+          this.startedDate = DataBaseUtil.toDate(startedDate);
   }
 
   public Datetime getCompletedDate() {
@@ -275,7 +275,7 @@ public class Analysis implements Auditable, Cloneable {
   
   public void setCompletedDate (Datetime completedDate){
       if(DataBaseUtil.isDifferentYM(completedDate, this.completedDate))
-          this.completedDate = completedDate.getDate();
+          this.completedDate = DataBaseUtil.toDate(completedDate);
   }
 
   public Datetime getReleasedDate() {
@@ -284,7 +284,7 @@ public class Analysis implements Auditable, Cloneable {
   
   public void setReleasedDate (Datetime releasedDate){
       if(DataBaseUtil.isDifferentYM(releasedDate, this.releasedDate))
-          this.releasedDate = releasedDate.getDate();
+          this.releasedDate = DataBaseUtil.toDate(releasedDate);
   }
 
   public Datetime getPrintedDate() {
@@ -293,7 +293,7 @@ public class Analysis implements Auditable, Cloneable {
   
   public void setPrintedDate (Datetime printedDate){
       if(DataBaseUtil.isDifferentYM(printedDate, this.printedDate))
-        this.printedDate = printedDate.getDate();
+        this.printedDate = DataBaseUtil.toDate(printedDate);
   }
   
   public Test getTest() {
