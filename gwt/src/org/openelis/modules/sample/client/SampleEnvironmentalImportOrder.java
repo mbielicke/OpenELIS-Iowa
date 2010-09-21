@@ -34,7 +34,6 @@ import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.ProjectDO;
-import org.openelis.domain.ProjectViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.gwt.common.Datetime;

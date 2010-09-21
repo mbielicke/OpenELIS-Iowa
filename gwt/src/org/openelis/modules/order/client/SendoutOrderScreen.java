@@ -111,12 +111,12 @@ public class SendoutOrderScreen extends Screen {
     private Tabs                  tab;
 
     private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
-                    commitButton, abortButton;
+                                  commitButton, abortButton;
     private MenuItem              duplicate, orderHistory, itemHistory, testHistory,
-                    containerHistory;
+                                  containerHistory;
     private TextBox               id, neededInDays, requestedBy, organizationAttention,
-                    organizationAddressMultipleUnit, organizationAddressStreetAddress,
-                    organizationAddressCity, organizationAddressState, organizationAddressZipCode;
+                                  organizationAddressMultipleUnit, organizationAddressStreetAddress,
+                                  organizationAddressCity, organizationAddressState, organizationAddressZipCode;
     private CalendarLookUp        orderedDate;
     private Dropdown<Integer>     statusId, shipFromId, costCenterId;
     private AutoComplete<Integer> organizationName;
@@ -145,21 +145,28 @@ public class SendoutOrderScreen extends Screen {
     }
 
     private void SendoutOrderScreenImpl() throws Exception {
-        service = new ScreenService(
-                                    "controller?service=org.openelis.modules.order.server.OrderService");
+        service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
         userService = new ScreenService("controller?service=org.openelis.server.SystemUserService");
-        organizationService = new ScreenService(
-                                                "controller?service=org.openelis.modules.organization.server.OrganizationService");
+        organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
 
         userPermission = OpenELIS.getSystemUserPermission().getModule("sendoutorder");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Send-out Order Screen");
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
+        //
+        // this is done here in order to make sure that if the screen is brought
+        // up from some other screen then its widgets are initialized before the
+        // constructor ends execution
+        //
+        if (window != null) {
+            postConstructor();
+        } else {
+            DeferredCommand.addCommand(new Command() {
+                public void execute() {
+                    postConstructor();
+                }
+            });
+        }
     }
 
     private void postConstructor() {
@@ -1009,7 +1016,10 @@ public class SendoutOrderScreen extends Screen {
         containerTab.draw();
         auxDataTab.draw();
 
-        setState(State.DISPLAY);
+        if (manager.getOrder().getId() != null)
+            setState(State.DISPLAY);
+        else 
+            setState(State.DEFAULT);
         DataChangeEvent.fire(this);
     }
 

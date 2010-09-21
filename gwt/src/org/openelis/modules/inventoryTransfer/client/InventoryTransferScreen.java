@@ -121,11 +121,20 @@ public class InventoryTransferScreen extends Screen {
             throw new PermissionException("screenPermException", "Inventory Transfer Screen");
         
         openedFromMenu = fromMenu;
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
+        //
+        // this is done here in order to make sure that if the screen is brought
+        // up from some other screen then its widgets are initialized before the
+        // constructor ends execution
+        //
+        if (window != null) {
+            postConstructor();
+        } else {
+            DeferredCommand.addCommand(new Command() {
+                public void execute() {
+                    postConstructor();
+                }
+            });
+        }
     } 
     
     /**

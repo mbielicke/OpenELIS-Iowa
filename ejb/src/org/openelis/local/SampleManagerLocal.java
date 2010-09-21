@@ -32,6 +32,6 @@ import org.openelis.manager.SampleManager;
 
 @Local
 public interface SampleManagerLocal {
-    public SampleManager validateAccessionNumber(SampleDO sampleDO) throws Exception;
+    public SampleManager validateAccessionNumber(SampleDO sampleDO) throws Exception;    
     public SampleManager fetchForUpdate(Integer sampleId) throws Exception;
 }

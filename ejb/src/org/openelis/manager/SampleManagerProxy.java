@@ -33,6 +33,7 @@ import javax.naming.InitialContext;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
+import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
@@ -40,6 +41,7 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalysisLocal;
 import org.openelis.local.DictionaryLocal;
+import org.openelis.local.OrderLocal;
 import org.openelis.local.SampleItemLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SampleManagerLocal;
@@ -357,6 +359,7 @@ public class SampleManagerProxy {
 
         // revalidate accession number
         validateAccessionNumber(man.getSample(), errorsList);
+        validateOrderId(man.getSample(), errorsList);
 
         data = man.getSample();
         quickEntry = SampleManager.QUICK_ENTRY.equals(data.getDomain());
@@ -393,6 +396,16 @@ public class SampleManagerProxy {
             for (int i = 0; i < errors.size(); i++ )
                 errorsList.add(errors.get(i));
         }
+    }
+    
+    private void validateOrderId(SampleDO data, ValidationErrorsList errorsList) throws Exception {
+        OrderViewDO order;
+        if (data.getOrderId() == null)
+            return;
+        order = orderLocal().fetchById(data.getOrderId());
+        if (order == null || !OrderManager.TYPE_SEND_OUT.equals(order.getType()))
+            errorsList.add(new FieldErrorException("orderIdInvalidException",
+                                                       SampleMeta.getOrderId()));                    
     }
 
     private SampleLocal sampleLocal() {
@@ -439,6 +452,16 @@ public class SampleManagerProxy {
         try {
             InitialContext ctx = new InitialContext();
             return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+    
+    private static OrderLocal orderLocal() {
+        try {
+            InitialContext ctx = new InitialContext();
+            return (OrderLocal)ctx.lookup("openelis/OrderBean/local");
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;

@@ -31,11 +31,12 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdAccessionVO;
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
@@ -64,11 +65,13 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.manager.OrderManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.modules.order.client.SendoutOrderScreen;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
@@ -125,11 +128,12 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                                            historyAnalysisQA, historyAuxData;
 
     protected AppButton                    queryButton, addButton, updateButton, nextButton,
-                                           prevButton, commitButton, abortButton;
+                                           prevButton, commitButton, abortButton, orderLookup;
     protected TabPanel                     tabs;
 
     private ScreenNavigator                nav;
-    private ModulePermission               userPermission;
+    private ModulePermission               userPermission;   
+    private SendoutOrderScreen             sendoutOrderScreen;
 
     private SampleEnvironmentalImportOrder envOrderImport;
     
@@ -426,14 +430,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         //
         // screen fields
         //
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
-                if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
-                    event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
-                }
-            }
-        });
 
         accessionNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
@@ -491,37 +487,65 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 ValidationErrorsList errors;
-                
+                OrderManager man;
+
                 manager.getSample().setOrderId(event.getValue());
 
-                if(event.getValue() != null){
-                    if (envOrderImport == null)
-                        envOrderImport = new SampleEnvironmentalImportOrder();
-                    
-                    try {
-                        errors = envOrderImport.importOrderInfo(event.getValue(), manager);
-                        
-                        DataChangeEvent.fire(envScreen);
-                        
-                        ArrayList<OrderTestViewDO> orderTests = envOrderImport.getTestsFromOrder(event.getValue());
-                        
-                        if(orderTests != null && orderTests.size() > 0)
-                            ActionEvent.fire(envScreen, AnalysisTab.Action.ORDER_LIST_ADDED, orderTests);
-                        
-                        if(errors != null)
-                            showErrors(errors);
-                        
-                    } catch (NotFoundException e) {
-                        //ignore
-                    } catch (Exception e) {
-                        Window.alert(e.getMessage());
+                if (DataBaseUtil.isEmpty(event.getValue()))
+                    return;
+                
+                try {
+                    man = OrderManager.fetchById(event.getValue());
+                    if (!OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType())) {
+                        orderNumber.addException(new LocalizedException("orderIdInvalidException"));                           
+                        return;
                     }
+                } catch (NotFoundException e) {                    
+                    orderNumber.addException(new LocalizedException("orderIdInvalidException"));
+                    return;
+                } catch (Exception ex) {
+                    Window.alert(ex.getMessage());
+                    return;
+                }
+                                                               
+                if (envOrderImport == null)
+                    envOrderImport = new SampleEnvironmentalImportOrder();
+
+                try {
+                    errors = envOrderImport.importOrderInfo(event.getValue(), manager);
+
+                    DataChangeEvent.fire(envScreen);
+
+                    ArrayList<OrderTestViewDO> orderTests = envOrderImport.getTestsFromOrder(event.getValue());
+
+                    if (orderTests != null && orderTests.size() > 0)
+                        ActionEvent.fire(envScreen, AnalysisTab.Action.ORDER_LIST_ADDED, orderTests);
+
+                    if (errors != null)
+                        showErrors(errors);
+
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
                 }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 orderNumber.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY).contains(event.getState()));
                 orderNumber.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        orderLookup = (AppButton)def.getWidget("orderButton");
+        addScreenHandler(orderLookup, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                onOrderLookupClick();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                orderLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
+                                             .contains(event.getState()));
             }
         });
 
@@ -764,7 +788,9 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         treeTab.addActionHandler(new ActionHandler<SampleItemAnalysisTreeTab.Action>() {
             public void onAction(ActionEvent<SampleItemAnalysisTreeTab.Action> event) {
                 if (event.getAction() == SampleItemAnalysisTreeTab.Action.REFRESH_TABS) {
-                    SampleDataBundle data = (SampleDataBundle)event.getData();
+                    SampleDataBundle data;
+                    
+                    data = (SampleDataBundle)event.getData();
                     sampleItemTab.setData(data);
                     analysisTab.setData(data);
                     testResultsTab.setData(data);
@@ -857,6 +883,15 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 return model;
             }
         };
+        
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+                if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
+                    event.cancel();
+                    window.setError(consts.get("mustCommitOrAbort"));
+                }
+            }
+        });
     }
 
     protected void query() {
@@ -887,7 +922,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         nav.next();
     }
 
-    public void add() {
+    protected void add() {
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
 
@@ -935,8 +970,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
     }
 
     protected void commit() {
-        Query query;
-        QueryData domain;
+        Query query;        
         ArrayList<QueryData> queryFields;
         
         setFocus(null);
@@ -1026,7 +1060,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         }
     }
 
-    public void abort() {
+    protected void abort() {
         setFocus(null);
         clearErrors();
         window.setBusy(consts.get("cancelChanges"));
@@ -1069,6 +1103,61 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         } else {
             window.clearStatus();
         }
+    }
+    
+    protected void onOrderLookupClick() {
+        Integer id;
+        OrderManager man;
+        
+        man = null;
+        if (state == State.DISPLAY) {
+            man = OrderManager.getInstance();
+        } else if (state == State.UPDATE || state == State.ADD) {
+            id  = manager.getSample().getOrderId();
+            if (id == null) {
+                man = OrderManager.getInstance();
+            } else { 
+                try {
+                    man = OrderManager.fetchById(id);
+                    if (!OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType())) {
+                        orderNumber.addException(new LocalizedException("orderIdInvalidException"));
+                        return;
+                    }
+                } catch (NotFoundException e) {
+                    orderNumber.addException(new LocalizedException("orderIdInvalidException"));            
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    e.printStackTrace();                      
+                }
+            }
+            
+        } else {
+            return;
+        }
+        
+        if (man != null)
+            showOrder(man);
+    }
+    
+
+    private void showOrder(OrderManager orderManager) {
+        ScreenWindow modal;
+        try {
+                modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+                modal.setName(consts.get("kitOrder"));
+                if (sendoutOrderScreen == null)
+                    sendoutOrderScreen = new SendoutOrderScreen(modal);
+
+                modal.setContent(sendoutOrderScreen);
+                sendoutOrderScreen.setManager(orderManager);
+                window.clearStatus();
+        } catch (Throwable e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            window.clearStatus();
+            return;
+        }
+
     }
 
     protected boolean fetchById(Integer id) {

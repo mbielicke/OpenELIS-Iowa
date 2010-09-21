@@ -132,7 +132,12 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'orderNum')" />:
               </text>
-              <textbox key="{meta:getOrderId()}" width="75" tab="{meta:getCollectionDate()},{meta:getAccessionNumber()}" field="Integer" />
+              <HorizontalPanel>
+              	<textbox key="{meta:getOrderId()}" width="75" tab="{meta:getCollectionDate()},{meta:getAccessionNumber()}" field="Integer" />
+                <appButton key="orderButton" style="LookupButton">
+                  <AbsolutePanel style="LookupButtonImage" />
+                </appButton>
+              </HorizontalPanel>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'collected')" />:
               </text>
@@ -170,7 +175,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'reportTo')" />:
                   </text>
                   <widget colspan="3">
-                    <autoComplete key="{meta:getWellOrganizationName()}" width="180" case="UPPER" max="30" popWidth="auto" tab="{meta:getWellOrganizationId()},{meta:getClientReference()}" field="String">
+                    <autoComplete key="{meta:getWellOrganizationName()}" width="180" case="UPPER" popWidth="auto" tab="{meta:getWellOrganizationId()},{meta:getClientReference()}" field="String">
                       <col width="200" header="Name" />
                       <col width="130" header="Street" />
                       <col width="120" header="City" />

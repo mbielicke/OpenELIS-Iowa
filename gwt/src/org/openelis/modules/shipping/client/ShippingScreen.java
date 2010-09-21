@@ -38,10 +38,10 @@ import org.openelis.domain.ShippingTrackingDO;
 import org.openelis.domain.ShippingViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.ModulePermission;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.event.BeforeCloseEvent;
@@ -55,7 +55,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -74,7 +73,6 @@ import org.openelis.meta.ShippingMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.note.client.NotesTab;
-import org.openelis.modules.orderFill.client.OrderFillScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -140,11 +138,21 @@ public class ShippingScreen extends Screen {
             throw new PermissionException("screenPermException", "Shipping Screen");
 
         openedFromMenu = fromMenu;
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-               postConstructor();
-            }
-        });
+        
+        //
+        // this is done here in order to make sure that if the screen is brought
+        // up from some other screen (i.e. window != null) then its widgets are 
+        // initialized before the constructor ends execution
+        //
+        if (window != null) {
+            postConstructor();
+        } else {
+            DeferredCommand.addCommand(new Command() {
+                public void execute() {
+                    postConstructor();
+                }
+            });
+        }
     }   
 
     /**
