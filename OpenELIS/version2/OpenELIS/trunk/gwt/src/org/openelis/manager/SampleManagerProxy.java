@@ -33,6 +33,7 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FieldErrorWarning;
 import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.services.ScreenService;
@@ -118,6 +119,7 @@ public class SampleManagerProxy {
 
         // re-validate accession number
         validateAccessionNumber(data, errorsList);
+        validateOrderId(man.getSample(), errorsList);
 
         // received date required
         if (data.getReceivedDate() == null || data.getReceivedDate().getDate() == null)
@@ -179,5 +181,22 @@ public class SampleManagerProxy {
             for (int i = 0; i < errors.size(); i++ )
                 errorsList.add(errors.get(i));
         }
+    }
+    
+    private void validateOrderId(SampleDO data, ValidationErrorsList errorsList) throws Exception {
+        OrderManager man;
+        
+        if (data.getOrderId() == null)
+            return;
+        try {
+            man = OrderManager.fetchById(data.getOrderId());
+            if (!OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType()))
+                errorsList.add(new FieldErrorException("orderIdInvalidException",
+                                                       SampleMeta.getOrderId()));
+        } catch (NotFoundException e) {
+            errorsList.add(new FieldErrorException("orderIdInvalidException",
+                                                   SampleMeta.getOrderId()));
+        }
+        
     }
 }

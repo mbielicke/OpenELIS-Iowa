@@ -70,7 +70,7 @@ public class EnvironmentalTab extends Screen {
     private TextBox<Integer>               priority;
     private AutoComplete<Integer>          project, reportTo, billTo;
     private AppButton                      billToLookup, reportToLookup, projectLookup,
-                    locationLookup;
+                                           locationLookup;
     private CheckBox                       isHazardous;
 
     private SampleLocationLookupScreen     locationScreen;

@@ -110,7 +110,12 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'orderNum')" />:
               </text>
-              <textbox key="{meta:getOrderId()}" width="75" tab="{meta:getCollectionDate()},{meta:getAccessionNumber()}" field="Integer" />
+              <HorizontalPanel>
+                <textbox key="{meta:getOrderId()}" width="75" tab="{meta:getCollectionDate()},{meta:getAccessionNumber()}" field="Integer" />
+                <appButton key="orderButton" style="LookupButton">
+                  <AbsolutePanel style="LookupButtonImage" />
+                </appButton>
+              </HorizontalPanel>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'collected')" />:
               </text>

@@ -33,9 +33,11 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
@@ -55,6 +57,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CalendarLookUp;
@@ -64,10 +67,12 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.manager.OrderManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.modules.order.client.SendoutOrderScreen;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
@@ -117,21 +122,19 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
     protected TextBox<Datetime>            collectedTime;
     protected Dropdown<Integer>            statusId;
     protected CalendarLookUp               collectedDate, receivedDate;
-    protected AppButton                    queryButton, addButton, updateButton, 
-                                           nextButton, prevButton, commitButton,
-                                           abortButton;
+    protected AppButton                    queryButton, addButton, updateButton, nextButton,
+                    prevButton, commitButton, abortButton, orderLookup;
     protected MenuItem                     historySample, historySamplePrivateWell,
-                                           historySampleProject, historySampleItem,
-                                           historyAnalysis, historyCurrentResult,
-                                           historyStorage, historySampleQA, historyAnalysisQA,
-                                           historyAuxData;
+                    historySampleProject, historySampleItem, historyAnalysis, historyCurrentResult,
+                    historyStorage, historySampleQA, historyAnalysisQA, historyAuxData;
     protected TabPanel                     tabs;
 
     private ScreenNavigator                nav;
     private ModulePermission               userPermission;
+    private SendoutOrderScreen             sendoutOrderScreen;
 
     protected SamplePrivateWellImportOrder wellOrderImport;
-    
+
     private enum Tabs {
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
         AUX_DATA
@@ -139,7 +142,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
 
     public PrivateWellWaterSampleLoginScreen() throws Exception {
         super((ScreenDefInt)GWT.create(PrivateWellWaterSampleLoginDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.sample.server.SampleService");
+        service = new ScreenService(
+                                    "controller?service=org.openelis.modules.sample.server.SampleService");
 
         userPermission = OpenELIS.getSystemUserPermission().getModule("sampleprivatewell");
         if (userPermission == null)
@@ -411,18 +415,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             }
         });
 
-        //
-        // screen fields
-        //
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
-                if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
-                    event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
-                }
-            }
-        });
-
         accessionNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -480,31 +472,47 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 ValidationErrorsList errors;
+                OrderManager man;
 
                 manager.getSample().setOrderId(event.getValue());
 
-                if (event.getValue() != null) {
-                    if (wellOrderImport == null)
-                        wellOrderImport = new SamplePrivateWellImportOrder();
-
-                    try {
-                        errors = wellOrderImport.importOrderInfo(event.getValue(), manager);
-                        DataChangeEvent.fire(wellScreen);
-
-                        ArrayList<OrderTestViewDO> orderTests = wellOrderImport.getTestsFromOrder(event.getValue());
-
-                        if (orderTests != null && orderTests.size() > 0)
-                            ActionEvent.fire(wellScreen, AnalysisTab.Action.ORDER_LIST_ADDED,
-                                             orderTests);
-
-                        if (errors != null)
-                            showErrors(errors);
-
-                    } catch (NotFoundException e) {
-                        // ignore
-                    } catch (Exception e) {
-                        Window.alert(e.getMessage());
+                if (DataBaseUtil.isEmpty(event.getValue()))
+                    return;
+                
+                try {
+                    man = OrderManager.fetchById(event.getValue());
+                    if (!OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType())) {
+                        orderNumber.addException(new LocalizedException("orderIdInvalidException"));                           
+                        return;
                     }
+                } catch (NotFoundException e) {                    
+                    orderNumber.addException(new LocalizedException("orderIdInvalidException"));
+                    return;
+                } catch (Exception ex) {
+                    Window.alert(ex.getMessage());
+                    return;
+                }
+
+                if (wellOrderImport == null)
+                    wellOrderImport = new SamplePrivateWellImportOrder();
+
+                try {
+                    errors = wellOrderImport.importOrderInfo(event.getValue(), manager);
+                    DataChangeEvent.fire(wellScreen);
+
+                    ArrayList<OrderTestViewDO> orderTests = wellOrderImport.getTestsFromOrder(event.getValue());
+
+                    if (orderTests != null && orderTests.size() > 0)
+                        ActionEvent.fire(wellScreen, AnalysisTab.Action.ORDER_LIST_ADDED,
+                                         orderTests);
+
+                    if (errors != null)
+                        showErrors(errors);
+
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
                 }
             }
 
@@ -512,6 +520,18 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 orderNumber.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                           .contains(event.getState()));
                 orderNumber.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        orderLookup = (AppButton)def.getWidget("orderButton");
+        addScreenHandler(orderLookup, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                onOrderLookupClick();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                orderLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
+                                          .contains(event.getState()));
             }
         });
 
@@ -845,6 +865,18 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 return model;
             }
         };
+
+        //
+        // screen fields
+        //
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+                if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
+                    event.cancel();
+                    window.setError(consts.get("mustCommitOrAbort"));
+                }
+            }
+        });
     }
 
     protected void query() {
@@ -876,7 +908,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         nav.next();
     }
 
-    public void add() {
+    protected void add() {
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
 
@@ -921,7 +953,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         setFocus(null);
         clearErrors();
         manager.setStatusWithError(false);
-        
+
         if ( !validate()) {
             window.setError(consts.get("correctErrors"));
             return;
@@ -929,7 +961,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
 
         if (state == State.QUERY) {
             query = new Query();
-            query.setFields(getQueryFields());            
+            query.setFields(getQueryFields());
 
             nav.setQuery(query);
         } else if (state == State.ADD) {
@@ -1004,7 +1036,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         }
     }
 
-    public void abort() {
+    protected void abort() {
         setFocus(null);
         clearErrors();
         window.setBusy(consts.get("cancelChanges"));
@@ -1049,6 +1081,60 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         }
     }
 
+    protected void onOrderLookupClick() {
+        Integer id;
+        OrderManager man;
+        
+        man = null;
+        if (state == State.DISPLAY) {
+            man = OrderManager.getInstance();
+        } else if (state == State.UPDATE || state == State.ADD) {
+            id  = manager.getSample().getOrderId();
+            if (id == null) {
+                man = OrderManager.getInstance();
+            } else { 
+                try {
+                    man = OrderManager.fetchById(id);
+                    if (!OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType())) {
+                        orderNumber.addException(new LocalizedException("orderIdInvalidException"));
+                        return;
+                    }
+                } catch (NotFoundException e) {
+                    orderNumber.addException(new LocalizedException("orderIdInvalidException"));            
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    e.printStackTrace();                      
+                }
+            }
+            
+        } else {
+            return;
+        }
+        
+        if (man != null)
+            showOrder(man);
+    }
+
+    private void showOrder(OrderManager orderManager) {
+        ScreenWindow modal;
+        try {
+            modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+            modal.setName(consts.get("kitOrder"));
+            if (sendoutOrderScreen == null)
+                sendoutOrderScreen = new SendoutOrderScreen(modal);
+
+            modal.setContent(sendoutOrderScreen);
+            sendoutOrderScreen.setManager(orderManager);
+            window.clearStatus();
+        } catch (Throwable e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            window.clearStatus();
+            return;
+        }
+
+    }
+
     protected boolean fetchById(Integer id) {
         if (id == null) {
             manager = SampleManager.getInstance();
@@ -1085,14 +1171,14 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         // add aux data values if necessary
         auxFields = auxDataTab.getQueryFields();
         addPrivateWellFields(fields);
-        
+
         // add the domain
         field = new QueryData();
         field.key = SampleMeta.getDomain();
         field.query = SampleManager.WELL_DOMAIN_FLAG;
         field.type = QueryData.Type.STRING;
         fields.add(field);
-        
+
         if (auxFields.size() > 0) {
             // add ref table
             field = new QueryData();
@@ -1102,9 +1188,9 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             fields.add(field);
 
             // add aux fields
-            for (int i = 0; i < auxFields.size(); i++ ) {                
-                fields.add(auxFields.get(i));            
-            }                
+            for (int i = 0; i < auxFields.size(); i++ ) {
+                fields.add(auxFields.get(i));
+            }
         }
 
         return fields;
@@ -1168,19 +1254,19 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
     public HandlerRegistration addActionHandler(ActionHandler handler) {
         return addHandler(handler, ActionEvent.getType());
     }
-    
+
     /**
      * We need to add additional fields to the list of queried fields if it
-     * contains any field belonging to private well water's report to/organization.
-     * This is done in order to make sure that names and addresses belonging to 
-     * organizations as well as the ones that don't are searched.          
+     * contains any field belonging to private well water's report
+     * to/organization. This is done in order to make sure that names and
+     * addresses belonging to organizations as well as the ones that don't are
+     * searched.
      */
-    private void addPrivateWellFields(ArrayList<QueryData> fields){
+    private void addPrivateWellFields(ArrayList<QueryData> fields) {
         int size;
-        String dataKey, orgName, addressMult, addressStreet, addressCity,
-               addressState, addressZip, addressWorkPhone, addressFaxPhone;
+        String dataKey, orgName, addressMult, addressStreet, addressCity, addressState, addressZip, addressWorkPhone, addressFaxPhone;
         QueryData data;
-        
+
         orgName = null;
         addressMult = null;
         addressStreet = null;
@@ -1189,12 +1275,12 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         addressZip = null;
         addressWorkPhone = null;
         addressFaxPhone = null;
-        
+
         size = fields.size();
-        for(int i = size-1; i >= 0; i--){
+        for (int i = size - 1; i >= 0; i-- ) {
             data = fields.get(i);
             dataKey = data.key;
-            
+
             if (SampleMeta.getWellOrganizationName().equals(dataKey)) {
                 orgName = data.query;
 

@@ -31,15 +31,16 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdAccessionVO;
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
@@ -55,6 +56,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CalendarLookUp;
@@ -64,10 +66,12 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.manager.OrderManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.modules.order.client.SendoutOrderScreen;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
@@ -97,7 +101,7 @@ import com.google.gwt.user.client.ui.TabPanel;
 public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers {
     private SampleManager             manager;
     protected Tabs                    tab;
-    private Integer                   sampleLoggedInId, sampleErrorStatusId, sampleReleasedId;
+    private Integer                   sampleReleasedId;
 
     private SampleItemAnalysisTreeTab treeTab;
     private SDWISTab                  sdwisTab;
@@ -123,13 +127,14 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                                       historySampleQA, historyAnalysisQA, historyAuxData;
 
     protected AppButton               queryButton, addButton, updateButton, nextButton, prevButton,
-                                      commitButton, abortButton;
+                                      commitButton, abortButton, orderLookup;
     protected TabPanel                tabs;
 
     private ScreenNavigator           nav;
     private ModulePermission          userPermission;
 
     private SampleSDWISImportOrder    sdwisOrderImport;
+    private SendoutOrderScreen        sendoutOrderScreen;
 
     private enum Tabs {
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
@@ -412,18 +417,6 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
         });
 
-        //
-        // screen fields
-        //
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
-                if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
-                    event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
-                }
-            }
-        });
-
         accessionNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -480,8 +473,26 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 ValidationErrorsList errors;
+                OrderManager man;
 
                 manager.getSample().setOrderId(event.getValue());
+
+                if (DataBaseUtil.isEmpty(event.getValue()))
+                    return;
+                
+                try {
+                    man = OrderManager.fetchById(event.getValue());
+                    if (!OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType())) {
+                        orderNumber.addException(new LocalizedException("orderIdInvalidException"));                           
+                        return;
+                    }
+                } catch (NotFoundException e) {                    
+                    orderNumber.addException(new LocalizedException("orderIdInvalidException"));
+                    return;
+                } catch (Exception ex) {
+                    Window.alert(ex.getMessage());
+                    return;
+                }
 
                 if (sdwisOrderImport == null)
                     sdwisOrderImport = new SampleSDWISImportOrder();
@@ -510,6 +521,18 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 orderNumber.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                           .contains(event.getState()));
                 orderNumber.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        orderLookup = (AppButton)def.getWidget("orderButton");
+        addScreenHandler(orderLookup, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                onOrderLookupClick();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                orderLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
+                                             .contains(event.getState()));
             }
         });
 
@@ -844,6 +867,18 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 return model;
             }
         };
+        
+        //
+        // screen fields
+        //
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+                if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
+                    event.cancel();
+                    window.setError(consts.get("mustCommitOrAbort"));
+                }
+            }
+        });
     }
 
     protected void query() {
@@ -875,7 +910,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         nav.next();
     }
 
-    public void add() {
+    protected void add() {
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.SDWIS_DOMAIN_FLAG);
 
@@ -921,7 +956,6 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
     protected void commit() {
         Query query;
-        QueryData domain;
         ArrayList<QueryData> queryFields;
         
         setFocus(null);
@@ -1011,7 +1045,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         }
     }
 
-    public void abort() {
+    protected void abort() {
         setFocus(null);
         clearErrors();
         window.setBusy(consts.get("cancelChanges"));
@@ -1054,6 +1088,61 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         } else {
             window.clearStatus();
         }
+    }
+    
+    protected void onOrderLookupClick() {
+        Integer id;
+        OrderManager man;
+        
+        man = null;
+        if (state == State.DISPLAY) {
+            man = OrderManager.getInstance();
+        } else if (state == State.UPDATE || state == State.ADD) {
+            id  = manager.getSample().getOrderId();
+            if (id == null) {
+                man = OrderManager.getInstance();
+            } else { 
+                try {
+                    man = OrderManager.fetchById(id);
+                    if (!OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType())) {
+                        orderNumber.addException(new LocalizedException("orderIdInvalidException"));
+                        return;
+                    }
+                } catch (NotFoundException e) {
+                    orderNumber.addException(new LocalizedException("orderIdInvalidException"));            
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    e.printStackTrace();                      
+                }
+            }
+            
+        } else {
+            return;
+        }
+        
+        if (man != null)
+            showOrder(man);
+    }
+    
+
+    private void showOrder(OrderManager orderManager) {
+        ScreenWindow modal;
+        try {
+                modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+                modal.setName(consts.get("kitOrder"));
+                if (sendoutOrderScreen == null)
+                    sendoutOrderScreen = new SendoutOrderScreen(modal);
+
+                modal.setContent(sendoutOrderScreen);
+                sendoutOrderScreen.setManager(orderManager);
+                window.clearStatus();
+        } catch (Throwable e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            window.clearStatus();
+            return;
+        }
+
     }
 
     protected boolean fetchById(Integer id) {
@@ -1121,12 +1210,6 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         // preload dictionary models and single entries, close the window if an
         // error is found
         try {
-            DictionaryCache.getIdFromSystemName("analysis_logged_in");
-            sampleLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
-            sampleErrorStatusId = DictionaryCache.getIdFromSystemName("sample_error");
-            DictionaryCache.getIdFromSystemName("analysis_cancelled");
-            DictionaryCache.getIdFromSystemName("analysis_released");
-            DictionaryCache.getIdFromSystemName("analysis_inprep");
             sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
 
             // sample status dropdown

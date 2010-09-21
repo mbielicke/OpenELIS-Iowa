@@ -159,6 +159,16 @@ public class ResultBean implements ResultLocal {
             }
         }
         
+        if (typeDefault == 0) {
+            try {
+                data = dictionary.fetchBySystemName("test_res_type_default");
+                typeDefault = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeDefault = 0;
+            }
+        } 
+        
         if (supplementalTypeId == 0) {
             try {
                 data = dictionary.fetchBySystemName("test_analyte_suplmtl");
@@ -511,7 +521,7 @@ public class ResultBean implements ResultLocal {
             for (int i = 0; i < testResultList.size(); i++ ) {
                 data = testResultList.get(i);
 
-                if ( !data.getResultGroup().equals(rg)) {
+                if ( !DataBaseUtil.isSame(data.getResultGroup(), rg)) {
                     rv = new ResultValidator();
                     rg = data.getResultGroup();
                     
