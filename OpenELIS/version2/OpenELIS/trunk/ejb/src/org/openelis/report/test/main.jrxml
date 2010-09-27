@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="test" language="groovy" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
-	<property name="ireport.zoom" value="1.9487171000000014"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.x" value="566"/>
+	<property name="ireport.y" value="203"/>
 	<property name="ireport.callouts" value="##Tue Sep 21 15:30:40 CDT 2010"/>
 	<parameter name="USER_NAME" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["demo"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["/auto/home/dshirazi/workspace/OpenELIS-EJB/src/org/openelis/report/test/"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["org/openelis/report/test/"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="DETAIL" class="java.lang.String">
 		<defaultValueExpression><![CDATA["NL"]]></defaultValueExpression>
@@ -34,9 +34,6 @@ ORDER BY s_name, t_name, m_name]]>
 	<group name="section">
 		<groupExpression><![CDATA[$F{s_name}]]></groupExpression>
 	</group>
-	<background>
-		<band splitType="Stretch"/>
-	</background>
 	<pageHeader>
 		<band height="36" splitType="Stretch">
 			<staticText>
@@ -128,18 +125,62 @@ ORDER BY s_name, t_name, m_name]]>
 					<subreportParameterExpression><![CDATA[$F{t_id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleTypeBarcode.jasper"]]></subreportExpression>
+				<subreportExpression class="java.lang.String"><![CDATA["sampleTypeBarcode.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
-		<band height="50">
+		<band height="24">
 			<printWhenExpression><![CDATA[("FD".equals($P{DETAIL})?Boolean.TRUE:Boolean.FALSE)]]></printWhenExpression>
 			<subreport>
-				<reportElement x="370" y="0" width="382" height="11" isRemoveLineWhenBlank="true"/>
+				<reportElement x="370" y="0" width="382" height="24" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="TEST_ID">
 					<subreportParameterExpression><![CDATA[$F{t_id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleType.jasper"]]></subreportExpression>
+				<subreportExpression class="java.lang.String"><![CDATA["sampleType.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="24">
+			<printWhenExpression><![CDATA[("FD".equals($P{DETAIL})?Boolean.TRUE:Boolean.FALSE)]]></printWhenExpression>
+			<subreport>
+				<reportElement x="370" y="0" width="382" height="24" isRemoveLineWhenBlank="true"/>
+				<subreportParameter name="TEST_ID">
+					<subreportParameterExpression><![CDATA[$F{t_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA["testAnalyte.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="36">
+			<printWhenExpression><![CDATA[("FD".equals($P{DETAIL})?Boolean.TRUE:Boolean.FALSE)]]></printWhenExpression>
+			<subreport>
+				<reportElement x="370" y="0" width="382" height="36"/>
+				<subreportParameter name="TEST_ID">
+					<subreportParameterExpression><![CDATA[$F{t_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA["testResult.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="24">
+			<printWhenExpression><![CDATA[("FD".equals($P{DETAIL})?Boolean.TRUE:Boolean.FALSE)]]></printWhenExpression>
+			<subreport>
+				<reportElement x="370" y="0" width="382" height="24"/>
+				<subreportParameter name="TEST_ID">
+					<subreportParameterExpression><![CDATA[$F{t_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA["testReflex.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="24">
+			<printWhenExpression><![CDATA[("FD".equals($P{DETAIL})?Boolean.TRUE:Boolean.FALSE)]]></printWhenExpression>
+			<subreport>
+				<reportElement x="370" y="0" width="382" height="24"/>
+				<subreportParameter name="TEST_ID">
+					<subreportParameterExpression><![CDATA[$F{t_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA["testPrep.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>
