@@ -1,56 +1,174 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="testResult" language="groovy" pageWidth="382" pageHeight="36" orientation="Landscape" columnWidth="382" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="testResult_testResult" language="groovy" pageWidth="392" pageHeight="24" orientation="Landscape" columnWidth="392" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.zoom" value="3.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="TEST_ID" class="java.lang.Integer"/>
+	<parameter name="RESULT_GROUP" class="java.lang.Integer"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["/auto/home/akampoow/workspace/OpenELIS-EJB/src/org/openelis/report/test/"]]></defaultValueExpression>
 	</parameter>
-	<queryString language="SQL">
-		<![CDATA[SELECT DISTINCT
-     t.id t_id,  tr.test_id tr_test_id,  tr.result_group tr_result_group
+	<parameter name="TEST_RESULT_VALUE" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+     tr.test_id tr_test_id, tr.result_group tr_result_group, tr.sort_order tr_sort_order,
+     tr.type_id tr_type_id, tr.value tr_value, tr.significant_digits tr_significant_digits,
+     d1.entry d1_entry, d1.system_name d1_system_name, d2.entry d2_entry
 FROM
-     test_result tr,  test t
+     test_result tr, dictionary d1,  outer dictionary d2
 WHERE
-    t.id = $P{TEST_ID} AND tr.test_id = t.id]]>
+   tr.test_id = $P{TEST_ID}  AND  tr.type_id = d1.id AND
+   tr.unit_of_measure_id = d2.id
+
+Order BY tr.result_group, tr.sort_order]]>
 	</queryString>
-	<field name="t_id" class="java.lang.Integer"/>
 	<field name="tr_test_id" class="java.lang.Integer"/>
 	<field name="tr_result_group" class="java.lang.Integer"/>
+	<field name="tr_sort_order" class="java.lang.Integer"/>
+	<field name="tr_type_id" class="java.lang.Integer"/>
+	<field name="tr_value" class="java.lang.String"/>
+	<field name="tr_significant_digits" class="java.lang.Integer"/>
+	<field name="d1_entry" class="java.lang.String"/>
+	<field name="d1_system_name" class="java.lang.String"/>
+	<field name="d2_entry" class="java.lang.String"/>
 	<columnHeader>
-		<band/>
+		<band height="12" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="170" y="0" width="175" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement>
+					<font size="8" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[Value]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="20" y="0" width="70" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement>
+					<font size="8" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[ Unit of measure]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="95" y="0" width="70" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement>
+					<font size="8" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="350" y="0" width="42" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement>
+					<font size="8" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[Sig.digits]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="15" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement>
+					<font size="8" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[ #]]></text>
+			</staticText>
+		</band>
 	</columnHeader>
 	<detail>
-		<band height="36" splitType="Stretch">
+		<band height="12" splitType="Stretch">
 			<textField isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToBandHeight" x="0" y="12" width="75" height="24"/>
+				<reportElement x="95" y="0" width="70" height="12"/>
 				<box>
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
-				<textElement textAlignment="Right">
+				<textElement>
+					<font size="8" isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{d1_entry}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="20" y="0" width="70" height="12"/>
+				<box>
+					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
+				</box>
+				<textElement>
+					<font size="8" isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{d2_entry}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="170" y="0" width="175" height="12">
+					<printWhenExpression><![CDATA[!"test_res_type_dictionary".equals($F{d1_system_name})]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
+				</box>
+				<textElement>
+					<font size="8" isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{tr_value}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="350" y="0" width="42" height="12"/>
+				<box>
+					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
+				</box>
+				<textElement>
+					<font size="8" isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{tr_significant_digits}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="170" y="0" width="175" height="12">
+					<printWhenExpression><![CDATA["test_res_type_dictionary".equals($F{d1_system_name})]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="TEST_RESULT_VALUE">
+					<subreportParameterExpression><![CDATA[$F{tr_value}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA["dictionaryLookUp.jasper"]]></subreportExpression>
+			</subreport>
+			<textField isBlankWhenNull="true">
+				<reportElement isPrintRepeatedValues="false" x="0" y="0" width="15" height="12"/>
+				<textElement>
 					<font size="8" isItalic="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{tr_result_group}]]></textFieldExpression>
 			</textField>
-			<subreport>
-				<reportElement x="86" y="12" width="296" height="24"/>
-				<subreportParameter name="RESULT_GROUP">
-					<subreportParameterExpression><![CDATA[$F{tr_result_group}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="TEST_ID">
-					<subreportParameterExpression><![CDATA[$F{t_id}]]></subreportParameterExpression>
-				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression class="java.lang.String"><![CDATA["testResult_testResult.jasper"]]></subreportExpression>
-			</subreport>
-			<staticText>
-				<reportElement mode="Opaque" x="0" y="0" width="382" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
-				<textElement textAlignment="Center">
-					<font size="8" isStrikeThrough="false"/>
-				</textElement>
-				<text><![CDATA[Result Group]]></text>
-			</staticText>
 		</band>
 	</detail>
+	<summary>
+		<band height="12"/>
+	</summary>
 </jasperReport>

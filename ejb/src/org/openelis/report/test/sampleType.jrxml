@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sampleType" language="groovy" pageWidth="382" pageHeight="24" orientation="Landscape" columnWidth="382" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sampleType" language="groovy" pageWidth="392" pageHeight="24" orientation="Landscape" columnWidth="392" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.zoom" value="2.853116706110003"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -16,14 +16,28 @@ where t.test_id = $P{TEST_ID} and
 	<columnHeader>
 		<band height="12">
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="0" width="189" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
+				<reportElement mode="Opaque" x="0" y="0" width="195" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
 				<textElement textAlignment="Justified">
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[ Sample type]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="193" y="0" width="189" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
+				<reportElement mode="Opaque" x="200" y="0" width="192" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
 				<textElement>
 					<font size="8" isStrikeThrough="false"/>
 				</textElement>
@@ -34,7 +48,7 @@ where t.test_id = $P{TEST_ID} and
 	<detail>
 		<band height="12" splitType="Stretch">
 			<textField isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="189" height="12"/>
+				<reportElement x="0" y="0" width="195" height="12"/>
 				<box>
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
@@ -44,7 +58,7 @@ where t.test_id = $P{TEST_ID} and
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{type_entry}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="193" y="0" width="189" height="12"/>
+				<reportElement x="200" y="0" width="192" height="12"/>
 				<box>
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
@@ -55,4 +69,7 @@ where t.test_id = $P{TEST_ID} and
 			</textField>
 		</band>
 	</detail>
+	<summary>
+		<band height="12"/>
+	</summary>
 </jasperReport>
