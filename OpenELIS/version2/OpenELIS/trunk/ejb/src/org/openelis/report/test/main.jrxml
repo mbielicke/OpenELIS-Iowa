@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="test" language="groovy" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
-	<property name="ireport.zoom" value="3.0"/>
-	<property name="ireport.x" value="566"/>
-	<property name="ireport.y" value="203"/>
+	<property name="ireport.zoom" value="1.1566298682885958"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
 	<property name="ireport.callouts" value="##Tue Sep 21 15:30:40 CDT 2010"/>
 	<parameter name="USER_NAME" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["demo"]]></defaultValueExpression>
@@ -78,17 +78,17 @@ ORDER BY s_name, t_name, m_name]]>
 				<text><![CDATA[ Test name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="235" y="0" width="125" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<reportElement mode="Opaque" x="230" y="0" width="125" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 				<textElement/>
 				<text><![CDATA[ Method name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="370" y="0" width="382" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<reportElement mode="Opaque" x="360" y="0" width="392" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 				<textElement/>
 				<text><![CDATA[ Test description]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="0" width="90" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<reportElement mode="Opaque" x="0" y="0" width="95" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 				<textElement/>
 				<text><![CDATA[ Section]]></text>
 			</staticText>
@@ -102,17 +102,17 @@ ORDER BY s_name, t_name, m_name]]>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{t_name}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="370" y="0" width="382" height="12"/>
+				<reportElement x="360" y="0" width="392" height="12"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{t_description}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="235" y="0" width="125" height="12"/>
+				<reportElement x="230" y="0" width="125" height="12"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{m_name}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement isPrintRepeatedValues="false" x="0" y="0" width="90" height="12"/>
+				<reportElement isPrintRepeatedValues="false" x="0" y="0" width="95" height="12"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{s_name}]]></textFieldExpression>
 			</textField>
@@ -120,7 +120,7 @@ ORDER BY s_name, t_name, m_name]]>
 		<band height="12">
 			<printWhenExpression><![CDATA[("BC".equals($P{DETAIL})?Boolean.TRUE:Boolean.FALSE)]]></printWhenExpression>
 			<subreport>
-				<reportElement x="370" y="0" width="382" height="11" isRemoveLineWhenBlank="true"/>
+				<reportElement x="230" y="0" width="522" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="TEST_ID">
 					<subreportParameterExpression><![CDATA[$F{t_id}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -128,54 +128,42 @@ ORDER BY s_name, t_name, m_name]]>
 				<subreportExpression class="java.lang.String"><![CDATA["sampleTypeBarcode.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
-		<band height="24">
+		<band height="60">
 			<printWhenExpression><![CDATA[("FD".equals($P{DETAIL})?Boolean.TRUE:Boolean.FALSE)]]></printWhenExpression>
 			<subreport>
-				<reportElement x="370" y="0" width="382" height="24" isRemoveLineWhenBlank="true"/>
+				<reportElement positionType="Float" x="230" y="0" width="522" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="TEST_ID">
 					<subreportParameterExpression><![CDATA[$F{t_id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA["sampleType.jasper"]]></subreportExpression>
 			</subreport>
-		</band>
-		<band height="24">
-			<printWhenExpression><![CDATA[("FD".equals($P{DETAIL})?Boolean.TRUE:Boolean.FALSE)]]></printWhenExpression>
 			<subreport>
-				<reportElement x="370" y="0" width="382" height="24" isRemoveLineWhenBlank="true"/>
+				<reportElement positionType="Float" x="230" y="12" width="522" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="TEST_ID">
 					<subreportParameterExpression><![CDATA[$F{t_id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA["testAnalyte.jasper"]]></subreportExpression>
 			</subreport>
-		</band>
-		<band height="36">
-			<printWhenExpression><![CDATA[("FD".equals($P{DETAIL})?Boolean.TRUE:Boolean.FALSE)]]></printWhenExpression>
 			<subreport>
-				<reportElement x="370" y="0" width="382" height="36"/>
+				<reportElement positionType="Float" x="230" y="24" width="522" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="TEST_ID">
 					<subreportParameterExpression><![CDATA[$F{t_id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA["testResult.jasper"]]></subreportExpression>
 			</subreport>
-		</band>
-		<band height="24">
-			<printWhenExpression><![CDATA[("FD".equals($P{DETAIL})?Boolean.TRUE:Boolean.FALSE)]]></printWhenExpression>
 			<subreport>
-				<reportElement x="370" y="0" width="382" height="24"/>
+				<reportElement positionType="Float" x="230" y="36" width="522" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="TEST_ID">
 					<subreportParameterExpression><![CDATA[$F{t_id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA["testReflex.jasper"]]></subreportExpression>
 			</subreport>
-		</band>
-		<band height="24">
-			<printWhenExpression><![CDATA[("FD".equals($P{DETAIL})?Boolean.TRUE:Boolean.FALSE)]]></printWhenExpression>
 			<subreport>
-				<reportElement x="370" y="0" width="382" height="24"/>
+				<reportElement positionType="Float" x="230" y="48" width="522" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="TEST_ID">
 					<subreportParameterExpression><![CDATA[$F{t_id}]]></subreportParameterExpression>
 				</subreportParameter>
