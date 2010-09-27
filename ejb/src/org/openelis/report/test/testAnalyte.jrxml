@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="testAnalyte" language="groovy" pageWidth="382" pageHeight="36" orientation="Landscape" columnWidth="382" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="TEST_ID" class="java.lang.Integer" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[SELECT
+     a.name a_name,
+     ta.result_group ta_result_group,
+     ta.is_column ta_is_column,
+     t.id t_id,
+     d.entry d_entry
+FROM
+     analyte a,
+     test_analyte ta,
+     test t,
+     dictionary d
+WHERE
+      t.id = $P{TEST_ID} AND ta.test_id = t.id  AND ta.analyte_id = a.id                                         AND ta.type_id = d.id]]>
+	</queryString>
+	<field name="a_name" class="java.lang.String"/>
+	<field name="ta_result_group" class="java.lang.Integer"/>
+	<field name="ta_is_column" class="java.lang.String"/>
+	<field name="t_id" class="java.lang.Integer"/>
+	<field name="d_entry" class="java.lang.String"/>
+	<columnHeader>
+		<band height="12">
+			<staticText>
+				<reportElement mode="Opaque" x="204" y="0" width="92" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
+				<textElement>
+					<font size="8" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[Result Group]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="189" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
+				<textElement textAlignment="Justified">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Analyte]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="307" y="0" width="77" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
+				<textElement>
+					<font size="8" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[Type]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="12" splitType="Stretch">
+			<printWhenExpression><![CDATA["N".equals($F{ta_is_column})]]></printWhenExpression>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="189" height="12"/>
+				<box>
+					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
+				</box>
+				<textElement>
+					<font size="8" isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{a_name}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="204" y="0" width="92" height="12"/>
+				<box>
+					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
+				</box>
+				<textElement>
+					<font size="8" isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{ta_result_group}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="307" y="0" width="77" height="11"/>
+				<box>
+					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
+				</box>
+				<textElement>
+					<font size="8" isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{d_entry}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="12">
+			<printWhenExpression><![CDATA["Y".equals($F{ta_is_column})]]></printWhenExpression>
+			<textField isBlankWhenNull="true">
+				<reportElement x="307" y="0" width="77" height="11"/>
+				<box>
+					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
+				</box>
+				<textElement>
+					<font size="8" isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{d_entry}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="204" y="0" width="92" height="12"/>
+				<box>
+					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
+				</box>
+				<textElement>
+					<font size="8" isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{ta_result_group}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="50" y="0" width="139" height="12"/>
+				<box>
+					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
+				</box>
+				<textElement>
+					<font size="8" isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{a_name}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
