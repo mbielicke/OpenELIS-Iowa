@@ -1084,33 +1084,26 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
     protected void onOrderLookupClick() {
         Integer id;
         OrderManager man;
-        
+
         man = null;
-        if (state == State.DISPLAY) {
+        id = manager.getSample().getOrderId();
+        if (id == null) {
             man = OrderManager.getInstance();
-        } else if (state == State.UPDATE || state == State.ADD) {
-            id  = manager.getSample().getOrderId();
-            if (id == null) {
-                man = OrderManager.getInstance();
-            } else { 
-                try {
-                    man = OrderManager.fetchById(id);
-                    if (!OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType())) {
-                        orderNumber.addException(new LocalizedException("orderIdInvalidException"));
-                        return;
-                    }
-                } catch (NotFoundException e) {
-                    orderNumber.addException(new LocalizedException("orderIdInvalidException"));            
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                    e.printStackTrace();                      
-                }
-            }
-            
         } else {
-            return;
+            try {
+                man = OrderManager.fetchById(id);
+                if ( !OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType())) {
+                    orderNumber.addException(new LocalizedException("orderIdInvalidException"));
+                    return;
+                }
+            } catch (NotFoundException e) {
+                orderNumber.addException(new LocalizedException("orderIdInvalidException"));
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                e.printStackTrace();
+            }
         }
-        
+
         if (man != null)
             showOrder(man);
     }
