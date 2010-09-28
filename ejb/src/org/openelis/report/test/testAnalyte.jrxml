@@ -9,6 +9,7 @@
      a.name a_name,
      ta.result_group ta_result_group,
      ta.is_column ta_is_column,
+     ta.is_reportable ta_is_reportable,
      t.id t_id,
      d.entry d_entry
 FROM
@@ -17,11 +18,12 @@ FROM
      test t,
      dictionary d
 WHERE
-      t.id = $P{TEST_ID} AND ta.test_id = t.id  AND ta.analyte_id = a.id                                         AND ta.type_id = d.id]]>
+      t.id = $P{TEST_ID} AND ta.test_id = t.id  AND ta.analyte_id = a.id AND ta.type_id = d.id order by ta.row_group , ta.sort_order ]]>
 	</queryString>
 	<field name="a_name" class="java.lang.String"/>
 	<field name="ta_result_group" class="java.lang.Integer"/>
 	<field name="ta_is_column" class="java.lang.String"/>
+	<field name="ta_is_reportable" class="java.lang.String"/>
 	<field name="t_id" class="java.lang.Integer"/>
 	<field name="d_entry" class="java.lang.String"/>
 	<columnHeader>
@@ -117,6 +119,16 @@ WHERE
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{d_entry}]]></textFieldExpression>
 			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="275" y="0" width="45" height="12"/>
+				<box>
+					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
+				</box>
+				<textElement>
+					<font size="8" isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{ta_is_reportable}]]></textFieldExpression>
+			</textField>
 		</band>
 		<band height="12">
 			<printWhenExpression><![CDATA["Y".equals($F{ta_is_column})]]></printWhenExpression>
@@ -149,6 +161,16 @@ WHERE
 					<font size="8" isItalic="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{a_name}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="275" y="0" width="45" height="12"/>
+				<box>
+					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
+				</box>
+				<textElement>
+					<font size="8" isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{ta_is_reportable}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
