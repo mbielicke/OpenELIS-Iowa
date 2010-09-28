@@ -99,7 +99,6 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
         errorsList = new ValidationErrorsList();
         wellMan = (SamplePrivateWellManager)manager.getDomainManager();
         reportToLoaded = wellMan.getPrivateWell().getOrganizationId() != null;
-        reportToLoaded = false;
         reportToError = false;
 
         // aux data
@@ -267,7 +266,7 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
 
     protected void loadReportToBillTo(Integer orderId, SampleManager man) throws Exception {
         OrderViewDO data;
-        OrganizationDO org;
+        OrganizationDO reportTo, org;
         SamplePrivateWellManager wellMan;
         SamplePrivateWellViewDO privateWell;
         SampleOrganizationViewDO billTo;
@@ -279,12 +278,13 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
         wellMan = (SamplePrivateWellManager)man.getDomainManager();
         privateWell = wellMan.getPrivateWell();
         data = orderMan.getOrder();
-        org = data.getReportTo();
+        reportTo = data.getReportTo();
+        org = data.getOrganization();
 
-        if (org != null) {
-            privateWell.setOrganizationId(org.getId());
-            privateWell.getOrganization().setName(org.getName());
-        } else {
+        if (reportTo != null) {
+            privateWell.setOrganizationId(reportTo.getId());
+            privateWell.getOrganization().setName(reportTo.getName());
+        } else if (org == null){
             privateWell.setOrganizationId(null);
         }
 

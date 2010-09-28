@@ -57,15 +57,14 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.SampleDataBundle;
@@ -1118,12 +1117,10 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
 
             modal.setContent(sendoutOrderScreen);
             sendoutOrderScreen.setManager(orderManager);
-            window.clearStatus();
         } catch (Throwable e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
             window.clearStatus();
-            return;
         }
 
     }
