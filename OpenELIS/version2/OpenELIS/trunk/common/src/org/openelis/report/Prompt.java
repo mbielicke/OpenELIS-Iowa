@@ -42,7 +42,7 @@ public class Prompt implements RPC {
     protected String          name, prompt, type, mask, shift, defaultValue;
     protected Integer         length, width;
     protected Object          optionList[];
-    protected boolean         required, hidden;
+    protected boolean         required, hidden, multiSelect;
 
     public static final String TYPE_ARRAY = "array", TYPE_ARRAYMULTI = "arraymulti",
                                TYPE_CHECK = "check", TYPE_SHORT = "short",
@@ -61,7 +61,7 @@ public class Prompt implements RPC {
     public static final String SHIFT_UPPER  = "upper", SHIFT_LOWER = "lower";
 
     /**
-     * Contructors
+     * Constructors
      */
 
     public Prompt(String name) {
@@ -182,6 +182,18 @@ public class Prompt implements RPC {
         return this;
     }
 
+    /**
+     * get/set the multiSelect option for OptionList
+     */
+    public Prompt setMutiSelect(boolean multiSelect) {
+        this.multiSelect = multiSelect;
+        return this;
+    }
+    
+    public boolean getMultiSelect() {
+        return multiSelect;
+    }
+    
     /**
      * get/set the default response value.
      */

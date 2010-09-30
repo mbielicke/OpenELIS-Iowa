@@ -64,9 +64,9 @@ public class ResultRangeNumeric implements ResultRange {
         double d;
         boolean contains;
 
-        if(value.startsWith(">") || value.startsWith("<"))
+        if (value.startsWith(">") || value.startsWith("<"))
             value = value.substring(1);
-        
+
         try {
             d = Double.parseDouble(value);
             contains = d >= min && d < max;
