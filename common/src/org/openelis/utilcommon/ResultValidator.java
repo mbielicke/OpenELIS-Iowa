@@ -172,17 +172,20 @@ public class ResultValidator implements RPC {
             dictUnit = dictionary.get(0);
         }
 
+        // look in dictionary first
         if (dictUnit != null) {
             id = dictUnit.get(value);
             if (id != null)
                 return id;
         }
 
+        // match the first any range
         if (list != null) {
             for (Item item : list) {
                 try {
                     item.resultRange.contains(value);
                     id = item.id;
+                    break;
                 } catch (Exception e) {
                     // ignore it
                 }
@@ -195,6 +198,14 @@ public class ResultValidator implements RPC {
         throw new ParseException("illegalResultValueException");
     }
 
+    /**
+     * Formats the result based on rounding and significant digits
+     */
+    public String format(Integer id, String value) throws ParseException {
+        
+        return null;
+    }
+    
     /**
      * This method returns a list of valid result ranges suitable for tooltip.
      */
@@ -284,6 +295,7 @@ public class ResultValidator implements RPC {
     public boolean noUnitsSpecified() {
         int unitsSize, dictUnitsSize, defaultsSize;
         boolean unitsNoUnits, dictNoUnits, defaultsNoUnits;
+
         unitsSize = units.size();
         dictUnitsSize = dictionary.size();
         defaultsSize = defaults.size();
