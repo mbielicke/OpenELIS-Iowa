@@ -7,5 +7,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Lib"/>
 	<classpathentry kind="lib" path="/OpenELIS-GWT/war/WEB-INF/classes"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="/libraries/lib/barbecue-1.0.6b.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
