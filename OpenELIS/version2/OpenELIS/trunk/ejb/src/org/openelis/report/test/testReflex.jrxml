@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="testReflex" language="groovy" pageWidth="382" pageHeight="24" orientation="Landscape" columnWidth="382" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="testReflex" language="groovy" pageWidth="392" pageHeight="24" orientation="Landscape" columnWidth="392" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.zoom" value="3.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -29,28 +29,56 @@ WHERE
 	<columnHeader>
 		<band height="12">
 			<staticText>
-				<reportElement mode="Opaque" x="65" y="0" width="51" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
+				<reportElement mode="Opaque" x="60" y="0" width="50" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
 				<textElement>
 					<font size="8" isStrikeThrough="false"/>
 				</textElement>
 				<text><![CDATA[Method]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="126" y="0" width="65" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
+				<reportElement mode="Opaque" x="115" y="0" width="65" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
 				<textElement>
 					<font size="8" isStrikeThrough="false"/>
 				</textElement>
 				<text><![CDATA[Analyte]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="201" y="0" width="106" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
+				<reportElement mode="Opaque" x="185" y="0" width="130" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
 				<textElement>
 					<font size="8" isStrikeThrough="false"/>
 				</textElement>
 				<text><![CDATA[Result]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="314" y="0" width="68" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
+				<reportElement mode="Opaque" x="320" y="0" width="72" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
 				<textElement>
 					<font size="8" isStrikeThrough="false"/>
 				</textElement>
@@ -58,6 +86,13 @@ WHERE
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="0" y="0" width="55" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
 				<textElement>
 					<font size="8" isStrikeThrough="false"/>
 				</textElement>
@@ -78,7 +113,7 @@ WHERE
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{xt_name}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="65" y="0" width="51" height="12"/>
+				<reportElement x="60" y="0" width="50" height="12"/>
 				<box>
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
@@ -88,7 +123,7 @@ WHERE
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{m_name}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="201" y="0" width="106" height="12">
+				<reportElement x="185" y="0" width="130" height="12">
 					<printWhenExpression><![CDATA[!"test_res_type_dictionary".equals($F{d1_system_name})]]></printWhenExpression>
 				</reportElement>
 				<box>
@@ -100,7 +135,7 @@ WHERE
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{tr_value}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="126" y="0" width="65" height="12"/>
+				<reportElement x="115" y="0" width="65" height="12"/>
 				<box>
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
@@ -110,7 +145,7 @@ WHERE
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{a_name}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="314" y="0" width="68" height="12"/>
+				<reportElement x="320" y="0" width="72" height="12"/>
 				<box>
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
@@ -120,7 +155,7 @@ WHERE
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{d_entry}]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement x="201" y="0" width="106" height="12">
+				<reportElement x="185" y="0" width="130" height="12">
 					<printWhenExpression><![CDATA["test_res_type_dictionary".equals($F{d1_system_name})]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="TEST_RESULT_VALUE">
@@ -131,4 +166,7 @@ WHERE
 			</subreport>
 		</band>
 	</detail>
+	<summary>
+		<band height="12"/>
+	</summary>
 </jasperReport>

@@ -5,7 +5,7 @@
 	<property name="ireport.y" value="0"/>
 	<parameter name="TEST_ID" class="java.lang.Integer" isForPrompting="false"/>
 	<queryString>
-		<![CDATA[SELECT d1.entry type_entry, d2.entry unit_entry
+		<![CDATA[SELECT d1.entry type_entry, d2.entry unit_entry, t.type_of_sample_id t_type_of_sample_id
 FROM test_type_of_sample t, outer dictionary d1, outer dictionary d2
 where t.test_id = $P{TEST_ID} and
            t.type_of_sample_id = d1.id and
@@ -13,12 +13,13 @@ where t.test_id = $P{TEST_ID} and
 	</queryString>
 	<field name="type_entry" class="java.lang.String"/>
 	<field name="unit_entry" class="java.lang.String"/>
+	<field name="t_type_of_sample_id" class="java.lang.Integer"/>
 	<detail>
 		<band height="24" splitType="Stretch">
 			<componentElement>
 				<reportElement x="1" y="0" width="101" height="12"/>
 				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="3of9" drawText="false" checksumRequired="false">
-					<jr:codeExpression><![CDATA[$P{TEST_ID}+"P"]]></jr:codeExpression>
+					<jr:codeExpression><![CDATA[$F{t_type_of_sample_id}]]></jr:codeExpression>
 				</jr:barbecue>
 			</componentElement>
 			<textField isBlankWhenNull="true">
