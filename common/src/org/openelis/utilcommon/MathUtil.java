@@ -47,5 +47,14 @@ public class MathUtil {
         
         return true;
     }
+    
+    public static String getSignificantDigits(String value, int numDigits) throws NumberFormatException{
+        SignificantFigures fig;
+        
+        fig = new SignificantFigures(value);      
+        fig.setNumberSignificantFigures(numDigits);
+        
+        return fig.toString();
+    }
 
 }
