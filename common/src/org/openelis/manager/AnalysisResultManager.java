@@ -271,7 +271,11 @@ public class AnalysisResultManager implements RPC {
 
     public Integer validateResultValue(Integer resultGroup, Integer unitId, String value)
                                                                                          throws Exception {
-        return resultValidators.get(resultGroup.intValue() - 1).validate(unitId, value);
+        return resultValidators.get(resultGroup.intValue() - 1).validate(unitId, value);        
+    }
+    
+    public String formatResultValue(Integer resultGroup, Integer unitId, Integer testResultId, String value) throws Exception {
+        return resultValidators.get(resultGroup.intValue() - 1).format(unitId, testResultId, value);        
     }
 
     public String getDefaultValue(Integer resultGroup, Integer unitOfMeasureId) {

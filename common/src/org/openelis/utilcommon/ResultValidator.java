@@ -28,6 +28,7 @@ package org.openelis.utilcommon;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.RPC;
@@ -43,7 +44,12 @@ public class ResultValidator implements RPC {
     private HashMap<Integer, String>                   defaults;
 
     public enum Type {
-        DATE, DATE_TIME, TIME, DICTIONARY, NUMERIC, TITER, ALPHA_LOWER, ALPHA_MIXED, ALPHA_UPPER, DEFAULT
+        DATE, DATE_TIME, TIME, DICTIONARY, NUMERIC, TITER, ALPHA_LOWER, 
+        ALPHA_MIXED, ALPHA_UPPER, DEFAULT
+    };
+    
+    public enum RoundingMethod {
+        EPA_METHOD
     };
 
     public ResultValidator() {
@@ -65,8 +71,8 @@ public class ResultValidator implements RPC {
      *        the string representation of valid range
      * @throws Exception
      */
-    public void addResult(Integer id, Integer unitId, Type type, String validRange)
-                                                                                   throws Exception {
+    public void addResult(Integer id, Integer unitId, Type type, RoundingMethod roundingMethod,
+                          Integer significantDigits, String validRange) throws Exception {
         Item item;
         ArrayList<Item> list;
         HashMap<String, Integer> dictUnit;
@@ -96,6 +102,8 @@ public class ResultValidator implements RPC {
         item = new Item();
         item.id = id;
         item.type = type;
+        item.roundingMethod = roundingMethod;
+        item.significantDigits = significantDigits;
 
         switch (type) {
             case NUMERIC:
@@ -185,7 +193,6 @@ public class ResultValidator implements RPC {
                 try {
                     item.resultRange.contains(value);
                     id = item.id;
-                    break;
                 } catch (Exception e) {
                     // ignore it
                 }
@@ -201,9 +208,46 @@ public class ResultValidator implements RPC {
     /**
      * Formats the result based on rounding and significant digits
      */
-    public String format(Integer id, String value) throws ParseException {
+    public String format(Integer unitId, Integer testResultId, String value) throws NumberFormatException {
+        ArrayList<Item> list;        
+        Double temp;
         
-        return null;
+        if (value == null)
+            return value;
+        
+        if (value.startsWith(">") || value.startsWith("<"))
+            value = value.substring(1);
+        
+        if (unitId == null)
+            unitId = 0;
+
+        //
+        // first check to see if we have unit specific validator; use
+        // null units (0) for all the other units
+        //
+        list = units.get(unitId);
+        if (list == null) 
+            list = units.get(0);        
+        
+        // match the first any range
+        if (list != null) {
+            for (Item item : list) {                
+                if (item.id.equals(testResultId)) {
+                    if(Type.ALPHA_UPPER.equals(item.type)) {
+                        return value.toUpperCase();
+                    } else if(Type.ALPHA_LOWER.equals(item.type)) {
+                        return value.toLowerCase();
+                    } else if(Type.NUMERIC.equals(item.type) && RoundingMethod.EPA_METHOD.equals(item.roundingMethod)) {
+                        temp = Double.valueOf(value);
+                        value = String.valueOf(Math.round(temp));
+                        if (item.significantDigits != null)
+                            value = SignificantFigures.format(value, item.significantDigits);                        
+                        return value;                        
+                    }
+                }                
+            }
+        }
+        return value;
     }
     
     /**
@@ -310,8 +354,9 @@ public class ResultValidator implements RPC {
     static class Item implements RPC {
         private static final long serialVersionUID = 1L;
 
-        Integer                   id;
+        Integer                   id, significantDigits;
         Type                      type;
+        RoundingMethod            roundingMethod;
         ResultRange               resultRange;
     }
 }

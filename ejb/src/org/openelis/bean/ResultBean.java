@@ -50,6 +50,7 @@ import org.openelis.local.DictionaryLocal;
 import org.openelis.local.ResultLocal;
 import org.openelis.manager.AnalysisResultManager.TestAnalyteListItem;
 import org.openelis.utilcommon.ResultValidator;
+import org.openelis.utilcommon.ResultValidator.RoundingMethod;
 import org.openelis.utilcommon.ResultValidator.Type;
 
 @Stateless
@@ -63,7 +64,8 @@ public class ResultBean implements ResultLocal {
     private DictionaryLocal dictionary;
 
     private static int  typeDictionary, typeNumeric, typeTiter, typeDate, typeDateTime, typeTime,
-                    typeDefault, typeAlphaLower, typeAlphaUpper, typeAlphaMixed, supplementalTypeId;
+                        typeDefault, typeAlphaLower, typeAlphaUpper, typeAlphaMixed, supplementalTypeId,
+                        epaMethodId;
 
     @PostConstruct
     public void init() {
@@ -176,6 +178,16 @@ public class ResultBean implements ResultLocal {
             } catch (Throwable e) {
                 e.printStackTrace();
                 supplementalTypeId = 0;
+            }
+        }
+        
+        if (epaMethodId == 0) {
+            try {
+                data = dictionary.fetchBySystemName("round_epa");
+                epaMethodId = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                epaMethodId = 0;
             }
         }
     }
@@ -505,11 +517,12 @@ public class ResultBean implements ResultLocal {
 
     private void createTestResultHash(List<TestResultDO> testResultList,
                                       ArrayList<ResultValidator> resultValidators) {
-        Integer rg, typeId;
+        Integer rg, typeId, rndgMethodId;
         String validRange;
         ResultValidator rv;
         TestResultDO data;
         Type type;
+        RoundingMethod method;
         DictionaryDO dict;
         
         
@@ -530,6 +543,7 @@ public class ResultBean implements ResultLocal {
 
                 // need to figure this out by type id
                 typeId = data.getTypeId();
+                
                 if(DataBaseUtil.isSame(typeDictionary, typeId)) {
                     type = Type.DICTIONARY;
                     
@@ -565,7 +579,13 @@ public class ResultBean implements ResultLocal {
                     validRange = data.getValue();
                 }
                 
-                rv.addResult(data.getId(), data.getUnitOfMeasureId(), type, validRange);
+                method = null;
+                rndgMethodId = data.getRoundingMethodId(); 
+                if (DataBaseUtil.isSame(epaMethodId, rndgMethodId))
+                    method = RoundingMethod.EPA_METHOD;
+                
+                rv.addResult(data.getId(), data.getUnitOfMeasureId(), type, method, 
+                             data.getSignificantDigits(), validRange);
             }
         } catch (Exception e) {
             resultValidators.clear();

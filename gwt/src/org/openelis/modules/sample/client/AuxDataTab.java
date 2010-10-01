@@ -33,8 +33,8 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
-import org.openelis.domain.IdNameVO;
 import org.openelis.exception.ParseException;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.data.QueryData;
@@ -86,14 +86,13 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
     protected TextBox               auxMethod, auxUnits, auxDesc;
     protected AutoComplete<Integer> ac, auxField;
     protected Integer               alphaLowerId, alphaUpperId, alphaMixedId, timeId, numericId,
-                    dateId, dateTimeId, dictionaryId;
+                                    dateId, dateTimeId, dictionaryId;
     protected boolean               queryFieldEntered;
     protected HasAuxDataInt         parentMan;
     protected AuxDataManager        manager;
 
     public AuxDataTab(ScreenDefInt def, ScreenWindow window) {
-        service = new ScreenService(
-                                    "OpenELISServlet?service=org.openelis.modules.auxiliary.server.AuxiliaryService");
+        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.auxiliary.server.AuxiliaryService");
         setDefinition(def);
         setWindow(window);
 
@@ -150,6 +149,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                 AuxDataViewDO data;
                 AuxFieldViewDO fieldDO;
                 AuxDataBundle adb;
+                ResultValidator rv;
 
                 r = event.getRow();
                 c = event.getCol();
@@ -178,7 +178,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                     case 2:
                         row = auxValsTable.getRow(r);
                         adb = (AuxDataBundle)row.data;
-                        ResultValidator rv = adb.validator;
+                        rv = adb.validator;
                         fieldDO = (AuxFieldViewDO)adb.fieldDO;
                         data.setValue(getCorrectManValueByType(val, fieldDO.getTypeId()));
 
@@ -186,9 +186,8 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                             try {
                                 auxValsTable.clearCellExceptions(r, c);
                                 
-                                if(val != null && !"".equals(val))
-                                    rv.validate(null, getCorrectManValueByType(val, fieldDO.getTypeId()));
-                                
+                                if(!DataBaseUtil.isEmpty(val)) 
+                                    rv.validate(null, getCorrectManValueByType(val, fieldDO.getTypeId()));                                                                                                   
                             } catch (ParseException e) {
                                 auxValsTable.setCellException(r, c, e);
                             } catch (Exception e) {
@@ -481,9 +480,10 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
     }
 
     private ResultValidator getDataItemForRow(Integer typeId, ArrayList<AuxFieldValueViewDO> values) {
-        ResultValidator rv = new ResultValidator();
+        ResultValidator rv;
         AuxFieldValueViewDO af;
 
+        rv = new ResultValidator();
         // we only need to validate numerics and times because the widget will
         // validate everything else
         if (numericId.equals(typeId) || timeId.equals(typeId)) {
@@ -491,9 +491,9 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                 for (int i = 0; i < values.size(); i++ ) {
                     af = values.get(i);
                     if (numericId.equals(typeId))
-                        rv.addResult(af.getId(), null, Type.NUMERIC, af.getValue());
+                        rv.addResult(af.getId(), null, Type.NUMERIC, null, null, af.getValue());
                     else
-                        rv.addResult(af.getId(), null, Type.TIME, af.getValue());
+                        rv.addResult(af.getId(), null, Type.TIME, null, null, af.getValue());
                 }
             } catch (Exception e) {
                 Window.alert(e.getMessage());
