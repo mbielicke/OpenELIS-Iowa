@@ -260,8 +260,10 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
                         data.setTypeId(testResult.getTypeId());
                         data.setTestResultId(testResult.getId());
-                        //if it's alpha we need to set it to the right case
-                        val = formatValue(testResult, val);
+                        //if it's alpha we need to set it to the right case                        
+                        val = manager.formatResultValue(data.getResultGroup(),
+                                                          analysis.getUnitOfMeasureId(), testResultId, val);
+                        //val = formatValue(testResult, val);
                         data.setValue(val);
                         testResultsTable.setCell(row, col, val);
 
@@ -329,14 +331,17 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                         val = getDefaultValue(data, analysis.getUnitOfMeasureId());
                         testResultsTable.setCell(index, i, val);   
                         
-                        if (val != null && !"".equals(val)) {
+                        if (!DataBaseUtil.isEmpty(val)) {
                             data.setValue(val);
                             displayManager.validateResultValue(manager, data,
                                                                analysis.getUnitOfMeasureId());
                             
                             testResult = displayManager.validateResultValue(manager, data,
                                                                analysis.getUnitOfMeasureId());
-                            val = formatValue(testResult, val);
+                            //val = formatValue(testResult, val);
+                            val = manager.formatResultValue(data.getResultGroup(),
+                                                            analysis.getUnitOfMeasureId(),
+                                                            testResult.getId(), val);
                             data.setValue(val);
                             testResultsTable.setCell(index, i, val);   
                         }
@@ -520,7 +525,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                     val = resultDO.getValue();
                     row.cells.get(c + 2).setValue(val);
 
-                    if (validateResults && val != null && !"".equals(val)) {
+                    if (validateResults && !DataBaseUtil.isEmpty(val)) {
                         resultDO.setValue(val);
                         testResult = displayManager.validateResultValue(manager, resultDO,
                                                            analysis.getUnitOfMeasureId());

@@ -28,6 +28,7 @@ package org.openelis.report;
 
 import java.util.List;
 
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.RPC;
 
 /**
@@ -44,21 +45,18 @@ public class Prompt implements RPC {
     protected Object          optionList[];
     protected boolean         required, hidden, multiSelect;
 
-    public static final String TYPE_ARRAY = "array", TYPE_ARRAYMULTI = "arraymulti",
-                               TYPE_CHECK = "check", TYPE_SHORT = "short",
-                               TYPE_INTEGER = "integer", TYPE_STRING = "string",
-                               TYPE_FLOAT = "float", TYPE_DOUBLE = "double",
-                               TYPE_BIGDECIMAL = "bigdecimal", TYPE_MONEY = "money",
-                               TYPE_DATETIME = "datetime";
+    public enum Type {
+          ARRAY, ARRAYMULTI, CHECK, SHORT, INTEGER, STRING, FLOAT, DOUBLE, 
+          BIGDECIMAL, MONEY, DATETIME
+    };
 
-    public static final String OPTION_DATETIME_YEAR = "year",
-                               OPTION_DATETIME_MONTH = "month",
-                               OPTION_DATETIME_DAY = "day",
-                               OPTION_DATETIME_HOUR = "hour",
-                               OPTION_DATETIME_MINUTE = "minute",
-                               OPTION_DATETIME_SECOND = "second";
+    public enum OPTION_DATETIME { 
+        YEAR, MONTH, DAY, HOUR, MINUTE, SECOND
+    };
 
-    public static final String SHIFT_UPPER  = "upper", SHIFT_LOWER = "lower";
+    public enum SHIFT {
+        UPPER, LOWER
+    };
 
     /**
      * Constructors
@@ -81,7 +79,7 @@ public class Prompt implements RPC {
     }
 
     public Prompt setName(String name) {
-        this.name = name;
+        this.name = DataBaseUtil.trim(name);
         return this;
     }
 
@@ -94,7 +92,7 @@ public class Prompt implements RPC {
     }
 
     public Prompt setPrompt(String prompt) {
-        this.prompt = prompt;
+        this.prompt = DataBaseUtil.trim(prompt);
         return this;
     }
 
@@ -157,7 +155,7 @@ public class Prompt implements RPC {
     }
 
     public Prompt setMask(String mask) {
-        this.mask = mask;
+        this.mask = DataBaseUtil.trim(mask);
         return this;
     }
 
@@ -202,7 +200,7 @@ public class Prompt implements RPC {
     }
 
     public Prompt setDefaultValue(String defaultValue) {
-        this.defaultValue = defaultValue;
+        this.defaultValue = DataBaseUtil.trim(defaultValue);
         return this;
     }
 
@@ -234,7 +232,9 @@ public class Prompt implements RPC {
      * Overridden.
      */
     public String toString() {
-        StringBuffer s = new StringBuffer();
+        StringBuffer s;
+        
+        s = new StringBuffer();
 
         s.append('{')
          .append("name=")
