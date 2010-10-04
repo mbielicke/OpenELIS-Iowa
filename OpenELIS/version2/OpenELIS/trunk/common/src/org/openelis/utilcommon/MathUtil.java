@@ -31,6 +31,26 @@ public class MathUtil {
      * equation, value = base ^ n; such that n is a natural number.
      */
     public static boolean isPowerOf(int value, int base) {
-        return (Math.log(value) % Math.log(base)) == 0;
+        double dv, db, quotient;
+        
+        dv = Math.log(value);
+        db = Math.log(base);
+        //
+        // we can't use the operator "%" here because for floating point 
+        // numbers the result of the operation may not be zero even if the result
+        // of using the operator "/" on the same numbers has significant digits
+        // only to the left of the decimal point
+        //
+        quotient = dv/db;
+        
+        //
+        // for a number like 5.34 or 5.0 the method Math.floor(double) returns 5,
+        // so if the following test succeeds then we know that "dv" is a multiple  
+        // of "db" 
+        //
+        if (Math.floor(quotient) == quotient)
+            return true;
+        
+        return false;
     }
 }
