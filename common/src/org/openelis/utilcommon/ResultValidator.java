@@ -28,7 +28,6 @@ package org.openelis.utilcommon;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.RPC;
@@ -210,13 +209,16 @@ public class ResultValidator implements RPC {
      */
     public String format(Integer unitId, Integer testResultId, String value) throws NumberFormatException {
         ArrayList<Item> list;        
-        Double temp;
+        String compOp;
         
         if (value == null)
             return value;
         
-        if (value.startsWith(">") || value.startsWith("<"))
+        compOp = null;
+        if (value.startsWith(">") || value.startsWith("<")) { 
+            compOp = value.substring(0, 1); 
             value = value.substring(1);
+        }
         
         if (unitId == null)
             unitId = 0;
@@ -238,10 +240,10 @@ public class ResultValidator implements RPC {
                     } else if(Type.ALPHA_LOWER.equals(item.type)) {
                         return value.toLowerCase();
                     } else if(Type.NUMERIC.equals(item.type) && RoundingMethod.EPA_METHOD.equals(item.roundingMethod)) {
-                        temp = Double.valueOf(value);
-                        value = String.valueOf(Math.round(temp));
                         if (item.significantDigits != null)
-                            value = SignificantFigures.format(value, item.significantDigits);                        
+                            value = SignificantFigures.format(value, item.significantDigits);  
+                        if (compOp != null)
+                            value = compOp + value ;
                         return value;                        
                     }
                 }                
