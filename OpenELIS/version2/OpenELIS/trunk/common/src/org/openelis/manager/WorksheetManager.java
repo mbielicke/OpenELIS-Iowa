@@ -37,7 +37,7 @@ public class WorksheetManager implements RPC, HasNotesInt {
 
     private static final long      serialVersionUID = 1L;
 
-    protected HashMap<Integer,SampleManager> sampleManagers;
+    protected HashMap<Integer,SampleManager> sampleManagers, lockedManagers;
     protected NoteManager                    notes;
     protected WorksheetDO                    worksheet;
     protected WorksheetItemManager           items;
@@ -53,6 +53,7 @@ public class WorksheetManager implements RPC, HasNotesInt {
         items          = null;
         notes          = null;
         sampleManagers = new HashMap<Integer,SampleManager>();
+        lockedManagers = new HashMap<Integer,SampleManager>();
     }
 
     /**
@@ -135,6 +136,7 @@ public class WorksheetManager implements RPC, HasNotesInt {
                 items = WorksheetItemManager.getInstance();
             
             items.setSampleManagers(sampleManagers);
+            items.setLockedManagers(lockedManagers);
         }
         return items;
     }
@@ -159,6 +161,14 @@ public class WorksheetManager implements RPC, HasNotesInt {
         return notes;
     }
 
+    public HashMap<Integer,SampleManager> getLockedManagers() {
+        return lockedManagers;
+    }
+    
+    HashMap<Integer,SampleManager> getSampleManagers() {
+        return sampleManagers;
+    }
+    
     private static WorksheetManagerProxy proxy() {
         if (proxy == null)
             proxy = new WorksheetManagerProxy();

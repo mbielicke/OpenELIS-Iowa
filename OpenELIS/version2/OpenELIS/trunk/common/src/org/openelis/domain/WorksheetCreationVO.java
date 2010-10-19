@@ -35,25 +35,29 @@ import org.openelis.manager.SampleManager;
 public class WorksheetCreationVO implements RPC {
     private static final long serialVersionUID = 1L;
 
-    protected Integer  analysisId, accessionNumber, priority, testId, timeHolding,
-                       timeTaAverage, preAnalysisId, sectionId, statusId;
+    protected Boolean  hasQaOverride;
+    protected Integer  analysisId, accessionNumber, preAnalysisId, priority, sampleId,
+                       sectionId, statusId, testId, timeHolding, timeTaAverage,
+                       worksheetFormatId;
     protected Long     dueDays;
-    protected String   domain, envDescription, sdwisLocation, privateWellLocation,
-                       testName, methodName;
-    protected Datetime collectionDate, collectionTime, receivedDate, expireDate;
+    protected String   domain, envDescription, methodName, privateWellLocation,
+                       sdwisLocation, testName;
+    protected Datetime collectionDate, collectionTime, expireDate, receivedDate;
 
     public WorksheetCreationVO() {
 
     }
 
     // analysis, accession number, test, method, section, status and received
-    public WorksheetCreationVO(Integer analysisId, String domain, Integer accessionNumber,
-                               Date collectionDate, Date collectionTime, Date receivedDate,
-                               String envDescription, Integer priority, String sdwisLocation,
-                               String privateWellLocation, Integer testId, String testName,
-                               String methodName, Integer timeHolding, Integer timeTaAverage,
-                               Integer sectionId, Integer preAnalysisId, Integer statusId) {
+    public WorksheetCreationVO(Integer analysisId, Integer sampleId, String domain,
+                               Integer accessionNumber, Date collectionDate, Date collectionTime,
+                               Date receivedDate, String envDescription, Integer priority,
+                               String sdwisLocation, String privateWellLocation,
+                               Integer testId, String testName, String methodName,
+                               Integer timeHolding, Integer timeTaAverage, Integer sectionId,
+                               Integer preAnalysisId, Integer statusId, Integer worksheetFormatId) {
         setAnalysisId(analysisId);
+        setSampleId(sampleId);
         setDomain(domain);
         setAccessionNumber(accessionNumber);
         setCollectionDate(DataBaseUtil.toYD(collectionDate));
@@ -71,6 +75,7 @@ public class WorksheetCreationVO implements RPC {
         setSectionId(sectionId);
         setPreAnalysisId(preAnalysisId);
         setStatusId(statusId);
+        setWorksheetFormatId(worksheetFormatId);
     }
 
     public Integer getAnalysisId() {
@@ -81,12 +86,20 @@ public class WorksheetCreationVO implements RPC {
         this.analysisId = analysisId;
     }
 
+    public Integer getSampleId() {
+        return sampleId;
+    }
+
+    public void setSampleId(Integer sampleId) {
+        this.sampleId = sampleId;
+    }
+
     public String getDomain() {
         return domain;
     }
 
     public void setDomain(String domain) {
-        this.domain = domain;
+        this.domain = DataBaseUtil.trim(domain);
     }
 
     public Integer getAccessionNumber() {
@@ -126,7 +139,7 @@ public class WorksheetCreationVO implements RPC {
     }
 
     public void setEnvDescription(String description) {
-        this.envDescription = description;
+        this.envDescription = DataBaseUtil.trim(description);
     }
 
     public String getSDWISLocation() {
@@ -134,7 +147,7 @@ public class WorksheetCreationVO implements RPC {
     }
 
     public void setSDWISLocation(String sdwisLocation) {
-        this.sdwisLocation = sdwisLocation;
+        this.sdwisLocation = DataBaseUtil.trim(sdwisLocation);
     }
 
     public String getPrivateWellLocation() {
@@ -142,7 +155,7 @@ public class WorksheetCreationVO implements RPC {
     }
 
     public void setPrivateWellLocation(String privateWellLocation) {
-        this.privateWellLocation = privateWellLocation;
+        this.privateWellLocation = DataBaseUtil.trim(privateWellLocation);
     }
 
     public String getDescription() {
@@ -188,7 +201,7 @@ public class WorksheetCreationVO implements RPC {
     }
 
     public void setTestName(String testName) {
-        this.testName = testName;
+        this.testName = DataBaseUtil.trim(testName);
     }
 
     public String getMethodName() {
@@ -196,7 +209,7 @@ public class WorksheetCreationVO implements RPC {
     }
 
     public void setMethodName(String methodName) {
-        this.methodName = methodName;
+        this.methodName = DataBaseUtil.trim(methodName);
     }
 
     public Integer getTimeHolding() {
@@ -239,6 +252,14 @@ public class WorksheetCreationVO implements RPC {
         this.statusId = statusId;
     }
 
+    public Integer getWorksheetFormatId() {
+        return worksheetFormatId;
+    }
+
+    public void setWorksheetFormatId(Integer worksheetFormatId) {
+        this.worksheetFormatId = worksheetFormatId;
+    }
+
     public Long getDueDays() {
         return dueDays;
     }
@@ -252,6 +273,14 @@ public class WorksheetCreationVO implements RPC {
     }
 
     public void setExpireDate(Datetime expireDate) {
-        this.expireDate = expireDate;
+        this.expireDate = DataBaseUtil.toYD(expireDate);
+    }
+
+    public Boolean getHasQaOverride() {
+        return hasQaOverride;
+    }
+
+    public void setHasQaOverride(Boolean hasQaOverride) {
+        this.hasQaOverride = hasQaOverride;
     }
 }

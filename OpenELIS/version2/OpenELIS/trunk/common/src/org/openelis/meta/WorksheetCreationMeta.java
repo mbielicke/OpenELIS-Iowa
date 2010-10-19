@@ -43,6 +43,7 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
                                 
                                 WSHT_ANA_WORKSHEET_ANALYSIS_ID = "_worksheetAnalysis.worksheetAnalysisId",
 
+                                SAMP_ID = "_sample.id",
                                 SAMP_DOMAIN = "_sample.domain",
                                 SAMP_ACCESSION_NUMBER = "_sample.accessionNumber",
                                 SAMP_COLLECTION_DATE = "_sample.collectionDate",
@@ -72,6 +73,8 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
                                 ANA_PRE_ANALYSIS_ID = "_analysis.preAnalysisId",
                                 ANA_STATUS_ID = "_analysis.statusId",
                                 
+                                TEST_WORKSHEET_FORMAT_ID = "_testWorksheet.formatId",
+
                                 SAMP_DESCRIPTION = "_sample.description",   // combined field for all domain descriptions
                                 ANA_DUE_DAYS = "_analysis.dueDays",
                                 ANA_EXPIRE_DATE = "_analysis.expireDate";
@@ -82,7 +85,7 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
     static {
         names = new HashSet<String>(Arrays.asList(WSHT_ID, WSHT_RELATED_WORKSHEET_ID,
                                                   WSHT_ITEM_POSITION, WSHT_ANA_WORKSHEET_ANALYSIS_ID, 
-                                                  SAMP_DOMAIN, SAMP_ACCESSION_NUMBER,
+                                                  SAMP_ID, SAMP_DOMAIN, SAMP_ACCESSION_NUMBER,
                                                   SAMP_COLLECTION_DATE, SAMP_COLLECTION_TIME,
                                                   SAMP_RECEIVED_DATE, SAMP_ENV_DESCRIPTION,
                                                   SAMP_ENV_PRIORITY, SAMP_ITEM_TYPE_OF_SAMPLE_ID,
@@ -91,8 +94,8 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
                                                   ANA_TEST_METHOD_NAME, ANA_TEST_TIME_HOLDING,
                                                   ANA_TEST_TIME_TA_AVERAGE, ANA_SECTION_ID,
                                                   ANA_PRE_ANALYSIS_ID, ANA_STATUS_ID,
-                                                  SAMP_DESCRIPTION, ANA_DUE_DAYS,
-                                                  ANA_EXPIRE_DATE));
+                                                  TEST_WORKSHEET_FORMAT_ID, SAMP_DESCRIPTION,
+                                                  ANA_DUE_DAYS, ANA_EXPIRE_DATE));
     }
 
     public static String getWorksheetId() {
@@ -109,6 +112,10 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
 
     public static String getWorksheetAnalysisWorksheetAnalysisId() {
         return WSHT_ANA_WORKSHEET_ANALYSIS_ID;
+    }
+
+    public static String getSampleId() {
+        return SAMP_ID;
     }
 
     public static String getSampleDomain() {
@@ -199,6 +206,10 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
         return ANA_STATUS_ID;
     }
 
+    public static String getTestWorksheetFormatId() {
+        return TEST_WORKSHEET_FORMAT_ID;
+    }
+
     public static String getSampleDescription() {
         return SAMP_DESCRIPTION;
     }
@@ -225,7 +236,8 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
 //               " LEFT JOIN _sample.sampleHuman _sampleHuman "+
 //               ", IN (_sampleHuman.patient) _patient "+
                ", IN (_sample.sampleItem) _sampleItem "+
-               ", IN (_sampleItem.analysis) _analysis ";
+               ", IN (_sampleItem.analysis) _analysis "+
+               " LEFT JOIN _analysis.test.testWorksheet _testWorksheet ";
 
         return from;
     }

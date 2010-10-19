@@ -25,6 +25,8 @@
  */
 package org.openelis.domain;
 
+import org.openelis.gwt.common.DataBaseUtil;
+
 /**
  * Class represents the fields in database table system_variable.
  */
@@ -49,6 +51,6 @@ public class WorksheetQcResultViewDO extends WorksheetQcResultDO {
     }
 
     public void setAnalyteName(String analyteName) {
-        this.analyteName = analyteName;
+        this.analyteName = DataBaseUtil.trim(analyteName);
     }
 }
