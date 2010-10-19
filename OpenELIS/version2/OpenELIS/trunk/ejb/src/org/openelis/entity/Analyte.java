@@ -61,6 +61,9 @@ import org.openelis.utils.Auditable;
                 @NamedQuery(name = "Analyte.FetchByName", query = "select new org.openelis.domain.AnalyteDO(a.id, a.name, a.isActive, a.parentAnalyteId, a.externalId) "
                                                                   + " from Analyte a where a.name like :name and a.isActive = 'Y' order by a.name"),
 
+                @NamedQuery(name = "Analyte.FetchByExternalId", query = "select new org.openelis.domain.AnalyteDO(a.id, a.name, a.isActive, a.parentAnalyteId, a.externalId) "
+                                                                       + " from Analyte a where a.externalId like :extId order by a.name"),
+
                 @NamedQuery(name = "Analyte.FetchAliases", query = "select new org.openelis.domain.AnalyteDO(a.id, a.name, a.isActive, a.parentAnalyteId, a.externalId) "
                                                                    + " from Analyte a where a.parentAnalyteId = :id and a.isActive = 'Y' order by a.name"),
                 @NamedQuery(name = "Analyte.FetchByTest", query = "select distinct new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId)"

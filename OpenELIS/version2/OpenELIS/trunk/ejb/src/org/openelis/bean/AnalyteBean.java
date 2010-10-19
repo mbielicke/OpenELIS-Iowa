@@ -53,6 +53,7 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.local.AnalyteLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.AnalyteMeta;
 import org.openelis.remote.AnalyteRemote;
@@ -62,7 +63,7 @@ import org.openelis.utils.PermissionInterceptor;
 @Stateless
 @SecurityDomain("openelis")
 @RolesAllowed("analyte-select")
-public class AnalyteBean implements AnalyteRemote {
+public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager               manager;
@@ -95,6 +96,18 @@ public class AnalyteBean implements AnalyteRemote {
         query = manager.createNamedQuery("Analyte.FetchByName");
 
         query.setParameter("name", name);
+        query.setMaxResults(maxResults);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    @SuppressWarnings("unchecked")
+    public ArrayList<AnalyteDO> fetchByExternalId(String extId, int maxResults) {
+        Query query = null;
+
+        query = manager.createNamedQuery("Analyte.FetchByExternalId");
+
+        query.setParameter("extId", extId);
         query.setMaxResults(maxResults);
 
         return DataBaseUtil.toArrayList(query.getResultList());

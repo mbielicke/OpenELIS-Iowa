@@ -41,6 +41,8 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.manager.AnalysisQaEventManager;
+import org.openelis.manager.SampleQaEventManager;
 import org.openelis.meta.WorksheetCreationMeta;
 import org.openelis.remote.WorksheetCreationRemote;
 import org.openelis.util.QueryBuilderV2;
@@ -61,16 +63,19 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetCreationVO> query(ArrayList<QueryData> fields, 
                                                 int first, int max) throws Exception {
-        int                 i;
-        List                list = null;
-        Query               query;
-        QueryBuilderV2      builder;
-        WorksheetCreationVO vo;
+        int                    i;
+        List                   list = null;
+        Query                  query;
+        QueryBuilderV2         builder;
+        AnalysisQaEventManager analysisQaManager;
+        SampleQaEventManager   sampleQaManager;
+        WorksheetCreationVO    vo;
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
         builder.setSelect("distinct new org.openelis.domain.WorksheetCreationVO("+
                           WorksheetCreationMeta.getAnalysisId()+", "+
+                          WorksheetCreationMeta.getSampleId()+", "+
                           WorksheetCreationMeta.getSampleDomain()+", "+
                           WorksheetCreationMeta.getSampleAccessionNumber()+", "+
                           WorksheetCreationMeta.getSampleCollectionDate()+", "+
@@ -89,7 +94,8 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
                           WorksheetCreationMeta.getAnalysisTestTimeTaAverage()+", " +
                           WorksheetCreationMeta.getAnalysisSectionId()+", "+
                           WorksheetCreationMeta.getAnalysisPreAnalysisId()+", "+
-                          WorksheetCreationMeta.getAnalysisStatusId()+") ");
+                          WorksheetCreationMeta.getAnalysisStatusId()+", " +
+                          WorksheetCreationMeta.getTestWorksheetFormatId()+") ");
         builder.constructWhere(fields);
         builder.setOrderBy(WorksheetCreationMeta.getSampleAccessionNumber());
 
@@ -105,6 +111,26 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
             for (i = 0; i < list.size(); i++) {
                 vo = (WorksheetCreationVO) list.get(i);
                 //
+                // Set QA Override Flag
+                //
+                vo.setHasQaOverride(Boolean.FALSE);
+                try {
+                    sampleQaManager = SampleQaEventManager.fetchBySampleId(vo.getSampleId());
+                    if (sampleQaManager != null && sampleQaManager.hasResultOverrideQA())
+                        vo.setHasQaOverride(Boolean.TRUE);
+                } catch (NotFoundException ignE) {
+                    // ignoring NotFoundException since you cannot override results
+                    // without a QAEVent
+                }
+                try {
+                    analysisQaManager = AnalysisQaEventManager.fetchByAnalysisId(vo.getAnalysisId());
+                    if (analysisQaManager != null && analysisQaManager.hasResultOverrideQA())
+                        vo.setHasQaOverride(Boolean.TRUE);
+                } catch (NotFoundException ignE) {
+                    // ignoring NotFoundException since you cannot override results
+                    // without a QAEVent
+                }
+                //
                 // Compute and set the number of days until the analysis is 
                 // due to be completed based on when the sample was received,
                 // what the tests average turnaround time is, and whether the
@@ -114,7 +140,7 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
                     vo.setDueDays(computeDueDays(vo.getReceivedDate(), vo.getPriority()));
                 else
                     vo.setDueDays(computeDueDays(vo.getReceivedDate(), vo.getTimeTaAverage()));
-                    
+                
                 //
                 // Compute and set the expiration date on the analysis based
                 // on the collection date and the tests definition of holding

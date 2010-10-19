@@ -8,7 +8,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Lib"/>
 	<classpathentry kind="lib" path="/libraries/lib/poi-3.6-20091214.jar"/>
 	<classpathentry kind="lib" path="/OpenELIS-Security-EJB/security-client.jar"/>
-	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="/libraries/lib/jasperreports-3.7.4.jar"/>
+	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -25,7 +25,6 @@
  */
 package org.openelis.manager;
 
-import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.naming.InitialContext;
@@ -71,27 +70,22 @@ public class WorksheetManagerProxy {
     }
 
     public WorksheetManager add(WorksheetManager manager) throws Exception {
-        int                            i;
-        Integer                        id;
-        Iterator<SampleManager>        iter;
-        HashMap<Integer,SampleManager> sManagers;
-        SampleManager                  sManager;
-        WorksheetLocal                 local;
+        Integer                 id;
+        Iterator<SampleManager> iter;
+        SampleManager           sManager;
+        WorksheetLocal          local;
 
         local = local();
         local.add(manager.getWorksheet());
         id = manager.getWorksheet().getId();
 
         if (manager.items != null) {
-            sManagers = new HashMap<Integer,SampleManager>();
-
             manager.getItems().setWorksheetId(id);
-            manager.getItems().add(sManagers);
+            manager.getItems().add();
             
-            iter = sManagers.values().iterator();
+            iter = manager.getSampleManagers().values().iterator();
             while (iter.hasNext()) {
                 sManager = (SampleManager) iter.next();
-                sManager.validate();
                 sManager.update();
             }
         }
@@ -106,28 +100,24 @@ public class WorksheetManagerProxy {
     }
 
     public WorksheetManager update(WorksheetManager manager) throws Exception {
-        int                            i;
-        Integer                        id;
-        Iterator<SampleManager>        iter;
-        HashMap<Integer,SampleManager> sManagers;
-        SampleManager                  sManager;
-        WorksheetLocal                 local;
+        Integer                 id;
+        Iterator<SampleManager> iter;
+        SampleManager           sManager;
+        WorksheetLocal          local;
 
         local = local();
         local.update(manager.getWorksheet());
         id = manager.getWorksheet().getId();
         
         if (manager.items != null) {
-            sManagers = new HashMap<Integer,SampleManager>();
-
             manager.getItems().setWorksheetId(id);
-            manager.getItems().update(sManagers);
+            manager.getItems().update();
             
-            iter = sManagers.values().iterator();
+            iter = manager.getSampleManagers().values().iterator();
             while (iter.hasNext()) {
                 sManager = (SampleManager) iter.next();
-                sManager.validate();
                 sManager.update();
+                manager.getLockedManagers().remove(sManager.getSample().getAccessionNumber());
             }
         }
         
@@ -151,14 +141,24 @@ public class WorksheetManagerProxy {
     }
 
     public void validate(WorksheetManager manager, ValidationErrorsList errorList) throws Exception {
+        Iterator<SampleManager> iter;
+        SampleManager           sManager;
+
         try {
             local().validate(manager.getWorksheet());
         } catch (Exception e) {
             DataBaseUtil.mergeException(errorList, e);
         }
 
-        if (manager.items != null)
+        if (manager.items != null) {
             manager.getItems().validate(errorList);
+
+            iter = manager.getSampleManagers().values().iterator();
+            while (iter.hasNext()) {
+                sManager = (SampleManager) iter.next();
+                sManager.validate();
+            }
+        }
     }
 
     private WorksheetLocal local(){

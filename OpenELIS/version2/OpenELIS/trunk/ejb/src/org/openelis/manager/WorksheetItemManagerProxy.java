@@ -54,7 +54,7 @@ public class WorksheetItemManagerProxy {
         return manager;
     }
     
-    public WorksheetItemManager add(WorksheetItemManager manager, HashMap<Integer,SampleManager> sManagers) throws Exception {
+    public WorksheetItemManager add(WorksheetItemManager manager) throws Exception {
         boolean                  notDone;
         int                      i;
         HashMap<Integer,Integer> idHash;
@@ -75,7 +75,7 @@ public class WorksheetItemManagerProxy {
                 item = manager.getWorksheetItemAt(i);
                 manager.getWorksheetAnalysisAt(i).setWorksheetId(manager.getWorksheetId());
                 manager.getWorksheetAnalysisAt(i).setWorksheetItemId(item.getId());
-                manager.getWorksheetAnalysisAt(i).add(idHash, sManagers);
+                manager.getWorksheetAnalysisAt(i).add(idHash);
                 if (manager.getWorksheetAnalysisAt(i).getNotDone())
                     notDone = true;
             }
@@ -84,7 +84,7 @@ public class WorksheetItemManagerProxy {
         return manager;
     }
 
-    public WorksheetItemManager update(WorksheetItemManager manager, HashMap<Integer,SampleManager> sManagers) throws Exception {
+    public WorksheetItemManager update(WorksheetItemManager manager) throws Exception {
         boolean                  notDone;
         int                      i, j;
         HashMap<Integer,Integer> idHash;
@@ -112,7 +112,7 @@ public class WorksheetItemManagerProxy {
                 item = manager.getWorksheetItemAt(i);
                 manager.getWorksheetAnalysisAt(i).setWorksheetId(manager.getWorksheetId());
                 manager.getWorksheetAnalysisAt(i).setWorksheetItemId(item.getId());
-                manager.getWorksheetAnalysisAt(i).update(idHash, sManagers);
+                manager.getWorksheetAnalysisAt(i).update(idHash);
                 if (manager.getWorksheetAnalysisAt(i).getNotDone())
                     notDone = true;
             }

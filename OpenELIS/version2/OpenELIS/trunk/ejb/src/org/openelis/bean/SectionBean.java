@@ -54,6 +54,7 @@ import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.JMSMessageProducerLocal;
 import org.openelis.local.LockLocal;
+import org.openelis.local.SectionLocal;
 import org.openelis.messages.SectionCacheMessage;
 import org.openelis.meta.SectionMeta;
 import org.openelis.remote.SectionRemote;
@@ -63,7 +64,7 @@ import org.openelis.utils.PermissionInterceptor;
 @Stateless
 @SecurityDomain("openelis")
 @RolesAllowed("section-select")
-public class SectionBean implements SectionRemote {
+public class SectionBean implements SectionRemote, SectionLocal {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager               manager;

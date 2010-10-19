@@ -39,6 +39,7 @@ import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalysisLocal;
 import org.openelis.local.DictionaryLocal;
+import org.openelis.local.SectionLocal;
 import org.openelis.manager.AnalysisManager.AnalysisListItem;
 import org.openelis.utils.PermissionInterceptor;
 
@@ -405,9 +406,8 @@ public class AnalysisManagerProxy {
         }
     }
 
-    protected SectionViewDO getSectionFromId(Integer sectionId) throws Exception {
-        assert false : "not supported";
-        return null;
+    public SectionViewDO getSectionFromId(Integer sectionId) throws Exception {
+        return sectionLocal().fetchById(sectionId);
     }
 
     protected Datetime getCurrentDatetime(byte begin, byte end) throws Exception {
@@ -435,6 +435,16 @@ public class AnalysisManagerProxy {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
+        }
+    }
+    
+    private static SectionLocal sectionLocal(){
+        try{
+            InitialContext ctx = new InitialContext();
+            return (SectionLocal)ctx.lookup("openelis/SectionBean/local");
+        }catch(Exception e){
+             System.out.println(e.getMessage());
+             return null;
         }
     }
 }

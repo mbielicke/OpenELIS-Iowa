@@ -25,24 +25,11 @@
  */
 package org.openelis.local;
 
-import java.util.ArrayList;
-
 import javax.ejb.Local;
 
-import org.openelis.domain.QcAnalyteDO;
-import org.openelis.domain.QcAnalyteViewDO;
+import org.openelis.domain.SectionViewDO;
 
 @Local
-public interface QcAnalyteLocal {
-    public QcAnalyteViewDO fetchById(Integer id) throws Exception;
-
-    public ArrayList<QcAnalyteViewDO> fetchByQcId(Integer id) throws Exception;
-
-    public QcAnalyteViewDO add(QcAnalyteViewDO data) throws Exception;
-
-    public QcAnalyteViewDO update(QcAnalyteViewDO data) throws Exception;
-
-    public void delete(QcAnalyteDO data) throws Exception;
-
-    public void validate(QcAnalyteDO data) throws Exception;
+public interface SectionLocal {
+    public SectionViewDO fetchById(Integer id) throws Exception;
 }

@@ -77,11 +77,39 @@ public class WorksheetResultBean implements WorksheetResultLocal {
         entity.setWorksheetAnalysisId(data.getWorksheetAnalysisId());
         entity.setTestAnalyteId(data.getTestAnalyteId());
         entity.setTestResultId(data.getTestResultId());
-        entity.setIsColumn(data.getIsColumn());
-        entity.setSortOrder(data.getSortOrder());
+        entity.setResultRow(data.getResultRow());
         entity.setAnalyteId(data.getAnalyteId());
         entity.setTypeId(data.getTypeId());
-        entity.setValue(data.getValue());
+        entity.setValue1(data.getValueAt(0));
+        entity.setValue2(data.getValueAt(1));
+        entity.setValue3(data.getValueAt(2));
+        entity.setValue4(data.getValueAt(3));
+        entity.setValue5(data.getValueAt(4));
+        entity.setValue6(data.getValueAt(5));
+        entity.setValue7(data.getValueAt(6));
+        entity.setValue8(data.getValueAt(7));
+        entity.setValue9(data.getValueAt(8));
+        entity.setValue10(data.getValueAt(9));
+        entity.setValue11(data.getValueAt(10));
+        entity.setValue12(data.getValueAt(11));
+        entity.setValue13(data.getValueAt(12));
+        entity.setValue14(data.getValueAt(13));
+        entity.setValue15(data.getValueAt(14));
+        entity.setValue16(data.getValueAt(15));
+        entity.setValue17(data.getValueAt(16));
+        entity.setValue18(data.getValueAt(17));
+        entity.setValue19(data.getValueAt(18));
+        entity.setValue20(data.getValueAt(19));
+        entity.setValue21(data.getValueAt(20));
+        entity.setValue22(data.getValueAt(21));
+        entity.setValue23(data.getValueAt(22));
+        entity.setValue24(data.getValueAt(23));
+        entity.setValue25(data.getValueAt(24));
+        entity.setValue26(data.getValueAt(25));
+        entity.setValue27(data.getValueAt(26));
+        entity.setValue28(data.getValueAt(27));
+        entity.setValue29(data.getValueAt(28));
+        entity.setValue30(data.getValueAt(29));
 
         manager.persist(entity);
         data.setId(entity.getId());
@@ -101,11 +129,39 @@ public class WorksheetResultBean implements WorksheetResultLocal {
         entity.setWorksheetAnalysisId(data.getWorksheetAnalysisId());
         entity.setTestAnalyteId(data.getTestAnalyteId());
         entity.setTestResultId(data.getTestResultId());
-        entity.setIsColumn(data.getIsColumn());
-        entity.setSortOrder(data.getSortOrder());
+        entity.setResultRow(data.getResultRow());
         entity.setAnalyteId(data.getAnalyteId());
         entity.setTypeId(data.getTypeId());
-        entity.setValue(data.getValue());
+        entity.setValue1(data.getValueAt(0));
+        entity.setValue2(data.getValueAt(1));
+        entity.setValue3(data.getValueAt(2));
+        entity.setValue4(data.getValueAt(3));
+        entity.setValue5(data.getValueAt(4));
+        entity.setValue6(data.getValueAt(5));
+        entity.setValue7(data.getValueAt(6));
+        entity.setValue8(data.getValueAt(7));
+        entity.setValue9(data.getValueAt(8));
+        entity.setValue10(data.getValueAt(9));
+        entity.setValue11(data.getValueAt(10));
+        entity.setValue12(data.getValueAt(11));
+        entity.setValue13(data.getValueAt(12));
+        entity.setValue14(data.getValueAt(13));
+        entity.setValue15(data.getValueAt(14));
+        entity.setValue16(data.getValueAt(15));
+        entity.setValue17(data.getValueAt(16));
+        entity.setValue18(data.getValueAt(17));
+        entity.setValue19(data.getValueAt(18));
+        entity.setValue20(data.getValueAt(19));
+        entity.setValue21(data.getValueAt(20));
+        entity.setValue22(data.getValueAt(21));
+        entity.setValue23(data.getValueAt(22));
+        entity.setValue24(data.getValueAt(23));
+        entity.setValue25(data.getValueAt(24));
+        entity.setValue26(data.getValueAt(25));
+        entity.setValue27(data.getValueAt(26));
+        entity.setValue28(data.getValueAt(27));
+        entity.setValue29(data.getValueAt(28));
+        entity.setValue30(data.getValueAt(29));
 
         return data;
     }
@@ -127,12 +183,9 @@ public class WorksheetResultBean implements WorksheetResultLocal {
         if (DataBaseUtil.isEmpty(data.getTestAnalyteId()))
             list.add(new FieldErrorException("fieldRequiredException",
                                              WorksheetCompletionMeta.getWorksheetResultTestAnalyteId()));
-        if (DataBaseUtil.isEmpty(data.getIsColumn()))
+        if (DataBaseUtil.isEmpty(data.getResultRow()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             WorksheetCompletionMeta.getWorksheetResultIsColumn()));
-        if (DataBaseUtil.isEmpty(data.getSortOrder()))
-            list.add(new FieldErrorException("fieldRequiredException",
-                                             WorksheetCompletionMeta.getWorksheetResultSortOrder()));
+                                             WorksheetCompletionMeta.getWorksheetResultResultRow()));
         if (DataBaseUtil.isEmpty(data.getAnalyteId()))
             list.add(new FieldErrorException("fieldRequiredException",
                                              WorksheetCompletionMeta.getWorksheetResultAnalyteId()));
