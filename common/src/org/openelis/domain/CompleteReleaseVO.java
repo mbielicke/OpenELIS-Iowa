@@ -1,25 +1,24 @@
 package org.openelis.domain;
 
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.RPC;
 
 public class CompleteReleaseVO implements RPC {
 	
 	private static final long serialVersionUID = 1L;
 	
-	protected Integer sampleId;
-	protected Integer accession;
-	protected String test;
-	protected String method;
-	protected Integer analysisStatus;
-	protected Integer specimenStatus;
-	protected Integer analysisId;
+	protected Integer sampleId, sampleItemId, accession, analysisId, analysisStatus, specimenStatus;
+	protected String test, method;
 	
 	public CompleteReleaseVO() {
 		
 	}
 	
-	public CompleteReleaseVO(Integer sampleId, Integer analysisId, Integer accession,String test, String method,Integer analysisStatus,Integer specimenStatus) {
+	public CompleteReleaseVO(Integer sampleId, Integer sampleItemId,
+	                         Integer analysisId, Integer accession,String test,
+	                         String method,Integer analysisStatus,Integer specimenStatus) {
 		this.sampleId = sampleId;
+		this.sampleItemId = sampleItemId;
 		this.analysisId = analysisId;
 		this.accession = accession;
 		this.test = test;
@@ -57,7 +56,7 @@ public class CompleteReleaseVO implements RPC {
 	}
 
 	public void setTest(String test) {
-		this.test = test;
+		this.test = DataBaseUtil.trim(test);
 	}
 
 	public String getMethod() {
@@ -65,7 +64,7 @@ public class CompleteReleaseVO implements RPC {
 	}
 
 	public void setMethod(String method) {
-		this.method = method;
+		this.method = DataBaseUtil.trim(method);
 	}
 
 	public Integer getAnalysisStatus() {

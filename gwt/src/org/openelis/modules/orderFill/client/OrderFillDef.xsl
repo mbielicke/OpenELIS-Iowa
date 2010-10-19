@@ -199,13 +199,13 @@ UIRF Software License are applicable instead of those above.
                           <textbox key="{meta:getOrganizationAddressState()}" width="33" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                         </widget>
                         <widget>
-                          <HorizontalPanel width="20" />
+                          <HorizontalPanel width="11" />
                         </widget>
                         <text style="Prompt">
                           <xsl:value-of select='resource:getString($constants,"zipcode")' />:
                         </text>
                         <widget>
-                          <textbox key="{meta:getOrganizationAddressZipCode()}" width="63" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+                          <textbox key="{meta:getOrganizationAddressZipCode()}" width="72" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                         </widget>
                       </row>
                     </TablePanel>

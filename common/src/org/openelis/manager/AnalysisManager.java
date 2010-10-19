@@ -717,7 +717,8 @@ public class AnalysisManager implements RPC {
         data.setTestName(test.getName());
         data.setMethodId(test.getMethodId());
         data.setMethodName(test.getMethodName());
-        data.setIsReportable(test.getIsReportable());
+        if (data.getIsReportable() == null)
+            data.setIsReportable(test.getIsReportable());
 
         // if there is only 1 unit then set it
         units = null;

@@ -242,7 +242,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                 col = event.getCol();
                 data = null;
 
-                val = (String)testResultsTable.getObject(row, col);;
+                val = (String)testResultsTable.getObject(row, col);
 
                 if (col == 0)
                     data = displayManager.getObjectAt(row, 0);
@@ -763,6 +763,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                 loaded = true;
             } catch (Exception e) {
                 Window.alert(e.getMessage());
+                e.printStackTrace();
             }
         }
     }

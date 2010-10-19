@@ -59,7 +59,7 @@ UIRF Software License are applicable instead of those above.
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'started')" />:
           </text>
-          <calendar key="{meta:getAnalysisStartedDate()}" width="125" begin="0" end="2" pattern="{resource:getString($constants,'dateTimePattern')}" />
+          <calendar key="{meta:getAnalysisStartedDate()}" width="125" begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
           </row>
         <row>
         <text style="Prompt">
@@ -77,7 +77,7 @@ UIRF Software License are applicable instead of those above.
            <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'completed')" />:
           </text>
-          <calendar key="{meta:getAnalysisCompletedDate()}" width="125" begin="0" end="2" pattern="{resource:getString($constants,'dateTimePattern')}" />
+          <calendar key="{meta:getAnalysisCompletedDate()}" width="125" begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
           </row>
           <row>
           <text style="Prompt">
@@ -93,7 +93,7 @@ UIRF Software License are applicable instead of those above.
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'released')" />:
           </text>
-          <calendar key="{meta:getAnalysisReleasedDate()}" width="125" begin="0" end="2" pattern="{resource:getString($constants,'dateTimePattern')}" />
+          <calendar key="{meta:getAnalysisReleasedDate()}" width="125" begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
        </row>
        <row>
           <text style="Prompt">
@@ -107,7 +107,7 @@ UIRF Software License are applicable instead of those above.
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'printed')" />:
           </text>
-          <calendar key="{meta:getAnalysisPrintedDate()}" width="125" begin="0" end="2" pattern="{resource:getString($constants,'dateTimePattern')}" />
+          <calendar key="{meta:getAnalysisPrintedDate()}" width="125" begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
           </row>
       </TablePanel>
       <HorizontalPanel spacing="0" padding="0">

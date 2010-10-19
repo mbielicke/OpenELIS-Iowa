@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="samplePrivateWell" language="groovy" pageWidth="555" pageHeight="572" orientation="Landscape" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SAMPLE_ACCESSION_NUMBER" class="java.lang.Integer"/>
+	<parameter name="SAMPLE_ORGANIZATION_ID" class="java.lang.Integer"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["/auto/home/akampoow/workspace/OpenELIS-EJB/src/org/openelis/report/finalreport/"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+     sample.id sample_id,
+     sample.accession_number sample_accession_number,
+     sample.received_date sample_received_date,
+     sample.collection_date sample_collection_date,
+     sample.collection_time sample_collection_time,
+     sample.client_reference sample_client_reference,
+     sample.released_date sample_released_date,
+     sample_private_well.owner sample_private_well_owner,
+     sample_private_well.collector sample_private_well_collector,
+     sample_private_well.location sample_private_well_location,
+     sample_private_well.well_number sample_private_well_well_number,
+     sample_private_well.report_to_name sample_private_report_to_name,
+     sample_private_well.report_to_address_id sample_private_report_to_address_id,
+     project.name AS project_name,
+     address.city address_city,
+     address.work_phone address_work_phone
+FROM
+     sample_private_well sample_private_well,
+     sample sample,
+     outer address address,
+     outer (sample_project  sample_project,
+     project project)
+WHERE
+     sample.domain = 'W' AND sample.accession_number = $P{SAMPLE_ACCESSION_NUMBER} AND sample_private_well.sample_id = sample.id
+     AND address.id = sample_private_well.location_address_id AND sample.id = sample_project.sample_id AND sample_project.project_id = project.id
+     AND sample_project.is_permanent = 'Y']]>
+	</queryString>
+	<field name="sample_id" class="java.lang.Integer"/>
+	<field name="sample_accession_number" class="java.lang.Integer"/>
+	<field name="sample_received_date" class="java.sql.Timestamp"/>
+	<field name="sample_collection_date" class="java.sql.Timestamp"/>
+	<field name="sample_collection_time" class="java.sql.Time"/>
+	<field name="sample_client_reference" class="java.lang.String"/>
+	<field name="sample_released_date" class="java.sql.Timestamp"/>
+	<field name="sample_private_well_owner" class="java.lang.String"/>
+	<field name="sample_private_well_collector" class="java.lang.String"/>
+	<field name="sample_private_well_location" class="java.lang.String"/>
+	<field name="sample_private_well_well_number" class="java.lang.Integer"/>
+	<field name="sample_private_report_to_name" class="java.lang.String"/>
+	<field name="sample_private_report_to_address_id" class="java.lang.Integer"/>
+	<field name="project_name" class="java.lang.String"/>
+	<field name="address_city" class="java.lang.String"/>
+	<field name="address_work_phone" class="java.lang.String"/>
+	<detail>
+		<band height="150" splitType="Stretch">
+			<staticText>
+				<reportElement x="254" y="30" width="134" height="15"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Project]]></text>
+			</staticText>
+			<textField pattern="HH:mm" isBlankWhenNull="true">
+				<reportElement x="477" y="15" width="78" height="15"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{sample_received_date}]]></textFieldExpression>
+			</textField>
+			<textField pattern="yyyy-MM-dd" isBlankWhenNull="true">
+				<reportElement x="404" y="45" width="72" height="15"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{sample_collection_date}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="254" y="75" width="134" height="15"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Collection Town]]></text>
+			</staticText>
+			<line>
+				<reportElement mode="Opaque" x="396" y="0" width="1" height="150"/>
+				<graphicElement>
+					<pen lineWidth="1.0"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="254" y="15" width="134" height="15"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date Received]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="254" y="0" width="134" height="15"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date Sample Finalized]]></text>
+			</staticText>
+			<textField pattern="yyyy-MM-dd" isBlankWhenNull="true">
+				<reportElement x="404" y="0" width="151" height="15"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{sample_released_date}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="254" y="45" width="134" height="15"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date Collected]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="404" y="75" width="151" height="15"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{address_city}]]></textFieldExpression>
+			</textField>
+			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
+				<reportElement x="404" y="15" width="72" height="15"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{sample_received_date}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="254" y="60" width="134" height="15"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Collection Site]]></text>
+			</staticText>
+			<textField pattern="HH:mm" isBlankWhenNull="true">
+				<reportElement x="477" y="45" width="78" height="15"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{sample_collection_time}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="404" y="90" width="151" height="15"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{sample_client_reference}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="254" y="90" width="134" height="15"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Reference]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="254" y="105" width="134" height="15"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Collector]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="254" y="120" width="134" height="15"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Well Number]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="404" y="60" width="151" height="17"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{sample_private_well_location}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="254" y="135" width="134" height="15"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Owner]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="404" y="135" width="151" height="15"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{sample_private_well_owner}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="404" y="105" width="151" height="15"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{sample_private_well_collector}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="404" y="120" width="151" height="15"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{sample_private_well_well_number}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="0" y="75" width="210" height="40">
+					<printWhenExpression><![CDATA[$P{SAMPLE_ORGANIZATION_ID} == null]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="REPORT_TO_NAME">
+					<subreportParameterExpression><![CDATA[$F{sample_private_report_to_name}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="REPORT_TO_ADDRESS_ID">
+					<subreportParameterExpression><![CDATA[$F{sample_private_report_to_address_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "samplePrivateWellReportTo.jasper"]]></subreportExpression>
+			</subreport>
+			<textField>
+				<reportElement x="404" y="30" width="151" height="15"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{project_name}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="0" y="75" width="210" height="40">
+					<printWhenExpression><![CDATA[$P{SAMPLE_ORGANIZATION_ID} != null]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SAMPLE_ORGANIZATION_ID">
+					<subreportParameterExpression><![CDATA[$P{SAMPLE_ORGANIZATION_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleOrganization.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<summary>
+		<band height="20" splitType="Stretch"/>
+	</summary>
+</jasperReport>
