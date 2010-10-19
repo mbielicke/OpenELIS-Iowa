@@ -38,7 +38,7 @@ public class WorksheetItemManager implements RPC {
     private static final long                  serialVersionUID = 1L;
     protected Integer                          worksheetId;
     protected ArrayList<WorksheetItemListItem> items, deleted;
-    protected HashMap<Integer,SampleManager>   sampleManagers;
+    protected HashMap<Integer,SampleManager>   sampleManagers, lockedManagers;
 
     protected transient static WorksheetItemManagerProxy proxy;
     
@@ -108,6 +108,7 @@ public class WorksheetItemManager implements RPC {
                 item.analysis = WorksheetAnalysisManager.getInstance();
         
             item.analysis.setSampleManagers(sampleManagers);
+            item.analysis.setLockedManagers(lockedManagers);
         }
             
         return item.analysis;
@@ -126,12 +127,12 @@ public class WorksheetItemManager implements RPC {
         return proxy().fetchByWorksheetId(id);
     }
 
-    public WorksheetItemManager add(HashMap<Integer,SampleManager> sManagers) throws Exception {
-        return proxy().add(this, sManagers);
+    public WorksheetItemManager add() throws Exception {
+        return proxy().add(this);
     }
     
-    public WorksheetItemManager update(HashMap<Integer,SampleManager> sManagers) throws Exception {
-        return proxy().update(this, sManagers);
+    public WorksheetItemManager update() throws Exception {
+        return proxy().update(this);
     }
     
     public void validate(ValidationErrorsList errorList) throws Exception {
@@ -149,6 +150,10 @@ public class WorksheetItemManager implements RPC {
     
     void setSampleManagers(HashMap<Integer,SampleManager> managers) {
         sampleManagers = managers;
+    }
+    
+    void setLockedManagers(HashMap<Integer,SampleManager> managers) {
+        lockedManagers = managers;
     }
     
     int deleteCount() {

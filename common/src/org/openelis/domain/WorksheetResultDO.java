@@ -25,6 +25,8 @@
  */
 package org.openelis.domain;
 
+import org.openelis.gwt.common.DataBaseUtil;
+
 /**
  * Class represents the fields in database table system_variable.
  */
@@ -34,27 +36,64 @@ public class WorksheetResultDO extends DataObject {
     private static final long serialVersionUID = 1L;
 
     protected Integer id, worksheetAnalysisId, testAnalyteId, testResultId,
-                      sortOrder, analyteId, typeId;
-    protected String  isColumn, value;
+                      resultRow, analyteId, typeId;
+    protected String  values[];
 
     public WorksheetResultDO() {
+        values = new String[30];
     }
 
     public WorksheetResultDO(Integer id, Integer worksheetAnalysisId, Integer testAnalyteId,
-                             Integer testResultId, String isColumn, Integer sortOrder,
-                             Integer analyteId, Integer typeId, String value) {
+                             Integer testResultId, Integer resultRow, Integer analyteId,
+                             Integer typeId, String v1, String v2, String v3, String v4,
+                             String v5, String v6, String v7, String v8, String v9,
+                             String v10, String v11, String v12, String v13, String v14,
+                             String v15, String v16, String v17, String v18, String v19,
+                             String v20, String v21, String v22, String v23, String v24,
+                             String v25, String v26, String v27, String v28, String v29,
+                             String v30) {
+        values = new String[30];
+
         setId(id);
         setWorksheetAnalysisId(worksheetAnalysisId);
         setTestAnalyteId(testAnalyteId);
         setTestResultId(testResultId);
-        setIsColumn(isColumn);
-        setSortOrder(sortOrder);
+        setResultRow(resultRow);
         setAnalyteId(analyteId);
         setTypeId(typeId);
-        setValue(value);
+        setValueAt(0, v1);
+        setValueAt(1, v2);
+        setValueAt(2, v3);
+        setValueAt(3, v4);
+        setValueAt(4, v5);
+        setValueAt(5, v6);
+        setValueAt(6, v7);
+        setValueAt(7, v8);
+        setValueAt(8, v9);
+        setValueAt(9, v10);
+        setValueAt(10, v11);
+        setValueAt(11, v12);
+        setValueAt(12, v13);
+        setValueAt(13, v14);
+        setValueAt(14, v15);
+        setValueAt(15, v16);
+        setValueAt(16, v17);
+        setValueAt(17, v18);
+        setValueAt(18, v19);
+        setValueAt(19, v20);
+        setValueAt(20, v21);
+        setValueAt(21, v22);
+        setValueAt(22, v23);
+        setValueAt(23, v24);
+        setValueAt(24, v25);
+        setValueAt(25, v26);
+        setValueAt(26, v27);
+        setValueAt(27, v28);
+        setValueAt(28, v29);
+        setValueAt(29, v30);
         _changed = false;
     }
-
+    
     public Integer getId() {
         return id;
     }
@@ -89,20 +128,12 @@ public class WorksheetResultDO extends DataObject {
         this.testResultId = testResultId;
     }
 
-    public String getIsColumn() {
-        return isColumn;
+    public Integer getResultRow() {
+        return resultRow;
     }
 
-    public void setIsColumn(String isColumn) {
-        this.isColumn = isColumn;
-    }
-
-    public Integer getSortOrder() {
-        return sortOrder;
-    }
-
-    public void setSortOrder(Integer sortOrder) {
-        this.sortOrder = sortOrder;
+    public void setResultRow(Integer resultRow) {
+        this.resultRow = resultRow;
         _changed = true;
     }
 
@@ -123,12 +154,12 @@ public class WorksheetResultDO extends DataObject {
         this.typeId = typeId;
     }
 
-    public String getValue() {
-        return value;
+    public String getValueAt(int index) {
+        return values[index];
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setValueAt(int index, String value) {
+        this.values[index] =  DataBaseUtil.trim(value);
         _changed = true;
     }
 }

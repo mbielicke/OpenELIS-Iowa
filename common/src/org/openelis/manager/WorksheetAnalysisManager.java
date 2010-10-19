@@ -40,7 +40,7 @@ public class WorksheetAnalysisManager implements RPC {
     boolean                                        notDone;
     protected Integer                              worksheetId, worksheetItemId;
     protected ArrayList<WorksheetAnalysisListItem> analyses, deleted;
-    protected HashMap<Integer,SampleManager>       sampleManagers;
+    protected HashMap<Integer,SampleManager>       sampleManagers, lockedManagers;
     
     protected transient static WorksheetAnalysisManagerProxy proxy;
     
@@ -155,25 +155,28 @@ public class WorksheetAnalysisManager implements RPC {
         if (analysis.bundle == null) {
             waDO = analysis.worksheetAnalysis;
             if (waDO != null && waDO.getId() != null) {
-                try {
-                    sManager = SampleManager.fetchByAccessionNumber(Integer.valueOf(waDO.getAccessionNumber()));
-                    siManager = sManager.getSampleItems();
-                    for (j = 0; j < siManager.count(); j++) {
-                        aManager = siManager.getAnalysisAt(j);
-                        for (k = 0; k < aManager.count(); k++) {
-                            aVDO = aManager.getAnalysisAt(k);
-                            if (waDO.getAnalysisId().equals(aVDO.getId())) {
-                                analysis.bundle = aManager.getBundleAt(k);
-                                break;
-                            }
-                        }
-                        if (analysis.bundle != null)
-                            break;
+                sManager = sampleManagers.get(Integer.valueOf(waDO.getAccessionNumber()));
+                if (sManager == null) {
+                    try {
+                        sManager = SampleManager.fetchByAccessionNumber(Integer.valueOf(waDO.getAccessionNumber()));
+                        sampleManagers.put(Integer.valueOf(waDO.getAccessionNumber()), sManager);
+                    } catch (Exception e) {
+                        throw e;
                     }
-                } catch (NotFoundException e) {
-                    //ignore
-                } catch (Exception e) {
-                    throw e;
+                }                        
+                        
+                siManager = sManager.getSampleItems();
+                for (j = 0; j < siManager.count(); j++) {
+                    aManager = siManager.getAnalysisAt(j);
+                    for (k = 0; k < aManager.count(); k++) {
+                        aVDO = aManager.getAnalysisAt(k);
+                        if (waDO.getAnalysisId().equals(aVDO.getId())) {
+                            analysis.bundle = aManager.getBundleAt(k);
+                            break;
+                        }
+                    }
+                    if (analysis.bundle != null)
+                        break;
                 }
             }
         }
@@ -190,12 +193,12 @@ public class WorksheetAnalysisManager implements RPC {
         return proxy().fetchByWorksheetItemId(id);
     }
 
-    public WorksheetAnalysisManager add(HashMap<Integer,Integer> idHash, HashMap<Integer,SampleManager> sManagers) throws Exception {
-        return proxy().add(this, idHash, sManagers);
+    public WorksheetAnalysisManager add(HashMap<Integer,Integer> idHash) throws Exception {
+        return proxy().add(this, idHash);
     }
     
-    public WorksheetAnalysisManager update(HashMap<Integer,Integer> idHash, HashMap<Integer,SampleManager> sManagers) throws Exception {
-        return proxy().update(this, idHash, sManagers);
+    public WorksheetAnalysisManager update(HashMap<Integer,Integer> idHash) throws Exception {
+        return proxy().update(this, idHash);
     }
        
     public void validate(ValidationErrorsList errorList) throws Exception {
@@ -219,8 +222,16 @@ public class WorksheetAnalysisManager implements RPC {
         worksheetItemId = id;
     }
     
+    HashMap<Integer,SampleManager> getSampleManagers() {
+        return sampleManagers;
+    }
+    
     void setSampleManagers(HashMap<Integer,SampleManager> managers) {
         sampleManagers = managers;
+    }
+    
+    void setLockedManagers(HashMap<Integer,SampleManager> managers) {
+        lockedManagers = managers;
     }
     
     boolean getNotDone() {

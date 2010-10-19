@@ -222,8 +222,10 @@ public class AnalysisManager implements RPC {
         assert data.getSectionId() != null : "section id is null";
 
         //make sure the status is not released, cancelled, or in prep
-        if (proxy().anErrorInPrepId.equals(data.getStatusId()) || proxy().anInPrepId.equals(data.getStatusId()) ||
-            proxy().anReleasedId.equals(data.getStatusId()) || proxy().anCancelledId.equals(data.getStatusId())) {
+        if (proxy().anErrorInPrepId.equals(data.getStatusId()) ||
+            proxy().anInPrepId.equals(data.getStatusId()) ||
+            proxy().anReleasedId.equals(data.getStatusId()) ||
+            proxy().anCancelledId.equals(data.getStatusId())) {
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("wrongStatusNoInitiate"));
             throw errorsList;
@@ -232,16 +234,19 @@ public class AnalysisManager implements RPC {
         //make sure the user has complete permission for the section
         section = proxy().getSectionFromId(data.getSectionId());
         perm = proxy().getSystemUserPermission();
-        if (perm.getSection(section.getName()) == null || !perm.getSection(section.getName()).hasCompletePermission()) {
+        if (perm.getSection(section.getName()) == null ||
+            !perm.getSection(section.getName()).hasCompletePermission()) {
             errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("insufficientPrivilegesInitiateAnalysis", data.getTestName(), data.getMethodName()));
+            errorsList.add(new FormErrorException("insufficientPrivilegesInitiateAnalysis",
+                                                  data.getTestName(), data.getMethodName()));
             throw errorsList;
         }
 
         //validate the sample type
         testMan = getTestAt(index);
         bundle = getBundleAt(index);
-        if (!testMan.getSampleTypes().hasType(sampleItemManager.getSampleItemAt(bundle.getSampleItemIndex()).getTypeOfSampleId())) {
+        if (!testMan.getSampleTypes().hasType(sampleItemManager.getSampleItemAt(bundle.getSampleItemIndex())
+                                              .getTypeOfSampleId())) {
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("sampleTypeInvalid", data.getTestName(), data.getMethodName()));
             throw errorsList;
@@ -268,9 +273,10 @@ public class AnalysisManager implements RPC {
         assert data.getSectionId() != null : "section id is null";
 
         //
-        // make sure the status is initiated, on hold or logged-in
+        // make sure the status is completed, initiated, on hold or logged-in
         //
-        if (!proxy().anOnHoldId.equals(data.getStatusId()) &&
+        if (!proxy().anCompletedId.equals(data.getStatusId()) &&
+            !proxy().anOnHoldId.equals(data.getStatusId()) &&
             !proxy().anInitiatedId.equals(data.getStatusId()) &&            
             !proxy().anLoggedInId.equals(data.getStatusId())) { 
             errorsList = new ValidationErrorsList();
@@ -313,7 +319,8 @@ public class AnalysisManager implements RPC {
         if (data.getStartedDate() == null)
             data.setStartedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
 
-        data.setCompletedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
+        if (data.getCompletedDate() == null)
+            data.setCompletedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
 
         try {
             // add an analysis user record

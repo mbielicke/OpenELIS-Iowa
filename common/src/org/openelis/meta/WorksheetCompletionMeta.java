@@ -59,11 +59,39 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
                                 RESULT_WORKSHEET_ANALYSIS_ID = "_worksheetResult.worksheetAnalysisId",
                                 RESULT_TEST_ANALYTE_ID       = "_worksheetResult.testAnalyteId",
                                 RESULT_TEST_RESULT_ID        = "_worksheetResult.testResultId",
-                                RESULT_IS_COLUMN             = "_worksheetResult.isColumn",
-                                RESULT_SORT_ORDER            = "_worksheetResult.sortOrder",
+                                RESULT_RESULT_ROW            = "_worksheetResult.resultRow",
                                 RESULT_ANALYTE_ID            = "_worksheetResult.analyteId",
                                 RESULT_TYPE_ID               = "_worksheetResult.typeId",
-                                RESULT_VALUE                 = "_worksheetResult.value",
+                                RESULT_VALUE_1               = "_worksheetResult.value1",
+                                RESULT_VALUE_2               = "_worksheetResult.value2",
+                                RESULT_VALUE_3               = "_worksheetResult.value3",
+                                RESULT_VALUE_4               = "_worksheetResult.value4",
+                                RESULT_VALUE_5               = "_worksheetResult.value5",
+                                RESULT_VALUE_6               = "_worksheetResult.value6",
+                                RESULT_VALUE_7               = "_worksheetResult.value7",
+                                RESULT_VALUE_8               = "_worksheetResult.value8",
+                                RESULT_VALUE_9               = "_worksheetResult.value9",
+                                RESULT_VALUE_10              = "_worksheetResult.value10",
+                                RESULT_VALUE_11              = "_worksheetResult.value11",
+                                RESULT_VALUE_12              = "_worksheetResult.value12",
+                                RESULT_VALUE_13              = "_worksheetResult.value13",
+                                RESULT_VALUE_14              = "_worksheetResult.value14",
+                                RESULT_VALUE_15              = "_worksheetResult.value15",
+                                RESULT_VALUE_16              = "_worksheetResult.value16",
+                                RESULT_VALUE_17              = "_worksheetResult.value17",
+                                RESULT_VALUE_18              = "_worksheetResult.value18",
+                                RESULT_VALUE_19              = "_worksheetResult.value19",
+                                RESULT_VALUE_20              = "_worksheetResult.value20",
+                                RESULT_VALUE_21              = "_worksheetResult.value21",
+                                RESULT_VALUE_22              = "_worksheetResult.value22",
+                                RESULT_VALUE_23              = "_worksheetResult.value23",
+                                RESULT_VALUE_24              = "_worksheetResult.value24",
+                                RESULT_VALUE_25              = "_worksheetResult.value25",
+                                RESULT_VALUE_26              = "_worksheetResult.value26",
+                                RESULT_VALUE_27              = "_worksheetResult.value27",
+                                RESULT_VALUE_28              = "_worksheetResult.value28",
+                                RESULT_VALUE_29              = "_worksheetResult.value29",
+                                RESULT_VALUE_30              = "_worksheetResult.value30",
 
                                 QC_RESULT_ID                    = "_worksheetQcResult.id",
                                 QC_RESULT_WORKSHEET_ANALYSIS_ID = "_worksheetQcResult.worksheetAnalysisId",
@@ -86,9 +114,18 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
                                     ANALYSIS_WORKSHEET_ITEM_ID, ANALYSIS_ACCESSION_NUMBER,
                                     ANALYSIS_ANALYSIS_ID, ANALYSIS_QC_ID, ANALYSIS_WORKSHEET_ANALYSIS_ID,
                                     RESULT_ID, RESULT_WORKSHEET_ANALYSIS_ID, RESULT_TEST_ANALYTE_ID,
-                                    RESULT_TEST_RESULT_ID, RESULT_IS_COLUMN, RESULT_SORT_ORDER,
-                                    RESULT_ANALYTE_ID, RESULT_TYPE_ID, RESULT_VALUE,
-                                    QC_RESULT_ID, QC_RESULT_WORKSHEET_ANALYSIS_ID,
+                                    RESULT_TEST_RESULT_ID, RESULT_RESULT_ROW, RESULT_ANALYTE_ID,
+                                    RESULT_TYPE_ID, RESULT_VALUE_1, RESULT_VALUE_2,
+                                    RESULT_VALUE_3, RESULT_VALUE_4, RESULT_VALUE_5,
+                                    RESULT_VALUE_6, RESULT_VALUE_7, RESULT_VALUE_8,
+                                    RESULT_VALUE_9, RESULT_VALUE_10, RESULT_VALUE_11,
+                                    RESULT_VALUE_12, RESULT_VALUE_13, RESULT_VALUE_14,
+                                    RESULT_VALUE_15, RESULT_VALUE_16, RESULT_VALUE_17,
+                                    RESULT_VALUE_18, RESULT_VALUE_19, RESULT_VALUE_20,
+                                    RESULT_VALUE_21, RESULT_VALUE_22, RESULT_VALUE_23,
+                                    RESULT_VALUE_24, RESULT_VALUE_25, RESULT_VALUE_26,
+                                    RESULT_VALUE_27, RESULT_VALUE_28, RESULT_VALUE_29,
+                                    RESULT_VALUE_30, QC_RESULT_ID, QC_RESULT_WORKSHEET_ANALYSIS_ID,
                                     QC_RESULT_SORT_ORDER, QC_RESULT_QC_ANALYTE_ID,
                                     QC_RESULT_TYPE_ID, QC_RESULT_VALUE/*, TEST_NAME,
                                     METHOD_NAME*/));
@@ -174,12 +211,8 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
         return RESULT_TEST_RESULT_ID;
     }
 
-    public static String getWorksheetResultIsColumn() {
-        return RESULT_IS_COLUMN;
-    }
-
-    public static String getWorksheetResultSortOrder() {
-        return RESULT_SORT_ORDER;
+    public static String getWorksheetResultResultRow() {
+        return RESULT_RESULT_ROW;
     }
 
     public static String getWorksheetResultAnalyteId() {
@@ -190,8 +223,124 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
         return RESULT_TYPE_ID;
     }
 
-    public static String getWorksheetResultValue() {
-        return RESULT_VALUE;
+    public static String getWorksheetResultValue1() {
+        return RESULT_VALUE_1;
+    }
+
+    public static String getWorksheetResultValue2() {
+        return RESULT_VALUE_2;
+    }
+
+    public static String getWorksheetResultValue3() {
+        return RESULT_VALUE_3;
+    }
+
+    public static String getWorksheetResultValue4() {
+        return RESULT_VALUE_4;
+    }
+
+    public static String getWorksheetResultValue5() {
+        return RESULT_VALUE_5;
+    }
+
+    public static String getWorksheetResultValue6() {
+        return RESULT_VALUE_6;
+    }
+
+    public static String getWorksheetResultValue7() {
+        return RESULT_VALUE_7;
+    }
+
+    public static String getWorksheetResultValue8() {
+        return RESULT_VALUE_8;
+    }
+
+    public static String getWorksheetResultValue9() {
+        return RESULT_VALUE_9;
+    }
+
+    public static String getWorksheetResultValue10() {
+        return RESULT_VALUE_10;
+    }
+
+    public static String getWorksheetResultValue11() {
+        return RESULT_VALUE_11;
+    }
+
+    public static String getWorksheetResultValue12() {
+        return RESULT_VALUE_12;
+    }
+
+    public static String getWorksheetResultValue13() {
+        return RESULT_VALUE_13;
+    }
+
+    public static String getWorksheetResultValue14() {
+        return RESULT_VALUE_14;
+    }
+
+    public static String getWorksheetResultValue15() {
+        return RESULT_VALUE_15;
+    }
+
+    public static String getWorksheetResultValue16() {
+        return RESULT_VALUE_16;
+    }
+
+    public static String getWorksheetResultValue17() {
+        return RESULT_VALUE_17;
+    }
+
+    public static String getWorksheetResultValue18() {
+        return RESULT_VALUE_18;
+    }
+
+    public static String getWorksheetResultValue19() {
+        return RESULT_VALUE_19;
+    }
+
+    public static String getWorksheetResultValue20() {
+        return RESULT_VALUE_20;
+    }
+
+    public static String getWorksheetResultValue21() {
+        return RESULT_VALUE_21;
+    }
+
+    public static String getWorksheetResultValue22() {
+        return RESULT_VALUE_22;
+    }
+
+    public static String getWorksheetResultValue23() {
+        return RESULT_VALUE_23;
+    }
+
+    public static String getWorksheetResultValue24() {
+        return RESULT_VALUE_24;
+    }
+
+    public static String getWorksheetResultValue25() {
+        return RESULT_VALUE_25;
+    }
+
+    public static String getWorksheetResultValue26() {
+        return RESULT_VALUE_26;
+    }
+
+    public static String getWorksheetResultValue27() {
+        return RESULT_VALUE_27;
+    }
+
+    public static String getWorksheetResultValue28() {
+        return RESULT_VALUE_28;
+    }
+
+    public static String getWorksheetResultValue29() {
+        return RESULT_VALUE_29;
+    }
+
+    public static String getWorksheetResultValue30() {
+        return RESULT_VALUE_30;
     }
 
     public static String getWorksheetQcResultId() {

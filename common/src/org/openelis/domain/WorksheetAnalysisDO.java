@@ -25,6 +25,8 @@
  */
 package org.openelis.domain;
 
+import org.openelis.gwt.common.DataBaseUtil;
+
 /**
  * Class represents the fields in database table system_variable.
  */
@@ -74,7 +76,7 @@ public class WorksheetAnalysisDO extends DataObject {
     }
 
     public void setAccessionNumber(String accessionNumber) {
-        this.accessionNumber = accessionNumber;
+        this.accessionNumber = DataBaseUtil.trim(accessionNumber);
         _changed = true;
     }
 
