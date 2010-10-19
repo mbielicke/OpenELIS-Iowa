@@ -36,6 +36,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -46,6 +47,7 @@ import org.openelis.domain.QcAnalyteDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.entity.QcAnalyte;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -82,6 +84,28 @@ public class QcAnalyteBean implements QcAnalyteLocal {
         }
     }
         
+
+    public QcAnalyteViewDO fetchById(Integer id) throws Exception {
+        Query query;
+        QcAnalyteViewDO data;
+        DictionaryViewDO dict;      
+        
+        query = manager.createNamedQuery("QcAnalyte.FetchById");
+        query.setParameter("id", id);
+        try {
+            data = (QcAnalyteViewDO)query.getSingleResult();
+            if (typeDict == data.getTypeId()) {
+                dict = dictionary.fetchById(Integer.parseInt(data.getValue()));
+                if (dict != null)
+                    data.setDictionary(dict.getEntry());
+            }
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
+    }
 
     @SuppressWarnings("unchecked")
     public ArrayList<QcAnalyteViewDO> fetchByQcId(Integer id) throws Exception {

@@ -29,7 +29,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
@@ -42,6 +45,7 @@ import org.apache.poi.hssf.usermodel.DVConstraint;
 import org.apache.poi.hssf.usermodel.HSSFDataValidation;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.formula.FormulaParseException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DateUtil;
@@ -55,8 +59,10 @@ import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.ss.util.CellReference;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
+import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SystemVariableDO;
@@ -65,9 +71,15 @@ import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.domain.WorksheetResultViewDO;
+import org.openelis.exception.ParseException;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LocalizedException;
+import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.AnalyteLocal;
 import org.openelis.local.DictionaryLocal;
+import org.openelis.local.QcAnalyteLocal;
+import org.openelis.local.SampleManagerLocal;
 import org.openelis.local.SystemVariableLocal;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
@@ -91,37 +103,38 @@ import org.openelis.utilcommon.ResultValidator;
 public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
     private static final String OPENELIS_CONSTANTS = "openelis-common/org.openelis.constants.OpenELISConstants";
+    
+    private HashMap<String,CellStyle>    styles;
+    private HashMap<String,FormatColumn> columnMasterMap;
 
     public WorksheetCompletionBean() {
+        createColumnMasterMap();
     }
 
     public WorksheetManager saveForEdit(WorksheetManager manager) throws Exception {
         int                       r, i, a, n, c, itemMergeStart, anaMergeStart;
         Integer                   testId, groupId;
+        String                    statuses[], cellNameIndex;
+        ArrayList<FormatColumn>   columnList;
         FileOutputStream          out;
         HashMap<Integer,String>   statusMap;
-        HashMap<String,CellStyle> styles;
         HashMap<Integer,HashMap<Integer,CellAttributes>> cellAttributes;
         Iterator<Integer>         testIter, groupIter;
-        String                    statuses[], cellNameIndex;
         Cell                      cell;
-        CellRangeAddressList      statusColumn, rawColumn;
-        DVConstraint              statusConstraint, rawConstraint1, rawConstraint2;
-        HSSFDataValidation        statusValidation, rawValidation;
+        CellRangeAddressList      statusColumn, reportableColumn;
+        DVConstraint              statusConstraint, reportableConstraint;
+        HSSFDataValidation        statusValidation, reportableValidation, rawValidation;
         HSSFSheet                 sheet;
         HSSFWorkbook              wb;
-        Name                      cellName;
         Row                       row;
         AnalysisManager           aManager;
         AnalysisResultManager     arManager;
         AnalysisViewDO            aVDO;
         DictionaryViewDO          formatVDO;
         QcManager                 qcManager;
-        ResultValidator           validator;
         SampleDataBundle          bundle;
         SampleDomainInt           sDomain;
         SampleItemManager         siManager;
-        SampleItemViewDO          siVDO;
         SampleManager             sManager;
         WorksheetAnalysisDO       waDO;
         WorksheetAnalysisManager  waManager;
@@ -129,11 +142,11 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         WorksheetQcResultManager  wqrManager;
         WorksheetQcResultViewDO   wqrVDO;
         WorksheetResultManager    wrManager;
-        WorksheetResultViewDO     wrVDO;
 
         cellAttributes = new HashMap<Integer,HashMap<Integer,CellAttributes>>();
         
         formatVDO = dictLocal().fetchById(manager.getWorksheet().getFormatId());
+        columnList = getColumnListForFormat(formatVDO.getSystemName());
 
         i         = 0;
         wb        = new HSSFWorkbook();
@@ -141,13 +154,413 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         statuses  = getStatusArray();
         
         sheet = wb.createSheet("Worksheet");
-        sheet.protectSheet("xyzzy");
-        sheet.createFreezePane(8, 1);
+//        sheet.protectSheet("xyzzy");
+        sheet.groupColumn(2, 6);
+        sheet.createFreezePane(9, 1);
 
-        styles = createStyles(wb);
+        createStyles(wb);
+
+        r = 1;
+        for (i = 0; i < manager.getItems().count(); i++) {
+            itemMergeStart = r;
+            wiDO           = manager.getItems().getWorksheetItemAt(i);
+            waManager      = manager.getItems().getWorksheetAnalysisAt(i);
+
+            for (a = 0; a < waManager.count(); a++) {
+                anaMergeStart = r;
+                waDO          = waManager.getWorksheetAnalysisAt(a);
+
+                row = sheet.createRow(r);
+
+                // position number
+                cell = row.createCell(0);
+                cell.setCellStyle(styles.get("row_no_edit"));
+                if (a == 0) {
+                    cell.setCellValue(getPositionNumber(wiDO.getPosition(),
+                                                        formatVDO.getSystemName(),
+                                                        manager.getWorksheet().getBatchCapacity()));
+                }
+                
+                // accession number
+                cell = row.createCell(1);
+                cell.setCellStyle(styles.get("row_no_edit"));
+                cell.setCellValue(waDO.getAccessionNumber());
+                
+                if (waDO.getAnalysisId() != null) {
+                    bundle = waManager.getBundleAt(a);
+                    sManager = bundle.getSampleManager();
+                    sDomain = sManager.getDomainManager();
+                    siManager = sManager.getSampleItems();
+                    aManager = siManager.getAnalysisAt(bundle.getSampleItemIndex());
+                    aVDO = aManager.getAnalysisAt(bundle.getAnalysisIndex());
+                    arManager = aManager.getAnalysisResultAt(bundle.getAnalysisIndex());
+
+                    // description
+                    cell = row.createCell(2);
+                    cell.setCellStyle(styles.get("row_no_edit"));
+                    if (sDomain != null)
+                        cell.setCellValue(sDomain.getDomainDescription());
+                    else
+                        cell.setCellValue("");
+    
+                    // qc link
+                    cell = row.createCell(3);
+                    cell.setCellStyle(styles.get("row_no_edit"));
+                    cell.setCellValue("");
+
+                    // test name
+                    cell = row.createCell(4);
+                    cell.setCellStyle(styles.get("row_no_edit"));
+                    cell.setCellValue(aVDO.getTestName());
+                    
+                    // method name
+                    cell = row.createCell(5);
+                    cell.setCellStyle(styles.get("row_no_edit"));
+                    cell.setCellValue(aVDO.getMethodName());
+                    
+                    // analysis status
+                    cell = row.createCell(6);
+                    cell.setCellStyle(styles.get("row_edit"));
+                    cell.setCellValue(statusMap.get(aVDO.getStatusId()));
+
+                    wrManager = waManager.getWorksheetResultAt(a);
+                    if (wrManager.count() == 0) {
+                        // analyte
+                        cell = row.createCell(7);
+                        cell.setCellStyle(styles.get("row_no_edit"));
+                        cell.setCellValue("NO ANALYTES DEFINED");
+                        
+                        // reportable
+                        cell = row.createCell(8);
+                        cell.setCellStyle(styles.get("row_no_edit"));
+                        cell.setCellValue("N");
+                        
+                        createEmptyCellsForFormat(row, columnList);
+                        
+                        r++;
+                    } else {
+                        cellNameIndex = i+"."+a;
+                        r = createResultCellsForFormat(wb, sheet, row, cellNameIndex,
+                                                       columnList, cellAttributes, aVDO,
+                                                       arManager, wrManager);
+                    }                    
+                } else if (waDO.getQcId() != null) {
+                    qcManager = QcManager.fetchById(waDO.getQcId());
+
+                    // description
+                    cell = row.createCell(2);
+                    cell.setCellStyle(styles.get("row_no_edit"));
+                    cell.setCellValue(qcManager.getQc().getName());
+    
+                    // qc link
+                    cell = row.createCell(3);
+                    cell.setCellStyle(styles.get("row_no_edit"));
+                    cell.setCellValue("");
+
+                    // test name
+                    cell = row.createCell(4);
+                    cell.setCellStyle(styles.get("row_no_edit"));
+                    cell.setCellValue("");
+                    
+                    // method name
+                    cell = row.createCell(5);
+                    cell.setCellStyle(styles.get("row_no_edit"));
+                    cell.setCellValue("");
+                    
+                    // analysis status
+                    cell = row.createCell(6);
+                    cell.setCellStyle(styles.get("row_no_edit"));
+                    cell.setCellValue("");
+
+                    wqrManager = waManager.getWorksheetQcResultAt(a);
+                    if (wqrManager.count() == 0) {
+                        // analyte
+                        cell = row.createCell(7);
+                        cell.setCellStyle(styles.get("row_no_edit"));
+                        cell.setCellValue("NO ANALYTES DEFINED");
+                        
+                        // reportable
+                        cell = row.createCell(8);
+                        cell.setCellStyle(styles.get("row_no_edit"));
+                        cell.setCellValue("N");
+                        
+                        createEmptyCellsForFormat(row, columnList);
+                        
+                        r++;
+                    } else {
+                        cellNameIndex = i+"."+a;
+                        r = createQcResultCellsForFormat(wb, sheet, row, cellNameIndex, columnList, cellAttributes, wqrManager);
+/*
+                        for (n = 0; n < wqrManager.count(); n++, r++) {
+                            wqrVDO = wqrManager.getWorksheetQcResultAt(n);
+    
+                            if (n != 0) {
+                                row = sheet.createRow(r);
+                                for (c = 0; c < 7; c++) {
+                                    cell = row.createCell(c);
+                                    cell.setCellStyle(styles.get("row_no_edit"));
+                                }                            
+                            }
+                            
+                            // analyte
+                            cell = row.createCell(7);
+                            cell.setCellStyle(styles.get("row_no_edit"));
+                            cell.setCellValue(wqrVDO.getAnalyteName());
+                            
+                            // reportable
+                            cell = row.createCell(8);
+                            cell.setCellStyle(styles.get("row_no_edit"));
+                            cell.setCellValue("N");
+                            
+                            cellNameIndex = i+"."+a+"."+n;
+                            createQcResultCellsForFormat(wb, row, cellNameIndex, columnList, cellAttributes, wqrVDO);
+                        }
+*/                        
+                    }
+                }
+                for (c = 3; c < 6; c++)
+                    sheet.addMergedRegion(new CellRangeAddress(anaMergeStart, r - 1, c, c));
+            }
+            
+            for (c = 0; c < 3; c++)
+                sheet.addMergedRegion(new CellRangeAddress(itemMergeStart, r - 1, c, c));
+        }
+        
+        //
+        // Create validators
+        //
+        statusColumn = new CellRangeAddressList(1,sheet.getPhysicalNumberOfRows()-1,6,6);
+        statusConstraint = DVConstraint.createExplicitListConstraint(statuses);
+        statusValidation = new HSSFDataValidation(statusColumn,statusConstraint);
+        statusValidation.setEmptyCellAllowed(true);
+        statusValidation.setSuppressDropDownArrow(false);
+        statusValidation.createPromptBox("Statuses", formatTooltip(statuses));
+        statusValidation.setShowPromptBox(false);
+        sheet.addValidationData(statusValidation);
+        
+        reportableColumn = new CellRangeAddressList(1,sheet.getPhysicalNumberOfRows()-1,8,8);
+        reportableConstraint = DVConstraint.createExplicitListConstraint(new String[]{"Y","N"});
+        reportableValidation = new HSSFDataValidation(reportableColumn,reportableConstraint);
+        reportableValidation.setSuppressDropDownArrow(false);
+        sheet.addValidationData(reportableValidation);
+/*        
+        testIter = cellAttributes.keySet().iterator();
+        while (testIter.hasNext()) {
+            testId = testIter.next();
+            groupIter = cellAttributes.get(testId).keySet().iterator();
+            while (groupIter.hasNext()) {
+                groupId = groupIter.next();
+                rawValidation = new HSSFDataValidation(cellAttributes.get(testId).get(groupId).cellRanges,
+                                                       cellAttributes.get(testId).get(groupId).constraint);
+                rawValidation.createPromptBox("Suggestions", cellAttributes.get(testId).get(groupId).tooltip);
+                sheet.addValidationData(rawValidation);
+            }
+        }
+*/        
         //
         // Create header row for main sheet
         //
+        createHeader(sheet, columnList);
+
+        for (c = 0; c < 9 + columnList.size(); c++)
+            sheet.autoSizeColumn(c, true);
+            
+        try {
+            out = new FileOutputStream(getWorksheetTempFileName(manager.getWorksheet().getId()));
+            wb.write(out);
+            out.close();
+            Runtime.getRuntime().exec("chmod go+rw "+getWorksheetTempFileName(manager.getWorksheet().getId()));
+        } catch (IOException ioE) {
+            System.out.println("Error writing Excel file: "+ioE.getMessage());
+        }
+
+        return manager;
+    }
+
+    public WorksheetManager loadFromEdit(WorksheetManager manager) throws Exception {
+        int             a, i, c, r, rowIndex, valIndex;
+        Object          value;
+        Integer         testResultId;
+        ArrayList<FormatColumn>   columnList;
+        File            file;
+        FileInputStream in;
+        FormatColumn          formatColumn;
+        ValidationErrorsList errorList;
+        HSSFWorkbook    wb;
+        AnalysisManager           aManager;
+        AnalysisResultManager     arManager;
+        AnalysisViewDO            aVDO;
+        AnalyteDO                 aDO;
+        DictionaryViewDO          formatVDO;
+        ResultViewDO              rVDO;
+        SampleDataBundle          bundle;
+        SampleItemManager         siManager;
+        SampleManager             sManager;
+        TestResultDO             trDO;
+        WorksheetAnalysisDO      waDO;
+        WorksheetAnalysisManager waManager;
+        WorksheetItemManager     wiManager;
+        WorksheetItemDO          wiDO;
+        WorksheetQcResultManager wqrManager;
+        WorksheetQcResultViewDO  wqrVDO;
+        WorksheetResultManager   wrManager;
+        WorksheetResultViewDO    wrVDO;
+        
+        errorList = new ValidationErrorsList();
+        file = new File(getWorksheetTempFileName(manager.getWorksheet().getId()));
+        in   = new FileInputStream(file);
+        wb   = new HSSFWorkbook(in);
+        formatVDO = dictLocal().fetchById(manager.getWorksheet().getFormatId());
+        columnList = getColumnListForFormat(formatVDO.getSystemName());
+
+        rowIndex = 1;
+        wiManager = manager.getItems();
+        for (i = 0; i < wiManager.count(); i++) {
+            wiDO = wiManager.getWorksheetItemAt(i);
+            waManager = wiManager.getWorksheetAnalysisAt(i);
+            for (a = 0; a < waManager.count(); a++) {
+                waDO = waManager.getWorksheetAnalysisAt(a);
+                if (waDO.getAnalysisId() != null) {
+                    bundle = waManager.getBundleAt(a);
+                    sManager = bundle.getSampleManager();
+                    siManager = sManager.getSampleItems();
+                    aManager = siManager.getAnalysisAt(bundle.getSampleItemIndex());
+                    aVDO = aManager.getAnalysisAt(bundle.getAnalysisIndex());
+                    arManager = aManager.getAnalysisResultAt(bundle.getAnalysisIndex());
+
+                    wrManager = waManager.getWorksheetResultAt(a);
+                    for (r = 0; r < wrManager.count(); r++, rowIndex++) {
+                        wrVDO = wrManager.getWorksheetResultAt(r);
+                        for (c = 0; c < 30; c++) {
+                            value = getValueFromCellByCoords(wb, rowIndex, 9 + c);
+                            if (value != null)
+                                wrVDO.setValueAt(c, value.toString());
+                        }   
+
+                        for (c = 0; c < arManager.getRowAt(wrVDO.getResultRow()).size(); c++) {
+                            valIndex = -1;
+                            rVDO = arManager.getResultAt(wrVDO.getResultRow(), c);
+                            try {
+                                if (c == 0) {
+                                    formatColumn = columnMasterMap.get("final_value");
+                                    valIndex = columnList.indexOf(formatColumn);
+                                    value = getValueFromCellByName(wb, "final_value."+i+"."+a+"."+r);
+                                } else {
+                                    aDO = analyteLocal().fetchById(rVDO.getAnalyteId());
+                                    formatColumn = columnMasterMap.get(aDO.getExternalId());
+                                    if (formatColumn == null)
+                                        continue;
+                                    valIndex = columnList.indexOf(formatColumn);
+                                    value = getValueFromCellByName(wb, aDO.getExternalId()+"."+i+"."+a+"."+r);
+                                }
+                                if (value != null) {
+                                    if (!manager.getLockedManagers().containsKey(sManager.getSample().getAccessionNumber())) {
+                                        sampManLocal().fetchForUpdate(sManager.getSample().getId());
+                                        manager.getLockedManagers().put(sManager.getSample().getAccessionNumber(), sManager);
+                                    }
+                                    testResultId = arManager.validateResultValue(wrVDO.getResultGroup(),
+                                                                                 aVDO.getUnitOfMeasureId(),
+                                                                                 value.toString());
+                                    trDO = arManager.getTestResultList().get(testResultId);
+                                    
+                                    rVDO = arManager.getResultAt(wrVDO.getResultRow(), c);
+                                    rVDO.setTestResultId(testResultId);
+                                    rVDO.setTypeId(trDO.getTypeId());
+                                    rVDO.setValue(formatValue(trDO, value.toString()));
+                                }
+                            } catch (ParseException parE) {
+                                errorList.add(new TableFieldErrorException("illegalResultValueException", rowIndex, "value"+(valIndex+1), "worksheetItemTable"));
+                                errorList.add(new FormErrorException("illegalResultValueFormException", String.valueOf(wiDO.getPosition()), String.valueOf(r), "value"+(valIndex+1)));
+                            } catch (Exception anyE) {
+                                errorList.add(new FormErrorException("analyteLookupFormException", String.valueOf(wiDO.getPosition()), String.valueOf(r)));
+                            }
+                        }
+                    }
+                } else if (waDO.getQcId() != null) {
+                    wqrManager = waManager.getWorksheetQcResultAt(a);
+                    for (r = 0; r < wqrManager.count(); r++) {
+                        wqrVDO = wqrManager.getWorksheetQcResultAt(r);
+                        
+//                        value = getValueFromCellByName(wb, "raw_value."+i+"."+a+"."+r);
+                        value = getValueFromCellByName(wb, "final_value."+i+"."+a+"."+r);
+                        if (value != null) {
+                            wqrVDO.setValue(value.toString());
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (errorList.getErrorList().size() > 0)
+            throw errorList;
+        
+        file.delete();
+        
+        return manager;
+    }
+    
+    private void createColumnMasterMap() {
+        columnMasterMap = new HashMap<String,FormatColumn>();
+        
+        columnMasterMap.put("raw_value1", new FormatColumn("raw_value1", null, null));
+        columnMasterMap.put("raw_value2", new FormatColumn("raw_value2", null, null));
+        columnMasterMap.put("dilution_factor", new FormatColumn("dilution_factor", null, null));
+        columnMasterMap.put("final_value1", new FormatColumn("final_value1", "%s*%s", new String[]{"raw_value1", "dilution_factor"}));
+        columnMasterMap.put("final_value2", new FormatColumn("final_value2", "%s*%s", new String[]{"raw_value2", "dilution_factor"}));
+        columnMasterMap.put("final_value", new FormatColumn("final_value", null, null));
+        columnMasterMap.put("range_low", new FormatColumn("range_low", null, null));
+        columnMasterMap.put("range_high", new FormatColumn("range_high", null, null));
+        columnMasterMap.put("quant_limit", new FormatColumn("quant_limit", null, null));
+        columnMasterMap.put("final_quant_limit", new FormatColumn("final_quant_limit", "%s*%s", new String[]{"quant_limit", "dilution_factor"}));
+        columnMasterMap.put("expected_value", new FormatColumn("expected_value", null, null));
+        columnMasterMap.put("expected_value_dilut", new FormatColumn("expected_value_dilut", "%s*%s", new String[]{"expected_value", "dilution_factor"}));
+        columnMasterMap.put("percent_recovery", new FormatColumn("percent_recovery", "(%s/%s)*100", new String[]{"final_value","expected_value"}));
+        columnMasterMap.put("sample_volume", new FormatColumn("sample_volume", null, null));
+        columnMasterMap.put("extract_volume", new FormatColumn("extract_volume", null, null));
+        columnMasterMap.put("instrument_run_id", new FormatColumn("instrument_run_id", null, null));
+        columnMasterMap.put("retention_time", new FormatColumn("retention_time", null, null));
+        columnMasterMap.put("response", new FormatColumn("response", null, null));
+        columnMasterMap.put("molecular_weight", new FormatColumn("molecular_weight", null, null));
+        columnMasterMap.put("desorp_efficiency", new FormatColumn("desorp_efficiency", null, null));
+    }
+    
+    private void createStyles(HSSFWorkbook wb) {
+        CellStyle headerStyle, rowEditStyle, rowNoEditStyle;
+        Font      font;
+
+        styles = new HashMap<String,CellStyle>();
+
+        font = wb.createFont();
+        font.setColor(IndexedColors.WHITE.getIndex());
+        headerStyle = wb.createCellStyle();
+        headerStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+        headerStyle.setFillForegroundColor(IndexedColors.GREY_80_PERCENT.getIndex());
+        headerStyle.setFont(font);
+        headerStyle.setLocked(true);
+        styles.put("header", headerStyle);
+
+        rowEditStyle = wb.createCellStyle();
+        rowEditStyle.setAlignment(CellStyle.ALIGN_LEFT);
+        rowEditStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+        rowEditStyle.setLocked(false);
+        styles.put("row_edit", rowEditStyle);
+
+        rowNoEditStyle = wb.createCellStyle();
+        rowNoEditStyle.setAlignment(CellStyle.ALIGN_LEFT);
+        rowNoEditStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+        rowNoEditStyle.setFillForegroundColor(IndexedColors.PALE_BLUE.getIndex());
+        rowNoEditStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+        rowNoEditStyle.setLocked(true);
+        styles.put("row_no_edit", rowNoEditStyle);
+    }
+
+    private void createHeader(HSSFSheet sheet, ArrayList<FormatColumn> formatColumns) {
+        int          i;
+        Cell         cell;
+        FormatColumn column;
+        Row          row;
+        ArrayList<AnalyteDO> analytes;
+
         row = sheet.createRow(0);
 
         cell = row.createCell(0);
@@ -182,369 +595,290 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         cell.setCellStyle(styles.get("header"));
         cell.setCellValue("Analyte");
 
-        createHeaderCellsForFormat(row, "format1", styles);
+        cell = row.createCell(8);
+        cell.setCellStyle(styles.get("header"));
+        cell.setCellValue("Reportable");
 
-        r = 1;
-        for (i = 0; i < manager.getItems().count(); i++) {
-            itemMergeStart = r;
-            wiDO           = manager.getItems().getWorksheetItemAt(i);
-            waManager      = manager.getItems().getWorksheetAnalysisAt(i);
+        // Create header cells for the specific worksheet format
+        for (i = 0; i < formatColumns.size(); i++) {
+            column = formatColumns.get(i);
+            cell = row.createCell(i+9);
+            cell.setCellStyle(styles.get("header"));
+            
+            try {
+                analytes = analyteLocal().fetchByExternalId(column.getName(), 10);
+                cell.setCellValue(analytes.get(0).getName());
+            } catch (Exception anyE) {
+                cell.setCellValue(column.getName());
+            }
+        }
+    }
 
-            for (a = 0; a < waManager.count(); a++) {
-                anaMergeStart = r;
-                waDO          = waManager.getWorksheetAnalysisAt(a);
-
+    private int createResultCellsForFormat(HSSFWorkbook wb, HSSFSheet sheet, Row row,
+                                           String nameIndexPrefix, ArrayList<FormatColumn> formatColumns,
+                                           HashMap<Integer,HashMap<Integer,CellAttributes>> cellAttributes,
+                                           AnalysisViewDO aVDO, AnalysisResultManager arManager,
+                                           WorksheetResultManager wrManager) {
+        int  c, i, j, r;
+        String cellNameIndex;
+        Cell cell;
+        Date                  tempDate;
+        FormatColumn          formatColumn;
+        Name cellName;
+        AnalyteDO             aDO;
+        ResultValidator       validator;
+        ResultViewDO          rVDO;
+        WorksheetResultViewDO wrVDO;
+        
+        r = row.getRowNum();
+        for (i = 0; i < wrManager.count(); i++, r++) {
+            wrVDO = wrManager.getWorksheetResultAt(i);
+            if (i != 0) {
                 row = sheet.createRow(r);
-
-                // position number
-                cell = row.createCell(0);
-                cell.setCellStyle(styles.get("row_no_edit"));
-                if (a == 0) {
-                    cell.setCellValue(getPositionNumber(wiDO.getPosition(),
-                                                        formatVDO.getSystemName(),
-                                                        manager.getWorksheet().getBatchCapacity()));
-                }
-                
-                // accession number
-                cell = row.createCell(1);
-                cell.setCellStyle(styles.get("row_no_edit"));
-                cell.setCellValue(waDO.getAccessionNumber());
-                
-                if (waDO.getAnalysisId() != null) {
-                    bundle = waManager.getBundleAt(a);
-                    sManager = bundle.getSampleManager();
-                    // TODO: Add code to lock the sample record if not already locked
-                    sDomain = sManager.getDomainManager();
-                    siManager = sManager.getSampleItems();
-                    siVDO = siManager.getSampleItemAt(bundle.getSampleItemIndex());
-                    aManager = siManager.getAnalysisAt(bundle.getSampleItemIndex());
-                    aVDO = aManager.getAnalysisAt(bundle.getAnalysisIndex());
-                    arManager = aManager.getAnalysisResultAt(bundle.getAnalysisIndex());
-
-                    // description
-                    cell = row.createCell(2);
+                for (c = 0; c < 7; c++) {
+                    cell = row.createCell(c);
                     cell.setCellStyle(styles.get("row_no_edit"));
-                    if (sDomain != null)
-                        cell.setCellValue(sDomain.getDomainDescription());
-                    else
-                        cell.setCellValue("");
-    
-                    // qc link
-                    cell = row.createCell(3);
-                    cell.setCellStyle(styles.get("row_no_edit"));
-                    cell.setCellValue("");
-
-                    // test name
-                    cell = row.createCell(4);
-                    cell.setCellStyle(styles.get("row_no_edit"));
-                    cell.setCellValue(aVDO.getTestName());
-                    
-                    // method name
-                    cell = row.createCell(5);
-                    cell.setCellStyle(styles.get("row_no_edit"));
-                    cell.setCellValue(aVDO.getMethodName());
-                    
-                    // analysis status
-                    cell = row.createCell(6);
-                    cell.setCellStyle(styles.get("row_edit"));
-                    cell.setCellValue(statusMap.get(aVDO.getStatusId()));
-
-                    wrManager = waManager.getWorksheetResultAt(a);
-                    for (n = 0; n < wrManager.count(); n++, r++) {
-                        wrVDO = wrManager.getWorksheetResultAt(n);
-                        validator = arManager.getResultValidator(wrVDO.getResultGroup());
-                        
-                        createConstraint(cellAttributes, aVDO.getTestId(), wrVDO.getResultGroup(), validator);
-                        
-                        if (n != 0) {
-                            row = sheet.createRow(r);
-                            for (c = 0; c < 7; c++) {
-                                cell = row.createCell(c);
-                                cell.setCellStyle(styles.get("row_no_edit"));
-                            }                            
-                        }
-                        
-                        // analyte
-                        cell = row.createCell(7);
-                        cell.setCellStyle(styles.get("row_no_edit"));
-                        cell.setCellValue(wrVDO.getAnalyteName());
-                        
-                        cellNameIndex = i+"."+a+"."+n;
-                        createResultCellsForFormat(wb, row, cellNameIndex, "format1", styles, cellAttributes, aVDO, wrVDO);
-                    }
-                    
-                    if (n == 0) {
-                        // analyte
-                        cell = row.createCell(7);
-                        cell.setCellStyle(styles.get("row_no_edit"));
-                        cell.setCellValue("NO ANALYTES DEFINED");
-                        
-                        createEmptyCellsForFormat(row, "format1", styles);
-                        
-                        r++;
-                    }
-                } else if (waDO.getQcId() != null) {
-                    qcManager = QcManager.fetchById(waDO.getQcId());
-
-                    // description
-                    cell = row.createCell(2);
-                    cell.setCellStyle(styles.get("row_no_edit"));
-                    cell.setCellValue(qcManager.getQc().getName());
-    
-                    // qc link
-                    cell = row.createCell(3);
-                    cell.setCellStyle(styles.get("row_no_edit"));
-                    cell.setCellValue("");
-
-                    // test name
-                    cell = row.createCell(4);
-                    cell.setCellStyle(styles.get("row_no_edit"));
-                    cell.setCellValue("");
-                    
-                    // method name
-                    cell = row.createCell(5);
-                    cell.setCellStyle(styles.get("row_no_edit"));
-                    cell.setCellValue("");
-                    
-                    // analysis status
-                    cell = row.createCell(6);
-                    cell.setCellStyle(styles.get("row_edit"));
-                    cell.setCellValue("");
-
-                    wqrManager = waManager.getWorksheetQcResultAt(a);
-                    for (n = 0; n < wqrManager.count(); n++, r++) {
-                        wqrVDO = wqrManager.getWorksheetQcResultAt(n);
-
-                        if (n != 0) {
-                            row = sheet.createRow(r);
-                            for (c = 0; c < 7; c++) {
-                                cell = row.createCell(c);
-                                cell.setCellStyle(styles.get("row_no_edit"));
-                            }                            
-                        }
-                        
-                        // analyte
-                        cell = row.createCell(7);
-                        cell.setCellStyle(styles.get("row_no_edit"));
-                        cell.setCellValue(wqrVDO.getAnalyteName());
-                        
-                        cellNameIndex = i+"."+a+"."+n;
-                        createQcResultCellsForFormat(wb, row, cellNameIndex, "format1", styles, cellAttributes, wqrVDO);
-                    }
-                    
-                    if (n == 0) {
-                        // analyte
-                        cell = row.createCell(7);
-                        cell.setCellStyle(styles.get("row_no_edit"));
-                        cell.setCellValue("NO ANALYTES DEFINED");
-                        
-                        createEmptyCellsForFormat(row, "format1", styles);
-                        
-                        r++;
-                    }
-                }
-
-                for (c = 3; c < 6; c++)
-                    sheet.addMergedRegion(new CellRangeAddress(anaMergeStart, r - 1, c, c));
+                }                            
             }
             
-            for (c = 0; c < 3; c++)
-                sheet.addMergedRegion(new CellRangeAddress(itemMergeStart, r - 1, c, c));
-        }
-        
-        //
-        // Create validators
-        //
-        statusColumn = new CellRangeAddressList(1,sheet.getPhysicalNumberOfRows()-1,6,6);
-        statusConstraint = DVConstraint.createExplicitListConstraint(statuses);
-        statusValidation = new HSSFDataValidation(statusColumn,statusConstraint);
-        statusValidation.setEmptyCellAllowed(true);
-        statusValidation.setSuppressDropDownArrow(false);
-        statusValidation.createPromptBox("Statuses", formatTooltip(statuses));
-        statusValidation.setShowPromptBox(false);
-        sheet.addValidationData(statusValidation);
-        
-//        rawColumn = new CellRangeAddressList(1,sheet.getPhysicalNumberOfRows()-1,8,8);
-//        rawConstraint1 = DVConstraint.createNumericConstraint(DVConstraint.ValidationType.DECIMAL,
-//                                                              DVConstraint.OperatorType.GREATER_OR_EQUAL,
-//                                                              "0.0", null);
-//        rawValidation = new HSSFDataValidation(rawColumn,rawConstraint1);
-//        sheet.addValidationData(rawValidation);
-//        rawConstraint2 = DVConstraint.createNumericConstraint(DVConstraint.ValidationType.DECIMAL,
-//                                                              DVConstraint.OperatorType.LESS_THAN,
-//                                                              "100.0", null);
-//        rawValidation = new HSSFDataValidation(rawColumn,rawConstraint2);
-//        sheet.addValidationData(rawValidation);
+            rVDO = arManager.getResultAt(wrVDO.getResultRow(), 0);
+            validator = arManager.getResultValidator(wrVDO.getResultGroup());
+            
+            // analyte
+            cell = row.createCell(7);
+            cell.setCellStyle(styles.get("row_no_edit"));
+            cell.setCellValue(wrVDO.getAnalyteName());
+            
+            // reportable
+            cell = row.createCell(8);
+            cell.setCellStyle(styles.get("row_edit"));
+            cell.setCellValue(rVDO.getIsReportable());
+            
+//            createConstraint(cellAttributes, aVDO.getTestId(), wrVDO.getResultGroup(), validator, aVDO.getUnitOfMeasureId());
+            
+            cellNameIndex = nameIndexPrefix+"."+i;
+            for (c = 0; c < formatColumns.size(); c++) {
+                formatColumn = formatColumns.get(c);
+                
+                cell = row.createCell(9+c);
+                if (formatColumn.getEquation() != null && formatColumn.getEquation().length() > 0) {
+                    cell.setCellStyle(styles.get("row_no_edit"));
+                    try {
+                        cell.setCellFormula(formatCellFormula(row, formatColumn, formatColumns));
+                    } catch (Exception anyE) {
+                        // TODO: Code proper exception handling
+                        anyE.printStackTrace();
+                    }
+                    try {
+                        tempDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(wrVDO.getValueAt(c), new ParsePosition(1));
+                        if (tempDate != null)
+                            cell.setCellValue(tempDate);
+                        else
+                            throw new Exception("Invalid Date");
+                    } catch (Exception anyE) {
+                        try {
+                            cell.setCellValue(Double.parseDouble(wrVDO.getValueAt(c)));
+                        } catch (Exception ignE) {
+                            // we won't be getting boolean values and string values
+                            // will wipe the formula
+                        }
+                    }
+                } else {
+                    cell.setCellStyle(styles.get("row_edit"));
+                    cell.setCellValue(wrVDO.getValueAt(c));
+                }
 
-        testIter = cellAttributes.keySet().iterator();
-        while (testIter.hasNext()) {
-            testId = testIter.next();
-            groupIter = cellAttributes.get(testId).keySet().iterator();
-            while (groupIter.hasNext()) {
-                groupId = groupIter.next();
-                rawValidation = new HSSFDataValidation(cellAttributes.get(testId).get(groupId).cellRanges,
-                                                       cellAttributes.get(testId).get(groupId).constraint);
-//                rawValidation.createPromptBox("Suggestions", cellAttributes.get(testId).get(groupId).tooltip);
-                sheet.addValidationData(rawValidation);
+                cellName = wb.createName();
+                cellName.setNameName(formatColumn.getName()+"."+cellNameIndex);
+                cellName.setRefersToFormula("Worksheet!"+CellReference.convertNumToColString(9+c)+
+                                            (row.getRowNum()+1));
+                
+//                addCellToValidationRange(cellAttributes, aVDO.getTestId(), wrVDO.getResultGroup(), cell);
+            }
+            
+            for (c = 0; c < arManager.getRowAt(wrVDO.getResultRow()).size(); c++) {
+                rVDO = arManager.getResultAt(wrVDO.getResultRow(), c);
+                try {
+                    aDO = analyteLocal().fetchById(rVDO.getAnalyteId());
+                    formatColumn = columnMasterMap.get(aDO.getExternalId());
+                    if (formatColumn != null) {
+                        j = formatColumns.indexOf(formatColumn);
+                        if (j != -1) {
+                            cell = row.getCell(9 + j);
+                            if (cell.getStringCellValue() == null || cell.getStringCellValue().length() == 0)
+                                cell.setCellValue(rVDO.getValue());
+                        } else {
+                            j = formatColumns.size();
+                            formatColumns.add(formatColumn);
+                            cell = row.createCell(9 + j);
+                            if (formatColumn.getEquation() != null && formatColumn.getEquation().length() > 0) {
+                                cell.setCellStyle(styles.get("row_no_edit"));
+                                try {
+                                    cell.setCellFormula(formatCellFormula(row, formatColumn, formatColumns));
+                                } catch (Exception anyE1) {
+                                    // TODO: Code proper exception handling
+                                    anyE1.printStackTrace();
+                                }
+                            } else {
+                                cell.setCellStyle(styles.get("row_edit"));
+                            }
+                            if (wrVDO.getValueAt(j) != null && wrVDO.getValueAt(j).length() > 0)
+                                cell.setCellValue(wrVDO.getValueAt(j));
+                            else
+                                cell.setCellValue(rVDO.getValue());
+
+                            cellName = wb.createName();
+                            cellName.setNameName(formatColumn.getName()+"."+cellNameIndex);
+                            cellName.setRefersToFormula("Worksheet!"+CellReference.convertNumToColString(9+j)+
+                                                        (row.getRowNum()+1));
+
+//                            addCellToValidationRange(cellAttributes, aVDO.getTestId(), wrVDO.getResultGroup(), cell);
+                        }
+                    }
+                } catch (Exception anyE) {
+                    // TODO: Code proper exception handling
+                    anyE.printStackTrace();
+                }
             }
         }
         
-        for (c = 0; c < 11; c++)
-            sheet.autoSizeColumn(c, true);
-            
-        sheet.groupColumn(2, 6);
+        return r;
+    }
+
+    private int createQcResultCellsForFormat(HSSFWorkbook wb, HSSFSheet sheet, 
+                                              Row row, String nameIndexPrefix, ArrayList<FormatColumn> formatColumns,
+                                              HashMap<Integer,HashMap<Integer,CellAttributes>> cellAttributes,
+                                              WorksheetQcResultManager wqrManager) {
+        int  c, i, j, r;
+        String cellNameIndex;
+        Cell cell;
+        Date                  tempDate;
+        FormatColumn          formatColumn;
+        Name cellName;
+        AnalyteDO             aDO;
+        QcAnalyteViewDO       qcaVDO;
+        ResultValidator       validator;
+        ResultViewDO          rVDO;
+        WorksheetQcResultViewDO wqrVDO;
         
+        r = row.getRowNum();
+        for (i = 0; i < wqrManager.count(); i++, r++) {
+            wqrVDO = wqrManager.getWorksheetQcResultAt(i);
+            if (i != 0) {
+                row = sheet.createRow(r);
+                for (c = 0; c < 7; c++) {
+                    cell = row.createCell(c);
+                    cell.setCellStyle(styles.get("row_no_edit"));
+                }                            
+            }
+            
+//            validator = arManager.getResultValidator(wrVDO.getResultGroup());
+            
+            // analyte
+            cell = row.createCell(7);
+            cell.setCellStyle(styles.get("row_no_edit"));
+            cell.setCellValue(wqrVDO.getAnalyteName());
+            
+            // reportable
+            cell = row.createCell(8);
+            cell.setCellStyle(styles.get("row_no_edit"));
+            cell.setCellValue("N");
+            
+//            createConstraint(cellAttributes, aVDO.getTestId(), wrVDO.getResultGroup(), validator, aVDO.getUnitOfMeasureId());
+            
+            cellNameIndex = nameIndexPrefix+"."+i;
+            for (c = 0; c < formatColumns.size(); c++) {
+                formatColumn = formatColumns.get(c);
+                
+                cell = row.createCell(9+c);
+                if ("raw_value".equals(formatColumn.getName())) {
+                    cell.setCellStyle(styles.get("row_edit"));
+                    cell.setCellValue(wqrVDO.getValue());
+                } else if ("final_value".equals(formatColumn.getName())) {
+                    cell.setCellStyle(styles.get("row_edit"));
+                    if (wqrVDO.getValue() != null && wqrVDO.getValue().length() > 0) {
+                        cell.setCellValue(wqrVDO.getValue());
+                    } else {
+                        try {
+                            qcaVDO = qcAnaLocal().fetchById(wqrVDO.getQcAnalyteId());
+                            cell.setCellValue(qcaVDO.getValue());
+                        } catch (Exception anyE) {
+                            // TODO: Code proper exception handling
+                            anyE.printStackTrace();
+                        }
+                    }
+                } else {
+                    cell.setCellStyle(styles.get("row_no_edit"));
+                }
+
+                cellName = wb.createName();
+                cellName.setNameName(formatColumn.getName()+"."+cellNameIndex);
+                cellName.setRefersToFormula("Worksheet!"+CellReference.convertNumToColString(9+c)+
+                                            (row.getRowNum()+1));
+                
+//                addCellToValidationRange(cellAttributes, aVDO.getTestId(), wrVDO.getResultGroup(), cell);
+            }
+            
+        }
+        
+        return r;
+    }
+
+    private void createEmptyCellsForFormat(Row row, ArrayList<FormatColumn> formatColumns) {
+        int  c;
+        Cell cell;
+        
+        // analyte
+        cell = row.createCell(7);
+        cell.setCellStyle(styles.get("row_no_edit"));
+        cell.setCellValue("NO ANALYTES DEFINED");
+        
+        // reportable
+        cell = row.createCell(8);
+        cell.setCellStyle(styles.get("row_no_edit"));
+        cell.setCellValue("N");
+        
+        for (c = 0; c < formatColumns.size(); c++) {
+            cell = row.createCell(9+c);
+            cell.setCellStyle(styles.get("row_no_edit"));
+            cell.setCellValue("");
+        }
+    }
+    
+    private AnalyteLocal analyteLocal() {
         try {
-            out = new FileOutputStream(getWorksheetTempDirectory()+"Worksheet"+manager.getWorksheet().getId()+".xls");
-            wb.write(out);
-            out.close();
-            Runtime.getRuntime().exec("chmod go+rw "+getWorksheetTempDirectory()+"Worksheet"+manager.getWorksheet().getId()+".xls");
-        } catch (IOException ioE) {
-            System.out.println("Error writing Excel file: "+ioE.getMessage());
+            InitialContext ctx = new InitialContext();
+            return (AnalyteLocal)ctx.lookup("openelis/AnalyteBean/local");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
         }
-
-        return manager;
-    }
-
-    public WorksheetManager loadFromEdit(WorksheetManager manager) throws Exception {
-        int             i, a, r;
-        Object          value;
-        Integer         testResultId;
-        FileInputStream in;
-//        ValidationErrorsList errorList;
-        HSSFWorkbook    wb;
-        AnalysisManager           aManager;
-        AnalysisResultManager     arManager;
-        AnalysisViewDO            aVDO;
-        ResultViewDO              rVDO;
-        SampleDataBundle          bundle;
-        SampleItemManager         siManager;
-        SampleItemViewDO          siVDO;
-        SampleManager             sManager;
-        TestResultDO             trDO;
-        WorksheetAnalysisDO      waDO;
-        WorksheetAnalysisManager waManager;
-        WorksheetItemDO          wiDO;
-        WorksheetItemManager     wiManager;
-        WorksheetQcResultManager wqrManager;
-        WorksheetQcResultViewDO  wqrVDO;
-        WorksheetResultManager   wrManager;
-        WorksheetResultViewDO    wrVDO;
-        
-//        errorList = new ValidationErrorsList();
-        in = new FileInputStream(getWorksheetTempDirectory()+"Worksheet"+manager.getWorksheet().getId()+".xls");
-        wb = new HSSFWorkbook(in);
-        
-        wiManager = manager.getItems();
-        for (i = 0; i < wiManager.count(); i++) {
-            wiDO = wiManager.getWorksheetItemAt(i);
-            waManager = wiManager.getWorksheetAnalysisAt(i);
-            for (a = 0; a < waManager.count(); a++) {
-                waDO = waManager.getWorksheetAnalysisAt(a);
-                if (waDO.getAnalysisId() != null) {
-                    bundle = waManager.getBundleAt(a);
-                    sManager = bundle.getSampleManager();
-                    siManager = sManager.getSampleItems();
-                    siVDO = siManager.getSampleItemAt(bundle.getSampleItemIndex());
-                    aManager = siManager.getAnalysisAt(bundle.getSampleItemIndex());
-                    aVDO = aManager.getAnalysisAt(bundle.getAnalysisIndex());
-                    arManager = aManager.getAnalysisResultAt(bundle.getAnalysisIndex());
-
-                    wrManager = waManager.getWorksheetResultAt(a);
-                    for (r = 0; r < wrManager.count(); r++) {
-                        wrVDO = wrManager.getWorksheetResultAt(r);
-                        
-                        value = getValueFromCell(wb, "raw_value."+i+"."+a+"."+r);
-                        if (value != null) {
-                            try {
-//                                testResultId = arManager.validateResultValue(wrVDO.getResultGroup(),
-//                                                                             aVDO.getUnitOfMeasureId(),
-//                                                                             value.toString());
-//                                trDO = arManager.getTestResultList().get(testResultId);
-                                
-//                                wrVDO.setTestResultId(testResultId);
-//                                wrVDO.setTypeId(trDO.getTypeId());
-                                wrVDO.setValue(value.toString());
-                            } catch (Exception anyE) {
-//                                errorList.add(anyE);
-                                throw anyE;
-                            }
-                        }
-
-                        value = getValueFromCell(wb, "final_value."+i+"."+a+"."+r);
-                        if (value != null) {
-                            try {
-//                                testResultId = arManager.validateResultValue(wrVDO.getResultGroup(),
-//                                                                             aVDO.getUnitOfMeasureId(),
-//                                                                             value.toString());
-//                                trDO = arManager.getTestResultList().get(testResultId);
-//                                
-                                rVDO = arManager.getResultForWorksheet(waDO.getAnalysisId(), wrVDO.getAnalyteId());
-//                                rVDO.setTestResultId(testResultId);
-//                                rVDO.setTypeId(trDO.getTypeId());
-//                                rVDO.setValue(formatValue(trDO, value.toString()));
-                                rVDO.setValue(value.toString());
-                            } catch (Exception anyE) {
-//                                errorList.add(anyE);
-                                throw anyE;
-                            }
-                        }
-                    }
-                } else if (waDO.getQcId() != null) {
-                    wqrManager = waManager.getWorksheetQcResultAt(a);
-                    for (r = 0; r < wqrManager.count(); r++) {
-                        wqrVDO = wqrManager.getWorksheetQcResultAt(r);
-                        
-                        value = getValueFromCell(wb, "raw_value."+i+"."+a+"."+r);
-                        if (value != null) {
-                            wqrVDO.setValue(value.toString());
-                        }
-                    }
-                }
-            }
-        }
-        
-//        if (errorList.getErrorList().size() > 0)
-//            throw errorList;
-        
-        return manager;
-    }
-    
-    private static HashMap<String,CellStyle> createStyles(HSSFWorkbook wb) {
-        HashMap<String,CellStyle> styles;
-        CellStyle                 headerStyle, rowEditStyle, rowNoEditStyle;
-        Font                      headerFont;
-
-        styles = new HashMap<String,CellStyle>();
-
-        headerFont = wb.createFont();
-        headerFont.setColor(IndexedColors.WHITE.getIndex());
-        headerStyle = wb.createCellStyle();
-        headerStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
-        headerStyle.setFillForegroundColor(IndexedColors.GREY_80_PERCENT.getIndex());
-        headerStyle.setFont(headerFont);
-        headerStyle.setLocked(true);
-        styles.put("header", headerStyle);
-
-        rowEditStyle = wb.createCellStyle();
-        rowEditStyle.setAlignment(CellStyle.ALIGN_LEFT);
-        rowEditStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
-        rowEditStyle.setLocked(false);
-        styles.put("row_edit", rowEditStyle);
-
-        rowNoEditStyle = wb.createCellStyle();
-        rowNoEditStyle.setAlignment(CellStyle.ALIGN_LEFT);
-        rowNoEditStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
-        rowNoEditStyle.setLocked(true);
-        styles.put("row_no_edit", rowNoEditStyle);
-
-        return styles;
     }
 
     private DictionaryLocal dictLocal() {
         try {
             InitialContext ctx = new InitialContext();
             return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    private QcAnalyteLocal qcAnaLocal() {
+        try {
+            InitialContext ctx = new InitialContext();
+            return (QcAnalyteLocal)ctx.lookup("openelis/QcAnalyteBean/local");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    private SampleManagerLocal sampManLocal() {
+        try {
+            InitialContext ctx = new InitialContext();
+            return (SampleManagerLocal)ctx.lookup("openelis/SampleManagerBean/local");
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
@@ -559,6 +893,45 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
             System.out.println(e.getMessage());
             return null;
         }
+    }
+    
+    private ArrayList<FormatColumn> getColumnListForFormat(String formatName) {
+        ArrayList<FormatColumn> colList;
+        
+        colList = new ArrayList<FormatColumn>();
+        if ("wsheet_num_format_total".equals(formatName) || "wsheet_num_format_batch".equals(formatName)) {
+            colList.add(columnMasterMap.get("raw_value1"));
+            colList.add(columnMasterMap.get("dilution_factor"));
+            colList.add(columnMasterMap.get("final_value1"));
+            colList.add(columnMasterMap.get("final_value"));
+        } else if ("format_terrycain1".equals(formatName)) {
+            colList.add(columnMasterMap.get("raw_value1"));
+            colList.add(columnMasterMap.get("raw_value2"));
+            colList.add(columnMasterMap.get("dilution_factor"));
+            colList.add(columnMasterMap.get("final_value1"));
+            colList.add(columnMasterMap.get("final_value2"));
+            colList.add(columnMasterMap.get("final_value"));
+            colList.add(columnMasterMap.get("range_low"));
+            colList.add(columnMasterMap.get("range_high"));
+            colList.add(columnMasterMap.get("quant_limit"));
+            colList.add(columnMasterMap.get("final_quant_limit"));
+            colList.add(columnMasterMap.get("quant_limit"));
+            colList.add(columnMasterMap.get("expected_value"));
+            colList.add(columnMasterMap.get("expected_value_dilut"));
+            colList.add(columnMasterMap.get("precent_recovery"));
+            colList.add(columnMasterMap.get("sample_volume"));
+            colList.add(columnMasterMap.get("extract_volume"));
+            colList.add(columnMasterMap.get("instrument_run_id"));
+            colList.add(columnMasterMap.get("retention_time"));
+            colList.add(columnMasterMap.get("response"));
+            colList.add(columnMasterMap.get("molecular_weight"));
+            colList.add(columnMasterMap.get("desorp_efficiency"));
+        } else {
+            colList.add(columnMasterMap.get("raw_value1"));
+            colList.add(columnMasterMap.get("final_value"));
+        }
+        
+        return colList;
     }
     
     private ArrayList<DictionaryDO> getStatuses() {
@@ -601,6 +974,10 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         }
 
         return statuses;
+    }
+    
+    private String getWorksheetTempFileName(Integer worksheetNumber) {
+        return getWorksheetTempDirectory()+"Worksheet"+worksheetNumber+".xls";
     }
     
     private String getWorksheetTempDirectory() {
@@ -652,15 +1029,16 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
     }
     
     private void createConstraint(HashMap<Integer,HashMap<Integer,CellAttributes>> testAttributes,
-                                  Integer testId, Integer resultGroup, ResultValidator validator) {
+                                  Integer testId, Integer resultGroup, ResultValidator validator,
+                                  Integer unitId) {
         CellAttributes attributes;
         
         attributes = getCellAttributes(testAttributes, testId, resultGroup);
 
-        attributes.constraint = DVConstraint.createNumericConstraint(DVConstraint.ValidationType.DECIMAL,
-                                                                     DVConstraint.OperatorType.GREATER_OR_EQUAL,
-                                                                     "0.0", null);
-//        attributes.tooltip = formatTooltip(validator.getRanges(0), validator.getDictionaryRanges(0));
+//        attributes.constraint = DVConstraint.createNumericConstraint(DVConstraint.ValidationType.DECIMAL,
+//                                                                     DVConstraint.OperatorType.GREATER_OR_EQUAL,
+//                                                                     "0.0", null);
+//        attributes.tooltip = formatTooltip(validator.getRanges(unitId), validator.getDictionaryRanges(unitId));
         return;
     }
     
@@ -728,6 +1106,29 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         return message;
     }
 */
+    private String formatCellFormula(Row row, FormatColumn column, ArrayList<FormatColumn> columnList) throws Exception {
+        int          i, j;
+        String       eColumns[];
+        FormatColumn tempColumn;
+        
+        eColumns = (String[]) column.getEquationColumns().clone();
+        for (i = 0; i < eColumns.length; i++) {
+            tempColumn = columnMasterMap.get(eColumns[i]);
+            if (tempColumn != null) {
+                j = columnList.indexOf(tempColumn);
+                if (j == -1) {
+                    columnList.add(tempColumn);
+                    j = columnList.size() - 1;
+                }
+            } else {
+                throw new Exception("Invalid column name in equation: '"+eColumns[i]+"'");
+            }
+            eColumns[i] = CellReference.convertNumToColString(9+j)+(row.getRowNum()+1);
+        }
+        
+        return String.format(column.getEquation(), eColumns);
+    }
+    
     private String formatValue(TestResultDO testResultDO, String value) {
         DictionaryViewDO typeVDO;
 
@@ -765,7 +1166,37 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         return attributes;
     }
     
-    private Object getValueFromCell(HSSFWorkbook wb, String name) {
+    private Object getValueFromCellByCoords(HSSFWorkbook wb, int row, int col) {
+        Object value;
+        Cell   cell;
+
+        value = null;
+        cell = wb.getSheetAt(0).getRow(row).getCell(col);
+        if (cell != null) {
+            switch (cell.getCellType()) {
+                case Cell.CELL_TYPE_STRING:
+                    value = cell.getStringCellValue();
+                    if (((String)value).length() == 0)
+                        value = null;
+                    break;
+                    
+                case Cell.CELL_TYPE_NUMERIC:
+                    if (DateUtil.isCellDateFormatted(cell))
+                        value = cell.getDateCellValue();
+                    else
+                        value = cell.getNumericCellValue();
+                    break;
+                    
+                case Cell.CELL_TYPE_FORMULA:
+                    value = cell.getNumericCellValue();
+                    break;
+            }
+        }
+        
+        return value;
+    }
+    
+    private Object getValueFromCellByName(HSSFWorkbook wb, String name) {
         int           nameIndex;
         Object        value;
         AreaReference aref;
@@ -784,6 +1215,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                 switch (cell.getCellType()) {
                     case Cell.CELL_TYPE_STRING:
                         value = cell.getStringCellValue();
+                        if (((String)value).length() == 0)
+                            value = null;
                         break;
                         
                     case Cell.CELL_TYPE_NUMERIC:
@@ -803,119 +1236,31 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         return value;
     }
     
-    /*
-     * Create format specific header row cells.  Index starts at 8.
-     */
-    private void createHeaderCellsForFormat(Row row, String format, HashMap<String,CellStyle> styles) {
-        Cell cell;
-        
-        cell = row.createCell(8);
-        cell.setCellStyle(styles.get("header"));
-        cell.setCellValue("Raw Value");
-
-        cell = row.createCell(9);
-        cell.setCellStyle(styles.get("header"));
-        cell.setCellValue("Dilution Factor");
-
-        cell = row.createCell(10);
-        cell.setCellStyle(styles.get("header"));
-        cell.setCellValue("Final Value");
-    }
-    
-    private void createResultCellsForFormat(HSSFWorkbook wb, Row row, String nameIndex,
-                                            String format1, HashMap<String,CellStyle> styles,
-                                            HashMap<Integer,HashMap<Integer,CellAttributes>> cellAttributes,
-                                            AnalysisViewDO aVDO, WorksheetResultViewDO wrVDO) {
-        Cell cell;
-        Name cellName;
-        
-        // raw value
-        cell = row.createCell(8);
-        cell.setCellStyle(styles.get("row_edit"));
-        cell.setCellValue("");
-        addCellToValidationRange(cellAttributes, aVDO.getTestId(), wrVDO.getResultGroup(), cell);
-        cellName = wb.createName();
-        cellName.setNameName("raw_value."+nameIndex);
-        cellName.setRefersToFormula("Worksheet!"+CellReference.convertNumToColString(8)+
-                                    (row.getRowNum()+1));
-
-        // dilution factor
-        cell = row.createCell(9);
-        cell.setCellStyle(styles.get("row_edit"));
-        cell.setCellValue(0.5);
-        cellName = wb.createName();
-        cellName.setNameName("dilution_factor."+nameIndex);
-        cellName.setRefersToFormula("Worksheet!"+CellReference.convertNumToColString(9)+
-                                    (row.getRowNum()+1));
-
-        // final value
-        cell = row.createCell(10);
-        cell.setCellStyle(styles.get("row_edit"));
-        cell.setCellFormula("PRODUCT("+CellReference.convertNumToColString(10-2)+
-                            (row.getRowNum()+1)+","+CellReference.convertNumToColString(10-1)+
-                            (row.getRowNum()+1)+")");
-        addCellToValidationRange(cellAttributes, aVDO.getTestId(), wrVDO.getResultGroup(), cell);
-        cellName = wb.createName();
-        cellName.setNameName("final_value."+nameIndex);
-        cellName.setRefersToFormula("Worksheet!"+CellReference.convertNumToColString(10)+
-                                    (row.getRowNum()+1));
-    }
-
-    private void createQcResultCellsForFormat(HSSFWorkbook wb, Row row, String nameIndex,
-                                              String format, HashMap<String,CellStyle> styles,
-                                              HashMap<Integer,HashMap<Integer,CellAttributes>> cellAttributes,
-                                              WorksheetQcResultViewDO wqrVDO) {
-        Cell cell;
-        Name cellName;
-        
-        // raw value
-        cell = row.createCell(8);
-        cell.setCellStyle(styles.get("row_edit"));
-        cell.setCellValue("");
-        cellName = wb.createName();
-        cellName.setNameName("raw_value."+nameIndex);
-        cellName.setRefersToFormula("Worksheet!"+CellReference.convertNumToColString(8)+
-                                    (row.getRowNum()+1));
-
-        // dilution factor
-        cell = row.createCell(9);
-        cell.setCellStyle(styles.get("row_edit"));
-        cell.setCellValue(0.5);
-        cellName = wb.createName();
-        cellName.setNameName("dilution_factor."+nameIndex);
-        cellName.setRefersToFormula("Worksheet!"+CellReference.convertNumToColString(9)+
-                                    (row.getRowNum()+1));
-
-        // final value
-        cell = row.createCell(10);
-        cell.setCellStyle(styles.get("row_edit"));
-        cell.setCellFormula("PRODUCT("+CellReference.convertNumToColString(10-2)+
-                            (row.getRowNum()+1)+","+CellReference.convertNumToColString(10-1)+
-                            (row.getRowNum()+1)+")");
-    }
-
-    private void createEmptyCellsForFormat(Row row, String format, HashMap<String,CellStyle> styles) {
-        Cell cell;
-        
-        // raw value
-        cell = row.createCell(8);
-        cell.setCellStyle(styles.get("row_no_edit"));
-        cell.setCellValue("");
-    
-        // dilution factor
-        cell = row.createCell(9);
-        cell.setCellStyle(styles.get("row_no_edit"));
-        cell.setCellValue("");
-    
-        // final value
-        cell = row.createCell(10);
-        cell.setCellStyle(styles.get("row_no_edit"));
-        cell.setCellValue("");
-    }
-    
     class CellAttributes {
         String tooltip;
         CellRangeAddressList cellRanges;
         DVConstraint constraint;
+    }
+    
+    class FormatColumn {
+        String name, equation, eColumns[];
+        
+        FormatColumn(String name, String equation, String eColumns[]) {
+            this.name = name;
+            this.equation = equation;
+            this.eColumns = eColumns;
+        }
+        
+        String getName() {
+            return name;
+        }
+        
+        String getEquation() {
+            return equation;
+        }
+        
+        String[] getEquationColumns() {
+            return eColumns;
+        }
     }
 }

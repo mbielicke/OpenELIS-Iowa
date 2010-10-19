@@ -32,7 +32,6 @@ import java.util.HashMap;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleDO;
@@ -41,8 +40,8 @@ import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SampleManagerLocal;
 import org.openelis.local.WorksheetAnalysisLocal;
@@ -52,20 +51,74 @@ import org.openelis.manager.WorksheetAnalysisManager.WorksheetAnalysisListItem;
 public class WorksheetAnalysisManagerProxy {
     
     public WorksheetAnalysisManager fetchByWorksheetItemId(Integer id) throws Exception {
-        int                            i;
-        WorksheetAnalysisManager       manager;
+//        boolean                        doBreak;
+        int                            i;//, j, k;
         ArrayList<WorksheetAnalysisDO> analyses;
+//        HashMap<Integer,SampleManager> sManagers;
+//        AnalysisManager                aManager;
+//        AnalysisResultManager          arManager;
+//        AnalysisViewDO                 aVDO;
+//        SampleDO                       sample;
+//        SampleItemManager              siManager;
+//        SampleManager                  sManager;
+        WorksheetAnalysisDO            waDO;
+        WorksheetAnalysisManager       waManager;
+//        WorksheetResultManager         wrManager;
         
         analyses = local().fetchByWorksheetItemId(id);
-        manager = WorksheetAnalysisManager.getInstance();
-        manager.setWorksheetItemId(id);
-        for (i = 0; i < analyses.size(); i++)
-            manager.addWorksheetAnalysis(analyses.get(i));
+        waManager = WorksheetAnalysisManager.getInstance();
+        waManager.setWorksheetItemId(id);
+        for (i = 0; i < analyses.size(); i++) {
+            waDO = analyses.get(i);
+            waManager.addWorksheetAnalysis(waDO);
+/*
+            if (waDO.getAnalysisId() != null) {
+                doBreak = false;
+                //
+                // Keep a hash map of sample managers so we only allocate one per
+                // sample to avoid update collisions for multiple analyses on the
+                // same sample
+                //
+                sManagers = waManager.getSampleManagers();
+                sManager = sManagers.get(Integer.valueOf(waDO.getAccessionNumber()));
+                if (sManager == null) {
+                    sample = sampleLocal().fetchByAccessionNumber(Integer.valueOf(waDO.getAccessionNumber()));
+                    sManager = sampleManagerLocal().fetchForUpdate(sample.getId());
+                    sManagers.put(sample.getAccessionNumber(), sManager);
+                }
+                siManager = sManager.getSampleItems();
+                for (j = 0; j < siManager.count(); j++) {
+                    aManager = siManager.getAnalysisAt(j);
+                    for (k = 0; k < aManager.count(); k++) {
+                        aVDO = aManager.getAnalysisAt(k);
+                        if (waDO.getAnalysisId().equals(aVDO.getId())) {
+                            arManager = aManager.getAnalysisResultAt(k);
+                            if (arManager.rowCount() <= 0) {
+                                try {
+                                    arManager = AnalysisResultManager.fetchForUpdateWithTestId(aVDO.getTestId(), aVDO.getUnitOfMeasureId());
+                                    aManager.setAnalysisResultAt(arManager, k);
+                                } catch (NotFoundException nfE) {
+                                    // ignore result not found error and leave the
+                                    // empty AnalysisResultManager attached to the
+                                    // AnalysisManger
+                                }
+                            }
+                            synchronizeWorksheetResults(aVDO, arManager, waManager, i);
+                            doBreak = true;
+                            break;
+                        }
+                    }
+                    if (doBreak)
+                        break;
+                }
+            }
+*/
+        }
         
-        return manager;
+        return waManager;
     }
     
-    public WorksheetAnalysisManager add(WorksheetAnalysisManager manager, HashMap<Integer,Integer> idHash, HashMap<Integer,SampleManager> sManagers) throws Exception {
+    public WorksheetAnalysisManager add(WorksheetAnalysisManager manager, HashMap<Integer,Integer> idHash) throws Exception {
         int                 i;
         Integer             oldId, qcLinkId;
         WorksheetAnalysisDO analysis;
@@ -77,7 +130,7 @@ public class WorksheetAnalysisManagerProxy {
             if (analysis.getWorksheetAnalysisId() == null) {
                 if (!idHash.containsKey(analysis.getId())) {
                     oldId = analysis.getId();
-                    add(manager, analysis, i, sManagers);
+                    add(manager, analysis, i);
                     
                     idHash.put(oldId, analysis.getId());
                     idHash.put(analysis.getId(), null);
@@ -88,7 +141,7 @@ public class WorksheetAnalysisManagerProxy {
                 if (qcLinkId != null) {
                     oldId = analysis.getId();
                     analysis.setWorksheetAnalysisId(qcLinkId);
-                    add(manager, analysis, i, sManagers);
+                    add(manager, analysis, i);
                     
                     idHash.put(oldId, analysis.getId());
                     idHash.put(analysis.getId(), null);
@@ -100,7 +153,7 @@ public class WorksheetAnalysisManagerProxy {
                 
                 if (qcLinkId == null) {
                     oldId = analysis.getId();
-                    add(manager, analysis, i, sManagers);
+                    add(manager, analysis, i);
                     
                     idHash.put(oldId, analysis.getId());
                     if (!oldId.equals(analysis.getId()))
@@ -112,7 +165,7 @@ public class WorksheetAnalysisManagerProxy {
         return manager;
     }
 
-    public WorksheetAnalysisManager update(WorksheetAnalysisManager manager, HashMap<Integer,Integer> idHash, HashMap<Integer,SampleManager> sManagers) throws Exception {
+    public WorksheetAnalysisManager update(WorksheetAnalysisManager manager, HashMap<Integer,Integer> idHash) throws Exception {
         int                 i;
         Integer             oldId, qcLinkId;
         WorksheetAnalysisDO analysis;
@@ -124,7 +177,7 @@ public class WorksheetAnalysisManagerProxy {
             if (analysis.getWorksheetAnalysisId() == null) {
                 if (!idHash.containsKey(analysis.getId())) {
                     oldId = analysis.getId();
-                    update(manager, analysis, i, sManagers);
+                    update(manager, analysis, i);
                     
                     idHash.put(oldId, analysis.getId());
                     idHash.put(analysis.getId(), null);
@@ -135,7 +188,7 @@ public class WorksheetAnalysisManagerProxy {
                 if (qcLinkId != null) {
                     oldId = analysis.getId();
                     analysis.setWorksheetAnalysisId(qcLinkId);
-                    update(manager, analysis, i, sManagers);
+                    update(manager, analysis, i);
                     
                     idHash.put(oldId, analysis.getId());
                     idHash.put(analysis.getId(), null);
@@ -147,7 +200,7 @@ public class WorksheetAnalysisManagerProxy {
                 
                 if (qcLinkId == null) {
                     oldId = analysis.getId();
-                    update(manager, analysis, i, sManagers);
+                    update(manager, analysis, i);
                     
                     idHash.put(oldId, analysis.getId());
                     if (!oldId.equals(analysis.getId()))
@@ -159,22 +212,22 @@ public class WorksheetAnalysisManagerProxy {
         return manager;
     }
 
-    public void add(WorksheetAnalysisManager manager, WorksheetAnalysisDO analysis, int i, HashMap<Integer,SampleManager> sManagers) throws Exception {
-        boolean                   doBreak;
-        int                       j, k;
-        String                    qcAccessionNumber;
-        AnalysisViewDO            aVDO;
-        AnalysisManager           aManager;
-        AnalysisResultManager     arManager;
-        DictionaryDO              newStatus;
-        QcManager                 qcManager;
-        SampleDO                  sample;
-        SampleItemManager         siManager;
-        SampleManager             sManager;
-        WorksheetAnalysisListItem listItem;
-        WorksheetAnalysisLocal    local;
-        WorksheetQcResultManager  wqrManager;
-        WorksheetResultManager    wrManager;
+    public void add(WorksheetAnalysisManager manager, WorksheetAnalysisDO analysis, int i) throws Exception {
+        boolean                        doBreak;
+        int                            j, k;
+        String                         qcAccessionNumber;
+        HashMap<Integer,SampleManager> sManagers;
+        AnalysisViewDO                 aVDO;
+        AnalysisManager                aManager;
+        AnalysisResultManager          arManager;
+        QcManager                      qcManager;
+        SampleDO                       sample;
+        SampleItemManager              siManager;
+        SampleManager                  sManager;
+        WorksheetAnalysisListItem      listItem;
+        WorksheetAnalysisLocal         local;
+        WorksheetQcResultManager       wqrManager;
+        WorksheetResultManager         wrManager;
         
         local = local();
 
@@ -193,18 +246,17 @@ public class WorksheetAnalysisManagerProxy {
             // Set Analysis status to Initiated and validate/update the sample
             //
             doBreak = false;
-            newStatus = dictionaryLocal().fetchBySystemName("analysis_initiated");
-            sample = sampleLocal().fetchByAccessionNumber(Integer.valueOf(analysis.getAccessionNumber()));
             //
             // Keep a hash map of sample managers so we only allocate one per
             // sample to avoid update collisions for multiple analyses on the
             // same sample
             //
-            if (sManagers.containsKey(sample.getId())) {
-                sManager = sManagers.get(sample.getId());
-            } else {
+            sManagers = manager.getSampleManagers();
+            sManager = sManagers.get(Integer.valueOf(analysis.getAccessionNumber()));
+            if (sManager == null) {
+                sample = sampleLocal().fetchByAccessionNumber(Integer.valueOf(analysis.getAccessionNumber()));
                 sManager = sampleManagerLocal().fetchForUpdate(sample.getId());
-                sManagers.put(sample.getId(), sManager);
+                sManagers.put(sample.getAccessionNumber(), sManager);
             }
             siManager = sManager.getSampleItems();
             for (j = 0; j < siManager.count(); j++) {
@@ -212,9 +264,19 @@ public class WorksheetAnalysisManagerProxy {
                 for (k = 0; k < aManager.count(); k++) {
                     aVDO = aManager.getAnalysisAt(k);
                     if (analysis.getAnalysisId().equals(aVDO.getId())) {
-                        aVDO.setStatusId(newStatus.getId());
                         arManager = aManager.getAnalysisResultAt(k);
+                        if (arManager.rowCount() <= 0) {
+                            try {
+                                arManager = AnalysisResultManager.fetchForUpdateWithTestId(aVDO.getTestId(), aVDO.getUnitOfMeasureId());
+                                aManager.setAnalysisResultAt(arManager, k);
+                            } catch (NotFoundException nfE) {
+                                // ignore result not found error and leave the
+                                // empty AnalysisResultManager attached to the
+                                // AnalysisManger
+                            }
+                        }
                         wrManager = manager.getWorksheetResultAt(i);
+                        aManager.initiateAnalysisAt(k);
                         initializeWorksheetResults(aVDO, arManager, wrManager);
                         doBreak = true;
                         break;
@@ -238,39 +300,36 @@ public class WorksheetAnalysisManagerProxy {
         }
     }
 
-    public void update(WorksheetAnalysisManager manager, WorksheetAnalysisDO analysis, int i, HashMap<Integer,SampleManager> sManagers) throws Exception {
-        boolean                   doBreak;
-        int                       /*j, */k, l;
-        AnalysisViewDO            aVDO;
-        AnalysisManager           aManager;
-        DictionaryDO              newStatus;
-        SampleDO                  sample;
-        SampleItemManager         siManager;
-        SampleManager             sManager;
-        WorksheetAnalysisListItem listItem;
-        WorksheetAnalysisLocal    local;
+    public void update(WorksheetAnalysisManager manager, WorksheetAnalysisDO analysis, int i) throws Exception {
+        boolean                        doBreak;
+        int                            /*j, */k, l;
+        HashMap<Integer,SampleManager> sManagers;
+        AnalysisViewDO                 aVDO;
+        AnalysisManager                aManager;
+        SampleDO                       sample;
+        SampleItemManager              siManager;
+        SampleManager                  sManager;
+        WorksheetAnalysisListItem      listItem;
+        WorksheetAnalysisLocal         local;
         
         local = local();
-//        for (j = 0; j < manager.deleteCount(); j++)
-//            local.delete(manager.getDeletedAt(j).worksheetAnalysis);
         
         if (analysis.getId() == null) {
             assert false : "not supported";
         } else {
             if (analysis.getAnalysisId() != null) {
                 doBreak = false;
-                newStatus = dictionaryLocal().fetchBySystemName("analysis_completed");
-                sample = sampleLocal().fetchByAccessionNumber(Integer.valueOf(analysis.getAccessionNumber()));
                 //
                 // Keep a hash map of sample managers so we only allocate one per
                 // sample to avoid update collisions for multiple analyses on the
                 // same sample
                 //
-                if (sManagers.containsKey(sample.getId())) {
-                    sManager = sManagers.get(sample.getId());
-                } else {
+                sManagers = manager.getSampleManagers();
+                sManager = sManagers.get(Integer.valueOf(analysis.getAccessionNumber()));
+                if (sManager == null) {
+                    sample = sampleLocal().fetchByAccessionNumber(Integer.valueOf(analysis.getAccessionNumber()));
                     sManager = sampleManagerLocal().fetchForUpdate(sample.getId());
-                    sManagers.put(sample.getId(), sManager);
+                    sManagers.put(sample.getAccessionNumber(), sManager);
                 }
                 siManager = sManager.getSampleItems();
                 for (k = 0; k < siManager.count(); k++) {
@@ -278,7 +337,13 @@ public class WorksheetAnalysisManagerProxy {
                     for (l = 0; l < aManager.count(); l++) {
                         aVDO = aManager.getAnalysisAt(l);
                         if (analysis.getAnalysisId().equals(aVDO.getId())) {
-                            aVDO.setStatusId(newStatus.getId());
+                            try {
+                                aManager.completeAnalysisAt(l);
+                            } catch (Exception ignE) {
+                                // ignoring errors cause by trying to complete
+                                // the analysis because they should not prevent
+                                // us from saving the record properly
+                            }
                             doBreak = true;
                             break;
                         }
@@ -335,18 +400,6 @@ public class WorksheetAnalysisManagerProxy {
         }
     }
 
-    private DictionaryLocal dictionaryLocal() {
-        InitialContext ctx;
-        
-        try {
-            ctx = new InitialContext();
-            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
-        } catch(Exception e) {
-             System.out.println(e.getMessage());
-             return null;
-        }
-    }
-
     private SampleLocal sampleLocal() {
         InitialContext ctx;
         
@@ -376,7 +429,7 @@ public class WorksheetAnalysisManagerProxy {
      */
     private void initializeWorksheetResults(AnalysisViewDO aVDO, AnalysisResultManager arManager,
                                             WorksheetResultManager wrManager) throws Exception {
-        int                                         i, j;
+        int                                         i;
         ArrayList<ResultViewDO>                     resultRow;
         ArrayList<ArrayList<ResultViewDO>>          results;
         HashMap<Integer,TestWorksheetAnalyteViewDO> twAnalytes;
@@ -396,22 +449,84 @@ public class WorksheetAnalysisManagerProxy {
         for (i = 0; i < results.size(); i++) {
             resultRow = results.get(i);
             result = resultRow.get(0);
-            if (twAnalytes.containsKey(result.getTestAnalyteId())) {
-                for (j = 0; j < resultRow.size(); j++) {
-                    result = resultRow.get(j);
+            if (twAnalytes.size() == 0 || twAnalytes.containsKey(result.getTestAnalyteId())) {
+                wrVDO = new WorksheetResultViewDO();
+                wrVDO.setTestAnalyteId(result.getTestAnalyteId());
+                wrVDO.setResultRow(i);
+                wrVDO.setAnalyteId(result.getAnalyteId());
+                wrVDO.setTypeId(result.getTypeId());
+                wrVDO.setAnalyteName(result.getAnalyte());
+                wrManager.addWorksheetResult(wrVDO);
+            }           
+        }
+    }
+
+    /**
+     * Loads the WorksheetResultManager from the provided AnalysisManager. 
+     */
+/*
+    private void synchronizeWorksheetResults(AnalysisViewDO aVDO, AnalysisResultManager arManager,
+                                             WorksheetAnalysisManager waManager, int index) throws Exception {
+        int                                         i, j;
+        ArrayList<ResultViewDO>                     resultRow;
+        ArrayList<ArrayList<ResultViewDO>>          results;
+        HashMap<Integer,TestWorksheetAnalyteViewDO> twAnalytes;
+        ResultViewDO                                result;
+        TestWorksheetAnalyteViewDO                  twaVDO;
+        TestWorksheetManager                        twManager;
+        WorksheetResultManager                      wrManager, newManager;
+        WorksheetResultViewDO                       wrVDO;
+
+        twAnalytes = new HashMap<Integer,TestWorksheetAnalyteViewDO>();
+        twManager = TestWorksheetManager.fetchByTestId(aVDO.getTestId());
+        for (i = 0; i < twManager.analyteCount(); i++) {
+            twaVDO = twManager.getAnalyteAt(i);
+            twAnalytes.put(twaVDO.getTestAnalyteId(), twaVDO);
+        }
+
+        results = arManager.getResults();
+        wrManager = waManager.getWorksheetResultAt(index);
+        if (wrManager.count() <= 0) {
+            for (i = 0; i < results.size(); i++) {
+                resultRow = results.get(i);
+                result = resultRow.get(0);
+                
+                if (twAnalytes.size() == 0 || twAnalytes.containsKey(result.getTestAnalyteId())) {
                     wrVDO = new WorksheetResultViewDO();
                     wrVDO.setTestAnalyteId(result.getTestAnalyteId());
-                    wrVDO.setIsColumn(result.getIsColumn());
-                    wrVDO.setSortOrder(i+1);
+                    wrVDO.setResultRow(i);
+                    wrVDO.setAnalyteId(result.getAnalyteId());
+                    wrVDO.setTypeId(result.getTypeId());
+                    wrVDO.setAnalyteName(result.getAnalyte());
+                    wrManager.addWorksheetResult(wrVDO);
+                }           
+            }
+        } else {
+            i = 0;
+            j = 0;
+            newManager = WorksheetResultManager.getInstance();
+            newManager.setWorksheetAnalysisId(wrManager.getWorksheetAnalysisId());
+            while (i < results.size() || j < wrManager.count()) {
+                resultRow = results.get(i);
+                result = resultRow.get(0);
+                wrVDO = wrManager.getWorksheetResultAt(j);
+                
+                
+                
+                if (twAnalytes.size() == 0 || twAnalytes.containsKey(result.getTestAnalyteId())) {
+                    
+                    wrVDO = new WorksheetResultViewDO();
+                    wrVDO.setTestAnalyteId(result.getTestAnalyteId());
+                    wrVDO.setResultRow(i);
                     wrVDO.setAnalyteId(result.getAnalyteId());
                     wrVDO.setTypeId(result.getTypeId());
                     wrVDO.setAnalyteName(result.getAnalyte());
                     wrManager.addWorksheetResult(wrVDO);
                 }
-            }           
+            }
         }
     }
-
+*/
     /**
      * Loads the WorksheetQcResultManager from the provided QcManager. 
      */
@@ -429,7 +544,7 @@ public class WorksheetAnalysisManagerProxy {
             wqrVDO.setQcAnalyteId(qcaVDO.getId());
             wqrVDO.setAnalyteName(qcaVDO.getAnalyteName());
             wqrVDO.setTypeId(qcaVDO.getTypeId());
-            wqrVDO.setValue(qcaVDO.getValue());
+//            wqrVDO.setValue(qcaVDO.getValue());
             wqrManager.addWorksheetQcResult(wqrVDO);
         }
     }

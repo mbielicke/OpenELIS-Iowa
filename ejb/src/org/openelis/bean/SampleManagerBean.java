@@ -168,6 +168,7 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
         SampleDO checkSample;
         SampleManager quickEntryMan;
         AnalysisManager anMan;
+        AnalysisResultManager arMan;
         AnalysisViewDO anDO;
         
 
@@ -186,14 +187,21 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
                     for(int i=0; i<quickEntryMan.getSampleItems().count(); i++){
                         anMan = quickEntryMan.getSampleItems().getAnalysisAt(i);
                         for(int j=0; j<anMan.count(); j++){
-                            anDO = anMan.getAnalysisAt(j);
-                            
-                            try {
-                                anMan.setAnalysisResultAt(AnalysisResultManager.fetchForUpdateWithTestId(anDO.getTestId(), anDO.getUnitOfMeasureId()), j);
-                            } catch (NotFoundException e) {
-                                anMan.setAnalysisResultAt(AnalysisResultManager.getInstance(), j);
-                            } catch (Exception e) {
-                                throw e;
+                            arMan = anMan.getAnalysisResultAt(j);
+                            // some analyses may have been put on worksheets
+                            // and therefore may already have result records
+                            if (arMan.rowCount() <= 0) {
+                                anDO = anMan.getAnalysisAt(j);
+                                try {
+                                    arMan = AnalysisResultManager.fetchForUpdateWithTestId(anDO.getTestId(), anDO.getUnitOfMeasureId());
+                                    anMan.setAnalysisResultAt(arMan, j);
+                                } catch (NotFoundException e) {
+                                    // ignore result not found error and leave the
+                                    // empty AnalysisResultManager attached to the
+                                    // AnalysisManger
+                                } catch (Exception e) {
+                                    throw e;
+                                }
                             }
                         }
                     }
