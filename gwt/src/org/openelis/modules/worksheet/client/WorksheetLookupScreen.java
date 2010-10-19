@@ -27,6 +27,16 @@ package org.openelis.modules.worksheet.client;
 
 import java.util.ArrayList;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
@@ -63,16 +73,6 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.meta.WorksheetCompletionMeta;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class WorksheetLookupScreen extends Screen implements HasActionHandlers<WorksheetLookupScreen.Action> {
 
@@ -359,15 +359,14 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
         ArrayList<TableDataRow> selections;
         
         selections = worksheetTable.getSelections();
+        window.close();
         if (selections.size() > 0)
             ActionEvent.fire(this, Action.SELECT, selections);
-        
-        window.close();
     }
     
     private void cancel() {
-        ActionEvent.fire(this, Action.CANCEL, null);
         window.close();
+        ActionEvent.fire(this, Action.CANCEL, null);
     }
     
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {

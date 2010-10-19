@@ -28,11 +28,22 @@ package org.openelis.modules.worksheetCompletion.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.TabPanel;
+
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InstrumentViewDO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SectionDO;
@@ -85,23 +96,14 @@ import org.openelis.manager.WorksheetQcResultManager;
 import org.openelis.manager.WorksheetResultManager;
 import org.openelis.meta.WorksheetCompletionMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.modules.note.client.EditNoteScreen;
 import org.openelis.modules.note.client.NotesTab;
 import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.TabPanel;
 
 public class WorksheetCompletionScreen extends Screen {
 
     private boolean              closeWindow, isPopup;
-    private Integer              formatBatch, formatTotal;
+    private Integer              formatBatch, formatTotal, statusFailedRun, origStatus;
     private ArrayList<SectionDO> sections;
     private ScreenService        instrumentService, userService;
     private ModulePermission     userPermission;
@@ -114,16 +116,20 @@ public class WorksheetCompletionScreen extends Screen {
     private TabPanel    tabPanel;
     private TableWidget table;
 
+    protected Integer                   userId;
+    protected String                    userName;
     protected AutoComplete<Integer>     instrumentId, defaultUser;
     protected CalendarLookUp            defaultStartedDate, defaultCompletedDate;
     protected Confirm                   worksheetExitConfirm;
     protected Dropdown<Integer>         statusId;
+    protected EditNoteScreen            editNote;
+    protected NoteViewDO                failedRunNote;
     protected TextBox<Integer>          worksheetId, relatedWorksheetId;
     protected WorksheetFileUploadScreen wFileUploadScreen;
     protected WorksheetLookupScreen     wLookupScreen, wrLookupScreen;
     
     private enum Tabs {
-        NOTE
+        WORKSHEET, NOTE
     };
 
     public WorksheetCompletionScreen(final Integer worksheetId) throws Exception {
@@ -217,7 +223,13 @@ public class WorksheetCompletionScreen extends Screen {
         commitButton = (AppButton)def.getWidget("commit");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                commit();
+                Integer statusId;
+                
+                statusId = manager.getWorksheet().getStatusId();
+                if (statusFailedRun.equals(statusId) && !statusFailedRun.equals(origStatus))
+                    openFailedRunNote();
+                else
+                    commit();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -383,8 +395,7 @@ public class WorksheetCompletionScreen extends Screen {
         table = (TableWidget)def.getWidget("worksheetItemTable");
         addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                if (state != State.QUERY)
-                    table.load(getTableModel());
+                table.load(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -487,6 +498,7 @@ public class WorksheetCompletionScreen extends Screen {
         try {
             formatBatch = DictionaryCache.getIdFromSystemName("wsheet_num_format_batch");
             formatTotal = DictionaryCache.getIdFromSystemName("wsheet_num_format_total");
+            statusFailedRun = DictionaryCache.getIdFromSystemName("worksheet_failed");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -531,6 +543,10 @@ public class WorksheetCompletionScreen extends Screen {
             window.setBusy(consts.get("fetching"));
             try {
                 switch (tab) {
+                    case WORKSHEET:
+                        manager = WorksheetManager.fetchWithItems(id);
+                        break;
+                        
                     case NOTE:
                         manager = WorksheetManager.fetchWithNotes(id);
                         break;
@@ -555,6 +571,10 @@ public class WorksheetCompletionScreen extends Screen {
 
     private void drawTabs() {
         switch (tab) {
+            case WORKSHEET:
+                table.load(getTableModel());
+                break;
+                
             case NOTE:
                 noteTab.draw();
                 break;
@@ -607,6 +627,7 @@ public class WorksheetCompletionScreen extends Screen {
         try {
             manager = manager.fetchForUpdate();
 
+            origStatus = manager.getWorksheet().getStatusId();
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
         } catch (Exception e) {
@@ -619,8 +640,6 @@ public class WorksheetCompletionScreen extends Screen {
         window.setBusy(consts.get("updating"));
         try {
             manager = manager.update();
-            commitSampleManagers();
-
             setState(State.DISPLAY);
             DataChangeEvent.fire(this);
             window.setDone(consts.get("updatingComplete"));
@@ -652,31 +671,6 @@ public class WorksheetCompletionScreen extends Screen {
         }
     }
 
-    /*
-     * Call the update method on SampleManagers attached to analysis data rows
-     */
-    protected void commitSampleManagers() throws Exception {
-        int                     i;
-        ArrayList<TableDataRow> model;
-        SampleDataBundle        bundle;
-        SampleManager           manager;
-        
-        model = table.getData();
-        for (i = 0; i < model.size(); i++) {
-            if (model.get(i).data instanceof SampleDataBundle) {
-                bundle = (SampleDataBundle) model.get(i).data;
-                manager = bundle.getSampleManager();
-                try {
-                    manager.update();
-                } catch (ValidationErrorsList e) {
-                    throw e;
-                } catch (Exception anyE) {
-                    throw new Exception("WorksheetTable Row "+(i+1)+": "+anyE.getMessage());
-                }
-            }
-        }
-    }
-    
     protected void editWorksheet() {
         window.setBusy("Saving worksheet for editing");
         try {
@@ -762,8 +756,59 @@ public class WorksheetCompletionScreen extends Screen {
         }
     }
     
+    protected void openFailedRunNote() {
+        ScreenWindow modal;
+        
+        if (editNote == null) {
+//            userName = OpenELIS.security.getSystemUserName();
+            userName = OpenELIS.getSystemUserPermission().getLoginName();
+//            userId = OpenELIS.security.getSystemUserId();
+            userId = OpenELIS.getSystemUserPermission().getSystemUserId();
+            try {
+                editNote = new EditNoteScreen();
+                editNote.addActionHandler(new ActionHandler<EditNoteScreen.Action>() {
+                    public void onAction(ActionEvent<EditNoteScreen.Action> event) {
+                        if (event.getAction() == EditNoteScreen.Action.OK) {
+                            if (failedRunNote.getText() == null || failedRunNote.getText().trim().length() == 0) {
+                                try {
+                                    manager.getNotes().removeEditingNote();
+                                } catch (Exception anyE) {
+                                    anyE.printStackTrace();
+                                    Window.alert("Error in EditNote:" + anyE.getMessage());
+                                }
+                            } else {
+                                commit();
+                            }
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+                Window.alert("Error in EditNote:" + e.getMessage());
+                return;
+            }
+        }
+
+        modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+        modal.setName(consts.get("noteEditor"));
+        modal.setContent(editNote);
+
+        failedRunNote = null;
+        try {
+            failedRunNote = manager.getNotes().getEditingNote();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert("Error in EditNote:" + e.getMessage());
+        }
+        failedRunNote.setSystemUser(userName);
+        failedRunNote.setSystemUserId(userId);
+        failedRunNote.setSubject(consts.get("failedRunSubject"));
+        failedRunNote.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
+        editNote.setNote(failedRunNote);
+    }
+    
     private ArrayList<TableDataRow> getTableModel() {
-        int                      i, j, k;
+        int                      i, j, k, l;
         ArrayList<TableDataRow>  model;
         TableDataRow             row;
         AnalysisManager          aManager;
@@ -793,7 +838,7 @@ public class WorksheetCompletionScreen extends Screen {
                 wiDO = manager.getItems().getWorksheetItemAt(i);
                 waManager = manager.getItems().getWorksheetAnalysisAt(i);
 
-                row = new TableDataRow(13);
+                row = new TableDataRow(39);
                 row.cells.get(0).value = getPositionNumber(wiDO.getPosition());
                 for (j = 0; j < waManager.count(); j++) {
                     waDO = waManager.getWorksheetAnalysisAt(j);
@@ -829,6 +874,7 @@ public class WorksheetCompletionScreen extends Screen {
 
                         wrManager = waManager.getWorksheetResultAt(j);
                         for (k = 0; k < wrManager.count(); k++) {
+                            wrVDO = wrManager.getWorksheetResultAt(k);
                             if (k != 0) {
                                 row.cells.get(0).value = null;
                                 row.cells.get(1).value = null;
@@ -838,14 +884,11 @@ public class WorksheetCompletionScreen extends Screen {
                                 row.cells.get(5).value = "";
                                 row.cells.get(6).value = 0;
                             }
-                            wrVDO = wrManager.getWorksheetResultAt(k);
-                            rVDO = arManager.getResultForWorksheet(waDO.getAnalysisId(), wrVDO.getAnalyteId());
+                            rVDO = arManager.getResultAt(wrVDO.getResultRow(), 0);
                             row.cells.get(7).value = wrVDO.getAnalyteName();
-                            row.cells.get(8).value = wrVDO.getValue();
-                            row.cells.get(9).value = "";
-                            row.cells.get(10).value = rVDO.getValue();
-                            row.cells.get(11).value = "";
-                            row.cells.get(12).value = "";
+                            row.cells.get(8).value = rVDO.getIsReportable();
+                            for (l = 0; l < 30; l++)
+                                row.cells.get(9+l).value = wrVDO.getValueAt(l);
                             row.data = bundle;
                             model.add((TableDataRow)row.clone());
                         }
@@ -881,11 +924,11 @@ public class WorksheetCompletionScreen extends Screen {
                             wqrVDO = wqrManager.getWorksheetQcResultAt(k);
                             qcaVDO = qcManager.getAnalytes().getAnalyteAt(k);
                             row.cells.get(7).value = wqrVDO.getAnalyteName();
-                            row.cells.get(8).value = wqrVDO.getValue();
-                            row.cells.get(9).value = "";
+                            row.cells.get(8).value = "";
+                            row.cells.get(9).value = wqrVDO.getValue();
                             row.cells.get(10).value = "";
-                            row.cells.get(11).value = qcaVDO.getValue();
-                            row.cells.get(12).value = "";
+                            row.cells.get(11).value = "";
+                            row.cells.get(12).value = qcaVDO.getValue();
                             row.data = qcManager;
                             model.add((TableDataRow)row.clone());
                         }
