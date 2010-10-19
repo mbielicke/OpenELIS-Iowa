@@ -1,5 +1,3 @@
-
-
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -247,13 +245,13 @@ UIRF Software License are applicable instead of those above.
                   <textbox key="{meta:getOrganizationAddressState()}" width="35" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
                 <widget>
-                  <HorizontalPanel width="17" />
+                  <HorizontalPanel width="10" />
                 </widget>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"zipcode")' />:
                 </text>
                 <widget>
-                  <textbox key="{meta:getOrganizationAddressZipCode()}" width="65" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+                  <textbox key="{meta:getOrganizationAddressZipCode()}" width="72" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
               </row>
             </TablePanel>
@@ -386,7 +384,7 @@ UIRF Software License are applicable instead of those above.
                           <xsl:value-of select='resource:getString($constants,"attention")' />:
                         </text>
                         <widget colspan="5">
-                          <textbox key="{meta:getReportToAttention()}" tab="{meta:getBillToName()},{meta:getReportToName()}" width="188" max = "30" field="String" />
+                          <textbox key="{meta:getReportToAttention()}" tab="{meta:getBillToName()},{meta:getReportToName()}" case="UPPER" width="188" max = "30" field="String" />
                         </widget>
                       </row>
                       <row>
@@ -421,13 +419,13 @@ UIRF Software License are applicable instead of those above.
                           <textbox key="{meta:getReportToAddressState()}" width="35" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                         </widget>
                         <widget>
-                          <HorizontalPanel width="17" />
+                          <HorizontalPanel width="10" />
                         </widget>
                         <text style="Prompt">
                           <xsl:value-of select='resource:getString($constants,"zipcode")' />:
                         </text>
                         <widget>
-                          <textbox key="{meta:getReportToAddressZipCode()}" width="65" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+                          <textbox key="{meta:getReportToAddressZipCode()}" width="72" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                         </widget>
                       </row>
                     </TablePanel>
@@ -452,7 +450,7 @@ UIRF Software License are applicable instead of those above.
                           <xsl:value-of select='resource:getString($constants,"attention")' />:
                         </text>
                         <widget colspan="5">
-                          <textbox key="{meta:getBillToAttention()}" tab="{meta:getReportToName()},{meta:getBillToName()}" width="188" max = "30" field="String" />
+                          <textbox key="{meta:getBillToAttention()}" tab="{meta:getReportToName()},{meta:getBillToName()}" case="UPPER" width="188" max = "30" field="String" />
                         </widget>
                       </row>
                       <row>
@@ -487,13 +485,13 @@ UIRF Software License are applicable instead of those above.
                           <textbox key="{meta:getBillToAddressState()}" width="35" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                         </widget>
                         <widget>
-                          <HorizontalPanel width="17" />
+                          <HorizontalPanel width="10" />
                         </widget>
                         <text style="Prompt">
                           <xsl:value-of select='resource:getString($constants,"zipcode")' />:
                         </text>
                         <widget>
-                          <textbox key="{meta:getBillToAddressZipCode()}" width="65" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+                          <textbox key="{meta:getBillToAddressZipCode()}" width="72" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                         </widget>
                       </row>
                     </TablePanel>

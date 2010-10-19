@@ -34,9 +34,9 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.Dropdown;
@@ -44,7 +44,6 @@ import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TabPanel;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataCell;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
@@ -914,7 +913,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
 
             try {
                 manager = manager.abortUpdate();
-
+                updateTableRow(completeReleaseTable.getSelectedRow());
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
@@ -1008,7 +1007,8 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
             bundle = getCurrentRowBundle(row, manager);
 
             row.data = bundle;
-            dataBundle = bundle;
+            if (index == completeReleaseTable.getSelectedRow())
+                dataBundle = bundle;
 
             // get the DOs from the new bundle
             itemIndex = bundle.getSampleItemIndex();

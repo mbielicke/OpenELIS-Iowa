@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="samplePrivateWellReportTo" language="groovy" pageWidth="210" pageHeight="572" orientation="Landscape" columnWidth="210" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="4.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="REPORT_TO_NAME" class="java.lang.String"/>
+	<parameter name="REPORT_TO_ADDRESS_ID" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[SELECT
+     a.multiple_unit a_multiple_unit,
+     a.street_address a_street_address,
+     a.city a_city,
+     a.state a_state,
+     a.zip_code a_zip_code,
+     a.id a_id
+FROM
+     address a
+WHERE
+     a.id = $P{REPORT_TO_ADDRESS_ID}]]>
+	</queryString>
+	<field name="a_multiple_unit" class="java.lang.String"/>
+	<field name="a_street_address" class="java.lang.String"/>
+	<field name="a_city" class="java.lang.String"/>
+	<field name="a_state" class="java.lang.String"/>
+	<field name="a_zip_code" class="java.lang.String"/>
+	<field name="a_id" class="java.lang.Integer"/>
+	<detail>
+		<band height="48" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="36" width="210" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.report.util.Concat.concatWithSeparator(org.openelis.report.util.Concat.concatWithSeparator($F{a_city}," ",$F{a_state}), " ", $F{a_zip_code})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="24" width="210" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{a_street_address}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="210" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_TO_NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="12" width="210" height="12" isRemoveLineWhenBlank="true"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{a_multiple_unit}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

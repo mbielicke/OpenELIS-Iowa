@@ -95,7 +95,7 @@ public class AnalysisBean implements AnalysisLocal{
         return data;
     }
     
-    public AnalysisViewDO add(AnalysisViewDO data) {
+    public AnalysisViewDO add(AnalysisViewDO data) throws Exception{
         Analysis entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -111,19 +111,19 @@ public class AnalysisBean implements AnalysisLocal{
         entity.setIsReportable(data.getIsReportable());
         entity.setUnitOfMeasureId(data.getUnitOfMeasureId());
         entity.setStatusId(data.getStatusId());
-        entity.setAvailableDate(data.getAvailableDate());
+        entity.setAvailableDate(data.getAvailableDate());        
         entity.setStartedDate(data.getStartedDate());
         entity.setCompletedDate(data.getCompletedDate());
         entity.setReleasedDate(data.getReleasedDate());
         entity.setPrintedDate(data.getPrintedDate());
         
-       manager.persist(entity);
-       data.setId(entity.getId());
+        manager.persist(entity);
+        data.setId(entity.getId());
        
-       return data;
+        return data;
     }
 
-    public AnalysisViewDO update(AnalysisViewDO data) {
+    public AnalysisViewDO update(AnalysisViewDO data) throws Exception {
         Analysis entity;
         
         if ( !data.isChanged())

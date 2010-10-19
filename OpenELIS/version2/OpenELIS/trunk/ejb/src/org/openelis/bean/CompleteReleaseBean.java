@@ -47,6 +47,7 @@ public class CompleteReleaseBean implements CompleteReleaseRemote {
 		builder = new QueryBuilderV2();
 		builder.setMeta(new CompleteReleaseMeta());
 		builder.setSelect("distinct new org.openelis.domain.CompleteReleaseVO(" + SampleMeta.getId() + ", "+
+		                                                                        SampleMeta.getItemItemSequence() + ", "+
 																				SampleMeta.getAnalysisId() +", " +
 																				SampleMeta.getAccessionNumber()+", " +
 																				SampleMeta.getAnalysisTestName()+"," +
@@ -54,7 +55,8 @@ public class CompleteReleaseBean implements CompleteReleaseRemote {
 																				SampleMeta.getAnalysisStatusId()+","+
 																				SampleMeta.getStatusId()+") ");
 		builder.constructWhere(fields);
-		builder.setOrderBy(SampleMeta.getAccessionNumber() + ", " + SampleMeta.getAnalysisTestName() + ", "+ SampleMeta.getAnalysisMethodName());
+		builder.setOrderBy(SampleMeta.getAccessionNumber()+ ", " + SampleMeta.getItemItemSequence() + ", " +
+		                   SampleMeta.getAnalysisTestName() + ", "+ SampleMeta.getAnalysisMethodName());
 		query = manager.createQuery(builder.getEJBQL());  		
          																					   
 		query.setMaxResults(first + max);

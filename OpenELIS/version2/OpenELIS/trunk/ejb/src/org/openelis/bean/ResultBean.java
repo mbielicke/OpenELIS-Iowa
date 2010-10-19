@@ -317,7 +317,8 @@ public class ResultBean implements ResultLocal {
     }
 
     public void fetchByAnalysisIdForDisplay(Integer analysisId, ArrayList<ArrayList<ResultViewDO>> results) throws Exception {
-        int i, j, rg;
+        int i;
+        Integer j, rg;
         ResultViewDO data;
         ArrayList<ResultViewDO> ar;
         List<ResultViewDO> list;
@@ -338,14 +339,15 @@ public class ResultBean implements ResultLocal {
 
         for (i = 0; i < list.size(); i++ ) {
             data = list.get(i);
-
+            
             rg = data.getRowGroup();
 
-            if (j != rg) {
+            if (!DataBaseUtil.isSame(j,rg)) {
                 ar = new ArrayList<ResultViewDO>(1);
                 ar.add(data);
-                results.add(ar);
-                j = rg;
+                results.add(ar);  
+                if (rg != null)
+                    j = rg;
                 continue;
             }
             if ("N".equals(data.getIsColumn())) {
@@ -365,6 +367,11 @@ public class ResultBean implements ResultLocal {
                                   HashMap<Integer, AnalyteDO> analyteList,
                                   HashMap<Integer, TestAnalyteListItem> testAnalyteList,
                                   ArrayList<ResultValidator> resultValidators) throws Exception {
+
+        // build the grid
+        int i, j, rg;
+        ResultViewDO rdo;
+        TestResultDO testResultDO;
         List<AnalyteDO> analytes;
         List<TestResultDO> testResults;
         List<ResultViewDO> rslts;
@@ -420,17 +427,12 @@ public class ResultBean implements ResultLocal {
         }
 
         testResultList.clear();
-        TestResultDO testResultDO;
         for (int k = 0; k < testResults.size(); k++ ) {
             testResultDO = testResults.get(k);
             testResultList.put(testResultDO.getId(), testResultDO);
         }
 
         createTestResultHash(testResults, resultValidators);
-
-        // build the grid
-        int i, j, rg;
-        ResultViewDO rdo;
         
         j = -1;
         ar = null;

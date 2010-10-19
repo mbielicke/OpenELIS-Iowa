@@ -452,6 +452,15 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                         manager = quickEntryMan;
                         manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
                         manager.createEmptyDomainManager();
+                        //
+                        // since when a sample is entered through quick entry we
+                        // don't know what domain the sample belongs to, it isn't
+                        // possible for the flag "isHazardous" to be set at that
+                        // point because it isn't specified for all samples but
+                        // only for environmental ones   
+                        //
+                        ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
+                        .setIsHazardous("N");
                         DeferredCommand.addCommand(new Command() {
                         	public void execute() {
                         		 setFocus(null);

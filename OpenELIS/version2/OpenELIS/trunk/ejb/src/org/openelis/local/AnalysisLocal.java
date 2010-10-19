@@ -38,8 +38,8 @@ public interface AnalysisLocal {
     public ArrayList<AnalysisViewDO> fetchBySampleId(Integer sampleId) throws Exception;
     public ArrayList<AnalysisViewDO> fetchBySampleItemId(Integer sampleItemId) throws Exception;
     
-    public AnalysisViewDO add(AnalysisViewDO data);
-    public AnalysisViewDO update(AnalysisViewDO data);
-    public void delete(AnalysisViewDO data);
+    public AnalysisViewDO add(AnalysisViewDO data) throws Exception;
+    public AnalysisViewDO update(AnalysisViewDO data) throws Exception;
+    public void delete(AnalysisViewDO data) throws Exception;
     
 }

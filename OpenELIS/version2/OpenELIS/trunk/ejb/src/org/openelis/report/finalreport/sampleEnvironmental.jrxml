@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sampleEnvironmental" language="groovy" pageWidth="555" pageHeight="572" orientation="Landscape" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SAMPLE_ACCESSION_NUMBER" class="java.lang.Integer"/>
+	<parameter name="SAMPLE_ORGANIZATION_ID" class="java.lang.Integer"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["/auto/home/akampoow/workspace/OpenELIS-EJB/src/org/openelis/report/finalreport/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[SELECT
+     sample.id sample_id,
+     sample.received_date sample_received_date,
+     sample.collection_date sample_collection_date,
+     sample.collection_time sample_collection_time,
+     sample.client_reference sample_client_reference,
+     sample.released_date sample_released_date,
+     sample_environmental.description sample_environmental_description,
+     sample_environmental.collector sample_environmental_collector,
+     sample_environmental.collector_phone sample_environmental_collector_phone,
+     sample_environmental.location sample_environmental_location,
+     project.name AS project_name,
+     address.city address_city,
+     address.work_phone address_work_phone,
+     organization.name organization_name,
+     organization_address.street_address organization_address_street_address,
+     organization_address.multiple_unit organization_address_multiple_unit,
+     organization_address.city organization_address_city,
+     organization_address.zip_code organization_address_zip_code,
+     organization_address.state organization_address_state
+FROM
+     sample_environmental sample_environmental,
+     sample sample,
+     outer address address,
+     outer (sample_project  sample_project,
+     project project),
+     sample_organization sample_organization,
+     organization organization,
+     address organization_address
+WHERE
+     sample.domain = 'E' AND sample.accession_number = $P{SAMPLE_ACCESSION_NUMBER} AND sample_environmental.sample_id = sample.id
+     AND sample_organization.id = $P{SAMPLE_ORGANIZATION_ID} AND organization.id = sample_organization.organization_id AND organization_address.id = organization.address_id
+     AND address.id = sample_environmental.location_address_id AND sample_project.sample_id = sample.id AND sample_project.project_id = project.id
+     AND sample_project.is_permanent = 'Y']]>
+	</queryString>
+	<field name="sample_id" class="java.lang.Integer"/>
+	<field name="sample_received_date" class="java.sql.Timestamp"/>
+	<field name="sample_collection_date" class="java.sql.Timestamp"/>
+	<field name="sample_collection_time" class="java.sql.Time"/>
+	<field name="sample_client_reference" class="java.lang.String"/>
+	<field name="sample_released_date" class="java.sql.Timestamp"/>
+	<field name="sample_environmental_description" class="java.lang.String"/>
+	<field name="sample_environmental_collector" class="java.lang.String"/>
+	<field name="sample_environmental_collector_phone" class="java.lang.String"/>
+	<field name="sample_environmental_location" class="java.lang.String"/>
+	<field name="project_name" class="java.lang.String"/>
+	<field name="address_city" class="java.lang.String"/>
+	<field name="address_work_phone" class="java.lang.String"/>
+	<field name="organization_name" class="java.lang.String"/>
+	<field name="organization_address_street_address" class="java.lang.String"/>
+	<field name="organization_address_multiple_unit" class="java.lang.String"/>
+	<field name="organization_address_city" class="java.lang.String"/>
+	<field name="organization_address_zip_code" class="java.lang.String"/>
+	<field name="organization_address_state" class="java.lang.String"/>
+	<detail>
+		<band height="120" splitType="Stretch">
+			<textField pattern="yyyy-MM-dd" isBlankWhenNull="true">
+				<reportElement x="405" y="12" width="72" height="12">
+					<printWhenExpression><![CDATA[$V{PAGE_NUMBER} == 1]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{sample_received_date}]]></textFieldExpression>
+			</textField>
+			<textField pattern="HH:mm" isBlankWhenNull="true">
+				<reportElement x="477" y="36" width="78" height="12"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.sql.Time"><![CDATA[$F{sample_collection_time}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1" y="48" width="210" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{organization_name}]]></textFieldExpression>
+			</textField>
+			<textField pattern="HH:mm" isBlankWhenNull="true">
+				<reportElement x="477" y="12" width="78" height="12"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{sample_received_date}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="255" y="108" width="131" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Phone]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="405" y="48" width="150" height="12"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{sample_environmental_location}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="255" y="0" width="131" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date Sample Finalized]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="255" y="72" width="131" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Sample Description]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="255" y="48" width="131" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Collection Site]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="405" y="108" width="150" height="12"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{sample_environmental_collector_phone}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1" y="72" width="210" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{organization_address_street_address}]]></textFieldExpression>
+			</textField>
+			<textField pattern="yyyy-MM-dd" isBlankWhenNull="true">
+				<reportElement x="405" y="36" width="72" height="12"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{sample_collection_date}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="255" y="12" width="131" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date Received]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="255" y="24" width="131" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Project]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="255" y="96" width="131" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Collector]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="255" y="36" width="131" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date Collected]]></text>
+			</staticText>
+			<line>
+				<reportElement mode="Opaque" x="397" y="0" width="1" height="120"/>
+				<graphicElement>
+					<pen lineWidth="1.0"/>
+				</graphicElement>
+			</line>
+			<textField isBlankWhenNull="true">
+				<reportElement x="405" y="72" width="150" height="12"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{sample_environmental_description}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="255" y="60" width="131" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Collection Town]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="405" y="96" width="150" height="12"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{sample_environmental_collector}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="405" y="60" width="150" height="12"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{address_city}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="405" y="84" width="150" height="12"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{sample_client_reference}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1" y="84" width="210" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.report.util.Concat.concatWithSeparator(org.openelis.report.util.Concat.concatWithSeparator($F{organization_address_city}," ",$F{organization_address_state}), " ", $F{organization_address_zip_code})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="255" y="84" width="131" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Reference]]></text>
+			</staticText>
+			<textField pattern="yyyy-MM-dd" isBlankWhenNull="true">
+				<reportElement x="405" y="0" width="150" height="12"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{sample_released_date}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="405" y="24" width="150" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{project_name}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="1" y="60" width="210" height="12" isRemoveLineWhenBlank="true"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{organization_address_multiple_unit}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="12"/>
+	</summary>
+</jasperReport>

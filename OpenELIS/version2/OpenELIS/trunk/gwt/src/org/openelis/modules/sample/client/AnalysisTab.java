@@ -850,6 +850,11 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("unit_of_measure"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
+        
+        fullUnitModel = model;
+        unitOfMeasureId.setModel(model);
+        unitModel = new HashMap<String, ArrayList<TableDataRow>>();
+        fullUnitShown = true;
 
         // analysis user action
         model = new ArrayList<TableDataRow>();
@@ -865,10 +870,6 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             model.add(new TableDataRow(d.getId(), d.getEntry()));
         ((Dropdown<Integer>)worksheetTable.getColumns().get(2).getColumnWidget()).setModel(model);
 
-        fullUnitModel = model;
-        unitOfMeasureId.setModel(model);
-        unitModel = new HashMap<String, ArrayList<TableDataRow>>();
-        fullUnitShown = true;
     }
 
     private void testChanged(Integer id) {

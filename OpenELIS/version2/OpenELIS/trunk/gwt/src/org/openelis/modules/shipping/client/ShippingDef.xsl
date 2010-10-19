@@ -1,4 +1,3 @@
-
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -206,13 +205,13 @@ UIRF Software License are applicable instead of those above.
                 <textbox key="{meta:getShippedToAddressState()}" width="35" max="30" style="ScreenTextboxDisplayOnly" field="String" />
               </widget>
               <widget>
-                <HorizontalPanel width="28" />
+                <HorizontalPanel width="21" />
               </widget>
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"zipcode")' />:
               </text>
               <widget>
-                <textbox key="{meta:getShippedToAddressZipCode()}" width="65" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+                <textbox key="{meta:getShippedToAddressZipCode()}" width="72" max="30" style="ScreenTextboxDisplayOnly" field="String" />
               </widget>              
             </row>
           </TablePanel>

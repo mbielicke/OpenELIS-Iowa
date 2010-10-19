@@ -114,17 +114,16 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalLocal {
             }
         } else {
             addressBean.update(data.getLocationAddress());
-
-            entity.setLocationAddressId(data.getLocationAddress().getId());
-            entity.setCollector(data.getCollector());
-            entity.setCollectorPhone(data.getCollectorPhone());
-            entity.setDescription(data.getDescription());
-            entity.setIsHazardous(data.getIsHazardous());
-            entity.setPriority(data.getPriority());
-            entity.setSampleId(data.getSampleId());
-            entity.setLocation(data.getLocation());
+            entity.setLocationAddressId(data.getLocationAddress().getId());            
         }
         
+        entity.setCollector(data.getCollector());
+        entity.setCollectorPhone(data.getCollectorPhone());
+        entity.setDescription(data.getDescription());
+        entity.setIsHazardous(data.getIsHazardous());
+        entity.setPriority(data.getPriority());
+        entity.setSampleId(data.getSampleId());
+        entity.setLocation(data.getLocation());
         return data;
     }
 
