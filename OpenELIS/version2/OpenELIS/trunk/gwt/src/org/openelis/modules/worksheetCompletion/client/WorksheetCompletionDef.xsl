@@ -151,19 +151,97 @@ UIRF Software License are applicable instead of those above.
                   <col key="analyteName" width="100" header="Analyte">
                     <label field="String" />
                   </col>
-                  <col key="rawValue" width="100" header="Raw Value">
+                  <col key="reportable" width="100" header="Reportable">
                     <label field="String" />
                   </col>
-                  <col key="dilutionFactor" width="100" header="Dilution Factor">
+                  <col key="value1" width="100" header="Value 1">
                     <label field="String" />
                   </col>
-                  <col key="finalValue" width="100" header="Final Value">
+                  <col key="value2" width="100" header="Value 2">
                     <label field="String" />
                   </col>
-                  <col key="expectedValue" width="100" header="Expected Value">
+                  <col key="value3" width="100" header="Value 3">
                     <label field="String" />
                   </col>
-                  <col key="quantLimit" width="100" header="Quant. Limit">
+                  <col key="value4" width="100" header="Value 4">
+                    <label field="String" />
+                  </col>
+                  <col key="value5" width="100" header="Value 5">
+                    <label field="String" />
+                  </col>
+                  <col key="value6" width="100" header="Value 6">
+                    <label field="String" />
+                  </col>
+                  <col key="value7" width="100" header="Value 7">
+                    <label field="String" />
+                  </col>
+                  <col key="value8" width="100" header="Value 8">
+                    <label field="String" />
+                  </col>
+                  <col key="value9" width="100" header="Value 9">
+                    <label field="String" />
+                  </col>
+                  <col key="value10" width="100" header="Value 10">
+                    <label field="String" />
+                  </col>
+                  <col key="value11" width="100" header="Value 11">
+                    <label field="String" />
+                  </col>
+                  <col key="value12" width="100" header="Value 12">
+                    <label field="String" />
+                  </col>
+                  <col key="value13" width="100" header="Value 13">
+                    <label field="String" />
+                  </col>
+                  <col key="value14" width="100" header="Value 14">
+                    <label field="String" />
+                  </col>
+                  <col key="value15" width="100" header="Value 15">
+                    <label field="String" />
+                  </col>
+                  <col key="value16" width="100" header="Value 16">
+                    <label field="String" />
+                  </col>
+                  <col key="value17" width="100" header="Value 17">
+                    <label field="String" />
+                  </col>
+                  <col key="value18" width="100" header="Value 18">
+                    <label field="String" />
+                  </col>
+                  <col key="value19" width="100" header="Value 19">
+                    <label field="String" />
+                  </col>
+                  <col key="value20" width="100" header="Value 20">
+                    <label field="String" />
+                  </col>
+                  <col key="value21" width="100" header="Value 21">
+                    <label field="String" />
+                  </col>
+                  <col key="value22" width="100" header="Value 22">
+                    <label field="String" />
+                  </col>
+                  <col key="value23" width="100" header="Value 23">
+                    <label field="String" />
+                  </col>
+                  <col key="value24" width="100" header="Value 24">
+                    <label field="String" />
+                  </col>
+                  <col key="value25" width="100" header="Value 25">
+                    <label field="String" />
+                  </col>
+                  <col key="value26" width="100" header="Value 26">
+                    <label field="String" />
+                  </col>
+                  <col key="value27" width="100" header="Value 27">
+                    <label field="String" />
+                  </col>
+                  <col key="value28" width="100" header="Value 28">
+                    <label field="String" />
+                  </col>
+                  <col key="value29" width="100" header="Value 29">
+                    <label field="String" />
+                  </col>
+                  <col key="value30" width="100" header="Value 30">
                     <label field="String" />
                   </col>
                 </table>

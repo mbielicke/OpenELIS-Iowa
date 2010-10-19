@@ -38,8 +38,10 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.SectionCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QcDO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.TestWorksheetItemDO;
 import org.openelis.domain.WorksheetAnalysisDO;
@@ -95,7 +97,7 @@ public class WorksheetCreationScreen extends Screen {
     private boolean                               hasErrors, isTemplateLoaded,
                                                   isSaved, wasExitCalled;
     private int                                   tempId, qcStartIndex;
-    private Integer                               formatBatch, formatTotal,
+    private Integer                               formatId, formatBatch, formatTotal,
                                                   qcDup, statusWorking, typeFixed,
                                                   typeRand, typeLastWell, typeLastRun,
                                                   typeLastBoth;
@@ -126,6 +128,7 @@ public class WorksheetCreationScreen extends Screen {
     
     public WorksheetCreationScreen() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetCreationDef.class));
+
         service   = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
         qcService = new ScreenService("OpenELISServlet?service=org.openelis.modules.qc.server.QcService");
 
@@ -451,16 +454,36 @@ public class WorksheetCreationScreen extends Screen {
                     public void onAction(ActionEvent<WorksheetCreationLookupScreen.Action> event) {
                         Integer                 testId;
                         ArrayList<TableDataRow> list;
+                        StringBuffer            message;
                         TableDataRow            row, newRow;
+                        SectionViewDO           sectionVDO;
                         WorksheetCreationVO     data;
 
                         if (event.getAction() == WorksheetCreationLookupScreen.Action.ADD) {
                             list = (ArrayList<TableDataRow>)event.getData();
                             if (list != null && list.size() > 0) {
+                                message = new StringBuffer();
                                 for (int i = 0; i < list.size(); i++) {
                                     row  = list.get(i);
                                     newRow = new TableDataRow(11);
                                     data = (WorksheetCreationVO)row.data;
+                                    
+                                    if (formatId == null) {
+                                        formatId = data.getWorksheetFormatId();
+                                    } else if (!formatId.equals(data.getWorksheetFormatId())) {
+                                        message.append(consts.get("accessionNum")).append(data.getAccessionNumber())
+                                               .append("\t").append(data.getTestName().trim()).append(", ")
+                                               .append(data.getMethodName().trim());
+                                        try {
+                                            sectionVDO = SectionCache.getSectionFromId(data.getSectionId());
+                                            message.append("\t\t").append(sectionVDO.getName().trim());
+                                        } catch (Exception anyE) {
+                                            anyE.printStackTrace();
+                                            message.append("\t\t").append("ERROR");
+                                        }
+                                        message.append("\n");
+                                        continue;
+                                    }
                                     
                                     testId = data.getTestId();
                                     if (!testIds.contains(testId))
@@ -480,6 +503,9 @@ public class WorksheetCreationScreen extends Screen {
                                     analysisItems.add(newRow);
                                 }
                                 
+                                if (message.length() > 0)
+                                    Window.alert(consts.get("worksheetItemsFormatConflict")+":\n\n"+message.toString());
+
                                 if (testIds.size() > 1) {
                                     Window.alert(consts.get("multipleTestsOnWorksheet"));
                                     clearQCTemplate();
@@ -510,6 +536,7 @@ public class WorksheetCreationScreen extends Screen {
     @SuppressWarnings("unchecked")
     protected void save() {
         int                      i;
+        Object                   position;
         TableDataRow             row;
         WorksheetDO              wDO;
         WorksheetAnalysisDO      waDO;
@@ -552,7 +579,11 @@ public class WorksheetCreationScreen extends Screen {
             row = worksheetItemTable.getRow(i);
             
             wiDO = new WorksheetItemDO();
-            wiDO.setPosition((Integer)row.cells.get(0).value);
+            position = row.cells.get(0).value;
+            if (formatBatch.equals(wDO.getFormatId()))
+                wiDO.setPosition(parseBatchPosition(position, testWorksheetDO.getBatchCapacity()));
+            else
+                wiDO.setPosition((Integer)position);
             wiManager.addWorksheetItem(wiDO);
             
             waDO = new WorksheetAnalysisDO();
@@ -1148,6 +1179,17 @@ public class WorksheetCreationScreen extends Screen {
      */
    private int getPositionMinorNumber(int position) {
        return position - (getPositionMajorNumber(position) - 1) * testWorksheetDO.getBatchCapacity();
+   }
+   
+   private Integer parseBatchPosition(Object position, Integer batchCapacity) {
+       int major, minor, splitIndex;
+       
+       splitIndex = ((String)position).indexOf("-");
+       
+       major = Integer.parseInt(((String)position).substring(0, splitIndex));
+       minor = Integer.parseInt(((String)position).substring(splitIndex + 1));
+       
+       return new Integer(major * batchCapacity.intValue() + minor);
    }
    
    private int getNextTempId() {

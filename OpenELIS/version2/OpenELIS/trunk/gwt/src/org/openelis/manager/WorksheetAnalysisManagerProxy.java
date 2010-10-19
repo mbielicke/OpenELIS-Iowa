@@ -42,12 +42,12 @@ public class WorksheetAnalysisManagerProxy {
         return service.call("fetchWorksheetAnalysisByWorksheetItemId", worksheetItemId);
     }
 
-    public WorksheetAnalysisManager add(WorksheetAnalysisManager manager, HashMap<Integer,Integer> idHash, HashMap<Integer,SampleManager> sManagers) throws Exception {
+    public WorksheetAnalysisManager add(WorksheetAnalysisManager manager, HashMap<Integer,Integer> idHash) throws Exception {
         assert false : "not supported";
         return null;
     }
 
-    public WorksheetAnalysisManager update(WorksheetAnalysisManager manager, HashMap<Integer,Integer> idHash, HashMap<Integer,SampleManager> sManagers) throws Exception {
+    public WorksheetAnalysisManager update(WorksheetAnalysisManager manager, HashMap<Integer,Integer> idHash) throws Exception {
         assert false : "not supported";
         return null;
     }

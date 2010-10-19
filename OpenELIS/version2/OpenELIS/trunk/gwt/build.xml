@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="OpenELIS" default="gwtc" basedir=".">
 	<!-- Configure path to GWT SDK -->
-	<property name="gwt.sdk" location="../OpenELIS-Lib-tools/gwt-2.0.0" />
+	<property name="gwt.sdk" location="../OpenELIS-Lib-tools/gwt-2.0.1" />
 
 	<path id="project.class.path">
 		<pathelement location="war/WEB-INF/classes" />
