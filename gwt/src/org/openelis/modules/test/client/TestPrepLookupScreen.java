@@ -114,7 +114,7 @@ public class TestPrepLookupScreen extends Screen implements
 
             window.close();
 
-            if (selectedRow != null)
+            //if (selectedRow != null)
                 ActionEvent.fire(this, Action.SELECTED_PREP_ROW, selectedRow);
         }
     }

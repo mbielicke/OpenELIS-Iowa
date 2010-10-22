@@ -331,7 +331,9 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
             prepPickerScreen = new TestPrepLookupScreen();
             prepPickerScreen.addActionHandler(new ActionHandler<TestPrepLookupScreen.Action>() {
                 public void onAction(ActionEvent<TestPrepLookupScreen.Action> event) {
-                    if (event.getAction() == TestPrepLookupScreen.Action.SELECTED_PREP_ROW) {
+                    TableDataRow selectedRow;
+                    Integer testId;
+                    /*if (event.getAction() == TestPrepLookupScreen.Action.SELECTED_PREP_ROW) {
                         TableDataRow selectedRow;
                         Integer testId;
 
@@ -339,8 +341,20 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
                         selectedRow = (TableDataRow)event.getData();
                         testId = (Integer)selectedRow.key;
                         selectedPrepTest(anMan, parentBundle, testId);
-                    } else
+                    } else {
                         numberOfPrepScreensDrawn-- ;
+                    }*/
+                    
+                    if (event.getAction() == TestPrepLookupScreen.Action.SELECTED_PREP_ROW) {                                               
+                        numberOfPrepScreensDrawn-- ;
+                        selectedRow = (TableDataRow)event.getData();
+                        if (selectedRow != null) { 
+                            testId = (Integer)selectedRow.key;
+                            selectedPrepTest(anMan, parentBundle, testId);
+                        }
+                    } else {
+                        numberOfPrepScreensDrawn-- ;
+                    }
 
                     fireFinished();
                 }
