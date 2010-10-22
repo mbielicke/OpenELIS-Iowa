@@ -126,6 +126,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         HSSFDataValidation        statusValidation, reportableValidation, rawValidation;
         HSSFSheet                 sheet;
         HSSFWorkbook              wb;
+        Name                      cellName;
         Row                       row;
         AnalysisManager           aManager;
         AnalysisResultManager     arManager;
@@ -222,6 +223,10 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     cell = row.createCell(6);
                     cell.setCellStyle(styles.get("row_edit"));
                     cell.setCellValue(statusMap.get(aVDO.getStatusId()));
+                    cellName = wb.createName();
+                    cellName.setNameName("analysis_status."+i+"."+a);
+                    cellName.setRefersToFormula("Worksheet!"+CellReference.convertNumToColString(6)+
+                                                (row.getRowNum()+1));
 
                     wrManager = waManager.getWorksheetResultAt(a);
                     if (wrManager.count() == 0) {
@@ -290,32 +295,6 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     } else {
                         cellNameIndex = i+"."+a;
                         r = createQcResultCellsForFormat(wb, sheet, row, cellNameIndex, columnList, cellAttributes, wqrManager);
-/*
-                        for (n = 0; n < wqrManager.count(); n++, r++) {
-                            wqrVDO = wqrManager.getWorksheetQcResultAt(n);
-    
-                            if (n != 0) {
-                                row = sheet.createRow(r);
-                                for (c = 0; c < 7; c++) {
-                                    cell = row.createCell(c);
-                                    cell.setCellStyle(styles.get("row_no_edit"));
-                                }                            
-                            }
-                            
-                            // analyte
-                            cell = row.createCell(7);
-                            cell.setCellStyle(styles.get("row_no_edit"));
-                            cell.setCellValue(wqrVDO.getAnalyteName());
-                            
-                            // reportable
-                            cell = row.createCell(8);
-                            cell.setCellStyle(styles.get("row_no_edit"));
-                            cell.setCellValue("N");
-                            
-                            cellNameIndex = i+"."+a+"."+n;
-                            createQcResultCellsForFormat(wb, row, cellNameIndex, columnList, cellAttributes, wqrVDO);
-                        }
-*/                        
                     }
                 }
                 for (c = 3; c < 6; c++)
@@ -382,6 +361,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         Object          value;
         Integer         testResultId;
         ArrayList<FormatColumn>   columnList;
+        HashMap<Integer,String>   statusMap;
         File            file;
         FileInputStream in;
         FormatColumn          formatColumn;
@@ -412,6 +392,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         wb   = new HSSFWorkbook(in);
         formatVDO = dictLocal().fetchById(manager.getWorksheet().getFormatId());
         columnList = getColumnListForFormat(formatVDO.getSystemName());
+        statusMap = getStatusMap();
 
         rowIndex = 1;
         wiManager = manager.getItems();
@@ -428,6 +409,11 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     aVDO = aManager.getAnalysisAt(bundle.getAnalysisIndex());
                     arManager = aManager.getAnalysisResultAt(bundle.getAnalysisIndex());
 
+                    value = getValueFromCellByName(wb, "analysis_status."+i+"."+a);
+                    if (!statusMap.get(aVDO.getStatusId()).equals(value)) {
+                        
+                    }
+                    
                     wrManager = waManager.getWorksheetResultAt(a);
                     for (r = 0; r < wrManager.count(); r++, rowIndex++) {
                         wrVDO = wrManager.getWorksheetResultAt(r);
@@ -734,6 +720,12 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
 //                            addCellToValidationRange(cellAttributes, aVDO.getTestId(), wrVDO.getResultGroup(), cell);
                         }
+                    } else if (!"Y".equals(rVDO.getIsColumn())) {
+                        formatColumn = columnMasterMap.get("final_value");
+                        j = formatColumns.indexOf(formatColumn);
+                        cell = row.getCell(9 + j);
+                        if (cell.getStringCellValue() == null || cell.getStringCellValue().length() == 0)
+                            cell.setCellValue(rVDO.getValue());
                     }
                 } catch (Exception anyE) {
                     // TODO: Code proper exception handling
@@ -798,14 +790,15 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     cell.setCellStyle(styles.get("row_edit"));
                     if (wqrVDO.getValue() != null && wqrVDO.getValue().length() > 0) {
                         cell.setCellValue(wqrVDO.getValue());
-                    } else {
-                        try {
-                            qcaVDO = qcAnaLocal().fetchById(wqrVDO.getQcAnalyteId());
-                            cell.setCellValue(qcaVDO.getValue());
-                        } catch (Exception anyE) {
-                            // TODO: Code proper exception handling
-                            anyE.printStackTrace();
-                        }
+                    }
+                } else if ("expected_value".equals(formatColumn.getName())) {
+                    cell.setCellStyle(styles.get("row_edit"));
+                    try {
+                        qcaVDO = qcAnaLocal().fetchById(wqrVDO.getQcAnalyteId());
+                        cell.setCellValue(qcaVDO.getValue());
+                    } catch (Exception anyE) {
+                        // TODO: Code proper exception handling
+                        anyE.printStackTrace();
                     }
                 } else {
                     cell.setCellStyle(styles.get("row_no_edit"));
@@ -915,10 +908,9 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
             colList.add(columnMasterMap.get("range_high"));
             colList.add(columnMasterMap.get("quant_limit"));
             colList.add(columnMasterMap.get("final_quant_limit"));
-            colList.add(columnMasterMap.get("quant_limit"));
             colList.add(columnMasterMap.get("expected_value"));
             colList.add(columnMasterMap.get("expected_value_dilut"));
-            colList.add(columnMasterMap.get("precent_recovery"));
+            colList.add(columnMasterMap.get("percent_recovery"));
             colList.add(columnMasterMap.get("sample_volume"));
             colList.add(columnMasterMap.get("extract_volume"));
             colList.add(columnMasterMap.get("instrument_run_id"));
@@ -1005,7 +997,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
             major = getPositionMajorNumber(position, batchCapacity);
             minor = getPositionMinorNumber(position, batchCapacity);
             positionNumber = major+"-"+minor;
-        } else if ("wsheet_num_format_total".equals(format)) {
+        } else {
             positionNumber = String.valueOf(position);
         }
         
