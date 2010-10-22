@@ -48,13 +48,14 @@ public class SampleManager implements RPC, HasAuxDataInt {
     protected NoteManager                         sampleExternalNote;
     protected AuxDataManager                      auxData;
     protected SampleDataBundle                    bundle;
+    protected boolean                             statusWithError;
 
     public static final String                    ENVIRONMENTAL_DOMAIN_FLAG = "E",
                                                   HUMAN_DOMAIN_FLAG = "H", ANIMAL_DOMAIN_FLAG = "A", NEWBORN_DOMAIN_FLAG = "N",
                                                   PT_DOMAIN_FLAG = "P", SDWIS_DOMAIN_FLAG = "S", WELL_DOMAIN_FLAG = "W",
                                                   QUICK_ENTRY = "Q";
 
-    protected transient boolean                   unreleaseSample, statusWithError;
+    protected transient boolean                   unreleaseSample;
     protected transient static SampleManagerProxy proxy;
 
     /**
