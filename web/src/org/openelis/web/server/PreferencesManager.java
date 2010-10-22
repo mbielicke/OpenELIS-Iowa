@@ -89,7 +89,7 @@ public class PreferencesManager {
                 root.appendChild(pref);
             }
             prefsDO.setText(XMLUtil.toString(prefsDoc));
-            remote.storePreferences(prefsDO);
+            remote.setPreferences(prefsDO);
         }catch(Exception e){
             e.printStackTrace();
         }

@@ -33,15 +33,13 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.gwt.Widget"/>
     <inherits name="org.openelis.gwt.Common"/>
     <inherits name="org.openelis.gwt.Screen"/>
-     
-    <inherits name='com.google.gwt.widgetideas.GWTCanvas'/>
-    
+         
     <inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/> 
     <inherits name="org.openelis.web.modules.main.Main"/>
-    <inherits name="org.openelis.web.modules.samples.Samples"/>
-    <inherits name="org.openelis.web.modules.tests.Tests"/>
+    <inherits name="org.openelis.web.modules.menu.Menu"/>
+    <inherits name="org.openelis.web.modules.report.Report"/>
     <inherits name="org.openelis.ELISCommon"/>   
-    
+	<stylesheet src="CSS/web.css"/>
 	<!-- Specify the app entry point class.                   -->
 	<entry-point class='org.openelis.web.modules.main.client.OpenELISWeb'/>
 	

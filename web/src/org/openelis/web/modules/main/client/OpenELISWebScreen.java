@@ -1,69 +1,56 @@
 package org.openelis.web.modules.main.client;
 
+import java.util.HashMap;
+
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
-import org.openelis.gwt.widget.MenuItem;
-import org.openelis.web.modules.samples.client.SamplesScreen;
-import org.openelis.web.modules.tests.client.TestScreen;
+import org.openelis.web.modules.menu.client.MenuScreen;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class OpenELISWebScreen extends Screen implements ValueChangeHandler<String>{
 	
-	AbsolutePanel content;
-	Screen samples;
-	Screen test;
+	protected static AbsolutePanel content;
+	protected static HashMap<String,Screen> screens;
+	protected static CrumbLine crumb;
 	
 	public OpenELISWebScreen() {
 		super((ScreenDefInt)GWT.create(OpenELISWebDef.class));
-		setHandlers();
-		History.addValueChangeHandler(this);
-		History.newItem("clear",false);
+		initialize();
 	}
 	
-	private void setHandlers() {
+	private void initialize() {
 		content = (AbsolutePanel)def.getWidget("content");
-		((MenuItem)def.getWidget("samples")).addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				content.clear();
-				content.add(samples = new SamplesScreen());
-				History.newItem("samples", false);
-			}
-		});
-		((MenuItem)def.getWidget("tests")).addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event){
-				content.clear();
-				content.add(test = new TestScreen());
-				History.newItem("tests",false);
-			}
-		});
+		screens = new HashMap<String,Screen>();
+		crumb = new CrumbLine();
+		((VerticalPanel)def.getWidget("container")).insert(crumb, 0);
+		History.addValueChangeHandler(this);
+		setScreen(new MenuScreen(),"Menu","menu");
+	}
+	
+	public static void setScreen(Screen screen, String name, String key) {
+		content.clear();
+		content.add(screen);
+		History.newItem(key,false);
+		screens.put(key, screen);
+		crumb.addLink(name, key);
+	}
+	
+	public static void gotoScreen(String key) {
+		content.clear();
+		content.add(screens.get(key));
+		History.newItem(key,false);
 	}
 
 	public void onValueChange(ValueChangeEvent<String> event) {
-		if(event.getValue().equals("samples")) {
-			content.clear();
-			if(samples != null)
-				content.add(samples);
-			else
-				content.add(samples = new SamplesScreen());
-		}
-		if(event.getValue().equals("tests")) {
-			content.clear();
-			if(test != null)
-				content.add(test);
-			else
-				content.add(test = new TestScreen());
-		}
-		if(event.getValue().equals("clear")){
-			content.clear();
-		}
+		content.clear();
+		content.add(screens.get(event.getValue()));
+		crumb.removeLink();
 	}
 
 }

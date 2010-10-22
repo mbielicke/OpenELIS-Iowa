@@ -27,71 +27,66 @@ UIRF Software License are applicable instead of those above.
 
 <web-app>
  <display-name>OpenELIS Web Application v0.0</display-name>
- <description>Initial Development of OpenELIS Web Applciation</description>
+ <description>Initial Development of OpenELIS Web Application</description>
   
    <filter>
         <filter-name>Login Filter</filter-name>
-        <filter-class>org.openelis.web.server.StaticFilter</filter-class>
+        <filter-class>org.openelis.web.server.HostedFilter</filter-class>
         <init-param>
             <param-name>AppRoot</param-name>
-            <param-value>${catalina.home}/apps/openelisweb/</param-value>
+            <param-value>workspace/OpenELIS-GWT/war/openelisweb/</param-value>
         </init-param>
         <init-param>
-            <param-name>ipTrys</param-name>
-            <param-value>9</param-value>
+            <param-name>User</param-name>
+            <param-value>demo</param-value>
         </init-param>
         <init-param>
-            <param-name>userTrys</param-name>
-            <param-value>3</param-value>
+            <param-name>Pass</param-name>
+            <param-value>demo</param-value>
         </init-param>
     </filter>
- 
-  <filter-mapping>
-    <filter-name>Login Filter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
+    
+    <filter-mapping>
+   		 <filter-name>Login Filter</filter-name>
+    	 <url-pattern>/*</url-pattern>
+    </filter-mapping>
   <!-- OpenELISServlets Servlets -->
+  
+  <welcome-file-list>
+     <welcome-file>OpenELIS.html</welcome-file>
+  </welcome-file-list>
 
   <servlet>
     <servlet-name>OpenELISServlet</servlet-name>
     <servlet-class>org.openelis.gwt.server.ScreenControllerServlet</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
+  
+  
   <servlet>
     <servlet-name>PreferencesServlet</servlet-name>
     <servlet-class>org.openelis.web.server.PreferencesServlet</servlet-class>
-    <load-on-startup>3</load-on-startup>
+    <load-on-startup>4</load-on-startup>
   </servlet>
   
-  <servlet>
-    <servlet-name>ReportServlet</servlet-name>
-    <servlet-class>org.openelis.gwt.server.ReportServlet</servlet-class>
-   		<init-param>
-              <param-name>app.root</param-name>
-              <param-value>${catalina.home}/apps/openelisweb/</param-value>
-        </init-param>
-  </servlet>
-  
+
   <servlet-mapping>
     <servlet-name>OpenELISServlet</servlet-name>
-    <url-pattern>/OpenELISServlet</url-pattern>
+    <url-pattern>/openelisweb/OpenELISServlet</url-pattern>
   </servlet-mapping>
+  
   
   <servlet-mapping>
     <servlet-name>PreferencesServlet</servlet-name>
-    <url-pattern>/PreferencesServlet</url-pattern>
+    <url-pattern>/openelisweb/PreferencesServlet</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
     <servlet-name>OpenELISServlet</servlet-name>
-    <url-pattern>/controller</url-pattern>
+    <url-pattern>/openelisweb/controller</url-pattern>
   </servlet-mapping>
-  
-  <servlet-mapping>
-    <servlet-name>ReportServlet</servlet-name>
-    <url-pattern>/report</url-pattern>
-  </servlet-mapping>
-      
+      <servlet> 
+      <servlet-name>remoteLoggingServiceImpl</servlet-name> <servlet-class>com.google.gwt.libideas.logging.server.RemoteLoggingServiceImpl</servlet-class> </servlet> <servlet-mapping> <servlet-name>remoteLoggingServiceImpl</servlet-name> <url-pattern>/openelis/logging</url-pattern> </servlet-mapping>
   <session-config>
     <session-timeout>300</session-timeout>
   </session-config>
@@ -99,13 +94,7 @@ UIRF Software License are applicable instead of those above.
   <error-page>
     <error-code>404</error-code>
     <location>/.no_file.html</location>
-  </error-page>     
- 
-  <listener>
-    <listener-class>
-      org.openelis.util.SessionManager
-    </listener-class>
-  </listener>
+  </error-page>  
   
   <resource-ref>
     <res-ref-name>openELISJNDI</res-ref-name>

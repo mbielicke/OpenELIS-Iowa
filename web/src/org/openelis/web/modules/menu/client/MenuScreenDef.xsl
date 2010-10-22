@@ -48,14 +48,37 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="props"><xsl:value-of select="doc/props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
     <xsl:template match="doc">
-      <screen name="Openelis Web V2.0">
-          <AbsolutePanel style="AppBackground" width="100%" height="100%" align="center">
-            <VerticalPanel width="800px" height="100%" align="center" key="container">
-              <widget halign="center" height="100%">
-    	   	  	<AbsolutePanel style="ContentWeb" key="content" align="center" width="800px" height="100%"/>
-    	   	  </widget>
-    	   	</VerticalPanel>
-       	  </AbsolutePanel>
+      <screen name="Menu">
+        <AbsolutePanel width="100%" height="100%">
+		  <widget x="15" y="10">
+		    <button key="phoneListMenu" wrap="false" enabled="true">
+		      <VerticalPanel>
+		        <DecoratorPanel style="ConfirmWindow">
+		          <AbsolutePanel style="webIPodIcon"/>
+		        </DecoratorPanel>
+		        <widget halign="center">
+		         <text style="webLabel">Phone List</text>
+		        </widget>
+		      </VerticalPanel>
+		    </button>
+		    <!-- <webButton icon="webIPodIcon" label="Phone List" key="phoneListMenu"/> -->
+		  </widget>
+		  <widget x="145" y="10">
+		    <webButton icon="webIPodIcon" label="Fire Drill" key="drillMenu"/>
+		  </widget>
+		  <widget x="275" y="10">
+		    <webButton icon="webTestIcon" label="Staff Time"/>
+		  </widget>
+		  <widget x="405" y="10">
+		    <webButton icon="webTestIcon" label="Well Water"/>
+		  </widget>
+		  <widget x="535" y="10">
+		    <webButton icon="webTestIcon" label="Directory"/>
+		  </widget>
+		  <widget x="665" y="10">
+		    <webButton icon="webTestIcon" label="Results"/>
+		  </widget>
+		</AbsolutePanel>
       </screen>
     </xsl:template>
 </xsl:stylesheet>
