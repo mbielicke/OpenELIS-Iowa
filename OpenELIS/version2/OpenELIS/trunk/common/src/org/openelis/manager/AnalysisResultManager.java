@@ -26,9 +26,8 @@ public class AnalysisResultManager implements RPC {
     protected boolean                               defaultsLoaded;
     protected AnalysisManager                       analysisManager;
 
-    protected transient HashMap<ArrayList<Integer>, ArrayList<GridCoords>> resultList;
-    protected transient TestManager                                        testManager;
-    protected transient static AnalysisResultManagerProxy                  proxy;
+    protected transient        TestManager                testManager;
+    protected transient static AnalysisResultManagerProxy proxy;
 
     
     private AnalysisResultManager() {
@@ -51,43 +50,13 @@ public class AnalysisResultManager implements RPC {
 
     }
 
-    public ResultViewDO getResultForWorksheet(Integer analysisId, Integer analyteId) {
-        ArrayList<Integer>    key;
-        ArrayList<GridCoords> cList;
-        GridCoords            coords;
-        ResultViewDO          result;
-        
-        result = null;
-        if (analysisId != null && analyteId != null) {
-            key = new ArrayList<Integer>();
-            key.add(analysisId);
-            key.add(analyteId);
-            
-            if (resultList == null)
-                refreshResultListFrom(0);
-            
-            cList = resultList.get(key);
-            if (cList != null) {
-                coords = cList.get(0);
-                if (coords != null)
-                    result = results.get(coords.row).get(coords.col);
-            }
-        }
-        
-        return result;
-    }
-
     public ArrayList<ResultViewDO> getRowAt(int row) {
         return results.get(row);
 
     }
 
     public void setResultAt(ResultViewDO result, int row, int col) {
-        ResultViewDO oldResult;
-        
-        oldResult = results.get(row).get(col);
         results.get(row).set(col, result);
-        updateResultListAt(oldResult, result, row, col);
     }
 
     public ArrayList<ArrayList<ResultViewDO>> getResults() {
@@ -96,7 +65,6 @@ public class AnalysisResultManager implements RPC {
 
     public void addRow(ArrayList<ResultViewDO> row) {
         results.add(row);
-        refreshResultListFrom(results.size() - 1);
     }
 
     public void addRowAt(int index, ArrayList<ResultViewDO> row) {
@@ -109,8 +77,6 @@ public class AnalysisResultManager implements RPC {
             results.add(row);
             index = results.size() - 1;
         }
-        
-        refreshResultListFrom(index);
     }
 
     public void addRowAt(int index,
@@ -146,7 +112,6 @@ public class AnalysisResultManager implements RPC {
         }
 
         results.remove(row);
-        refreshResultListFrom(row);
     }
 
     public static AnalysisResultManager fetchByAnalysisId(Integer analysisId) throws Exception {
@@ -419,7 +384,6 @@ public class AnalysisResultManager implements RPC {
 
     void setResults(ArrayList<ArrayList<ResultViewDO>> results) {
         this.results = results;
-        refreshResultListFrom(0);
     }
 
     int deleteCount() {
@@ -509,115 +473,6 @@ public class AnalysisResultManager implements RPC {
         return currDO;
     }
 
-    private void updateResultListAt(ResultViewDO oldResult, ResultViewDO newResult, int row, int col) {
-        int                   i;
-        ArrayList<Integer>    oldKey, newKey;
-        ArrayList<GridCoords> cList;
-        GridCoords            oldCoords, newCoords;
-        
-        if (resultList == null)
-            refreshResultListFrom(0);
-
-        if (oldResult != null) {
-            oldKey = new ArrayList<Integer>();
-            oldKey.add(oldResult.getAnalysisId());
-            oldKey.add(oldResult.getAnalyteId());
-            cList = resultList.get(oldKey);
-            if (cList != null) {
-                for (i = 0; i < cList.size(); i++) {
-                    oldCoords = cList.get(i);
-                    if (oldCoords.row == row && oldCoords.col == col) {
-                        cList.remove(i);
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (newResult != null && newResult.getAnalysisId() != null && newResult.getAnalyteId() == null) {
-            newKey = new ArrayList<Integer>();
-            newKey.add(newResult.getAnalysisId());
-            newKey.add(newResult.getAnalyteId());
-    
-            newCoords = new GridCoords();
-            newCoords.row = row;
-            newCoords.col = col;
-            
-            cList = resultList.get(newKey);
-            if (cList != null) {
-                for (i = 0; i < cList.size(); i++) {
-                    oldCoords = cList.get(i);
-                    if (oldCoords.row == row) {
-                        if (oldCoords.col == col)
-                            break;
-                        if (oldCoords.col > col) {
-                            cList.add(i, newCoords);
-                            break;
-                        }
-                    } else if (oldCoords.row > row) {
-                        cList.add(i, newCoords);
-                        break;
-                    }
-                }
-                if (i == cList.size())
-                    cList.add(newCoords);
-            } else {
-                cList = new ArrayList<GridCoords>();
-                cList.add(newCoords);
-                resultList.put(newKey, cList);
-            }
-        }
-    }
-    
-    @SuppressWarnings("unchecked")
-    private void refreshResultListFrom(int row) {
-        int                     i, col;
-        ArrayList<Integer>      key;
-        ArrayList<GridCoords>   cList;
-        ArrayList<ResultViewDO> rowList;
-        GridCoords              oldCoords, newCoords;
-        ResultViewDO            result;
-        
-        if (resultList == null) {
-            resultList = new HashMap<ArrayList<Integer>, ArrayList<GridCoords>>();
-            row = 0;
-        }
-        
-        key = new ArrayList<Integer>();
-        key.add(null);
-        key.add(null);
-        for (; row < results.size(); row++) {
-            rowList = results.get(row);
-            for (col = 0; col < rowList.size(); col++) {
-                result = rowList.get(col);
-                
-                key.set(0, result.getAnalysisId());
-                key.set(1, result.getAnalyteId());
-                
-                newCoords = new GridCoords();
-                newCoords.row = row;
-                newCoords.col = col;
-
-                cList = resultList.get(key);
-                if (cList != null) {
-                    for (i = 0; i < cList.size(); i++) {
-                        oldCoords = cList.get(i);
-                        if (oldCoords.row > row || (oldCoords.row == row && oldCoords.col >= col)) {
-                            while (cList.size() > i)
-                                cList.remove(i);
-                            break;
-                        }
-                    }
-                    cList.add(newCoords);
-                } else {
-                    cList = new ArrayList<GridCoords>();
-                    cList.add(newCoords);
-                    resultList.put((ArrayList<Integer>)key.clone(), cList);
-                }
-            }
-        }
-    }
-    
     private static AnalysisResultManagerProxy proxy() {
         if (proxy == null)
             proxy = new AnalysisResultManagerProxy();
@@ -630,10 +485,5 @@ public class AnalysisResultManager implements RPC {
         private static final long                             serialVersionUID = 1L;
         public ArrayList<TestAnalyteViewDO>                   testAnalytes;
         public HashMap<Integer, ArrayList<TestAnalyteViewDO>> aliasList;
-    }
-    
-    public static class GridCoords {
-        public int row;
-        public int col;
     }
 }
