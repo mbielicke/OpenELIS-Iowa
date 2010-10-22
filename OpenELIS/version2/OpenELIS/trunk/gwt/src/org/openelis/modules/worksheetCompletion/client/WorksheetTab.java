@@ -270,7 +270,6 @@ public class WorksheetTab extends Screen {
                                 row.cells.get(6).value = 0;
                             }
                             wrVDO = wrManager.getWorksheetResultAt(k);
-//                            rVDO = arManager.getResultForWorksheet(waDO.getAnalysisId(), wrVDO.getAnalyteId());
                             rVDO = arManager.getResultAt(wrVDO.getResultRow(), 0);
                             row.cells.get(7).value = wrVDO.getAnalyteName();
                             row.cells.get(8).value = wrVDO.getValueAt(0);

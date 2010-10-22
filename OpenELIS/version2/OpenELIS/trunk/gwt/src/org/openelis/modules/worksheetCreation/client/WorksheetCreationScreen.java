@@ -583,7 +583,7 @@ public class WorksheetCreationScreen extends Screen {
             if (formatBatch.equals(wDO.getFormatId()))
                 wiDO.setPosition(parseBatchPosition(position, testWorksheetDO.getBatchCapacity()));
             else
-                wiDO.setPosition((Integer)position);
+                wiDO.setPosition(Integer.valueOf((String)position));
             wiManager.addWorksheetItem(wiDO);
             
             waDO = new WorksheetAnalysisDO();
@@ -690,13 +690,11 @@ public class WorksheetCreationScreen extends Screen {
                 try {
                     list = qcService.callList("fetchActiveByName", twiDO.getQcName());
                     if (list.size() == 0) {
-//                        qcErrors.add(new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), twiDO.getPosition().toString()));
                         for (j = twiDO.getPosition(); j < testWorksheetDO.getTotalCapacity(); j += testWorksheetDO.getBatchCapacity())
                             qcErrors.put(j, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), String.valueOf(j)));
                         qcDO = new QcDO();
                         qcDO.setName(twiDO.getQcName());
                     } else if (list.size() > 1) {
-//                        Window.alert(new FormErrorException("multiMatchingActiveQc", twiDO.getQcName(), twiDO.getPosition().toString()).getMessage());
                         Window.alert(new FormErrorException("multiMatchingActiveQc", twiDO.getQcName(), String.valueOf(i+1)).getMessage());
                         openQCLookup(twiDO.getQcName(), list);
                         qcStartIndex = i + 1;
@@ -1149,17 +1147,17 @@ public class WorksheetCreationScreen extends Screen {
         }
     }
 
-    private Object getPositionNumber(int position) {
+    private String getPositionNumber(int position) {
         int    major, minor;
-        Object positionNumber;
+        String positionNumber;
         
         positionNumber = "";
         if (formatBatch.equals(testWorksheetDO.getFormatId())) {
             major = getPositionMajorNumber(position+1);
             minor = getPositionMinorNumber(position+1);
             positionNumber = major+"-"+minor;
-        } else if (formatTotal.equals(testWorksheetDO.getFormatId())) {
-            positionNumber = position + 1;
+        } else {
+            positionNumber = String.valueOf(position + 1);
         }
         
         return positionNumber;

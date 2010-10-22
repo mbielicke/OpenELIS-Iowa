@@ -760,9 +760,7 @@ public class WorksheetCompletionScreen extends Screen {
         ScreenWindow modal;
         
         if (editNote == null) {
-//            userName = OpenELIS.security.getSystemUserName();
             userName = OpenELIS.getSystemUserPermission().getLoginName();
-//            userId = OpenELIS.security.getSystemUserId();
             userId = OpenELIS.getSystemUserPermission().getSystemUserId();
             try {
                 editNote = new EditNoteScreen();
