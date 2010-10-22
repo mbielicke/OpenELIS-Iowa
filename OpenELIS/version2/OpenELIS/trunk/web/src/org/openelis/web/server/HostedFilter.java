@@ -46,36 +46,31 @@ import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.web.modules.main.server.OpenELISWebService;
-import org.openelis.persistence.JMSMessageConsumer;
+import org.openelis.persistence.CachingManager;
 import org.openelis.remote.SystemUserPermissionProxyRemote;
 import org.openelis.util.SessionManager;
-import org.openelis.util.XMLUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
-/**
- * Elis controller is the entry point for Elis Web Application. This object
- * controls the workflow for processing request and response.
- * 
- */
-public class StaticFilter implements Filter {
+public class HostedFilter implements Filter {
+    private static final long serialVersionUID = 1L;
 
-    private static final long    serialVersionUID = 1L;
-    private static Logger        log              = Logger.getLogger(StaticFilter.class.getName());
-    private static Logger        authLog          = Logger.getLogger("org.openelis.auth");
+    private String            user, password, locale;
+    private static Logger     log = Logger.getLogger(HostedFilter.class.getName());
 
     public void init(FilterConfig config) throws ServletException {
         log.debug("Initializing the Application.");
 
         ServiceUtils.props = "org.openelis.constants.OpenELISConstants";
         OpenELISWebService.APP_ROOT = config.getInitParameter("AppRoot");
-        JMSMessageConsumer.startListener("topic/openelisTopic");
-        
+        //JMSMessageConsumer.startListener("topic/openelisTopic");
+
+        locale = config.getInitParameter("Locale");
+        user = config.getInitParameter("User");
+        password = config.getInitParameter("Pass");
+
         log.debug("getting out");
     }
 
     public void doFilter(ServletRequest req, ServletResponse response, FilterChain chain) throws IOException {
-        String error = null;
         HttpServletRequest hreq = (HttpServletRequest)req;
 
         //
@@ -90,7 +85,6 @@ public class StaticFilter implements Filter {
             }
             return;
         }
-
         //
         // used for language binding
         //
@@ -98,18 +92,16 @@ public class StaticFilter implements Filter {
             hreq.getSession().setAttribute("locale", req.getParameter("locale"));
 
         //
-        // register this session with SessionManager so we can access it
-        // statically in gwt code
+        // check to see if we have logged in session
         //
-        SessionManager.setSession(hreq.getSession());
-
-        //
-        // check to see if we are coming from login screen
-        //
-        if (hreq.getParameter("username") != null) {            
+        if (hreq.getSession().getAttribute("jndiProps") == null) {
             try {
-                login(hreq, hreq.getParameter("username"), req.getParameter("password"),  
-                      hreq.getRemoteAddr());
+                login(hreq, user, password, hreq.getRemoteAddr());
+                //
+                // register the session so we can access it statically in gwt
+                // code
+                //
+                SessionManager.setSession(hreq.getSession());
 
                 try {
                     chain.doFilter(req, response);
@@ -117,67 +109,35 @@ public class StaticFilter implements Filter {
                     e.printStackTrace();
                 }
                 return;
-            } catch (PermissionException p) {
-                ((HttpServletResponse)response).sendRedirect("NoPermission.html");
-                return;
             } catch (Exception e) {
-                error = "authFailure";
+                ((HttpServletResponse)response).sendRedirect("BadUserIdOrPasswordInHostedMode.html");
             }
-        }
-        //
-        // ask them to authenticate
-        //
-        try {
-            Document doc;
-            Element action;
-            
-            doc = XMLUtil.createNew("login");
-            action = doc.createElement("action");
-            action.appendChild(doc.createTextNode("OpenELIS.html"));
-            doc.getDocumentElement().appendChild(action);
-            if (error != null) {
-                Element errorEL = doc.createElement("error");
-                errorEL.appendChild(doc.createTextNode(error));
-                doc.getDocumentElement().appendChild(errorEL);
-            }
-            ((HttpServletResponse)response).setHeader("pragma", "no-cache");
-            ((HttpServletResponse)response).setHeader("Cache-Control", "no-cache");
-            ((HttpServletResponse)response).setHeader("Cache-Control", "no-store");
-            ((HttpServletResponse)response).setDateHeader("Expires", 0);
-            ((HttpServletResponse)response).setContentType("text/html");
-            ((HttpServletResponse)response).setCharacterEncoding("UTF-8");
-            response.getWriter().write(ServiceUtils.getXML(OpenELISWebService.APP_ROOT + "login.xsl",
-                                                           doc));
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
-    
 
     public void destroy() {
-        JMSMessageConsumer.stopListener();
+        CachingManager.destroy();
     }
 
     /*
      * log the user into the system by sending its credentials to JBOSS for
      * authentication
      */
-    
     private void login(HttpServletRequest req, String name, String password, String ipAddress) throws Exception {
-        InitialContext localctx, remotectx;
+        InitialContext remotectx;
         File propFile;
         Properties props;
         SystemUserPermissionProxyRemote remote;
         SystemUserPermission perm;
-        
+
         System.out.println("Checking Credentials");
 
         try {
-            localctx = new InitialContext();
-            propFile = new File((String)localctx.lookup( ("java:comp/env/openelisJNDI")));
+            propFile = new File("/usr/pub/http/var/jndi/jndi.properties");
             props = new Properties();
             props.load(new FileInputStream(propFile));
-            props.setProperty(InitialContext.INITIAL_CONTEXT_FACTORY, "org.jboss.security.jndi.LoginInitialContextFactory");
+            props.setProperty(InitialContext.INITIAL_CONTEXT_FACTORY,
+                              "org.jboss.security.jndi.LoginInitialContextFactory");
             props.setProperty(InitialContext.SECURITY_PROTOCOL, "other");
             props.setProperty(Context.SECURITY_PRINCIPAL, name);
             props.setProperty(InitialContext.SECURITY_CREDENTIALS, password);
@@ -188,17 +148,19 @@ public class StaticFilter implements Filter {
             //
             // check to see if she has connect permission
             //
-            if (!perm.hasConnectPermission())
+            if ( !perm.hasConnectPermission())
                 throw new PermissionException("NoPermission.html");
 
             req.getSession().setAttribute("UserPermission", perm);
             req.getSession().setAttribute("jndiProps", props);
             req.getSession().setAttribute("USER_NAME", name);
 
-            authLog.info("Login attempt for " + name + " succeeded");
+            log.info("Login attempt for " + name + " succeeded");
         } catch (Exception e) {
-            authLog.info("Login attempt for " + name + " failed ");
+            e.printStackTrace();
+            log.info("Login attempt for " + name + " failed ");
             throw e;
         }
     }
+
 }
