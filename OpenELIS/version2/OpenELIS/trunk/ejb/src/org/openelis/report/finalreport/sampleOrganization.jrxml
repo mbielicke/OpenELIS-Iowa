@@ -29,22 +29,30 @@ WHERE
 		<band height="48" splitType="Stretch">
 			<textField isBlankWhenNull="true">
 				<reportElement x="0" y="0" width="210" height="12"/>
-				<textElement/>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{organization_name}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="0" y="24" width="210" height="12"/>
-				<textElement/>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{organization_address_street_address}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="0" y="36" width="210" height="12"/>
-				<textElement/>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.report.util.Concat.concatWithSeparator(org.openelis.report.util.Concat.concatWithSeparator($F{organization_address_city}," ",$F{organization_address_state}), " ", $F{organization_address_zip_code})]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement positionType="Float" x="0" y="12" width="210" height="12" isRemoveLineWhenBlank="true"/>
-				<textElement/>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{organization_address_multiple_unit}]]></textFieldExpression>
 			</textField>
 		</band>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sampleEnvironmental" language="groovy" pageWidth="555" pageHeight="572" orientation="Landscape" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sampleEnvironmental" language="groovy" pageWidth="550" pageHeight="572" orientation="Landscape" columnWidth="550" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -67,188 +67,177 @@ WHERE
 	<detail>
 		<band height="120" splitType="Stretch">
 			<textField pattern="yyyy-MM-dd" isBlankWhenNull="true">
-				<reportElement x="405" y="12" width="72" height="12">
+				<reportElement x="400" y="12" width="72" height="12">
 					<printWhenExpression><![CDATA[$V{PAGE_NUMBER} == 1]]></printWhenExpression>
 				</reportElement>
 				<textElement>
-					<font size="10"/>
+					<font fontName="Times New Roman" size="10"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$F{sample_received_date}]]></textFieldExpression>
 			</textField>
 			<textField pattern="HH:mm" isBlankWhenNull="true">
-				<reportElement x="477" y="36" width="78" height="12"/>
+				<reportElement x="472" y="36" width="78" height="12"/>
 				<textElement>
-					<font size="10"/>
+					<font fontName="Times New Roman" size="10"/>
 				</textElement>
 				<textFieldExpression class="java.sql.Time"><![CDATA[$F{sample_collection_time}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="1" y="48" width="210" height="12"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{organization_name}]]></textFieldExpression>
-			</textField>
 			<textField pattern="HH:mm" isBlankWhenNull="true">
-				<reportElement x="477" y="12" width="78" height="12"/>
+				<reportElement x="472" y="12" width="78" height="12"/>
 				<textElement>
-					<font size="10"/>
+					<font fontName="Times New Roman" size="10"/>
 				</textElement>
 				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{sample_received_date}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="255" y="108" width="131" height="12"/>
+				<reportElement x="285" y="108" width="99" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="true"/>
+					<font fontName="Times New Roman" size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Phone]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="405" y="48" width="150" height="12"/>
+				<reportElement x="400" y="48" width="150" height="12"/>
 				<textElement>
-					<font size="10"/>
+					<font fontName="Times New Roman" size="10"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{sample_environmental_location}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="255" y="0" width="131" height="12"/>
+				<reportElement x="285" y="0" width="99" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="true"/>
+					<font fontName="Times New Roman" size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Date Sample Finalized]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="255" y="72" width="131" height="12"/>
+				<reportElement x="285" y="72" width="99" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="true"/>
+					<font fontName="Times New Roman" size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Sample Description]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="255" y="48" width="131" height="12"/>
+				<reportElement x="285" y="48" width="99" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="true"/>
+					<font fontName="Times New Roman" size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Collection Site]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="405" y="108" width="150" height="12"/>
+				<reportElement x="400" y="108" width="150" height="12"/>
 				<textElement>
-					<font size="10"/>
+					<font fontName="Times New Roman" size="10"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{sample_environmental_collector_phone}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="1" y="72" width="210" height="12"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{organization_address_street_address}]]></textFieldExpression>
-			</textField>
 			<textField pattern="yyyy-MM-dd" isBlankWhenNull="true">
-				<reportElement x="405" y="36" width="72" height="12"/>
+				<reportElement x="400" y="36" width="72" height="12"/>
 				<textElement>
-					<font size="10"/>
+					<font fontName="Times New Roman" size="10"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$F{sample_collection_date}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="255" y="12" width="131" height="12"/>
+				<reportElement x="285" y="12" width="99" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="true"/>
+					<font fontName="Times New Roman" size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Date Received]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="255" y="24" width="131" height="12"/>
+				<reportElement x="285" y="24" width="99" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="true"/>
+					<font fontName="Times New Roman" size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Project]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="255" y="96" width="131" height="12"/>
+				<reportElement x="285" y="96" width="99" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="true"/>
+					<font fontName="Times New Roman" size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Collector]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="255" y="36" width="131" height="12"/>
+				<reportElement x="285" y="36" width="99" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="true"/>
+					<font fontName="Times New Roman" size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Date Collected]]></text>
 			</staticText>
 			<line>
-				<reportElement mode="Opaque" x="397" y="0" width="1" height="120"/>
+				<reportElement mode="Opaque" x="392" y="0" width="1" height="120"/>
 				<graphicElement>
 					<pen lineWidth="1.0"/>
 				</graphicElement>
 			</line>
 			<textField isBlankWhenNull="true">
-				<reportElement x="405" y="72" width="150" height="12"/>
+				<reportElement x="400" y="72" width="150" height="12"/>
 				<textElement>
-					<font size="10"/>
+					<font fontName="Times New Roman" size="10"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{sample_environmental_description}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="255" y="60" width="131" height="12"/>
+				<reportElement x="285" y="60" width="99" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="true"/>
+					<font fontName="Times New Roman" size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Collection Town]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="405" y="96" width="150" height="12"/>
+				<reportElement x="400" y="96" width="150" height="12"/>
 				<textElement>
-					<font size="10"/>
+					<font fontName="Times New Roman" size="10"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{sample_environmental_collector}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="405" y="60" width="150" height="12"/>
+				<reportElement x="400" y="60" width="150" height="12"/>
 				<textElement>
-					<font size="10"/>
+					<font fontName="Times New Roman" size="10"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{address_city}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="405" y="84" width="150" height="12"/>
+				<reportElement x="400" y="84" width="150" height="12"/>
 				<textElement>
-					<font size="10"/>
+					<font fontName="Times New Roman" size="10"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{sample_client_reference}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="1" y="84" width="210" height="12"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.report.util.Concat.concatWithSeparator(org.openelis.report.util.Concat.concatWithSeparator($F{organization_address_city}," ",$F{organization_address_state}), " ", $F{organization_address_zip_code})]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement x="255" y="84" width="131" height="12"/>
+				<reportElement x="285" y="84" width="99" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="true"/>
+					<font fontName="Times New Roman" size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Reference]]></text>
 			</staticText>
 			<textField pattern="yyyy-MM-dd" isBlankWhenNull="true">
-				<reportElement x="405" y="0" width="150" height="12"/>
+				<reportElement x="400" y="0" width="150" height="12"/>
 				<textElement>
-					<font size="10"/>
+					<font fontName="Times New Roman" size="10"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$F{sample_released_date}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="405" y="24" width="150" height="12"/>
-				<textElement/>
+				<reportElement x="400" y="24" width="150" height="12"/>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{project_name}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement positionType="Float" x="1" y="60" width="210" height="12" isRemoveLineWhenBlank="true"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{organization_address_multiple_unit}]]></textFieldExpression>
-			</textField>
+			<subreport>
+				<reportElement x="35" y="48" width="210" height="12">
+					<printWhenExpression><![CDATA[$P{SAMPLE_ORGANIZATION_ID} != null]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SAMPLE_ORGANIZATION_ID">
+					<subreportParameterExpression><![CDATA[$P{SAMPLE_ORGANIZATION_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleOrganization.jasper"]]></subreportExpression>
+			</subreport>
 		</band>
 	</detail>
-	<summary>
-		<band height="12"/>
-	</summary>
 </jasperReport>
