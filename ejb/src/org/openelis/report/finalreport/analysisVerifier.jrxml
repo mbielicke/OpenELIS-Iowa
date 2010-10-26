@@ -20,7 +20,9 @@ WHERE
 		<band height="12" splitType="Stretch">
 			<textField>
 				<reportElement x="0" y="0" width="139" height="12"/>
-				<textElement/>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{initials}]]></textFieldExpression>
 			</textField>
 		</band>
