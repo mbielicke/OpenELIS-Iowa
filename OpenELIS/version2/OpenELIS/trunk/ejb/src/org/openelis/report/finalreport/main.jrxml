@@ -227,7 +227,7 @@ WHERE
 				<text><![CDATA[Michael D. Wichman, Ph.D.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="120" y="24" width="133" height="10"/>
+				<reportElement x="120" y="25" width="133" height="10"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8"/>
 				</textElement>
@@ -269,21 +269,21 @@ WHERE
 				<text><![CDATA[319/335-4500   Fax:  319/335-4555]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="402" y="33" width="150" height="10"/>
+				<reportElement x="402" y="35" width="150" height="10"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8"/>
 				</textElement>
 				<text><![CDATA[2220 S. Ankeny Blvd, Ankeny, IA  50023 ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="402" y="22" width="150" height="10"/>
+				<reportElement x="402" y="25" width="150" height="10"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8"/>
 				</textElement>
 				<text><![CDATA[Iowa Laboratories Complex]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="402" y="43" width="150" height="10"/>
+				<reportElement x="402" y="45" width="150" height="10"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8"/>
 				</textElement>
@@ -317,7 +317,7 @@ WHERE
 				<text><![CDATA[712/337-3669  ext. 6 Fax: 712/337-0227]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="262" y="24" width="134" height="10"/>
+				<reportElement x="262" y="25" width="134" height="10"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8"/>
 				</textElement>

@@ -95,7 +95,7 @@ WHERE
 				<text><![CDATA[Analysis Prep]]></text>
 			</staticText>
 			<subreport>
-				<reportElement x="0" y="96" width="380" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement x="0" y="96" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="ANALYSIS_ID">
 					<subreportParameterExpression><![CDATA[$F{a_id}]]></subreportParameterExpression>
 				</subreportParameter>
