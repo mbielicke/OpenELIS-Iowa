@@ -73,14 +73,14 @@ WHERE
 				<textElement>
 					<font fontName="Times New Roman" size="10"/>
 				</textElement>
-				<textFieldExpression class="java.util.Date"><![CDATA[$F{sample_received_date}]]></textFieldExpression>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{sample_received_date}]]></textFieldExpression>
 			</textField>
 			<textField pattern="HH:mm" isBlankWhenNull="true">
 				<reportElement x="472" y="36" width="78" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman" size="10"/>
 				</textElement>
-				<textFieldExpression class="java.sql.Time"><![CDATA[$F{sample_collection_time}]]></textFieldExpression>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{sample_collection_time}]]></textFieldExpression>
 			</textField>
 			<textField pattern="HH:mm" isBlankWhenNull="true">
 				<reportElement x="472" y="12" width="78" height="12"/>
@@ -136,7 +136,7 @@ WHERE
 				<textElement>
 					<font fontName="Times New Roman" size="10"/>
 				</textElement>
-				<textFieldExpression class="java.util.Date"><![CDATA[$F{sample_collection_date}]]></textFieldExpression>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{sample_collection_date}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="285" y="12" width="99" height="12"/>
@@ -219,7 +219,7 @@ WHERE
 				<textElement>
 					<font fontName="Times New Roman" size="10"/>
 				</textElement>
-				<textFieldExpression class="java.util.Date"><![CDATA[$F{sample_released_date}]]></textFieldExpression>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{sample_released_date}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="400" y="24" width="150" height="12"/>
@@ -229,7 +229,7 @@ WHERE
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{project_name}]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement x="35" y="48" width="210" height="12">
+				<reportElement x="25" y="48" width="250" height="12">
 					<printWhenExpression><![CDATA[$P{SAMPLE_ORGANIZATION_ID} != null]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="SAMPLE_ORGANIZATION_ID">
