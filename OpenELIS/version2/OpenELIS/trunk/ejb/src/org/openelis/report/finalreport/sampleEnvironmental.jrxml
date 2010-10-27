@@ -80,7 +80,7 @@ WHERE
 				<textElement>
 					<font fontName="Times New Roman" size="10"/>
 				</textElement>
-				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{sample_collection_time}]]></textFieldExpression>
+				<textFieldExpression class="java.sql.Time"><![CDATA[$F{sample_collection_time}]]></textFieldExpression>
 			</textField>
 			<textField pattern="HH:mm" isBlankWhenNull="true">
 				<reportElement x="472" y="12" width="78" height="12"/>

@@ -16,9 +16,10 @@
      s.revision s_revision,
      s.domain s_domain, so.id so_id
 FROM
-     sample s, outer sample_organization so
+     sample s, outer (sample_organization so, dictionary d)
 WHERE
-     s.accession_number = $P{SAMPLE_ACCESSION_NUMBER} AND so.sample_id = s.id AND so.organization_id = $P{ORGANIZATION_ID}]]>
+     s.accession_number = $P{SAMPLE_ACCESSION_NUMBER} AND so.sample_id = s.id AND so.organization_id = $P{ORGANIZATION_ID}
+     AND so.type_id = d.id AND d.system_name = 'org_report_to']]>
 	</queryString>
 	<field name="s_id" class="java.lang.Integer"/>
 	<field name="s_accession_number" class="java.lang.Integer"/>
@@ -129,9 +130,9 @@ WHERE
 		</band>
 		<band height="132">
 			<staticText>
-				<reportElement positionType="Float" x="186" y="84" width="194" height="12"/>
+				<reportElement positionType="Float" x="186" y="82" width="194" height="14"/>
 				<textElement textAlignment="Center">
-					<font fontName="Times New Roman" size="10" isBold="true"/>
+					<font fontName="Times New Roman" size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Results of Analyses]]></text>
 			</staticText>
@@ -163,7 +164,7 @@ WHERE
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysis.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement positionType="Float" x="0" y="60" width="550" height="12"/>
+				<reportElement positionType="Float" x="0" y="60" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SAMPLE_ID">
 					<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -171,10 +172,10 @@ WHERE
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisPending.jasper"]]></subreportExpression>
 			</subreport>
 			<staticText>
-				<reportElement positionType="Float" x="185" y="48" width="194" height="12"/>
+				<reportElement positionType="Float" x="185" y="46" width="194" height="14"/>
 				<box bottomPadding="0"/>
 				<textElement textAlignment="Center">
-					<font fontName="Times New Roman" size="10" isBold="true"/>
+					<font fontName="Times New Roman" size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Pending Analyses]]></text>
 			</staticText>

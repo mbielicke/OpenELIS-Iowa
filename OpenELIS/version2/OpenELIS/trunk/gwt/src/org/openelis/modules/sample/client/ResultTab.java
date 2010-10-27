@@ -212,12 +212,14 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                         data = displayManager.getObjectAt(r, c - 2);
                     
                     testAnalyte = manager.getTestAnalyte(data.getRowGroup(), data.getTestAnalyteId());
-                    if (testAnalyte == null || testAnalyteReadOnlyId.equals(testAnalyte.getTypeId())) {
-                        if (testAnalyte == null)
-                            window.setError(consts.get("testAnalyteDefinitionChanged"));
+                    if (testAnalyte == null) {
+                        window.setError(consts.get("testAnalyteDefinitionChanged"));
                         event.cancel();
                         enableButton = false;
-                    } else if (analysis.getUnitOfMeasureId() == null &&
+                    } else if (testAnalyteReadOnlyId.equals(testAnalyte.getTypeId()) && c > 0) {                        
+                        event.cancel();
+                        enableButton = false;
+                    } else if (analysis.getUnitOfMeasureId() == null &&                   
                                !manager.getResultValidator(data.getResultGroup()).noUnitsSpecified()) {
                         window.setError(consts.get("unitOfMeasureException"));
                         event.cancel();
