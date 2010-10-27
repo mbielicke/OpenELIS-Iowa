@@ -280,35 +280,37 @@ public class TestBean implements TestRemote, TestLocal {
             }
         }
 
-        if (DataBaseUtil.isEmpty(data.getIsReportable())) {
+        if (DataBaseUtil.isEmpty(data.getIsReportable())) 
             exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                       TestMeta.getIsReportable()));
-        }
-
-        if (DataBaseUtil.isEmpty(data.getTimeTaMax())) {
+        
+        if (DataBaseUtil.isEmpty(data.getTimeTaMax())) 
             exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      TestMeta.getTimeTaMax()));
-        }
+                                                      TestMeta.getTimeTaMax()));        
 
-        if (DataBaseUtil.isEmpty(data.getTimeTransit())) {
+        if (DataBaseUtil.isEmpty(data.getTimeTransit())) 
             exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      TestMeta.getTimeTransit()));
-        }
+                                                      TestMeta.getTimeTransit()));       
 
-        if (DataBaseUtil.isEmpty(data.getTimeTaAverage())) {
+        if (DataBaseUtil.isEmpty(data.getTimeTaAverage())) 
             exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      TestMeta.getTimeTaAverage()));
-        }
+                                                      TestMeta.getTimeTaAverage()));        
 
-        if (DataBaseUtil.isEmpty(data.getTimeHolding())) {
+        if (DataBaseUtil.isEmpty(data.getTimeHolding())) 
             exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      TestMeta.getTimeHolding()));
-        }
+                                                      TestMeta.getTimeHolding()));        
 
-        if (DataBaseUtil.isEmpty(data.getTimeTaWarning())) {
+        if (DataBaseUtil.isEmpty(data.getTimeTaWarning())) 
             exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                       TestMeta.getTimeTaWarning()));
-        }
+        
+        if (DataBaseUtil.isEmpty(data.getReportingMethodId())) 
+            exceptionList.add(new FieldErrorException("fieldRequiredException",
+                                                      TestMeta.getReportingMethodId()));
+        
+        if (DataBaseUtil.isEmpty(data.getSortingMethodId())) 
+            exceptionList.add(new FieldErrorException("fieldRequiredException",
+                                                      TestMeta.getSortingMethodId()));
 
         if (DataBaseUtil.isEmpty(data.getActiveBegin())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",

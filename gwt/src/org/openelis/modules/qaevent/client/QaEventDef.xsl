@@ -127,6 +127,7 @@ UIRF Software License are applicable instead of those above.
                     </appButton>
                   </menuDisplay>
                   <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                    <xsl:call-template name="duplicateRecordMenuItem" />
                     <menuItem key="qaeventHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'qaeventHistory')}" />
                   </menuPanel>
                 </menuItem>
@@ -140,19 +141,25 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"name")' />:
                 </text>
-                <textbox key="{meta:getName()}" width="145" case="LOWER" max="20" tab="{meta:getDescription()},{meta:getReportingText()}" field="String" required="true" />
+                <widget colspan = "5">
+                  <textbox key="{meta:getName()}" width="145" case="LOWER" max="20" tab="{meta:getDescription()},{meta:getReportingText()}" field="String" required="true" />
+                </widget>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"description")' />:
                 </text>
-                <textbox key="{meta:getDescription()}" width="425" max="60" tab="{meta:getTypeId()},{meta:getName()}" field="String" required="true" />
+                <widget colspan = "5">
+                  <textbox key="{meta:getDescription()}" width="425" max="60"  tab="{meta:getTypeId()},{meta:getName()}" field="String" required="true" />
+                </widget>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"type")' />:
                 </text>
-                <dropdown key="{meta:getTypeId()}" width="120" tab="{meta:getTestName()},{meta:getDescription()}" field="Integer" required="true" />
+                <widget colspan = "5">
+                  <dropdown key="{meta:getTypeId()}" width="120" tab="{meta:getTestName()},{meta:getDescription()}" field="Integer" required="true" />
+                </widget>
               </row>
               <row>
                 <text style="Prompt">
@@ -163,6 +170,10 @@ UIRF Software License are applicable instead of those above.
                   <col width="100" header="{resource:getString($constants,'method')}" />
                   <col width="250" header="{resource:getString($constants,'description')}" />
                 </autoComplete>
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"method")' />:
+                </text>
+                <textbox key="method" width="140" style="ScreenTextboxDisplayOnly" field="String" />
               </row>
               <row>
                 <text style="Prompt">
@@ -182,7 +193,9 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select='resource:getString($constants,"text")' />:
                   </text>
                 </widget>
-                <textarea key="{meta:getReportingText()}" width="425" height="155" tab="{meta:getName()},{meta:getReportingSequence()}" />
+                <widget colspan = "5">
+                  <textarea key="{meta:getReportingText()}" width="425" height="155" tab="{meta:getName()},{meta:getReportingSequence()}" />
+                </widget>
               </row>
             </TablePanel>
           </VerticalPanel>

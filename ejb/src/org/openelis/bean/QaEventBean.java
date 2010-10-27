@@ -25,6 +25,18 @@
  */
 package org.openelis.bean;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QaEventDO;
@@ -35,30 +47,17 @@ import org.openelis.entity.QaEvent;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.QaEventMeta;
 import org.openelis.remote.QaEventRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utils.PermissionInterceptor;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -68,16 +67,10 @@ public class QaEventBean implements QaEventRemote {
     @PersistenceContext(unitName = "openelis")
     private EntityManager               manager;
 
-    @Resource
-    private SessionContext              ctx;
-
     @EJB
     private LockLocal                   lockBean;
 
     private static final QaEventMeta    meta = new QaEventMeta();
-
-    public QaEventBean() {
-    }
 
     public QaEventViewDO fetchById(Integer id) throws Exception {
         Query query;
@@ -213,13 +206,13 @@ public class QaEventBean implements QaEventRemote {
 
     public void validate(QaEventDO data) throws Exception {
         ValidationErrorsList list;
+        ArrayList<QaEventVO> dups;
 
         list = new ValidationErrorsList();
 
         if (DataBaseUtil.isEmpty(data.getName())) {
-            list.add(new FieldErrorException("fieldRequiredException", meta.getName()));
+            list.add(new FieldErrorException("fieldRequiredException", QaEventMeta.getName()));
         } else {
-            ArrayList<QaEventVO> dups;
             //
             // do not allow duplicates names for the same test or
             // for the general group (test = null)
@@ -230,17 +223,17 @@ public class QaEventBean implements QaEventRemote {
                     if (DataBaseUtil.isDifferent(data.getId(), dup.getId()) &&
                         !DataBaseUtil.isDifferent(data.getName(), dup.getName()) &&
                         !DataBaseUtil.isDifferent(data.getTestId(), dup.getTestId()))
-                        list.add(new FieldErrorException("fieldUniqueException", meta.getName()));
+                        list.add(new FormErrorException("qaeventTestComboUnique"));
                 }
             } catch (NotFoundException ignE) {
             }
         }
 
         if (DataBaseUtil.isEmpty(data.getTypeId()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getTypeId()));
+            list.add(new FieldErrorException("fieldRequiredException", QaEventMeta.getTypeId()));
 
         if (DataBaseUtil.isEmpty(data.getReportingText()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getReportingText()));
+            list.add(new FieldErrorException("fieldRequiredException", QaEventMeta.getReportingText()));
 
         if (list.size() > 0)
             throw list;

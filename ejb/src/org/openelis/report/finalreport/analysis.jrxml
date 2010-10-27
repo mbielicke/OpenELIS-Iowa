@@ -33,28 +33,28 @@ WHERE
 	<detail>
 		<band height="120" splitType="Stretch">
 			<textField>
-				<reportElement mode="Opaque" x="40" y="12" width="460" height="12" backcolor="#EDE6E6"/>
+				<reportElement mode="Opaque" x="112" y="12" width="309" height="12" backcolor="#EDE6E6"/>
 				<textElement textAlignment="Center">
 					<font fontName="Times New Roman" isBold="true" isItalic="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.report.util.Concat.concatWithSeparator($F{t_reporting_description}," , ", $F{m_reporting_description})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="40" y="36" width="60" height="12"/>
+				<reportElement x="81" y="36" width="60" height="12"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman"/>
 				</textElement>
 				<text><![CDATA[Units]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="40" y="48" width="60" height="12"/>
+				<reportElement x="81" y="48" width="60" height="12"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman"/>
 				</textElement>
 				<text><![CDATA[Date Analyzed]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="40" y="60" width="60" height="12"/>
+				<reportElement x="81" y="60" width="60" height="12"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman"/>
 				</textElement>
@@ -82,20 +82,20 @@ WHERE
 				<text><![CDATA[Date Verified]]></text>
 			</staticText>
 			<line>
-				<reportElement x="105" y="36" width="1" height="48"/>
+				<reportElement x="146" y="36" width="1" height="48"/>
 			</line>
 			<line>
 				<reportElement x="375" y="36" width="1" height="36"/>
 			</line>
 			<staticText>
-				<reportElement x="40" y="72" width="60" height="12"/>
+				<reportElement x="81" y="72" width="60" height="12"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman"/>
 				</textElement>
 				<text><![CDATA[Analysis Prep]]></text>
 			</staticText>
 			<subreport>
-				<reportElement x="0" y="96" width="550" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement x="81" y="96" width="469" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="ANALYSIS_ID">
 					<subreportParameterExpression><![CDATA[$F{a_id}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -119,28 +119,28 @@ WHERE
 				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.report.finalreport.SectionLocationBean.getLocation($P{REPORT_CONNECTION},  $F{a_section_id})]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="112" y="36" width="100" height="12"/>
+				<reportElement x="153" y="36" width="100" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{d1_entry}]]></textFieldExpression>
 			</textField>
 			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
-				<reportElement x="112" y="48" width="100" height="12"/>
+				<reportElement x="153" y="48" width="100" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman"/>
 				</textElement>
 				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{a_started_date}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="112" y="72" width="438" height="12"/>
+				<reportElement x="153" y="72" width="397" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.report.util.Concat.concatWithSeparator($F{pat_reporting_description}," , ", $F{pam_reporting_description})]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement x="112" y="60" width="100" height="12"/>
+				<reportElement x="153" y="60" width="100" height="12"/>
 				<subreportParameter name="ANALYSIS_ID">
 					<subreportParameterExpression><![CDATA[$F{a_id}]]></subreportParameterExpression>
 				</subreportParameter>

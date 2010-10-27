@@ -83,11 +83,11 @@ public class QaEventScreen extends Screen {
     private QaEventViewDO         data;
     private ModulePermission      userPermission;
 
-    private TextBox               name, description, reportingSequence;
+    private TextBox               name, description, reportingSequence, methodName;
     private CheckBox              isBillable;
     private AppButton             queryButton, previousButton, nextButton, addButton, 
                                   updateButton, commitButton, abortButton;
-    protected MenuItem            history;
+    protected MenuItem            duplicate, history;
     private Dropdown<Integer>     typeId;
     private AutoComplete<Integer> testName;
     private TextArea              reportingText;
@@ -225,6 +225,17 @@ public class QaEventScreen extends Screen {
             }
         });
         
+        duplicate = (MenuItem)def.getWidget("duplicateRecord");
+        addScreenHandler(duplicate, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                duplicate();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
         history = (MenuItem)def.getWidget("qaeventHistory");
         addScreenHandler(history, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -294,8 +305,21 @@ public class QaEventScreen extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
+                TableDataRow row;
+                String method;
+                
+                row = testName.getSelection();
                 data.setTestId(event.getValue());
                 data.setTestName(testName.getTextBoxDisplay());
+                
+                if (row != null) {
+                    method = (String)row.cells.get(1).getValue();                                    
+                    data.setMethodName(method);
+                    methodName.setText(method);
+                } else {                    
+                    data.setMethodName(null);
+                    methodName.setText(null);
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -329,6 +353,21 @@ public class QaEventScreen extends Screen {
                     Window.alert(e.getMessage());
                 }
                 window.clearStatus();
+            }
+        });
+        
+        methodName = (TextBox)def.getWidget("method");
+        addScreenHandler(methodName, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                methodName.setValue(data.getMethodName());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                // this field will not be edited
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                methodName.enable(false);
             }
         });
 
@@ -595,6 +634,17 @@ public class QaEventScreen extends Screen {
             window.setDone(consts.get("updateAborted"));
         } else {
             window.clearStatus();
+        }
+    }
+    
+    protected void duplicate() {
+        try {
+            data = service.call("fetchById", data.getId());
+            data.setId(null);
+            setState(State.ADD);
+            DataChangeEvent.fire(this);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
         }
     }
     

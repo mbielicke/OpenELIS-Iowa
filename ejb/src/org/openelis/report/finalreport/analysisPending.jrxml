@@ -12,6 +12,7 @@ FROM
      analysis a, sample_item si, test t, method m, sample s
 WHERE
      si.sample_id = $P{SAMPLE_ID} AND a.sample_item_id = si.id AND si.sample_id = s.id AND a.is_reportable = 'Y'
+     AND a.status_id NOT IN (SELECT d2.id FROM dictionary d2 where d2.system_name = 'analysis_cancelled')
      AND a.test_id = t.id AND t.method_id = m.id  AND (a.status_id NOT IN (SELECT d2.id FROM dictionary d2 where d2.system_name = 'analysis_released')
      OR (a.status_id IN (SELECT d2.id FROM dictionary d2 where d2.system_name = 'sample_released')
      AND s.status_id NOT IN (SELECT d2.id FROM dictionary d2 where d2.system_name = 'analysis_released')
