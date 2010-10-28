@@ -8,7 +8,7 @@
 		<defaultValueExpression><![CDATA["/auto/home/akampoow/workspace/OpenELIS-EJB/src/org/openelis/report/finalreport/"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT
+		<![CDATA[SELECT 1 sorting_method, t.reporting_sequence,
      t.reporting_description t_reporting_description, m.reporting_description m_reporting_description, d1.entry d1_entry,
      a.id a_id, a.released_date a_released_date, a.started_date a_started_date, a.revision a_revision, a.section_id a_section_id,
      pat.reporting_description pat_reporting_description, pam.reporting_description pam_reporting_description
@@ -18,8 +18,25 @@ WHERE
      si.sample_id = $P{SAMPLE_ID} AND a.sample_item_id = si.id AND a.is_reportable = 'Y'
      AND a.test_id = t.id AND t.method_id = m.id AND a.pre_analysis_id = pa.id
      AND pa.test_id = pat.id AND pat.method_id = pam.id AND a.unit_of_measure_id = d1.id
-     AND a.status_id = d2.id AND d2.system_name = 'analysis_released']]>
+     AND a.status_id = d2.id AND d2.system_name = 'analysis_released'
+     AND t.sorting_method_id in (select id from dictionary where system_name = 'analyses_complete')
+UNION
+SELECT 2 sorting_method, t.reporting_sequence,
+     t.reporting_description t_reporting_description, m.reporting_description m_reporting_description, d1.entry d1_entry,
+     a.id a_id, a.released_date a_released_date, a.started_date a_started_date, a.revision a_revision, a.section_id a_section_id,
+     pat.reporting_description pat_reporting_description, pam.reporting_description pam_reporting_description
+FROM
+     analysis a, sample_item si, test t, method m, outer (analysis pa, test pat, method pam), outer dictionary d1, dictionary d2
+WHERE
+     si.sample_id = $P{SAMPLE_ID} AND a.sample_item_id = si.id AND a.is_reportable = 'Y'
+     AND a.test_id = t.id AND t.method_id = m.id AND a.pre_analysis_id = pa.id
+     AND pa.test_id = pat.id AND pat.method_id = pam.id AND a.unit_of_measure_id = d1.id
+     AND a.status_id = d2.id AND d2.system_name = 'analysis_released'
+     AND t.sorting_method_id in (select id from dictionary where system_name = 'test_sequence')
+ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 	</queryString>
+	<field name="sorting_method" class="java.lang.Integer"/>
+	<field name="reporting_sequence" class="java.lang.Integer"/>
 	<field name="t_reporting_description" class="java.lang.String"/>
 	<field name="m_reporting_description" class="java.lang.String"/>
 	<field name="d1_entry" class="java.lang.String"/>
