@@ -201,7 +201,8 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                printButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+//                printButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                printButton.enable(Boolean.FALSE);
             }
         });
 
@@ -341,57 +342,6 @@ public class WorksheetCompletionScreen extends Screen {
             } 
         });
 
-        defaultUser = (AutoComplete<Integer>)def.getWidget("defaultUser");
-        addScreenHandler(defaultUser, new ScreenEventHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                defaultUser.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
-            }
-        });
-
-        defaultUser.addGetMatchesHandler(new GetMatchesHandler() {
-            public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
-                ArrayList<SystemUserVO> users;
-                ArrayList<TableDataRow> model;
-                
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
-                try {
-                    users = userService.callList("fetchByLoginName", parser.getParameter().get(0));
-                    model = new ArrayList<TableDataRow>();
-                    for (SystemUserVO user : users)
-                        model.add(new TableDataRow(user.getId(), user.getLoginName()));
-                    defaultUser.showAutoMatches(model);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                }
-            }
-        });
-        
-        defaultStartedDate = (CalendarLookUp)def.getWidget("defaultStartedDate");
-        addScreenHandler(defaultStartedDate, new ScreenEventHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                defaultStartedDate.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
-            }
-        });
-
-        defaultCompletedDate = (CalendarLookUp)def.getWidget("defaultCompletedDate");
-        addScreenHandler(defaultCompletedDate, new ScreenEventHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                defaultCompletedDate.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
-            }
-        });
-
         table = (TableWidget)def.getWidget("worksheetItemTable");
         addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
@@ -439,7 +389,8 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                loadFilePopupButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
+//                loadFilePopupButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
+                loadFilePopupButton.enable(Boolean.FALSE);
             }
         });
 
@@ -618,7 +569,7 @@ public class WorksheetCompletionScreen extends Screen {
     }
     
     protected void print() {
-        Window.alert("Worksheet printed!!!");
+        // TODO: Add worksheet printing code
     }
     
     protected void update() {
@@ -951,18 +902,17 @@ public class WorksheetCompletionScreen extends Screen {
     }
 
     private boolean canEditAny() {
-        int             i;
-        SectionDO       section;
-        SectionPermission secSection;
-/*        
-        for (i = 0; i < sections.size(); i++) {
-            section = sections.get(i);
-            secSection = OpenELIS.security.getSection(section.getName());
-            if (secSection.hasCompletePermission())
+        int               i;
+        SectionDO         section;
+        SectionPermission perm;
+
+//        for (i = 0; i < sections.size(); i++) {
+//            section = sections.get(i);
+//            perm = OpenELIS.getSystemUserPermission().getSection(section.getName());
+//            if (perm != null && perm.hasCompletePermission())
                 return true;
-        }
-*/        
-        return true;
+//        }
+
 //        return false;
     }
     
@@ -975,7 +925,7 @@ public class WorksheetCompletionScreen extends Screen {
             major = getPositionMajorNumber(position);
             minor = getPositionMinorNumber(position);
             positionNumber = major+"-"+minor;
-        } else if (formatTotal.equals(manager.getWorksheet().getFormatId())) {
+        } else {
             positionNumber = position;
         }
         
