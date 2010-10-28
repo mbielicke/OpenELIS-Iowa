@@ -81,6 +81,24 @@ public class AnalysisUserManager implements RPC {
         return addAnalysisUser(data);
     }
 
+    public int addCompleteRecord(SystemUserVO user) throws Exception {
+        AnalysisUserViewDO data;
+
+        proxy().loadDictionaryEntries(this);
+
+        // if this user has already completed this record, don't add another one
+        if (getIndex(actionCompletedId, user.getId()) >= 0)
+            return -1;
+
+        // multiples allowed
+        data = new AnalysisUserViewDO();
+        data.setActionId(actionCompletedId);
+        data.setSystemUserId(user.getId());
+        data.setSystemUser(user.getLoginName());
+
+        return addAnalysisUser(data);
+    }
+
     public int addReleaseRecord() throws Exception {
         int i;
         SystemUserVO user;
