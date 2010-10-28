@@ -105,7 +105,7 @@ public class AnalysisUserManagerProxy {
         }
     }
 
-    protected void loadDictiondaryEntries(AnalysisUserManager m) throws Exception {
+    protected void loadDictionaryEntries(AnalysisUserManager m) throws Exception {
         DictionaryLocal l;
 
         if (m.actionCompletedId == null) {
