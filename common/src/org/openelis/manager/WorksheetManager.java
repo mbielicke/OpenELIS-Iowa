@@ -26,6 +26,7 @@
 package org.openelis.manager;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.WorksheetDO;
@@ -105,6 +106,17 @@ public class WorksheetManager implements RPC, HasNotesInt {
     }
 
     public WorksheetManager abortUpdate() throws Exception {
+        Iterator<SampleManager> iter;
+        SampleManager           manager;
+        
+        // abort update on any samples we may have locked when loading data
+        iter = lockedManagers.values().iterator();
+        while (iter.hasNext()) {
+            manager = (SampleManager) iter.next();
+            manager.abortUpdate();
+        }
+        getLockedManagers().clear();
+        
         return proxy().abortUpdate(worksheet.getId());
     }
 
@@ -165,7 +177,7 @@ public class WorksheetManager implements RPC, HasNotesInt {
         return lockedManagers;
     }
     
-    HashMap<Integer,SampleManager> getSampleManagers() {
+    public HashMap<Integer,SampleManager> getSampleManagers() {
         return sampleManagers;
     }
     

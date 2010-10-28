@@ -184,6 +184,10 @@ public class WorksheetAnalysisManager implements RPC {
         return analysis.bundle;
     }
 
+    public void setBundleAt(SampleDataBundle bundle, int i) {
+        analyses.get(i).bundle = bundle;
+    }
+
     public WorksheetAnalysisListItem getItemAt(int i) {
         return (WorksheetAnalysisListItem)analyses.get(i);
     }
