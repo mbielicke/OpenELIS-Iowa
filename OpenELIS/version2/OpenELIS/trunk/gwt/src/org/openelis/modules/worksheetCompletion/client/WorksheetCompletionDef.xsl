@@ -81,6 +81,8 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select="resource:getString($constants,'status')" />:
               </text>
               <dropdown key="{meta:getStatusId()}" width="100" popWidth="100" tab="lookupWorksheetButton,tabPanel" field="Integer" />
+            </row>
+            <row>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'relatedWorksheetNumber')" />:
               </text>
@@ -90,8 +92,6 @@ UIRF Software License are applicable instead of those above.
                   <AbsolutePanel style="LookupButtonImage" />
                 </appButton>
               </HorizontalPanel>
-            </row>
-            <row>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'instrumentName')" />:
               </text>
@@ -105,20 +105,6 @@ UIRF Software License are applicable instead of those above.
                   <col width="200" header="Location" />
                 </autoComplete>
               </widget>
-            </row>
-            <row>
-              <text style="Prompt">
-                <xsl:value-of select="resource:getString($constants,'initials')" />:
-              </text>
-              <autoComplete key="defaultUser" width="100" case="LOWER" tab="defaultStartedDate,instrumentId" field="Integer"/>
-              <text style="Prompt">
-                <xsl:value-of select="resource:getString($constants,'started')" />:
-              </text>
-              <calendar key="defaultStartedDate" begin="0" end="4" width="130" pattern="{resource:getString($constants,'dateTimePattern')}" tab="defaultCompletedDate,defaultUser" />
-              <text style="Prompt">
-                <xsl:value-of select="resource:getString($constants,'completed')" />:
-              </text>
-              <calendar key="defaultCompletedDate" begin="0" end="4" width="130" pattern="{resource:getString($constants,'dateTimePattern')}" tab="tabPanel,defaultStartedDate" />
             </row>
           </TablePanel>
 <!-- TAB PANEL -->
