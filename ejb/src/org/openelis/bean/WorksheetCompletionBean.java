@@ -536,7 +536,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                                 auManager.addCompleteRecord(userList.get(0));
                                 keepLock = true;
                             } else {
-                                errorList.add(new FormErrorException("illegalWorksheetUserFormException", String.valueOf(wiDO.getPosition()), String.valueOf(a)));
+                                errorList.add(new FormErrorException("illegalWorksheetUserFormException", String.valueOf(wiDO.getPosition()), String.valueOf(a+1)));
                             }
                         }
                     }
