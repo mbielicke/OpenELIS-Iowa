@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="analysisResults" language="groovy" pageWidth="380" pageHeight="572" orientation="Landscape" columnWidth="380" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="analysisResults" language="groovy" pageWidth="660" pageHeight="572" orientation="Landscape" columnWidth="660" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -31,7 +31,7 @@ ORDER BY
 	<columnHeader>
 		<band height="12">
 			<staticText>
-				<reportElement x="0" y="0" width="180" height="12"/>
+				<reportElement x="0" y="0" width="330" height="12"/>
 				<box topPadding="0">
 					<bottomPen lineWidth="0.5" lineColor="#000000"/>
 				</box>
@@ -41,7 +41,7 @@ ORDER BY
 				<text><![CDATA[Analyte]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="190" y="0" width="190" height="12"/>
+				<reportElement x="330" y="0" width="330" height="12"/>
 				<box topPadding="0">
 					<bottomPen lineWidth="0.5" lineColor="#000000"/>
 				</box>
@@ -56,14 +56,14 @@ ORDER BY
 		<band height="12" splitType="Stretch">
 			<printWhenExpression><![CDATA["N".equals($F{ta_is_column})]]></printWhenExpression>
 			<textField>
-				<reportElement x="0" y="0" width="180" height="12"/>
+				<reportElement x="0" y="0" width="330" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{a_name}.trim()]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="190" y="0" width="190" height="12"/>
+				<reportElement x="330" y="0" width="330" height="12"/>
 				<textElement textAlignment="Center">
 					<font fontName="Times New Roman"/>
 				</textElement>
@@ -73,14 +73,14 @@ ORDER BY
 		<band height="12">
 			<printWhenExpression><![CDATA["Y".equals($F{ta_is_column})]]></printWhenExpression>
 			<textField isBlankWhenNull="true">
-				<reportElement x="190" y="0" width="190" height="12"/>
+				<reportElement x="330" y="0" width="330" height="12"/>
 				<textElement textAlignment="Center">
 					<font fontName="Times New Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{r_value}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="32" y="0" width="148" height="12"/>
+				<reportElement x="32" y="0" width="288" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman"/>
 				</textElement>
