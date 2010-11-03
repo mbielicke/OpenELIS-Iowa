@@ -128,6 +128,7 @@ UIRF Software License are applicable instead of those above.
                     </appButton>
                   </menuDisplay>
                   <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                    <xsl:call-template name="duplicateRecordMenuItem" />
                     <menuItem key="qcHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'qcHistory')}" />
                     <menuItem key="qcAnalyteHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'qcAnalyteHistory')}" />
                   </menuPanel>
