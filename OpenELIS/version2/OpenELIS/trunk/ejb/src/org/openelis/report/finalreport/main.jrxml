@@ -2,13 +2,16 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="finalreport" language="groovy" pageWidth="612" pageHeight="791" columnWidth="576" leftMargin="18" rightMargin="18" topMargin="18" bottomMargin="18">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="96"/>
 	<parameter name="SAMPLE_ACCESSION_NUMBER" class="java.lang.Integer"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["/auto/home/akampoow/workspace/OpenELIS-EJB/src/org/openelis/report/finalreport/"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="ORGANIZATION_ID" class="java.lang.Integer"/>
 	<parameter name="REPORT_TYPE" class="java.lang.String"/>
+	<parameter name="SYSTEM_NAME" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA['org_report_to']]></parameterDescription>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT
      s.id s_id,
@@ -19,7 +22,7 @@ FROM
      sample s, outer (sample_organization so, dictionary d)
 WHERE
      s.accession_number = $P{SAMPLE_ACCESSION_NUMBER} AND so.sample_id = s.id AND so.organization_id = $P{ORGANIZATION_ID}
-     AND so.type_id = d.id AND d.system_name = 'org_report_to']]>
+     AND so.type_id = d.id AND d.system_name = $P{SYSTEM_NAME}]]>
 	</queryString>
 	<field name="s_id" class="java.lang.Integer"/>
 	<field name="s_accession_number" class="java.lang.Integer"/>
@@ -76,7 +79,7 @@ WHERE
 			<staticText>
 				<reportElement key="header-bottom" x="148" y="74" width="388" height="28" backcolor="#E7E4E4"/>
 				<textElement>
-					<font fontName="Times New Roman" size="22" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Italic" pdfEncoding="CP1252" isPdfEmbedded="false"/>
+					<font fontName="Times New Roman" size="22" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="CP1252" isPdfEmbedded="false"/>
 				</textElement>
 				<text><![CDATA[The University of Iowa]]></text>
 			</staticText>
@@ -93,7 +96,7 @@ WHERE
 			<staticText>
 				<reportElement key="header-top" x="148" y="0" width="402" height="54"/>
 				<textElement>
-					<font fontName="Times New Roman" size="37" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="CP1252" isPdfEmbedded="false"/>
+					<font fontName="Times New Roman" size="37" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<text><![CDATA[State Hygienic Laboratory]]></text>
 			</staticText>
@@ -130,7 +133,7 @@ WHERE
 		</band>
 		<band height="132">
 			<staticText>
-				<reportElement positionType="Float" x="186" y="82" width="194" height="14"/>
+				<reportElement positionType="Float" x="191" y="82" width="194" height="14"/>
 				<textElement textAlignment="Center">
 					<font fontName="Times New Roman" size="12" isBold="true"/>
 				</textElement>
@@ -172,7 +175,7 @@ WHERE
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisPending.jasper"]]></subreportExpression>
 			</subreport>
 			<staticText>
-				<reportElement positionType="Float" x="185" y="46" width="194" height="14"/>
+				<reportElement positionType="Float" x="191" y="46" width="194" height="14"/>
 				<box bottomPadding="0"/>
 				<textElement textAlignment="Center">
 					<font fontName="Times New Roman" size="12" isBold="true"/>
@@ -218,7 +221,7 @@ WHERE
 				<textFieldExpression class="java.lang.String"><![CDATA[$V{PAGE_NUMBER} + " of "]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="2" y="16" width="550" height="1"/>
+				<reportElement x="0" y="16" width="552" height="1"/>
 			</line>
 			<staticText>
 				<reportElement x="2" y="25" width="114" height="10"/>

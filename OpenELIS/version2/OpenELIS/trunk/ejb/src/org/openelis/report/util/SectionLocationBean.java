@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.report.finalreport;
+package org.openelis.report.util;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -44,8 +44,7 @@ public class SectionLocationBean {
         a_rs = null;
         
         try {
-            a_st = con.prepareStatement("select s.name "+
-                                        " from section s"+
+            a_st = con.prepareStatement("select s.name from section s"+
                                         " where s.id = ? ");
             a_st.setObject(1, sectionId);
             a_rs = a_st.executeQuery();

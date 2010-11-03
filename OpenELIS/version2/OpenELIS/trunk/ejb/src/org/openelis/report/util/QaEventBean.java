@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.report.finalreport;
+package org.openelis.report.util;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -32,21 +32,27 @@ import java.sql.SQLException;
 
 public class QaEventBean {
 
-    public static String getAnalysisQaeventText(Connection con, Integer analysisId) {        
+    public static String getAnalysisQaeventText(Connection con, Integer analysisId,
+                                                Boolean notInternal) {        
         StringBuffer text;
         PreparedStatement a_st;
         ResultSet a_rs;
+        String queryClause,internalClause;
                 
         a_st = null;
         a_rs = null;
         text = new StringBuffer();
-        try {
-            a_st = con.prepareStatement("select q.reporting_text "+
-                                        " from analysis_qaevent aq, qaevent q"+
-                                        " where q.id = aq.qaevent_id" +
-                                        " and aq.analysis_id = ?" +
-                                        " and aq.type_id not in" +
-                                        " (select d.id from dictionary d where d.system_name = 'qaevent_internal')");
+        queryClause = "select q.reporting_text from analysis_qaevent aq, qaevent q"+
+                      " where q.id = aq.qaevent_id and aq.analysis_id = ?";
+        internalClause = " and aq.type_id not in (select d.id from dictionary d" +
+        		         " where d.system_name = 'qaevent_internal')";
+        
+        try {            
+            if (notInternal)               
+                a_st = con.prepareStatement(queryClause + internalClause) ;
+            else
+                a_st = con.prepareStatement(queryClause);
+            
             a_st.setObject(1, analysisId);
             a_rs = a_st.executeQuery();
             while (a_rs.next()) {
@@ -73,21 +79,27 @@ public class QaEventBean {
             return null; 
     }
     
-    public static String getSampleQaeventText(Connection con, Integer sampleId) {        
+    public static String getSampleQaeventText(Connection con, Integer sampleId,
+                                              Boolean notInternal) {        
         StringBuffer text;
         PreparedStatement a_st;
         ResultSet a_rs;
-                
+        String queryClause,internalClause;
+        
         a_st = null;
         a_rs = null;
-        text = new StringBuffer();              
+        text = new StringBuffer();
+        queryClause = "select q.reporting_text from sample_qaevent sq, qaevent q"+
+                      " where q.id = sq.qaevent_id and sq.sample_id = ?";
+        internalClause = " and sq.type_id not in (select d.id from dictionary d" +
+        		         "  where d.system_name = 'qaevent_internal')";
+        
         try {            
-            a_st = con.prepareStatement("select q.reporting_text "+
-                                        " from sample_qaevent sq, qaevent q"+
-                                        " where q.id = sq.qaevent_id" +
-                                        " and sq.sample_id = ?" +
-                                        " and sq.type_id not in" +
-                                        " (select d.id from dictionary d where d.system_name = 'qaevent_internal')");
+            if (notInternal)               
+                a_st = con.prepareStatement(queryClause + internalClause) ;
+            else
+                a_st = con.prepareStatement(queryClause);
+            
             a_st.setObject(1, sampleId);
             a_rs = a_st.executeQuery();            
             while (a_rs.next()) {
