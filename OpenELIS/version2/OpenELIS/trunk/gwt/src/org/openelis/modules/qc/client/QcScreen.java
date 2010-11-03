@@ -34,6 +34,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.QcAnalyteViewDO;
+import org.openelis.domain.QcViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
@@ -59,6 +60,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -104,7 +106,7 @@ public class QcScreen extends Screen {
     private AppButton                   queryButton, previousButton, nextButton, addButton,
                                         updateButton, commitButton, abortButton, addAnalyteButton,
                                         removeAnalyteButton, dictionaryButton;
-    protected MenuItem                  qcHistory, qcAnalyteHistory;
+    protected MenuItem                  duplicate,qcHistory, qcAnalyteHistory;
     private ButtonGroup                 atoz;
     private ScreenNavigator             nav;
     private CalendarLookUp              preparedDate, usableDate, expireDate;
@@ -249,6 +251,17 @@ public class QcScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
                                           .contains(event.getState()));
+            }
+        });
+        
+        duplicate = (MenuItem)def.getWidget("duplicateRecord");
+        addScreenHandler(duplicate, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                duplicate();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
@@ -644,7 +657,7 @@ public class QcScreen extends Screen {
         addAnalyteButton = (AppButton)def.getWidget("addAnalyteButton");
         addScreenHandler(addAnalyteButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int r, n;
+                int r;
 
                 r = qcAnalyteTable.getSelectedRow() + 1;
                 if (r == 0) {
@@ -941,6 +954,20 @@ public class QcScreen extends Screen {
             window.setDone(consts.get("updateAborted"));
         } else {
             window.clearStatus();
+        }
+    }
+    
+    protected void duplicate() {
+        QcViewDO data;
+        try {
+            manager = QcManager.fetchById(manager.getQc().getId());            
+            setState(State.ADD);
+            DataChangeEvent.fire(this);
+            data = manager.getQc();
+            data.setId(null);
+            setFocus(name);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
         }
     }
     
