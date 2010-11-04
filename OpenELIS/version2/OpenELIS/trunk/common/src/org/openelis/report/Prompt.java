@@ -40,7 +40,8 @@ import org.openelis.gwt.common.RPC;
 public class Prompt implements RPC {
     
     private static final long serialVersionUID = 1L;
-    protected String          name, prompt, type, mask, shift, defaultValue;
+    protected String          name, prompt, mask, shift, defaultValue;
+    protected Type            type;
     protected Integer         length, width;
     protected Object          optionList[];
     protected boolean         required, hidden, multiSelect;
@@ -66,7 +67,7 @@ public class Prompt implements RPC {
         this(name, null);
     }
 
-    public Prompt(String name, String type) {
+    public Prompt(String name, Type type) {
         setName(name);
         setType(type);
     }
@@ -100,11 +101,11 @@ public class Prompt implements RPC {
      * get/set the type of response allowed for this prompt. See predefined
      * TYPE_xxxx for valid types.
      */
-    public String getType() {
+    public Type getType() {
         return type;
     }
 
-    public Prompt setType(String type) {
+    public Prompt setType(Type type) {
         this.type = type;
         return this;
     }
