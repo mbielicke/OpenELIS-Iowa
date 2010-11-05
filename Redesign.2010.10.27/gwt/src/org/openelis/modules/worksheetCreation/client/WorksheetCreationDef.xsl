@@ -41,26 +41,12 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen id="WorksheetCreation" name="{resource:getString($constants,'worksheetCreation')}">
+    <screen name="{resource:getString($constants,'worksheetCreation')}">
       <VerticalPanel padding="0" spacing="0">
         <AbsolutePanel spacing="0" style="ButtonPanelContainer">
           <HorizontalPanel>
-            <appButton key="saveButton" style="ButtonPanelButton" action="save">
-              <HorizontalPanel>
-                <AbsolutePanel style="SaveButtonImage" />
-                <text>
-                  <xsl:value-of select="resource:getString($constants,'save')" />
-                </text>
-              </HorizontalPanel>
-            </appButton>
-            <appButton key="exitButton" style="ButtonPanelButton" action="exit">
-              <HorizontalPanel>
-                <AbsolutePanel style="ExitButtonImage" />
-                <text>
-                  <xsl:value-of select="resource:getString($constants,'exit')" />
-                </text>
-              </HorizontalPanel>
-            </appButton>
+            <button key="saveButton" icon="SaveButtonImage" text="{resource:getString($constants,'save')}" style="ButtonPanelButton" action="save"/>
+            <button key="exitButton" icon="ExitButtonImage" text="{resource:getString($constants,'exit')}" style="ButtonPanelButton" action="exit"/>
           </HorizontalPanel>
         </AbsolutePanel>
         <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
@@ -75,13 +61,13 @@ UIRF Software License are applicable instead of those above.
               </text>
               <HorizontalPanel>
                 <textbox key="{meta:getWorksheetRelatedWorksheetId()}" width="100" case="LOWER" field="String" />
-                <appButton key="lookupWorksheetButton" style="LookupButton" tab="worksheetItemTable,removeRowButton" action="lookupWorksheet">
+                <button key="lookupWorksheetButton" style="LookupButton" tab="worksheetItemTable,removeRowButton" action="lookupWorksheet">
                   <AbsolutePanel style="LookupButtonImage" />
-                </appButton>
+                </button>
               </HorizontalPanel>
             </row>
           </TablePanel>
-          <table key="worksheetItemTable" width="800" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" tab="insertQCWorksheetButton,lookupWorksheetButton" title="">
+          <table key="worksheetItemTable" width="800" rows="9" vscroll="ALWAYS" hscroll="ALWAYS" style="ScreenTableWithSides" tab="insertQCWorksheetButton,lookupWorksheetButton">
             <col key="{meta:getWorksheetItemPosition()}" width="50" header="{resource:getString($constants,'position')}">
               <label field="String" />
             </col>
@@ -118,30 +104,9 @@ UIRF Software License are applicable instead of those above.
           </table>
           <widget style="TableFooterPanel">
             <HorizontalPanel>
-              <appButton key="insertQCWorksheetButton" style="Button" tab="insertQCLookupButton,worksheetItemTable" action="insertQCWorksheet">
-                <HorizontalPanel>
-                  <AbsolutePanel style="AddRowButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'insertQCWorksheet')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
-              <appButton key="insertQCLookupButton" style="Button" tab="removeRowButton,insertQCWorksheetButton" action="insertQCLookup">
-                <HorizontalPanel>
-                  <AbsolutePanel style="AddRowButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'insertQCLookup')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
-              <appButton key="removeRowButton" style="Button" tab="{meta:getWorksheetRelatedWorksheetId()},insertQCLookupButton" action="removeRow">
-                <HorizontalPanel>
-                  <AbsolutePanel style="RemoveRowButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
+              <button key="insertQCWorksheetButton" icon="AddRowButtonImage" text="{resource:getString($constants,'insertQCWorksheet')}" style="Button" tab="insertQCLookupButton,worksheetItemTable" action="insertQCWorksheet"/>
+              <button key="insertQCLookupButton" icon="AddRowButtonImage" text="{resource:getString($constants,'insertQCLookup')}" style="Button" tab="removeRowButton,insertQCWorksheetButton" action="insertQCLookup"/>
+              <button key="removeRowButton" icon="RemoveRowButtonImage" text="{resource:getString($constants,'removeRow')}" style="Button" tab="{meta:getWorksheetRelatedWorksheetId()},insertQCLookupButton" action="removeRow"/>
             </HorizontalPanel>
           </widget>
         </VerticalPanel>

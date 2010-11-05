@@ -46,40 +46,20 @@ UIRF Software License are applicable instead of those above.
       <xsl:value-of select="props" />
     </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="InventoryReceipt" name="{resource:getString($constants,'inventoryReceipt')}">
+    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="{resource:getString($constants,'inventoryReceipt')}">
       <VerticalPanel padding="0" spacing="0">
 
 <!--button panel code-->
 
         <AbsolutePanel spacing="0" style="ButtonPanelContainer">
           <HorizontalPanel>
-            <xsl:call-template name="queryButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
+            <xsl:call-template name="queryButton"/>
             <xsl:call-template name="buttonPanelDivider" />
-            <xsl:call-template name="addButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="updateButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
+            <xsl:call-template name="addButton"/>
+            <xsl:call-template name="updateButton"/>
             <xsl:call-template name="buttonPanelDivider" />
-            <xsl:call-template name="commitButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="abortButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
+            <xsl:call-template name="commitButton"/>
+            <xsl:call-template name="abortButton"/>
           </HorizontalPanel>
         </AbsolutePanel>
 
@@ -87,7 +67,7 @@ UIRF Software License are applicable instead of those above.
 
         <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
           <widget valign="top">
-            <table key="receiptTable" width="auto" maxRows="10" showScroll="ALWAYS" title="">
+            <table key="receiptTable" rows="10" vscroll="ALWAYS" hscroll="ALWAYS">
               <col key="{meta:getOrderItemOrderId()}" width="50" header="{resource:getString($constants,'ordNum')}">
                 <textbox field="Integer" />
               </col>
@@ -98,20 +78,20 @@ UIRF Software License are applicable instead of those above.
                 <calendar begin="0" end="2" pattern="{resource:getString($constants,'datePattern')}" />
               </col>
               <col key="{meta:getUpc()}" width="80" header="{resource:getString($constants,'upc')}">
-                <autoComplete width="120" case="LOWER" field="Integer">
+                <autoComplete width="120" case="LOWER">
                   <col width="100" header="{resource:getString($constants,'upc')}" />
                   <col width="150" header="{resource:getString($constants,'inventoryItem')}" />
                 </autoComplete>
               </col>
               <col key="{meta:getInventoryItemName()}" width="140" header="{resource:getString($constants,'inventoryItem')}">
-                <autoComplete width="120" case="LOWER" field="Integer" >
+                <autoComplete width="120" case="LOWER"  >
                   <col width="100" header="{resource:getString($constants,'name')}" />
                   <col width="150" header="{resource:getString($constants,'store')}" />
                   <col width="150" header="{resource:getString($constants,'dispensedUnits')}" />
                 </autoComplete>
               </col>
               <col key="{meta:getOrganizationName()}" width="160" header="{resource:getString($constants,'vendor')}">
-                <autoComplete width="140" case="UPPER" field="Integer" >
+                <autoComplete width="140" case="UPPER" >
                   <col width="180" header="{resource:getString($constants,'name')}" />
                   <col width="110" header="{resource:getString($constants,'street')}" />
                   <col width="100" header="{resource:getString($constants,'city')}" />
@@ -131,22 +111,8 @@ UIRF Software License are applicable instead of those above.
           </widget>
           <widget style="TableButtonFooter">
             <HorizontalPanel>
-              <appButton key="addReceiptButton" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="AddRowButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'addRow')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
-              <appButton key="removeReceiptButton" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="RemoveRowButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
+              <button key="addReceiptButton" icon="AddRowButtonImage" text="{resource:getString($constants,'addRow')}" style="Button"/>
+              <button key="removeReceiptButton" icon="RemoveRowButtonImage" text="{resource:getString($constants,'removeRow')}" style="Button"/>
             </HorizontalPanel>
           </widget>
           <VerticalPanel style="WhiteContentPanel">
@@ -197,7 +163,7 @@ UIRF Software License are applicable instead of those above.
                           <xsl:value-of select='resource:getString($constants,"location")' />:
                         </text>
                         <widget colspan="7">
-                          <autoComplete key="{meta:getInventoryLocationStorageLocationId()}"  width="300" field="Integer" tab = "{meta:getInventoryLocationLotNumber()},addToExisting">
+                          <autoComplete key="{meta:getInventoryLocationStorageLocationId()}"  width="300" tab = "{meta:getInventoryLocationLotNumber()},addToExisting">
                             <col width="300" header="{resource:getString($constants,'description')}" />
                             <col width="65" header="{resource:getString($constants,'lotNum')}" />
                             <col width="55" header="{resource:getString($constants,'qty')}" />
@@ -281,14 +247,7 @@ UIRF Software License are applicable instead of those above.
               <tab key="noteTab" text="{resource:getString($constants,'orderShippingNotes')}" tab="notesPanel, notesPanel">
                 <VerticalPanel padding="0" spacing="0">
                   <notes key="notesPanel" width="802" height="75" />
-                  <appButton key="standardNoteButton" style="Button">
-                    <HorizontalPanel>
-                      <AbsolutePanel style="StandardNoteButtonImage" />
-                      <text>
-                        <xsl:value-of select="resource:getString($constants,'addNote')" />
-                      </text>
-                    </HorizontalPanel>
-                  </appButton>
+                  <button key="standardNoteButton" icon="StandardNoteButtonImage" text="{resource:getString($constants,'addNote')}" style="Button"/>
                 </VerticalPanel>
               </tab>
             </TabPanel>

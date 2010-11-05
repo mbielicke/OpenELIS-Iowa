@@ -43,7 +43,7 @@ UIRF Software License are applicable instead of those above.
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'test')" />:
           </text>
-          <autoComplete key="{meta:getAnalysisTestName()}" width="150" case="LOWER" popWidth="auto" field="Integer">
+          <autoComplete key="{meta:getAnalysisTestName()}" width="150" case="LOWER">
             <col width="170" header="{resource:getString($constants,'test')}" />
             <col width="150" header="{resource:getString($constants,'method')}" />
             <col width="290" header="{resource:getString($constants,'description')}" />
@@ -52,7 +52,7 @@ UIRF Software License are applicable instead of those above.
             <xsl:value-of select="resource:getString($constants,'method')" />:
           </text>
           <widget colspan="3">
-          <autoComplete key="{meta:getAnalysisMethodName()}" width="151" case="LOWER" popWidth="auto" field="Integer">
+          <autoComplete key="{meta:getAnalysisMethodName()}" width="151" case="LOWER">
             <col width="150" header="{resource:getString($constants,'method')}" />
           </autoComplete>
           </widget>
@@ -65,7 +65,7 @@ UIRF Software License are applicable instead of those above.
         <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'status')" />:
           </text>
-          <dropdown key="{meta:getAnalysisStatusId()}" width="150" popWidth="150" field="Integer" />
+          <dropdown key="{meta:getAnalysisStatusId()}" width="150" />
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'revision')" />:
           </text>
@@ -83,12 +83,12 @@ UIRF Software License are applicable instead of those above.
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'section')" />:
           </text>
-          <dropdown key="{meta:getAnalysisSectionId()}" width="151" case="LOWER" popWidth="150" field="Integer" />
+          <dropdown key="{meta:getAnalysisSectionId()}" width="151" case="LOWER" field="Integer" />
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'unit')" />:
           </text>
           <widget colspan="3">
-          <dropdown key="{meta:getAnalysisUnitOfMeasureId()}" width="150" popWidth="150" field="Integer" />
+          <dropdown key="{meta:getAnalysisUnitOfMeasureId()}" width="150" field="Integer" />
           </widget>
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'released')" />:
@@ -100,7 +100,7 @@ UIRF Software License are applicable instead of those above.
             <xsl:value-of select="resource:getString($constants,'samplePrep')" />:
           </text>
           <widget colspan="5">
-          <autoComplete key="{meta:getAnalysisSamplePrep()}" width="365" popWidth="auto" field="Integer">
+          <autoComplete key="{meta:getAnalysisSamplePrep()}" width="365">
             <col width="350" header="Name" />
           </autoComplete>
           </widget>
@@ -112,7 +112,7 @@ UIRF Software License are applicable instead of those above.
       </TablePanel>
       <HorizontalPanel spacing="0" padding="0">
                    <VerticalPanel spacing="0" padding="0">
-            <table key="worksheetTable" style="ScreenTableWithSides" width="auto" maxRows="3" showScroll="ALWAYS" title="">
+            <table key="worksheetTable" style="ScreenTableWithSides" rows="3" vscroll="ALWAYS" hscroll="ALWAYS">
             	<col width="70" header="Worksheet">
               		<label field="Integer"/>
             	</col>
@@ -127,19 +127,12 @@ UIRF Software License are applicable instead of those above.
             	</col>
             </table>
 	            <HorizontalPanel style="TableFooterPanel">
-                 <appButton key="selectWkshtButton" style="Button">
-                   <HorizontalPanel>
-                     <AbsolutePanel style="selectIcon" />
-                     <text>
-                       <xsl:value-of select='resource:getString($constants,"select")' />
-                     </text>
-                   </HorizontalPanel>
-                 </appButton>
-                  </HorizontalPanel>
+                  <button key="selectWkshtButton" icon="selectIcon" text="{resource:getString($constants,'select')}" style="Button"/>
+                </HorizontalPanel>
                   </VerticalPanel>
             <AbsolutePanel style="Divider" />
                   <VerticalPanel spacing="0" padding="0">
-      		<table key="analysisUserTable" style="ScreenTableWithSides" width="auto" maxRows="3" showScroll="ALWAYS" title="">
+      		<table key="analysisUserTable" style="ScreenTableWithSides" rows="3" vscroll="ALWAYS" hscroll="ALWAYS">
             	<col width="115" header="User">
               		<autoComplete width="100" case="LOWER" field="Integer"/>
             	</col>
@@ -148,24 +141,10 @@ UIRF Software License are applicable instead of those above.
             	</col>
             </table>
             <HorizontalPanel style="TableFooterPanel">
-               <appButton key="addActionButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel style="AddRowButtonImage" />
-                          <text>
-                            <xsl:value-of select="resource:getString($constants,'addRow')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
-                      <appButton key="removeActionButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel style="RemoveRowButtonImage" />
-                          <text>
-                            <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
-                  </HorizontalPanel>
-                  </VerticalPanel>
+               <button key="addActionButton" icon="AddRowButtonImage" text="{resource:getString($constants,'addRow')}" style="Button"/>
+               <button key="removeActionButton" icon="RemoveRowButtonImage" text="{resource:getString($constants,'removeRow')}" style="Button"/>
+            </HorizontalPanel>
+         </VerticalPanel>
       </HorizontalPanel>
     </VerticalPanel>
   </xsl:template>

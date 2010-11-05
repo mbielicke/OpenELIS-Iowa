@@ -43,7 +43,7 @@ UIRF Software License are applicable instead of those above.
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
   <xsl:template match="doc">
   
-  <screen id="SDWIS" name="SDWIS">
+  <screen name="SDWIS">
                    	<TablePanel style="Form">
                      <row>
                 		<text style="Prompt">
@@ -51,9 +51,9 @@ UIRF Software License are applicable instead of those above.
                 		</text>
                 	    <HorizontalPanel>
                   		  <textbox key="{meta:getSDWISPwsId()}" width="75" max="9" case="UPPER" tab="pwsName,{meta:getClientReference()}" field="String" required="true"/>
-                  			<appButton key="pwsButton" style="LookupButton">
+                  			<button key="pwsButton" style="LookupButton">
                     		  <AbsolutePanel style="LookupButtonImage" />
-                            </appButton>
+                            </button>
                        </HorizontalPanel>
                        <text style="Prompt">
                           <xsl:value-of select="resource:getString($constants,'pwsName')" />:
@@ -99,15 +99,15 @@ UIRF Software License are applicable instead of those above.
                          <xsl:value-of select="resource:getString($constants,'reportTo')" />:
                        </text>
                        <HorizontalPanel>
-                         <autoComplete key="{meta:getOrgName()}" width="179" case="UPPER" popWidth="auto" tab="{meta:getBillTo()},{meta:getSDWISCollector()}" field="Integer">
+                         <autoComplete key="{meta:getOrgName()}" width="179" case="UPPER" tab="{meta:getBillTo()},{meta:getSDWISCollector()}">
                            <col width="180" header="{resource:getString($constants,'name')}" />
                            <col width="110" header="{resource:getString($constants,'street')}" />
                            <col width="100" header="{resource:getString($constants,'city')}" />
                            <col width="20" header="{resource:getString($constants,'st')}" />
                          </autoComplete>
-                         <appButton key="reportToLookup" style="LookupButton">
+                         <button key="reportToLookup" style="LookupButton">
                            <AbsolutePanel style="LookupButtonImage" />
-                         </appButton>
+                         </button>
                        </HorizontalPanel>
                      </row>
                      <row>
@@ -115,15 +115,15 @@ UIRF Software License are applicable instead of those above.
                          <xsl:value-of select="resource:getString($constants,'billTo')" />:
                        </text>
                        <HorizontalPanel>
-                        <autoComplete key="{meta:getBillTo()}" width="179" case="UPPER" popWidth="auto" tab="sampleItemTabPanel,{meta:getOrgName()}" field="Integer">
+                        <autoComplete key="{meta:getBillTo()}" width="179" case="UPPER" tab="sampleItemTabPanel,{meta:getOrgName()}">
                           <col width="180" header="{resource:getString($constants,'name')}" />
                           <col width="110" header="{resource:getString($constants,'street')}" />
                           <col width="100" header="{resource:getString($constants,'city')}" />
                           <col width="20" header="{resource:getString($constants,'st')}" />
                         </autoComplete>
-                        <appButton key="billToLookup" style="LookupButton">
+                        <button key="billToLookup" style="LookupButton">
                           <AbsolutePanel style="LookupButtonImage" />
-                        </appButton>
+                        </button>
                        </HorizontalPanel>
                      </row>
                    </TablePanel>

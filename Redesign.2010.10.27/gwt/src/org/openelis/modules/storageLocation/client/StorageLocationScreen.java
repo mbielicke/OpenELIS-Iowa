@@ -50,17 +50,18 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoCompleteValue;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
+import org.openelis.gwt.widget.Item;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.Window;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
@@ -80,22 +81,21 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class StorageLocationScreen extends Screen {
     private StorageLocationManager manager;
     private ModulePermission       userPermission;
 
-    private AutoComplete<Integer>  storageUnit, childStorageUnit;
+    private AutoComplete           storageUnit, childStorageUnit;
     private TextBox                name, location;
     private CheckBox               isAvailable;
-    private AppButton              queryButton, previousButton, nextButton, addButton,
+    private Button                 queryButton, previousButton, nextButton, addButton,
                                    updateButton, commitButton, abortButton, addChildButton, removeChildButton;
     protected MenuItem             storageLocationHistory, subLocationHistory;
     private ButtonGroup            atoz;
     private ScreenNavigator        nav;
-    private TableWidget            childStorageLocsTable;
+    private Table                  childStorageLocsTable;
 
     private ScreenService          storageUnitService;
 
@@ -135,92 +135,98 @@ public class StorageLocationScreen extends Screen {
         //
         // button panel buttons
         //
-        queryButton = (AppButton)def.getWidget("query");
+        queryButton = (Button)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 query();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                queryButton.setEnabled(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                           .contains(event.getState()) &&
                                    userPermission.hasSelectPermission());
-                if (event.getState() == State.QUERY)
-                    queryButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.QUERY) {
+                    queryButton.setPressed(true);
+                    queryButton.lock();
+                }
             }
         });
 
-        previousButton = (AppButton)def.getWidget("previous");
+        previousButton = (Button)def.getWidget("previous");
         addScreenHandler(previousButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 previous();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                previousButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
-        nextButton = (AppButton)def.getWidget("next");
+        nextButton = (Button)def.getWidget("next");
         addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 next();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                nextButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                nextButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
-        addButton = (AppButton)def.getWidget("add");
+        addButton = (Button)def.getWidget("add");
         addScreenHandler(addButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 add();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                addButton.setEnabled(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                         .contains(event.getState()) &&
                                  userPermission.hasAddPermission());
-                if (event.getState() == State.ADD)
-                    addButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.ADD) {
+                    addButton.setPressed(true);
+                    addButton.lock();
+                }
             }
         });
 
-        updateButton = (AppButton)def.getWidget("update");
+        updateButton = (Button)def.getWidget("update");
         addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 update();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
+                updateButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
                                     userPermission.hasUpdatePermission());
-                if (event.getState() == State.UPDATE)
-                    updateButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.UPDATE) {
+                    updateButton.setPressed(true);
+                    updateButton.lock();
+                }
             }
         });
 
-        commitButton = (AppButton)def.getWidget("commit");
+        commitButton = (Button)def.getWidget("commit");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 commit();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                commitButton.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
                                            .contains(event.getState()));
             }
         });
 
-        abortButton = (AppButton)def.getWidget("abort");
+        abortButton = (Button)def.getWidget("abort");
         addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 abort();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                abortButton.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
                                           .contains(event.getState()));
             }
         });
@@ -232,7 +238,7 @@ public class StorageLocationScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                storageLocationHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                storageLocationHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
@@ -243,7 +249,7 @@ public class StorageLocationScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                subLocationHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                subLocationHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -258,7 +264,7 @@ public class StorageLocationScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                name.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                name.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                    .contains(event.getState()));
                 name.setQueryMode(event.getState() == State.QUERY);
             }
@@ -275,7 +281,7 @@ public class StorageLocationScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                location.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                location.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                        .contains(event.getState()));
                 location.setQueryMode(event.getState() == State.QUERY);
             }
@@ -284,18 +290,18 @@ public class StorageLocationScreen extends Screen {
         storageUnit = (AutoComplete)def.getWidget(StorageLocationMeta.getStorageUnitDescription());
         addScreenHandler(storageUnit, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                storageUnit.setSelection(manager.getStorageLocation().getStorageUnitId(),
+                storageUnit.setValue(manager.getStorageLocation().getStorageUnitId(),
                                          manager.getStorageLocation().getStorageUnitDescription());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 manager.getStorageLocation().setStorageUnitId(event.getValue());
                 manager.getStorageLocation()
-                       .setStorageUnitDescription(storageUnit.getTextBoxDisplay());
+                       .setStorageUnitDescription(storageUnit.getDisplay());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                storageUnit.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                storageUnit.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                           .contains(event.getState()));
                 storageUnit.setQueryMode(event.getState() == State.QUERY);
             }
@@ -306,24 +312,28 @@ public class StorageLocationScreen extends Screen {
                 QueryFieldUtil parser;
                 IdNameVO data;
                 ArrayList<IdNameVO> list;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e) {
+                	
+                }
 
                 try {
                     list = storageUnitService.callList("fetchByDescription", parser.getParameter()
                                                                                    .get(0));
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
 
                     for (int i = 0; i < list.size(); i++ ) {
                         data = list.get(i);
-                        model.add(new TableDataRow(data.getId(), data.getName(),
+                        model.add(new Item<Integer>(data.getId(), data.getName(),
                                                    data.getDescription()));
                     }
                     storageUnit.showAutoMatches(model);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
@@ -339,23 +349,23 @@ public class StorageLocationScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isAvailable.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                isAvailable.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                           .contains(event.getState()));
                 isAvailable.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        childStorageLocsTable = (TableWidget)def.getWidget("childStorageLocsTable");
-        childStorageUnit = (AutoComplete<Integer>)childStorageLocsTable.getColumnWidget(StorageLocationMeta.getChildStorageUnitDescription());
+        childStorageLocsTable = (Table)def.getWidget("childStorageLocsTable");
+        childStorageUnit = (AutoComplete)childStorageLocsTable.getColumnAt(childStorageLocsTable.getColumnByName(StorageLocationMeta.getChildStorageUnitDescription())).getCellEditor().getWidget();
 
-        addScreenHandler(childStorageLocsTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        addScreenHandler(childStorageLocsTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
                 if (state != State.QUERY)
-                    childStorageLocsTable.load(getChildLocationModel());
+                    childStorageLocsTable.setModel(getChildLocationModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                childStorageLocsTable.enable(true);
+                childStorageLocsTable.setEnabled(true);
                 childStorageLocsTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -374,23 +384,23 @@ public class StorageLocationScreen extends Screen {
                 int r, c;
                 Object val;
                 StorageLocationViewDO data;
-                TableDataRow row;
+                AutoCompleteValue av;
 
                 r = event.getRow();
                 c = event.getCol();
-                val = childStorageLocsTable.getObject(r, c);
+                val = childStorageLocsTable.getValueAt(r, c);
                 try {
                     data = manager.getChildren().getChildAt(r);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                     return;
                 }
 
                 switch (c) {
                     case 0:
-                        row = (TableDataRow)val;
-                        data.setStorageUnitId((Integer)row.key);
-                        data.setStorageUnitDescription(childStorageUnit.getTextBoxDisplay());
+                        av = (AutoCompleteValue)val;
+                        data.setStorageUnitId((Integer)av.getId());
+                        data.setStorageUnitDescription(childStorageUnit.getDisplay());
                         break;
                     case 1:
                         data.setLocation((String)val);
@@ -412,9 +422,9 @@ public class StorageLocationScreen extends Screen {
                     data = new StorageLocationViewDO();
                     data.setIsAvailable("Y");
                     manager.getChildren().addChildAt(data, r);
-                    childStorageLocsTable.setCell(r, 2, "Y");
+                    childStorageLocsTable.setValueAt(r, 2, "Y");
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
@@ -424,7 +434,7 @@ public class StorageLocationScreen extends Screen {
                 try {
                     manager.getChildren().removeChildAt(event.getIndex());
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
@@ -434,72 +444,76 @@ public class StorageLocationScreen extends Screen {
                 QueryFieldUtil parser;
                 IdNameVO data;
                 ArrayList<IdNameVO> list;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e) {
+                	
+                }
 
                 try {
                     list = storageUnitService.callList("fetchByDescription", parser.getParameter()
                                                                                    .get(0));
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
 
                     for (int i = 0; i < list.size(); i++ ) {
                         data = list.get(i);
-                        model.add(new TableDataRow(data.getId(), data.getName(),
+                        model.add(new Item<Integer>(data.getId(), data.getName(),
                                                    data.getDescription()));
                     }
                     childStorageUnit.showAutoMatches(model);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
 
-        addChildButton = (AppButton)def.getWidget("addChildButton");
+        addChildButton = (Button)def.getWidget("addChildButton");
         addScreenHandler(addChildButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int r;
 
                 r = childStorageLocsTable.getSelectedRow() + 1;
                 if (r == 0)
-                    r = childStorageLocsTable.numRows();
+                    r = childStorageLocsTable.getRowCount();
 
-                childStorageLocsTable.addRow(r);
-                childStorageLocsTable.selectRow(r);
-                childStorageLocsTable.scrollToSelection();
+                childStorageLocsTable.addRowAt(r);
+                childStorageLocsTable.selectRowAt(r);
+                childStorageLocsTable.scrollToVisible(r);
                 childStorageLocsTable.startEditing(r, 0);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addChildButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                addChildButton.setEnabled(EnumSet.of(State.ADD, State.UPDATE)
                                              .contains(event.getState()));
             }
         });
 
-        removeChildButton = (AppButton)def.getWidget("removeChildButton");
+        removeChildButton = (Button)def.getWidget("removeChildButton");
         addScreenHandler(removeChildButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int r;
 
                 r = childStorageLocsTable.getSelectedRow();
                 try {
-                    if (r > -1 && childStorageLocsTable.numRows() > 0) {
+                    if (r > -1 && childStorageLocsTable.getRowCount() > 0) {
                         window.setBusy(consts.get("validatingDelete"));
                         validateForDelete(manager.getChildren().getChildAt(r));
-                        childStorageLocsTable.deleteRow(r);
+                        childStorageLocsTable.removeRowAt(r);
                     }
                 } catch (ValidationErrorsList e) {
-                    Window.alert(consts.get("storageLocationDeleteException"));
+                    com.google.gwt.user.client.Window.alert(consts.get("storageLocationDeleteException"));
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                     e.printStackTrace();
                 }
                 window.clearStatus();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeChildButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                removeChildButton.setEnabled(EnumSet.of(State.ADD, State.UPDATE)
                                                 .contains(event.getState()));
             }
         });
@@ -524,7 +538,7 @@ public class StorageLocationScreen extends Screen {
                         } else if (error instanceof LastPageException) {
                             window.setError(consts.get("noMoreRecordInDir"));
                         } else {
-                            Window.alert("Error: Storage Location call query failed; " +
+                            com.google.gwt.user.client.Window.alert("Error: Storage Location call query failed; " +
                                          error.getMessage());
                             window.setError(consts.get("queryFailed"));
                         }
@@ -536,16 +550,16 @@ public class StorageLocationScreen extends Screen {
                 return fetchById( (entry == null) ? null : ((IdNameVO)entry).getId());
             }
 
-            public ArrayList<TableDataRow> getModel() {
+            public ArrayList<Item<Integer>> getModel() {
                 ArrayList<IdNameVO> result;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 model = null;
                 result = nav.getQueryResult();
                 if (result != null) {
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
                     for (IdNameVO entry : result)
-                        model.add(new TableDataRow(entry.getId(), entry.getName()));
+                        model.add(new Item<Integer>(entry.getId(), entry.getName()));
                 }
                 return model;
             }
@@ -557,7 +571,7 @@ public class StorageLocationScreen extends Screen {
                 boolean enable;
                 enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
                          userPermission.hasSelectPermission();
-                atoz.enable(enable);
+                atoz.setEnabled(enable);
                 nav.enable(enable);
             }
 
@@ -567,7 +581,7 @@ public class StorageLocationScreen extends Screen {
 
                 field = new QueryData();
                 field.key = StorageLocationMeta.getName();
-                field.query = ((AppButton)event.getSource()).getAction();
+                field.query = ((Button)event.getSource()).getAction();
                 field.type = QueryData.Type.STRING;
 
                 query = new Query();
@@ -576,8 +590,8 @@ public class StorageLocationScreen extends Screen {
             }
         });
         
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+        window.addBeforeClosedHandler(new BeforeCloseHandler<Window>() {
+            public void onBeforeClosed(BeforeCloseEvent<Window> event) {                
                 if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
@@ -630,7 +644,7 @@ public class StorageLocationScreen extends Screen {
             setFocus(name);
         } catch (Exception e) {
             e.printStackTrace();
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
         }
         window.clearStatus();
     }
@@ -660,7 +674,7 @@ public class StorageLocationScreen extends Screen {
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
-                Window.alert("commitAdd(): " + e.getMessage());
+                com.google.gwt.user.client.Window.alert("commitAdd(): " + e.getMessage());
                 window.clearStatus();
             }
         } else if (state == State.UPDATE) {
@@ -674,7 +688,7 @@ public class StorageLocationScreen extends Screen {
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
-                Window.alert("commitUpdate(): " + e.getMessage());
+                com.google.gwt.user.client.Window.alert("commitUpdate(): " + e.getMessage());
                 window.clearStatus();
             }
         }
@@ -697,7 +711,7 @@ public class StorageLocationScreen extends Screen {
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
             } catch (Exception e) {
-                Window.alert(e.getMessage());
+                com.google.gwt.user.client.Window.alert(e.getMessage());
                 fetchById(null);
             }
             window.setDone(consts.get("updateAborted"));
@@ -707,7 +721,7 @@ public class StorageLocationScreen extends Screen {
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
             } catch (Exception e) {
-                Window.alert(e.getMessage());
+                com.google.gwt.user.client.Window.alert(e.getMessage());
                 fetchById(null);
             }
             window.setDone(consts.get("deleteAborted"));
@@ -741,7 +755,7 @@ public class StorageLocationScreen extends Screen {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             return;
         }
 
@@ -765,7 +779,7 @@ public class StorageLocationScreen extends Screen {
             } catch (Exception e) {
                 fetchById(null);
                 e.printStackTrace();
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                com.google.gwt.user.client.Window.alert(consts.get("fetchFailed") + e.getMessage());
                 return false;
             }
         }
@@ -775,30 +789,30 @@ public class StorageLocationScreen extends Screen {
         return true;
     }
 
-    private ArrayList<TableDataRow> getChildLocationModel() {
+    private ArrayList<Row> getChildLocationModel() {
         int i;
         StorageLocationViewDO data;
-        ArrayList<TableDataRow> model;
-        TableDataRow row;
+        ArrayList<Row> model;
+        Row row;
 
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<Row>();
         if (manager == null)
             return model;
 
         try {
             for (i = 0; i < manager.getChildren().count(); i++ ) {
                 data = manager.getChildren().getChildAt(i);
-                row = new TableDataRow(3);
-                row.key = data.getId();
-                row.cells.get(0).setValue(new TableDataRow(data.getStorageUnitId(),
+                row = new Row(3);
+                //row.key = data.getId();
+                row.setCell(0,new AutoCompleteValue(data.getStorageUnitId(),
                                                            data.getStorageUnitDescription()));
-                row.cells.get(1).setValue(data.getLocation());
-                row.cells.get(2).setValue(data.getIsAvailable());
+                row.setCell(1,data.getLocation());
+                row.setCell(2,data.getIsAvailable());
 
                 model.add(row);
             }
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             e.printStackTrace();
         }
         return model;

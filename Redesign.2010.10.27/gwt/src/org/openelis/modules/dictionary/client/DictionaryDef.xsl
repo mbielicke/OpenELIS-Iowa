@@ -70,43 +70,15 @@ UIRF Software License are applicable instead of those above.
         <VerticalPanel padding="0" spacing="0">
           <AbsolutePanel spacing="0" style="ButtonPanelContainer">
             <HorizontalPanel>
-              <xsl:call-template name="queryButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="previousButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="nextButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
+              <xsl:call-template name="queryButton"/>
+              <xsl:call-template name="previousButton"/>
+              <xsl:call-template name="nextButton"/>
               <xsl:call-template name="buttonPanelDivider" />
-              <xsl:call-template name="addButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="updateButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
+              <xsl:call-template name="addButton"/>
+              <xsl:call-template name="updateButton"/>
               <xsl:call-template name="buttonPanelDivider" />
-              <xsl:call-template name="commitButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="abortButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
+              <xsl:call-template name="commitButton"/>
+              <xsl:call-template name="abortButton"/>
               <xsl:call-template name="buttonPanelDivider" />
                 <menu>
                   <menuDisplay>
@@ -119,8 +91,8 @@ UIRF Software License are applicable instead of those above.
                       </HorizontalPanel>
                     </button>
                   </menuDisplay>
-                  <menuItem key="categoryHistory" description="" enabled="false" icon="historyIcon" display="{resource:getString($constants,'categoryHistory')}" />
-                  <menuItem key="dictionaryHistory" description="" enabled="false" icon="historyIcon" display="{resource:getString($constants,'dictionaryHistory')}" />
+                  <menuItem key="categoryHistory" enabled="false" icon="historyIcon" display="{resource:getString($constants,'categoryHistory')}" />
+                  <menuItem key="dictionaryHistory" enabled="false" icon="historyIcon" display="{resource:getString($constants,'dictionaryHistory')}" />
                 </menu>
             </HorizontalPanel>
           </AbsolutePanel>

@@ -39,12 +39,14 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoCompleteValue;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
+import org.openelis.gwt.widget.Item;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -53,9 +55,9 @@ import com.google.gwt.user.client.Window;
 
 public class StorageLocationLookupScreen extends Screen implements HasActionHandlers<StorageLocationLookupScreen.Action> {
 
-    protected AutoComplete<Integer> location;
-    protected AppButton             okButton, cancelButton;
-    protected TableWidget           storageLocationTable;
+    protected AutoComplete          location;
+    protected Button                okButton, cancelButton;
+    protected Table                 storageLocationTable;
     protected ButtonGroup           azButtons;
 
     public enum Action {
@@ -73,38 +75,43 @@ public class StorageLocationLookupScreen extends Screen implements HasActionHand
 
     private void initialize() {
 
-        location = (AutoComplete<Integer>)def.getWidget("location");
+        location = (AutoComplete)def.getWidget("location");
         
         location.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
-                TableDataRow row;
+                Item<Integer> row;
                 StorageLocationViewDO data;
                 ArrayList<StorageLocationViewDO> list;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e) {
+                	
+                }
 
                 window.setBusy();
 
                 try {
                     list = service.callList("fetchAvailableByName", parser.getParameter().get(0));
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
                         data = list.get(i);                        
-                        row = new TableDataRow(3);
-                        row.key = data.getId();
-                        row.cells.get(0).setValue(data.getName());
-                        row.cells.get(1).setValue(data.getStorageUnitDescription());
-                        row.cells.get(2).setValue(data.getLocation());                        
-                        row.data = data;
+                        row = new Item<Integer>(3);
+                        row.setKey(data.getId());
+                        row.setCell(0,data.getName());
+                        row.setCell(1,data.getStorageUnitDescription());
+                        row.setCell(2,data.getLocation());                        
+                        row.setData(data);
                         model.add(row);
                     }
-                    storageLocationTable.load(model);
+                    storageLocationTable.setModel(model);
                     
                     if(model.size() > 0)
-                        storageLocationTable.selectRow(0);
+                        storageLocationTable.selectRowAt(0);
+                    
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -112,58 +119,58 @@ public class StorageLocationLookupScreen extends Screen implements HasActionHand
             }
         });
         
-        addScreenHandler(location, new ScreenEventHandler<ArrayList<TableDataRow>>() {            
+        addScreenHandler(location, new ScreenEventHandler<AutoCompleteValue>() {            
             public void onDataChange(DataChangeEvent event) {
-                location.setSelection(new TableDataRow(null, ""));
+                location.setValue(null,"");
             }
             
             public void onStateChange(StateChangeEvent<State> event) {
-                location.enable(true);
+                location.setEnabled(true);
             }
         });
 
-        storageLocationTable = (TableWidget)def.getWidget("storageLocationTable");
-        addScreenHandler(storageLocationTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        storageLocationTable = (Table)def.getWidget("storageLocationTable");
+        addScreenHandler(storageLocationTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                storageLocationTable.load(null);
+                storageLocationTable.setModel(null);
             }
             
             public void onStateChange(StateChangeEvent<State> event) {
-                storageLocationTable.enable(true);
+                storageLocationTable.setEnabled(true);
             }
         });               
         
-        storageLocationTable.multiSelect(false);
+        storageLocationTable.setAllowMultipleSelection(false);
 
-        okButton = (AppButton)def.getWidget("ok");
+        okButton = (Button)def.getWidget("ok");
         addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 ok();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                okButton.enable(true);
+                okButton.setEnabled(true);
             }
         });
 
-        cancelButton = (AppButton)def.getWidget("cancel");
+        cancelButton = (Button)def.getWidget("cancel");
         addScreenHandler(cancelButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 cancel();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                cancelButton.enable(true);
+                cancelButton.setEnabled(true);
             }
         });
     }
 
     public void ok() {
-        TableDataRow row;
+        Row row;
         
-        row = storageLocationTable.getSelection();
+        row = storageLocationTable.getRowAt(storageLocationTable.getSelectedRow());
         if(row != null)
-            ActionEvent.fire(this, Action.OK, row.data);
+            ActionEvent.fire(this, Action.OK, row.getData());
         else 
             ActionEvent.fire(this, Action.OK, null);
         window.close();

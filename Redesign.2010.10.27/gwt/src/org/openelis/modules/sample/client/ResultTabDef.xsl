@@ -43,7 +43,7 @@ UIRF Software License are applicable instead of those above.
     <VerticalPanel padding="0" spacing="0">
       <TablePanel padding="0" spacing="0">
         <row>
-          <table key="testResultsTable" width="{string($widthParam)}" maxRows="{string($maxRowsParam)}" showScroll="ALWAYS" title="">
+          <table key="testResultsTable" width="{string($widthParam)}" rows="{string($maxRowsParam)}" vscroll="ALWAYS" hscroll="ALWAYS">
             <col width="65" class="org.openelis.modules.sample.client.SampleResultTableColumn">
               <label field="String" />
             </col>
@@ -82,38 +82,10 @@ UIRF Software License are applicable instead of those above.
         <row>
           <widget style="TableButtonFooter">
             <HorizontalPanel>
-              <appButton key="addResultButton" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="AddRowButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'addRow')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
-              <appButton key="removeResultButton" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="RemoveRowButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
-              <appButton key="suggestionsButton" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="PickerButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'suggestions')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
-              <appButton key="popoutTable" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="popoutButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'popout')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
+              <button key="addResultButton" icon="AddRowButtonImage" text="{resource:getString($constants,'addRow')}" style="Button"/>
+              <button key="removeResultButton" icon="RemoveRowButtonImage" text="{resource:getString($constants,'removeRow')}" style="Button"/>
+              <button key="suggestionsButton" icon="PickerButtonImage" text="{resource:getString($constants,'suggestions')}" style="Button"/>
+              <button key="popoutTable" icon="popoutButtonImage" text="{resource:getString($constants,'popout')}" style="Button"/>
             </HorizontalPanel>
           </widget>
         </row>

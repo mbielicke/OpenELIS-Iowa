@@ -40,15 +40,15 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AutoComplete;
+import org.openelis.gwt.widget.Item;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.Window;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.Row;
 import org.openelis.manager.OrderManager;
 import org.openelis.meta.OrderMeta;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Window;
 
 public class ReportToBillToTab extends Screen {
     
@@ -57,12 +57,12 @@ public class ReportToBillToTab extends Screen {
                                   reportToAddressCity, reportToAddressState, reportToAddressZipCode,
                                   billToAttention,billToAddressMultipleUnit, billToAddressStreetAddress,
                                   billToAddressCity, billToAddressState, billToAddressZipCode;
-    private AutoComplete<Integer> reportToName, billToName;    
+    private AutoComplete          reportToName, billToName;    
     private boolean               loaded;
             
     protected ScreenService       organizationService;
     
-    public ReportToBillToTab(ScreenDefInt def, ScreenWindow window) {
+    public ReportToBillToTab(ScreenDefInt def, Window window) {
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
         organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
         
@@ -83,7 +83,7 @@ public class ReportToBillToTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                reportToAttention.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                reportToAttention.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 reportToAttention.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -95,16 +95,16 @@ public class ReportToBillToTab extends Screen {
                 
                 data = manager.getOrder();                
                 if(data.getReportTo() != null)
-                    reportToName.setSelection(data.getReportToId(), data.getReportTo().getName());
+                    reportToName.setValue(data.getReportToId(), data.getReportTo().getName());
                 else 
-                    reportToName.setSelection(null,"");
+                    reportToName.setValue(null,"");
                     
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 OrganizationDO data;                             
-                if(reportToName.getSelection() != null) {
-                    data = (OrganizationDO) reportToName.getSelection().data;
+                if(reportToName.getValue() != null) {
+                    data = (OrganizationDO) reportToName.getValue().getData();
                     
                     manager.getOrder().setReportToId(data.getId());
                     manager.getOrder().setReportTo(data);
@@ -127,7 +127,7 @@ public class ReportToBillToTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                reportToName.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                reportToName.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 reportToName.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -135,36 +135,40 @@ public class ReportToBillToTab extends Screen {
         reportToName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
-                TableDataRow row;
+                Item<Integer> row;
                 OrganizationDO data;
                 ArrayList<OrganizationDO> list;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e) {
+                	
+                }
 
                 window.setBusy();
                 try {
                     list = organizationService.callList("fetchByIdOrName", parser.getParameter().get(0));
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new TableDataRow(4);
+                        row = new Item<Integer>(4);
                         data = list.get(i);
 
-                        row.key = data.getId();
-                        row.cells.get(0).value = data.getName();
-                        row.cells.get(1).value = data.getAddress().getStreetAddress();
-                        row.cells.get(2).value = data.getAddress().getCity();
-                        row.cells.get(3).value = data.getAddress().getState();
+                        row.setKey(data.getId());
+                        row.setCell(0,data.getName());
+                        row.setCell(1,data.getAddress().getStreetAddress());
+                        row.setCell(2,data.getAddress().getCity());
+                        row.setCell(3,data.getAddress().getState());
                         
-                        row.data = data;
+                        row.setData(data);
                         
                         model.add(row);
                     }
                     reportToName.showAutoMatches(model);
                 } catch (Throwable e) {
                     e.printStackTrace();
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
                 window.clearStatus();
                 
@@ -189,7 +193,7 @@ public class ReportToBillToTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                reportToAddressMultipleUnit.enable(false);
+                reportToAddressMultipleUnit.setEnabled(false);
                 reportToAddressMultipleUnit.setQueryMode(false);
             }
         });
@@ -212,7 +216,7 @@ public class ReportToBillToTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                reportToAddressStreetAddress.enable(false);
+                reportToAddressStreetAddress.setEnabled(false);
                 reportToAddressStreetAddress.setQueryMode(false);
             }
         });
@@ -234,7 +238,7 @@ public class ReportToBillToTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                reportToAddressCity.enable(false);
+                reportToAddressCity.setEnabled(false);
                 reportToAddressCity.setQueryMode(false);
             }
         });
@@ -256,7 +260,7 @@ public class ReportToBillToTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                reportToAddressState.enable(false);
+                reportToAddressState.setEnabled(false);
                 reportToAddressState.setQueryMode(false);
             }
         });
@@ -278,7 +282,7 @@ public class ReportToBillToTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                reportToAddressZipCode.enable(false);
+                reportToAddressZipCode.setEnabled(false);
                 reportToAddressZipCode.setQueryMode(false);
             }
         });
@@ -294,7 +298,7 @@ public class ReportToBillToTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                billToAttention.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                billToAttention.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 billToAttention.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -306,15 +310,15 @@ public class ReportToBillToTab extends Screen {
                 
                 data = manager.getOrder();                
                 if(data.getBillTo() != null)
-                    billToName.setSelection(data.getBillToId(), data.getBillTo().getName());
+                    billToName.setValue(data.getBillToId(), data.getBillTo().getName());
                 else
-                    billToName.setSelection(null,"");
+                    billToName.setValue(null,"");
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {                                
                 OrganizationDO data;                             
-                if(billToName.getSelection() != null) {
-                    data = (OrganizationDO) billToName.getSelection().data;                    
+                if(billToName.getValue() != null) {
+                    data = (OrganizationDO) billToName.getValue().getData();                    
                     manager.getOrder().setBillToId(data.getId());
                     manager.getOrder().setBillTo(data);
                     
@@ -336,7 +340,7 @@ public class ReportToBillToTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                billToName.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                billToName.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 billToName.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -344,36 +348,40 @@ public class ReportToBillToTab extends Screen {
         billToName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
-                TableDataRow row;
+                Item<Integer> row;
                 OrganizationDO data;
                 ArrayList<OrganizationDO> list;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e) {
+                	
+                }
 
                 window.setBusy();
                 try {
                     list = organizationService.callList("fetchByIdOrName", parser.getParameter().get(0));
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new TableDataRow(4);
+                        row = new Item<Integer>(4);
                         data = list.get(i);
 
-                        row.key = data.getId();
-                        row.cells.get(0).value = data.getName();
-                        row.cells.get(1).value = data.getAddress().getStreetAddress();
-                        row.cells.get(2).value = data.getAddress().getCity();
-                        row.cells.get(3).value = data.getAddress().getState();
+                        row.setKey(data.getId());
+                        row.setCell(0,data.getName());
+                        row.setCell(1,data.getAddress().getStreetAddress());
+                        row.setCell(2,data.getAddress().getCity());
+                        row.setCell(3,data.getAddress().getState());
                         
-                        row.data = data;
+                        row.setData(data);
                         
                         model.add(row);
                     }
                     billToName.showAutoMatches(model);
                 } catch (Throwable e) {
                     e.printStackTrace();
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
                 window.clearStatus();
                 
@@ -398,7 +406,7 @@ public class ReportToBillToTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                billToAddressMultipleUnit.enable(false);
+                billToAddressMultipleUnit.setEnabled(false);
                 billToAddressMultipleUnit.setQueryMode(false);
             }
         });
@@ -420,7 +428,7 @@ public class ReportToBillToTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                billToAddressStreetAddress.enable(false);
+                billToAddressStreetAddress.setEnabled(false);
                 billToAddressStreetAddress.setQueryMode(false);
             }
         });
@@ -442,7 +450,7 @@ public class ReportToBillToTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                billToAddressCity.enable(false);
+                billToAddressCity.setEnabled(false);
                 billToAddressCity.setQueryMode(false);
             }
         });
@@ -464,7 +472,7 @@ public class ReportToBillToTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                billToAddressState.enable(false);
+                billToAddressState.setEnabled(false);
                 billToAddressState.setQueryMode(false);
             }
         });
@@ -487,7 +495,7 @@ public class ReportToBillToTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                billToAddressZipCode.enable(false);
+                billToAddressZipCode.setEnabled(false);
                 billToAddressZipCode.setQueryMode(false);
             }
         });       

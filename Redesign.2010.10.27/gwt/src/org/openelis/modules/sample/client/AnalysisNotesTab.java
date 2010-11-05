@@ -37,9 +37,10 @@ import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Button;
+import org.openelis.gwt.widget.ModalWindow;
 import org.openelis.gwt.widget.NotesPanel;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.Window;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.HasNotesInt;
 import org.openelis.manager.NoteManager;
@@ -48,7 +49,6 @@ import org.openelis.modules.note.client.EditNoteScreen;
 import org.openelis.modules.note.client.NotesTab;
 
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.Window;
 
 public class AnalysisNotesTab extends NotesTab {
 
@@ -62,18 +62,18 @@ public class AnalysisNotesTab extends NotesTab {
     protected NoteManager     internalManager;
 
     protected NotesPanel      internalNotesPanel;
-    protected AppButton       standardNote, internalEditButton;
+    protected Button          standardNote, internalEditButton;
     protected EditNoteScreen  internalEditNote;
     protected NoteViewDO      internalNote;
 
     private Integer           analysisCancelledId, analysisReleasedId;
 
-    public AnalysisNotesTab(ScreenDefInt def, ScreenWindow window, String notesPanelKey,
+    public AnalysisNotesTab(ScreenDefInt def, Window window, String notesPanelKey,
                             String editButtonKey) {
         super(def, window, notesPanelKey, editButtonKey);
     }
 
-    public AnalysisNotesTab(ScreenDefInt def, ScreenWindow window, String externalNotesPanelKey,
+    public AnalysisNotesTab(ScreenDefInt def, Window window, String externalNotesPanelKey,
                             String externalEditButtonKey, String internalNotesPanelKey,
                             String internalEditButtonKey) {
 
@@ -105,14 +105,14 @@ public class AnalysisNotesTab extends NotesTab {
             }
         });
 
-        standardNote = (AppButton)def.getWidget(editButtonKey);
+        standardNote = (Button)def.getWidget(editButtonKey);
         addScreenHandler(standardNote, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 showEditWindow();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                standardNote.enable( !isReleased() && !isCancelled() &&
+                standardNote.setEnabled( !isReleased() && !isCancelled() &&
                                     EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
@@ -129,7 +129,7 @@ public class AnalysisNotesTab extends NotesTab {
             }
         });
 
-        internalEditButton = (AppButton)def.getWidget(internalEditButtonKey);
+        internalEditButton = (Button)def.getWidget(internalEditButtonKey);
         addScreenHandler(internalEditButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 if (internalEditNote == null) {
@@ -150,12 +150,12 @@ public class AnalysisNotesTab extends NotesTab {
 
                     } catch (Exception e) {
                         e.printStackTrace();
-                        Window.alert("error: " + e.getMessage());
+                        com.google.gwt.user.client.Window.alert("error: " + e.getMessage());
                         return;
                     }
                 }
 
-                ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+                ModalWindow modal = new ModalWindow();
                 modal.setName(consts.get("standardNote"));
                 modal.setContent(internalEditNote);
 
@@ -164,7 +164,7 @@ public class AnalysisNotesTab extends NotesTab {
                     internalNote = internalManager.getEditingNote();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Window.alert("error!");
+                    com.google.gwt.user.client.Window.alert("error!");
                 }
                 internalNote.setSystemUser(userName);
                 internalNote.setSystemUserId(userId);
@@ -173,7 +173,7 @@ public class AnalysisNotesTab extends NotesTab {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                internalEditButton.enable( !isCancelled() &&
+                internalEditButton.setEnabled( !isCancelled() &&
                                           EnumSet.of(State.ADD, State.UPDATE)
                                                  .contains(event.getState()));
             }
@@ -205,7 +205,7 @@ public class AnalysisNotesTab extends NotesTab {
                 DataChangeEvent.fire(this);
                 loaded = true;
             } catch (Exception e) {
-                Window.alert(e.getMessage());
+                com.google.gwt.user.client.Window.alert(e.getMessage());
             }
         }
     }
@@ -224,7 +224,7 @@ public class AnalysisNotesTab extends NotesTab {
             analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
 
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             window.close();
         }
     }
@@ -245,7 +245,7 @@ public class AnalysisNotesTab extends NotesTab {
                     StateChangeEvent.fire(this, State.UPDATE);
             
             }catch(Exception e){
-                Window.alert("AnalysisNotesTab.setData: "+e.getMessage());
+                com.google.gwt.user.client.Window.alert("AnalysisNotesTab.setData: "+e.getMessage());
             }
         }
 

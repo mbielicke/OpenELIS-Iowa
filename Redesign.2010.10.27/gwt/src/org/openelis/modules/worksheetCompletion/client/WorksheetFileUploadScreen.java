@@ -39,12 +39,12 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.FileUploadWidget;
+import org.openelis.gwt.widget.Button;
+import org.openelis.gwt.widget.fileupload.FileUploadWidget;
 
 public class WorksheetFileUploadScreen extends Screen implements HasActionHandlers<WorksheetFileUploadScreen.Action> {
 
-    protected AppButton        okButton, cancelButton;
+    protected Button           okButton, cancelButton;
     protected FileUploadWidget loadFile;
 
     public enum Action {
@@ -87,25 +87,25 @@ public class WorksheetFileUploadScreen extends Screen implements HasActionHandle
             }
         });
 
-        okButton = (AppButton)def.getWidget("ok");
+        okButton = (Button)def.getWidget("ok");
         addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 ok();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                okButton.enable(true);
+                okButton.setEnabled(true);
             }
         });
 
-        cancelButton = (AppButton)def.getWidget("cancel");
+        cancelButton = (Button)def.getWidget("cancel");
         addScreenHandler(cancelButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 cancel();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                cancelButton.enable(true);
+                cancelButton.setEnabled(true);
             }
         });
     }

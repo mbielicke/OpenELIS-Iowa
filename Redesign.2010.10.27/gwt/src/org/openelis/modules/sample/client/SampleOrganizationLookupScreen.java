@@ -47,13 +47,14 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoCompleteValue;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.Item;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
@@ -76,7 +77,7 @@ import com.google.gwt.user.client.Window;
 public class SampleOrganizationLookupScreen  extends Screen implements HasActionHandlers<SampleOrganizationLookupScreen.Action> {
 
     private SampleOrganizationManager manager;
-    protected AppButton organizationRemoveButton;
+    protected Button organizationRemoveButton;
     private boolean canAddReportTo, canAddBillTo, canAddSecondReportTo;
     private Integer reportToId, billToId, secondReportToId;
     
@@ -84,7 +85,7 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
         OK
     };
 
-    private TableWidget sampleOrganizationTable;
+    private Table sampleOrganizationTable;
     
     public SampleOrganizationLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SampleOrganizationLookupDef.class));
@@ -104,32 +105,32 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
     }
     
     private void initialize(){
-        sampleOrganizationTable = (TableWidget)def.getWidget("sampleOrganizationTable");
-        addScreenHandler(sampleOrganizationTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        sampleOrganizationTable = (Table)def.getWidget("sampleOrganizationTable");
+        addScreenHandler(sampleOrganizationTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                sampleOrganizationTable.load(getTableModel());
+                sampleOrganizationTable.setModel(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sampleOrganizationTable.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                sampleOrganizationTable.setEnabled(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
                 sampleOrganizationTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
         
-        sampleOrganizationTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
-            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+        sampleOrganizationTable.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+            public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
                 //always allow selection
             }
         });
 
-        sampleOrganizationTable.addSelectionHandler(new SelectionHandler<TableRow>() {
-            public void onSelection(SelectionEvent<TableRow> event) {
+        sampleOrganizationTable.addSelectionHandler(new SelectionHandler<Integer>() {
+            public void onSelection(SelectionEvent<Integer> event) {
                 if(EnumSet.of(State.ADD, State.UPDATE).contains(state))
-                    organizationRemoveButton.enable(true);
+                    organizationRemoveButton.setEnabled(true);
             }
         });
 
-        final AutoComplete<Integer> organization = ((AutoComplete<Integer>)sampleOrganizationTable.getColumns().get(2).colWidget);
+        final AutoComplete organization = ((AutoComplete)sampleOrganizationTable.getColumnWidget(2));
         sampleOrganizationTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int row,col;
@@ -143,23 +144,23 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
                 try{
                     orgDO = manager.getOrganizationAt(row);
                 }catch(Exception e){
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                     return;
                 }
                     
-                val = sampleOrganizationTable.getObject(row, col);
+                val = sampleOrganizationTable.getValueAt(row, col);
                 
                 switch (col) {
                     case 0:
-                        sampleOrganizationTable.clearCellExceptions(row, col);
+                        sampleOrganizationTable.clearExceptions(row, col);
                         if(reportToId.equals((Integer)val) && !canAddReportTo)
-                            sampleOrganizationTable.setCellException(row, col, new LocalizedException("cantAddReportToException"));
+                            sampleOrganizationTable.addException(row, col, new LocalizedException("cantAddReportToException"));
                         
                         else if(billToId.equals((Integer)val) && !canAddBillTo)
-                            sampleOrganizationTable.setCellException(row, col, new LocalizedException("cantAddBillToException"));
+                            sampleOrganizationTable.addException(row, col, new LocalizedException("cantAddBillToException"));
                         
                         else if(secondReportToId.equals((Integer)val) && !canAddSecondReportTo)
-                            sampleOrganizationTable.setCellException(row, col, new LocalizedException("cantAddSecondReortToException"));
+                            sampleOrganizationTable.addException(row, col, new LocalizedException("cantAddSecondReortToException"));
                         
                         orgDO.setTypeId((Integer)val);
                         break;
@@ -167,26 +168,26 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
                         orgDO.setOrganizationAttention((String)val);
                         break;
                     case 2:
-                        TableDataRow selectedRow = organization.getSelection();
+                        Item<Integer> selectedRow = organization.getSelectedItem();
                         Integer id = null;
                         String city = null;
                         String state = null;
 
-                        if (selectedRow.key != null) {
-                            id = (Integer)selectedRow.key;
-                            city = (String)selectedRow.cells.get(2).value;
-                            state = (String)selectedRow.cells.get(3).value;
+                        if (selectedRow.getKey() != null) {
+                            id = (Integer)selectedRow.getKey();
+                            city = (String)selectedRow.getCell(2);
+                            state = (String)selectedRow.getCell(3);
                         }
 
-                        sampleOrganizationTable.setCell(sampleOrganizationTable.getSelectedRow(),
+                        sampleOrganizationTable.setValueAt(sampleOrganizationTable.getSelectedRow(),
                                                         3,
                                                         city);
-                        sampleOrganizationTable.setCell(sampleOrganizationTable.getSelectedRow(),
+                        sampleOrganizationTable.setValueAt(sampleOrganizationTable.getSelectedRow(),
                                                         4,
                                                         state);
 
                         orgDO.setOrganizationId(id);
-                        orgDO.setOrganizationName((String)selectedRow.cells.get(0).value);
+                        orgDO.setOrganizationName((String)selectedRow.getCell(0));
                         orgDO.setOrganizationCity(city);
                         orgDO.setOrganizationState(state);
                         break;
@@ -203,34 +204,38 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
         organization.addGetMatchesHandler(new GetMatchesHandler(){
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
-                TableDataRow row;
+                Item<Integer> row;
                 OrganizationDO data;
                 ArrayList<OrganizationDO> list;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e) {
+                	
+                }
 
                 window.setBusy();
                 try {
                     list = service.callList("fetchByIdOrName", parser.getParameter().get(0));
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new TableDataRow(4);
+                        row = new Item<Integer>(4);
                         data = list.get(i);
 
-                        row.key = data.getId();
-                        row.cells.get(0).value = data.getName();
-                        row.cells.get(1).value = data.getAddress().getStreetAddress();
-                        row.cells.get(2).value = data.getAddress().getCity();
-                        row.cells.get(3).value = data.getAddress().getState();
+                        row.setKey(data.getId());
+                        row.setCell(0,data.getName());
+                        row.setCell(1,data.getAddress().getStreetAddress());
+                        row.setCell(2,data.getAddress().getCity());
+                        row.setCell(3,data.getAddress().getState());
 
                         model.add(row);
                     }
                     organization.showAutoMatches(model);
                 } catch (Throwable e) {
                     e.printStackTrace();
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
                 window.clearStatus();
             }
@@ -239,53 +244,53 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
         sampleOrganizationTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 manager.addOrganization(new SampleOrganizationViewDO());
-                organizationRemoveButton.enable(true);
+                organizationRemoveButton.setEnabled(true);
             }
         });
 
         sampleOrganizationTable.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
                 manager.removeOrganizationAt(event.getIndex());
-                organizationRemoveButton.enable(false);
+                organizationRemoveButton.setEnabled(false);
             }
         });
         
-        organizationRemoveButton = (AppButton)def.getWidget("organizationRemoveButton");
+        organizationRemoveButton = (Button)def.getWidget("organizationRemoveButton");
         addScreenHandler(organizationRemoveButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int selectedRow = sampleOrganizationTable.getSelectedRow();
-                if (selectedRow > -1 && sampleOrganizationTable.numRows() > 0) {
-                    sampleOrganizationTable.deleteRow(selectedRow);
+                if (selectedRow > -1 && sampleOrganizationTable.getRowCount() > 0) {
+                    sampleOrganizationTable.removeRowAt(selectedRow);
                 }
             }
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationRemoveButton.enable(false);
+                organizationRemoveButton.setEnabled(false);
             }
             
         });
         
-        final AppButton organizationAddButton = (AppButton)def.getWidget("organizationAddButton");
+        final Button organizationAddButton = (Button)def.getWidget("organizationAddButton");
         addScreenHandler(organizationAddButton,new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 sampleOrganizationTable.addRow();
-                sampleOrganizationTable.selectRow(sampleOrganizationTable.numRows()-1);
-                sampleOrganizationTable.scrollToSelection();
-                sampleOrganizationTable.startEditing(sampleOrganizationTable.numRows()-1, 0);
+                sampleOrganizationTable.selectRowAt(sampleOrganizationTable.getRowCount()-1);
+                sampleOrganizationTable.scrollToVisible(sampleOrganizationTable.getSelectedRow());
+                sampleOrganizationTable.startEditing(sampleOrganizationTable.getRowCount()-1, 0);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationAddButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                organizationAddButton.setEnabled(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
         
-        final AppButton okButton = (AppButton)def.getWidget("ok");
+        final Button okButton = (Button)def.getWidget("ok");
         addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 ok();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                okButton.enable(true);
+                okButton.setEnabled(true);
             }
         });
 
@@ -299,8 +304,8 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
         }
     }
     
-    private ArrayList<TableDataRow> getTableModel() {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+    private ArrayList<Row> getTableModel() {
+        ArrayList<Row> model = new ArrayList<Row>();
         
         if(manager == null)
             return model;
@@ -310,14 +315,14 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
             for(int iter = 0;iter < manager.count();iter++) {
                 SampleOrganizationViewDO orgDO = (SampleOrganizationViewDO)manager.getOrganizationAt(iter);
             
-               TableDataRow row = new TableDataRow(5);
-               row.key = orgDO.getId();
+               Row row = new Row(5);
+               //row.key = orgDO.getId();
                
-               row.cells.get(0).value = orgDO.getTypeId();
-               row.cells.get(1).value = orgDO.getOrganizationAttention();
-               row.cells.get(2).value = new TableDataRow(orgDO.getOrganizationId(), orgDO.getOrganizationName());
-               row.cells.get(3).value = orgDO.getOrganizationCity();
-               row.cells.get(4).value = orgDO.getOrganizationState();
+               row.setCell(0,orgDO.getTypeId());
+               row.setCell(1,orgDO.getOrganizationAttention());
+               row.setCell(2,new AutoCompleteValue(orgDO.getOrganizationId(), orgDO.getOrganizationName()));
+               row.setCell(3,orgDO.getOrganizationCity());
+               row.setCell(4,orgDO.getOrganizationState());
                
                model.add(row);
                
@@ -345,17 +350,17 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
     
     private void initializeDropdowns() {
         ArrayList<DictionaryDO> list;
-        ArrayList<TableDataRow> model;
+        ArrayList<Item<Integer>> model;
         
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
         
         try{
             list = DictionaryCache.getListByCategorySystemName("organization_type");
             for(DictionaryDO resultDO :  list){
-                model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
+                model.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
             } 
-            ((Dropdown<Integer>)sampleOrganizationTable.getColumns().get(0).getColumnWidget()).setModel(model);
+            ((Dropdown<Integer>)sampleOrganizationTable.getColumnWidget(0)).setModel(model);
             
             //load the type ids
             reportToId = DictionaryCache.getIdFromSystemName("org_report_to");
@@ -363,7 +368,7 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
             secondReportToId = DictionaryCache.getIdFromSystemName("org_second_report_to");
         
         }catch(Exception e){
-            Window.alert("initializedropdowns: "+e.getMessage());
+            com.google.gwt.user.client.Window.alert("initializedropdowns: "+e.getMessage());
         }
     }
     
@@ -374,8 +379,8 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
         
         DeferredCommand.addCommand(new Command() {
             public void execute() {
-                if(sampleOrganizationTable.numRows() > 0)
-                    sampleOrganizationTable.select(0, 0);
+                if(sampleOrganizationTable.getRowCount() > 0)
+                    sampleOrganizationTable.startEditing(0, 0);
             }
         });
     }
@@ -419,7 +424,7 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
             showErrors(e);
             return false;
         }catch(Exception e){
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             return false;
         }
         

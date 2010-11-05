@@ -58,14 +58,15 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.CalendarLookUp;
+import org.openelis.gwt.widget.Button;
+import org.openelis.gwt.widget.calendar.Calendar;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.Item;
 import org.openelis.gwt.widget.MenuItem;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ModalWindow;
+import org.openelis.gwt.widget.Window;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.Row;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleManager;
@@ -94,7 +95,6 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
 
@@ -121,12 +121,12 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     protected TextBox<Integer>        accessionNumber, orderNumber;
     protected TextBox<Datetime>       collectedTime;
     protected Dropdown<Integer>       statusId;
-    protected CalendarLookUp          collectedDate, receivedDate;
+    protected Calendar                collectedDate, receivedDate;
     protected MenuItem                historySample, historySampleSdwis, historySampleOrganization,
                                       historySampleItem, historyAnalysis, historyCurrentResult, historyStorage,
                                       historySampleQA, historyAnalysisQA, historyAuxData;
 
-    protected AppButton               queryButton, addButton, updateButton, nextButton, prevButton,
+    protected Button                  queryButton, addButton, updateButton, nextButton, prevButton,
                                       commitButton, abortButton, orderLookup;
     protected TabPanel                tabs;
 
@@ -177,7 +177,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                                                          "sdwis_sample_category",
                                                          "sdwis_sample_type");
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             window.close();
         }
 
@@ -192,7 +192,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         //
         // button panel buttons
         //
-        queryButton = (AppButton)def.getWidget("query");
+        queryButton = (Button)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 query();
@@ -201,37 +201,38 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             public void onStateChange(StateChangeEvent<State> event) {
                 if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
                     userPermission.hasSelectPermission())
-                    queryButton.enable(true);
-                else if (event.getState() == State.QUERY)
-                    queryButton.setState(ButtonState.LOCK_PRESSED);
-                else
-                    queryButton.enable(false);
+                    queryButton.setEnabled(true);
+                else if (event.getState() == State.QUERY) {
+                    queryButton.setPressed(true);
+                    queryButton.lock();
+                }else
+                    queryButton.setEnabled(false);
             }
         });
 
-        nextButton = (AppButton)def.getWidget("next");
+        nextButton = (Button)def.getWidget("next");
         addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 next();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                nextButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                nextButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
-        prevButton = (AppButton)def.getWidget("previous");
+        prevButton = (Button)def.getWidget("previous");
         addScreenHandler(prevButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 previous();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                prevButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                prevButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
-        addButton = (AppButton)def.getWidget("add");
+        addButton = (Button)def.getWidget("add");
         addScreenHandler(addButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 add();
@@ -240,15 +241,16 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             public void onStateChange(StateChangeEvent<State> event) {
                 if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
                     userPermission.hasAddPermission())
-                    addButton.enable(true);
-                else if (EnumSet.of(State.ADD).contains(event.getState()))
-                    addButton.setState(ButtonState.LOCK_PRESSED);
-                else
-                    addButton.enable(false);
+                    addButton.setEnabled(true);
+                else if (EnumSet.of(State.ADD).contains(event.getState())) {
+                    addButton.setPressed(true);
+                    addButton.lock();
+                }else
+                    addButton.setEnabled(false);
             }
         });
 
-        updateButton = (AppButton)def.getWidget("update");
+        updateButton = (Button)def.getWidget("update");
         addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 update();
@@ -257,35 +259,36 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             public void onStateChange(StateChangeEvent<State> event) {
                 if (EnumSet.of(State.DISPLAY).contains(event.getState()) &&
                     userPermission.hasUpdatePermission())
-                    updateButton.enable(true);
-                else if (EnumSet.of(State.UPDATE).contains(event.getState()))
-                    updateButton.setState(ButtonState.LOCK_PRESSED);
-                else
-                    updateButton.enable(false);
+                    updateButton.setEnabled(true);
+                else if (EnumSet.of(State.UPDATE).contains(event.getState())) {
+                    updateButton.setPressed(true);
+                    updateButton.lock();
+                }else
+                    updateButton.setEnabled(false);
 
             }
         });
 
-        commitButton = (AppButton)def.getWidget("commit");
+        commitButton = (Button)def.getWidget("commit");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 commit();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                commitButton.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                            .contains(event.getState()));
             }
         });
 
-        abortButton = (AppButton)def.getWidget("abort");
+        abortButton = (Button)def.getWidget("abort");
         addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 abort();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                abortButton.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                           .contains(event.getState()));
             }
         });
@@ -304,7 +307,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historySample.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                historySample.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -316,7 +319,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historySampleSdwis.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                historySampleSdwis.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -328,7 +331,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historySampleOrganization.enable(EnumSet.of(State.DISPLAY)
+                historySampleOrganization.setEnabled(EnumSet.of(State.DISPLAY)
                                                         .contains(event.getState()));
             }
         });
@@ -341,7 +344,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historySampleItem.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                historySampleItem.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -353,7 +356,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historyAnalysis.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                historyAnalysis.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -365,7 +368,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historyCurrentResult.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                historyCurrentResult.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -377,7 +380,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historyStorage.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                historyStorage.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -389,7 +392,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historySampleQA.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                historySampleQA.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -401,7 +404,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historyAnalysisQA.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                historyAnalysisQA.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -413,14 +416,14 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historyAuxData.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                historyAuxData.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
         accessionNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                accessionNumber.setValue(Util.toString(manager.getSample().getAccessionNumber()));
+                accessionNumber.setValue(manager.getSample().getAccessionNumber());
             }
 
             public void onValueChange(final ValueChangeEvent<Integer> event) {
@@ -451,15 +454,15 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 } catch (ValidationErrorsList e) {
                     showErrors(e);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                    accessionNumber.setValue(Util.toString(null));
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
+                    accessionNumber.setValue(null);
                     manager.getSample().setAccessionNumber(null);
                     setFocus(accessionNumber);
                 }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                accessionNumber.enable(EnumSet.of(State.ADD, State.QUERY)
+                accessionNumber.setEnabled(EnumSet.of(State.ADD, State.QUERY)
                                               .contains(event.getState()));
                 accessionNumber.setQueryMode(event.getState() == State.QUERY);
             }
@@ -468,7 +471,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         orderNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getOrderId());
         addScreenHandler(orderNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                orderNumber.setValue(Util.toString(manager.getSample().getOrderId()));
+                orderNumber.setValue(manager.getSample().getOrderId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -490,7 +493,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                     orderNumber.addException(new LocalizedException("orderIdInvalidException"));
                     return;
                 } catch (Exception ex) {
-                    Window.alert(ex.getMessage());
+                    com.google.gwt.user.client.Window.alert(ex.getMessage());
                     return;
                 }
 
@@ -513,30 +516,30 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orderNumber.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                orderNumber.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                           .contains(event.getState()));
                 orderNumber.setQueryMode(event.getState() == State.QUERY);
             }
         });
         
-        orderLookup = (AppButton)def.getWidget("orderButton");
+        orderLookup = (Button)def.getWidget("orderButton");
         addScreenHandler(orderLookup, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 onOrderLookupClick();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orderLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
+                orderLookup.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
                                              .contains(event.getState()));
             }
         });
 
-        collectedDate = (CalendarLookUp)def.getWidget(SampleMeta.getCollectionDate());
+        collectedDate = (Calendar)def.getWidget(SampleMeta.getCollectionDate());
         addScreenHandler(collectedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 collectedDate.setValue(manager.getSample().getCollectionDate());
@@ -547,7 +550,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collectedDate.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                collectedDate.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                             .contains(event.getState()));
                 collectedDate.setQueryMode(event.getState() == State.QUERY);
             }
@@ -565,11 +568,11 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collectedTime.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                collectedTime.setEnabled(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
-        receivedDate = (CalendarLookUp)def.getWidget(SampleMeta.getReceivedDate());
+        receivedDate = (Calendar)def.getWidget(SampleMeta.getReceivedDate());
         addScreenHandler(receivedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 receivedDate.setValue(manager.getSample().getReceivedDate());
@@ -580,7 +583,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                receivedDate.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                receivedDate.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                            .contains(event.getState()));
                 receivedDate.setQueryMode(event.getState() == State.QUERY);
             }
@@ -589,7 +592,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         statusId = (Dropdown<Integer>)def.getWidget(SampleMeta.getStatusId());
         addScreenHandler(statusId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                statusId.setSelection(manager.getSample().getStatusId());
+                statusId.setValue(manager.getSample().getStatusId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -597,7 +600,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                statusId.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                statusId.setEnabled(EnumSet.of(State.QUERY).contains(event.getState()));
                 statusId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -613,7 +616,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                clientReference.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                clientReference.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                               .contains(event.getState()));
                 clientReference.setQueryMode(event.getState() == State.QUERY);
             }
@@ -639,7 +642,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             sdwisTab = new SDWISTab(def, window);
         } catch (Exception e) {
             e.printStackTrace();
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
         }
         addScreenHandler(sdwisTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -842,7 +845,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                         } else if (error instanceof LastPageException) {
                             window.setError("No more records in this direction");
                         } else {
-                            Window.alert("Error: envsample call query failed; " +
+                            com.google.gwt.user.client.Window.alert("Error: envsample call query failed; " +
                                          error.getMessage());
                             window.setError(consts.get("queryFailed"));
                         }
@@ -854,15 +857,15 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 return fetchById( (entry == null) ? null : ((IdAccessionVO)entry).getId());
             }
 
-            public ArrayList<TableDataRow> getModel() {
+            public ArrayList<Item<Integer>> getModel() {
                 ArrayList<IdAccessionVO> result;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 result = nav.getQueryResult();
-                model = new ArrayList<TableDataRow>();
+                model = new ArrayList<Item<Integer>>();
                 if (result != null) {
                     for (IdAccessionVO entry : result)
-                        model.add(new TableDataRow(entry.getId(), entry.getAccessionNumber()));
+                        model.add(new Item<Integer>(entry.getId(), entry.getAccessionNumber()));
                 }
                 return model;
             }
@@ -871,8 +874,8 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         //
         // screen fields
         //
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+        window.addBeforeClosedHandler(new BeforeCloseHandler<Window>() {
+            public void onBeforeClosed(BeforeCloseEvent<Window> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
@@ -920,7 +923,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             manager.getSample().setReceivedById(OpenELIS.getSystemUserPermission().getSystemUserId());
 
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             return;
         }
 
@@ -948,7 +951,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             window.clearStatus();
 
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
         }
 
         window.clearStatus();
@@ -988,7 +991,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 if ( !e.hasErrors() && e.hasWarnings())
                     showWarningsDialog(e);
             } catch (Exception e) {
-                Window.alert("commitAdd(): " + e.getMessage());
+                com.google.gwt.user.client.Window.alert("commitAdd(): " + e.getMessage());
                 window.clearStatus();
             }
         } else if (state == State.UPDATE) {
@@ -1006,7 +1009,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 if ( !e.hasErrors() && e.hasWarnings())
                     showWarningsDialog(e);
             } catch (Exception e) {
-                Window.alert("commitUpdate(): " + e.getMessage());
+                com.google.gwt.user.client.Window.alert("commitUpdate(): " + e.getMessage());
             }
         }
     }
@@ -1026,7 +1029,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
-                Window.alert("commitAdd(): " + e.getMessage());
+                com.google.gwt.user.client.Window.alert("commitAdd(): " + e.getMessage());
                 window.clearStatus();
             }
         } else if (state == State.UPDATE) {
@@ -1040,7 +1043,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
-                Window.alert("commitUpdate(): " + e.getMessage());
+                com.google.gwt.user.client.Window.alert("commitUpdate(): " + e.getMessage());
             }
         }
     }
@@ -1081,7 +1084,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 window.clearStatus();
 
             } catch (Exception e) {
-                Window.alert(e.getMessage());
+                com.google.gwt.user.client.Window.alert(e.getMessage());
                 window.clearStatus();
             }
 
@@ -1108,7 +1111,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             } catch (NotFoundException e) {
                 orderNumber.addException(new LocalizedException("orderIdInvalidException"));
             } catch (Exception e) {
-                Window.alert(e.getMessage());
+                com.google.gwt.user.client.Window.alert(e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -1119,9 +1122,9 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     
 
     private void showOrder(OrderManager orderManager) {
-        ScreenWindow modal;
+        ModalWindow modal;
         try {
-                modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+                modal = new ModalWindow();
                 modal.setName(consts.get("kitOrder"));
                 if (sendoutOrderScreen == null)
                     sendoutOrderScreen = new SendoutOrderScreen(modal);
@@ -1131,7 +1134,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 window.clearStatus();
         } catch (Throwable e) {
             e.printStackTrace();
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             window.clearStatus();
             return;
         }
@@ -1153,7 +1156,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             } catch (Exception e) {
                 e.printStackTrace();
                 setState(State.DEFAULT);
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                com.google.gwt.user.client.Window.alert(consts.get("fetchFailed") + e.getMessage());
                 window.clearStatus();
                 return false;
             }
@@ -1199,21 +1202,21 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     }
 
     private void initializeDropdowns() {
-        ArrayList<TableDataRow> model;
+        ArrayList<Item<Integer>> model;
         // preload dictionary models and single entries, close the window if an
         // error is found
         try {
             sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
 
             // sample status dropdown
-            model = new ArrayList<TableDataRow>();
-            model.add(new TableDataRow(null, ""));
+            model = new ArrayList<Item<Integer>>();
+            model.add(new Item<Integer>(null, ""));
             for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("sample_status"))
-                model.add(new TableDataRow(d.getId(), d.getEntry()));
+                model.add(new Item<Integer>(d.getId(), d.getEntry()));
 
             statusId.setModel(model);
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             window.close();
         }
     }

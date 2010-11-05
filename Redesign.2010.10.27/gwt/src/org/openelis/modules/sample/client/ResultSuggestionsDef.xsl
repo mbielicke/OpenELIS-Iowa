@@ -43,9 +43,9 @@
       <xsl:value-of select="props" />
     </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="ResultSuggestionsScreen" name="{resource:getString($constants,'suggestions')}">
+    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="{resource:getString($constants,'suggestions')}">
       <VerticalPanel>
-        <table key="suggestionsTable" width="auto" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
+        <table key="suggestionsTable" rows="10" vscroll="ALWAYS" hscroll="ALWAYS" style="ScreenTableWithSides">
           <col width="400">
             <label field="String" />
           </col>

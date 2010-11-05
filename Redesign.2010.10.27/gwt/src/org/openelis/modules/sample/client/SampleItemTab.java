@@ -41,15 +41,15 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.Item;
+import org.openelis.gwt.widget.Window;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.Row;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.meta.SampleMeta;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Window;
 
 public class SampleItemTab extends Screen implements HasActionHandlers<SampleItemTab.Action> {
     public enum Action {
@@ -63,7 +63,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
     protected TextBox          sourceOther, containerReference, quantity;
     protected Dropdown<Integer> typeOfSampleId, sourceOfSampleId, containerId, unitOfMeasureId;
 
-    public SampleItemTab(ScreenDefInt def, ScreenWindow window) {
+    public SampleItemTab(ScreenDefInt def, Window window) {
         setDefinition(def);
         setWindow(window);
 
@@ -77,17 +77,17 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
         typeOfSampleId = (Dropdown)def.getWidget(SampleMeta.getItemTypeOfSampleId());
         addScreenHandler(typeOfSampleId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                typeOfSampleId.setSelection(sampleItem.getTypeOfSampleId());
+                typeOfSampleId.setValue(sampleItem.getTypeOfSampleId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 sampleItem.setTypeOfSampleId(event.getValue());
-                sampleItem.setTypeOfSample(typeOfSampleId.getTextBoxDisplay());
+                sampleItem.setTypeOfSample(typeOfSampleId.getDisplay());
                 ActionEvent.fire(itemTab, Action.CHANGED, null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                typeOfSampleId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                typeOfSampleId.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
                                              .contains(event.getState()));
                 typeOfSampleId.setQueryMode(event.getState() == State.QUERY);
             }
@@ -96,17 +96,17 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
         sourceOfSampleId = (Dropdown)def.getWidget(SampleMeta.getItemSourceOfSampleId());
         addScreenHandler(sourceOfSampleId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                sourceOfSampleId.setSelection(sampleItem.getSourceOfSampleId());
+                sourceOfSampleId.setValue(sampleItem.getSourceOfSampleId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 sampleItem.setSourceOfSampleId(event.getValue());
-                sampleItem.setSourceOfSample(sourceOfSampleId.getTextBoxDisplay());
+                sampleItem.setSourceOfSample(sourceOfSampleId.getDisplay());
                 ActionEvent.fire(itemTab, Action.CHANGED, null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sourceOfSampleId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                sourceOfSampleId.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                                .contains(event.getState()));
                 sourceOfSampleId.setQueryMode(event.getState() == State.QUERY);
             }
@@ -123,7 +123,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sourceOther.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                sourceOther.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                           .contains(event.getState()));
                 sourceOther.setQueryMode(event.getState() == State.QUERY);
             }
@@ -132,17 +132,17 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
         containerId = (Dropdown)def.getWidget(SampleMeta.getItemContainerId());
         addScreenHandler(containerId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                containerId.setSelection(sampleItem.getContainerId());
+                containerId.setValue(sampleItem.getContainerId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 sampleItem.setContainerId(event.getValue());
-                sampleItem.setContainer(containerId.getTextBoxDisplay());
+                sampleItem.setContainer(containerId.getDisplay());
                 ActionEvent.fire(itemTab, Action.CHANGED, null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                containerId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                containerId.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
                                           .contains(event.getState()));
                 containerId.setQueryMode(event.getState() == State.QUERY);
             }
@@ -159,7 +159,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                containerReference.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE,
+                containerReference.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE,
                                                      State.DELETE).contains(event.getState()));
                 containerReference.setQueryMode(event.getState() == State.QUERY);
             }
@@ -172,12 +172,12 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             }
 
             public void onValueChange(ValueChangeEvent<Double> event) {
-                sampleItem.setQuantity((Double)quantity.getFieldValue());
+                sampleItem.setQuantity((Double)quantity.getValue());
 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                quantity.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                quantity.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
                                        .contains(event.getState()));
                 quantity.setQueryMode(event.getState() == State.QUERY);
             }
@@ -186,7 +186,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
         unitOfMeasureId = (Dropdown)def.getWidget(SampleMeta.getItemUnitOfMeasureId());
         addScreenHandler(unitOfMeasureId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                unitOfMeasureId.setSelection(sampleItem.getUnitOfMeasureId());
+                unitOfMeasureId.setValue(sampleItem.getUnitOfMeasureId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -194,7 +194,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                unitOfMeasureId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE,
+                unitOfMeasureId.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE,
                                                   State.DELETE).contains(event.getState()));
                 unitOfMeasureId.setQueryMode(event.getState() == State.QUERY);
             }
@@ -202,48 +202,48 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
     }
 
     private void initializeDropdowns() {
-        ArrayList<TableDataRow> model;
-        TableDataRow            row;
+        ArrayList<Item<Integer>> model;
+        Item<Integer>            row;
 
         // sample type dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("type_of_sample")) {
-            row = new TableDataRow(d.getId(), d.getEntry());
-            row.enabled = "Y".equals(d.getIsActive());
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
 
         typeOfSampleId.setModel(model);
 
         // source dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("source_of_sample")) {
-            row = new TableDataRow(d.getId(), d.getEntry());
-            row.enabled = "Y".equals(d.getIsActive());
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
 
         sourceOfSampleId.setModel(model);
 
         // sample container dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("sample_container")) {
-            row = new TableDataRow(d.getId(), d.getEntry());
-            row.enabled = "Y".equals(d.getIsActive());
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
 
         containerId.setModel(model);
 
         // unit of measure dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("unit_of_measure")) {
-            row = new TableDataRow(d.getId(), d.getEntry());
-            row.enabled = "Y".equals(d.getIsActive());
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
 
@@ -267,7 +267,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             bundle = data;
             loaded = false;
         }catch(Exception e){
-            Window.alert("sampleItemTab setData: "+e.getMessage());
+            com.google.gwt.user.client.Window.alert("sampleItemTab setData: "+e.getMessage());
         }
     }
 

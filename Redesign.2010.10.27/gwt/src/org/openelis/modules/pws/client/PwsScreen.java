@@ -49,15 +49,15 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.ButtonGroup;
-import org.openelis.gwt.widget.CalendarLookUp;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.calendar.Calendar;
+import org.openelis.gwt.widget.Item;
+import org.openelis.gwt.widget.Window;
 import org.openelis.gwt.widget.TabPanel;
 import org.openelis.gwt.widget.TextArea;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.Row;
 import org.openelis.manager.PwsManager;
 import org.openelis.meta.PwsMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
@@ -70,7 +70,6 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Action> {
@@ -85,12 +84,12 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
 
     private ScreenNavigator  nav;
 
-    private CalendarLookUp   effBeginDt, effEndDt;
+    private Calendar         effBeginDt, effEndDt;
     private TextBox          number0, alternateStNum, name, dPrinCitySvdNm, dPrinCntySvdNm,
                              dPwsStTypeCd, activityStatusCd, dPopulationCount, startDay, startMonth, endDay,
                              endMonth;
     private TextArea         activityRsnTxt;
-    private AppButton        queryButton, previousButton, nextButton, commitButton, abortButton,
+    private Button           queryButton, previousButton, nextButton, commitButton, abortButton,
                              selectButton;
     private TabPanel         tabPanel;
     private ButtonGroup      atoz;
@@ -140,66 +139,68 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
     }
 
     private void initialize() {
-        queryButton = (AppButton)def.getWidget("query");
+        queryButton = (Button)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 query();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                queryButton.setEnabled(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                           .contains(event.getState()) &&
                                    userPermission.hasSelectPermission());
-                if (event.getState() == State.QUERY)
-                    queryButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.QUERY) {
+                    queryButton.setPressed(true);
+                    queryButton.lock();
+                }
             }
         });
 
-        previousButton = (AppButton)def.getWidget("previous");
+        previousButton = (Button)def.getWidget("previous");
         addScreenHandler(previousButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 previous();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                previousButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
-        nextButton = (AppButton)def.getWidget("next");
+        nextButton = (Button)def.getWidget("next");
         addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 next();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                nextButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                nextButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
-        commitButton = (AppButton)def.getWidget("commit");
+        commitButton = (Button)def.getWidget("commit");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 commit();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                commitButton.setEnabled(EnumSet.of(State.QUERY).contains(event.getState()));
             }
         });
 
-        abortButton = (AppButton)def.getWidget("abort");
+        abortButton = (Button)def.getWidget("abort");
         addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 abort();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                abortButton.setEnabled(EnumSet.of(State.QUERY).contains(event.getState()));
             }
         });
 
-        selectButton = (AppButton)def.getWidget("select");
+        selectButton = (Button)def.getWidget("select");
         if (pwsId != null) {
             addScreenHandler(selectButton, new ScreenEventHandler<Object>() {
                 public void onClick(ClickEvent event) {
@@ -207,7 +208,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
                 }
 
                 public void onStateChange(StateChangeEvent<State> event) {
-                    selectButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                    selectButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
                 }
             });
         } else
@@ -224,7 +225,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                number0.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                number0.setEnabled(EnumSet.of(State.QUERY).contains(event.getState()));
                 number0.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -240,7 +241,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                alternateStNum.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                alternateStNum.setEnabled(EnumSet.of(State.QUERY).contains(event.getState()));
                 alternateStNum.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -256,7 +257,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                name.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                name.setEnabled(EnumSet.of(State.QUERY).contains(event.getState()));
                 name.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -272,7 +273,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                dPrinCitySvdNm.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                dPrinCitySvdNm.setEnabled(EnumSet.of(State.QUERY).contains(event.getState()));
                 dPrinCitySvdNm.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -288,7 +289,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                dPrinCntySvdNm.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                dPrinCntySvdNm.setEnabled(EnumSet.of(State.QUERY).contains(event.getState()));
                 dPrinCntySvdNm.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -304,7 +305,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                dPwsStTypeCd.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                dPwsStTypeCd.setEnabled(EnumSet.of(State.QUERY).contains(event.getState()));
                 dPwsStTypeCd.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -320,7 +321,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                activityStatusCd.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                activityStatusCd.setEnabled(EnumSet.of(State.QUERY).contains(event.getState()));
                 activityStatusCd.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -336,7 +337,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                dPopulationCount.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                dPopulationCount.setEnabled(EnumSet.of(State.QUERY).contains(event.getState()));
                 dPopulationCount.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -352,7 +353,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                activityRsnTxt.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                activityRsnTxt.setEnabled(EnumSet.of(State.QUERY).contains(event.getState()));
                 activityRsnTxt.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -368,7 +369,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                startDay.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                startDay.setEnabled(EnumSet.of(State.QUERY).contains(event.getState()));
                 startDay.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -384,12 +385,12 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                startMonth.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                startMonth.setEnabled(EnumSet.of(State.QUERY).contains(event.getState()));
                 startMonth.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        effBeginDt = (CalendarLookUp)def.getWidget(PwsMeta.getEffBeginDt());
+        effBeginDt = (Calendar)def.getWidget(PwsMeta.getEffBeginDt());
         addScreenHandler(effBeginDt, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 effBeginDt.setValue(manager.getPws().getEffBeginDt());
@@ -400,7 +401,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                effBeginDt.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                effBeginDt.setEnabled(EnumSet.of(State.QUERY).contains(event.getState()));
                 effBeginDt.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -416,7 +417,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                endDay.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                endDay.setEnabled(EnumSet.of(State.QUERY).contains(event.getState()));
                 endDay.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -432,12 +433,12 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                endMonth.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                endMonth.setEnabled(EnumSet.of(State.QUERY).contains(event.getState()));
                 endMonth.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        effEndDt = (CalendarLookUp)def.getWidget(PwsMeta.getEffEndDt());
+        effEndDt = (Calendar)def.getWidget(PwsMeta.getEffEndDt());
         addScreenHandler(effEndDt, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 effEndDt.setValue(manager.getPws().getEffEndDt());
@@ -448,7 +449,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                effEndDt.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                effEndDt.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                        .contains(event.getState()));
                 effEndDt.setQueryMode(event.getState() == State.QUERY);
             }
@@ -529,7 +530,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
                         } else if (error instanceof LastPageException) {
                             window.setError(consts.get("noMoreRecordInDir"));
                         } else {
-                            Window.alert("Error: Pws call query failed; " + error.getMessage());
+                            com.google.gwt.user.client.Window.alert("Error: Pws call query failed; " + error.getMessage());
                             window.setError(consts.get("queryFailed"));
                         }
                     }
@@ -540,16 +541,16 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
                 return fetchByTinwsysIsNumber( (entry == null) ? null : ((IdNameVO)entry).getId());
             }
 
-            public ArrayList<TableDataRow> getModel() {
+            public ArrayList<Item<Integer>> getModel() {
                 ArrayList<IdNameVO> list;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 list = nav.getQueryResult();
                 model = null;
                 if (list != null) {
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
                     for (IdNameVO entry : list)
-                        model.add(new TableDataRow(entry.getId(), entry.getName()));
+                        model.add(new Item<Integer>(entry.getId(), entry.getName()));
                 }
                 return model;
             }
@@ -561,7 +562,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
                 boolean enable;
                 enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
                          userPermission.hasSelectPermission();
-                atoz.enable(enable);
+                atoz.setEnabled(enable);
                 nav.enable(enable);
             }
 
@@ -571,7 +572,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
 
                 field = new QueryData();
                 field.key = PwsMeta.getName();
-                field.query = ((AppButton)event.getSource()).action;
+                field.query = ((Button)event.getSource()).getAction();
                 field.type = QueryData.Type.STRING;
 
                 query = new Query();
@@ -580,8 +581,8 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
         });
 
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+        window.addBeforeClosedHandler(new BeforeCloseHandler<Window>() {
+            public void onBeforeClosed(BeforeCloseEvent<Window> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
@@ -672,7 +673,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             } catch (Exception e) {
                 fetchByTinwsysIsNumber(null);
                 e.printStackTrace();
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                com.google.gwt.user.client.Window.alert(consts.get("fetchFailed") + e.getMessage());
                 return false;
             }
 

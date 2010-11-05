@@ -41,14 +41,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:param name="height" select="250" />
     <VerticalPanel padding="0" spacing="0">
       <notes key="notesPanel" width="{string($width)}" height="{string($height)}" />
-      <button key="standardNoteButton" style="Button">
-        <HorizontalPanel>
-          <AbsolutePanel style="StandardNoteButtonImage" />
-          <text>
-            <xsl:value-of select="resource:getString($constants,'editNote')" />
-          </text>
-        </HorizontalPanel>
-      </button>
+      <button key="standardNoteButton" icon="StandardNoteButtonImage" text="{resource:getString($constants,'editNote')}" style="Button"/>
     </VerticalPanel>
   </xsl:template>
 </xsl:stylesheet>

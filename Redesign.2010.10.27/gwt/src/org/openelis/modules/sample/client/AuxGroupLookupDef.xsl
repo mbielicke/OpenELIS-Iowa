@@ -43,9 +43,9 @@
       <xsl:value-of select="props" />
     </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="AuxGroupPicker" name="{resource:getString($constants,'auxGroupSelection')}">
+    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="{resource:getString($constants,'auxGroupSelection')}">
       <VerticalPanel padding="0" spacing="0">
-        <table key="auxGroupsTable" width="auto" maxRows="10" multiSelect="true" showScroll="ALWAYS" title="">
+        <table key="auxGroupsTable" rows="10" multiSelect="true" vscroll="ALWAYS" hscroll="ALWAYS">
           <col width="205" header="{resource:getString($constants,'name')}">
             <label field="String" />
           </col>
@@ -55,16 +55,8 @@
         </table>
         <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
           <HorizontalPanel>
-            <xsl:call-template name="okButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="cancelButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
+            <xsl:call-template name="okButton"/>
+            <xsl:call-template name="cancelButton"/>
           </HorizontalPanel>
         </AbsolutePanel>
       </VerticalPanel>

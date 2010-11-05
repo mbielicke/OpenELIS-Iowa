@@ -48,22 +48,21 @@ import org.openelis.gwt.event.BeforeCloseEvent;
 import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.ButtonGroup;
-import org.openelis.gwt.widget.CalendarLookUp;
+import org.openelis.gwt.widget.calendar.Calendar;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.Item;
 import org.openelis.gwt.widget.MenuItem;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.Window;
 import org.openelis.gwt.widget.TabPanel;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.Row;
 import org.openelis.manager.NoteManager;
 import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
@@ -78,7 +77,6 @@ import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class InternalOrderScreen extends Screen {
@@ -93,11 +91,11 @@ public class InternalOrderScreen extends Screen {
     private ShipNoteTab       shipNoteTab;
     private Tabs              tab;
 
-    private AppButton         queryButton, previousButton, nextButton, addButton, updateButton,
+    private Button            queryButton, previousButton, nextButton, addButton, updateButton,
                               commitButton, abortButton;
     private MenuItem          duplicate, orderHistory, itemHistory;
     private TextBox           id, neededInDays, requestedBy;
-    private CalendarLookUp    orderedDate;
+    private Calendar          orderedDate;
     private Dropdown<Integer> statusId, costCenterId;
     private TabPanel          tabPanel;
     private Integer           status_pending;
@@ -129,7 +127,7 @@ public class InternalOrderScreen extends Screen {
             DictionaryCache.preloadByCategorySystemNames("order_status", "cost_centers",
                                                          "inventory_store", "inventory_unit");
         } catch (Exception e) {
-            Window.alert("OrderSreen: missing dictionary entry; " + e.getMessage());
+            com.google.gwt.user.client.Window.alert("OrderSreen: missing dictionary entry; " + e.getMessage());
             window.close();
         }
         
@@ -143,89 +141,95 @@ public class InternalOrderScreen extends Screen {
         //
         // button panel buttons
         //
-        queryButton = (AppButton)def.getWidget("query");
+        queryButton = (Button)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 query();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
+                queryButton.setEnabled(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
                                      && userPermission.hasSelectPermission());
-                if (event.getState() == State.QUERY)
-                    queryButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.QUERY) {
+                    queryButton.setPressed(true);
+                    queryButton.lock();
+                }
             }
         });
 
-        previousButton = (AppButton)def.getWidget("previous");
+        previousButton = (Button)def.getWidget("previous");
         addScreenHandler(previousButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 previous();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                previousButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
-        nextButton = (AppButton)def.getWidget("next");
+        nextButton = (Button)def.getWidget("next");
         addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 next();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                nextButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                nextButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
-        addButton = (AppButton)def.getWidget("add");
+        addButton = (Button)def.getWidget("add");
         addScreenHandler(addButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 add();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
+                addButton.setEnabled(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
                                      && userPermission.hasAddPermission());
-                if (event.getState() == State.ADD)
-                    addButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.ADD) {
+                    addButton.setPressed(true);
+                    addButton.lock();
+                }
             }
         });
 
-        updateButton = (AppButton)def.getWidget("update");
+        updateButton = (Button)def.getWidget("update");
         addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 update();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState())
+                updateButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState())
                                      && userPermission.hasUpdatePermission());
-                if (event.getState() == State.UPDATE)
-                    updateButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.UPDATE) {
+                    updateButton.setPressed(true);
+                    updateButton.lock();
+                }
             }
         });
 
-        commitButton = (AppButton)def.getWidget("commit");
+        commitButton = (Button)def.getWidget("commit");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 commit();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                commitButton.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
 
-        abortButton = (AppButton)def.getWidget("abort");
+        abortButton = (Button)def.getWidget("abort");
         addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 abort();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                abortButton.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
         
@@ -236,7 +240,7 @@ public class InternalOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                duplicate.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -247,7 +251,7 @@ public class InternalOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orderHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                orderHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
@@ -258,7 +262,7 @@ public class InternalOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                itemHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                itemHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -276,7 +280,7 @@ public class InternalOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                id.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                id.setEnabled(EnumSet.of(State.QUERY).contains(event.getState()));
                 id.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -292,15 +296,15 @@ public class InternalOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                neededInDays.enable(EnumSet.of(State.QUERY,State.ADD, State.UPDATE).contains(event.getState()));
+                neededInDays.setEnabled(EnumSet.of(State.QUERY,State.ADD, State.UPDATE).contains(event.getState()));
                 neededInDays.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        statusId = (Dropdown)def.getWidget(OrderMeta.getStatusId());
+        statusId = (Dropdown<Integer>)def.getWidget(OrderMeta.getStatusId());
         addScreenHandler(statusId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                statusId.setSelection(manager.getOrder().getStatusId());
+                statusId.setValue(manager.getOrder().getStatusId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -308,7 +312,7 @@ public class InternalOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                statusId.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                statusId.setEnabled(EnumSet.of(State.QUERY).contains(event.getState()));
                 statusId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -324,12 +328,12 @@ public class InternalOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                requestedBy.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                requestedBy.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 requestedBy.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        orderedDate = (CalendarLookUp)def.getWidget(OrderMeta.getOrderedDate());
+        orderedDate = (Calendar)def.getWidget(OrderMeta.getOrderedDate());
         addScreenHandler(orderedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 orderedDate.setValue(manager.getOrder().getOrderedDate());
@@ -340,7 +344,7 @@ public class InternalOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orderedDate.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                orderedDate.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 orderedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -348,7 +352,7 @@ public class InternalOrderScreen extends Screen {
         costCenterId = (Dropdown)def.getWidget(OrderMeta.getCostCenterId());
         addScreenHandler(costCenterId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                costCenterId.setSelection(manager.getOrder().getCostCenterId());
+                costCenterId.setValue(manager.getOrder().getCostCenterId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -356,7 +360,7 @@ public class InternalOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                costCenterId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                costCenterId.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 costCenterId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -447,7 +451,7 @@ public class InternalOrderScreen extends Screen {
                         } else if (error instanceof LastPageException) {
                             window.setError("No more records in this direction");
                         } else {
-                            Window.alert("Error: Order call query failed; " +
+                            com.google.gwt.user.client.Window.alert("Error: Order call query failed; " +
                                          error.getMessage());
                             window.setError(consts.get("queryFailed"));
                         }
@@ -459,16 +463,16 @@ public class InternalOrderScreen extends Screen {
                 return fetchById( (entry == null) ? null : ((IdNameVO)entry).getId());
             }
 
-            public ArrayList<TableDataRow> getModel() {
+            public ArrayList<Item<Integer>> getModel() {
                 ArrayList<IdNameVO> result;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 model = null;
                 result = nav.getQueryResult();
                 if (result != null) {
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
                     for (IdNameVO entry : result)
-                        model.add(new TableDataRow(entry.getId(), entry.getId(), entry.getName()));
+                        model.add(new Item<Integer>(entry.getId(), entry.getId(), entry.getName()));
                 }
                 return model;
             }
@@ -480,7 +484,7 @@ public class InternalOrderScreen extends Screen {
                 boolean enable;
                 enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
                          userPermission.hasSelectPermission();
-                atoz.enable(enable);
+                atoz.setEnabled(enable);
                 nav.enable(enable);
             }
 
@@ -490,7 +494,7 @@ public class InternalOrderScreen extends Screen {
 
                 field = new QueryData();
                 field.key = OrderMeta.getId();
-                field.query = ((AppButton)event.getSource()).getAction();
+                field.query = ((Button)event.getSource()).getAction();
                 field.type = QueryData.Type.INTEGER;
 
                 query = new Query();
@@ -499,8 +503,8 @@ public class InternalOrderScreen extends Screen {
             }
         });
         
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+        window.addBeforeClosedHandler(new BeforeCloseHandler<Window>() {
+            public void onBeforeClosed(BeforeCloseEvent<Window> event) {                
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
@@ -510,28 +514,28 @@ public class InternalOrderScreen extends Screen {
     }
     
     private void initializeDropdowns() {
-        ArrayList<TableDataRow> model;
+        ArrayList<Item<Integer>> model;
         ArrayList<DictionaryDO> list;
-        TableDataRow row;
+        Item<Integer> row;
 
         // order status dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
         list = DictionaryCache.getListByCategorySystemName("order_status");
         for (DictionaryDO d : list) {
-            row = new TableDataRow(d.getId(), d.getEntry());
-            row.enabled = ("Y".equals(d.getIsActive()));
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
 
         statusId.setModel(model);
 
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
         list = DictionaryCache.getListByCategorySystemName("cost_centers");
         for (DictionaryDO d : list) {         
-            row = new TableDataRow(d.getId(), d.getEntry());
-            row.enabled = ("Y".equals(d.getIsActive()));
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
 
@@ -540,7 +544,7 @@ public class InternalOrderScreen extends Screen {
         try {
             status_pending = DictionaryCache.getIdFromSystemName("order_status_pending");
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             window.close();
         }
     }
@@ -577,9 +581,9 @@ public class InternalOrderScreen extends Screen {
         OrderViewDO data;
 
         try {
-            now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
+            now = org.openelis.gwt.screen.Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
         } catch (Exception e) {
-            Window.alert("OrderAdd Datetime: " +e.getMessage());
+            com.google.gwt.user.client.Window.alert("OrderAdd Datetime: " +e.getMessage());
             return;
         }
         
@@ -603,7 +607,7 @@ public class InternalOrderScreen extends Screen {
         try {
             manager = manager.fetchForUpdate();
             if (! status_pending.equals(manager.getOrder().getStatusId())) {
-                Window.alert(consts.get("orderStatusNotPendingForUpdate"));
+                com.google.gwt.user.client.Window.alert(consts.get("orderStatusNotPendingForUpdate"));
                 manager = manager.abortUpdate();
             } else {
                 setState(State.UPDATE);                
@@ -612,7 +616,7 @@ public class InternalOrderScreen extends Screen {
             
             DataChangeEvent.fire(this);
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
         }
         window.clearStatus();
     }
@@ -650,7 +654,7 @@ public class InternalOrderScreen extends Screen {
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
-                Window.alert("commitAdd(): " + e.getMessage());
+                com.google.gwt.user.client.Window.alert("commitAdd(): " + e.getMessage());
                 window.clearStatus();
             }
         } else if (state == State.UPDATE) {
@@ -664,7 +668,7 @@ public class InternalOrderScreen extends Screen {
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
-                Window.alert("commitUpdate(): " + e.getMessage());
+                com.google.gwt.user.client.Window.alert("commitUpdate(): " + e.getMessage());
                 window.clearStatus();
             }
         }
@@ -687,7 +691,7 @@ public class InternalOrderScreen extends Screen {
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
             } catch (Exception e) {
-                Window.alert(e.getMessage());
+                com.google.gwt.user.client.Window.alert(e.getMessage());
                 fetchById(null);
             }
             window.setDone(consts.get("updateAborted"));
@@ -704,9 +708,9 @@ public class InternalOrderScreen extends Screen {
             manager = OrderManager.fetchById(manager.getOrder().getId());
 
             try {
-                now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
+                now = org.openelis.gwt.screen.Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
             } catch (Exception e) {
-                Window.alert("OrderAdd Datetime: " +e.getMessage());
+                com.google.gwt.user.client.Window.alert("OrderAdd Datetime: " +e.getMessage());
                 return;
             }
             
@@ -736,7 +740,7 @@ public class InternalOrderScreen extends Screen {
             setFocus(neededInDays);
             window.setDone(consts.get("enterInformationPressCommit"));
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
         }                  
     }   
 
@@ -764,7 +768,7 @@ public class InternalOrderScreen extends Screen {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             return;
         }
 
@@ -798,7 +802,7 @@ public class InternalOrderScreen extends Screen {
             } catch (Exception e) {
                 fetchById(null);
                 e.printStackTrace();
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                com.google.gwt.user.client.Window.alert(consts.get("fetchFailed") + e.getMessage());
                 return false;
             }
         }
@@ -851,7 +855,7 @@ public class InternalOrderScreen extends Screen {
                 note.setReferenceTableId(null);
             } 
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             e.printStackTrace();
         }      
     }

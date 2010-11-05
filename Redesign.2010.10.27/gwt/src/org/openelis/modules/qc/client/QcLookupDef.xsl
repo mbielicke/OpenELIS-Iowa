@@ -41,7 +41,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="QCLookup" name="{resource:getString($constants,'QCLookup')}">
+    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="{resource:getString($constants,'QCLookup')}">
       <VerticalPanel>
         <HorizontalPanel height="100%" spacing="0">
 <!--left table goes here -->
@@ -56,20 +56,13 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'enterSearch')" />:
                   </text>
                   <textbox key="findTextBox" width="253" field="String" />
-                  <appButton key="findButton" style="Button" action="find">
-                    <HorizontalPanel>
-                      <AbsolutePanel style="FindButtonImage" />
-                      <text>
-                        <xsl:value-of select='resource:getString($constants,"search")' />
-                      </text>
-                    </HorizontalPanel>
-                  </appButton>
+                  <button key="findButton" icon="FindButtonImage" text="{resource:getString($constants,'search')}" style="Button" action="find"/>
                 </row>
               </TablePanel>
             </HorizontalPanel>
             <VerticalPanel spacing="0">
               <widget>
-                <table key="qcTable" width="auto" maxRows="6" multiSelect="true" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
+                <table key="qcTable" rows="6" multiSelect="true" vscroll="ALWAYS" hscroll="ALWAYS" style="ScreenTableWithSides">
                   <col key="{meta:getName()}" width="150" sort="false" header="{resource:getString($constants,'name')}">
                     <label field="String" />
                   </col>
@@ -93,16 +86,8 @@ UIRF Software License are applicable instead of those above.
         <VerticalPanel width="636px" spacing="0">
           <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
             <HorizontalPanel>
-              <xsl:call-template name="okButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="cancelButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
+              <xsl:call-template name="okButton"/>
+              <xsl:call-template name="cancelButton"/>
             </HorizontalPanel>
           </AbsolutePanel>
         </VerticalPanel>

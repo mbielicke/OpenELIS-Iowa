@@ -42,7 +42,7 @@ UIRF Software License are applicable instead of those above.
   <xsl:variable name="props" select="doc/props" />
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
   <xsl:template match="doc">
-    <screen id="ResultPopoutTab" name="{resource:getString($constants,'testResults')}">
+    <screen name="{resource:getString($constants,'testResults')}">
       <VerticalPanel padding="0" spacing="0">
         <xsl:call-template name="ResultTab">
           <xsl:with-param name="widthParam">905</xsl:with-param>

@@ -11,11 +11,12 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.Item;
+import org.openelis.gwt.widget.Window;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
@@ -27,16 +28,15 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.ProviderManager;
 
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.Window;
 
 public class LocationTab extends Screen {
 	
 	private ProviderManager manager;
-	private TableWidget locationTable; 
-	private AppButton addAddressButton, removeAddressButton;
-	private boolean loaded;
+	private Table           locationTable; 
+	private Button          addAddressButton, removeAddressButton;
+	private boolean         loaded;
 	
-	public LocationTab(ScreenDefInt def, ScreenWindow window) {
+	public LocationTab(ScreenDefInt def, Window window) {
 		setDefinition(def);
 		setWindow(window);
 		initialize();
@@ -45,15 +45,15 @@ public class LocationTab extends Screen {
     }
 	
 	private void initialize() {
-        locationTable = (TableWidget)def.getWidget("locationTable");
-        addScreenHandler(locationTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        locationTable = (Table)def.getWidget("locationTable");
+        addScreenHandler(locationTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
                 if (state != State.QUERY)
-                    locationTable.load(getTableModel());
+                    locationTable.setModel(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                locationTable.enable(true);
+                locationTable.setEnabled(true);
                 locationTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -70,14 +70,16 @@ public class LocationTab extends Screen {
                 int r, c;
                 r = event.getRow();
                 c = event.getCol();
-                Object val = event.getValue();
+                Object val;
                 ProviderLocationDO data;
+
                 try {
                 	data = manager.getLocations().getLocationAt(r);
                 }catch(Exception e) {
                 	return;
                 }
-                val = locationTable.getObject(r,c);
+                
+                val = locationTable.getValueAt(r,c);
                 switch(c) {
                     case 0:
                         data.setLocation((String)val);
@@ -128,7 +130,7 @@ public class LocationTab extends Screen {
             		manager.getLocations().addLocation(new ProviderLocationDO());
             	}catch(Exception e){
             		e.printStackTrace();
-            		Window.alert(e.toString());
+            		com.google.gwt.user.client.Window.alert(e.toString());
             	}
             }
         });
@@ -139,74 +141,74 @@ public class LocationTab extends Screen {
             		manager.getLocations().removeLocationAt(event.getIndex());
             	}catch(Exception e) {
             		e.printStackTrace();
-            		Window.alert(e.toString());
+            		com.google.gwt.user.client.Window.alert(e.toString());
             	}
             }
         });
         
 
-        addAddressButton = (AppButton)def.getWidget("addLocationButton");
+        addAddressButton = (Button)def.getWidget("addLocationButton");
         addScreenHandler(addAddressButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
             	locationTable.addRow();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addAddressButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                addAddressButton.setEnabled(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
 
-        removeAddressButton = (AppButton)def.getWidget("removeLocationButton");
+        removeAddressButton = (Button)def.getWidget("removeLocationButton");
         addScreenHandler(removeAddressButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
             	int r = locationTable.getSelectedRow();
-            	locationTable.deleteRow(r);
+            	locationTable.removeRowAt(r);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeAddressButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                removeAddressButton.setEnabled(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
         });		
 	}
 	
 	private void initializeDropdowns() {
-        ArrayList<TableDataRow> model;
+        ArrayList<Item<String>> model;
         ArrayList<DictionaryDO> list;
-        TableDataRow row;
+        Item<String> row;
         Dropdown<String> state, country;
         
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        model = new ArrayList<Item<String>>();
+        model.add(new Item<String>(null, ""));
         list = DictionaryCache.getListByCategorySystemName("state");
         for (DictionaryDO d : list) {            
-            row = new TableDataRow(d.getEntry(), d.getEntry());
-            row.enabled = ("Y".equals(d.getIsActive()));
+            row = new Item<String>(d.getEntry(), d.getEntry());
+            row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
         
-        state = ((Dropdown<String>)locationTable.getColumns().get(5).getColumnWidget());
+        state = ((Dropdown<String>)locationTable.getColumnAt(5).getCellEditor().getWidget());
         state.setModel(model);
 
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        model = new ArrayList<Item<String>>();
+        model.add(new Item<String>(null, ""));
         list =  DictionaryCache.getListByCategorySystemName("country");
         for (DictionaryDO d : list) {         
-            row = new TableDataRow(d.getEntry(), d.getEntry());
-            row.enabled = ("Y".equals(d.getIsActive()));
+            row = new Item<String>(d.getEntry(), d.getEntry());
+            row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
         
-        country = ((Dropdown<String>)locationTable.getColumns().get(7).getColumnWidget());
+        country = ((Dropdown<String>)locationTable.getColumnAt(7).getCellEditor().getWidget());
         country.setModel(model);		
 	}
 	
-    private ArrayList<TableDataRow> getTableModel() {
+    private ArrayList<Row> getTableModel() {
         int i;
-        TableDataRow row;
+        Row row;
         ProviderLocationDO data;
-        ArrayList<TableDataRow> model;
+        ArrayList<Row> model;
         
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<Row>();
         if (manager == null)
             return model;
 
@@ -214,24 +216,24 @@ public class LocationTab extends Screen {
             for (i = 0; i < manager.getLocations().count(); i++) {
                 data = (ProviderLocationDO)manager.getLocations().getLocationAt(i);
 
-                row = new TableDataRow(13);
-                row.cells.get(0).value = data.getLocation();
-                row.cells.get(1).value = data.getExternalId();
-                row.cells.get(2).value = data.getAddress().getMultipleUnit();
-                row.cells.get(3).value = data.getAddress().getStreetAddress();
-                row.cells.get(4).value = data.getAddress().getCity();
-                row.cells.get(5).value = data.getAddress().getState();
-                row.cells.get(6).value = data.getAddress().getZipCode();
-                row.cells.get(7).value = data.getAddress().getCountry();
-                row.cells.get(8).value = data.getAddress().getWorkPhone();
-                row.cells.get(9).value = data.getAddress().getHomePhone();
-                row.cells.get(10).value = data.getAddress().getCellPhone();
-                row.cells.get(11).value = data.getAddress().getFaxPhone();
-                row.cells.get(12).value = data.getAddress().getEmail();
+                row = new Row(13);
+                row.setCell(0,data.getLocation());
+                row.setCell(1,data.getExternalId());
+                row.setCell(2,data.getAddress().getMultipleUnit());
+                row.setCell(3,data.getAddress().getStreetAddress());
+                row.setCell(4,data.getAddress().getCity());
+                row.setCell(5,data.getAddress().getState());
+                row.setCell(6,data.getAddress().getZipCode());
+                row.setCell(7,data.getAddress().getCountry());
+                row.setCell(8,data.getAddress().getWorkPhone());
+                row.setCell(9,data.getAddress().getHomePhone());
+                row.setCell(10,data.getAddress().getCellPhone());
+                row.setCell(11,data.getAddress().getFaxPhone());
+                row.setCell(12,data.getAddress().getEmail());
                 model.add(row);
             }
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             e.printStackTrace();
         }
         return model;

@@ -40,7 +40,7 @@ UIRF Software License are applicable instead of those above.
   <xsl:variable name="props" select="doc/props" />
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
   <xsl:template match="doc">
-    <screen id="QuickEntry" name="{resource:getString($constants,'quickEntry')}">
+    <screen name="{resource:getString($constants,'quickEntry')}">
       <VerticalPanel padding="0" spacing="0">
 
 <!--button panel code-->
@@ -90,7 +90,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'received')" />:
               </text>
-              <calendar key="receivedDate" begin="0" end="4" minValue="364" maxValue="0" width="125px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="entry, entry"/>
+              <calendar key="receivedDate" begin="0" end="4" width="125px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="entry, entry"/>
               </row>
               <row>
               <widget colspan="2">
@@ -100,7 +100,7 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select="resource:getString($constants,'testMethodSampleType')" />:
               </text>
               <widget colspan="5">
-              	<dropdown key="testMethodSampleType" width="419" popWidth="auto" field="String" tab="entry, entry"/>
+              	<dropdown key="testMethodSampleType" width="419" field="String" tab="entry, entry"/>
               </widget>
               </row>
               <row>
@@ -118,15 +118,15 @@ UIRF Software License are applicable instead of those above.
              <text style="Prompt">
 	        	<xsl:value-of select="resource:getString($constants,'printer')" />:
 	    	</text>
-		    <dropdown key="printer" width="121" popWidth="auto" field="Integer" tab="entry, entry"/>
+		    <dropdown key="printer" width="121" field="Integer" tab="entry, entry"/>
               </row>
           </TablePanel>
-          <table key="quickEntryTable" width="auto" maxRows="15" style="ScreenTableWithSides" showScroll="ALWAYS" title="" tab="entry,entry">
+          <table key="quickEntryTable" rows="15" style="ScreenTableWithSides" vscroll="ALWAYS" hscroll="ALWAYS" tab="entry,entry">
             <col width="90" header="{resource:getString($constants,'accessionNum')}">
               <label />
             </col>
             <col width="130" header="{resource:getString($constants,'received')}">
-              <calendar begin="0" end="4" maxValue="0" pattern="{resource:getString($constants,'dateTimePattern')}"/>
+              <calendar begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}"/>
             </col>
             <col width="160" header="{resource:getString($constants,'test')}">
               <label />
@@ -141,16 +141,9 @@ UIRF Software License are applicable instead of those above.
               <label />
             </col>
             </table>
-             <widget style="TableButtonFooter">
-                      <appButton key="removeRowButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel style="RemoveRowButtonImage" />
-                          <text>
-                            <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
-                  </widget>
+            <widget style="TableButtonFooter">
+              <button key="removeRowButton" icon="RemoveRowButtonImage" text="{resource:getString($constants,'removeRow')}" style="Button"/>
+            </widget>
       </VerticalPanel>
       </VerticalPanel>
     </screen>

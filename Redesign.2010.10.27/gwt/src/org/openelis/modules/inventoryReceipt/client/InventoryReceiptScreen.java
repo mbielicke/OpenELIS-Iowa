@@ -60,17 +60,17 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoCompleteValue;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.AutoComplete;
-import org.openelis.gwt.widget.HasField;
+import org.openelis.gwt.widget.HasExceptions;
+import org.openelis.gwt.widget.Item;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.Window;
 import org.openelis.gwt.widget.TabPanel;
-import org.openelis.gwt.widget.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.TableColumn;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.Column;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
@@ -92,7 +92,6 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.Focusable;
 
@@ -106,16 +105,16 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
     private ShipNoteTab                               shipNoteTab;
     private Tabs                                      tab;
 
-    private TableWidget                               receiptTable;
-    private AppButton                                 queryButton, addButton, updateButton,
+    private Table                                     receiptTable;
+    private Button                                    queryButton, addButton, updateButton,
                                                       commitButton, abortButton, addReceiptButton,
                                                       removeReceiptButton;
-    private TableColumn                               dateRecColumn, upcColumn, numRecColumn,
+    private Column                                    dateRecColumn, upcColumn, numRecColumn,
                                                       costColumn, itemColumn, orgColumn;
-    private AutoComplete<Integer>                     upc, inventoryItem, organization;
+    private AutoComplete                              upc, inventoryItem, organization;
     private TabPanel                                  tabPanel;
     
-    private ArrayList<TableDataRow>                   receiptModel; 
+    private ArrayList<Row>                            receiptModel; 
     //private HashMap<Integer, InventoryItemViewDO>     inventoryItemMap;  
     private Query                                     query; 
     private String                                    upcQuery;
@@ -160,86 +159,92 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
         //
         // button panel buttons
         //
-        queryButton = (AppButton)def.getWidget("query");
+        queryButton = (Button)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 query();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
+                queryButton.setEnabled(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
                                      && userPermission.hasSelectPermission());
-                if (event.getState() == State.QUERY)
-                    queryButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.QUERY) {
+                    queryButton.setPressed(true);
+                    queryButton.lock();
+                }
             }
         });
 
-        addButton = (AppButton)def.getWidget("add");
+        addButton = (Button)def.getWidget("add");
         addScreenHandler(addButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 add();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
+                addButton.setEnabled(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
                                      && userPermission.hasAddPermission());
-                if (event.getState() == State.ADD)
-                    addButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.ADD) {
+                    addButton.setPressed(true);
+                    addButton.lock();
+                }
             }
         });
 
-        updateButton = (AppButton)def.getWidget("update");
+        updateButton = (Button)def.getWidget("update");
         addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 update();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState())
+                updateButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState())
                                      && userPermission.hasUpdatePermission());
-                if (event.getState() == State.UPDATE)
-                    updateButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.UPDATE) {
+                    updateButton.setPressed(true);
+                    updateButton.lock();
+                }
             }
         });
 
-        commitButton = (AppButton)def.getWidget("commit");
+        commitButton = (Button)def.getWidget("commit");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 commit();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                commitButton.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
 
-        abortButton = (AppButton)def.getWidget("abort");
+        abortButton = (Button)def.getWidget("abort");
         addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 abort();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                abortButton.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
 
-        receiptTable = (TableWidget)def.getWidget("receiptTable");
-        addScreenHandler(receiptTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        receiptTable = (Table)def.getWidget("receiptTable");
+        addScreenHandler(receiptTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {                
                 if (state != State.QUERY)
-                    receiptTable.load(receiptModel);                
+                    receiptTable.setModel(receiptModel);                
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                receiptTable.enable(true);
+                receiptTable.setEnabled(true);
                 receiptTable.setQueryMode(event.getState() == State.QUERY);
                 upcQuery = null;
             }
         });
 
-        receiptTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>(){
-            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+        receiptTable.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>(){
+            public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
                 //
                 // this is done here in order to make sure that whenever a row 
                 // is selected if some data for the previous row got changed
@@ -254,16 +259,16 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
             }            
         });
         
-        receiptTable.addSelectionHandler(new SelectionHandler<TableRow>(){
-            public void onSelection(SelectionEvent<TableRow> event) {                                               
+        receiptTable.addSelectionHandler(new SelectionHandler<Integer>(){
+            public void onSelection(SelectionEvent<Integer> event) {                                               
                 int index;
                 InventoryReceiptManager man;
                 InventoryReceiptDataBundle bundle;
                 OrderManager order;
-                TableDataRow row;
+                Row row;
                 
-                row = receiptTable.getSelection();                
-                bundle = (InventoryReceiptDataBundle)row.data;                                
+                row = receiptTable.getRowAt(receiptTable.getSelectedRow());                
+                bundle = (InventoryReceiptDataBundle)row.getData();                                
                 man = bundle.getManager();
                 index = bundle.getManagerIndex();
                 
@@ -283,7 +288,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                     shipNoteTab.setManager(order);
                 } catch(Exception ex) {
                     ex.printStackTrace();
-                    Window.alert(ex.getMessage());
+                    com.google.gwt.user.client.Window.alert(ex.getMessage());
                 }                
                 itemTab.setState(state);
                 drawTabs();
@@ -312,7 +317,8 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 Object val;
-                TableDataRow tableRow, valRow, tmpRow;
+                Row tableRow;
+                AutoCompleteValue valRow, tmpRow;
                 Integer numRec, index;
                 InventoryReceiptViewDO data;
                 InventoryReceiptManager man;
@@ -326,10 +332,10 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
 
                 r = event.getRow();
                 c = event.getCol();
-                tableRow = receiptTable.getRow(r);
-                val = receiptTable.getObject(r,c);
+                tableRow = receiptTable.getRowAt(r);
+                val = receiptTable.getValueAt(r,c);
                 
-                bundle = (InventoryReceiptDataBundle)tableRow.data;
+                bundle = (InventoryReceiptDataBundle)tableRow.getData();
                 index = bundle.getManagerIndex();
                 man = bundle.getManager();                
                 data = man.getReceiptAt(index);
@@ -340,20 +346,20 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                         data.setReceivedDate((Datetime)val);   
                         break;
                     case 3:
-                        valRow = (TableDataRow)val; 
+                        valRow = (AutoCompleteValue)val; 
                         if (valRow != null) {
-                            upcData = (IdNameVO)valRow.data;
+                            upcData = (IdNameVO)valRow.getData();
                             data.setUpc(upcData.getName());
                             if (!upcData.getId().equals(-1)) {
-                                tmpRow = new TableDataRow(upcData.getId(), upcData.getDescription());
+                                tmpRow = new AutoCompleteValue(upcData.getId(), upcData.getDescription());
                                 try {
                                     item = InventoryItemCache.getActiveInventoryItemFromId(upcData.getId());
                                 } catch (Exception e) {
-                                    Window.alert("Inventory Item Cache error:" + e.getMessage());
+                                    com.google.gwt.user.client.Window.alert("Inventory Item Cache error:" + e.getMessage());
                                     e.printStackTrace();
                                 }
-                                tmpRow.data = item;
-                                exceptions = tableRow.cells.get(4).getExceptions();
+                                tmpRow.setData(item);
+                                exceptions = receiptTable.getEndUserExceptions(r,4);
                                 if (exceptions != null) {
                                     for (int i = 0; i < exceptions.size(); i++) {
                                         ex = exceptions.get(i);
@@ -364,9 +370,9 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                                     }
                                     
                                     if(exceptions.size() == 0) 
-                                        tableRow.cells.get(4).clearExceptions();
+                                        receiptTable.clearExceptions(r,4);
                                 }
-                                receiptTable.setCell(r, 4, tmpRow);
+                                receiptTable.setValueAt(r, 4, tmpRow);
                                 data.setInventoryItemId(upcData.getId()); 
                                 itemTab.setManager(man, index, screen);
                                 drawTabs();
@@ -376,9 +382,9 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                         }
                         break;
                     case 4:
-                        valRow = (TableDataRow)val; 
+                        valRow = (AutoCompleteValue)val; 
                         if (valRow != null) {
-                            item = (InventoryItemDO)valRow.data;
+                            item = (InventoryItemDO)valRow.getData();
                             data.setInventoryItemId(item.getId());                                                       
                         } else {                                                       
                             data.setInventoryItemId(null);                                                       
@@ -387,9 +393,9 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                         drawTabs();
                         break;
                     case 5:
-                        valRow = (TableDataRow)val; 
+                        valRow = (AutoCompleteValue)val; 
                         if (valRow != null) {
-                            org = (OrganizationDO)valRow.data;                            
+                            org = (OrganizationDO)valRow.getData();                            
                             data.setOrganizationId(org.getId());
                             data.setOrganization(org);
                         } else {                                                        
@@ -408,7 +414,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                                 try {
                                     dateRec = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
                                 } catch (Exception e) {
-                                    Window.alert("Inventory Receipt Datetime: " +e.getMessage());
+                                    com.google.gwt.user.client.Window.alert("Inventory Receipt Datetime: " +e.getMessage());
                                     return;
                                 }
                                 data.setReceivedDate(dateRec);
@@ -418,13 +424,13 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                                 // because of wrong formatting or a value not 
                                 // being present
                                 //
-                                tableRow.cells.get(2).clearExceptions();
-                                receiptTable.setCell(r, 2, dateRec);
+                                receiptTable.clearExceptions(r,2);
+                                receiptTable.setValueAt(r, 2, dateRec);
                             }         
                             
                             if (data.getUnitCost() == null) {
                                 data.setUnitCost(data.getOrderItemUnitCost());
-                                receiptTable.setCell(r, 8, data.getUnitCost());
+                                receiptTable.setValueAt(r, 8, data.getUnitCost());
                             }
                         }
                         break;
@@ -437,7 +443,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
 
         receiptTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
-                TableDataRow row;
+                Row row;
                 InventoryReceiptDataBundle bundle;
                 InventoryReceiptManager manager;
                 
@@ -445,22 +451,22 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                 manager = InventoryReceiptManager.getInstance();
                 manager.addReceipt(new InventoryReceiptViewDO());
                 bundle = new InventoryReceiptDataBundle(0, null, manager);
-                row.data = bundle;
+                row.setData(bundle);
             }
         });
         
-        dateRecColumn = receiptTable.getColumns().get(2);
-        upcColumn = receiptTable.getColumns().get(3);
-        itemColumn = receiptTable.getColumns().get(4);
-        orgColumn = receiptTable.getColumns().get(5);
-        numRecColumn = receiptTable.getColumns().get(7);
-        costColumn = receiptTable.getColumns().get(8);
+        dateRecColumn = receiptTable.getColumnAt(2);
+        upcColumn = receiptTable.getColumnAt(3);
+        itemColumn = receiptTable.getColumnAt(4);
+        orgColumn = receiptTable.getColumnAt(5);
+        numRecColumn = receiptTable.getColumnAt(7);
+        costColumn = receiptTable.getColumnAt(8);
             
-        upc = (AutoComplete<Integer>)receiptTable.getColumnWidget(InventoryReceiptMeta.getUpc());
+        upc = (AutoComplete)receiptTable.getColumnWidget(InventoryReceiptMeta.getUpc());
         upc.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                TableDataRow row;
-                ArrayList<TableDataRow> model;                
+                Item<Integer> row;
+                ArrayList<Item<Integer>> model;                
                 QueryFieldUtil parser;
                 IdNameVO data;
                 ArrayList<IdNameVO> list;  
@@ -471,10 +477,10 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                 window.setBusy();
                 
                 try {
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
                     
-                    row = new TableDataRow(-1, match);
-                    row.data = new IdNameVO(-1, match, null);
+                    row = new Item<Integer>(-1, match);
+                    row.setData(new IdNameVO(-1, match, null));
                     model.add(row);
                     
                     if(upcQuery == null || (!(match.indexOf(upcQuery) == 0))) {
@@ -483,8 +489,8 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                         list = service.callList("fetchByUpc", parser.getParameter().get(0));
                         for (int i = 0; i < list.size(); i++ ) {
                             data = list.get(i);
-                            row = new TableDataRow(data.getId(), data.getName(), data.getDescription());                  
-                            row.data = data;
+                            row = new Item<Integer>(data.getId(), data.getName(), data.getDescription());                  
+                            row.setData(data);
                             model.add(row);
                         } 
                         
@@ -495,81 +501,85 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                     upc.showAutoMatches(model);
                 } catch (Throwable e) {
                     e.printStackTrace();
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
                 window.clearStatus();                            
             }
         });
             
-        inventoryItem = (AutoComplete<Integer>)receiptTable.getColumnWidget(InventoryReceiptMeta.getInventoryItemName());
+        inventoryItem = (AutoComplete)receiptTable.getColumnWidget(InventoryReceiptMeta.getInventoryItemName());
         inventoryItem.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 InventoryItemDO data;
-                TableDataRow row;
+                Item<Integer> row;
                 ArrayList<InventoryItemDO> list;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
                 DictionaryDO store, units;
 
                 try {
                     list = inventoryItemService.callList("fetchActiveByName", event.getMatch());
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
 
                     for (int i = 0; i < list.size(); i++ ) {
                         data = (InventoryItemDO) list.get(i);
                         store = DictionaryCache.getEntryFromId(data.getStoreId());
                         units = DictionaryCache.getEntryFromId(data.getDispensedUnitsId());
-                        row = new TableDataRow(data.getId(), data.getName(),
+                        row = new Item<Integer>(data.getId(), data.getName(),
                                                store.getEntry(), units.getEntry());
-                        row.data = data;
+                        row.setData(data);
                         model.add(row);
                     }
                     inventoryItem.showAutoMatches(model);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
         
-        organization = (AutoComplete<Integer>)receiptTable.getColumnWidget(InventoryReceiptMeta.getOrganizationName());
+        organization = (AutoComplete)receiptTable.getColumnWidget(InventoryReceiptMeta.getOrganizationName());
         organization.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
-                TableDataRow row;
+                Item<Integer> row;
                 OrganizationDO data;
                 ArrayList<OrganizationDO> list;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e) {
+                	
+                }
 
                 window.setBusy();
                 try {
                     list = organizationService.callList("fetchByIdOrName", parser.getParameter().get(0));
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new TableDataRow(4);
+                        row = new Item<Integer>(4);
                         data = list.get(i);
 
-                        row.key = data.getId();
-                        row.cells.get(0).value = data.getName();
-                        row.cells.get(1).value = data.getAddress().getStreetAddress();
-                        row.cells.get(2).value = data.getAddress().getCity();
-                        row.cells.get(3).value = data.getAddress().getState();
+                        row.setKey(data.getId());
+                        row.setCell(0,data.getName());
+                        row.setCell(1,data.getAddress().getStreetAddress());
+                        row.setCell(2,data.getAddress().getCity());
+                        row.setCell(3,data.getAddress().getState());
                         
-                        row.data = data;
+                        row.setData(data);
                         
                         model.add(row);
                     }
                     organization.showAutoMatches(model);
                 } catch (Throwable e) {
                     e.printStackTrace();
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
                 window.clearStatus();               
             }            
         });
         
-        addReceiptButton = (AppButton)def.getWidget("addReceiptButton");
+        addReceiptButton = (Button)def.getWidget("addReceiptButton");
         addScreenHandler(addReceiptButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int n;       
@@ -577,9 +587,9 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                 
                 order = null;
                 receiptTable.addRow();                
-                n = receiptTable.numRows() - 1;
-                receiptTable.selectRow(n);
-                receiptTable.scrollToSelection();
+                n = receiptTable.getRowCount() - 1;
+                receiptTable.selectRowAt(n);
+                receiptTable.scrollToVisible(n);
                 receiptTable.startEditing(n, 2);
                 
                 itemTab.setManager(null, -1, screen);
@@ -589,11 +599,11 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addReceiptButton.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                addReceiptButton.setEnabled(EnumSet.of(State.ADD).contains(event.getState()));
             }
         });
         
-        removeReceiptButton = (AppButton)def.getWidget("removeReceiptButton");
+        removeReceiptButton = (Button)def.getWidget("removeReceiptButton");
         addScreenHandler(removeReceiptButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int r;
@@ -601,8 +611,8 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                 
                 r = receiptTable.getSelectedRow();
                 order = null;
-                if (r > -1 && receiptTable.numRows() > 0) {
-                    receiptTable.deleteRow(r);
+                if (r > -1 && receiptTable.getRowCount() > 0) {
+                    receiptTable.removeRowAt(r);
                     //
                     // after a row is removed no row is in selected state,
                     // thus there's no information to be shown in the tabs,
@@ -615,7 +625,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeReceiptButton.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                removeReceiptButton.setEnabled(EnumSet.of(State.ADD).contains(event.getState()));
             }
         });
 
@@ -671,8 +681,8 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
             }
         });               
         
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+        window.addBeforeClosedHandler(new BeforeCloseHandler<Window>() {
+            public void onBeforeClosed(BeforeCloseEvent<Window> event) {                
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
@@ -707,7 +717,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
         
         order = OrderManager.getInstance();
         query = null;
-        receiptModel =  new ArrayList<TableDataRow>();
+        receiptModel =  new ArrayList<Row>();
         setState(State.ADD);
         DataChangeEvent.fire(this);
         
@@ -725,7 +735,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
         OrderManager order;
         
         if (query == null) {
-            Window.alert(consts.get("queryExeBeforeUpdate"));
+            com.google.gwt.user.client.Window.alert(consts.get("queryExeBeforeUpdate"));
             return;
         }
         order = OrderManager.getInstance();         
@@ -750,7 +760,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
         ArrayList<QueryData> fields;
         InventoryReceiptDataBundle bundle;
         InventoryReceiptManager prevMan, currMan;                
-        TableDataRow row;     
+        Row row;     
         OrderManager order;
         
         if ( !validate()) {
@@ -769,9 +779,9 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
         } else if (state == State.ADD) {
             window.setBusy(consts.get("adding"));
             success = true;            
-            for (i = 0; i < receiptTable.numRows(); i++ ) {
-                row = receiptTable.getRow(i);
-                bundle = (InventoryReceiptDataBundle)row.data;
+            for (i = 0; i < receiptTable.getRowCount(); i++ ) {
+                row = receiptTable.getRowAt(i);
+                bundle = (InventoryReceiptDataBundle)row.getData();
                 currMan = bundle.getManager();
                 newManagerIndex = i;
                 try {
@@ -780,7 +790,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                     showErrors(e);
                     success = false;
                 } catch (Exception e) {
-                    Window.alert("commitAdd(): " + e.getMessage());
+                    com.google.gwt.user.client.Window.alert("commitAdd(): " + e.getMessage());
                     window.clearStatus();
                     success = false;
                     break;
@@ -796,9 +806,9 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
 
             prevMan = null;
             success = true;
-            for (i = 0; i < receiptTable.numRows(); i++ ) {
-                row = receiptTable.getRow(i);
-                bundle = (InventoryReceiptDataBundle)row.data;
+            for (i = 0; i < receiptTable.getRowCount(); i++ ) {
+                row = receiptTable.getRowAt(i);
+                bundle = (InventoryReceiptDataBundle)row.getData();
                 currMan = bundle.getManager();
 
                 try {
@@ -810,7 +820,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                     showErrors(e);
                     success = false;
                 } catch (Exception e) {
-                    Window.alert("commitUpdate(): " + e.getMessage());
+                    com.google.gwt.user.client.Window.alert("commitUpdate(): " + e.getMessage());
                     window.clearStatus();
                     success = false;   
                     break;
@@ -848,7 +858,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
             window.setDone(consts.get("queryAborted"));
         } else if (state == State.ADD) {          
             query = null;
-            receiptModel = new ArrayList<TableDataRow>();
+            receiptModel = new ArrayList<Row>();
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
             drawTabs();
@@ -880,12 +890,13 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
         int i,r;
         LocalizedException ex;
         ArrayList<LocalizedException> exceptions;
-        TableDataRow row, val;        
+        Row row;
+        AutoCompleteValue val;        
 
         r = receiptTable.getSelectedRow();
-        row = receiptTable.getSelection();
-        val = (TableDataRow)receiptTable.getObject(r, 4);
-        exceptions = row.cells.get(4).getExceptions();        
+        row = receiptTable.getRowAt(r);
+        val = (AutoCompleteValue)receiptTable.getValueAt(r, 4);
+        exceptions = receiptTable.getEndUserExceptions(r,4);        
         if (event.getAction() == Action.LOT_NUMBER_CHANGED) {
             if(exceptions != null && event.getData() != null) {
                 for (i = 0; i < exceptions.size(); i++) {
@@ -899,7 +910,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                 //
                 // this will redraw the exceptions
                 //
-                receiptTable.setCell(r, 4, val);    
+                receiptTable.setValueAt(r, 4, val);    
                 
                 //
                 // the list of exceptions for this  cell is set to null if it is
@@ -909,7 +920,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                 // isn't made to return false 
                 //
                 if (exceptions.size() == 0) 
-                    row.cells.get(4).clearExceptions();                    
+                    receiptTable.clearExceptions(r,4);                    
             }
         } else if (event.getAction() == Action.STORAGE_LOCATION_CHANGED) {            
             if(exceptions != null && event.getData() != null) {
@@ -924,7 +935,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                 //
                 // this will redraw the exceptions
                 //
-                receiptTable.setCell(r, 4, val);
+                receiptTable.setValueAt(r, 4, val);
                 
                 //
                 // the list of exceptions for this  cell is set to null if it is
@@ -934,7 +945,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                 // isn't made to return false 
                 //
                 if (exceptions.size() == 0) 
-                    row.cells.get(4).clearExceptions();
+                    receiptTable.clearExceptions(r,4);
             }
         }
     }
@@ -944,21 +955,21 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
         TableFieldErrorException tableE;
         FormErrorException formE;
         FieldErrorException fieldE;
-        TableWidget tableWid;
-        HasField field;
+        Table tableWid;
+        HasExceptions field;
 
         formErrors = new ArrayList<LocalizedException>();
         for (Exception ex : list.getErrorList()) {
             if (ex instanceof TableFieldErrorException) {
                 tableE = (TableFieldErrorException) ex;
-                tableWid = (TableWidget)def.getWidget(tableE.getTableKey());
-                tableWid.setCellException(tableE.getRowIndex()+newManagerIndex, tableE.getFieldName(), tableE);
+                tableWid = (Table)def.getWidget(tableE.getTableKey());
+                tableWid.addException(tableE.getRowIndex()+newManagerIndex, tableWid.getColumnByName(tableE.getFieldName()), tableE);
             } else if (ex instanceof FormErrorException) {
                 formE = (FormErrorException)ex;
                 formErrors.add(formE);
             } else if (ex instanceof FieldErrorException) {
                 fieldE = (FieldErrorException)ex;
-                field = (HasField)def.getWidget(fieldE.getFieldName());
+                field = (HasExceptions)def.getWidget(fieldE.getFieldName());
                 
                 if(field != null)
                     field.addException(fieldE);
@@ -982,7 +993,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
         service.callList("query", query, new SyncCallback<ArrayList<InventoryReceiptManager>>() {
             public void onSuccess(ArrayList<InventoryReceiptManager> result) {
                 int i, j, k, count;
-                TableDataRow row;
+                Row row;
                 InventoryReceiptViewDO data;
                 OrganizationDO organization;
                 InventoryItemDO invItem;
@@ -993,7 +1004,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                 invItem = null;                                
                 try {
                     if (result != null) {                          
-                        receiptModel = new ArrayList<TableDataRow>();                              
+                        receiptModel = new ArrayList<Row>();                              
                         k = 0;
                         
                         for (i = 0; i < result.size(); i++) {                            
@@ -1001,38 +1012,38 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                             count = manager.count();
                             
                             for (j = 0; j < count; j++ ) {                                
-                                row = new TableDataRow(9);
+                                row = new Row(9);
                                 data = manager.getReceiptAt(j);                                
                                 orderId = data.getOrderItemOrderId();                                
                                                                 
-                                row.cells.get(0).setValue(orderId);
-                                row.cells.get(1).setValue(data.getOrderItemOrderExternalOrderNumber());
-                                row.cells.get(2).setValue(data.getReceivedDate());
+                                row.setCell(0,orderId);
+                                row.setCell(1,data.getOrderItemOrderExternalOrderNumber());
+                                row.setCell(2,data.getReceivedDate());
 
                                 invItem = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());
                                 if (invItem != null) {
-                                    row.cells.get(3).setValue(new TableDataRow(invItem.getId(), data.getUpc()));
-                                    row.cells.get(4).setValue(new TableDataRow(invItem.getId(), invItem.getName()));
+                                    row.setCell(3,new AutoCompleteValue(invItem.getId(), data.getUpc()));
+                                    row.setCell(4,new AutoCompleteValue(invItem.getId(), invItem.getName()));
                                 } else {
-                                    row.cells.get(3).setValue(new TableDataRow(-1, data.getUpc()));
+                                    row.setCell(3,new AutoCompleteValue(-1, data.getUpc()));
                                 }
 
                                 organization = data.getOrganization();
                                 if (organization != null)
-                                    row.cells.get(5).setValue(new TableDataRow(organization.getId(),
+                                    row.setCell(5,new AutoCompleteValue(organization.getId(),
                                                                         organization.getName()));
 
-                                row.cells.get(6).setValue(data.getOrderItemQuantity());         
-                                row.cells.get(7).setValue(data.getQuantityReceived());     
+                                row.setCell(6,data.getOrderItemQuantity());         
+                                row.setCell(7,data.getQuantityReceived());     
                                 if (data.getId() != null)
-                                    row.cells.get(8).setValue(data.getUnitCost());
+                                    row.setCell(8,data.getUnitCost());
 
                                 if(state == State.UPDATE)
                                     manager = manager.abortUpdate();
                                 else if(state == State.DISPLAY)
                                     manager = manager.fetchForUpdate();
                                 bundle = new InventoryReceiptDataBundle(j, data.getOrderItemOrderId(), manager);
-                                row.data = bundle;                                                                 
+                                row.setData(bundle);                                                                 
                                 receiptModel.add(row);
                                 k++;
                             }
@@ -1043,7 +1054,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                 } catch (Exception ex) {
                     receiptModel = null;
                     ex.printStackTrace();
-                    Window.alert(ex.getMessage());
+                    com.google.gwt.user.client.Window.alert(ex.getMessage());
                     window.clearStatus();
                 }
 
@@ -1051,7 +1062,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
             }
 
             public void onFailure(Throwable error) {
-                receiptTable.load(null);
+                receiptTable.setModel(null);
                 if (error instanceof NotFoundException) {
                     window.setDone(consts.get("noRecordsFound"));
                     receiptModel = null;
@@ -1059,7 +1070,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                 } else if (error instanceof LastPageException) {
                     window.setError(consts.get("noMoreRecordInDir"));
                 } else {
-                    Window.alert("Error: Inventory Receipt call query failed; " + error.getMessage());
+                    com.google.gwt.user.client.Window.alert("Error: Inventory Receipt call query failed; " + error.getMessage());
                     window.setError(consts.get("queryFailed"));
                 }
             }
@@ -1067,12 +1078,12 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
     }
     
     private void enableColumns(boolean enable) {
-        dateRecColumn.enable(enable);
-        upcColumn.enable(enable);
-        numRecColumn.enable(enable);
-        costColumn.enable(enable);
-        itemColumn.enable(enable);
-        orgColumn.enable(enable);
+        dateRecColumn.setEnabled(enable);
+        upcColumn.setEnabled(enable);
+        numRecColumn.setEnabled(enable);
+        costColumn.setEnabled(enable);
+        itemColumn.setEnabled(enable);
+        orgColumn.setEnabled(enable);
     } 
     
     private class InventoryReceiptDataBundle {

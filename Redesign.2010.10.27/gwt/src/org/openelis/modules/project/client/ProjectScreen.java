@@ -55,19 +55,19 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
-import org.openelis.gwt.widget.CalendarLookUp;
+import org.openelis.gwt.widget.calendar.Calendar;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.Item;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.Window;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
@@ -87,22 +87,21 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class ProjectScreen extends Screen {
     private ProjectManager        manager;
     private ModulePermission      userPermission;
 
-    private CalendarLookUp        startedDate, completedDate;
+    private Calendar              startedDate, completedDate;
     private TextBox<Integer>      id;
     private TextBox               name, description, referenceTo;
     private CheckBox              isActive;
-    private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
+    private Button                queryButton, previousButton, nextButton, addButton, updateButton,
                                   commitButton, abortButton, addParameterButton, removeParameterButton;
     protected MenuItem            projectHistory, projectParameterHistory;
-    private TableWidget           parameterTable;
-    private AutoComplete<Integer> ownerId, scriptletId;
+    private Table                 parameterTable;
+    private AutoComplete          ownerId, scriptletId;
     private ButtonGroup           atoz;
     private ScreenNavigator       nav;
 
@@ -142,92 +141,98 @@ public class ProjectScreen extends Screen {
     }
 
     private void initialize() {
-        queryButton = (AppButton)def.getWidget("query");
+        queryButton = (Button)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 query();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                queryButton.setEnabled(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                           .contains(event.getState()) &&
                                    userPermission.hasSelectPermission());
-                if (event.getState() == State.QUERY)
-                    queryButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.QUERY) {
+                    queryButton.setPressed(true);
+                    queryButton.lock();
+                }
             }
         });
 
-        previousButton = (AppButton)def.getWidget("previous");
+        previousButton = (Button)def.getWidget("previous");
         addScreenHandler(previousButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 previous();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                previousButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
-        nextButton = (AppButton)def.getWidget("next");
+        nextButton = (Button)def.getWidget("next");
         addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 next();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                nextButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                nextButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
-        addButton = (AppButton)def.getWidget("add");
+        addButton = (Button)def.getWidget("add");
         addScreenHandler(addButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 add();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                addButton.setEnabled(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                         .contains(event.getState()) &&
                                  userPermission.hasAddPermission());
-                if (event.getState() == State.ADD)
-                    addButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.ADD) {
+                    addButton.setPressed(true);
+                    addButton.lock();
+                }
             }
         });
 
-        updateButton = (AppButton)def.getWidget("update");
+        updateButton = (Button)def.getWidget("update");
         addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 update();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
+                updateButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
                                     userPermission.hasUpdatePermission());
-                if (event.getState() == State.UPDATE)
-                    updateButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.UPDATE) {
+                    updateButton.setPressed(true);
+                    updateButton.lock();
+                }
             }
         });
 
-        commitButton = (AppButton)def.getWidget("commit");
+        commitButton = (Button)def.getWidget("commit");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 commit();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                commitButton.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
                                            .contains(event.getState()));
             }
         });
 
-        abortButton = (AppButton)def.getWidget("abort");
+        abortButton = (Button)def.getWidget("abort");
         addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 abort();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                abortButton.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
                                           .contains(event.getState()));
             }
         });
@@ -239,7 +244,7 @@ public class ProjectScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                projectHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                projectHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
@@ -250,7 +255,7 @@ public class ProjectScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                projectParameterHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                projectParameterHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -265,7 +270,7 @@ public class ProjectScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                id.enable(EnumSet.of(State.QUERY)
+                id.setEnabled(EnumSet.of(State.QUERY)
                                  .contains(event.getState()));
                 id.setQueryMode(event.getState() == State.QUERY);
             }
@@ -282,7 +287,7 @@ public class ProjectScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                name.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                name.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                    .contains(event.getState()));
                 name.setQueryMode(event.getState() == State.QUERY);
             }
@@ -299,26 +304,26 @@ public class ProjectScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                description.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                description.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                           .contains(event.getState()));
                 description.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        ownerId = (AutoComplete<Integer>)def.getWidget(ProjectMeta.getOwnerId());
+        ownerId = (AutoComplete)def.getWidget(ProjectMeta.getOwnerId());
         addScreenHandler(ownerId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                ownerId.setSelection(manager.getProject().getOwnerId(), 
+                ownerId.setValue(manager.getProject().getOwnerId(), 
                                      manager.getProject().getOwnerName());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 manager.getProject().setOwnerId(event.getValue());
-                manager.getProject().setOwnerName(ownerId.getTextBoxDisplay());
+                manager.getProject().setOwnerName(ownerId.getDisplay());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                ownerId.enable(EnumSet.of(State.ADD, State.UPDATE)
+                ownerId.setEnabled(EnumSet.of(State.ADD, State.UPDATE)
                                       .contains(event.getState()));
                 ownerId.setQueryMode(event.getState() == State.QUERY);
             }
@@ -328,20 +333,24 @@ public class ProjectScreen extends Screen {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
                 ArrayList<SystemUserVO> users;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
                 
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e) {
+                	
+                }
 
                 try {
                     users = userService.callList("fetchByLoginName", parser.getParameter().get(0));
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
                     for (SystemUserVO user : users)
-                        model.add(new TableDataRow(user.getId(), user.getLoginName()));
+                        model.add(new Item<Integer>(user.getId(), user.getLoginName()));
                     ownerId.showAutoMatches(model);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Window.alert(e.toString());
+                    com.google.gwt.user.client.Window.alert(e.toString());
                 }
             }
         });
@@ -357,7 +366,7 @@ public class ProjectScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isActive.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                isActive.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                        .contains(event.getState()));
                 isActive.setQueryMode(event.getState() == State.QUERY);
             }
@@ -374,13 +383,13 @@ public class ProjectScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                referenceTo.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                referenceTo.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                           .contains(event.getState()));
                 referenceTo.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        startedDate = (CalendarLookUp)def.getWidget(ProjectMeta.getStartedDate());
+        startedDate = (Calendar)def.getWidget(ProjectMeta.getStartedDate());
         addScreenHandler(startedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 startedDate.setValue(manager.getProject().getStartedDate());
@@ -391,26 +400,26 @@ public class ProjectScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                startedDate.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                startedDate.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                           .contains(event.getState()));
                 startedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        scriptletId = (AutoComplete<Integer>)def.getWidget(ProjectMeta.getScriptletName());
+        scriptletId = (AutoComplete)def.getWidget(ProjectMeta.getScriptletName());
         addScreenHandler(name, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                scriptletId.setSelection(manager.getProject().getScriptletId(),
+                scriptletId.setValue(manager.getProject().getScriptletId(),
                                        Util.toString(manager.getProject().getScriptletName()));
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 manager.getProject().setScriptletId(event.getValue());
-                manager.getProject().setScriptletName(scriptletId.getTextBoxDisplay());
+                manager.getProject().setScriptletName(scriptletId.getDisplay());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                scriptletId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                scriptletId.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                    .contains(event.getState()));
                 scriptletId.setQueryMode(event.getState() == State.QUERY);
             }
@@ -419,25 +428,29 @@ public class ProjectScreen extends Screen {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
                 ArrayList<IdNameVO> list;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e) {
+                	
+                }
 
                 try {
                     list = scriptletService.callList("fetchByName", parser.getParameter().get(0));
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
 
                     for (IdNameVO data : list)
-                        model.add(new TableDataRow(data.getId(), data.getName()));
+                        model.add(new Item<Integer>(data.getId(), data.getName()));
                     scriptletId.showAutoMatches(model);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
 
-        completedDate = (CalendarLookUp)def.getWidget(ProjectMeta.getCompletedDate());
+        completedDate = (Calendar)def.getWidget(ProjectMeta.getCompletedDate());
         addScreenHandler(completedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 completedDate.setValue(manager.getProject().getCompletedDate());
@@ -448,21 +461,21 @@ public class ProjectScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                completedDate.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                completedDate.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                             .contains(event.getState()));
                 completedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        parameterTable = (TableWidget)def.getWidget("parameterTable");
-        addScreenHandler(parameterTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        parameterTable = (Table)def.getWidget("parameterTable");
+        addScreenHandler(parameterTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
                 if (state != State.QUERY)
-                    parameterTable.load(getParameterTableModel());
+                    parameterTable.setModel(getParameterTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                parameterTable.enable(true);
+                parameterTable.setEnabled(true);
                 parameterTable.setQueryMode(event.getState() == State.QUERY);
             }
         });                
@@ -483,11 +496,11 @@ public class ProjectScreen extends Screen {
 
                 r = event.getRow();
                 c = event.getCol();
-                val = parameterTable.getObject(r, c);
+                val = parameterTable.getValueAt(r, c);
                 try {
                     data = manager.getParameters().getParameterAt(r);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                     return;
                 }
                 switch (c) {
@@ -509,7 +522,7 @@ public class ProjectScreen extends Screen {
                 try {
                     manager.getParameters().addParameter(new ProjectParameterDO());
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
@@ -519,35 +532,35 @@ public class ProjectScreen extends Screen {
                 try {
                     manager.getParameters().removeParameterAt(event.getIndex());
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
         
-        addParameterButton = (AppButton)def.getWidget("addParameterButton");
+        addParameterButton = (Button)def.getWidget("addParameterButton");
         addScreenHandler(addParameterButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 parameterTable.addRow();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addParameterButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                addParameterButton.setEnabled(EnumSet.of(State.ADD, State.UPDATE)
                                                  .contains(event.getState()));
             }
         });
 
-        removeParameterButton = (AppButton)def.getWidget("removeParameterButton");
+        removeParameterButton = (Button)def.getWidget("removeParameterButton");
         addScreenHandler(removeParameterButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int r;
 
                 r = parameterTable.getSelectedRow();
-                if (r > -1 && parameterTable.numRows() > 0)
-                    parameterTable.deleteRow(r);
+                if (r > -1 && parameterTable.getRowCount() > 0)
+                    parameterTable.removeRowAt(r);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeParameterButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                removeParameterButton.setEnabled(EnumSet.of(State.ADD, State.UPDATE)
                                                     .contains(event.getState()));
             }
         });
@@ -572,7 +585,7 @@ public class ProjectScreen extends Screen {
                         } else if (error instanceof LastPageException) {
                             window.setError(consts.get("noMoreRecordInDir"));
                         } else {
-                            Window.alert("Error: Project call query failed; " + error.getMessage());
+                            com.google.gwt.user.client.Window.alert("Error: Project call query failed; " + error.getMessage());
                             window.setError(consts.get("queryFailed"));
                         }
                     }
@@ -583,15 +596,15 @@ public class ProjectScreen extends Screen {
                 return fetchById( (entry == null) ? null : ((IdNameVO)entry).getId());
             }
 
-            public ArrayList<TableDataRow> getModel() {
+            public ArrayList<Item<Integer>> getModel() {
                 ArrayList<IdNameVO> result;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 result = nav.getQueryResult();
-                model = new ArrayList<TableDataRow>();
+                model = new ArrayList<Item<Integer>>();
                 if (result != null) {
                     for (IdNameVO entry : result)
-                        model.add(new TableDataRow(entry.getId(), entry.getName()));
+                        model.add(new Item<Integer>(entry.getId(), entry.getName()));
                 }
                 return model;
             }
@@ -603,7 +616,7 @@ public class ProjectScreen extends Screen {
                 boolean enable;
                 enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
                          userPermission.hasSelectPermission();
-                atoz.enable(enable);
+                atoz.setEnabled(enable);
                 nav.enable(enable);
             }
 
@@ -613,7 +626,7 @@ public class ProjectScreen extends Screen {
 
                 field = new QueryData();
                 field.key = ProjectMeta.getName();
-                field.query = ((AppButton)event.getSource()).action;
+                field.query = ((Button)event.getSource()).getAction();
                 field.type = QueryData.Type.STRING;
 
                 query = new Query();
@@ -622,8 +635,8 @@ public class ProjectScreen extends Screen {
             }
         });
         
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+        window.addBeforeClosedHandler(new BeforeCloseHandler<Window>() {
+            public void onBeforeClosed(BeforeCloseEvent<Window> event) {                
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
@@ -633,21 +646,21 @@ public class ProjectScreen extends Screen {
     }
 
     private void initializeDropdowns() {
-        ArrayList<TableDataRow> model;
+        ArrayList<Item<Integer>> model;
         ArrayList<DictionaryDO> list;
-        TableDataRow row;
+        Item<Integer> row;
 
         // parameter table project parameter
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
         list =  DictionaryCache.getListByCategorySystemName("project_parameter_operations");
         for (DictionaryDO d : list) {
-            row = new TableDataRow(d.getId(), d.getEntry());
-            row.enabled = ("Y".equals(d.getIsActive()));
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
 
-        ((Dropdown)parameterTable.getColumnWidget(ProjectMeta.getProjectParameterOperationId())).setModel(model);
+        ((Dropdown)parameterTable.getColumnAt(parameterTable.getColumnByName(ProjectMeta.getProjectParameterOperationId())).getCellEditor().getWidget()).setModel(model);
     }
 
     protected void query() {
@@ -687,7 +700,7 @@ public class ProjectScreen extends Screen {
             DataChangeEvent.fire(this);
             setFocus(name);
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
         }
         window.clearStatus();
     }
@@ -717,7 +730,7 @@ public class ProjectScreen extends Screen {
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
-                Window.alert("commitAdd(): " + e.getMessage());
+                com.google.gwt.user.client.Window.alert("commitAdd(): " + e.getMessage());
                 window.clearStatus();
             }
         } else if (state == State.UPDATE) {
@@ -731,7 +744,7 @@ public class ProjectScreen extends Screen {
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
-                Window.alert("commitUpdate(): " + e.getMessage());
+                com.google.gwt.user.client.Window.alert("commitUpdate(): " + e.getMessage());
                 window.clearStatus();
             }
         }
@@ -754,7 +767,7 @@ public class ProjectScreen extends Screen {
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
             } catch (Exception e) {
-                Window.alert(e.getMessage());
+                com.google.gwt.user.client.Window.alert(e.getMessage());
                 fetchById(null);
             }
             window.setDone(consts.get("updateAborted"));
@@ -787,7 +800,7 @@ public class ProjectScreen extends Screen {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             return;
         }
 
@@ -811,7 +824,7 @@ public class ProjectScreen extends Screen {
             } catch (Exception e) {
                 fetchById(null);
                 e.printStackTrace();
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                com.google.gwt.user.client.Window.alert(consts.get("fetchFailed") + e.getMessage());
                 return false;
             }
         }
@@ -821,27 +834,26 @@ public class ProjectScreen extends Screen {
         return true;
     }
     
-    private ArrayList<TableDataRow> getParameterTableModel() {
+    private ArrayList<Row> getParameterTableModel() {
         int i;
-        TableDataRow row;
+        Row row;
         ProjectParameterDO data;
-        ArrayList<TableDataRow> model;
+        ArrayList<Row> model;
         
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<Row>();
         if (manager == null)
             return model;
 
         try {
             for (i = 0; i < manager.getParameters().count(); i++) {
                 data = manager.getParameters().getParameterAt(i);
-                row = new TableDataRow(null,
-                                       data.getParameter(),
-                                       data.getOperationId(),
-                                       data.getValue());
+                row = new Row(data.getParameter(),
+                              data.getOperationId(),
+                              data.getValue());
                 model.add(row);
             }
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             e.printStackTrace();
         }
         return model;

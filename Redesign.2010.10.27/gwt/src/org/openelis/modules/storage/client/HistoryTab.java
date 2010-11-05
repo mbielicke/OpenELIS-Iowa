@@ -37,10 +37,10 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.Button;
+import org.openelis.gwt.widget.Window;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.manager.StorageLocationManager;
@@ -49,18 +49,17 @@ import org.openelis.manager.StorageViewManager;
 import org.openelis.meta.StorageMeta;
 
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.Window;
 
 public class HistoryTab extends Screen {
 
     private StorageViewManager manager;
-    private TableWidget        storageHistoryTable;
-    private AppButton          historyPrevButton, historyNextButton;
+    private Table              storageHistoryTable;
+    private Button             historyPrevButton, historyNextButton;
     private HistoryTab         screen; 
     private boolean            loaded;
     private int                pageNum;
     
-    public HistoryTab(ScreenDefInt def, ScreenWindow window) {
+    public HistoryTab(ScreenDefInt def, Window window) {
         setDefinition(def);
         setWindow(window);
         initialize();  
@@ -69,14 +68,14 @@ public class HistoryTab extends Screen {
     private void initialize() {        
         screen = this;
         
-        storageHistoryTable = (TableWidget)def.getWidget("storageHistoryTable");
-        addScreenHandler(storageHistoryTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        storageHistoryTable = (Table)def.getWidget("storageHistoryTable");
+        addScreenHandler(storageHistoryTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
                 loadHistoryModel(); 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                storageHistoryTable.enable(true);                
+                storageHistoryTable.setEnabled(true);                
             }
         });
         
@@ -86,7 +85,7 @@ public class HistoryTab extends Screen {
             }            
         });
 
-        historyPrevButton = (AppButton)def.getWidget("historyPrevButton");
+        historyPrevButton = (Button)def.getWidget("historyPrevButton");
         addScreenHandler(historyPrevButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) { 
                 if(pageNum > 0) {                               
@@ -98,11 +97,11 @@ public class HistoryTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historyPrevButton.enable(EnumSet.of(State.UPDATE, State.DISPLAY).contains(event.getState()));
+                historyPrevButton.setEnabled(EnumSet.of(State.UPDATE, State.DISPLAY).contains(event.getState()));
             }
         });
 
-        historyNextButton = (AppButton)def.getWidget("historyNextButton");
+        historyNextButton = (Button)def.getWidget("historyNextButton");
         addScreenHandler(historyNextButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {           
                 pageNum++;                   
@@ -110,23 +109,23 @@ public class HistoryTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historyNextButton.enable(EnumSet.of(State.UPDATE,State.DISPLAY).contains(event.getState()));
+                historyNextButton.setEnabled(EnumSet.of(State.UPDATE,State.DISPLAY).contains(event.getState()));
             }
         });
     }
     
     private void loadHistoryModel() {
         int i;
-        TableDataRow row;
+        Row row;
         StorageViewDO data;
-        ArrayList<TableDataRow> model;
+        ArrayList<Row> model;
         StorageManager sm;  
         StorageLocationManager slm;
         Query query;
         QueryData field;
         String location;
                 
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<Row>();
         sm = null;
         
         if (manager == null)        
@@ -156,7 +155,7 @@ public class HistoryTab extends Screen {
             pageNum--;
             return;
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             e.printStackTrace();
             pageNum--;
             window.clearStatus();
@@ -166,20 +165,20 @@ public class HistoryTab extends Screen {
         for (i = 0; i < sm.count(); i++) {
             data = sm.getStorageAt(i);
             
-            row = new TableDataRow(5);            
+            row = new Row(5);            
             location = data.getStorageLocation();
             if(location != null)
                 location = location.replaceAll(",", "");
-            row.cells.get(0).setValue(location);
-            row.cells.get(1).setValue(data.getItemDescription());
-            row.cells.get(2).setValue(data.getUserName());
-            row.cells.get(3).setValue(data.getCheckin());
-            row.cells.get(4).setValue(data.getCheckout());
+            row.setCell(0,location);
+            row.setCell(1,data.getItemDescription());
+            row.setCell(2,data.getUserName());
+            row.setCell(3,data.getCheckin());
+            row.setCell(4,data.getCheckout());
             
             model.add(row);
         }
         
-        storageHistoryTable.load(model);
+        storageHistoryTable.setModel(model);
         window.clearStatus();                
     }
     

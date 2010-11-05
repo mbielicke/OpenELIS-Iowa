@@ -40,7 +40,7 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.DateField;
+import org.openelis.gwt.widget.DateHelper;
 import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleManager;
 
@@ -99,11 +99,10 @@ public class SampleEnvironmentalImportOrder extends ImportOrder {
                         manager.getSample().setCollectionDate(
                                             Datetime.getInstance(Datetime.YEAR, Datetime.DAY, new Date(auxData.getValue())));
                     else if(analyteId.equals("smpl_collected_time")){
-                        DateField df = new DateField();
+                        DateHelper df = new DateHelper();
                         df.setBegin(Datetime.HOUR);
                         df.setEnd(Datetime.MINUTE);
-                        df.setStringValue(auxData.getValue());
-                        manager.getSample().setCollectionTime(df.getValue());
+                        manager.getSample().setCollectionTime(df.getValue(auxData.getValue()));
                     }else if(analyteId.equals("smpl_client_ref"))
                         manager.getSample().setClientReference(auxData.getValue());
                     else if(analyteId.equals("is_hazardous")){

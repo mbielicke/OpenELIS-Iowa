@@ -43,7 +43,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
 <!-- main screen -->
-    <screen id="Method" name="{resource:getString($constants,'method')}">
+    <screen name="{resource:getString($constants,'method')}">
       <HorizontalPanel padding="0" spacing="0">
 <!--left table goes here -->
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
@@ -52,19 +52,19 @@ UIRF Software License are applicable instead of those above.
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" width="auto" maxRows="9" style="atozTable">
+              <table key="atozTable" width="auto" rows="9" style="atozTable">
                 <col width="175" header="{resource:getString($constants,'method')}">
                   <label field="String" />
                 </col>
               </table>
               <widget halign="center">
                 <HorizontalPanel>
-                  <appButton key="atozPrev" style="Button" enable="false">
+                  <button key="atozPrev" style="Button" enabled="false">
                     <AbsolutePanel style="prevNavIndex" />
-                  </appButton>
-                  <appButton key="atozNext" style="Button" enable="false">
+                  </button>
+                  <button key="atozNext" style="Button" enabled="false">
                     <AbsolutePanel style="nextNavIndex" />
-                  </appButton>
+                  </button>
                 </HorizontalPanel>
               </widget>
             </VerticalPanel>
@@ -74,61 +74,29 @@ UIRF Software License are applicable instead of those above.
         <VerticalPanel padding="0" spacing="0">
           <AbsolutePanel spacing="0" style="ButtonPanelContainer">
             <HorizontalPanel>
-              <xsl:call-template name="queryButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="previousButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="nextButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
+              <xsl:call-template name="queryButton"/>
+              <xsl:call-template name="previousButton"/>
+              <xsl:call-template name="nextButton"/>
               <xsl:call-template name="buttonPanelDivider" />
-              <xsl:call-template name="addButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="updateButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
+              <xsl:call-template name="addButton"/>
+              <xsl:call-template name="updateButton"/>
               <xsl:call-template name="buttonPanelDivider" />
-              <xsl:call-template name="commitButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="abortButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
+              <xsl:call-template name="commitButton"/>
+              <xsl:call-template name="abortButton"/>
               <xsl:call-template name="buttonPanelDivider" />
-              <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
-                <menuItem>
+                <menu selfShow="true" showBelow="true">
                   <menuDisplay>
-                    <appButton style="ButtonPanelButton" action="option">
-                      <HorizontalPanel>
-                        <text>
-                          <xsl:value-of select='resource:getString($constants,"options")' />
-                        </text>
-                        <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
-                      </HorizontalPanel>
-                    </appButton>
+                    <button style="ButtonPanelButton" action="option">
+                      <Grid>
+                        <row>
+                          <cell style="ScreenLabel,ButtonAdj" text="{resource:getString($constants,'options')}" />
+                          <cell style="OptionsButtonImage" />
+                        </row>
+                      </Grid>
+                    </button>
                   </menuDisplay>
-                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                    <menuItem key="methodHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'methodHistory')}" />
-                  </menuPanel>
-                </menuItem>
-              </menuPanel>
+                    <menuItem key="methodHistory" description="" enabled="false" icon="historyIcon" display="{resource:getString($constants,'methodHistory')}" />
+                </menu>
             </HorizontalPanel>
           </AbsolutePanel>
 <!--end button panel-->

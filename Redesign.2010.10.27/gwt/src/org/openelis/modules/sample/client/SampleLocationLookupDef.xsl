@@ -34,7 +34,7 @@
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="SampleLocationPicker" name="{resource:getString($constants,'sampleLocation')}">
+    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="{resource:getString($constants,'sampleLocation')}">
       <VerticalPanel padding="0" spacing="0">
         <VerticalPanel width="300" padding="0" spacing="0" style="WhiteContentPanel">
           <TablePanel style="Form">
@@ -97,11 +97,7 @@
 <!--button panel code-->
         <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
           <HorizontalPanel>
-            <xsl:call-template name="okButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
+            <xsl:call-template name="okButton"/>
           </HorizontalPanel>
         </AbsolutePanel>
 <!--end button panel-->

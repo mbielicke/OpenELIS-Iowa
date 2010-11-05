@@ -50,27 +50,27 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AutoComplete;
-import org.openelis.gwt.widget.CalendarLookUp;
+import org.openelis.gwt.widget.calendar.Calendar;
 import org.openelis.gwt.widget.CheckBox;
+import org.openelis.gwt.widget.Item;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.Window;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.Row;
 import org.openelis.manager.InventoryReceiptManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.InventoryReceiptMeta;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Window;
 
 public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>{
 
     private InventoryReceiptManager               manager;
     private InventoryReceiptScreen                inventoryReceiptScreen;
     private ItemTab                               screen; 
-    private CalendarLookUp                        inventoryLocationExpirationDate;
-    private AutoComplete<Integer>                 inventoryLocationStorageLocationName;
+    private Calendar                              inventoryLocationExpirationDate;
+    private AutoComplete                          inventoryLocationStorageLocationName;
     private TextBox                               inventoryItemDescription, 
                                                   inventoryLocationLotNumber, qcReference, 
                                                   inventoryItemStore, inventoryItemDispensedUnits;
@@ -84,7 +84,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
         STORAGE_LOCATION_CHANGED, LOT_NUMBER_CHANGED 
     }
     
-    public ItemTab(ScreenDefInt def, ScreenWindow window) {
+    public ItemTab(ScreenDefInt def, Window window) {
         service = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService");                      
         inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");
         storageService = new ScreenService("controller?service=org.openelis.modules.storage.server.StorageService");
@@ -108,7 +108,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                         item = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());                        
                     } catch(Exception ex) {
                         ex.printStackTrace();
-                        Window.alert(ex.getMessage());
+                        com.google.gwt.user.client.Window.alert(ex.getMessage());
                     }                      
                     if (item != null)
                         inventoryItemDescription.setValue(item.getDescription());
@@ -124,7 +124,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                inventoryItemDescription.enable(false);                
+                inventoryItemDescription.setEnabled(false);                
             }
         });
 
@@ -142,19 +142,19 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                         item = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId()); 
                     } catch(Exception ex) {
                         ex.printStackTrace();
-                        Window.alert(ex.getMessage());
+                        com.google.gwt.user.client.Window.alert(ex.getMessage());
                     }
                                                             
                     if (state == State.ADD || state == State.UPDATE) {
                         if(item != null) {
                             enable = "Y".equals(item.getIsBulk());
-                            addToExisting.enable(enable);
-                            inventoryLocationLotNumber.enable(!enable);
-                            inventoryLocationExpirationDate.enable(!enable);
+                            addToExisting.setEnabled(enable);
+                            inventoryLocationLotNumber.setEnabled(!enable);
+                            inventoryLocationExpirationDate.setEnabled(!enable);
                         } else {
-                            addToExisting.enable(false);
-                            inventoryLocationLotNumber.enable(false);
-                            inventoryLocationExpirationDate.enable(false);
+                            addToExisting.setEnabled(false);
+                            inventoryLocationLotNumber.setEnabled(false);
+                            inventoryLocationExpirationDate.setEnabled(false);
                         }
                     }
                 } else {
@@ -170,7 +170,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                     data.setAddToExistingLocation(event.getValue());
                 } catch(Exception ex) {
                     ex.printStackTrace();
-                    Window.alert(ex.getMessage());
+                    com.google.gwt.user.client.Window.alert(ex.getMessage());
                 }
             }
 
@@ -180,20 +180,20 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                                            
                 item = null;
                 if (state != State.ADD && state != State.UPDATE) {
-                    addToExisting.enable(false);
+                    addToExisting.setEnabled(false);
                 } else if (manager != null &&  index != -1) {
                     try {
                         data = manager.getReceiptAt(index);
                         item = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());                        
                     } catch(Exception ex) {
                         ex.printStackTrace();
-                        Window.alert(ex.getMessage());
+                        com.google.gwt.user.client.Window.alert(ex.getMessage());
                     }
                     
                     if (item != null)  
-                        addToExisting.enable("Y".equals(item.getIsBulk()));                                            
+                        addToExisting.setEnabled("Y".equals(item.getIsBulk()));                                            
                 } else {
-                    addToExisting.enable(false);
+                    addToExisting.setEnabled(false);
                 }
             }
         });
@@ -215,7 +215,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                             dict = DictionaryCache.getEntryFromId(item.getStoreId());
                     } catch(Exception ex) {
                         ex.printStackTrace();
-                        Window.alert(ex.getMessage());
+                        com.google.gwt.user.client.Window.alert(ex.getMessage());
                     }                         
                     if (dict != null)
                         inventoryItemStore.setValue(dict.getEntry());
@@ -231,7 +231,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                inventoryItemStore.enable(false);
+                inventoryItemStore.setEnabled(false);
             }
         });
 
@@ -252,7 +252,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                             dict = DictionaryCache.getEntryFromId(item.getDispensedUnitsId());
                     } catch(Exception ex) {
                         ex.printStackTrace();
-                        Window.alert(ex.getMessage());
+                        com.google.gwt.user.client.Window.alert(ex.getMessage());
                     }                        
                     if (dict != null)                     
                         inventoryItemDispensedUnits.setValue(dict.getEntry());
@@ -268,7 +268,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                inventoryItemDispensedUnits.enable(false);
+                inventoryItemDispensedUnits.setEnabled(false);
             }
         });
 
@@ -284,7 +284,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                 storLocId = null;
                 if (manager != null && index != -1) {
                     if(state == State.ADD || state == State.UPDATE)
-                        inventoryLocationStorageLocationName.enable(true);
+                        inventoryLocationStorageLocationName.setEnabled(true);
                     
                     data = manager.getReceiptAt(index);
                     if (data.getInventoryLocations() == null) {
@@ -298,12 +298,12 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                         location = StorageLocationManager.getLocationForDisplay(invLoc.getStorageLocationName(),
                                                                                 invLoc.getStorageLocationUnitDescription(),
                                                                                 invLoc.getStorageLocationLocation());
-                        inventoryLocationStorageLocationName.setSelection(storLocId, location);
+                        inventoryLocationStorageLocationName.setValue(storLocId, location);
                     } else {
-                        inventoryLocationStorageLocationName.setSelection(null, "");
+                        inventoryLocationStorageLocationName.setValue(null, "");
                     }
                 } else {
-                    inventoryLocationStorageLocationName.setSelection(null, "");
+                    inventoryLocationStorageLocationName.setValue(null, "");
                 }
                 
                 
@@ -312,10 +312,10 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 InventoryReceiptViewDO data; 
                 InventoryLocationViewDO location;
-                TableDataRow row;               
+                Item<Integer> row;               
                 
                 data = manager.getReceiptAt(index);
-                row = inventoryLocationStorageLocationName.getSelection();
+                row = inventoryLocationStorageLocationName.getSelectedItem();
                 
                 if (data.getInventoryLocations() == null) {
                     data.setInventoryLocations(new ArrayList<InventoryLocationViewDO>());
@@ -324,7 +324,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                 
                 location = data.getInventoryLocations().get(0);
                 if (row != null) {
-                    location = (InventoryLocationViewDO)row.data;
+                    location = (InventoryLocationViewDO)row.getData();
                     data.getInventoryLocations().set(0, location);                    
                 } else {
                     location.setId(null);
@@ -339,11 +339,11 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
 
             public void onStateChange(StateChangeEvent<State> event) {                
                 if(state != State.ADD && state != State.UPDATE) {
-                    inventoryLocationStorageLocationName.enable(false);
+                    inventoryLocationStorageLocationName.setEnabled(false);
                 } else if(manager != null &&  index != -1) {
-                    inventoryLocationStorageLocationName.enable(true);
+                    inventoryLocationStorageLocationName.setEnabled(true);
                 } else {
-                    inventoryLocationStorageLocationName.enable(false);
+                    inventoryLocationStorageLocationName.setEnabled(false);
                 }                
             }
         });
@@ -358,8 +358,8 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                 InventoryLocationViewDO invLoc;
                 ArrayList<StorageLocationViewDO> storLocList;
                 StorageLocationViewDO storLoc;
-                TableDataRow row;                
-                ArrayList<TableDataRow> model;
+                Item<Integer> row;                
+                ArrayList<Item<Integer>> model;
                 QueryFieldUtil parser;
                 ArrayList<QueryData> fields;
                 Query query;
@@ -370,11 +370,15 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                                
                 data = manager.getReceiptAt(index);
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());  
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e){
+                	
+                }
                 param = parser.getParameter().get(0); 
                                 
                 window.setBusy();
-                model = new ArrayList<TableDataRow>();
+                model = new ArrayList<Item<Integer>>();
                 try {
                     itemId = data.getInventoryItemId();
                     if ("Y".equals(addToExisting.getValue()) && itemId != null) {   
@@ -392,37 +396,37 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                         query.setFields(fields);
                         invLocList = inventoryLocationService.callList("fetchByLocationNameInventoryItemId", query);
                         for (i = 0; i < invLocList.size(); i++ ) {
-                            row = new TableDataRow(4);
+                            row = new Item<Integer>(4);
                             invLoc = invLocList.get(i);
 
-                            row.key = invLoc.getId();
+                            row.setKey(invLoc.getId());
                             location = StorageLocationManager.getLocationForDisplay(invLoc.getStorageLocationName(),
                                                                                     invLoc.getStorageLocationUnitDescription(),
                                                                                     invLoc.getStorageLocationLocation());
-                            row.cells.get(0).setValue(location);
-                            row.cells.get(1).setValue(invLoc.getLotNumber());
-                            row.cells.get(2).setValue(invLoc.getQuantityOnhand());
-                            row.cells.get(3).setValue(invLoc.getExpirationDate());
+                            row.setCell(0,location);
+                            row.setCell(1,invLoc.getLotNumber());
+                            row.setCell(2,invLoc.getQuantityOnhand());
+                            row.setCell(3,invLoc.getExpirationDate());
 
-                            row.data = invLoc;
+                            row.setData(invLoc);
 
                             model.add(row);
                         }
                     } else {
                         storLocList = storageService.callList("fetchAvailableByName", param);
                         for (i = 0; i < storLocList.size(); i++ ) {
-                            row = new TableDataRow(4);
+                            row = new Item<Integer>(4);
                             storLoc = storLocList.get(i);
                             location = StorageLocationManager.getLocationForDisplay(storLoc.getName(),
                                                                                     storLoc.getStorageUnitDescription(),
                                                                                     storLoc.getLocation());
-                            row.cells.get(0).setValue(location);
+                            row.setCell(0,location);
                             invLoc = new InventoryLocationViewDO();
                             invLoc.setStorageLocationId(storLoc.getId());
                             invLoc.setStorageLocationName(storLoc.getName());
                             invLoc.setStorageLocationUnitDescription(storLoc.getStorageUnitDescription());
                             invLoc.setStorageLocationLocation(storLoc.getLocation());
-                            row.data = invLoc;
+                            row.setData(invLoc);
 
                             model.add(row);
 
@@ -431,7 +435,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                     inventoryLocationStorageLocationName.showAutoMatches(model);
                 } catch (Throwable e) {
                     e.printStackTrace();
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
                 window.clearStatus();
             }            
@@ -474,19 +478,19 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                 
                 item = null;
                 if (state != State.ADD && state != State.UPDATE) {
-                    inventoryLocationLotNumber.enable(false);
+                    inventoryLocationLotNumber.setEnabled(false);
                 } else if (manager != null && index != -1) {                    
                     data = manager.getReceiptAt(index);
                     try {
                         item = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());
                     } catch (Exception e) {
-                        Window.alert("Inventory Item Cache error:" + e.getMessage());
+                        com.google.gwt.user.client.Window.alert("Inventory Item Cache error:" + e.getMessage());
                         e.printStackTrace();
                     }
                     if(item != null) 
-                        inventoryLocationLotNumber.enable("N".equals(item.getIsBulk()));                    
+                        inventoryLocationLotNumber.setEnabled("N".equals(item.getIsBulk()));                    
                 } else {
-                    inventoryLocationLotNumber.enable(false);
+                    inventoryLocationLotNumber.setEnabled(false);
                 }
             }
         });
@@ -499,7 +503,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                 data = null;
                 if (manager != null && index != -1) {  
                     if (state == State.ADD || state == State.UPDATE)
-                        qcReference.enable(true);
+                        qcReference.setEnabled(true);
                     data = manager.getReceiptAt(index);                                                                   
                     qcReference.setValue(data.getQcReference());                    
                 } else {
@@ -516,16 +520,16 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
 
             public void onStateChange(StateChangeEvent<State> event) {                
                 if (state != State.ADD && state != State.UPDATE) {
-                    qcReference.enable(false);
+                    qcReference.setEnabled(false);
                 } else if(manager != null &&  index != -1) {
-                    qcReference.enable(true);
+                    qcReference.setEnabled(true);
                 } else {
-                    qcReference.enable(false);
+                    qcReference.setEnabled(false);
                 }                
             }
         });
 
-        inventoryLocationExpirationDate = (CalendarLookUp)def.getWidget(InventoryReceiptMeta.getInventoryLocationExpirationDate());
+        inventoryLocationExpirationDate = (Calendar)def.getWidget(InventoryReceiptMeta.getInventoryLocationExpirationDate());
         addScreenHandler(inventoryLocationExpirationDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 InventoryReceiptViewDO data;      
@@ -560,20 +564,20 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                 
                 item = null;
                 if (state != State.ADD && state != State.UPDATE) {
-                    inventoryLocationExpirationDate.enable(false);
+                    inventoryLocationExpirationDate.setEnabled(false);
                 } else if(manager != null && index != -1) {
                     try {
                         data = manager.getReceiptAt(index);
                         item = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());                        
                     } catch(Exception ex) {
                         ex.printStackTrace();
-                        Window.alert(ex.getMessage());
+                        com.google.gwt.user.client.Window.alert(ex.getMessage());
                     }
                     
                     if (item != null) 
-                        inventoryLocationExpirationDate.enable("N".equals(item.getIsBulk()));                    
+                        inventoryLocationExpirationDate.setEnabled("N".equals(item.getIsBulk()));                    
                 } else {
-                    inventoryLocationExpirationDate.enable(false);
+                    inventoryLocationExpirationDate.setEnabled(false);
                 }
             }
         });

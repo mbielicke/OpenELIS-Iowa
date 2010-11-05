@@ -38,9 +38,9 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.Button;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 
@@ -55,7 +55,7 @@ public class TestReflexLookupScreen extends Screen implements
         SELECTED_REFLEX_ROW, CANCEL
     };
 
-    protected TableWidget               reflexTestTable;
+    protected Table                     reflexTestTable;
     private ArrayList<TestReflexViewDO> reflexTests;
     private ArrayList<TestIdDupsVO>     returnList;
     
@@ -74,14 +74,14 @@ public class TestReflexLookupScreen extends Screen implements
     }
 
     private void initialize() {
-        reflexTestTable = (TableWidget)def.getWidget("reflexTestTable");
-        addScreenHandler(reflexTestTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        reflexTestTable = (Table)def.getWidget("reflexTestTable");
+        addScreenHandler(reflexTestTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                reflexTestTable.load(getTableModel());
+                reflexTestTable.setModel(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                reflexTestTable.enable(true);
+                reflexTestTable.setEnabled(true);
             }
         });
 
@@ -91,25 +91,25 @@ public class TestReflexLookupScreen extends Screen implements
             }
         });
 
-        final AppButton okButton = (AppButton)def.getWidget("ok");
+        final Button okButton = (Button)def.getWidget("ok");
         addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 ok();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                okButton.enable(true);
+                okButton.setEnabled(true);
             }
         });
 
-        final AppButton cancelButton = (AppButton)def.getWidget("cancel");
+        final Button cancelButton = (Button)def.getWidget("cancel");
         addScreenHandler(cancelButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 cancel();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                cancelButton.enable(true);
+                cancelButton.setEnabled(true);
             }
         });
 
@@ -132,12 +132,12 @@ public class TestReflexLookupScreen extends Screen implements
         }
     }
 
-    private ArrayList<TableDataRow> getTableModel() {
-        ArrayList<TableDataRow> model;
+    private ArrayList<Row> getTableModel() {
+        ArrayList<Row> model;
         TestReflexViewDO reflexDO;
-        TableDataRow row;
+        Row row;
         
-        model  = new ArrayList<TableDataRow>();
+        model  = new ArrayList<Row>();
         
         if (reflexTests == null)
             return model;
@@ -145,11 +145,11 @@ public class TestReflexLookupScreen extends Screen implements
         try {
             for (int iter = 0; iter < reflexTests.size(); iter++ ) {
                 reflexDO = reflexTests.get(iter);
-                row = new TableDataRow(1);
+                row = new Row(1);
                 
                 if(promptId.equals(reflexDO.getFlagsId()) || promptNonDupId.equals(reflexDO.getFlagsId())){
-                    row.data = new TestIdDupsVO(reflexDO.getAddTestId(), promptNonDupId.equals(reflexDO.getFlagsId()));
-                    row.cells.get(0).value = reflexDO.getAddTestName() + ", " + reflexDO.getAddMethodName();
+                    row.setData(new TestIdDupsVO(reflexDO.getAddTestId(), promptNonDupId.equals(reflexDO.getFlagsId())));
+                    row.setCell(0,reflexDO.getAddTestName() + ", " + reflexDO.getAddMethodName());
                     model.add(row);
                 }
             }
@@ -177,13 +177,19 @@ public class TestReflexLookupScreen extends Screen implements
     
     public ArrayList<TestIdDupsVO> getReflexList(){
         TestReflexViewDO reflexDO;
-        ArrayList<TableDataRow> selectedRows;
-        TableDataRow row;
+        Integer[] selRows;
+        ArrayList<Row> selectedRows;
+        Row row;
         int i,j;
         
         if(returnList == null){
             returnList = new ArrayList<TestIdDupsVO>();
-            selectedRows = reflexTestTable.getSelections();
+            selRows = reflexTestTable.getSelectedRows();
+            
+            selectedRows = new ArrayList<Row>();
+            
+            for(i = 0; i < selRows.length; i++) 
+            	selectedRows.add(reflexTestTable.getRowAt(i));
                 
             //add non prompt reflex tests to the return list
             for(i=0; i<reflexTests.size(); i++){
@@ -198,7 +204,7 @@ public class TestReflexLookupScreen extends Screen implements
             //add prompt reflex tests that are selected to the return list
             for(j=0; j<selectedRows.size(); j++){
                 row = selectedRows.get(j);
-                returnList.add((TestIdDupsVO)row.data);
+                returnList.add((TestIdDupsVO)row.getData());
             }
         }
         

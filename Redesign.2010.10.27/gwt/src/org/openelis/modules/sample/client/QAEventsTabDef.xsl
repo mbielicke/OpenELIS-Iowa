@@ -41,7 +41,7 @@ UIRF Software License are applicable instead of those above.
     <VerticalPanel padding="0" spacing="0">
       <TablePanel height="100%" padding="0" spacing="0" style="TabSubForm">
         <row>
-          <table key="sampleQATable" width="auto" maxRows="8" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
+          <table key="sampleQATable" rows="8" vscroll="ALWAYS" hscroll="ALWAYS" style="ScreenTableWithSides">
             <col key="{meta:getSampleSubQaName()}" width="172" header="{resource:getString($constants,'sampleQAEvent')}">
               <textbox field="String" />
             </col>
@@ -55,7 +55,7 @@ UIRF Software License are applicable instead of those above.
           <widget rowspan="3">
             <AbsolutePanel style="Divider" />
           </widget>
-          <table key="analysisQATable" width="auto" maxRows="8" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
+          <table key="analysisQATable" rows="8" vscroll="ALWAYS" hscroll="ALWAYS" style="ScreenTableWithSides">
             <col key="{meta:getAnalysisSubQaName()}" width="172" header="{resource:getString($constants,'analysisQAEvent')}">
               <textbox field="String" />
             </col>
@@ -70,42 +70,14 @@ UIRF Software License are applicable instead of those above.
         <row>
           <widget style="TableButtonFooter">
             <HorizontalPanel>
-              <appButton key="removeSampleQAButton" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="RemoveRowButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
-              <appButton key="sampleQAPicker" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="PickerButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'qaEvents')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
+              <button key="removeSampleQAButton" icon="RemoveRowButtonImage" text="resource:getString($constants,'removeRow')" style="Button"/>
+              <button key="sampleQAPicker" icon="PickerButtonImage" text="{resource:getString($constants,'qaEvents')}" style="Button"/>
             </HorizontalPanel>
           </widget>
           <widget style="TableButtonFooter">
             <HorizontalPanel>
-              <appButton key="removeAnalysisQAButton" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="RemoveRowButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
-              <appButton key="analysisQAPicker" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="PickerButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'qaEvents')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
+              <button key="removeAnalysisQAButton" icon="RemoveRowButtonImage" text="{resource:getString($constants,'removeRow')}" style="Button"/>
+              <button key="analysisQAPicker" icon="PickerButtonImage" text="resource:getString($constants,'qaEvents')" style="Button"/>
             </HorizontalPanel>
           </widget>
         </row>

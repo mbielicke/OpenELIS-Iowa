@@ -39,8 +39,10 @@ import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.Item;
+import org.openelis.gwt.widget.ModalWindow;
+import org.openelis.gwt.widget.Window;
+import org.openelis.gwt.widget.table.Row;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleManager;
@@ -49,7 +51,6 @@ import org.openelis.manager.TestPrepManager;
 import org.openelis.modules.test.client.TestPrepLookupScreen;
 
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Window;
 
 public class TestPrepUtility extends Screen implements HasActionHandlers<TestPrepUtility.Action> {
     public enum Type {
@@ -77,7 +78,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         try {
             anInPrepId = DictionaryCache.getIdFromSystemName("analysis_inprep");
         } catch (Exception e) {
-            Window.alert("testlookup constructor: " + e.getMessage());
+            com.google.gwt.user.client.Window.alert("testlookup constructor: " + e.getMessage());
         }
     }
 
@@ -257,7 +258,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
             }
 
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
         }
     }
 
@@ -289,7 +290,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
                 testMan = TestManager.fetchWithPrepTestsSampleTypes(prepTestId);
 
             } catch (Exception e) {
-                Window.alert(e.getMessage());
+                com.google.gwt.user.client.Window.alert(e.getMessage());
             }
             
             if (testMan.canAssign()) {
@@ -331,7 +332,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
             prepPickerScreen = new TestPrepLookupScreen();
             prepPickerScreen.addActionHandler(new ActionHandler<TestPrepLookupScreen.Action>() {
                 public void onAction(ActionEvent<TestPrepLookupScreen.Action> event) {
-                    TableDataRow selectedRow;
+                    Item<Integer> selectedRow;
                     Integer testId;
                     /*if (event.getAction() == TestPrepLookupScreen.Action.SELECTED_PREP_ROW) {
                         TableDataRow selectedRow;
@@ -347,9 +348,9 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
                     
                     if (event.getAction() == TestPrepLookupScreen.Action.SELECTED_PREP_ROW) {                                               
                         numberOfPrepScreensDrawn-- ;
-                        selectedRow = (TableDataRow)event.getData();
+                        selectedRow = (Item<Integer>)event.getData();
                         if (selectedRow != null) { 
-                            testId = (Integer)selectedRow.key;
+                            testId = (Integer)selectedRow.getKey();
                             selectedPrepTest(anMan, parentBundle, testId);
                         }
                     } else {
@@ -362,12 +363,12 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
 
         } catch (Exception e) {
             e.printStackTrace();
-            Window.alert("error: " + e.getMessage());
+            com.google.gwt.user.client.Window.alert("error: " + e.getMessage());
             return;
         }
 
-        ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-        modal.setContent(prepPickerScreen, ScreenWindow.position+(numberOfPrepScreensDrawn*20), ScreenWindow.position+(numberOfPrepScreensDrawn*20));
+        ModalWindow modal = new ModalWindow();
+        modal.setContent(prepPickerScreen, (numberOfPrepScreensDrawn*20),(numberOfPrepScreensDrawn*20));
         modal.setName(consts.get("prepTestPicker") + " " + testMethodName);
         prepPickerScreen.setManager(manager);
         numberOfPrepScreensDrawn++ ;

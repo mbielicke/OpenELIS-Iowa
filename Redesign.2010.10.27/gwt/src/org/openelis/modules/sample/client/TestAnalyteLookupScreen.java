@@ -38,11 +38,11 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.Item;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 
@@ -55,8 +55,8 @@ import com.google.gwt.user.client.Window;
 
 public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers<TestAnalyteLookupScreen.Action>{
 
-    private AppButton commitButton, abortButton;
-    private TableWidget testAnalyteTable;
+    private Button commitButton, abortButton;
+    private Table  testAnalyteTable;
     
     protected ArrayList<TestAnalyteViewDO> analytes;
     
@@ -78,19 +78,19 @@ public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers
     }
     
     private void initialize() {
-        testAnalyteTable = (TableWidget)def.getWidget("testAnalyteTable");
-        addScreenHandler(testAnalyteTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        testAnalyteTable = (Table)def.getWidget("testAnalyteTable");
+        addScreenHandler(testAnalyteTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                testAnalyteTable.load(getTableModel());
+                testAnalyteTable.setModel(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                testAnalyteTable.enable(true);
+                testAnalyteTable.setEnabled(true);
             }
         });
 
-        testAnalyteTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>(){
-           public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+        testAnalyteTable.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>(){
+           public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
                //always allow
            }
         });
@@ -101,25 +101,25 @@ public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers
             }
         });
         
-        commitButton = (AppButton)def.getWidget("ok");
+        commitButton = (Button)def.getWidget("ok");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 ok();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(true);
+                commitButton.setEnabled(true);
             }
         });
 
-        abortButton = (AppButton)def.getWidget("cancel");
+        abortButton = (Button)def.getWidget("cancel");
         addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 cancel();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(true);
+                abortButton.setEnabled(true);
             }
         });
     }
@@ -127,11 +127,17 @@ public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers
     private void ok(){
         ArrayList<TestAnalyteViewDO> rows;
         TestAnalyteViewDO ta;
-        ArrayList<TableDataRow> selections = testAnalyteTable.getSelections();
+        Integer[] sels;
+        ArrayList<Row> selections = new ArrayList<Row>();
+        
+        sels = testAnalyteTable.getSelectedRows();
+        
+        for(int i = 0; i < sels.length; i++)
+        	selections.add(testAnalyteTable.getRowAt(sels[i]));
         
         rows = new ArrayList<TestAnalyteViewDO>();
         for(int i=0; i<selections.size(); i++){
-            ta = (TestAnalyteViewDO)selections.get(i).data;
+            ta = (TestAnalyteViewDO)selections.get(i).getData();
             rows.add(ta);
         }
         
@@ -145,13 +151,13 @@ public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers
         window.close();
     }
     
-    private ArrayList<TableDataRow> getTableModel() {
+    private ArrayList<Row> getTableModel() {
         int i;
-        TableDataRow row;
+        Row row;
         TestAnalyteViewDO data;
-        ArrayList<TableDataRow> model;
+        ArrayList<Row> model;
         
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<Row>();
         if (analytes == null)
             return model;
 
@@ -159,12 +165,12 @@ public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers
             for (i = 0; i < analytes.size(); i++) {
                 data = analytes.get(i);
 
-                row = new TableDataRow(3);
-                row.key = data.getId();
-                row.cells.get(0).value = data.getAnalyteName();
-                row.cells.get(1).value = data.getTypeId();
-                row.cells.get(2).value = data.getIsAlias();
-                row.data = data;
+                row = new Row(3);
+                //row.key = data.getId();
+                row.setCell(0,data.getAnalyteName());
+                row.setCell(1,data.getTypeId());
+                row.setCell(2,data.getIsAlias());
+                row.setData(data);
                 model.add(row);
             }
         } catch (Exception e) {
@@ -175,15 +181,15 @@ public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers
     }
     
     private void initializeDropdowns(){
-        ArrayList<TableDataRow> model;
+        ArrayList<Item<Integer>> model;
         
         //type dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("test_analyte_type"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+            model.add(new Item<Integer>(d.getId(), d.getEntry()));
 
-        ((Dropdown<Integer>)testAnalyteTable.getColumns().get(1).colWidget).setModel(model);
+        ((Dropdown<Integer>)testAnalyteTable.getColumnWidget(1)).setModel(model);
     }
     
     public void setData(ArrayList<TestAnalyteViewDO> analytes){

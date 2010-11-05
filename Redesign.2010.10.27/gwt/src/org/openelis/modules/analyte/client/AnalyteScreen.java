@@ -51,16 +51,15 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
+import org.openelis.gwt.widget.Item;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.Window;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.AnalyteMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
@@ -70,7 +69,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class AnalyteScreen extends Screen {
@@ -79,10 +77,10 @@ public class AnalyteScreen extends Screen {
 
     private TextBox               name, externalId;
     private CheckBox              isActive;
-    private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
+    private Button                queryButton, previousButton, nextButton, addButton, updateButton,
                                   commitButton, abortButton;
     protected MenuItem            history;
-    private AutoComplete<Integer> parent;
+    private AutoComplete          parent;
     private ButtonGroup           atoz;
     private ScreenNavigator       nav;
 
@@ -115,92 +113,98 @@ public class AnalyteScreen extends Screen {
     }
 
     private void initialize() {
-        queryButton = (AppButton)def.getWidget("query");
+        queryButton = (Button)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 query();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                queryButton.setEnabled(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                           .contains(event.getState()) &&
                                    userPermission.hasSelectPermission());
-                if (event.getState() == State.QUERY)
-                    queryButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.QUERY) {
+                    queryButton.setPressed(true);
+                    queryButton.lock();
+                }
             }
         });
 
-        previousButton = (AppButton)def.getWidget("previous");
+        previousButton = (Button)def.getWidget("previous");
         addScreenHandler(previousButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 previous();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                previousButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
-        nextButton = (AppButton)def.getWidget("next");
+        nextButton = (Button)def.getWidget("next");
         addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 next();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                nextButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                nextButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
-        addButton = (AppButton)def.getWidget("add");
+        addButton = (Button)def.getWidget("add");
         addScreenHandler(addButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 add();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                addButton.setEnabled(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                         .contains(event.getState()) &&
                                  userPermission.hasAddPermission());
-                if (event.getState() == State.ADD)
-                    addButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.ADD) {
+                    addButton.setPressed(true);
+                    addButton.lock();
+                }
             }
         });
 
-        updateButton = (AppButton)def.getWidget("update");
+        updateButton = (Button)def.getWidget("update");
         addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 update();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
+                updateButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
                                     userPermission.hasUpdatePermission());
-                if (event.getState() == State.UPDATE)
-                    updateButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.UPDATE) {
+                    updateButton.setPressed(true);
+                    updateButton.lock();
+                }
             }
         });
 
-        commitButton = (AppButton)def.getWidget("commit");
+        commitButton = (Button)def.getWidget("commit");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 commit();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                commitButton.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
                                            .contains(event.getState()));
             }
         });
 
-        abortButton = (AppButton)def.getWidget("abort");
+        abortButton = (Button)def.getWidget("abort");
         addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 abort();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                abortButton.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
                                           .contains(event.getState()));
             }
         });
@@ -212,7 +216,7 @@ public class AnalyteScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                history.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                history.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
@@ -227,25 +231,25 @@ public class AnalyteScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                name.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                name.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                    .contains(event.getState()));
                 name.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        parent = (AutoComplete<Integer>)def.getWidget(AnalyteMeta.getParentAnalyteName());
+        parent = (AutoComplete)def.getWidget(AnalyteMeta.getParentAnalyteName());
         addScreenHandler(parent, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                parent.setSelection(data.getParentAnalyteId(), data.getParentAnalyteName());
+                parent.setValue(data.getParentAnalyteId(), data.getParentAnalyteName());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 data.setParentAnalyteId(event.getValue());
-                data.setParentAnalyteName(parent.getTextBoxDisplay());
+                data.setParentAnalyteName(parent.getDisplay());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                parent.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                parent.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                      .contains(event.getState()));
                 parent.setQueryMode(event.getState() == State.QUERY);
             }
@@ -256,22 +260,26 @@ public class AnalyteScreen extends Screen {
                 QueryFieldUtil parser;
                 AnalyteDO data;
                 ArrayList<AnalyteDO> list;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e) {
+                	
+                }
 
                 try {
                     list = service.callList("fetchByName", parser.getParameter().get(0));
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
 
                     for (int i = 0; i < list.size(); i++ ) {
                         data = list.get(i);
-                        model.add(new TableDataRow(data.getId(), data.getName()));
+                        model.add(new Item<Integer>(data.getId(), data.getName()));
                     }
                     parent.showAutoMatches(model);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
@@ -287,7 +295,7 @@ public class AnalyteScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                externalId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                externalId.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                          .contains(event.getState()));
                 externalId.setQueryMode(event.getState() == State.QUERY);
             }
@@ -304,7 +312,7 @@ public class AnalyteScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isActive.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                isActive.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                        .contains(event.getState()));
                 isActive.setQueryMode(event.getState() == State.QUERY);
             }
@@ -330,7 +338,7 @@ public class AnalyteScreen extends Screen {
                         } else if (error instanceof LastPageException) {
                             window.setError(consts.get("noMoreRecordInDir"));
                         } else {
-                            Window.alert("Error: Project call query failed; " + error.getMessage());
+                            com.google.gwt.user.client.Window.alert("Error: Project call query failed; " + error.getMessage());
                             window.setError(consts.get("queryFailed"));
                         }
                     }
@@ -341,15 +349,15 @@ public class AnalyteScreen extends Screen {
                 return fetchById( (entry == null) ? null : ((IdNameVO)entry).getId());
             }
 
-            public ArrayList<TableDataRow> getModel() {
+            public ArrayList<Item<Integer>> getModel() {
                 ArrayList<IdNameVO> result;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 result = nav.getQueryResult();
-                model = new ArrayList<TableDataRow>();
+                model = new ArrayList<Item<Integer>>();
                 if (result != null) {
                     for (IdNameVO entry : result)
-                        model.add(new TableDataRow(entry.getId(), entry.getName()));
+                        model.add(new Item<Integer>(entry.getId(), entry.getName()));
                 }
                 return model;
             }
@@ -361,7 +369,7 @@ public class AnalyteScreen extends Screen {
                 boolean enable;
                 enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
                          userPermission.hasSelectPermission();
-                atoz.enable(enable);
+                atoz.setEnabled(enable);
                 nav.enable(enable);
             }
 
@@ -371,7 +379,7 @@ public class AnalyteScreen extends Screen {
 
                 field = new QueryData();
                 field.key = AnalyteMeta.getName();
-                field.query = ((AppButton)event.getSource()).action;
+                field.query = ((Button)event.getSource()).getAction();
                 field.type = QueryData.Type.STRING;
 
                 query = new Query();
@@ -380,8 +388,8 @@ public class AnalyteScreen extends Screen {
             }
         });
         
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+        window.addBeforeClosedHandler(new BeforeCloseHandler<Window>() {
+            public void onBeforeClosed(BeforeCloseEvent<Window> event) {                
                 if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
@@ -430,7 +438,7 @@ public class AnalyteScreen extends Screen {
             DataChangeEvent.fire(this);
             setFocus(name);
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
         }
         window.clearStatus();
     }
@@ -460,7 +468,7 @@ public class AnalyteScreen extends Screen {
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
-                Window.alert("commitAdd(): " + e.getMessage());
+                com.google.gwt.user.client.Window.alert("commitAdd(): " + e.getMessage());
                 window.clearStatus();
             }
         } else if (state == State.UPDATE) {
@@ -474,7 +482,7 @@ public class AnalyteScreen extends Screen {
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
-                Window.alert("commitUpdate(): " + e.getMessage());
+                com.google.gwt.user.client.Window.alert("commitUpdate(): " + e.getMessage());
                 window.clearStatus();
             }
         }
@@ -497,7 +505,7 @@ public class AnalyteScreen extends Screen {
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
             } catch (Exception e) {
-                Window.alert(e.getMessage());
+                com.google.gwt.user.client.Window.alert(e.getMessage());
                 fetchById(null);
             }
             window.setDone(consts.get("updateAborted"));
@@ -529,7 +537,7 @@ public class AnalyteScreen extends Screen {
             } catch (Exception e) {
                 fetchById(null);
                 e.printStackTrace();
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                com.google.gwt.user.client.Window.alert(consts.get("fetchFailed") + e.getMessage());
                 return false;
             }
         }

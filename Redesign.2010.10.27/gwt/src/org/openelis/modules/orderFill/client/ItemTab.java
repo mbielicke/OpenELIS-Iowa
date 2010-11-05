@@ -51,23 +51,27 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoCompleteValue;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.Item;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.Window;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.Row;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.event.RowAddedHandler;
-import org.openelis.gwt.widget.tree.TreeDataItem;
-import org.openelis.gwt.widget.tree.TreeWidget;
-import org.openelis.gwt.widget.tree.event.BeforeLeafOpenEvent;
-import org.openelis.gwt.widget.tree.event.BeforeLeafOpenHandler;
+import org.openelis.gwt.widget.tree.Node;
+import org.openelis.gwt.widget.tree.Tree;
+import org.openelis.gwt.widget.tree.event.BeforeNodeOpenEvent;
+import org.openelis.gwt.widget.tree.event.BeforeNodeOpenHandler;
+import org.openelis.gwt.widget.tree.event.NodeAddedEvent;
+import org.openelis.gwt.widget.tree.event.NodeAddedHandler;
 import org.openelis.manager.OrderFillManager;
 import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
@@ -75,25 +79,24 @@ import org.openelis.meta.OrderMeta;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Window;
 
 public class ItemTab extends Screen {
 
     private OrderManager                   manager;
     private OrderFillScreen                orderFillScreen;
-    private TreeWidget                     itemsTree;
+    private Tree                           itemsTree;
     private Dropdown<Integer>              costCenterId;
     private TextBox                        organizationAttention,
                                            organizationAddressMultipleUnit, organizationAddressStreetAddress,
                                            organizationAddressCity, organizationAddressState, organizationAddressZipCode;
-    private AutoComplete<Integer>          storageLocationName;
-    private AppButton                      removeItemButton, addItemButton;
+    private AutoComplete                   storageLocationName;
+    private Button                         removeItemButton, addItemButton;
 
     private boolean                        loaded;
     private HashMap<Integer, OrderManager> combinedMap;   
     private ScreenService                  inventoryLocationService;                 
     
-    public ItemTab(ScreenDefInt def, ScreenWindow window, OrderFillScreen orderFillScreen) {
+    public ItemTab(ScreenDefInt def, Window window, OrderFillScreen orderFillScreen) {
         inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");              
         this.orderFillScreen = orderFillScreen;
         setDefinition(def);
@@ -108,7 +111,7 @@ public class ItemTab extends Screen {
         addScreenHandler(costCenterId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 if(manager != null)
-                    costCenterId.setSelection(manager.getOrder().getCostCenterId());
+                    costCenterId.setValue(manager.getOrder().getCostCenterId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {               
@@ -116,7 +119,7 @@ public class ItemTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                costCenterId.enable(EnumSet.of(State.UPDATE).contains(event.getState()));                
+                costCenterId.setEnabled(EnumSet.of(State.UPDATE).contains(event.getState()));                
             }
         });
 
@@ -132,7 +135,7 @@ public class ItemTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationAttention.enable(EnumSet.of(State.UPDATE).contains(event.getState()));                
+                organizationAttention.setEnabled(EnumSet.of(State.UPDATE).contains(event.getState()));                
             }
         });
 
@@ -154,7 +157,7 @@ public class ItemTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationAddressMultipleUnit.enable(false);
+                organizationAddressMultipleUnit.setEnabled(false);
                 organizationAddressMultipleUnit.setQueryMode(false);
             }
         });
@@ -178,7 +181,7 @@ public class ItemTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationAddressStreetAddress.enable(false);
+                organizationAddressStreetAddress.setEnabled(false);
                 organizationAddressStreetAddress.setQueryMode(false);
             }
         });
@@ -202,7 +205,7 @@ public class ItemTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationAddressCity.enable(false);
+                organizationAddressCity.setEnabled(false);
                 organizationAddressCity.setQueryMode(false);
             }
         });
@@ -226,7 +229,7 @@ public class ItemTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationAddressState.enable(false);
+                organizationAddressState.setEnabled(false);
                 organizationAddressState.setQueryMode(false);
             }
         });
@@ -250,18 +253,18 @@ public class ItemTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationAddressZipCode.enable(false);
+                organizationAddressZipCode.setEnabled(false);
                 organizationAddressZipCode.setQueryMode(false);
             }            
         });
         
-        itemsTree = (TreeWidget)def.getWidget("itemsTree");
+        itemsTree = (Tree)def.getWidget("itemsTree");
         addScreenHandler(itemsTree, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 boolean present;
                 
                 itemsTree.finishEditing();
-                itemsTree.load(getTreeModel());                 
+                itemsTree.setRoot(getTreeModel());                 
                 if(state == State.UPDATE) {
                     //
                     // we don't allow users to add or remove items to or from 
@@ -269,19 +272,19 @@ public class ItemTab extends Screen {
                     // to be processed  
                     //
                     present = combinedMap.containsKey(manager.getOrder().getId());                    
-                    removeItemButton.enable(present);
-                    addItemButton.enable(present);                    
+                    removeItemButton.setEnabled(present);
+                    addItemButton.setEnabled(present);                    
                 }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                itemsTree.enable(true);
+                itemsTree.setEnabled(true);
             }
         });
         
         itemsTree.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                TreeDataItem item;
+                Node item;
                 OrderItemViewDO data;
                 OrderManager man;
                 int c;
@@ -291,11 +294,11 @@ public class ItemTab extends Screen {
                     return;
                 }
                 
-                item = itemsTree.getSelection();
+                item = itemsTree.getNodeAt(itemsTree.getSelectedNode());
                 c = event.getCol();
                 
-                if("top".equals(item.leafType)) {
-                    data = (OrderItemViewDO)item.key;
+                if("top".equals(item.getType())) {
+                    data = (OrderItemViewDO)item.getData();
                     if(combinedMap == null) {                     
                         event.cancel();
                     } else { 
@@ -311,35 +314,35 @@ public class ItemTab extends Screen {
         
         itemsTree.addCellEditedHandler(new CellEditedHandler(){
             public void onCellUpdated(CellEditedEvent event) {                
-                TableDataRow row;
+                AutoCompleteValue row;
                 InventoryLocationViewDO loc;
                 InventoryXUseViewDO fill;
                 OrderItemViewDO item;
-                TreeDataItem child, parent;
+                Node child, parent;
                 Integer qty;
                 int r, c;
 
                 c = event.getCol();
-                r = itemsTree.getSelectedRow();
-                child = itemsTree.getRow(event.getRow());
+                r = itemsTree.getSelectedNode();
+                child = itemsTree.getNodeAt(event.getRow());
                 
-                if ("orderItem".equals(child.leafType)) {                    
-                    fill = (InventoryXUseViewDO)child.data;
-                    parent = child.parent;
-                    item = (OrderItemViewDO)parent.key;
+                if ("orderItem".equals(child.getType())) {                    
+                    fill = (InventoryXUseViewDO)child.getData();
+                    parent = child.getParent();
+                    item = (OrderItemViewDO)parent.getData();
 
                     if (c == 1) {
-                        qty = (Integer)child.cells.get(1).getValue();
+                        qty = (Integer)child.getCell(1);
                         fill.setQuantity(qty);                        
                         validateLocationRow(child, r);                        
                         
-                        itemsTree.refreshRow(child);
+                        //itemsTree.refreshRow(child);
                     } else {
-                        row = (TableDataRow)child.cells.get(3).getValue();
+                        row = (AutoCompleteValue)child.getCell(3);
                         if (row != null) {
-                            loc = (InventoryLocationViewDO)row.data;
-                            child.cells.get(4).setValue(loc.getLotNumber());
-                            child.cells.get(5).setValue(loc.getExpirationDate());
+                            loc = (InventoryLocationViewDO)row.getData();
+                            child.setCell(4,loc.getLotNumber());
+                            child.setCell(5,loc.getExpirationDate());
                             fill.setInventoryItemId(item.getInventoryItemId());
                             fill.setStorageLocationId(loc.getStorageLocationId());
                             fill.setStorageLocationName(loc.getStorageLocationName());
@@ -347,8 +350,8 @@ public class ItemTab extends Screen {
                             fill.setInventoryLocationLotNumber(loc.getLotNumber());
                             fill.setInventoryLocationQuantityOnhand(loc.getQuantityOnhand());                            
                         } else {
-                            child.cells.get(4).setValue(null);
-                            child.cells.get(5).setValue(null);
+                            child.setCell(4,null);
+                            child.setCell(5,null);
                             fill.setInventoryItemId(null);
                             fill.setStorageLocationId(null);
                             fill.setStorageLocationName(null);
@@ -358,41 +361,41 @@ public class ItemTab extends Screen {
                         }
                         
                         validateLocationRow(child, r);                        
-                        itemsTree.refreshRow(child);
+                        //itemsTree.refreshRow(child);
                     }
                 } else if (c == 1) {
-                    qty = (Integer)child.cells.get(1).getValue();
-                    item = (OrderItemViewDO)child.key;
+                    qty = (Integer)child.getCell(1);
+                    item = (OrderItemViewDO)child.getData();
                     item.setQuantity(qty);
                     validateItemRow(child, r);
-                    itemsTree.refreshRow(child);
+                    //itemsTree.refreshRow(child);
                 }
             }            
         });
         
-        itemsTree.addBeforeLeafOpenHandler(new BeforeLeafOpenHandler() {
-            public void onBeforeLeafOpen(BeforeLeafOpenEvent event) {
-                TreeDataItem item;
+        itemsTree.addBeforeNodeOpenHandler(new BeforeNodeOpenHandler() {
+            public void onBeforeNodeOpen(BeforeNodeOpenEvent event) {
+                Node item;
                 
-                item = event.getItem();         
+                item = event.getNode();         
                 
-                if("top".equals(item.leafType) && item.data == null) 
+                if("top".equals(item.getType()) && item.getData() == null) 
                     loadChildItems(item);                                                           
             }            
         });      
         
-        itemsTree.addRowAddedHandler(new RowAddedHandler() {
-            public void onRowAdded(RowAddedEvent event) {
+        itemsTree.addNodeAddedHandler(new NodeAddedHandler() {
+            public void onNodeAdded(NodeAddedEvent event) {
                 OrderManager man;
                 OrderItemViewDO item;
                 InventoryXUseViewDO fill;
                 OrderFillManager fills;
-                TreeDataItem row, parent;
+                Node row, parent;
                 Integer sum, quantity, difference;
                 
-                row = (TreeDataItem)event.getRow();
-                parent = row.parent;
-                item = (OrderItemViewDO)parent.key;                
+                row = event.getNode();
+                parent = row.getParent();
+                item = (OrderItemViewDO)parent.getData();                
                 man = combinedMap.get(item.getOrderId());
                 
                 try {
@@ -413,28 +416,28 @@ public class ItemTab extends Screen {
                     fill.setOrderItemId(item.getId());
                     fill.setOrderItemOrderId(item.getOrderId());
                     
-                    row.data = fill;        
+                    row.setData(fill);        
                     
-                    row.cells.get(1).setValue(difference);
-                    parent.cells.get(1).clearExceptions();
-                    itemsTree.refreshRow(row);
-                    itemsTree.refreshRow(parent);                                                       
+                    row.setCell(1,difference);
+                    itemsTree.clearExceptions(parent, 1);
+                    //itemsTree.refreshRow(row);
+                    //itemsTree.refreshRow(parent);                                                       
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Window.alert(e.toString());
+                    com.google.gwt.user.client.Window.alert(e.toString());
                 }
             }            
         });
         
-        storageLocationName = (AutoComplete<Integer>)itemsTree.getColumns().get("orderItem").get(3).getColumnWidget();
+        storageLocationName = (AutoComplete)itemsTree.getNodeDefinitionAt("orderItem",3).getCellEditor().getWidget();
         storageLocationName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
-                TableDataRow row;
-                TreeDataItem item;
+                Item<Integer> row;
+                Node item;
                 InventoryLocationViewDO data;
                 ArrayList<InventoryLocationViewDO> list;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
                 ArrayList<QueryData> fields;
                 Query query;
                 QueryData field;
@@ -443,14 +446,18 @@ public class ItemTab extends Screen {
                 fields = new ArrayList<QueryData>();
                 query = new Query();
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());               
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e) {
+                	
+                }
                                 
                 field = new QueryData();
                 field.query = parser.getParameter().get(0);
                 fields.add(field);
                 
-                item = itemsTree.getSelection();
-                key = (OrderItemViewDO)item.parent.key;
+                item = itemsTree.getNodeAt(itemsTree.getSelectedNode());
+                key = (OrderItemViewDO)item.getParent().getData();
                 
                 field = new QueryData();
                 field.query = Integer.toString(key.getInventoryItemId());
@@ -462,20 +469,20 @@ public class ItemTab extends Screen {
                 try {
                     
                     list = inventoryLocationService.callList("fetchByLocationNameInventoryItemId", query);
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new TableDataRow(4);
+                        row = new Item<Integer>(4);
                         data = list.get(i);
 
-                        row.key = data.getId();
-                        row.cells.get(0).setValue(data.getStorageLocationName() +", "+ 
+                        row.setKey(data.getId());
+                        row.setCell(0,data.getStorageLocationName() +", "+ 
                                                   data.getStorageLocationUnitDescription()+" "+
                                                   data.getStorageLocationLocation());
-                        row.cells.get(1).setValue(data.getLotNumber());
-                        row.cells.get(2).setValue(data.getQuantityOnhand());
-                        row.cells.get(3).setValue(data.getExpirationDate());
+                        row.setCell(1,data.getLotNumber());
+                        row.setCell(2,data.getQuantityOnhand());
+                        row.setCell(3,data.getExpirationDate());
                                                 
-                        row.data = data;
+                        row.setData(data);
                         
                         model.add(row);
                     }
@@ -483,116 +490,116 @@ public class ItemTab extends Screen {
                     storageLocationName.showAutoMatches(model);
                 } catch (Throwable e) {
                     e.printStackTrace();
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
                 window.clearStatus();
                 
             }            
         });
         
-        removeItemButton = (AppButton)def.getWidget("removeItemButton");
+        removeItemButton = (Button)def.getWidget("removeItemButton");
         addScreenHandler(removeItemButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                TreeDataItem item, parent;
+                Node item, parent;
                 InventoryXUseViewDO data;     
                 OrderManager man;
                 OrderFillManager fills;
                 
-                item = itemsTree.getSelection();
+                item = itemsTree.getNodeAt(itemsTree.getSelectedNode());
                 
                 if(item == null) 
                     return;
                 
-                if("top".equals(item.leafType)) {                    
+                if("top".equals(item.getType())) {                    
                     window.setStatus(consts.get("qtyAdjustedItemNotRemoved"), "");
                 } else {
-                    data = (InventoryXUseViewDO)item.data;
+                    data = (InventoryXUseViewDO)item.getData();
                     man = combinedMap.get(data.getOrderItemOrderId());
-                    itemsTree.deleteRow(item);
+                    itemsTree.removeNode(item);
                     try {
                         fills = man.getFills();
                         fills.removeFill(data);
                     } catch (Throwable e) {
                         e.printStackTrace();
-                        Window.alert(e.getMessage());
+                        com.google.gwt.user.client.Window.alert(e.getMessage());
                     }
-                    parent = item.parent;
+                    parent = item.getParent();
                     validateItemRow(parent,-1); 
-                    if(parent.getItems().size() > 0) 
-                        parent.checkForChildren(false);
+                    if(parent.getChildCount() > 0) 
+                        parent.setDeferLoadingUntilExpand(false);
                     
-                    itemsTree.refreshRow(parent);
+                    //itemsTree.refreshRow(parent);
                 }                                
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeItemButton.enable(false);
+                removeItemButton.setEnabled(false);
             }
         });
 
-        addItemButton = (AppButton)def.getWidget("addItemButton");
+        addItemButton = (Button)def.getWidget("addItemButton");
         addScreenHandler(addItemButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                TreeDataItem item, child, parent;
+                Node item, child, parent;
                 OrderItemViewDO data;
                 InventoryItemDO invItem;
                 int row;
                                 
-                item = itemsTree.getSelection();
+                item = itemsTree.getNodeAt(itemsTree.getSelectedNode());
                 invItem = null;
                 
                 if(item == null) 
                     return;           
                 
                 itemsTree.finishEditing();
-                if("top".equals(item.leafType)) {
-                    data = (OrderItemViewDO)item.key;                  
+                if("top".equals(item.getType())) {
+                    data = (OrderItemViewDO)item.getData();                  
                     try {
                         invItem = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());
                     } catch (Exception e) {
-                        Window.alert(e.getMessage());
+                        com.google.gwt.user.client.Window.alert(e.getMessage());
                         e.printStackTrace();
                     }
-                    if(!item.open)
+                    if(!item.isOpen())
                         itemsTree.toggle(item);
                     
                     if (invItem != null && "Y".equals(invItem.getIsNotInventoried())) {
-                        Window.alert(consts.get("itemFlagDontInvCantBeFilled"));
+                        com.google.gwt.user.client.Window.alert(consts.get("itemFlagDontInvCantBeFilled"));
                         return;
                     }
                                                             
-                    child = createAndAddChildToParent((OrderItemViewDO)item.key, item);                    
-                    itemsTree.select(child);    
-                    row = itemsTree.getSelectedRow();
+                    child = createAndAddChildToParent((OrderItemViewDO)item.getData(), item);                    
+                    itemsTree.selectNodeAt(child);    
+                    row = itemsTree.getSelectedNode();
                     validateLocationRow(child, row);
                     itemsTree.startEditing(row, 3);        
                 } else {
-                    parent = item.parent;
-                    child  = createAndAddChildToParent((OrderItemViewDO)parent.key, parent);
-                    itemsTree.select(child);
-                    row = itemsTree.getSelectedRow();
+                    parent = item.getParent();
+                    child  = createAndAddChildToParent((OrderItemViewDO)parent.getData(), parent);
+                    itemsTree.selectNodeAt(child);
+                    row = itemsTree.getSelectedNode();
                     validateLocationRow(child, row);
                     itemsTree.startEditing(row, 3);                    
                 }                                               
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addItemButton.enable(false);
+                addItemButton.setEnabled(false);
             }
         });
     }
         
     private void initializeDropdowns() {
-        ArrayList<TableDataRow> model;
+        ArrayList<Item<Integer>> model;
         ArrayList<DictionaryDO> list;
-        TableDataRow row;
+        Item<Integer> row;
         
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
         list = DictionaryCache.getListByCategorySystemName("cost_centers"); 
         for (DictionaryDO d : list) {
-            row = new TableDataRow(d.getId(), d.getEntry());
-            row.enabled = ("Y".equals(d.getIsActive()));
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
         
@@ -613,8 +620,8 @@ public class ItemTab extends Screen {
     }
     
     public boolean validate() {
-        TreeDataItem parent, child;
-        ArrayList<TreeDataItem> model, items;
+        Node parent, child, model;
+        ArrayList<Node> items;
         OrderItemViewDO item;
         InventoryItemDO invItem;
         Integer quantity;
@@ -626,39 +633,39 @@ public class ItemTab extends Screen {
         
         if (combinedMap != null && combinedMap.get(manager.getOrder().getId()) != null) {
             itemsTree.finishEditing();
-            model = itemsTree.getData();
+            model = itemsTree.getRoot();
                         
-            for (i = 0; i < model.size(); i++ ) {
-                parent = model.get(i);
-                item = (OrderItemViewDO)parent.key;
+            for (i = 0; i < model.getChildCount(); i++ ) {
+                parent = model.getChildAt(i);
+                item = (OrderItemViewDO)parent.getData();
                 try {
                     invItem = InventoryItemCache.getActiveInventoryItemFromId(item.getInventoryItemId());
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                     e.printStackTrace();
                 }
                 
                 if (invItem != null && "Y".equals(invItem.getIsNotInventoried())) 
                     continue;
                 
-                if ( !parent.open)
+                if ( !parent.isOpen())
                     itemsTree.toggle(parent);
 
-                items = parent.getItems();                                
+                items = parent.children();                                
                 quantity = item.getQuantity();
 
                 if (items != null && items.size() > 0) {
                     for (int j = 0; j < items.size(); j++ ) {
                         child = items.get(j);
                         if ( !validateLocationRow(child, -1)) {
-                            itemsTree.refreshRow(child);
-                            itemsTree.refreshRow(parent);
+                            //itemsTree.refreshRow(child);
+                            //itemsTree.refreshRow(parent);
                             validate = false;
                         }
                     }
                 } else if ( (quantity == null) || (quantity != null && quantity > 0)) {
-                    parent.cells.get(1).addException(new LocalizedException("sumOfQtyLessThanQtyOrderedException"));
-                    itemsTree.refreshRow(parent);
+                	itemsTree.addException(parent, 1, new LocalizedException("sumOfQtyLessThanQtyOrderedException"));
+                    //itemsTree.refreshRow(parent);
                     validate = false;
                 }
             }
@@ -666,9 +673,8 @@ public class ItemTab extends Screen {
         return validate;
     }
     
-    private ArrayList<TreeDataItem> getTreeModel() {
-        ArrayList<TreeDataItem> model;
-        TreeDataItem item;
+    private Node getTreeModel() {
+        Node model,item;
         OrderManager man;
         OrderItemManager itemMan;        
         OrderItemViewDO data, key;
@@ -679,15 +685,15 @@ public class ItemTab extends Screen {
         int count, i, j;        
         
         if(combinedMap == null)
-            return new ArrayList<TreeDataItem>();
+            return new Node();
         
         man = combinedMap.get(manager.getOrder().getId());
-        model = new ArrayList<TreeDataItem>();
+        model = new Node();
         
         try {            
             if(man == null) {                    
-                organizationAttention.enable(false);
-                costCenterId.enable(false);
+                organizationAttention.setEnabled(false);
+                costCenterId.setEnabled(false);
                 
                 itemMan = manager.getItems();
                 count = itemMan.count();                
@@ -705,8 +711,8 @@ public class ItemTab extends Screen {
             // widgets, because only then the record represented by "manager" will             
             // have been locked 
             //
-            organizationAttention.enable(true);
-            costCenterId.enable(true);
+            organizationAttention.setEnabled(true);
+            costCenterId.setEnabled(true);
             
             set = combinedMap.keySet();
             iter = set.iterator();
@@ -719,11 +725,11 @@ public class ItemTab extends Screen {
                 itemMan = man.getItems();
                 count = itemMan.count();                
 
-                for (j = 0; j < model.size(); j++ ) {
-                    item = model.get(j);
+                for (j = 0; j < model.getChildCount(); j++ ) {
+                    item = model.getChildAt(j);
                     for (i = 0; i < count; i++ ) {
                         data = itemMan.getItemAt(i);
-                        key = (OrderItemViewDO)item.key;
+                        key = (OrderItemViewDO)item.getData();
                         if (data.getId().equals(key.getId()))
                             itemPresentMap.put(data.getId(), true);
                     }
@@ -739,17 +745,17 @@ public class ItemTab extends Screen {
             } 
         } catch (Exception e) {
             e.printStackTrace();
-            Window.alert(e.toString());
+            com.google.gwt.user.client.Window.alert(e.toString());
         }
 
         return model;
     }    
     
-    private void loadChildItems(TreeDataItem item) {  
+    private void loadChildItems(Node item) {  
         OrderFillManager fills;       
         InventoryXUseViewDO fill;
         ArrayList<InventoryXUseViewDO> list;       
-        TreeDataItem child;
+        Node child;
         OrderManager man;
         OrderItemViewDO data;
         
@@ -757,7 +763,7 @@ public class ItemTab extends Screen {
         
         window.setBusy();        
         try {
-            data = (OrderItemViewDO)item.key;            
+            data = (OrderItemViewDO)item.getData();            
             man = combinedMap.get(data.getOrderId());
             
             if(man == null)
@@ -768,17 +774,17 @@ public class ItemTab extends Screen {
             for (int i = 0; i < fills.count(); i++ ) {
                 fill = fills.getFillAt(i);
                 if(fill.getOrderItemId().equals(data.getId())) {
-                    child = new TreeDataItem(6);                
-                    child.leafType = "orderItem";
-                    child.cells.get(1).setValue(fill.getQuantity());
-                    child.cells.get(3).setValue(new TableDataRow(fill.getStorageLocationId(),
+                    child = new Node(6);                
+                    child.setType("orderItem");
+                    child.setCell(1,fill.getQuantity());
+                    child.setCell(3,new AutoCompleteValue(fill.getStorageLocationId(),
                                                                  fill.getStorageLocationName()));
-                    child.cells.get(4).setValue(fill.getInventoryLocationLotNumber());
-                    child.cells.get(5).setValue(fill.getInventoryLocationExpirationDate());
-                    child.checkForChildren(false);
+                    child.setCell(4,fill.getInventoryLocationLotNumber());
+                    child.setCell(5,fill.getInventoryLocationExpirationDate());
+                    child.setDeferLoadingUntilExpand(false);
     
-                    child.data = fill;
-                    item.addItem(child);   
+                    child.setData(fill);
+                    item.add(child);   
                     list.add(fill);
                 }
             }                                  
@@ -786,39 +792,39 @@ public class ItemTab extends Screen {
             // ignore       
         } catch (Throwable e) {
             e.printStackTrace();
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
         }
         
         window.clearStatus(); 
                 
-        item.checkForChildren(false);
+        item.setDeferLoadingUntilExpand(false);
         
-        item.data = list;                      
+        item.setData(list);                      
     }
     
-    private TreeDataItem getTopLevelItem(OrderItemViewDO data) {
-        TreeDataItem item;
+    private Node getTopLevelItem(OrderItemViewDO data) {
+        Node item;
         
-        item = new TreeDataItem(3);
-        item.leafType = "top";
-        item.close();
-        item.key = data;
-        item.cells.get(0).setValue(data.getOrderId());
-        item.cells.get(1).setValue(data.getQuantity());        
-        item.cells.get(2).setValue(new TableDataRow(data.getInventoryItemId(),
+        item = new Node(3);
+        item.setType("top");
+        item.setOpen(false);
+        item.setData(data);
+        item.setCell(0,data.getOrderId());
+        item.setCell(1,data.getQuantity());        
+        item.setCell(2,new AutoCompleteValue(data.getInventoryItemId(),
                                                     data.getInventoryItemName()));
 
-        item.checkForChildren(true);        
+        item.setDeferLoadingUntilExpand(true);        
         
         return item;
     }    
     
-    private TreeDataItem createAndAddChildToParent(OrderItemViewDO data, TreeDataItem parent) {
-        TreeDataItem child;
+    private Node createAndAddChildToParent(OrderItemViewDO data, Node parent) {
+        Node child;
         
-        child = new TreeDataItem(6);
-        child.leafType = "orderItem";
-        itemsTree.addChildItem(parent, child);
+        child = new Node(6);
+        child.setType("orderItem");
+        itemsTree.addNodeAt(parent, child);
         return child;
     }
     
@@ -826,17 +832,17 @@ public class ItemTab extends Screen {
      * This method calculates the sum of the quantities specified in the
      * inventory-x-use records associated with an order item
      */
-    private int getSumOfFillQuantityForItem(TreeDataItem parent) {
-        ArrayList<TreeDataItem> items;
+    private int getSumOfFillQuantityForItem(Node parent) {
+        ArrayList<Node> items;
         InventoryXUseViewDO data;
-        TreeDataItem child;
+        Node child;
         int i, count, sum;
         Integer quantity;
         
         sum = 0;
         
         try {
-            items = parent.getItems();
+            items = parent.children();
             if(items == null)
                 return sum;
             
@@ -844,7 +850,7 @@ public class ItemTab extends Screen {
             
             for(i = 0; i < count; i++) {
                 child = items.get(i);
-                data = (InventoryXUseViewDO)child.data;
+                data = (InventoryXUseViewDO)child.getData();
                 if(data != null) {
                     quantity = data.getQuantity();
                     if(quantity != null)
@@ -853,13 +859,13 @@ public class ItemTab extends Screen {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
         }
          
         return sum;
     }
     
-    private boolean validateItemRow(TreeDataItem item, int r) {
+    private boolean validateItemRow(Node item, int r) {
         int sum;
         boolean valid;
         Integer qty;
@@ -867,23 +873,23 @@ public class ItemTab extends Screen {
         InventoryItemDO invItem;
         
         invItem = null;
-        data = (OrderItemViewDO)item.key;
+        data = (OrderItemViewDO)item.getData();
         try {
             invItem = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             e.printStackTrace();
         }
         qty = data.getQuantity();
         
-        item.cells.get(1).clearExceptions();
+        itemsTree.clearExceptions(item, 1);
         
         if (invItem != null && "Y".equals(invItem.getIsNotInventoried())) {
             if (qty == null || qty < 0) {
                 if (r > -1)
-                    itemsTree.setCellException(r,1, new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
+                    itemsTree.addException(r,1, new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
                 else
-                    item.cells.get(1).addException(new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));         
+                	itemsTree.addException(item,1,new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));         
                 return false;
             }      
             return true;
@@ -894,65 +900,65 @@ public class ItemTab extends Screen {
                         
         if (qty == null || sum > qty) {    
             if(r > -1)
-                itemsTree.setCellException(r,1, new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
+                itemsTree.addException(r,1, new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
             else 
-                item.cells.get(1).addException(new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
+                itemsTree.addException(item,1,new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
             valid = false;
         } else if(sum < qty) {
             if(r > -1)
-                itemsTree.setCellException(r,1, new LocalizedException("sumOfQtyLessThanQtyOrderedException"));
+                itemsTree.addException(r,1, new LocalizedException("sumOfQtyLessThanQtyOrderedException"));
             else
-                item.cells.get(1).addException(new LocalizedException("sumOfQtyLessThanQtyOrderedException"));
+                itemsTree.addException(item,1,new LocalizedException("sumOfQtyLessThanQtyOrderedException"));
             valid = false;
         }
         
         return valid;
     }
     
-    private boolean validateLocationRow(TreeDataItem child, int row) {
+    private boolean validateLocationRow(Node child, int row) {
         InventoryXUseViewDO fill;
         OrderItemViewDO item;
-        TreeDataItem parent;
+        Node parent;
         Integer qty, qtyOnHand, qtyOrdered, difference, invLocationId;
         int sum;
         boolean valid;
         
-        fill = (InventoryXUseViewDO)child.data;
+        fill = (InventoryXUseViewDO)child.getData();
         qtyOnHand = fill.getInventoryLocationQuantityOnhand();
-        parent = child.parent;
-        item = (OrderItemViewDO)parent.key;
+        parent = child.getParent();
+        item = (OrderItemViewDO)parent.getData();
         qtyOrdered = item.getQuantity();
         invLocationId = fill.getInventoryLocationId();
         difference = null;
         
-        qty = (Integer)child.cells.get(1).getValue();
+        qty = (Integer)child.getCell(1);
         if (qty == null) {
             if(row > -1)
-                itemsTree.setCellException(row, 1,new LocalizedException("fieldRequiredException"));
+                itemsTree.addException(row, 1,new LocalizedException("fieldRequiredException"));
             else
-                child.cells.get(1).addException(new LocalizedException("fieldRequiredException")); 
+            	itemsTree.addException(child,1,new LocalizedException("fieldRequiredException")); 
             
             return false;
         }
 
         valid = true; 
-        child.cells.get(1).clearExceptions();
+        itemsTree.clearExceptions(child, 1);
                 
         if(qty < 1) {
             if(row > -1)
-                itemsTree.setCellException(row, 1,new LocalizedException("invalidLocationQuantityException"));
+                itemsTree.addException(row, 1,new LocalizedException("invalidLocationQuantityException"));
             else
-                child.cells.get(1).addException(new LocalizedException("invalidLocationQuantityException"));  
+            	itemsTree.addException(child,1,new LocalizedException("invalidLocationQuantityException"));  
             
             valid = false;
         }
         
         if(invLocationId == null) {
             if(row > -1) {
-                itemsTree.setCellException(row,1, new LocalizedException("noLocationSelectedForRowException"));                                         
+                itemsTree.addException(row,1, new LocalizedException("noLocationSelectedForRowException"));                                         
             } else {
-                child.cells.get(1).addException(new LocalizedException("noLocationSelectedForRowException"));
-                child.cells.get(3).addException(new LocalizedException("fieldRequiredException"));
+                itemsTree.addException(child,1,new LocalizedException("noLocationSelectedForRowException"));
+                itemsTree.addException(child,3,new LocalizedException("fieldRequiredException"));
             }
             
             valid = false;
@@ -962,22 +968,22 @@ public class ItemTab extends Screen {
 
             if (difference == null || difference < 0) {  
                 if(row > -1)
-                    itemsTree.setCellException(row,1 ,new LocalizedException("qtyMoreThanQtyOnhandException"));
+                    itemsTree.addException(row,1 ,new LocalizedException("qtyMoreThanQtyOnhandException"));
                 else
-                    child.cells.get(1).addException(new LocalizedException("qtyMoreThanQtyOnhandException"));
+                    itemsTree.addException(child,1,new LocalizedException("qtyMoreThanQtyOnhandException"));
                 
                 valid = false;
             }
         }
         
         sum = getSumOfFillQuantityForItem(parent);
-        parent.cells.get(1).clearExceptions();
+        itemsTree.clearExceptions(parent, 1);
         
         if (qtyOrdered == null || sum > qtyOrdered) {
-            parent.cells.get(1).addException(new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
+            itemsTree.addException(parent,1,new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
             valid = false;
         } else if(sum < qtyOrdered) {
-            parent.cells.get(1).addException(new LocalizedException("sumOfQtyLessThanQtyOrderedException"));
+            itemsTree.addException(parent,1,new LocalizedException("sumOfQtyLessThanQtyOrderedException"));
             valid = false;
         }
                 

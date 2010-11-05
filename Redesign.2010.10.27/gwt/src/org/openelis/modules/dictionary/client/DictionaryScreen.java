@@ -358,12 +358,8 @@ public class DictionaryScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                boolean enable;
-
                 dictTable.setEnabled(true);
                 dictTable.setQueryMode(event.getState() == State.QUERY);
-
-                enable = EnumSet.of(State.ADD, State.UPDATE).contains(event.getState());
             }
         });
 
@@ -456,7 +452,28 @@ public class DictionaryScreen extends Screen {
                 }
             }
         });
-		*/
+		
+        
+        dictTable.addSortHandler(new SortHandler() {
+            public void onSort(SortEvent event) {
+                SortDirection direction;
+
+                direction = event.getDirection();
+
+                try {
+                    if (direction == SortEvent.SortDirection.ASCENDING)
+                        sort(manager.getEntries().getEntries(), true);
+                    else
+                        sort(manager.getEntries().getEntries(), false);
+
+                    DataChangeEvent.fire(screen, dictTable);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+            }
+        });
+        
+        */
 
         dictTable.enableDrag();
         dictTable.enableDrop();

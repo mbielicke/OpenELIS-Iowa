@@ -48,14 +48,15 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.AutoComplete;
-import org.openelis.gwt.widget.DateField;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.DateHelper;
+import org.openelis.gwt.widget.Item;
+import org.openelis.gwt.widget.ModalWindow;
+import org.openelis.gwt.widget.Window;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
@@ -75,23 +76,22 @@ import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.user.client.Window;
 
 public class AuxDataTab extends Screen implements GetMatchesHandler {
     private boolean                 loaded;
 
     protected AuxGroupLookupScreen  auxGroupScreen;
-    protected TableWidget           auxValsTable;
-    protected AppButton             addAuxButton, removeAuxButton;
+    protected Table                 auxValsTable;
+    protected Button                addAuxButton, removeAuxButton;
     protected TextBox               auxMethod, auxUnits, auxDesc;
-    protected AutoComplete<Integer> ac, auxField;
+    protected AutoComplete          ac, auxField;
     protected Integer               alphaLowerId, alphaUpperId, alphaMixedId, timeId, numericId,
                                     dateId, dateTimeId, dictionaryId;
     protected boolean               queryFieldEntered;
     protected HasAuxDataInt         parentMan;
     protected AuxDataManager        manager;
 
-    public AuxDataTab(ScreenDefInt def, ScreenWindow window) {
+    public AuxDataTab(ScreenDefInt def, Window window) {
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.auxiliary.server.AuxiliaryService");
         setDefinition(def);
         setWindow(window);
@@ -103,16 +103,16 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
     private void initialize() {
         final AuxDataTab tab = this;
 
-        auxValsTable = (TableWidget)def.getWidget("auxValsTable");
-        ((AuxTableColumn)auxValsTable.getColumns().get(2)).setScreen(this);
-        addScreenHandler(auxValsTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        auxValsTable = (Table)def.getWidget("auxValsTable");
+        ((AuxTableColumn)auxValsTable.getColumnAt(2)).setScreen(this);
+        addScreenHandler(auxValsTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                auxValsTable.load(getTableModel());
+                auxValsTable.setModel(getTableModel());
                 queryFieldEntered = false;
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                auxValsTable.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                auxValsTable.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                            .contains(event.getState()));
                 // auxValsTable.setQueryMode(event.getState() == State.QUERY);
                 // ((HasField)auxValsTable.getColumns().get(1).colWidget).setQueryMode(false);
@@ -130,7 +130,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                 window.clearStatus();
                 
                 if (state == State.QUERY){
-                    val = auxValsTable.getObject(r, c);
+                    val = auxValsTable.getValueAt(r, c);
                     
                     if(c == 0)
                         event.cancel();
@@ -144,7 +144,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
         auxValsTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
-                TableDataRow row;
+                Row row;
                 Object val;
                 AuxDataViewDO data;
                 AuxFieldViewDO fieldDO;
@@ -153,7 +153,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
 
                 r = event.getRow();
                 c = event.getCol();
-                val = auxValsTable.getObject(r, c);
+                val = auxValsTable.getValueAt(r, c);
                 data = null;
 
                 if (state == State.QUERY){
@@ -167,7 +167,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                 try {
                     data = manager.getAuxDataAt(r);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                     return;
                 }
 
@@ -176,22 +176,22 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                         data.setIsReportable((String)val);
                         break;
                     case 2:
-                        row = auxValsTable.getRow(r);
-                        adb = (AuxDataBundle)row.data;
+                        row = auxValsTable.getRowAt(r);
+                        adb = (AuxDataBundle)row.getData();
                         rv = adb.validator;
                         fieldDO = (AuxFieldViewDO)adb.fieldDO;
                         data.setValue(getCorrectManValueByType(val, fieldDO.getTypeId()));
 
                         if (rv != null && getCorrectManValueByType(val, fieldDO.getTypeId()) != null) {
                             try {
-                                auxValsTable.clearCellExceptions(r, c);
+                                auxValsTable.clearExceptions(r, c);
                                 
                                 if(!DataBaseUtil.isEmpty(val)) 
                                     rv.validate(null, getCorrectManValueByType(val, fieldDO.getTypeId()));                                                                                                   
                             } catch (ParseException e) {
-                                auxValsTable.setCellException(r, c, e);
+                                auxValsTable.addException(r, c, e);
                             } catch (Exception e) {
-                                Window.alert(e.getMessage());
+                                com.google.gwt.user.client.Window.alert(e.getMessage());
                             }
                         }
 
@@ -200,19 +200,19 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             }
         });
 
-        auxValsTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
-            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+        auxValsTable.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+            public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
                 // always allow selection
             }
         });
 
-        auxValsTable.addSelectionHandler(new SelectionHandler<TableRow>() {
-            public void onSelection(SelectionEvent<TableRow> event) {
-                TableRow row;
+        auxValsTable.addSelectionHandler(new SelectionHandler<Integer>() {
+            public void onSelection(SelectionEvent<Integer> event) {
+                Row row;
                 AuxDataBundle bundle;
 
-                row = event.getSelectedItem();
-                bundle = (AuxDataBundle)row.row.data;
+                row = auxValsTable.getRowAt(event.getSelectedItem());
+                bundle = (AuxDataBundle)row.getData();
                 if (bundle != null) {
                     AuxFieldViewDO fieldDO = bundle.fieldDO;
 
@@ -222,26 +222,26 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                 }
 
                 if (EnumSet.of(State.ADD, State.UPDATE, State.QUERY).contains(state))
-                    removeAuxButton.enable(true);
+                    removeAuxButton.setEnabled(true);
             };
         });
 
-        auxValsTable.addUnselectionHandler(new UnselectionHandler<TableDataRow>() {
-            public void onUnselection(UnselectionEvent<TableDataRow> event) {
+        auxValsTable.addUnselectionHandler(new UnselectionHandler<Integer>() {
+            public void onUnselection(UnselectionEvent<Integer> event) {
                 auxMethod.setValue(null);
                 auxDesc.setValue(null);
                 auxUnits.setValue(null);
             }
         });
 
-        addAuxButton = (AppButton)def.getWidget("addAuxButton");
+        addAuxButton = (Button)def.getWidget("addAuxButton");
         addScreenHandler(addAuxButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 if (auxGroupScreen == null) {
                     try {
                         auxGroupScreen = new AuxGroupLookupScreen();
                     } catch (Exception e) {
-                        Window.alert(e.getMessage());
+                        com.google.gwt.user.client.Window.alert(e.getMessage());
                     }
                     auxGroupScreen.addActionHandler(new ActionHandler<AuxGroupLookupScreen.Action>() {
                         public void onAction(ActionEvent<AuxGroupLookupScreen.Action> event) {
@@ -250,35 +250,35 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                     });
                 }
 
-                ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+                ModalWindow modal = new ModalWindow();
                 modal.setName(consts.get("auxGroupSelection"));
                 modal.setContent(auxGroupScreen);
                 auxGroupScreen.draw();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addAuxButton.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                addAuxButton.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                            .contains(event.getState()));
             }
         });
 
-        removeAuxButton = (AppButton)def.getWidget("removeAuxButton");
+        removeAuxButton = (Button)def.getWidget("removeAuxButton");
         addScreenHandler(removeAuxButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 if (auxValsTable.getSelectedRow() == -1)
                     return;
 
-                if (Window.confirm(consts.get("removeAuxMessage")))
+                if (com.google.gwt.user.client.Window.confirm(consts.get("removeAuxMessage")))
                     manager.removeAuxDataGroupAt(auxValsTable.getSelectedRow());
 
-                removeAuxButton.enable(false);
+                removeAuxButton.setEnabled(false);
 
                 // reload the tab
                 DataChangeEvent.fire(tab);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeAuxButton.enable(false);
+                removeAuxButton.setEnabled(false);
             }
         });
 
@@ -289,7 +289,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                auxMethod.enable(false);
+                auxMethod.setEnabled(false);
             }
         });
 
@@ -300,7 +300,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                auxUnits.enable(false);
+                auxUnits.setEnabled(false);
             }
         });
 
@@ -311,23 +311,23 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                auxDesc.enable(false);
+                auxDesc.setEnabled(false);
             }
         });
     }
 
-    private ArrayList<TableDataRow> getTableModel() {
+    private ArrayList<Row> getTableModel() {
         int i;
-        TableDataRow row;
+        Row row;
         AuxDataViewDO data;
         AuxFieldViewDO field;
         ArrayList<AuxFieldValueViewDO> values;
         AuxFieldValueViewDO val;
-        ArrayList<TableDataRow> model;
+        ArrayList<Row> model;
         AuxDataBundle adb;
         ResultValidator validatorItem;
 
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<Row>();
         if (manager == null)
             return model;
 
@@ -338,23 +338,23 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                 values = manager.getFieldsAt(i).getValuesAt(0).getValues();
                 val = values.get(0);
 
-                row = new TableDataRow(3);
-                row.cells.get(0).value = data.getIsReportable();
-                row.cells.get(1).value = field.getAnalyteName();
-                row.cells.get(2).value = getCorrectColValueByType(data.getValue(),
-                                                                  data.getDictionary(),
-                                                                  val.getTypeId());
+                row = new Row(3);
+                row.setCell(0,data.getIsReportable());
+                row.setCell(1,field.getAnalyteName());
+                row.setCell(2,getCorrectColValueByType(data.getValue(),
+                                                       data.getDictionary(),
+                                                       val.getTypeId()));
 
                 field.setTypeId(val.getTypeId());
 
                 validatorItem = getDataItemForRow(field.getTypeId(), values);
                 adb = new AuxDataBundle(validatorItem, field);
-                row.data = adb;
+                row.setData(adb);
 
                 model.add(row);
             }
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             e.printStackTrace();
         }
         return model;
@@ -366,12 +366,12 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
         ArrayList<AuxFieldValueViewDO> values;
         AuxFieldValueViewDO valueDO, defaultValue;
         AuxDataViewDO dataDO;
-        TableDataRow row;
+        Row row;
         AuxDataBundle adb;
         ResultValidator validatorItem;
 
         try {
-            auxValsTable.fireEvents(false);
+            //auxValsTable.fireEvents(false);
             for (int i = 0; i < fields.size(); i++ ) {
                 man = fields.get(i);
 
@@ -393,13 +393,15 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
 
                         manager.addAuxDataFieldsAndValues(dataDO, fieldDO, values);
 
-                        row = new TableDataRow(3);
-                        row.cells.get(0).value = fieldDO.getIsReportable();
-                        row.cells.get(1).value = fieldDO.getAnalyteName();
+                        row = new Row(3);
+                        row.setCell(0,fieldDO.getIsReportable());
+                        row.setCell(1,fieldDO.getAnalyteName());
 
                         validatorItem = getDataItemForRow(valueDO.getTypeId(), values);
                         adb = new AuxDataBundle(validatorItem, fieldDO);
-                        row.data = adb;
+                        row.setData(adb);
+                        
+                        auxValsTable.addRow(row);
 
                         if (defaultValue != null && state != State.QUERY) {
                             try {
@@ -421,33 +423,28 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                                     if (value == null)
                                         throw new Exception();
                                     else
-                                        row.cells.get(2).value = getCorrectColValueByType(
-                                                                                          value,
-                                                                                          dictionary,
-                                                                                          valueDO.getTypeId());
+                                        row.setCell(2,getCorrectColValueByType(value,
+                                                                               dictionary,
+                                                                               valueDO.getTypeId()));
 
                                 } else
-                                    row.cells.get(2).value = getCorrectColValueByType(
-                                                                                      defaultValue.getValue(),
-                                                                                      null,
-                                                                                      valueDO.getTypeId());
+                                    row.setCell(2,getCorrectColValueByType(defaultValue.getValue(),
+                                                                           null,
+                                                                           valueDO.getTypeId()));
 
                             } catch (Exception e) {
-                                row.cells.get(2)
-                                         .addException(
-                                                       new LocalizedException(
-                                                                              "illegalDefaultValueException"));
+                                auxValsTable.addException(auxValsTable.getRowCount()-1, 2,new LocalizedException("illegalDefaultValueException"));
                             }
                         }
-                        auxValsTable.addRow(row);
+                        
                     }
                 }
             }
-            auxValsTable.fireEvents(true);
+            //auxValsTable.fireEvents(true);
 
         } catch (Exception e) {
 
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
         }
     }
 
@@ -473,7 +470,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             if (dictionary == null)
                 throw new Exception();
 
-            return new TableDataRow(new Integer(value), dictionary);
+            return new Item<Integer>(new Integer(value), dictionary);
         }
 
         return null;
@@ -496,7 +493,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                         rv.addResult(af.getId(), null, Type.TIME, null, null, af.getValue());
                 }
             } catch (Exception e) {
-                Window.alert(e.getMessage());
+                com.google.gwt.user.client.Window.alert(e.getMessage());
                 return null;
             }
         } else
@@ -506,7 +503,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
     }
 
     private String getCorrectManValueByType(Object value, Integer typeId) {
-        DateField df;
+        DateHelper df;
         if (alphaLowerId.equals(typeId) || alphaUpperId.equals(typeId) ||
             alphaMixedId.equals(typeId) || timeId.equals(typeId))
             return (String)value;
@@ -515,34 +512,32 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             return ((Integer)value).toString();
 
         else if (dateId.equals(typeId)) {
-            df = new DateField();
+            df = new DateHelper();
             df.setBegin(Datetime.YEAR);
             df.setEnd(Datetime.DAY);
-            df.setFormat(consts.get("datePattern"));
-            df.setValue( ((Datetime)value));
-            return df.toString().replaceAll("-", "/");
+            df.setPattern(consts.get("datePattern"));
+            return df.format((Datetime)value).replaceAll("-", "/");
         } else if (dateTimeId.equals(typeId)) {
-            df = new DateField();
+            df = new DateHelper();
             df.setBegin(Datetime.YEAR);
             df.setEnd(Datetime.MINUTE);
-            df.setFormat(consts.get("dateTimePattern"));
-            df.setValue( ((Datetime)value));
-            return  df.toString().replaceAll("-", "/");
+            df.setPattern(consts.get("dateTimePattern"));
+            return  df.format((Datetime)value).replaceAll("-", "/");
         } else if (dictionaryId.equals(typeId))
-            return ((TableDataRow)value).key.toString();
+            return ((Item<Integer>)value).getKey().toString();
 
         return null;
     }
 
     public void onGetMatches(GetMatchesEvent event) {
-        ArrayList<TableDataRow> model;
+        ArrayList<Item<Integer>> model;
         int index;
         AuxFieldValueViewDO valDO;
         String match;
         boolean showWholeList;
 
         index = auxValsTable.getSelectedRow();
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<Item<Integer>>();
         match = event.getMatch();
 
         showWholeList = "".equals(match.trim());
@@ -556,29 +551,29 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
 
                 if (valDO.getDictionary() != null &&
                     (showWholeList || valDO.getDictionary().startsWith(match)))
-                    model.add(new TableDataRow(new Integer(valDO.getValue()), valDO.getDictionary()));
+                    model.add(new Item<Integer>(new Integer(valDO.getValue()), valDO.getDictionary()));
             }
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             return;
         }
 
-        ((AutoComplete<Integer>)event.getSource()).showAutoMatches(model);
+        ((AutoComplete)event.getSource()).showAutoMatches(model);
     }
 
     public ArrayList<QueryData> getQueryFields() {
         ArrayList<QueryData> fieldList;
-        TableDataRow row;
+        Row row;
         AuxDataBundle adb;
         QueryData field;
         
         fieldList = new ArrayList<QueryData>();
 
-        for (int i = 0; i < auxValsTable.numRows(); i++ ) {
-            row = auxValsTable.getRow(i);
-            adb = (AuxDataBundle)row.data;
+        for (int i = 0; i < auxValsTable.getRowCount(); i++ ) {
+            row = auxValsTable.getRowAt(i);
+            adb = (AuxDataBundle)row.getData();
 
-            if (row.cells.get(2).value != null) {                                
+            if (row.getCell(2) != null) {                                
                 
                 field = new QueryData();
                 field.key = SampleMeta.getAuxDataAuxFieldId();
@@ -590,7 +585,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                 field = new QueryData();
                 field.key = SampleMeta.getAuxDataValue();
                 field.type = QueryData.Type.STRING;
-                field.query = getCorrectManValueByType(row.cells.get(2).value,
+                field.query = getCorrectManValueByType(row.getCell(2),
                                                        adb.fieldDO.getTypeId());
                 fieldList.add(field);
             }
@@ -610,7 +605,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             dateTimeId = DictionaryCache.getIdFromSystemName("aux_date_time");
             dictionaryId = DictionaryCache.getIdFromSystemName("aux_dictionary");
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             window.close();
         }
     }
@@ -632,7 +627,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                 DataChangeEvent.fire(this);
 
             } catch (Exception e) {
-                Window.alert(e.getMessage());
+                com.google.gwt.user.client.Window.alert(e.getMessage());
             }
         }
     }

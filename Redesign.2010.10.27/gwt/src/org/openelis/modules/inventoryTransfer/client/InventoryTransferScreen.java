@@ -49,14 +49,15 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoCompleteValue;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.AutoComplete;
+import org.openelis.gwt.widget.Item;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.Window;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
@@ -77,7 +78,6 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
 
 public class InventoryTransferScreen extends Screen {
 
@@ -90,10 +90,10 @@ public class InventoryTransferScreen extends Screen {
                                                   inventoryLocationLotNumber, inventoryLocationExpirationDate,
                                                   toDescription, toStoreId, toDispensedUnits,
                                                   toLotNumber, toExpDate;
-    private AutoComplete<Integer>                 fromItemName, toItemName, toStorageLocationName;
-    private AppButton                             addButton, commitButton, abortButton,
+    private AutoComplete                          fromItemName, toItemName, toStorageLocationName;
+    private Button                                addButton, commitButton, abortButton,
                                                   addReceiptButton, removeReceiptButton;
-    private TableWidget                           receiptTable;
+    private Table                                 receiptTable;
     private ScreenService                         inventoryItemService, inventoryLocationService, 
                                                   storageService;    
     
@@ -103,7 +103,7 @@ public class InventoryTransferScreen extends Screen {
         InventoryTransferScreenImpl(true);
     }
     
-    public InventoryTransferScreen(ScreenWindow window) throws Exception {
+    public InventoryTransferScreen(Window window) throws Exception {
         super((ScreenDefInt)GWT.create(InventoryTransferDef.class));
         this.window = window;
 
@@ -152,44 +152,46 @@ public class InventoryTransferScreen extends Screen {
         //
         // button panel buttons
         //
-        addButton = (AppButton)def.getWidget("add");
+        addButton = (Button)def.getWidget("add");
         addScreenHandler(addButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 add(null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
+                addButton.setEnabled(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
                                      && userPermission.hasAddPermission());
-                if (event.getState() == State.ADD)
-                    addButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.ADD) {
+                    addButton.setPressed(true);
+                    addButton.lock();
+                }
             }
         });
 
-        commitButton = (AppButton)def.getWidget("commit");
+        commitButton = (Button)def.getWidget("commit");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 commit();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY,State.ADD).contains(event.getState()));
+                commitButton.setEnabled(EnumSet.of(State.QUERY,State.ADD).contains(event.getState()));
             }
         });
 
-        abortButton = (AppButton)def.getWidget("abort");
+        abortButton = (Button)def.getWidget("abort");
         addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 abort();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY,State.ADD).contains(event.getState()));
+                abortButton.setEnabled(EnumSet.of(State.QUERY,State.ADD).contains(event.getState()));
             }
         });         
 
-        receiptTable = (TableWidget)def.getWidget("receiptTable");
-        addScreenHandler(receiptTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        receiptTable = (Table)def.getWidget("receiptTable");
+        addScreenHandler(receiptTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
                 //
                 // this is done in order to prevent the table from getting refreshed
@@ -198,53 +200,53 @@ public class InventoryTransferScreen extends Screen {
                 // these is set in one of the rows in the table
                 //
                 if(reloadTable)      
-                    receiptTable.load(getTransferModel());
+                    receiptTable.setModel(getTransferModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                receiptTable.enable(true);
+                receiptTable.setEnabled(true);
                 receiptTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
         
-        fromItemName = (AutoComplete<Integer>)receiptTable.getColumnWidget("fromItemName");
-        toItemName = (AutoComplete<Integer>)receiptTable.getColumnWidget("toItemName");
-        toStorageLocationName = (AutoComplete<Integer>)receiptTable.getColumnWidget("toLoc"); 
+        fromItemName = (AutoComplete)receiptTable.getColumnWidget("fromItemName");
+        toItemName = (AutoComplete)receiptTable.getColumnWidget("toItemName");
+        toStorageLocationName = (AutoComplete)receiptTable.getColumnWidget("toLoc"); 
         
         fromItemName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 String location;
                 InventoryLocationViewDO data;
-                TableDataRow row;
+                Item<Integer> row;
                 ArrayList<InventoryLocationViewDO> list;
-                ArrayList<TableDataRow> model;                
+                ArrayList<Item<Integer>> model;                
                 DictionaryDO store;
 
                 try {
                     list = inventoryLocationService.callList("fetchByInventoryItemName", event.getMatch());
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
 
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new TableDataRow(4);
+                        row = new Item<Integer>(4);
                         data = list.get(i);
 
-                        row.key = data.getId();
+                        row.setKey(data.getId());
                         location = StorageLocationManager.getLocationForDisplay(data.getStorageLocationName(),
                                                                                 data.getStorageLocationUnitDescription(),
                                                                                 data.getStorageLocationLocation());
-                        row.cells.get(0).setValue(data.getInventoryItemName());
+                        row.setCell(0,data.getInventoryItemName());
                         store = DictionaryCache.getEntryFromId(data.getInventoryItemStoreId());
-                        row.cells.get(1).setValue(store.getEntry());
-                        row.cells.get(2).setValue(location);
-                        row.cells.get(3).setValue(data.getQuantityOnhand());
+                        row.setCell(1,store.getEntry());
+                        row.setCell(2,location);
+                        row.setCell(3,data.getQuantityOnhand());
 
-                        row.data = data;                           
+                        row.setData(data);                           
 
                         model.add(row);
                     }
                     fromItemName.showAutoMatches(model);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
@@ -254,9 +256,9 @@ public class InventoryTransferScreen extends Screen {
                 int r;
                 Integer id;
                 InventoryItemDO fromData, data;
-                TableDataRow row;
+                Item<Integer> row;
                 ArrayList<InventoryItemDO> list;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
                 DictionaryDO store, units;
                 Query query;
                 QueryData field;
@@ -270,7 +272,11 @@ public class InventoryTransferScreen extends Screen {
                 id = fromData.getId();                
                 query = new Query();
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e) {
+                	
+                }
 
                 field = new QueryData();
                 field.key = InventoryItemMeta.getName();
@@ -285,20 +291,20 @@ public class InventoryTransferScreen extends Screen {
                 query.setFields(field);
                 try {
                     list = inventoryItemService.callList("fetchActiveByNameStoreAndParentInventoryItem", query);
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
 
                     for (int i = 0; i < list.size(); i++ ) {
                         data = (InventoryItemDO) list.get(i);
                         store = DictionaryCache.getEntryFromId(data.getStoreId());
                         units = DictionaryCache.getEntryFromId(data.getDispensedUnitsId());
-                        row = new TableDataRow(data.getId(), data.getName(), 
+                        row = new Item<Integer>(data.getId(), data.getName(), 
                                                store.getEntry(), units.getEntry());
-                        row.data = data;
+                        row.setData(data);
                         model.add(row);
                     }
                     toItemName.showAutoMatches(model);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
@@ -313,8 +319,8 @@ public class InventoryTransferScreen extends Screen {
                 InventoryLocationViewDO invLoc;
                 ArrayList<StorageLocationViewDO> storLocList; 
                 StorageLocationViewDO storLoc;
-                TableDataRow row;                
-                ArrayList<TableDataRow> model;
+                Item<Integer> row;                
+                ArrayList<Item<Integer>> model;
                 QueryFieldUtil parser;
                 ArrayList<QueryData> fields;
                 Query query;
@@ -323,15 +329,19 @@ public class InventoryTransferScreen extends Screen {
                 r = receiptTable.getSelectedRow();                          
                                               
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());  
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e) {
+                	
+                }
                 param = parser.getParameter().get(0); 
                                 
                 window.setBusy();
-                model = new ArrayList<TableDataRow>();
+                model = new ArrayList<Item<Integer>>();
                 try {
                     data = manager.getToInventoryItemAt(r);
                     if(data == null) {
-                        Window.alert(consts.get("selToItem"));
+                        com.google.gwt.user.client.Window.alert(consts.get("selToItem"));
                         window.clearStatus();
                         return;
                     }
@@ -352,37 +362,37 @@ public class InventoryTransferScreen extends Screen {
                         query.setFields(fields);
                         invLocList = inventoryLocationService.callList("fetchByLocationNameInventoryItemId", query);
                         for (i = 0; i < invLocList.size(); i++ ) {
-                            row = new TableDataRow(4);
+                            row = new Item<Integer>(4);
                             invLoc = invLocList.get(i);
 
-                            row.key = invLoc.getId();
+                            row.setKey(invLoc.getId());
                             location = StorageLocationManager.getLocationForDisplay(invLoc.getStorageLocationName(),
                                                                                     invLoc.getStorageLocationUnitDescription(),
                                                                                     invLoc.getStorageLocationLocation());
-                            row.cells.get(0).setValue(location);
-                            row.cells.get(2).setValue(invLoc.getQuantityOnhand());
-                            row.cells.get(3).setValue(invLoc.getExpirationDate());
+                            row.setCell(0,location);
+                            row.setCell(2,invLoc.getQuantityOnhand());
+                            row.setCell(3,invLoc.getExpirationDate());
 
-                            row.data = invLoc;                           
+                            row.setData(invLoc);                           
 
                             model.add(row);
                         }
                     } else {
                         storLocList = storageService.callList("fetchAvailableByName", param);
                         for (i = 0; i < storLocList.size(); i++ ) {
-                            row = new TableDataRow(4);
+                            row = new Item<Integer>(4);
                             storLoc = storLocList.get(i);
-                            row.key = -1;
+                            row.setKey(-1);
                             location = StorageLocationManager.getLocationForDisplay(storLoc.getName(),
                                                                                     storLoc.getStorageUnitDescription(),
                                                                                     storLoc.getLocation());
-                            row.cells.get(0).setValue(location);
+                            row.setCell(0,location);
                             invLoc = new InventoryLocationViewDO();
                             invLoc.setStorageLocationId(storLoc.getId());
                             invLoc.setStorageLocationName(storLoc.getName());
                             invLoc.setStorageLocationUnitDescription(storLoc.getStorageUnitDescription());
                             invLoc.setStorageLocationLocation(storLoc.getLocation());
-                            row.data = invLoc;
+                            row.setData(invLoc);
 
                             model.add(row);
                         }
@@ -390,7 +400,7 @@ public class InventoryTransferScreen extends Screen {
                     toStorageLocationName.showAutoMatches(model);
                 } catch (Throwable e) {
                     e.printStackTrace();
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
                 window.clearStatus();
             }                                   
@@ -420,13 +430,13 @@ public class InventoryTransferScreen extends Screen {
                 switch(c) {
                     case 4:
                         if (fromData == null) {
-                            Window.alert(consts.get("selFromItem"));
+                            com.google.gwt.user.client.Window.alert(consts.get("selFromItem"));
                             event.cancel();                                                                       
                         }
                         break;
                     case 5:
                         if (toData == null) {
-                            Window.alert(consts.get("selToItem"));
+                            com.google.gwt.user.client.Window.alert(consts.get("selToItem"));
                             event.cancel();
                             return;                                            
                         }
@@ -435,7 +445,7 @@ public class InventoryTransferScreen extends Screen {
                         break;
                     case 6:
                         if (toData == null) {
-                            Window.alert(consts.get("selToItem")); 
+                            com.google.gwt.user.client.Window.alert(consts.get("selToItem")); 
                             event.cancel();                                            
                         }                        
                         break;                   
@@ -447,36 +457,36 @@ public class InventoryTransferScreen extends Screen {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 String location;
-                TableDataRow row;
+                AutoCompleteValue av;
                 InventoryLocationViewDO data, tempData;
                 Object val;
 
                 r = event.getRow();
                 c = event.getCol();
-                val = receiptTable.getObject(r,c);
+                val = receiptTable.getValueAt(r,c);
                 
                 switch(c){
                     case 0:
-                        row = (TableDataRow)val;
-                        if (row != null) {      
-                            data = (InventoryLocationViewDO)row.data;
+                        av = (AutoCompleteValue)val;
+                        if (av != null) {      
+                            data = (InventoryLocationViewDO)av.getData();
                             try {
                                 manager.setFromInventoryItemAt(InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId()), r);
                             } catch (Exception e) {
-                                Window.alert(e.getMessage());
+                                com.google.gwt.user.client.Window.alert(e.getMessage());
                                 e.printStackTrace();
                             }
                             manager.setFromInventoryLocationAt(data, r);                                                  
                             location = StorageLocationManager.getLocationForDisplay(data.getStorageLocationName(),
                                                                                     data.getStorageLocationUnitDescription(),
                                                                                     data.getStorageLocationLocation());
-                            receiptTable.setCell(r, 1, location);
-                            receiptTable.setCell(r, 2, data.getQuantityOnhand());
+                            receiptTable.setValueAt(r, 1, location);
+                            receiptTable.setValueAt(r, 2, data.getQuantityOnhand());
                             //
                             // we clear field required exceptions from the 2nd
                             // column because it can't be edited 
                             //
-                            receiptTable.clearCellExceptions(r, 1);
+                            receiptTable.clearExceptions(r, 1);
                             
                             tempData = manager.getToInventoryLocationAt(r);     
                             if (tempData != null) {
@@ -485,8 +495,8 @@ public class InventoryTransferScreen extends Screen {
                             }
                         } else { 
                             manager.setFromInventoryItemAt(null, r);
-                            receiptTable.setCell(r, 1, null);
-                            receiptTable.setCell(r, 2, null);
+                            receiptTable.setValueAt(r, 1, null);
+                            receiptTable.setValueAt(r, 2, null);
                         }
                         reloadTable = false;
                         //
@@ -499,12 +509,12 @@ public class InventoryTransferScreen extends Screen {
                         manager.setQuantityAt((Integer)val, r);
                         break;                        
                     case 4:
-                        row = (TableDataRow)val;
-                        if (row != null) 
-                            manager.setToInventoryItemAt((InventoryItemDO)row.data, r);
+                        av = (AutoCompleteValue)val;
+                        if (av != null) 
+                            manager.setToInventoryItemAt((InventoryItemDO)av.getData(), r);
                         else 
                             manager.setToInventoryItemAt(null, r);
-                        receiptTable.setCell(r, 5, "N");
+                        receiptTable.setValueAt(r, 5, "N");
                         reloadTable = false;
                         //
                         // this is done in order to refresh the data in all the 
@@ -516,9 +526,9 @@ public class InventoryTransferScreen extends Screen {
                         manager.setAddtoExistingAt((String)val,r);
                         break;
                     case 6:
-                        row = (TableDataRow)val;
-                        if (row != null) {
-                            data = (InventoryLocationViewDO)row.data;
+                        av = (AutoCompleteValue)val;
+                        if (av != null) {
+                            data = (InventoryLocationViewDO)av.getData();
                             tempData =  manager.getFromInventoryLocationAt(r);
                             if (tempData != null) {
                                 data.setLotNumber(tempData.getLotNumber());
@@ -552,35 +562,35 @@ public class InventoryTransferScreen extends Screen {
             }
         });
         
-        addReceiptButton = (AppButton)def.getWidget("addReceiptButton");
+        addReceiptButton = (Button)def.getWidget("addReceiptButton");
         addScreenHandler(addReceiptButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int n;  
                 
                 receiptTable.addRow();                
-                n = receiptTable.numRows() - 1;
-                receiptTable.selectRow(n);
-                receiptTable.scrollToSelection();
+                n = receiptTable.getRowCount() - 1;
+                receiptTable.selectRowAt(n);
+                receiptTable.scrollToVisible(n);
                 receiptTable.startEditing(n, 0);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addReceiptButton.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                addReceiptButton.setEnabled(EnumSet.of(State.ADD).contains(event.getState()));
             }
         });
 
-        removeReceiptButton = (AppButton)def.getWidget("removeReceiptButton");
+        removeReceiptButton = (Button)def.getWidget("removeReceiptButton");
         addScreenHandler(removeReceiptButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int r;
                 
                 r = receiptTable.getSelectedRow();
-                if (r > -1 && receiptTable.numRows() > 0) 
-                    receiptTable.deleteRow(r);
+                if (r > -1 && receiptTable.getRowCount() > 0) 
+                    receiptTable.removeRowAt(r);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeReceiptButton.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                removeReceiptButton.setEnabled(EnumSet.of(State.ADD).contains(event.getState()));
             }
         });
 
@@ -608,7 +618,7 @@ public class InventoryTransferScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                inventoryItemDescription.enable(false);
+                inventoryItemDescription.setEnabled(false);
             }
         });
 
@@ -634,7 +644,7 @@ public class InventoryTransferScreen extends Screen {
                         inventoryItemStoreId.setValue(null);
                     }
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                     e.printStackTrace();
                 }
             }
@@ -644,7 +654,7 @@ public class InventoryTransferScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                inventoryItemStoreId.enable(false);
+                inventoryItemStoreId.setEnabled(false);
             }
         });
 
@@ -670,7 +680,7 @@ public class InventoryTransferScreen extends Screen {
                         inventoryItemDispensedUnitsId.setValue(null);
                     }
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                     e.printStackTrace();
                 }
             }
@@ -680,7 +690,7 @@ public class InventoryTransferScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                inventoryItemDispensedUnitsId.enable(false);
+                inventoryItemDispensedUnitsId.setEnabled(false);
             }
         });
 
@@ -708,7 +718,7 @@ public class InventoryTransferScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                inventoryLocationLotNumber.enable(false);
+                inventoryLocationLotNumber.setEnabled(false);
             }
         });
 
@@ -736,7 +746,7 @@ public class InventoryTransferScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                inventoryLocationExpirationDate.enable(false);
+                inventoryLocationExpirationDate.setEnabled(false);
             }
         });
 
@@ -764,7 +774,7 @@ public class InventoryTransferScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                toDescription.enable(false);
+                toDescription.setEnabled(false);
             }
         });
 
@@ -790,7 +800,7 @@ public class InventoryTransferScreen extends Screen {
                         toStoreId.setValue(null);
                     }
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                     e.printStackTrace();
                 }
             }
@@ -800,7 +810,7 @@ public class InventoryTransferScreen extends Screen {
             }            
 
             public void onStateChange(StateChangeEvent<State> event) {
-                toStoreId.enable(false);
+                toStoreId.setEnabled(false);
             }
         });
 
@@ -826,7 +836,7 @@ public class InventoryTransferScreen extends Screen {
                         toDispensedUnits.setValue(null);
                     }
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                     e.printStackTrace();
                 }
             }
@@ -836,7 +846,7 @@ public class InventoryTransferScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                toDispensedUnits.enable(false);
+                toDispensedUnits.setEnabled(false);
             }
         });
 
@@ -864,7 +874,7 @@ public class InventoryTransferScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                toLotNumber.enable(false);
+                toLotNumber.setEnabled(false);
             }
         });
 
@@ -892,12 +902,12 @@ public class InventoryTransferScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                toExpDate.enable(false);
+                toExpDate.setEnabled(false);
             }
         });
         
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+        window.addBeforeClosedHandler(new BeforeCloseHandler<Window>() {
+            public void onBeforeClosed(BeforeCloseEvent<Window> event) {                
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
@@ -948,7 +958,7 @@ public class InventoryTransferScreen extends Screen {
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
-                Window.alert("commitAdd(): " + e.getMessage());
+                com.google.gwt.user.client.Window.alert("commitAdd(): " + e.getMessage());
                 e.printStackTrace();
                 window.clearStatus();
             }
@@ -977,47 +987,47 @@ public class InventoryTransferScreen extends Screen {
         }        
     }    
     
-    private ArrayList<TableDataRow> getTransferModel() {
+    private ArrayList<Row> getTransferModel() {
         String location;
-        ArrayList<TableDataRow> model;
+        ArrayList<Row> model;
         InventoryItemDO fromItem, toItem;
         InventoryLocationViewDO fromLoc, toLoc;
-        TableDataRow row;
+        Row row;
         
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<Row>();
         if (manager == null)
             return model;
         
         try {
             for (int i = 0; i < manager.count(); i++) {
-                row = new TableDataRow(7);                   
+                row = new Row(7);                   
                 fromItem = manager.getFromInventoryItemAt(i);                             
                 if (fromItem != null)                    
-                    row.cells.get(0).setValue(new TableDataRow(fromItem.getId(), fromItem.getName()));
+                    row.setCell(0,new AutoCompleteValue(fromItem.getId(), fromItem.getName()));
                     
                 fromLoc = manager.getFromInventoryLocationAt(i);
                 if (fromLoc != null) {
                     location = StorageLocationManager.getLocationForDisplay(fromLoc.getStorageLocationName(),
                                                                             fromLoc.getStorageLocationUnitDescription(),
                                                                             fromLoc.getStorageLocationLocation());
-                    row.cells.get(1).setValue(location);
-                    row.cells.get(2).setValue(fromLoc.getQuantityOnhand());
+                    row.setCell(1,location);
+                    row.setCell(2,fromLoc.getQuantityOnhand());
                 }
                 
-                row.cells.get(3).setValue(manager.getQuantityAt(i));
+                row.setCell(3,manager.getQuantityAt(i));
                 
                 toItem = manager.getToInventoryItemAt(i);                
                 if (toItem != null)                    
-                    row.cells.get(4).setValue(new TableDataRow(toItem.getId(), toItem.getName()));
+                    row.setCell(4,new AutoCompleteValue(toItem.getId(), toItem.getName()));
                 
-                row.cells.get(5).setValue(manager.getAddtoExistingAt(i));
+                row.setCell(5,manager.getAddtoExistingAt(i));
                 
                 toLoc = manager.getToInventoryLocationAt(i);
                 if (toLoc != null) {
                     location = StorageLocationManager.getLocationForDisplay(toLoc.getStorageLocationName(),
                                                                             toLoc.getStorageLocationUnitDescription(),
                                                                             toLoc.getStorageLocationLocation());
-                    row.cells.get(6).setValue(new TableDataRow(toLoc.getId(), location));
+                    row.setCell(6,new AutoCompleteValue(toLoc.getId(), location));
                 }
                 
                 
@@ -1025,7 +1035,7 @@ public class InventoryTransferScreen extends Screen {
                 model.add(row);
             }
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             e.printStackTrace();
         }
         return model;

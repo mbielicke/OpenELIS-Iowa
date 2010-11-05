@@ -43,31 +43,15 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen id="WorksheetCompletion" name="{resource:getString($constants,'worksheetCompletion')}">
+    <screen name="{resource:getString($constants,'worksheetCompletion')}">
       <VerticalPanel padding="0" spacing="0">
         <AbsolutePanel spacing="0" style="ButtonPanelContainer">
           <HorizontalPanel>
-            <xsl:call-template name="printButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="updateButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
+            <xsl:call-template name="printButton"/>
+            <xsl:call-template name="updateButton"/>
             <xsl:call-template name="buttonPanelDivider" />
-            <xsl:call-template name="commitButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="abortButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
+            <xsl:call-template name="commitButton"/>
+            <xsl:call-template name="abortButton"/>
           </HorizontalPanel>
         </AbsolutePanel>
         <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
@@ -80,45 +64,31 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'status')" />:
               </text>
-              <dropdown key="{meta:getStatusId()}" width="100" popWidth="100" tab="lookupWorksheetButton,tabPanel" field="Integer" />
+              <dropdown key="{meta:getStatusId()}" width="100" tab="lookupWorksheetButton,tabPanel" field="Integer" />
+            </row>
+            <row>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'relatedWorksheetNumber')" />:
               </text>
               <HorizontalPanel>
                 <textbox key="{meta:getRelatedWorksheetId()}" width="100" case="LOWER" field="String" />
-                <appButton key="lookupWorksheetButton" style="LookupButton" tab="instrumentId,{meta:getStatusId()}" action="lookupWorksheet">
+                <button key="lookupWorksheetButton" style="LookupButton" tab="instrumentId,{meta:getStatusId()}" action="lookupWorksheet">
                   <AbsolutePanel style="LookupButtonImage" />
-                </appButton>
+                </button>
               </HorizontalPanel>
-            </row>
-            <row>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'instrumentName')" />:
               </text>
               <widget colspan="5">
-                <autoComplete key="instrumentId" width="150" case="LOWER" popWidth="auto" tab="defaultUser,lookupWorksheetButton" field="Integer">
+                <autoComplete key="instrumentId" width="150" case="LOWER" tab="defaultUser,lookupWorksheetButton">
                   <col width="150" header="Name" />
                   <col width="200" header="Description" />
                   <col width="75" header="Type">
-                    <dropdown width="75" popWidth="auto" field="Integer"/>
+                    <dropdown width="75" field="Integer"/>
                   </col>
                   <col width="200" header="Location" />
                 </autoComplete>
               </widget>
-            </row>
-            <row>
-              <text style="Prompt">
-                <xsl:value-of select="resource:getString($constants,'initials')" />:
-              </text>
-              <autoComplete key="defaultUser" width="100" case="LOWER" tab="defaultStartedDate,instrumentId" field="Integer"/>
-              <text style="Prompt">
-                <xsl:value-of select="resource:getString($constants,'started')" />:
-              </text>
-              <calendar key="defaultStartedDate" begin="0" end="4" width="130" pattern="{resource:getString($constants,'dateTimePattern')}" tab="defaultCompletedDate,defaultUser" />
-              <text style="Prompt">
-                <xsl:value-of select="resource:getString($constants,'completed')" />:
-              </text>
-              <calendar key="defaultCompletedDate" begin="0" end="4" width="130" pattern="{resource:getString($constants,'dateTimePattern')}" tab="tabPanel,defaultStartedDate" />
             </row>
           </TablePanel>
 <!-- TAB PANEL -->
@@ -126,7 +96,7 @@ UIRF Software License are applicable instead of those above.
 <!-- TAB 1 -->
             <tab key="worksheetItemTab" tab="worksheetItemTable,worksheetItemTable" text="{resource:getString($constants,'worksheet')}">
               <VerticalPanel padding="0" spacing="0">
-                <table key="worksheetItemTable" width="832" maxRows="10" showScroll="ALWAYS" tab="{meta:getId()},{meta:getId()}">
+                <table key="worksheetItemTable" width="832" rows="10" vscroll="ALWAYS" hscroll="ALWAYS" tab="{meta:getId()},{meta:getId()}">
                   <col key="{meta:getWorksheetItemPosition()}" width="50" header="{resource:getString($constants,'position')}">
                     <label field="String" />
                   </col>
@@ -247,30 +217,9 @@ UIRF Software License are applicable instead of those above.
                 </table>
                 <widget style="TableButtonFooter">
                   <HorizontalPanel>
-                    <appButton key="editWorksheetButton" style="Button">
-                      <HorizontalPanel>
-                        <AbsolutePanel style="EditMultipleButtonImage" />
-                        <text>
-                          <xsl:value-of select="resource:getString($constants,'editWorksheet')" />
-                        </text>
-                      </HorizontalPanel>
-                    </appButton>
-                    <appButton key="loadFromEditButton" style="Button">
-                      <HorizontalPanel>
-                        <AbsolutePanel style="LoadButtonImage" />
-                        <text>
-                          <xsl:value-of select="resource:getString($constants,'loadFromEditFile')" />
-                        </text>
-                      </HorizontalPanel>
-                    </appButton>
-                    <appButton key="loadFilePopupButton" style="Button">
-                      <HorizontalPanel>
-                        <AbsolutePanel style="LoadButtonImage" />
-                        <text>
-                          <xsl:value-of select="resource:getString($constants,'loadFromFile')" />
-                        </text>
-                      </HorizontalPanel>
-                    </appButton>
+                    <button key="editWorksheetButton" icon="EditMultipleButtonImage" text="{resource:getString($constants,'editWorksheet')}" style="Button"/>
+                    <button key="loadFromEditButton" icon="LoadButtonImage" text="{resource:getString($constants,'loadFromEditFile')} "style="Button"/>
+                    <button key="loadFilePopupButton" icon="LoadButtonImage" text="{resource:getString($constants,'loadFromFile')}" style="Button"/>
                   </HorizontalPanel>
                 </widget>
               </VerticalPanel>

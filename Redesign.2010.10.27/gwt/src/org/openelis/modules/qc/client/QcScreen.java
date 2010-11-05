@@ -34,6 +34,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.QcAnalyteViewDO;
+import org.openelis.domain.QcViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
@@ -59,20 +60,23 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
-import org.openelis.gwt.widget.CalendarLookUp;
+import org.openelis.gwt.widget.calendar.Calendar;
+import org.openelis.gwt.widget.AutoCompleteValue;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.Item;
 import org.openelis.gwt.widget.MenuItem;
+import org.openelis.gwt.widget.ModalWindow;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.Window;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
@@ -94,25 +98,24 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class QcScreen extends Screen {
     private QcManager                   manager;
     private ModulePermission            userPermission;
 
-    private AppButton                   queryButton, previousButton, nextButton, addButton,
+    private Button                      queryButton, previousButton, nextButton, addButton,
                                         updateButton, commitButton, abortButton, addAnalyteButton,
                                         removeAnalyteButton, dictionaryButton;
-    protected MenuItem                  qcHistory, qcAnalyteHistory;
+    protected MenuItem                  duplicate,qcHistory, qcAnalyteHistory;
     private ButtonGroup                 atoz;
     private ScreenNavigator             nav;
-    private CalendarLookUp              preparedDate, usableDate, expireDate;
-    private AutoComplete<Integer>       inventoryItem, preparedBy, analyte;
+    private Calendar                    preparedDate, usableDate, expireDate;
+    private AutoComplete                inventoryItem, preparedBy, analyte;
     private Dropdown<Integer>           typeId, preparedUnitId, analyteTypeId;
     private TextBox                     name, source, lotNumber, preparedVolume;
     private CheckBox                    isActive;
-    private TableWidget                 qcAnalyteTable;
+    private Table                       qcAnalyteTable;
 
     private Integer                     typeDict, typeNumeric, typeTiter, typeDefault;
     private DictionaryLookupScreen      dictLookup;
@@ -162,93 +165,110 @@ public class QcScreen extends Screen {
         //
         // button panel buttons
         //
-        queryButton = (AppButton)def.getWidget("query");
+        queryButton = (Button)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 query();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                queryButton.setEnabled(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                           .contains(event.getState()) &&
                                    userPermission.hasSelectPermission());
-                if (event.getState() == State.QUERY)
-                    queryButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.QUERY) {
+                    queryButton.setPressed(true);
+                    queryButton.lock();
+                }
             }
         });
 
-        previousButton = (AppButton)def.getWidget("previous");
+        previousButton = (Button)def.getWidget("previous");
         addScreenHandler(previousButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 previous();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                previousButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
-        nextButton = (AppButton)def.getWidget("next");
+        nextButton = (Button)def.getWidget("next");
         addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 next();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                nextButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                nextButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
-        addButton = (AppButton)def.getWidget("add");
+        addButton = (Button)def.getWidget("add");
         addScreenHandler(addButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 add();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                addButton.setEnabled(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                         .contains(event.getState()) &&
                                  userPermission.hasAddPermission());
-                if (event.getState() == State.ADD)
-                    addButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.ADD) {
+                    addButton.setPressed(true);
+                    addButton.lock();
+                }
             }
         });
 
-        updateButton = (AppButton)def.getWidget("update");
+        updateButton = (Button)def.getWidget("update");
         addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 update();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
+                updateButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
                                     userPermission.hasUpdatePermission());
-                if (event.getState() == State.UPDATE)
-                    updateButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.UPDATE) {
+                    updateButton.setPressed(true);
+                    updateButton.lock();
+                }
             }
         });
 
-        commitButton = (AppButton)def.getWidget("commit");
+        commitButton = (Button)def.getWidget("commit");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 commit();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                commitButton.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
                                            .contains(event.getState()));
             }
         });
 
-        abortButton = (AppButton)def.getWidget("abort");
+        abortButton = (Button)def.getWidget("abort");
         addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 abort();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                abortButton.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
                                           .contains(event.getState()));
+            }
+        });
+        
+        duplicate = (MenuItem)def.getWidget("duplicateRecord");
+        addScreenHandler(duplicate, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                duplicate();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
@@ -259,7 +279,7 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                qcHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                qcHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
@@ -270,7 +290,7 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                qcAnalyteHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                qcAnalyteHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -288,16 +308,16 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                name.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                name.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                    .contains(event.getState()));
                 name.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        typeId = (Dropdown)def.getWidget(QcMeta.getTypeId());
+        typeId = (Dropdown<Integer>)def.getWidget(QcMeta.getTypeId());
         addScreenHandler(typeId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                typeId.setSelection(manager.getQc().getTypeId());
+                typeId.setValue(manager.getQc().getTypeId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -305,7 +325,7 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                typeId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                typeId.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                      .contains(event.getState()));
                 typeId.setQueryMode(event.getState() == State.QUERY);
             }
@@ -314,17 +334,17 @@ public class QcScreen extends Screen {
         inventoryItem = (AutoComplete)def.getWidget(QcMeta.getInventoryItemName());
         addScreenHandler(inventoryItem, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                inventoryItem.setSelection(manager.getQc().getInventoryItemId(),
+                inventoryItem.setValue(manager.getQc().getInventoryItemId(),
                                            manager.getQc().getInventoryItemName());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 manager.getQc().setInventoryItemId(event.getValue());
-                manager.getQc().setInventoryItemName(inventoryItem.getTextBoxDisplay());
+                manager.getQc().setInventoryItemName(inventoryItem.getDisplay());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                inventoryItem.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                inventoryItem.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 inventoryItem.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -333,22 +353,26 @@ public class QcScreen extends Screen {
                 DictionaryDO   dict;
                 QueryFieldUtil parser;
                 ArrayList<InventoryItemDO> list;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e) {
+                	
+                }
 
                 try {
                     list = inventoryService.callList("fetchActiveByName", parser.getParameter().get(0));
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
 
                     for (InventoryItemDO data : list) {
                         dict = DictionaryCache.getEntryFromId(data.getStoreId());
-                        model.add(new TableDataRow(data.getId(), data.getName(), dict.getEntry()));
+                        model.add(new Item<Integer>(data.getId(), data.getName(), dict.getEntry()));
                     }
                     inventoryItem.showAutoMatches(model);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
@@ -364,7 +388,7 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                source.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                source.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                      .contains(event.getState()));
                 source.setQueryMode(event.getState() == State.QUERY);
             }
@@ -381,7 +405,7 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                lotNumber.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                lotNumber.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                         .contains(event.getState()));
                 lotNumber.setQueryMode(event.getState() == State.QUERY);
             }
@@ -398,13 +422,13 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isActive.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                isActive.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                           .contains(event.getState()));
                 isActive.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        preparedDate = (CalendarLookUp)def.getWidget(QcMeta.getPreparedDate());
+        preparedDate = (Calendar)def.getWidget(QcMeta.getPreparedDate());
         addScreenHandler(preparedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 preparedDate.setValue(manager.getQc().getPreparedDate());
@@ -415,7 +439,7 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                preparedDate.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                preparedDate.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                            .contains(event.getState()));
                 preparedDate.setQueryMode(event.getState() == State.QUERY);
             }
@@ -432,16 +456,16 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                preparedVolume.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                preparedVolume.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                              .contains(event.getState()));
                 preparedVolume.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        preparedUnitId = (Dropdown)def.getWidget(QcMeta.getPreparedUnitId());
+        preparedUnitId = (Dropdown<Integer>)def.getWidget(QcMeta.getPreparedUnitId());
         addScreenHandler(preparedUnitId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                preparedUnitId.setSelection(manager.getQc().getPreparedUnitId());
+                preparedUnitId.setValue(manager.getQc().getPreparedUnitId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -449,7 +473,7 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                preparedUnitId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                preparedUnitId.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                              .contains(event.getState()));
                 preparedUnitId.setQueryMode(event.getState() == State.QUERY);
             }
@@ -458,17 +482,17 @@ public class QcScreen extends Screen {
         preparedBy = (AutoComplete)def.getWidget(QcMeta.getPreparedById());
         addScreenHandler(preparedBy, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                preparedBy.setSelection(manager.getQc().getPreparedById(),
+                preparedBy.setValue(manager.getQc().getPreparedById(),
                                         manager.getQc().getPreparedByName());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 manager.getQc().setPreparedById(event.getValue());
-                manager.getQc().setPreparedByName(preparedBy.getTextBoxDisplay());
+                manager.getQc().setPreparedByName(preparedBy.getDisplay());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                preparedBy.enable(EnumSet.of(State.ADD, State.UPDATE)
+                preparedBy.setEnabled(EnumSet.of(State.ADD, State.UPDATE)
                                          .contains(event.getState()));
                 preparedBy.setQueryMode(event.getState() == State.QUERY);
             }
@@ -478,25 +502,29 @@ public class QcScreen extends Screen {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
                 ArrayList<SystemUserVO> users;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e) {
+                	
+                }
 
                 try {
                     users = userService.callList("fetchByLoginName", parser.getParameter().get(0));
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
                     for (SystemUserVO user : users)
-                        model.add(new TableDataRow(user.getId(), user.getLoginName()));
+                        model.add(new Item<Integer>(user.getId(), user.getLoginName()));
                     preparedBy.showAutoMatches(model);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Window.alert(e.toString());
+                    com.google.gwt.user.client.Window.alert(e.toString());
                 }
             }
         });
 
-        usableDate = (CalendarLookUp)def.getWidget(QcMeta.getUsableDate());
+        usableDate = (Calendar)def.getWidget(QcMeta.getUsableDate());
         addScreenHandler(usableDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 usableDate.setValue(manager.getQc().getUsableDate());
@@ -507,13 +535,13 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                usableDate.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                usableDate.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                          .contains(event.getState()));
                 usableDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        expireDate = (CalendarLookUp)def.getWidget(QcMeta.getExpireDate());
+        expireDate = (Calendar)def.getWidget(QcMeta.getExpireDate());
         addScreenHandler(expireDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 expireDate.setValue(manager.getQc().getExpireDate());
@@ -524,23 +552,23 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                expireDate.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                expireDate.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                          .contains(event.getState()));
                 expireDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        qcAnalyteTable = (TableWidget)def.getWidget("QcAnalyteTable");
-        analyte = (AutoComplete<Integer>)qcAnalyteTable.getColumnWidget(QcMeta.getQcAnalyteAnalyteName());
-        analyteTypeId = (Dropdown)qcAnalyteTable.getColumnWidget(QcMeta.getQcAnalyteTypeId());
-        addScreenHandler(qcAnalyteTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        qcAnalyteTable = (Table)def.getWidget("QcAnalyteTable");
+        analyte = (AutoComplete)qcAnalyteTable.getColumnAt(qcAnalyteTable.getColumnByName(QcMeta.getQcAnalyteAnalyteName())).getCellEditor().getWidget();
+        analyteTypeId = (Dropdown)qcAnalyteTable.getColumnAt(qcAnalyteTable.getColumnByName(QcMeta.getQcAnalyteTypeId())).getCellEditor().getWidget();
+        addScreenHandler(qcAnalyteTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
                 // table is not queried,so it needs to be cleared in query mode
-                qcAnalyteTable.load(getAnalyteTableModel());
+                qcAnalyteTable.setModel(getAnalyteTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                qcAnalyteTable.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));                
+                qcAnalyteTable.setEnabled(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));                
             }
         });
 
@@ -551,42 +579,42 @@ public class QcScreen extends Screen {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 Object val;
-                TableDataRow row;
+                AutoCompleteValue av;
                 QcAnalyteViewDO data;
 
                 r = event.getRow();
                 c = event.getCol();
-                val = qcAnalyteTable.getObject(r, c);
+                val = qcAnalyteTable.getValueAt(r, c);
                 try {
                     data = manager.getAnalytes().getAnalyteAt(r);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                     return;
                 }
                 switch (c) {
                     case 0:
-                        row = (TableDataRow)val;
-                        data.setAnalyteId((Integer)row.key);
-                        data.setAnalyteName(analyte.getTextBoxDisplay());
+                        av = (AutoCompleteValue)val;
+                        data.setAnalyteId((Integer)av.getId());
+                        data.setAnalyteName(analyte.getDisplay());
                         break;
                     case 1:
                         data.setTypeId((Integer)val);
-                        qcAnalyteTable.clearCellExceptions(r, 3);
+                        qcAnalyteTable.clearExceptions(r, 3);
                         try {
-                            validateValue(data, (String)qcAnalyteTable.getObject(r, 3));
+                            validateValue(data, (String)qcAnalyteTable.getValueAt(r, 3));
                         } catch (LocalizedException e) {
-                            qcAnalyteTable.setCellException(r, 3, e);
+                            qcAnalyteTable.addException(r, 3, e);
                         }
                         break;
                     case 2:
                         data.setIsTrendable((String)val);
                         break;
                     case 3:
-                        qcAnalyteTable.clearCellExceptions(r, c);
+                        qcAnalyteTable.clearExceptions(r, c);
                         try {
                             validateValue(data, (String)val);
                         } catch (LocalizedException e) {
-                            qcAnalyteTable.setCellException(r, c, e);
+                            qcAnalyteTable.addException(r, c, e);
                         }
                         break;
                 }
@@ -601,7 +629,7 @@ public class QcScreen extends Screen {
                 try {
                     manager.getAnalytes().addAnalyteAt(new QcAnalyteViewDO(), r);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
@@ -611,7 +639,7 @@ public class QcScreen extends Screen {
                 try {
                     manager.getAnalytes().removeAnalyteAt(event.getIndex());
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
@@ -621,72 +649,76 @@ public class QcScreen extends Screen {
                 QueryFieldUtil parser;
                 AnalyteDO data;
                 ArrayList<AnalyteDO> list;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e) {
+                	
+                }
 
                 try {
                     list = analyteService.callList("fetchByName", parser.getParameter().get(0));
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
 
                     for (int i = 0; i < list.size(); i++ ) {
                         data = list.get(i);
-                        model.add(new TableDataRow(data.getId(), data.getName()));
+                        model.add(new Item<Integer>(data.getId(), data.getName()));
                     }
                     analyte.showAutoMatches(model);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
 
-        addAnalyteButton = (AppButton)def.getWidget("addAnalyteButton");
+        addAnalyteButton = (Button)def.getWidget("addAnalyteButton");
         addScreenHandler(addAnalyteButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int r, n;
+                int r;
 
                 r = qcAnalyteTable.getSelectedRow() + 1;
                 if (r == 0) {
-                    r = qcAnalyteTable.numRows();
+                    r = qcAnalyteTable.getRowCount();
                 }
-                qcAnalyteTable.addRow(r);
-                qcAnalyteTable.selectRow(r);
-                qcAnalyteTable.scrollToSelection();
+                qcAnalyteTable.addRowAt(r);
+                qcAnalyteTable.selectRowAt(r);
+                qcAnalyteTable.scrollToVisible(r);
                 qcAnalyteTable.startEditing(r, 0);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addAnalyteButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                addAnalyteButton.setEnabled(EnumSet.of(State.ADD, State.UPDATE)
                                                .contains(event.getState()));
             }
 
         });
 
-        removeAnalyteButton = (AppButton)def.getWidget("removeAnalyteButton");
+        removeAnalyteButton = (Button)def.getWidget("removeAnalyteButton");
         addScreenHandler(removeAnalyteButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int r;
 
                 r = qcAnalyteTable.getSelectedRow();
-                if (r > -1 && qcAnalyteTable.numRows() > 0)
-                    qcAnalyteTable.deleteRow(r);
+                if (r > -1 && qcAnalyteTable.getRowCount() > 0)
+                    qcAnalyteTable.removeRowAt(r);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeAnalyteButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                removeAnalyteButton.setEnabled(EnumSet.of(State.ADD, State.UPDATE)
                                                   .contains(event.getState()));
             }
         });
 
-        dictionaryButton = (AppButton)def.getWidget("dictionaryButton");
+        dictionaryButton = (Button)def.getWidget("dictionaryButton");
         addScreenHandler(dictionaryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 showDictionary(null,null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                dictionaryButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                dictionaryButton.setEnabled(EnumSet.of(State.ADD, State.UPDATE)
                                                .contains(event.getState()));
             }
         });
@@ -711,7 +743,7 @@ public class QcScreen extends Screen {
                         } else if (error instanceof LastPageException) {
                             window.setError(consts.get("noMoreRecordInDir"));
                         } else {
-                            Window.alert("Error: QC call query failed; " + error.getMessage());
+                            com.google.gwt.user.client.Window.alert("Error: QC call query failed; " + error.getMessage());
                             window.setError(consts.get("queryFailed"));
                         }
                     }
@@ -722,16 +754,16 @@ public class QcScreen extends Screen {
                 return fetchById( (entry == null) ? null : ((IdNameVO)entry).getId());
             }
 
-            public ArrayList<TableDataRow> getModel() {
+            public ArrayList<Item<Integer>> getModel() {
                 ArrayList<IdNameVO> result;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 model = null;
                 result = nav.getQueryResult();
                 if (result != null) {
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
                     for (IdNameVO entry : result)
-                        model.add(new TableDataRow(entry.getId(), entry.getName(),
+                        model.add(new Item<Integer>(entry.getId(), entry.getName(),
                                                    entry.getDescription()));
                 }
                 return model;
@@ -744,7 +776,7 @@ public class QcScreen extends Screen {
                 boolean enable;
                 enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
                          userPermission.hasSelectPermission();
-                atoz.enable(enable);
+                atoz.setEnabled(enable);
                 nav.enable(enable);
             }
 
@@ -754,7 +786,7 @@ public class QcScreen extends Screen {
 
                 field = new QueryData();
                 field.key = QcMeta.getName();
-                field.query = ((AppButton)event.getSource()).getAction();
+                field.query = ((Button)event.getSource()).getAction();
                 field.type = QueryData.Type.STRING;
 
                 query = new Query();
@@ -763,8 +795,8 @@ public class QcScreen extends Screen {
             }
         });
         
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+        window.addBeforeClosedHandler(new BeforeCloseHandler<Window>() {
+            public void onBeforeClosed(BeforeCloseEvent<Window> event) {                
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
@@ -774,41 +806,41 @@ public class QcScreen extends Screen {
     }
 
     private void initializeDropdowns() {
-        ArrayList<TableDataRow> model;
+        ArrayList<Item<Integer>> model;
         ArrayList<DictionaryDO> list;
-        TableDataRow row;
+        Item<Integer> row;
 
         // type dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
         list =  DictionaryCache.getListByCategorySystemName("qc_type");
         for (DictionaryDO d : list) {
-            row = new TableDataRow(d.getId(), d.getEntry());
-            row.enabled = ("Y".equals(d.getIsActive()));
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
 
         typeId.setModel(model);
 
         // prepareUnit dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
         list = DictionaryCache.getListByCategorySystemName("unit_of_measure");
         for (DictionaryDO d : list) {
-            row = new TableDataRow(d.getId(), d.getEntry());
-            row.enabled = ("Y".equals(d.getIsActive()));
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
 
         preparedUnitId.setModel(model);
 
         // analyte table type dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
         list = DictionaryCache.getListByCategorySystemName("qc_analyte_type");
         for (DictionaryDO d : list) {
-            row = new TableDataRow(d.getId(), d.getEntry());
-            row.enabled = ("Y".equals(d.getIsActive()));
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
 
@@ -820,7 +852,7 @@ public class QcScreen extends Screen {
             typeTiter   = DictionaryCache.getIdFromSystemName("qc_analyte_titer");
             typeDefault = DictionaryCache.getIdFromSystemName("qc_analyte_default");
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             window.close();
         }
     }
@@ -868,7 +900,7 @@ public class QcScreen extends Screen {
             DataChangeEvent.fire(this);
             setFocus(name);
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
         }
         window.clearStatus();
     }
@@ -898,7 +930,7 @@ public class QcScreen extends Screen {
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
-                Window.alert("commitAdd(): " + e.getMessage());
+                com.google.gwt.user.client.Window.alert("commitAdd(): " + e.getMessage());
                 window.clearStatus();
             }
         } else if (state == State.UPDATE) {
@@ -912,7 +944,7 @@ public class QcScreen extends Screen {
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
-                Window.alert("commitUpdate(): " + e.getMessage());
+                com.google.gwt.user.client.Window.alert("commitUpdate(): " + e.getMessage());
                 window.clearStatus();
             }
         }
@@ -935,12 +967,26 @@ public class QcScreen extends Screen {
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
             } catch (Exception e) {
-                Window.alert(e.getMessage());
+                com.google.gwt.user.client.Window.alert(e.getMessage());
                 fetchById(null);
             }
             window.setDone(consts.get("updateAborted"));
         } else {
             window.clearStatus();
+        }
+    }
+    
+    protected void duplicate() {
+        QcViewDO data;
+        try {
+            manager = QcManager.fetchById(manager.getQc().getId());            
+            setState(State.ADD);
+            DataChangeEvent.fire(this);
+            data = manager.getQc();
+            data.setId(null);
+            setFocus(name);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
         }
     }
     
@@ -968,7 +1014,7 @@ public class QcScreen extends Screen {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             return;
         }
 
@@ -992,7 +1038,7 @@ public class QcScreen extends Screen {
             } catch (Exception e) {
                 fetchById(null);
                 e.printStackTrace();
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                com.google.gwt.user.client.Window.alert(consts.get("fetchFailed") + e.getMessage());
                 return false;
             }
         }
@@ -1002,13 +1048,13 @@ public class QcScreen extends Screen {
         return true;
     }
 
-    private ArrayList<TableDataRow> getAnalyteTableModel() {
+    private ArrayList<Row> getAnalyteTableModel() {
         int i;
         QcAnalyteViewDO data;
-        ArrayList<TableDataRow> model;
+        ArrayList<Row> model;
         String value;
 
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<Row>();
         if (manager == null)
             return model;
 
@@ -1019,12 +1065,11 @@ public class QcScreen extends Screen {
                 value = data.getValue();
                 if (data.getDictionary() != null)
                     value = data.getDictionary();
-                model.add(new TableDataRow(null, 
-                                           new TableDataRow(data.getAnalyteId(),data.getAnalyteName()),
+                model.add(new Row(new AutoCompleteValue(data.getAnalyteId(),data.getAnalyteName()),
                                            data.getTypeId(), data.getIsTrendable(), value));
             }
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             e.printStackTrace();
         }
         return model;
@@ -1062,7 +1107,7 @@ public class QcScreen extends Screen {
             return null;
         } catch (Exception e) {
             e.printStackTrace();
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
         }
         return null;
     }
@@ -1099,14 +1144,14 @@ public class QcScreen extends Screen {
     }
 
     private void showDictionary(String entry,ArrayList<IdNameVO> list) {
-        ScreenWindow modal;
+        ModalWindow modal;
 
         if (dictLookup == null) {
             try {
                 dictLookup = new DictionaryLookupScreen();
             } catch (Exception e) {
                 e.printStackTrace();
-                Window.alert("DictionaryLookup Error: " + e.getMessage());
+                com.google.gwt.user.client.Window.alert("DictionaryLookup Error: " + e.getMessage());
                 return;
             }
         
@@ -1131,20 +1176,20 @@ public class QcScreen extends Screen {
                                 data.setValue(entry.getId().toString());
                                 data.setDictionary(entry.getName());
                                 data.setTypeId(typeDict);
-                                qcAnalyteTable.setCell(r, 1, typeDict);
-                                qcAnalyteTable.setCell(r, 3, data.getDictionary());
-                                qcAnalyteTable.clearCellExceptions(r, 3);
+                                qcAnalyteTable.setValueAt(r, 1, typeDict);
+                                qcAnalyteTable.setValueAt(r, 3, data.getDictionary());
+                                qcAnalyteTable.clearExceptions(r, 3);
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                qcAnalyteTable.setCell(r, 3, "");
-                                Window.alert("DictionaryLookup Error: " + e.getMessage());
+                                qcAnalyteTable.setValueAt(r, 3, "");
+                                com.google.gwt.user.client.Window.alert("DictionaryLookup Error: " + e.getMessage());
                             }
                         }
                     }
                 }
             });
         }
-        modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+        modal = new ModalWindow();
         modal.setName(consts.get("chooseDictEntry"));
         modal.setContent(dictLookup);
         dictLookup.setScreenState(State.DEFAULT);

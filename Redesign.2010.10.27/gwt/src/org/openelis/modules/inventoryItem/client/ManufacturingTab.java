@@ -27,15 +27,13 @@ package org.openelis.modules.inventoryItem.client;
 
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.screen.ScreenDefInt;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.Window;
 import org.openelis.manager.InventoryItemManager;
 import org.openelis.modules.note.client.RichTextTab;
 
-import com.google.gwt.user.client.Window;
-
 public class ManufacturingTab extends RichTextTab {
 
-    public ManufacturingTab(ScreenDefInt def, ScreenWindow window, String richtextPanelKey,
+    public ManufacturingTab(ScreenDefInt def, Window window, String richtextPanelKey,
                             String editButtonKey) {
         super(def, window, richtextPanelKey, editButtonKey);
     }
@@ -47,7 +45,7 @@ public class ManufacturingTab extends RichTextTab {
                 DataChangeEvent.fire(this);
                 loaded = true;
             } catch (Exception e) {
-                Window.alert(e.getMessage());
+                com.google.gwt.user.client.Window.alert(e.getMessage());
             }
         }
     }

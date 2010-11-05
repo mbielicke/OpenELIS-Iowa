@@ -51,7 +51,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen id="ReviewRelase" name="{resource:getString($constants,'reviewAndRelease')}">
+    <screen name="{resource:getString($constants,'reviewAndRelease')}">
       <VerticalPanel padding="0" spacing="0">
 <!--button panel code-->
         <AbsolutePanel spacing="0" style="ButtonPanelContainer">
@@ -60,22 +60,9 @@ UIRF Software License are applicable instead of those above.
             <xsl:call-template name="buttonPanelDivider" />
             <xsl:call-template name="updateButton" />
             <xsl:call-template name="buttonPanelDivider" />
-            <appButton key="complete" style="ButtonPanelButton" action="complete">
-              <HorizontalPanel>
-                <AbsolutePanel width="20" height="20" style="completeIcon" />
-                <text>
-                  <xsl:value-of select='resource:getString($constants,"complete")' />
-                </text>
-              </HorizontalPanel>
-            </appButton>
-            <appButton key="release" style="ButtonPanelButton" action="release">
-              <HorizontalPanel>
-                <AbsolutePanel width="20" height="20" style="reviewAndReleaseIcon" />
-                <text>
-                  <xsl:value-of select='resource:getString($constants,"release")' />
-                </text>
-              </HorizontalPanel>
-            </appButton>
+            <button key="complete" icon="completeIcon" text="{resource:getString($constants,'complete')}" style="ButtonPanelButton" action="complete"/>
+            <button key="release" icon="reviewAndReleaseIcon" text="{resource:getString($constants,'release')}" style="ButtonPanelButton" action="release"/>
+
 <!-- 
   
 <appButton action="report" key="report" style="ButtonPanelButton">
@@ -91,48 +78,42 @@ UIRF Software License are applicable instead of those above.
             <xsl:call-template name="commitButton" />
             <xsl:call-template name="abortButton" />
             <xsl:call-template name="buttonPanelDivider" />
-            <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
-              <menuItem>
+            <menu key="optionsMenu" selfShow="true" showBelow="true" style="topBarItemHolder">
                 <menuDisplay>
-                  <appButton style="ButtonPanelButton" action="option">
-                    <HorizontalPanel>
-                      <text>
-                        <xsl:value-of select='resource:getString($constants,"options")' />
-                      </text>
-                      <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
-                    </HorizontalPanel>
-                  </appButton>
+                  <button style="ButtonPanelButton" action="option">
+                    <Grid cols="2">
+                      <row>
+                        <cell text="{resource:getString($constants,'options')}" />
+                        <cell style="OptionsButtonImage" />
+                      </row>
+                    </Grid>
+                  </button>
                 </menuDisplay>
-                <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                <menuItem key="unreleaseAnalysis" description="" enable="false" icon="unreleaseIcon" label="Unrelease Analysis" />
+                <menuItem key="unreleaseAnalysis" enabled="false" icon="unreleaseIcon" display="Unrelease Analysis" />
                 <menuItem>
   					<menuDisplay>
-  						<HorizontalPanel>
-     					<check key="previewReport"/>
-     					<text style="Prompt">
-                  Preview Final Report
-                </text>
+  				    	<HorizontalPanel>
+     				    <check key="previewReport"/>
+     					<text style="Prompt">Preview Final Report</text>
      					</HorizontalPanel>
  					</menuDisplay>
  				</menuItem>
-               	 <html>&lt;hr/&gt;</html>
-                  <menuItem key="historySample" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySample')}" />
-                  <menuItem key="historySampleSpec" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleSpec')}" />
-                  <menuItem key="historySampleProject" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleProject')}" />
-                  <menuItem key="historySampleOrganization" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleOrganization')}" />
-                  <menuItem key="historySampleItem" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleItem')}" />
-                  <menuItem key="historyAnalysis" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyAnalysis')}" />
-                  <menuItem key="historyCurrentResult" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyCurrentResult')}" />
-                  <menuItem key="historyStorage" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyStorage')}" />
-                  <menuItem key="historySampleQA" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleQA')}" />
-                  <menuItem key="historyAnalysisQA" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyAnalysisQA')}" />
-                  <menuItem key="historyAuxData" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyAuxData')}" />
-                </menuPanel>
-              </menuItem>
-            </menuPanel>
+                <separator/>
+                <menuItem key="historySample" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historySample')}" />
+                <menuItem key="historySampleSpec" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historySampleSpec')}" />
+                <menuItem key="historySampleProject" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historySampleProject')}" />
+                <menuItem key="historySampleOrganization" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historySampleOrganization')}" />
+                <menuItem key="historySampleItem" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historySampleItem')}" />
+                <menuItem key="historyAnalysis" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historyAnalysis')}" />
+                <menuItem key="historyCurrentResult" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historyCurrentResult')}" />
+                <menuItem key="historyStorage" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historyStorage')}" />
+                <menuItem key="historySampleQA" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historySampleQA')}" />
+                <menuItem key="historyAnalysisQA" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historyAnalysisQA')}" />
+                <menuItem key="historyAuxData" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historyAuxData')}" />
+            </menu>
           </HorizontalPanel>
         </AbsolutePanel>
-        <table key="completeReleaseTable" width="auto" maxRows="10" multiSelect="true" showScroll="ALWAYS">
+        <table key="completeReleaseTable" rows="10" multiSelect="true" vscroll="ALWAYS" hscroll="ALWAYS">
           <col key="{meta:getAccessionNumber()}" width="115" header="Accession #" sort="true">
             <textbox field="Integer" />
           </col>

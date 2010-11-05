@@ -42,10 +42,10 @@
     </xsl:variable>
 
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
-    <screen id="reflexTestPicker" name="{resource:getString($constants,'reflexTestPicker')}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <screen name="{resource:getString($constants,'reflexTestPicker')}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <VerticalPanel padding="0" spacing="0">
         <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
-        	<table key="reflexTestTable" width="auto" maxRows="10"  multiSelect="true" showScroll="ALWAYS" title="">
+        	<table key="reflexTestTable" rows="10"  multiSelect="true" vscroll="ALWAYS" hscroll="ALWAYS">
             	<col width="500" header="{resource:getString($constants,'reflexTestMethod')}">
                 	<label field="String"/>
                 </col>
@@ -56,16 +56,8 @@
 
         <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
           <HorizontalPanel>
-            <xsl:call-template name="okButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="cancelButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
+            <xsl:call-template name="okButton"/>
+            <xsl:call-template name="cancelButton"/>
           </HorizontalPanel>
         </AbsolutePanel>
 

@@ -37,7 +37,7 @@ import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.screen.Screen;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ModalWindow;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
@@ -115,7 +115,7 @@ public class ReflexTestUtility extends Screen implements
         reflexPickerScreen.setData(reflexList);
         if(reflexPickerScreen.needToDrawPopup()){
             lookupDrawn = true;
-            ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+            ModalWindow modal = new ModalWindow();
             modal.setContent(reflexPickerScreen);
             modal.setName(consts.get("reflexTestPicker") + " " + anDO.getTestName() + " : " + anDO.getMethodName());
         }else

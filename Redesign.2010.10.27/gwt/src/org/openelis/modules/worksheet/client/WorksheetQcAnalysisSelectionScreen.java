@@ -38,10 +38,9 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.Button;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.manager.QcManager;
@@ -58,9 +57,9 @@ import com.google.gwt.user.client.Window;
 
 public class WorksheetQcAnalysisSelectionScreen extends Screen implements HasActionHandlers<WorksheetQcAnalysisSelectionScreen.Action> {
 
-    private AppButton          okButton, cancelButton;
+    private Button             okButton, cancelButton;
     private ScreenService      qcService;
-    private TableWidget        worksheetQcAnalysisTable;
+    private Table              worksheetQcAnalysisTable;
     
     protected Integer          worksheetId;
     protected WorksheetManager manager;
@@ -82,19 +81,19 @@ public class WorksheetQcAnalysisSelectionScreen extends Screen implements HasAct
     }
 
     private void initialize() {
-        worksheetQcAnalysisTable = (TableWidget)def.getWidget("worksheetQcAnalysisTable");
-        addScreenHandler(worksheetQcAnalysisTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        worksheetQcAnalysisTable = (Table)def.getWidget("worksheetQcAnalysisTable");
+        addScreenHandler(worksheetQcAnalysisTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                worksheetQcAnalysisTable.load(getTableModel());
+                worksheetQcAnalysisTable.setModel(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                worksheetQcAnalysisTable.enable(true);
+                worksheetQcAnalysisTable.setEnabled(true);
             }
         });
         
-        worksheetQcAnalysisTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
-           public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+        worksheetQcAnalysisTable.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+           public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
                //do nothing
            }; 
         });
@@ -106,7 +105,7 @@ public class WorksheetQcAnalysisSelectionScreen extends Screen implements HasAct
             }
         });
 
-        okButton = (AppButton)def.getWidget("ok");
+        okButton = (Button)def.getWidget("ok");
         addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 if (okButton.isEnabled())
@@ -114,11 +113,11 @@ public class WorksheetQcAnalysisSelectionScreen extends Screen implements HasAct
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                okButton.enable(true);
+                okButton.setEnabled(true);
             }
         });
 
-        cancelButton = (AppButton)def.getWidget("cancel");
+        cancelButton = (Button)def.getWidget("cancel");
         addScreenHandler(cancelButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 if (cancelButton.isEnabled())
@@ -126,13 +125,19 @@ public class WorksheetQcAnalysisSelectionScreen extends Screen implements HasAct
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                cancelButton.enable(true);
+                cancelButton.setEnabled(true);
             }
         });
     }
     
     private void ok() {
-        ArrayList<TableDataRow> selections = worksheetQcAnalysisTable.getSelections();
+    	Integer[] sels;
+        ArrayList<Row> selections;
+        
+        sels = worksheetQcAnalysisTable.getSelectedRows();
+        selections = new ArrayList<Row>(sels.length);
+        for(int i = 0; i < sels.length; i++)
+        	selections.add(worksheetQcAnalysisTable.getRowAt(sels[i]));
         
         if (selections.size() > 0)
             ActionEvent.fire(this, Action.OK, selections);
@@ -144,17 +149,17 @@ public class WorksheetQcAnalysisSelectionScreen extends Screen implements HasAct
         window.close();
     }
     
-    private ArrayList<TableDataRow> getTableModel() {
+    private ArrayList<Row> getTableModel() {
         int                      i, j;
-        ArrayList<TableDataRow>  model;
+        ArrayList<Row>           model;
         QcManager                qcManager;
-        TableDataRow             row;
+        Row                      row;
         WorksheetAnalysisDO      waDO;
         WorksheetAnalysisManager waManager;
         WorksheetItemDO          wiDO;
         WorksheetItemManager     wiManager;
         
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<Row>();
         if (manager == null) 
             return model;
 
@@ -175,11 +180,10 @@ public class WorksheetQcAnalysisSelectionScreen extends Screen implements HasAct
                             continue;
                         
                         qcManager = qcService.call("fetchById", waDO.getQcId());
-                        row = new TableDataRow(waDO.getId(),
-                                               wiDO.getPosition(), 
-                                               waDO.getAccessionNumber(), 
-                                               qcManager.getQc().getName());
-                        row.data = waDO;
+                        row = new Row(wiDO.getPosition(), 
+                                      waDO.getAccessionNumber(), 
+                                      qcManager.getQc().getName());
+                        row.setData(waDO);
                         
                         model.add(row);
                     }

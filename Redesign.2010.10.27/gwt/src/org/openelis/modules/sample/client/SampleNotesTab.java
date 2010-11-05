@@ -33,16 +33,16 @@ import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Button;
+import org.openelis.gwt.widget.ModalWindow;
 import org.openelis.gwt.widget.NotesPanel;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.Window;
 import org.openelis.manager.NoteManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.modules.note.client.EditNoteScreen;
 import org.openelis.modules.note.client.NotesTab;
 
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.Window;
 
 public class SampleNotesTab extends NotesTab {
     protected String         internalNotesPanelKey;
@@ -52,12 +52,12 @@ public class SampleNotesTab extends NotesTab {
     protected NoteManager    internalManager;
 
     protected NotesPanel     internalNotesPanel;
-    protected AppButton      internalEditButton;
+    protected Button         internalEditButton;
     protected EditNoteScreen internalEditNote;
 
     protected NoteViewDO     internalNote;
 
-    public SampleNotesTab(ScreenDefInt def, ScreenWindow window, String externalNotesPanelKey,
+    public SampleNotesTab(ScreenDefInt def, Window window, String externalNotesPanelKey,
                           String externalEditButtonKey, String internalNotesPanelKey,
                           String internalEditButtonKey) {
 
@@ -82,7 +82,7 @@ public class SampleNotesTab extends NotesTab {
             }
         });
 
-        internalEditButton = (AppButton)def.getWidget(internalEditButtonKey);
+        internalEditButton = (Button)def.getWidget(internalEditButtonKey);
         addScreenHandler(internalEditButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 if (internalEditNote == null) {
@@ -103,12 +103,12 @@ public class SampleNotesTab extends NotesTab {
 
                     } catch (Exception e) {
                         e.printStackTrace();
-                        Window.alert("error: " + e.getMessage());
+                        com.google.gwt.user.client.Window.alert("error: " + e.getMessage());
                         return;
                     }
                 }
 
-                ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+                ModalWindow modal = new ModalWindow();
                 modal.setName(consts.get("standardNote"));
                 modal.setContent(internalEditNote);
 
@@ -117,7 +117,7 @@ public class SampleNotesTab extends NotesTab {
                     internalNote = internalManager.getEditingNote();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Window.alert("error!");
+                    com.google.gwt.user.client.Window.alert("error!");
                 }
                 internalNote.setSystemUser(userName);
                 internalNote.setSystemUserId(userId);
@@ -128,9 +128,9 @@ public class SampleNotesTab extends NotesTab {
             public void onStateChange(StateChangeEvent<State> event) {
 
                 if (event.getState() == State.ADD || event.getState() == State.UPDATE)
-                    internalEditButton.enable(true);
+                    internalEditButton.setEnabled(true);
                 else
-                    internalEditButton.enable(false);
+                    internalEditButton.setEnabled(false);
             }
         });
     }
@@ -166,7 +166,7 @@ public class SampleNotesTab extends NotesTab {
                 loaded = true;
 
             } catch (Exception e) {
-                Window.alert(e.getMessage());
+                com.google.gwt.user.client.Window.alert(e.getMessage());
             }
         }
     }

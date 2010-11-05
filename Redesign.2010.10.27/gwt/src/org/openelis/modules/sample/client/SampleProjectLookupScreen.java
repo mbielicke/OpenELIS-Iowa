@@ -41,12 +41,13 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoCompleteValue;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.AutoComplete;
+import org.openelis.gwt.widget.Item;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
@@ -69,13 +70,13 @@ import com.google.gwt.user.client.Window;
 public class SampleProjectLookupScreen extends Screen implements HasActionHandlers<SampleProjectLookupScreen.Action> {
 
     private SampleProjectManager manager;
-    protected AppButton projectRemoveButton;
+    protected Button projectRemoveButton;
     
     public enum Action {
         OK
     };
 
-    private TableWidget sampleProjectTable;
+    private Table sampleProjectTable;
 
     public SampleProjectLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SampleProjectLookupDef.class));
@@ -90,39 +91,39 @@ public class SampleProjectLookupScreen extends Screen implements HasActionHandle
     }
     
     private void initialize(){
-        sampleProjectTable = (TableWidget)def.getWidget("sampleProjectTable");
-        addScreenHandler(sampleProjectTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        sampleProjectTable = (Table)def.getWidget("sampleProjectTable");
+        addScreenHandler(sampleProjectTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                sampleProjectTable.load(getTableModel());
+                sampleProjectTable.setModel(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sampleProjectTable.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                sampleProjectTable.setEnabled(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
                 sampleProjectTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
         
-        sampleProjectTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
-            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+        sampleProjectTable.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+            public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
                 //always allow selection
             }
         });
 
-        sampleProjectTable.addSelectionHandler(new SelectionHandler<TableRow>() {
-            public void onSelection(SelectionEvent<TableRow> event) {
+        sampleProjectTable.addSelectionHandler(new SelectionHandler<Integer>() {
+            public void onSelection(SelectionEvent<Integer> event) {
                 if(EnumSet.of(State.ADD, State.UPDATE).contains(state))
-                    projectRemoveButton.enable(true);
+                    projectRemoveButton.setEnabled(true);
             }
         });
 
-        final AutoComplete<Integer> project = ((AutoComplete<Integer>)sampleProjectTable.getColumns().get(0).colWidget);
+        final AutoComplete project = (AutoComplete)sampleProjectTable.getColumnWidget(0);
         sampleProjectTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int row,col;
                 row = event.getRow();
                 col = event.getCol();
                 SampleProjectViewDO projectDO;
-                TableDataRow tableRow = sampleProjectTable.getRow(row);
+                Row tableRow = sampleProjectTable.getRowAt(row);
                 try{
                     projectDO = manager.getProjectAt(row);
                 }catch(Exception e){
@@ -130,20 +131,20 @@ public class SampleProjectLookupScreen extends Screen implements HasActionHandle
                     return;
                 }
                     
-                Object val = tableRow.cells.get(col).value;
+                Object val = tableRow.getCell(col);
                 
                 switch (col) {
                     case 0:
-                        TableDataRow selectedRow = project.getSelection();
+                        Item<Integer> selectedRow = project.getSelectedItem();
                         String des = null;
                         
-                        if(selectedRow.key != null)
-                            des = (String)selectedRow.cells.get(1).value;
+                        if(selectedRow.getKey() != null)
+                            des = (String)selectedRow.getCell(1);
                             
-                        sampleProjectTable.setCell(sampleProjectTable.getSelectedRow(), 1, des);
+                        sampleProjectTable.setValueAt(sampleProjectTable.getSelectedRow(), 1, des);
                         
-                        projectDO.setProjectId((Integer)selectedRow.key);
-                        projectDO.setProjectName((String)selectedRow.cells.get(0).value);
+                        projectDO.setProjectId((Integer)selectedRow.getKey());
+                        projectDO.setProjectName((String)selectedRow.getCell(0));
                         projectDO.setProjectDescription(des);
                         break;
                     case 1:
@@ -159,25 +160,29 @@ public class SampleProjectLookupScreen extends Screen implements HasActionHandle
         project.addGetMatchesHandler(new GetMatchesHandler(){
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
-                TableDataRow row;
+                Item<Integer> row;
                 ProjectDO data;
                 ArrayList<ProjectDO> list;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e){
+                	
+                }
 
                 window.setBusy();
                 try {
                     list = service.callList("fetchActiveByName", parser.getParameter().get(0));
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new TableDataRow(4);
+                        row = new Item<Integer>(4);
                         data = list.get(i);
 
-                        row.key = data.getId();
-                        row.cells.get(0).value = data.getName();
-                        row.cells.get(1).value = data.getDescription();
+                        row.setKey(data.getId());
+                        row.setCell(0,data.getName());
+                        row.setCell(1,data.getDescription());
                        
                         model.add(row);
                     }
@@ -193,53 +198,53 @@ public class SampleProjectLookupScreen extends Screen implements HasActionHandle
         sampleProjectTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 manager.addProject(new SampleProjectViewDO());
-                projectRemoveButton.enable(true);
+                projectRemoveButton.setEnabled(true);
             }
         });
 
         sampleProjectTable.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
                 manager.removeProjectAt(event.getIndex());
-                projectRemoveButton.enable(false);
+                projectRemoveButton.setEnabled(false);
             }
         });
         
-        projectRemoveButton = (AppButton)def.getWidget("projectRemoveButton");
+        projectRemoveButton = (Button)def.getWidget("projectRemoveButton");
         addScreenHandler(projectRemoveButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int selectedRow = sampleProjectTable.getSelectedRow();
-                if (selectedRow > -1 && sampleProjectTable.numRows() > 0) {
-                    sampleProjectTable.deleteRow(selectedRow);
+                if (selectedRow > -1 && sampleProjectTable.getRowCount() > 0) {
+                    sampleProjectTable.removeRowAt(selectedRow);
                 }
             }
             public void onStateChange(StateChangeEvent<State> event) {
-                projectRemoveButton.enable(false);
+                projectRemoveButton.setEnabled(false);
             }
             
         });
         
-        final AppButton projectAddButton = (AppButton)def.getWidget("projectAddButton");
+        final Button projectAddButton = (Button)def.getWidget("projectAddButton");
         addScreenHandler(projectAddButton,new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 sampleProjectTable.addRow();
-                sampleProjectTable.selectRow(sampleProjectTable.numRows()-1);
-                sampleProjectTable.scrollToSelection();
-                sampleProjectTable.startEditing(sampleProjectTable.numRows()-1, 0);
+                sampleProjectTable.selectRowAt(sampleProjectTable.getRowCount()-1);
+                sampleProjectTable.scrollToVisible(sampleProjectTable.getSelectedRow());
+                sampleProjectTable.startEditing(sampleProjectTable.getRowCount()-1, 0);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                projectAddButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                projectAddButton.setEnabled(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
         
-        final AppButton okButton = (AppButton)def.getWidget("ok");
+        final Button okButton = (Button)def.getWidget("ok");
         addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 ok();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                okButton.enable(true);
+                okButton.setEnabled(true);
             }
         });
 
@@ -257,8 +262,8 @@ public class SampleProjectLookupScreen extends Screen implements HasActionHandle
         window.close();
     }
         
-    private ArrayList<TableDataRow> getTableModel() {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+    private ArrayList<Row> getTableModel() {
+        ArrayList<Row> model = new ArrayList<Row>();
         
         if(manager == null)
             return model;
@@ -268,12 +273,12 @@ public class SampleProjectLookupScreen extends Screen implements HasActionHandle
             for(int iter = 0;iter < manager.count();iter++) {
                 SampleProjectViewDO projectRow = (SampleProjectViewDO)manager.getProjectAt(iter);
             
-               TableDataRow row = new TableDataRow(3);
-               row.key = projectRow.getId();
+               Row row = new Row(3);
+               //row.key = projectRow.getId();
                
-               row.cells.get(0).value = new TableDataRow(projectRow.getProjectId(),projectRow.getProjectName());
-               row.cells.get(1).value = projectRow.getProjectDescription();
-               row.cells.get(2).value = projectRow.getIsPermanent();
+               row.setCell(0,new AutoCompleteValue(projectRow.getProjectId(),projectRow.getProjectName()));
+               row.setCell(1,projectRow.getProjectDescription());
+               row.setCell(2,projectRow.getIsPermanent());
                model.add(row);
                
             }
@@ -292,8 +297,8 @@ public class SampleProjectLookupScreen extends Screen implements HasActionHandle
         
         DeferredCommand.addCommand(new Command() {
             public void execute() {
-                if(sampleProjectTable.numRows() > 0)
-                    sampleProjectTable.select(0, 0);
+                if(sampleProjectTable.getRowCount() > 0)
+                    sampleProjectTable.startEditing(0, 0);
             }
         });
     }

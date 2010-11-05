@@ -44,14 +44,15 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoCompleteValue;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.Item;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.Window;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
@@ -68,20 +69,19 @@ import org.openelis.meta.OrderMeta;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.user.client.Window;
 
 public class ContainerTab extends Screen {
 
     private OrderManager          manager;
-    private AutoComplete<Integer> test;
-    private AppButton             addTestButton, removeTestButton, addContainerButton,
+    private AutoComplete          test;
+    private Button                addTestButton, removeTestButton, addContainerButton,
                                   removeContainerButton;
-    private TableWidget           orderTestTable, orderContainerTable;
+    private Table                 orderTestTable, orderContainerTable;
     private boolean               loaded;
 
     protected ScreenService       analysisService, testService;
 
-    public ContainerTab(ScreenDefInt def, ScreenWindow window) {
+    public ContainerTab(ScreenDefInt def, Window window) {
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
         analysisService = new ScreenService("controller?service=org.openelis.modules.analysis.server.AnalysisService");
         testService  = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
@@ -94,15 +94,15 @@ public class ContainerTab extends Screen {
     }
 
     private void initialize() {        
-        orderTestTable = (TableWidget)def.getWidget("orderTestTable");
-        addScreenHandler(orderTestTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        orderTestTable = (Table)def.getWidget("orderTestTable");
+        addScreenHandler(orderTestTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {       
                 if(state != State.QUERY)
-                    orderTestTable.load(getTestTableModel());
+                    orderTestTable.setModel(getTestTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orderTestTable.enable(true);
+                orderTestTable.setEnabled(true);
                 orderTestTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -123,19 +123,19 @@ public class ContainerTab extends Screen {
 
                 r = event.getRow();
                 c = event.getCol();
-                val = orderTestTable.getObject(r,c);
+                val = orderTestTable.getValueAt(r,c);
                 
                 try {
                     data = manager.getTests().getTestAt(r);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                     return;
                 }
                 
                 switch(c) {
                     case 0:
                         if (val != null) {
-                            test = (TestMethodVO) ((TableDataRow)val).data;
+                            test = (TestMethodVO) ((AutoCompleteValue)val).getData();
                             if(test.getMethodId() == null) {
                                 addTestsFromPanel(test.getTestId(), r);
                             } else {
@@ -144,8 +144,8 @@ public class ContainerTab extends Screen {
                                 data.setDescription(test.getTestDescription());
                                 data.setMethodName(test.getMethodName());
                                 
-                                orderTestTable.setCell(r, 1, test.getMethodName());
-                                orderTestTable.setCell(r, 2, test.getTestDescription());
+                                orderTestTable.setValueAt(r, 1, test.getMethodName());
+                                orderTestTable.setValueAt(r, 2, test.getTestDescription());
                             }
                         } else {
                             data.setTestId(null);
@@ -153,8 +153,8 @@ public class ContainerTab extends Screen {
                             data.setMethodName(null);
                             data.setDescription(null);
                             
-                            orderTestTable.setCell(r, 1, null);
-                            orderTestTable.setCell(r, 2, null);
+                            orderTestTable.setValueAt(r, 1, null);
+                            orderTestTable.setValueAt(r, 2, null);
                         }
                 }
             }
@@ -163,7 +163,7 @@ public class ContainerTab extends Screen {
         orderTestTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 int r;
-                TableDataRow val;
+                AutoCompleteValue val;
                 OrderTestViewDO data;
                 TestMethodVO test;                
                 OrderTestManager man;
@@ -175,10 +175,10 @@ public class ContainerTab extends Screen {
                     man.addTestAt(r);
                     data = man.getTestAt(r);                    
                     
-                    val = (TableDataRow)orderTestTable.getObject(r, 0);
+                    val = (AutoCompleteValue)orderTestTable.getValueAt(r, 0);
                     
                     if(val != null) {
-                        test = (TestMethodVO)val.data;
+                        test = (TestMethodVO)val.getData();
                         data.setTestId(test.getTestId());
                         data.setTestName(test.getTestName());
                         data.setMethodName(test.getMethodName());
@@ -191,7 +191,7 @@ public class ContainerTab extends Screen {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
@@ -201,7 +201,7 @@ public class ContainerTab extends Screen {
                 try {
                     manager.getTests().removeTestAt(event.getIndex());
                 } catch (Exception e) {                    
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
@@ -215,13 +215,17 @@ public class ContainerTab extends Screen {
                 ArrayList<QueryData> fields;
                 ArrayList<TestMethodVO> autoList;
                 TestMethodVO data;
-                ArrayList<TableDataRow> model;
-                TableDataRow row;
+                ArrayList<Item<Integer>> model;
+                Item<Integer> row;
 
                 fields = new ArrayList<QueryData>();
                 query = new Query();
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e){
+                	
+                }
 
                 field = new QueryData();
                 field.query = parser.getParameter().get(0);
@@ -231,16 +235,16 @@ public class ContainerTab extends Screen {
 
                 try {
                     autoList = analysisService.callList("getTestMethodMatches", query);
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
 
                     for (int i = 0; i < autoList.size(); i++ ) {
                         data = autoList.get(i);
 
-                        row = new TableDataRow(data.getTestId(),
+                        row = new Item<Integer>(data.getTestId(),
                                                             data.getTestName(),
                                                             data.getMethodName(),
                                                             data.getTestDescription());
-                        row.data = data;
+                        row.setData(data);
 
                         model.add(row);
                     }
@@ -248,19 +252,19 @@ public class ContainerTab extends Screen {
                     test.showAutoMatches(model);
 
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             
             }            
         });
         
-        test.addSelectionHandler(new SelectionHandler<TableRow>() {
-            public void onSelection(SelectionEvent<TableRow> event) {
-                TableDataRow selectedRow;
+        test.getPopupContext().addSelectionHandler(new SelectionHandler<Integer>() {
+            public void onSelection(SelectionEvent<Integer> event) {
+                Item<Integer> selectedRow;
                 TestMethodVO data;
                 int r;
 
-                selectedRow = event.getSelectedItem().row;                
+                selectedRow = test.getSelectedItem();
                 r = orderTestTable.getSelectedRow();
 
                 //
@@ -269,61 +273,61 @@ public class ContainerTab extends Screen {
                 // the tests belonging to that panel we have to make sure that 
                 // in both cases the id of the test is set for each
                 // 
-                if (selectedRow != null && selectedRow.key != null) {
-                    data = (TestMethodVO)selectedRow.data;
-                    orderTestTable.setCell(r, 1, data.getMethodName());
-                    orderTestTable.setCell(r, 2, data.getTestDescription());
+                if (selectedRow != null && selectedRow.getKey() != null) {
+                    data = (TestMethodVO)selectedRow.getData();
+                    orderTestTable.setValueAt(r, 1, data.getMethodName());
+                    orderTestTable.setValueAt(r, 2, data.getTestDescription());
                 } else {
-                    orderTestTable.setCell(r, 1, null);
-                    orderTestTable.setCell(r, 1, null);
+                    orderTestTable.setValueAt(r, 1, null);
+                    orderTestTable.setValueAt(r, 1, null);
                 }
             }
 
         });
 
-        addTestButton = (AppButton)def.getWidget("addTestButton");
+        addTestButton = (Button)def.getWidget("addTestButton");
         addScreenHandler(addTestButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int r;
 
                 r = orderTestTable.getSelectedRow() + 1;
                 if (r == 0) 
-                    r = orderTestTable.numRows();                
-                orderTestTable.addRow(r);
-                orderTestTable.selectRow(r);
-                orderTestTable.scrollToSelection();
+                    r = orderTestTable.getRowCount();                
+                orderTestTable.addRowAt(r);
+                orderTestTable.selectRowAt(r);
+                orderTestTable.scrollToVisible(r);
                 orderTestTable.startEditing(r, 0);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addTestButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                addTestButton.setEnabled(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
 
-        removeTestButton = (AppButton)def.getWidget("removeTestButton");
+        removeTestButton = (Button)def.getWidget("removeTestButton");
         addScreenHandler(removeTestButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int r;
 
                 r = orderTestTable.getSelectedRow();
-                if (r > -1 && orderTestTable.numRows() > 0)
-                    orderTestTable.deleteRow(r);
+                if (r > -1 && orderTestTable.getRowCount() > 0)
+                    orderTestTable.removeRowAt(r);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeTestButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                removeTestButton.setEnabled(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
         
-        orderContainerTable = (TableWidget)def.getWidget("orderContainerTable");
-        addScreenHandler(orderContainerTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        orderContainerTable = (Table)def.getWidget("orderContainerTable");
+        addScreenHandler(orderContainerTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
                 if(state != State.QUERY)
-                    orderContainerTable.load(getContainerTableModel());
+                    orderContainerTable.setModel(getContainerTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orderContainerTable.enable(true);
+                orderContainerTable.setEnabled(true);
                 orderContainerTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -343,12 +347,12 @@ public class ContainerTab extends Screen {
 
                 r = event.getRow();
                 c = event.getCol();
-                val = orderContainerTable.getObject(r,c);
+                val = orderContainerTable.getValueAt(r,c);
                 
                 try {
                     data = manager.getContainers().getContainerAt(r);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                     return;
                 }
                 
@@ -380,10 +384,10 @@ public class ContainerTab extends Screen {
                         sampleTypeId = prevData.getTypeOfSampleId();                        
                         data = man.getContainerAt(index);
                         data.setTypeOfSampleId(sampleTypeId);
-                        orderContainerTable.setCell(index, 2, sampleTypeId);
+                        orderContainerTable.setValueAt(index, 2, sampleTypeId);
                     }
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
@@ -393,83 +397,83 @@ public class ContainerTab extends Screen {
                 try {
                     manager.getContainers().removeContainerAt(event.getIndex());
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
 
-        addContainerButton = (AppButton)def.getWidget("addContainerButton");
+        addContainerButton = (Button)def.getWidget("addContainerButton");
         addScreenHandler(addContainerButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int n;
 
                 orderContainerTable.addRow();
-                n = orderContainerTable.numRows() - 1;
-                orderContainerTable.selectRow(n);
-                orderContainerTable.scrollToSelection();
+                n = orderContainerTable.getRowCount() - 1;
+                orderContainerTable.selectRowAt(n);
+                orderContainerTable.scrollToVisible(n);
                 orderContainerTable.startEditing(n, 0);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addContainerButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                addContainerButton.setEnabled(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
 
-        removeContainerButton = (AppButton)def.getWidget("removeContainerButton");
+        removeContainerButton = (Button)def.getWidget("removeContainerButton");
         addScreenHandler(removeContainerButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int r;
 
                 r = orderContainerTable.getSelectedRow();
-                if (r > -1 && orderContainerTable.numRows() > 0)
-                    orderContainerTable.deleteRow(r);
+                if (r > -1 && orderContainerTable.getRowCount() > 0)
+                    orderContainerTable.removeRowAt(r);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeContainerButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                removeContainerButton.setEnabled(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
     }
     
     private void initializeDropdowns() {
         Dropdown<Integer> container, sampleTypes;
-        ArrayList<TableDataRow> model;
+        ArrayList<Item<Integer>> model;
         ArrayList<DictionaryDO> list;
-        TableDataRow row;
+        Item<Integer> row;
 
-        container = (Dropdown) orderContainerTable.getColumns().get(0).getColumnWidget();
-        sampleTypes = (Dropdown) orderContainerTable.getColumns().get(2).getColumnWidget();        
+        container = (Dropdown) orderContainerTable.getColumnWidget(0);
+        sampleTypes = (Dropdown) orderContainerTable.getColumnWidget(2);
 
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
         list = DictionaryCache.getListByCategorySystemName("sample_container");
         for (DictionaryDO d : list) {
-            row = new TableDataRow(d.getId(), d.getEntry());
-            row.enabled = ("Y".equals(d.getIsActive()));
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);   
         }
         container.setModel(model);
 
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
         list = DictionaryCache.getListByCategorySystemName("type_of_sample");
         for (DictionaryDO d : list) {
-            row = new TableDataRow(d.getId(), d.getEntry());
-            row.enabled = ("Y".equals(d.getIsActive()));
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row); 
         }
         sampleTypes.setModel(model);
     }   
     
-    private ArrayList<TableDataRow> getTestTableModel() {
+    private ArrayList<Row> getTestTableModel() {
         int i;
         OrderTestViewDO data;
-        ArrayList<TableDataRow> model;
+        ArrayList<Row> model;
         OrderTestManager man;
-        TableDataRow row;
+        AutoCompleteValue av;
         
         
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<Row>();
         if (manager == null)
             return model;
         
@@ -477,24 +481,24 @@ public class ContainerTab extends Screen {
             man = manager.getTests();
             for (i = 0; i < man.count(); i++ ) {
                 data = (OrderTestViewDO)man.getTestAt(i);
-                row = new TableDataRow(data.getTestId(), data.getTestName());
-                row.data = data;
-                model.add(new TableDataRow(null, row, data.getMethodName(), data.getDescription()));
+                av = new AutoCompleteValue(data.getTestId(), data.getTestName());
+                av.setData(data);
+                model.add(new Row(av, data.getMethodName(), data.getDescription()));
             }
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             e.printStackTrace();
         }
         return model;
     }
     
-    private ArrayList<TableDataRow> getContainerTableModel() {
+    private ArrayList<Row> getContainerTableModel() {
         int i;
         OrderContainerDO data;
-        ArrayList<TableDataRow> model;
+        ArrayList<Row> model;
         OrderContainerManager man;
         
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<Row>();
         if (manager == null)
             return model;
         
@@ -502,12 +506,12 @@ public class ContainerTab extends Screen {
             man = manager.getContainers();
             for (i = 0; i < man.count(); i++ ) {
                 data = (OrderContainerDO)man.getContainerAt(i);
-                model.add(new TableDataRow(null, data.getContainerId(), 
-                                           data.getNumberOfContainers(),                                                            
-                                           data.getTypeOfSampleId()));
+                model.add(new Row(data.getContainerId(), 
+                                  data.getNumberOfContainers(),                                                            
+                                  data.getTypeOfSampleId()));
             }
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             e.printStackTrace();
         }
         return model;
@@ -527,36 +531,37 @@ public class ContainerTab extends Screen {
     
     private void addTestsFromPanel(Integer panelId, int index) {
         ArrayList<TestMethodVO> tests;
-        TableDataRow row, val;  
+        Row row;
+        AutoCompleteValue val;  
         TestMethodVO data;
 
         try {
             tests = testService.callList("fetchByPanelId", panelId);            
             if (tests != null && tests.size() > 0) {
-                orderTestTable.deleteRow(index);
+                orderTestTable.removeRowAt(index);
                 for (int i = 0; i < tests.size(); i++ ) {
                     data = tests.get(i);
 
-                    row = new TableDataRow(3);
+                    row = new Row(3);
 
-                    val = new TableDataRow(data.getTestId(), data.getTestName());
-                    val.data = data;
+                    val = new AutoCompleteValue(data.getTestId(), data.getTestName());
+                    val.setData(data);
 
-                    row.cells.get(0).setValue(val);
-                    row.cells.get(1).setValue(data.getMethodName());
-                    row.cells.get(2).setValue(data.getTestDescription());
+                    row.setCell(0,val);
+                    row.setCell(1,data.getMethodName());
+                    row.setCell(2,data.getTestDescription());
 
-                    orderTestTable.addRow(index + i, row);
+                    orderTestTable.addRowAt(index + i, row);
                 }
             } else {
-                orderTestTable.setCellException(index, 0, new LocalizedException("noActiveTestFoundForPanelException"));
-                orderTestTable.setCell(index, 0, null);
-                orderTestTable.setCell(index, 1, null);
-                orderTestTable.setCell(index, 2, null);
+                orderTestTable.addException(index, 0, new LocalizedException("noActiveTestFoundForPanelException"));
+                orderTestTable.setValueAt(index, 0, null);
+                orderTestTable.setValueAt(index, 1, null);
+                orderTestTable.setValueAt(index, 2, null);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
         }
     } 
 }

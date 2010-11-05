@@ -33,37 +33,35 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.Window;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.manager.PwsAddressManager;
 import org.openelis.manager.PwsManager;
 
-import com.google.gwt.user.client.Window;
-
 public class AddressTab extends Screen {
 
     private PwsManager  manager;
     private boolean     loaded;
-    private TableWidget addressTable;    
+    private Table       addressTable;    
     
-    public AddressTab(ScreenDefInt def, ScreenWindow window) {
+    public AddressTab(ScreenDefInt def, Window window) {
         setDefinition(def);
         setWindow(window);
         initialize();
     }
 
     private void initialize() {
-        addressTable = (TableWidget)def.getWidget("addressTable");
-        addScreenHandler(addressTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        addressTable = (Table)def.getWidget("addressTable");
+        addScreenHandler(addressTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                addressTable.load(getTableModel()); 
+                addressTable.setModel(getTableModel()); 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addressTable.enable(true);
+                addressTable.setEnabled(true);
             }
         });  
         
@@ -74,13 +72,13 @@ public class AddressTab extends Screen {
         });
     }
     
-    private ArrayList<TableDataRow> getTableModel() {
-        ArrayList<TableDataRow> model;
-        TableDataRow row;
+    private ArrayList<Row> getTableModel() {
+        ArrayList<Row> model;
+        Row row;
         PwsAddressDO data;
         PwsAddressManager man;
         
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<Row>();
         if (manager == null)
             return model; 
         
@@ -89,22 +87,22 @@ public class AddressTab extends Screen {
             for(int i = 0; i < man.count(); i++) {
                 data = man.getAddressAt(i);
                 
-                row = new TableDataRow(10);
-                row.cells.get(0).setValue(data.getTypeCode());
-                row.cells.get(1).setValue(data.getActiveIndCd());
-                row.cells.get(2).setValue(data.getName());
-                row.cells.get(3).setValue(data.getAddrLineOneTxt());
-                row.cells.get(4).setValue(data.getAddrLineTwoTxt());
-                row.cells.get(5).setValue(data.getAddressCityName());
-                row.cells.get(6).setValue(data.getAddressStateCode());
-                row.cells.get(7).setValue(data.getAddressZipCode());
-                row.cells.get(8).setValue(data.getStateFipsCode());
-                row.cells.get(9).setValue(data.getPhoneNumber());
+                row = new Row(10);
+                row.setCell(0,data.getTypeCode());
+                row.setCell(1,data.getActiveIndCd());
+                row.setCell(2,data.getName());
+                row.setCell(3,data.getAddrLineOneTxt());
+                row.setCell(4,data.getAddrLineTwoTxt());
+                row.setCell(5,data.getAddressCityName());
+                row.setCell(6,data.getAddressStateCode());
+                row.setCell(7,data.getAddressZipCode());
+                row.setCell(8,data.getStateFipsCode());
+                row.setCell(9,data.getPhoneNumber());
                 
                 model.add(row);
             }
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             e.printStackTrace();
         }        
         return model;

@@ -53,20 +53,19 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
-import org.openelis.gwt.widget.CalendarLookUp;
+import org.openelis.gwt.widget.calendar.Calendar;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.Item;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.Window;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.TableDataCell;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
@@ -86,7 +85,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class InstrumentScreen extends Screen {
@@ -94,17 +92,17 @@ public class InstrumentScreen extends Screen {
     private InstrumentManager           manager;
     private ModulePermission            userPermission;
     
-    private CalendarLookUp              activeBegin, activeEnd;
+    private Calendar                    activeBegin, activeEnd;
     private TextBox                     name, description, modelNumber, serialNumber, location;
     private CheckBox                    isActive;
-    private AppButton                   queryButton, previousButton, nextButton, addButton, updateButton,
+    private Button                      queryButton, previousButton, nextButton, addButton, updateButton,
                                         commitButton, abortButton, addLogButton, removeLogButton;
     protected MenuItem                  instrumentHistory, instrumentLogHistory;
     private ButtonGroup                 atoz;
     private ScreenNavigator             nav;
     private Dropdown<Integer>           typeId;
-    private TableWidget                 logTable;
-    private AutoComplete<Integer>       scriptlet;
+    private Table                       logTable;
+    private AutoComplete                scriptlet;
     private ScreenService               scriptletService;    
     
     public InstrumentScreen() throws Exception {
@@ -143,89 +141,95 @@ public class InstrumentScreen extends Screen {
      */
     @SuppressWarnings("unchecked")
     private void initialize() {        
-        queryButton = (AppButton)def.getWidget("query");
+        queryButton = (Button)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 query();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
+                queryButton.setEnabled(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
                                      && userPermission.hasSelectPermission());
-                if (event.getState() == State.QUERY)
-                    queryButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.QUERY) {
+                    queryButton.setPressed(true);
+                    queryButton.lock();
+                }
             }
         });
 
-        previousButton = (AppButton)def.getWidget("previous");
+        previousButton = (Button)def.getWidget("previous");
         addScreenHandler(previousButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 previous();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                previousButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
-        nextButton = (AppButton)def.getWidget("next");
+        nextButton = (Button)def.getWidget("next");
         addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 next();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                nextButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                nextButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
-        addButton = (AppButton)def.getWidget("add");
+        addButton = (Button)def.getWidget("add");
         addScreenHandler(addButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 add();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
+                addButton.setEnabled(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
                                      && userPermission.hasAddPermission());
-                if (event.getState() == State.ADD)
-                    addButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.ADD) {
+                    addButton.setPressed(true);
+                    addButton.lock();
+                }
             }
         });
 
-        updateButton = (AppButton)def.getWidget("update");
+        updateButton = (Button)def.getWidget("update");
         addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 update();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState())
+                updateButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState())
                                      && userPermission.hasUpdatePermission());
-                if (event.getState() == State.UPDATE)
-                    updateButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.UPDATE) {
+                    updateButton.setPressed(true);
+                    updateButton.lock();
+                }
             }
         });
 
-        commitButton = (AppButton)def.getWidget("commit");
+        commitButton = (Button)def.getWidget("commit");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 commit();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                commitButton.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
 
-        abortButton = (AppButton)def.getWidget("abort");
+        abortButton = (Button)def.getWidget("abort");
         addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 abort();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                abortButton.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
         
@@ -236,7 +240,7 @@ public class InstrumentScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                instrumentHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                instrumentHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
@@ -247,7 +251,7 @@ public class InstrumentScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                instrumentLogHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                instrumentLogHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -262,7 +266,7 @@ public class InstrumentScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                name.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                name.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 name.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -278,7 +282,7 @@ public class InstrumentScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                description.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                description.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 description.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -294,7 +298,7 @@ public class InstrumentScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                modelNumber.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                modelNumber.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 modelNumber.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -310,7 +314,7 @@ public class InstrumentScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                serialNumber.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                serialNumber.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 serialNumber.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -318,7 +322,7 @@ public class InstrumentScreen extends Screen {
         typeId = (Dropdown)def.getWidget(InstrumentMeta.getTypeId());
         addScreenHandler(typeId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                typeId.setSelection(manager.getInstrument().getTypeId());
+                typeId.setValue(manager.getInstrument().getTypeId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -326,7 +330,7 @@ public class InstrumentScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                typeId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                typeId.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 typeId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -342,7 +346,7 @@ public class InstrumentScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isActive.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                isActive.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 isActive.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -358,12 +362,12 @@ public class InstrumentScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                location.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                location.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 location.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        activeBegin = (CalendarLookUp)def.getWidget(InstrumentMeta.getActiveBegin());
+        activeBegin = (Calendar)def.getWidget(InstrumentMeta.getActiveBegin());
         addScreenHandler(activeBegin, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 activeBegin.setValue(manager.getInstrument().getActiveBegin());
@@ -374,7 +378,7 @@ public class InstrumentScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                activeBegin.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                activeBegin.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 activeBegin.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -382,17 +386,17 @@ public class InstrumentScreen extends Screen {
         scriptlet = (AutoComplete)def.getWidget(InstrumentMeta.getScriptletName());
         addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                scriptlet.setSelection(manager.getInstrument().getScriptletId(),
+                scriptlet.setValue(manager.getInstrument().getScriptletId(),
                                   manager.getInstrument().getScriptletName());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 manager.getInstrument().setScriptletId(event.getValue());
-                manager.getInstrument().setScriptletName(scriptlet.getTextBoxDisplay());
+                manager.getInstrument().setScriptletName(scriptlet.getDisplay());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                scriptlet.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                scriptlet.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 scriptlet.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -400,26 +404,30 @@ public class InstrumentScreen extends Screen {
         scriptlet.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
                 ArrayList<IdNameVO> list;
 
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e) {
+                	
+                }
                 
                 try {
                     list = scriptletService.callList("fetchByName", parser.getParameter().get(0));
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
                     for (IdNameVO data : list) {                       
-                        model.add(new TableDataRow(data.getId(),data.getName()));
+                        model.add(new Item<Integer>(data.getId(),data.getName()));
                     }
                     scriptlet.showAutoMatches(model);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
 
-        activeEnd = (CalendarLookUp)def.getWidget(InstrumentMeta.getActiveEnd());
+        activeEnd = (Calendar)def.getWidget(InstrumentMeta.getActiveEnd());
         addScreenHandler(activeEnd, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 activeEnd.setValue(manager.getInstrument().getActiveEnd());
@@ -430,22 +438,22 @@ public class InstrumentScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                activeEnd.enable(true);
+                activeEnd.setEnabled(true);
                 activeEnd.setQueryMode(event.getState() == State.QUERY);
             }
         });
         
-        logTable = (TableWidget)def.getWidget("logTable");
-        addScreenHandler(logTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        logTable = (Table)def.getWidget("logTable");
+        addScreenHandler(logTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
                 //
                 //this table is not queried by,so it needs to be cleared in query mode
                 //
-                logTable.load(getLogTableModel()); 
+                logTable.setModel(getLogTableModel()); 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                logTable.enable(true);               
+                logTable.setEnabled(true);               
             }
         });        
         
@@ -461,18 +469,15 @@ public class InstrumentScreen extends Screen {
                 int r, c;
                 Object val;
                 InstrumentLogDO data;
-                TableDataCell cell;
 
                 r = event.getRow();
                 c = event.getCol();
-                
-                cell = logTable.getCell(r, c);
-                
-                val = logTable.getObject(r,c);
+                                
+                val = logTable.getValueAt(r,c);
                 try {
                     data = manager.getLogs().getLogAt(r);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                     return;
                 }                
                 switch(c) {
@@ -480,19 +485,19 @@ public class InstrumentScreen extends Screen {
                         data.setTypeId((Integer)val);
                         break;
                     case 1:                        
-                        if(cell.getExceptions() != null)
+                        if(logTable.hasExceptions(r, c))
                             data.setWorksheetId(null);
                         else
                             data.setWorksheetId((Integer)val);
                         break;
                     case 2:
-                        if(cell.getExceptions() != null)
+                        if(logTable.hasExceptions(r, c))
                             data.setEventBegin(null);
                         else 
                             data.setEventBegin((Datetime)val);
                         break;
                     case 3:
-                        if(cell.getExceptions() != null)
+                        if(logTable.hasExceptions(r,c))
                             data.setEventEnd(null);
                         else 
                             data.setEventEnd((Datetime)val);
@@ -509,7 +514,7 @@ public class InstrumentScreen extends Screen {
                try {
                    manager.getLogs().addLogAt(new InstrumentLogDO(), event.getIndex());
                } catch (Exception e) {
-                   Window.alert(e.getMessage());
+                   com.google.gwt.user.client.Window.alert(e.getMessage());
                }
             }
         });
@@ -519,40 +524,40 @@ public class InstrumentScreen extends Screen {
                 try {
                     manager.getLogs().removeLogAt(event.getIndex());
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
 
-        addLogButton = (AppButton)def.getWidget("addLogButton");
+        addLogButton = (Button)def.getWidget("addLogButton");
         addScreenHandler(addLogButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int n;
                 
                 logTable.addRow();
-                n = logTable.numRows() - 1;
-                logTable.selectRow(n);
-                logTable.scrollToSelection();
+                n = logTable.getRowCount() - 1;
+                logTable.selectRowAt(n);
+                logTable.scrollToVisible(n);
                 logTable.startEditing(n, 0);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addLogButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                addLogButton.setEnabled(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
         
-        removeLogButton = (AppButton)def.getWidget("removeLogButton");
+        removeLogButton = (Button)def.getWidget("removeLogButton");
         addScreenHandler(removeLogButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int r;
                 
                 r = logTable.getSelectedRow();
-                if (r > -1 && logTable.numRows() > 0)
-                    logTable.deleteRow(r);
+                if (r > -1 && logTable.getRowCount() > 0)
+                    logTable.removeRowAt(r);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeLogButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                removeLogButton.setEnabled(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
         
@@ -576,7 +581,7 @@ public class InstrumentScreen extends Screen {
                         } else if (error instanceof LastPageException) {
                             window.setError(consts.get("noMoreRecordInDir"));
                         } else {
-                            Window.alert("Error: Instrument call query failed; " + error.getMessage());
+                            com.google.gwt.user.client.Window.alert("Error: Instrument call query failed; " + error.getMessage());
                             window.setError(consts.get("queryFailed"));
                         }
                     }
@@ -587,16 +592,16 @@ public class InstrumentScreen extends Screen {
                 return fetchById( (entry == null) ? null : ((IdNameVO)entry).getId());
             }
 
-            public ArrayList<TableDataRow> getModel() {
+            public ArrayList<Item<Integer>> getModel() {
                 ArrayList<IdNameVO> result;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 model = null;
                 result = nav.getQueryResult();
                 if (result != null) {
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
                     for (IdNameVO entry : result)
-                        model.add(new TableDataRow(entry.getId(), entry.getName(),
+                        model.add(new Item<Integer>(entry.getId(), entry.getName(),
                                                    entry.getDescription()));
                 }
                 return model;
@@ -609,7 +614,7 @@ public class InstrumentScreen extends Screen {
                 boolean enable;
                 enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
                          userPermission.hasSelectPermission();
-                atoz.enable(enable);
+                atoz.setEnabled(enable);
                 nav.enable(enable);
             }
 
@@ -619,7 +624,7 @@ public class InstrumentScreen extends Screen {
 
                 field = new QueryData();
                 field.key = InstrumentMeta.getName();
-                field.query = ((AppButton)event.getSource()).getAction();
+                field.query = ((Button)event.getSource()).getAction();
                 field.type = QueryData.Type.STRING;
 
                 query = new Query();
@@ -628,8 +633,8 @@ public class InstrumentScreen extends Screen {
             }
         });
         
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+        window.addBeforeClosedHandler(new BeforeCloseHandler<Window>() {
+            public void onBeforeClosed(BeforeCloseEvent<Window> event) {                
                 if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
@@ -639,33 +644,33 @@ public class InstrumentScreen extends Screen {
     }
     
     private void initializeDropdowns() {
-        ArrayList<TableDataRow> model;
+        ArrayList<Item<Integer>> model;
         ArrayList<DictionaryDO> list;
-        TableDataRow row;
+        Item<Integer> row;
 
         // type dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
         list = DictionaryCache.getListByCategorySystemName("instrument_type");
         for (DictionaryDO d : list) {         
-            row = new TableDataRow(d.getId(), d.getEntry());
-            row.enabled = ("Y".equals(d.getIsActive()));
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
 
         typeId.setModel(model);
 
         // log type dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, "")); 
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, "")); 
         list = DictionaryCache.getListByCategorySystemName("instrument_log_type");
         for (DictionaryDO d : list) {
-            row = new TableDataRow(d.getId(), d.getEntry());
-            row.enabled = ("Y".equals(d.getIsActive()));
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
 
-        ((Dropdown<Integer>)(logTable.getColumnWidget(InstrumentMeta.getLogTypeId()))).setModel(model);        
+        ((Dropdown<Integer>)(logTable.getColumnAt(logTable.getColumnByName(InstrumentMeta.getLogTypeId())).getCellEditor().getWidget())).setModel(model);        
     }
     
     /*
@@ -710,7 +715,7 @@ public class InstrumentScreen extends Screen {
             DataChangeEvent.fire(this);
             setFocus(name);
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
         }
         window.clearStatus();
     }
@@ -740,7 +745,7 @@ public class InstrumentScreen extends Screen {
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
-                Window.alert("commitAdd(): " + e.getMessage());
+                com.google.gwt.user.client.Window.alert("commitAdd(): " + e.getMessage());
                 window.clearStatus();
             }
         } else if (state == State.UPDATE) {
@@ -754,7 +759,7 @@ public class InstrumentScreen extends Screen {
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
-                Window.alert("commitUpdate(): " + e.getMessage());
+                com.google.gwt.user.client.Window.alert("commitUpdate(): " + e.getMessage());
                 window.clearStatus();
             }
         }
@@ -777,7 +782,7 @@ public class InstrumentScreen extends Screen {
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
             } catch (Exception e) {
-                Window.alert(e.getMessage());
+                com.google.gwt.user.client.Window.alert(e.getMessage());
                 fetchById(null);
             }
             window.setDone(consts.get("updateAborted"));
@@ -820,7 +825,7 @@ public class InstrumentScreen extends Screen {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             return;
         }
 
@@ -845,7 +850,7 @@ public class InstrumentScreen extends Screen {
             } catch (Exception e) {
                 fetchById(null);
                 e.printStackTrace();
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                com.google.gwt.user.client.Window.alert(consts.get("fetchFailed") + e.getMessage());
                 return false;
             }
         }
@@ -855,32 +860,32 @@ public class InstrumentScreen extends Screen {
         return true;
     }
     
-    private ArrayList<TableDataRow> getLogTableModel() {
+    private ArrayList<Row> getLogTableModel() {
         int i;
         InstrumentLogDO data;
-        ArrayList<TableDataRow> model;
-        TableDataRow row;
+        ArrayList<Row> model;
+        Row row;
         
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<Row>();
         if (manager == null)
             return model;
         
         try {
             for (i = 0; i < manager.getLogs().count(); i++ ) {
                 data = manager.getLogs().getLogAt(i);
-                row = new TableDataRow(5);
+                row = new Row(5);
                 
-                row.key = data.getId();
-                row.cells.get(0).setValue(data.getTypeId());
-                row.cells.get(1).setValue(data.getWorksheetId());
-                row.cells.get(2).setValue(data.getEventBegin());
-                row.cells.get(3).setValue(data.getEventEnd());
-                row.cells.get(4).setValue(data.getText());
+                //row.key = data.getId();
+                row.setCell(0,data.getTypeId());
+                row.setCell(1,data.getWorksheetId());
+                row.setCell(2,data.getEventBegin());
+                row.setCell(3,data.getEventEnd());
+                row.setCell(4,data.getText());
           
                 model.add(row);
             }
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             e.printStackTrace();
         }        
         return model;

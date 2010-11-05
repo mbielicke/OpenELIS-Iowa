@@ -44,7 +44,7 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.DateField;
+import org.openelis.gwt.widget.DateHelper;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SamplePrivateWellManager;
@@ -112,11 +112,10 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                     if (analyteId.equals("smpl_collected_date")) {
                         manager.getSample().setCollectionDate(Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY));
                     } else if (analyteId.equals("smpl_collected_time")) {
-                        DateField df = new DateField();
+                        DateHelper df = new DateHelper();
                         df.setBegin(Datetime.HOUR);
                         df.setEnd(Datetime.MINUTE);
-                        df.setStringValue(data.getValue());
-                        manager.getSample().setCollectionTime(df.getValue());
+                        manager.getSample().setCollectionTime(df.getValue(data.getValue()));
                     } else if (analyteId.equals("smpl_client_ref")) {
                         manager.getSample().setClientReference(data.getValue());
                     } else if (analyteId.equals("report_to")) {

@@ -42,7 +42,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen id="WorksheetLookup" name="{resource:getString($constants,'worksheetLookup')}">
+    <screen name="{resource:getString($constants,'worksheetLookup')}">
       <VerticalPanel padding="0" spacing="0">
         <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
           <HorizontalPanel>
@@ -55,7 +55,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'worksheetUser')" />
                 </text>
-                <autoComplete key="{meta:getSystemUserId()}" width="100" case="LOWER" popWidth="auto" tab="{meta:getCreatedDate()},{meta:getId()}" field="Integer" />
+                <autoComplete key="{meta:getSystemUserId()}" width="100" case="LOWER" tab="{meta:getCreatedDate()},{meta:getId()}"/>
               </row>
               <row>
                 <text style="Prompt">
@@ -65,21 +65,14 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'status')" />:
                 </text>
-                <dropdown key="{meta:getStatusId()}" width="100" popWidth="100" tab="searchButton,{meta:getCreatedDate()}" field="Integer" />
+                <dropdown key="{meta:getStatusId()}" width="100" tab="searchButton,{meta:getCreatedDate()}" field="Integer" />
               </row>
             </TablePanel>
             <widget halign="center" valign="middle">
-              <appButton key="searchButton" style="Button" tab="worksheetTable,{meta:getStatusId()}" action="search">
-                <HorizontalPanel>
-                  <AbsolutePanel style="FindButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'search')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
+              <button key="searchButton" style="Button" icon="FindButtonImage" text="{resource:getString($constants,'search')}" tab="worksheetTable,{meta:getStatusId()}" action="search"/>
             </widget>
           </HorizontalPanel>
-          <table key="worksheetTable" width="auto" maxRows="9" multiSelect="false" showScroll="ALWAYS" style="ScreenTableWithSides" tab="okButton,searchButton" title="">
+          <table key="worksheetTable" rows="9" multiSelect="false" vscroll="ALWAYS" hscroll="ALWAYS" style="ScreenTableWithSides" tab="okButton,searchButton">
             <col key="{meta:getId()}" width="100" sort="true" header="{resource:getString($constants,'worksheetNumber')}">
               <label field="Integer" />
             </col>
@@ -105,16 +98,8 @@ UIRF Software License are applicable instead of those above.
 
         <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
           <HorizontalPanel>
-            <xsl:call-template name="selectButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="cancelButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
+            <xsl:call-template name="selectButton"/>
+            <xsl:call-template name="cancelButton"/>
           </HorizontalPanel>
         </AbsolutePanel>
 

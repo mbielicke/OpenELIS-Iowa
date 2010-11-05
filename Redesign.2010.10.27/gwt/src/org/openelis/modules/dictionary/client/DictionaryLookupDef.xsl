@@ -92,16 +92,8 @@ UIRF Software License are applicable instead of those above.
         <VerticalPanel width="504" spacing="0">
           <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
             <HorizontalPanel>
-              <xsl:call-template name="okButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="cancelButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
+              <xsl:call-template name="okButton"/>
+              <xsl:call-template name="cancelButton"/>
             </HorizontalPanel>
           </AbsolutePanel>
         </VerticalPanel>
