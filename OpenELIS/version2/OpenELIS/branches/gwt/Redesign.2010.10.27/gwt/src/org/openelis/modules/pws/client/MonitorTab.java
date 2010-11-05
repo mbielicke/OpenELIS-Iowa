@@ -33,37 +33,36 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.Window;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.manager.PwsManager;
 import org.openelis.manager.PwsMonitorManager;
 
-import com.google.gwt.user.client.Window;
 
 public class MonitorTab extends Screen{
 
     private PwsManager  manager;
     private boolean     loaded;
-    private TableWidget monitorTable;    
+    private Table       monitorTable;    
 
-    public MonitorTab(ScreenDefInt def, ScreenWindow window) {
+    public MonitorTab(ScreenDefInt def, Window window) {
         setDefinition(def);
         setWindow(window);
         initialize();
     }
 
     private void initialize() {
-        monitorTable = (TableWidget)def.getWidget("monitorTable");
-        addScreenHandler(monitorTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        monitorTable = (Table)def.getWidget("monitorTable");
+        addScreenHandler(monitorTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                monitorTable.load(getTableModel()); 
+                monitorTable.setModel(getTableModel()); 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                monitorTable.enable(true);                
+                monitorTable.setEnabled(true);                
             }
         });       
         
@@ -75,13 +74,13 @@ public class MonitorTab extends Screen{
     }
         
     
-    private ArrayList<TableDataRow> getTableModel() {
-        ArrayList<TableDataRow> model;
-        TableDataRow row;
+    private ArrayList<Row> getTableModel() {
+        ArrayList<Row> model;
+        Row row;
         PwsMonitorDO data;
         PwsMonitorManager man;
         
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<Row>();
         if (manager == null)
             return model; 
         
@@ -90,20 +89,20 @@ public class MonitorTab extends Screen{
             for(int i = 0; i < man.count(); i++) {
                 data = man.getMonitorAt(i);
                 
-                row = new TableDataRow(8);
-                row.cells.get(0).setValue(data.getStAsgnIdentCd());
-                row.cells.get(1).setValue(data.getName());
-                row.cells.get(2).setValue(data.getTiaanlgpTiaanlytName());
-                row.cells.get(3).setValue(data.getNumberSamples());
-                row.cells.get(4).setValue(data.getCompBeginDate());
-                row.cells.get(5).setValue(data.getCompEndDate());
-                row.cells.get(6).setValue(data.getFrequencyName());
-                row.cells.get(7).setValue(data.getPeriodName());
+                row = new Row(8);
+                row.setCell(0,data.getStAsgnIdentCd());
+                row.setCell(1,data.getName());
+                row.setCell(2,data.getTiaanlgpTiaanlytName());
+                row.setCell(3,data.getNumberSamples());
+                row.setCell(4,data.getCompBeginDate());
+                row.setCell(5,data.getCompEndDate());
+                row.setCell(6,data.getFrequencyName());
+                row.setCell(7,data.getPeriodName());
                 
                 model.add(row);
             }
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             e.printStackTrace();
         }        
         return model;

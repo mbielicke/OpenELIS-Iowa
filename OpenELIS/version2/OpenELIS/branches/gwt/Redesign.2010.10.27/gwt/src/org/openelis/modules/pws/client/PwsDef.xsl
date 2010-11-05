@@ -43,7 +43,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
 <!-- main screen -->
-    <screen id="PWS" name="{resource:getString($constants,'pwsInformation')}">
+    <screen name="{resource:getString($constants,'pwsInformation')}">
       <HorizontalPanel padding="0" spacing="0">
 <!--left table goes here -->
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
@@ -52,19 +52,19 @@ UIRF Software License are applicable instead of those above.
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" width="auto" maxRows="20" style="atozTable">
+              <table key="atozTable" rows="20" style="atozTable">
                 <col width="175" header="{resource:getString($constants,'name')}">
                   <label field="String" />
                 </col>
               </table>
               <widget halign="center">
                 <HorizontalPanel>
-                  <appButton key="atozPrev" style="Button" enable="false">
+                  <button key="atozPrev" style="Button" enabled="false">
                     <AbsolutePanel style="prevNavIndex" />
-                  </appButton>
-                  <appButton key="atozNext" style="Button" enable="false">
+                  </button>
+                  <button key="atozNext" style="Button" enabled="false">
                     <AbsolutePanel style="nextNavIndex" />
-                  </appButton>
+                  </button>
                 </HorizontalPanel>
               </widget>
             </VerticalPanel>
@@ -74,37 +74,13 @@ UIRF Software License are applicable instead of those above.
         <VerticalPanel padding="0" spacing="0">
           <AbsolutePanel spacing="0" style="ButtonPanelContainer">
             <HorizontalPanel>
-              <xsl:call-template name="queryButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="previousButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="nextButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
+              <xsl:call-template name="queryButton"/>
+              <xsl:call-template name="previousButton"/>
+              <xsl:call-template name="nextButton"/>
               <xsl:call-template name="buttonPanelDivider" />
-              <xsl:call-template name="commitButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="abortButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="selectButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
+              <xsl:call-template name="commitButton"/>
+              <xsl:call-template name="abortButton"/>
+              <xsl:call-template name="selectButton"/>
             </HorizontalPanel>
           </AbsolutePanel>
 <!--end button panel-->
@@ -214,7 +190,7 @@ UIRF Software License are applicable instead of those above.
 <!-- TAB 1 -->
               <tab key="facilityTab" text="{resource:getString($constants,'facility')}">
                 <VerticalPanel padding="0" spacing="0">
-                  <table key="facilityTable" width="707" maxRows="11" showScroll="ALWAYS">
+                  <table key="facilityTable" width="707" rows="11" vscroll="ALWAYS" hscroll="ALWAYS">
                     <col key="{meta:getFacilityName()}" width="250" header="{resource:getString($constants,'name')}">
                       <textbox field="String" />
                     </col>
@@ -248,7 +224,7 @@ UIRF Software License are applicable instead of those above.
 <!-- TAB 2 -->
               <tab key="addressTab" text="{resource:getString($constants,'address')}">
                 <VerticalPanel padding="0" spacing="0">
-                  <table key="addressTable" width="707" maxRows="11" showScroll="ALWAYS">
+                  <table key="addressTable" width="707" rows="11" vscroll="ALWAYS" hscroll="ALWAYS">
                     <col key="{meta:getAddressTypeCode()}" width="60" header="{resource:getString($constants,'type')}">
                       <textbox field="String" />
                     </col>
@@ -285,7 +261,7 @@ UIRF Software License are applicable instead of those above.
 <!-- TAB 3 -->
               <tab key="monitorTab" text="{resource:getString($constants,'monitor')}">
                 <VerticalPanel padding="0" spacing="0">
-                  <table key="monitorTable" width="707" maxRows="11" showScroll="ALWAYS">
+                  <table key="monitorTable" width="707" rows="11" vscroll="ALWAYS" hscroll="ALWAYS">
                     <col key="{meta:getMonitorStAsgnIdentCd()}" width="60" header="{resource:getString($constants,'type')}">
                       <textbox field="String" />
                     </col>

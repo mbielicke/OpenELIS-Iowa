@@ -42,7 +42,7 @@ UIRF Software License are applicable instead of those above.
   <xsl:variable name="props" select="doc/props" />
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
   <xsl:template match="doc">
-  <screen id="PrivateWell" name="PrivateWell">
+  <screen name="PrivateWell">
   
   	          <TablePanel style="Form">
                 <row>
@@ -50,7 +50,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'reportTo')" />:
                   </text>
                   <widget colspan="3">
-                    <autoComplete key="{meta:getWellOrganizationName()}" width="180" case="UPPER" max="30" popWidth="auto" tab="{meta:getWellOrganizationId()},{meta:getClientReference()}" field="String">
+                    <autoComplete key="{meta:getWellOrganizationName()}" width="180" case="UPPER" tab="{meta:getWellOrganizationId()},{meta:getClientReference()}" >
                       <col width="180" header="Name" />
                       <col width="110" header="Street" />
                       <col width="100" header="City" />
@@ -152,13 +152,13 @@ UIRF Software License are applicable instead of those above.
                   </text>
                   <widget colspan="5">
                   <HorizontalPanel>
-                    <autoComplete key="{meta:getProjectName()}" width="182" case="UPPER" popWidth="auto" tab="sampleItemTabPanel,{meta:getWellWellNumber()}" field="Integer">
+                    <autoComplete key="{meta:getProjectName()}" width="182" case="UPPER" tab="sampleItemTabPanel,{meta:getWellWellNumber()}" >
                       <col width="115" header="{resource:getString($constants,'name')}" />
                       <col width="190" header="{resource:getString($constants,'desc')}" />
                     </autoComplete>
-                    <appButton key="projectLookup" style="LookupButton">
+                    <button key="projectLookup" style="LookupButton">
                       <AbsolutePanel style="LookupButtonImage" />
-                    </appButton>
+                    </button>
                   </HorizontalPanel>
                   </widget>
                 </row>
@@ -174,15 +174,15 @@ UIRF Software License are applicable instead of those above.
                   </text>
                   <widget colspan="5">
                   <HorizontalPanel>
-                    <autoComplete key="{meta:getBillTo()}" width="182" case="UPPER" popWidth="auto" tab="sampleItemTabPanel,{meta:getProjectName()}" field="Integer">
+                    <autoComplete key="{meta:getBillTo()}" width="182" case="UPPER" tab="sampleItemTabPanel,{meta:getProjectName()}">
                       <col width="200" header="{resource:getString($constants,'name')}" />
                       <col width="130" header="{resource:getString($constants,'street')}" />
                       <col width="120" header="{resource:getString($constants,'city')}" />
                       <col width="20" header="{resource:getString($constants,'st')}" />
                     </autoComplete>
-                    <appButton key="billToLookup" style="LookupButton">
+                    <button key="billToLookup" style="LookupButton">
                       <AbsolutePanel style="LookupButtonImage" />
-                    </appButton>
+                    </button>
                   </HorizontalPanel>
                   </widget>
                 </row>

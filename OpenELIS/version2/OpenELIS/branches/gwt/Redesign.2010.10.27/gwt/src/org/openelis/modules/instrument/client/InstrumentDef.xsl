@@ -41,7 +41,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Instrument" name="{resource:getString($constants,'instrument')}">
+    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="{resource:getString($constants,'instrument')}">
       <HorizontalPanel padding="0" spacing="0">
 <!--left table goes here -->
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
@@ -50,7 +50,7 @@ UIRF Software License are applicable instead of those above.
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" width="auto" maxRows="20" style="atozTable">
+              <table key="atozTable" rows="20" style="atozTable">
                 <col width="75" header="{resource:getString($constants,'name')}">
                   <label field="String" />
                 </col>
@@ -60,12 +60,12 @@ UIRF Software License are applicable instead of those above.
               </table>
               <widget halign="center">
                 <HorizontalPanel>
-                  <appButton key="atozPrev" style="Button" enable="false">
+                  <button key="atozPrev" style="Button" enabled="false">
                     <AbsolutePanel style="prevNavIndex" />
-                  </appButton>
-                  <appButton key="atozNext" style="Button" enable="false">
+                  </button>
+                  <button key="atozNext" style="Button" enabled="false">
                     <AbsolutePanel style="nextNavIndex" />
-                  </appButton>
+                  </button>
                 </HorizontalPanel>
               </widget>
             </VerticalPanel>
@@ -75,62 +75,30 @@ UIRF Software License are applicable instead of those above.
 <!--button panel code-->
           <AbsolutePanel spacing="0" style="ButtonPanelContainer">
             <HorizontalPanel>
-              <xsl:call-template name="queryButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="previousButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="nextButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
+              <xsl:call-template name="queryButton"/>
+              <xsl:call-template name="previousButton"/>
+              <xsl:call-template name="nextButton"/>
               <xsl:call-template name="buttonPanelDivider" />
-              <xsl:call-template name="addButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="updateButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
+              <xsl:call-template name="addButton"/>
+              <xsl:call-template name="updateButton"/>
               <xsl:call-template name="buttonPanelDivider" />
-              <xsl:call-template name="commitButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="abortButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
+              <xsl:call-template name="commitButton"/>
+              <xsl:call-template name="abortButton"/>
               <xsl:call-template name="buttonPanelDivider" />
-              <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
-                <menuItem>
+              <menu key="optionsMenu" selfShow="true" showBelow="true">
                   <menuDisplay>
-                    <appButton style="ButtonPanelButton" action="option">
-                      <HorizontalPanel>
-                        <text>
-                          <xsl:value-of select='resource:getString($constants,"options")' />
-                        </text>
-                        <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
-                      </HorizontalPanel>
-                    </appButton>
+                    <button style="ButtonPanelButton" action="option">
+                      <Grid cols="2">
+                        <row>
+                          <cell style="ScreenLabel,ButtonAdj" text='resource:getString($constants,"options")' />
+	                      <cell style="OptionsButtonImage" />
+	                    </row>
+                      </Grid>
+                    </button>
                   </menuDisplay>
-                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                    <menuItem key="instrumentHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'instrumentHistory')}" />
-                    <menuItem key="instrumentLogHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'instrumentLogHistory')}" />
-                  </menuPanel>
-                </menuItem>
-              </menuPanel>
+                  <menuItem key="instrumentHistory" enabled="false" icon="historyIcon" display="{resource:getString($constants,'instrumentHistory')}" />
+                  <menuItem key="instrumentLogHistory" enabled="false" icon="historyIcon" display="{resource:getString($constants,'instrumentLogHistory')}" />
+              </menu>
             </HorizontalPanel>
           </AbsolutePanel>
 <!--end button panel-->
@@ -204,7 +172,7 @@ UIRF Software License are applicable instead of those above.
               </row>
             </TablePanel>
             <widget valign="top">
-              <table key="logTable" width="668" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getActiveEnd()}" title="">
+              <table key="logTable" width="668" rows="9" vscroll="ALWAYS" hscroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getActiveEnd()}" >
                 <col key="{meta:getLogTypeId()}" width="120" align="left" header="{resource:getString($constants,'type')}">
                   <dropdown width="155" field="Integer" required="true" />
                 </col>
@@ -224,22 +192,8 @@ UIRF Software License are applicable instead of those above.
             </widget>
             <widget style="TableButtonFooter">
               <HorizontalPanel>
-                <appButton key="addLogButton" style="Button">
-                  <HorizontalPanel>
-                    <AbsolutePanel style="AddRowButtonImage" />
-                    <text>
-                      <xsl:value-of select="resource:getString($constants,'addRow')" />
-                    </text>
-                  </HorizontalPanel>
-                </appButton>
-                <appButton key="removeLogButton" style="Button">
-                  <HorizontalPanel>
-                    <AbsolutePanel style="RemoveRowButtonImage" />
-                    <text>
-                      <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                    </text>
-                  </HorizontalPanel>
-                </appButton>
+                <button key="addLogButton" icon="AddRowButtonImage" text="{resource:getString($constants,'addRow')}" style="Button"/>
+                <button key="removeLogButton" icon="RemoveRowButtonImage" text="{resource:getString($constants,'removeRow')}" style="Button"/>
               </HorizontalPanel>
             </widget>
             <VerticalPanel height="8" />

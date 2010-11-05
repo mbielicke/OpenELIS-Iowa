@@ -33,9 +33,8 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.utilcommon.ResultValidator;
 
 import com.google.gwt.core.client.GWT;
@@ -43,7 +42,7 @@ import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 
 public class ResultSuggestionsScreen extends Screen {
-    protected TableWidget suggestionsTable;
+    protected Table suggestionsTable;
     
     protected ResultValidator resultValidator;
     protected Integer unitId;
@@ -59,41 +58,41 @@ public class ResultSuggestionsScreen extends Screen {
      }
 
      private void initialize() {
-         suggestionsTable = (TableWidget)def.getWidget("suggestionsTable");
-         addScreenHandler(suggestionsTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+         suggestionsTable = (Table)def.getWidget("suggestionsTable");
+         addScreenHandler(suggestionsTable, new ScreenEventHandler<ArrayList<Row>>() {
              public void onDataChange(DataChangeEvent event) {
-                 suggestionsTable.load(getTableModel());
+                 suggestionsTable.setModel(getTableModel());
              }
              
              public void onStateChange(StateChangeEvent<State> event) {
-                 suggestionsTable.enable(true);
+                 suggestionsTable.setEnabled(true);
              }
          });
          
-         suggestionsTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>(){
-            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+         suggestionsTable.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>(){
+            public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
                 //do nothing
             } 
          });
      }
      
-     private ArrayList<TableDataRow> getTableModel(){
+     private ArrayList<Row> getTableModel(){
          int                           i;
-         TableDataRow                  row;
-         ArrayList<TableDataRow>       model;
+         Row                           row;
+         ArrayList<Row>                model;
          ArrayList<LocalizedException> suggestions;
          
-         model = new ArrayList<TableDataRow>();
+         model = new ArrayList<Row>();
          
          suggestions = resultValidator.getRanges(unitId);
          for(i = 0; i < suggestions.size(); i++){
-             row = new TableDataRow(suggestions.get(i).getMessage(),suggestions.get(i).getMessage());
+             row = new Row(suggestions.get(i).getMessage());
              model.add(row);
          }
          
          suggestions = resultValidator.getDictionaryRanges(unitId);
          for(i = 0; i < suggestions.size(); i++)
-             model.add(new TableDataRow(suggestions.get(i).getMessage(),suggestions.get(i).getMessage()));
+             model.add(new Row(suggestions.get(i).getMessage()));
          
          return model;
      }

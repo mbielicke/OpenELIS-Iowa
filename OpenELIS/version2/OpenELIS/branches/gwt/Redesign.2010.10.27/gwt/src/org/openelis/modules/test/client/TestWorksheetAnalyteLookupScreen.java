@@ -36,9 +36,9 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.Button;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.manager.TestAnalyteManager;
@@ -53,8 +53,8 @@ public class TestWorksheetAnalyteLookupScreen extends Screen
                                                             implements
                                                             HasActionHandlers<TestWorksheetAnalyteLookupScreen.Action> {
 
-    protected TableWidget                testAnalyteTable;
-    protected AppButton                  okButton, cancelButton;
+    protected Table                      testAnalyteTable;
+    protected Button                     okButton, cancelButton;
 
     private ArrayList<TestAnalyteViewDO> selections;
     private TestAnalyteManager           manager;
@@ -78,21 +78,21 @@ public class TestWorksheetAnalyteLookupScreen extends Screen
     private void initialize() {
         selections = null;
 
-        testAnalyteTable = (TableWidget)def.getWidget("testAnalyteTable");
-        addScreenHandler(testAnalyteTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        testAnalyteTable = (Table)def.getWidget("testAnalyteTable");
+        addScreenHandler(testAnalyteTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                testAnalyteTable.load(getTestAnalyteTable());
+                testAnalyteTable.setModel(getTestAnalyteTable());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                testAnalyteTable.enable(true);
+                testAnalyteTable.setEnabled(true);
             }
         });
 
         testAnalyteTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
-                TableDataRow row;
+                Row row;
                 String val;
                 TestAnalyteViewDO data;
                 Integer group;
@@ -103,14 +103,14 @@ public class TestWorksheetAnalyteLookupScreen extends Screen
                 if (c != 1)
                     return;
 
-                row = testAnalyteTable.getRow(r);
-                val = (String)row.cells.get(c).getValue();
+                row = testAnalyteTable.getRowAt(r);
+                val = (String)row.getCell(c);
                 group = manager.getAnalyteAt(r, 0).getRowGroup();
 
                 for (int i = 0; i < manager.rowCount(); i++ ) {
                     data = manager.getAnalyteAt(i, 0);
                     if (group.equals(data.getRowGroup()))
-                        testAnalyteTable.setCell(i, c, val);
+                        testAnalyteTable.setValueAt(i, c, val);
                 }
 
                 if ("Y".equals(val))
@@ -120,25 +120,25 @@ public class TestWorksheetAnalyteLookupScreen extends Screen
 
         });
 
-        okButton = (AppButton)def.getWidget("ok");
+        okButton = (Button)def.getWidget("ok");
         addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 ok();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                okButton.enable(true);
+                okButton.setEnabled(true);
             }
         });
 
-        cancelButton = (AppButton)def.getWidget("cancel");
+        cancelButton = (Button)def.getWidget("cancel");
         addScreenHandler(cancelButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 cancel();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                cancelButton.enable(true);
+                cancelButton.setEnabled(true);
             }
         });
 
@@ -169,26 +169,26 @@ public class TestWorksheetAnalyteLookupScreen extends Screen
         //testAnalyteTable.load(getTestAnalyteTable());
     }
 
-    private ArrayList<TableDataRow> getTestAnalyteTable() {
-        ArrayList<TableDataRow> model;
+    private ArrayList<Row> getTestAnalyteTable() {
+        ArrayList<Row> model;
         TestAnalyteViewDO data;
-        TableDataRow row;
+        Row row;
         String name;
 
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<Row>();
 
         if (manager == null)
             return model;
 
         for (int i = 0; i < manager.rowCount(); i++ ) {
             data = manager.getAnalyteAt(i, 0);
-            row = new TableDataRow(2);
+            row = new Row(2);
             name = data.getAnalyteName();
             if (name != null && !"".equals(name)) {
-                row.key = data.getId();
-                row.data = data;
-                row.cells.get(0).setValue(name);
-                row.cells.get(1).setValue("N");
+                //row.key = data.getId();
+                row.setData(data);
+                row.setCell(0,name);
+                row.setCell(1,"N");
 
                 model.add(row);
             }
@@ -198,14 +198,14 @@ public class TestWorksheetAnalyteLookupScreen extends Screen
     }
 
     private void fillSelectionList() {
-        TableDataRow row;
+        Row row;
 
         selections = new ArrayList<TestAnalyteViewDO>();
 
-        for (int i = 0; i < testAnalyteTable.numRows(); i++ ) {
-            row = testAnalyteTable.getRow(i);
-            if ("Y".equals(row.cells.get(1).getValue()))
-                selections.add((TestAnalyteViewDO)row.data);
+        for (int i = 0; i < testAnalyteTable.getRowCount(); i++ ) {
+            row = testAnalyteTable.getRowAt(i);
+            if ("Y".equals(row.getCell(1)))
+                selections.add((TestAnalyteViewDO)row.getData());
         }
 
     }

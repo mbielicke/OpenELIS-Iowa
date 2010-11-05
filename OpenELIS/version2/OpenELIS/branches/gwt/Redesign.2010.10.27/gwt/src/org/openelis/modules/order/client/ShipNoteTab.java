@@ -28,17 +28,15 @@ package org.openelis.modules.order.client;
 
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.screen.ScreenDefInt;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.Window;
 import org.openelis.manager.OrderManager;
 import org.openelis.modules.note.client.NotesTab;
-
-import com.google.gwt.user.client.Window;
 
 public class ShipNoteTab extends NotesTab {
 
     protected OrderManager parentManager;
     
-    public ShipNoteTab(ScreenDefInt def, ScreenWindow window, String notesPanelKey,
+    public ShipNoteTab(ScreenDefInt def, Window window, String notesPanelKey,
                         String editButtonKey) {
         super(def, window, notesPanelKey, editButtonKey);
     }
@@ -55,7 +53,7 @@ public class ShipNoteTab extends NotesTab {
                 DataChangeEvent.fire(this);
                 loaded = true;
             } catch (Exception e) {
-                Window.alert(e.getMessage());
+                com.google.gwt.user.client.Window.alert(e.getMessage());
             }
         }
     }

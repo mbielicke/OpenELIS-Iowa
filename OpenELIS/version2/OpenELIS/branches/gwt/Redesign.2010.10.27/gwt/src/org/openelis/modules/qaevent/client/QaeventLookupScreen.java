@@ -40,11 +40,11 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.Item;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 
@@ -62,8 +62,8 @@ public class QaeventLookupScreen extends Screen implements HasActionHandlers<Qae
     protected Type type;
     protected ArrayList<QaEventVO> qaEvents;
     
-    private AppButton okButton, cancelButton;
-    private TableWidget qaEventTable;
+    private Button      okButton, cancelButton;
+    private Table       qaEventTable;
     
     
     public QaeventLookupScreen() throws Exception {
@@ -79,20 +79,20 @@ public class QaeventLookupScreen extends Screen implements HasActionHandlers<Qae
     }
 
     private void initialize() {
-        qaEventTable = (TableWidget)def.getWidget("qaEventTable");
-        addScreenHandler(qaEventTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        qaEventTable = (Table)def.getWidget("qaEventTable");
+        addScreenHandler(qaEventTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                qaEventTable.load(getTableModel());
+                qaEventTable.setModel(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                qaEventTable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                qaEventTable.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 qaEventTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
         
-        qaEventTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>(){
-           public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+        qaEventTable.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>(){
+           public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
                //do nothing
            }; 
         });
@@ -103,7 +103,7 @@ public class QaeventLookupScreen extends Screen implements HasActionHandlers<Qae
             }
         });
 
-        okButton = (AppButton)def.getWidget("ok");
+        okButton = (Button)def.getWidget("ok");
         addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 if (okButton.isEnabled())
@@ -111,11 +111,11 @@ public class QaeventLookupScreen extends Screen implements HasActionHandlers<Qae
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                okButton.enable(true);
+                okButton.setEnabled(true);
             }
         });
 
-        cancelButton = (AppButton)def.getWidget("cancel");
+        cancelButton = (Button)def.getWidget("cancel");
         addScreenHandler(cancelButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 if (cancelButton.isEnabled())
@@ -123,14 +123,21 @@ public class QaeventLookupScreen extends Screen implements HasActionHandlers<Qae
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                cancelButton.enable(true);
+                cancelButton.setEnabled(true);
             }
         });
     }
     
     private void ok(){
-        ArrayList<TableDataRow> selections = qaEventTable.getSelections();
+    	Integer[] selRows;
+        ArrayList<Row> selections;
         
+        selRows = qaEventTable.getSelectedRows();
+        selections = new ArrayList<Row>();
+        
+        for(int i = 0; i < selRows.length; i++) 
+        	selections.add(qaEventTable.getRowAt(selRows[i]));
+                
         if(selections.size() > 0)
             ActionEvent.fire(this, Action.OK, selections);
         
@@ -141,8 +148,8 @@ public class QaeventLookupScreen extends Screen implements HasActionHandlers<Qae
         window.close();
     }
     
-    private ArrayList<TableDataRow> getTableModel() {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+    private ArrayList<Row> getTableModel() {
+        ArrayList<Row> model = new ArrayList<Row>();
         
         if(qaEvents == null) 
             return model;
@@ -150,11 +157,10 @@ public class QaeventLookupScreen extends Screen implements HasActionHandlers<Qae
         for(int i=0; i<qaEvents.size(); i++) {
             QaEventVO qaEventDO = qaEvents.get(i);
         
-           TableDataRow row = new TableDataRow(qaEventDO.getId(), 
-                                               qaEventDO.getName(), 
-                                               qaEventDO.getDescription(), 
-                                               qaEventDO.getTypeId(), 
-                                               qaEventDO.getIsBillable());
+            Row row = new Row(qaEventDO.getName(), 
+                              qaEventDO.getDescription(), 
+                              qaEventDO.getTypeId(), 
+                              qaEventDO.getIsBillable());
            
            model.add(row);
         }
@@ -179,13 +185,13 @@ public class QaeventLookupScreen extends Screen implements HasActionHandlers<Qae
     }
     
     private void initializeDropdowns() {
-        ArrayList<TableDataRow> model;
+        ArrayList<Item<Integer>> model;
         
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("qaevent_type"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
-        ((Dropdown<Integer>)qaEventTable.getColumns().get(2).getColumnWidget()).setModel(model);
+            model.add(new Item<Integer>(d.getId(), d.getEntry()));
+        ((Dropdown<Integer>)qaEventTable.getColumnAt(2).getCellEditor().getWidget()).setModel(model);
     }
     
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {

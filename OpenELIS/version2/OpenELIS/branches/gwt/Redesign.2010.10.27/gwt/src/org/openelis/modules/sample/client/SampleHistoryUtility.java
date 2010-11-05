@@ -38,7 +38,7 @@ import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.StorageViewDO;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.Window;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
 import org.openelis.manager.AuxDataManager;
@@ -54,14 +54,13 @@ import org.openelis.manager.StorageManager;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
-import com.google.gwt.user.client.Window;
 
 public abstract class SampleHistoryUtility {
     
     private SampleManager     manager;
-    private ScreenWindow      window;
+    private Window      window;
     
-    public SampleHistoryUtility(ScreenWindow window) {
+    public SampleHistoryUtility(Window window) {
         this.window = window;
     }
     
@@ -87,7 +86,7 @@ public abstract class SampleHistoryUtility {
                                   ReferenceTable.SAMPLE_ENVIRONMENTAL, hist);
         }catch(Exception e){
             window.clearStatus();
-            Window.alert("historySampleEnvironmental: "+e.getMessage());
+            com.google.gwt.user.client.Window.alert("historySampleEnvironmental: "+e.getMessage());
         }
         
         window.clearStatus();
@@ -105,7 +104,7 @@ public abstract class SampleHistoryUtility {
                                   ReferenceTable.SAMPLE_PRIVATE_WELL, hist);
         }catch(Exception e){
             window.clearStatus();
-            Window.alert("historySamplePrivateWell: "+e.getMessage());
+            com.google.gwt.user.client.Window.alert("historySamplePrivateWell: "+e.getMessage());
         }
         
         window.clearStatus();
@@ -123,7 +122,7 @@ public abstract class SampleHistoryUtility {
                                   ReferenceTable.SAMPLE_SDWIS, hist);
         }catch(Exception e){
             window.clearStatus();
-            Window.alert("historySampleSDWIS: "+e.getMessage());
+            com.google.gwt.user.client.Window.alert("historySampleSDWIS: "+e.getMessage());
         }
         
         window.clearStatus();
@@ -149,7 +148,7 @@ public abstract class SampleHistoryUtility {
                                       ReferenceTable.SAMPLE_PROJECT, refVoList);
         } catch (Exception e) {
             window.clearStatus();
-            Window.alert("historySampleProject: "+e.getMessage());
+            com.google.gwt.user.client.Window.alert("historySampleProject: "+e.getMessage());
         }
         
         window.clearStatus();
@@ -176,7 +175,7 @@ public abstract class SampleHistoryUtility {
             window.clearStatus();
         } catch (Exception e) {
             window.clearStatus();
-            Window.alert("historySampleProject: "+e.getMessage());
+            com.google.gwt.user.client.Window.alert("historySampleProject: "+e.getMessage());
         }        
     }
     
@@ -201,7 +200,7 @@ public abstract class SampleHistoryUtility {
             window.clearStatus();
         } catch (Exception e) {
             window.clearStatus();
-            Window.alert("historySampleItem: "+e.getMessage());
+            com.google.gwt.user.client.Window.alert("historySampleItem: "+e.getMessage());
         }        
     }
     
@@ -239,7 +238,7 @@ public abstract class SampleHistoryUtility {
                                       ReferenceTable.ANALYSIS, refVoList);
             window.clearStatus();
         } catch (Exception e) {
-            Window.alert("historyAnalysis: "+e.getMessage());
+            com.google.gwt.user.client.Window.alert("historyAnalysis: "+e.getMessage());
             window.clearStatus();
         }        
     }
@@ -293,7 +292,7 @@ public abstract class SampleHistoryUtility {
             window.clearStatus();
         } catch (Exception e) {
             window.clearStatus();
-            Window.alert("historyStorage: "+e.getMessage());
+            com.google.gwt.user.client.Window.alert("historyStorage: "+e.getMessage());
         }        
     }
     
@@ -318,7 +317,7 @@ public abstract class SampleHistoryUtility {
             window.clearStatus();
         } catch (Exception e) {
             window.clearStatus();
-            Window.alert("historySampleQA: "+e.getMessage());
+            com.google.gwt.user.client.Window.alert("historySampleQA: "+e.getMessage());
         }        
     }
     
@@ -362,7 +361,7 @@ public abstract class SampleHistoryUtility {
             window.clearStatus();
         } catch (Exception e) {
             window.clearStatus();
-            Window.alert("historyAnalysis: "+e.getMessage());
+            com.google.gwt.user.client.Window.alert("historyAnalysis: "+e.getMessage());
         }        
     }
     
@@ -389,7 +388,7 @@ public abstract class SampleHistoryUtility {
             window.clearStatus();
         } catch (Exception e) {
             window.clearStatus();
-            Window.alert("historyAuxData: "+e.getMessage());
+            com.google.gwt.user.client.Window.alert("historyAuxData: "+e.getMessage());
         }        
     }
     

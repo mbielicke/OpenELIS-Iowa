@@ -51,22 +51,21 @@ import org.openelis.gwt.event.BeforeCloseEvent;
 import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.CalendarLookUp;
+import org.openelis.gwt.widget.Button;
+import org.openelis.gwt.widget.calendar.Calendar;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Confirm;
-import org.openelis.gwt.widget.DateField;
+import org.openelis.gwt.widget.DateHelper;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.Item;
+import org.openelis.gwt.widget.Window;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
@@ -87,24 +86,23 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class QuickEntryScreen extends Screen {
 
-    protected DateField                     recDate;
+    protected DateHelper                    recDate;
     protected boolean                       useCurrentTime, printLabelsOnTheFly, close;
     protected TestPrepUtility               testLookup;
     protected Confirm                       windowCloseConfirm, receivedDateNotTodayConfirm;
     
-    private CalendarLookUp                  receivedDate;
+    private Calendar                        receivedDate;
     private TextBox                         entry, tubeNumber;
     private TextBox<Integer>                accessionNumber;
     private CheckBox                        currentDateTime, printLabels;
-    private AppButton                       commitButton, removeRowButton;
+    private Button                          commitButton, removeRowButton;
     private Dropdown<String>                testMethodSampleType, printer;
-    private TableWidget                     quickEntryTable;
-    private TableDataRow                    rowToBeAdded;
+    private Table                           quickEntryTable;
+    private Row                             rowToBeAdded;
 
     private Integer                         sampleLoggedInId;
     private Datetime                        todaysDate;
@@ -146,11 +144,11 @@ public class QuickEntryScreen extends Screen {
         managers = new HashMap<Integer, SampleManager>();
         close = false;
         
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+        window.addBeforeClosedHandler(new BeforeCloseHandler<Window>() {
+            public void onBeforeClosed(BeforeCloseEvent<Window> event) {
                 if(close){
                     close = false;
-                }else if(quickEntryTable.numRows() > 0){
+                }else if(quickEntryTable.getRowCount() > 0){
                     event.cancel();
                     if (windowCloseConfirm == null) {
                         windowCloseConfirm = new Confirm(Confirm.Type.QUESTION,
@@ -188,17 +186,17 @@ public class QuickEntryScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                entry.enable(EnumSet.of(State.ADD, State.DEFAULT).contains(event.getState()));
+                entry.setEnabled(EnumSet.of(State.ADD, State.DEFAULT).contains(event.getState()));
             }
         });
 
         accessionNumber = (TextBox<Integer>)def.getWidget("accessionNumber");
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                accessionNumber.setValue(Util.toString(null));
+                accessionNumber.setValue(null);
             }
             public void onStateChange(StateChangeEvent<State> event) {
-                accessionNumber.enable(false);
+                accessionNumber.setEnabled(false);
             }
         });
 
@@ -209,11 +207,11 @@ public class QuickEntryScreen extends Screen {
             }
             
             public void onStateChange(StateChangeEvent<State> event) {
-                tubeNumber.enable(false);
+                tubeNumber.setEnabled(false);
             }
         });
 
-        receivedDate = (CalendarLookUp)def.getWidget("receivedDate");
+        receivedDate = (Calendar)def.getWidget("receivedDate");
         addScreenHandler(receivedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 receivedDate.setValue(null);
@@ -246,7 +244,7 @@ public class QuickEntryScreen extends Screen {
             }
             
             public void onStateChange(StateChangeEvent<State> event) {
-                receivedDate.enable(EnumSet.of(State.ADD, State.DEFAULT).contains(event.getState()));
+                receivedDate.setEnabled(EnumSet.of(State.ADD, State.DEFAULT).contains(event.getState()));
             }
         });
 
@@ -256,7 +254,7 @@ public class QuickEntryScreen extends Screen {
                 testMethodSampleType.setValue(null);
             }
             public void onStateChange(StateChangeEvent<State> event) {
-                testMethodSampleType.enable(EnumSet.of(State.ADD, State.DEFAULT).contains(event.getState()));
+                testMethodSampleType.setEnabled(EnumSet.of(State.ADD, State.DEFAULT).contains(event.getState()));
             }
         });
 
@@ -268,7 +266,7 @@ public class QuickEntryScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                currentDateTime.enable(EnumSet.of(State.ADD, State.DEFAULT).contains(event.getState()));
+                currentDateTime.setEnabled(EnumSet.of(State.ADD, State.DEFAULT).contains(event.getState()));
             }
         });
 
@@ -280,31 +278,31 @@ public class QuickEntryScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                printLabels.enable(EnumSet.of(State.ADD, State.DEFAULT).contains(event.getState()));
+                printLabels.setEnabled(EnumSet.of(State.ADD, State.DEFAULT).contains(event.getState()));
             }
         });
 
         printer = (Dropdown)def.getWidget("printer");
         addScreenHandler(printer, new ScreenEventHandler<String>() {
             public void onStateChange(StateChangeEvent<State> event) {
-                printer.enable(EnumSet.of(State.ADD, State.DEFAULT).contains(event.getState()));
+                printer.setEnabled(EnumSet.of(State.ADD, State.DEFAULT).contains(event.getState()));
             }
         });
 
-        quickEntryTable = (TableWidget)def.getWidget("quickEntryTable");
-        addScreenHandler(quickEntryTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        quickEntryTable = (Table)def.getWidget("quickEntryTable");
+        addScreenHandler(quickEntryTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                quickEntryTable.load(getTableModel());
+                quickEntryTable.setModel(getTableModel());
             }
             
             public void onStateChange(StateChangeEvent<State> event) {
-                quickEntryTable.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                quickEntryTable.setEnabled(EnumSet.of(State.ADD).contains(event.getState()));
             }
         });
         
-        quickEntryTable.addSelectionHandler(new SelectionHandler<TableRow>() {
-            public void onSelection(SelectionEvent<TableRow> event) {
-                removeRowButton.enable(true);
+        quickEntryTable.addSelectionHandler(new SelectionHandler<Integer>() {
+            public void onSelection(SelectionEvent<Integer> event) {
+                removeRowButton.setEnabled(true);
             }
         });
 
@@ -320,7 +318,7 @@ public class QuickEntryScreen extends Screen {
             }
         });
         
-        removeRowButton = (AppButton)def.getWidget("removeRowButton");
+        removeRowButton = (Button)def.getWidget("removeRowButton");
         addScreenHandler(removeRowButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int selected;
@@ -328,33 +326,31 @@ public class QuickEntryScreen extends Screen {
                 selected = quickEntryTable.getSelectedRow();
 
                 if (selected != -1)
-                    quickEntryTable.deleteRow(selected);
+                    quickEntryTable.removeRowAt(selected);
                 
-                removeRowButton.enable(false);
+                removeRowButton.setEnabled(false);
                 setFocus(entry);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeRowButton.enable(false);
+                removeRowButton.setEnabled(false);
             }
         });
 
-        commitButton = (AppButton)def.getWidget("commit");
+        commitButton = (Button)def.getWidget("commit");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 commit();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                commitButton.setEnabled(EnumSet.of(State.ADD).contains(event.getState()));
             }
         });
 
-        recDate = new DateField();
+        recDate = new DateHelper();
         recDate.setBegin(Datetime.YEAR);
         recDate.setEnd(Datetime.MINUTE);
-        recDate.setMin(364);
-        recDate.setMax(0);
     }
 
     private void commit() {
@@ -409,21 +405,29 @@ public class QuickEntryScreen extends Screen {
         Integer accessionNum;
         SampleDO sampleDO;
         SampleManager sampleMan;
+        Datetime date = null;
+        final Datetime calDate;
+        boolean valid = true; 
 
-        val = entry.getValue();
+        val = (String)entry.getValue();
         window.clearStatus();
 
         // date recieved
-        recDate.setStringValue(val);
-        if (recDate.exceptions == null) {
-            recDate.validate();
-            if (recDate.exceptions == null){
-                if(todaysDate.after(recDate.getValue())){
-                    LocalizedException ex = new LocalizedException("recievedDateNotTodayExceptionBody", recDate.getValue().toString());
+        try {
+        	date = recDate.getValue(val);
+        }catch(Exception e) {
+        	valid = false;
+        	LocalizedException le = new LocalizedException("invalidEntryException", val);
+            window.setError(le.getMessage());
+        }
+        if (valid) {
+                if(todaysDate.after(date)){
+                    LocalizedException ex = new LocalizedException("recievedDateNotTodayExceptionBody", date.toString());
                     receivedDateNotTodayConfirm = new Confirm(Confirm.Type.QUESTION,
                                                         consts.get("recievedDateNotTodayExceptionTitle"),
                                                         ex.getMessage(),
                                                         "No", "Yes");
+                    calDate = date;
                     receivedDateNotTodayConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
                         public void onSelection(SelectionEvent<Integer> event) {
                             switch (event.getSelectedItem().intValue()) {
@@ -431,7 +435,7 @@ public class QuickEntryScreen extends Screen {
                                     //do nothing
                                     break;
                                 case 1:
-                                    receivedDate.setValue(recDate.getValue());
+                                    receivedDate.setValue(calDate);
                                     break;
                             }
                         }
@@ -440,13 +444,8 @@ public class QuickEntryScreen extends Screen {
                     receivedDateNotTodayConfirm.show();
                 
                 }else
-                    receivedDate.setValue(recDate.getValue());
-                
-            } else {
-                LocalizedException e = new LocalizedException("invalidEntryException", val);
-                window.setError(e.getMessage());
-            }
-
+                    receivedDate.setValue(date);
+                 
             // test/panel
         } else if (val.matches("[TP][0-9]*\\|[0-9]*")) {
             testMethodSampleType.setValue(val);
@@ -471,7 +470,7 @@ public class QuickEntryScreen extends Screen {
                 }catch(ValidationErrorsList e){
                     showErrors(e);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
 
@@ -493,7 +492,7 @@ public class QuickEntryScreen extends Screen {
                         managers.get(sampleMan.getSample().getAccessionNumber()) == null)
                         managers.put(sampleMan.getSample().getAccessionNumber(), sampleMan);
 
-                    accessionNumber.setValue(val);
+                    accessionNumber.setValue(Integer.parseInt(val));
                     addAnalysisRow();
                 } catch (NumberFormatException e) {
                     LocalizedException ex = new LocalizedException("invalidEntryException", val);
@@ -510,7 +509,7 @@ public class QuickEntryScreen extends Screen {
 
                     showErrors(newE);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
 
@@ -519,7 +518,7 @@ public class QuickEntryScreen extends Screen {
             window.setError(e.getMessage());
         }
         entry.setValue(null);
-        recDate.exceptions = null;
+        //recDate.exceptions = null;
     }
 
     public void analysisTestChanged(Integer id,
@@ -550,49 +549,49 @@ public class QuickEntryScreen extends Screen {
             testLookup.lookup(analysisBundle, type, id);
 
         } catch (Exception e) {
-            Window.alert("analysisTestChanged: " + e.getMessage());
+            com.google.gwt.user.client.Window.alert("analysisTestChanged: " + e.getMessage());
         }
     }
 
     public void testLookupFinished(ArrayList<SampleDataBundle> bundles) {
         int numOfRows;
         window.setBusy();
-        TableDataRow newRow;
+        Row newRow;
 
         numOfRows = 0;
         if (bundles.size() == 0)
             rowToBeAdded = null;
         else {
-            numOfRows = quickEntryTable.numRows();
+            numOfRows = quickEntryTable.getRowCount();
             newRow = null;
-            quickEntryTable.fireEvents(false);
+            //quickEntryTable.fireEvents(false);
 
             for (int i = 0; i < bundles.size(); i++ ) {
                 if (i == 0) {
                     quickEntryTable.addRow(rowToBeAdded);
                     newRow = rowToBeAdded;
                     rowToBeAdded = null;
-                    newRow.data = bundles.get(i);
+                    newRow.setData(bundles.get(i));
                 } else {
-                    newRow = new TableDataRow(6);
-                    newRow.data = bundles.get(i);
+                    newRow = new Row(6);
+                    newRow.setData(bundles.get(i));
                     quickEntryTable.addRow(newRow);
                 }
 
-                updateQuickEntryRowFromBundle(quickEntryTable.numRows() - 1);
+                updateQuickEntryRowFromBundle(quickEntryTable.getRowCount() - 1);
             }
             
 
-            quickEntryTable.fireEvents(true);
+            //quickEntryTable.fireEvents(true);
         }
         
-        if(numOfRows == 0 && quickEntryTable.numRows() > 0)
+        if(numOfRows == 0 && quickEntryTable.getRowCount() > 0)
             setState(State.ADD);
 
         window.clearStatus();
     }
 
-    private void rowDeleted(int index, TableDataRow deletedRow) {
+    private void rowDeleted(int index, Row deletedRow) {
         window.setBusy();
         SampleDataBundle bundle;
         SampleManager man;
@@ -600,7 +599,7 @@ public class QuickEntryScreen extends Screen {
         AnalysisManager anMan;
 
         try {
-            bundle = (SampleDataBundle)deletedRow.data;
+            bundle = (SampleDataBundle)deletedRow.getData();
             man = bundle.getSampleManager();
             itemMan = man.getSampleItems();
             anMan = itemMan.getAnalysisAt(bundle.getSampleItemIndex());
@@ -619,17 +618,17 @@ public class QuickEntryScreen extends Screen {
                     managers.remove(man.getSample().getAccessionNumber());
             }
             
-            if(quickEntryTable.numRows() == 0)
+            if(quickEntryTable.getRowCount() == 0)
                 setState(State.DEFAULT);
             
             window.clearStatus();
         } catch (Exception e) {
-            Window.alert("rowDeleted: " + e.getMessage());
+            com.google.gwt.user.client.Window.alert("rowDeleted: " + e.getMessage());
         }
     }
 
     private void addAnalysisRow() {
-        TableDataRow row;
+        Row row;
         TestMethodSampleTypeVO typeDO;
         Integer id;
         SampleManager sampleMan;
@@ -639,9 +638,9 @@ public class QuickEntryScreen extends Screen {
         SampleDataBundle anBundle;
         Integer accessionNum;
 
-        typeDO = (TestMethodSampleTypeVO)testMethodSampleType.getSelection().data;
+        typeDO = (TestMethodSampleTypeVO)testMethodSampleType.getSelectedItem().getData();
         accessionNum = Integer.valueOf(accessionNumber.getValue());
-        row = new TableDataRow(6);
+        row = new Row(6);
 
         try {
             sampleMan = managers.get(accessionNum);
@@ -666,7 +665,7 @@ public class QuickEntryScreen extends Screen {
 
             analysisAddedIndex = anMan.addAnalysis();
             anBundle = anMan.getBundleAt(analysisAddedIndex);
-            row.data = anBundle;
+            row.setData(anBundle);
 
             if (typeDO.getTestId() != null)
                 id = typeDO.getTestId();
@@ -677,12 +676,12 @@ public class QuickEntryScreen extends Screen {
             analysisTestChanged(id, (typeDO.getTestId() == null), anBundle, sampleMan);
 
         } catch (Exception e) {
-            Window.alert("rowAdded: " + e.getMessage());
+            com.google.gwt.user.client.Window.alert("rowAdded: " + e.getMessage());
         }
     }
 
     private void updateQuickEntryRowFromBundle(int index) {
-        TableDataRow row;
+        Row row;
         SampleDataBundle bundle;
         SampleManager man;
         SampleItemManager itemMan;
@@ -690,25 +689,25 @@ public class QuickEntryScreen extends Screen {
         AnalysisViewDO anDO;
 
         try {
-            row = quickEntryTable.getRow(index);
-            bundle = (SampleDataBundle)row.data;
+            row = quickEntryTable.getRowAt(index);
+            bundle = (SampleDataBundle)row.getData();
             man = bundle.getSampleManager();
             itemMan = man.getSampleItems();
             itemDO = itemMan.getSampleItemAt(bundle.getSampleItemIndex());
             anDO = itemMan.getAnalysisAt(bundle.getSampleItemIndex())
                           .getAnalysisAt(bundle.getAnalysisIndex());
 
-            quickEntryTable.setCell(index, 0, man.getSample().getAccessionNumber());
-            quickEntryTable.setCell(index, 1, man.getSample().getReceivedDate());
-            quickEntryTable.setCell(index, 2, anDO.getTestName());
-            quickEntryTable.setCell(index, 3, anDO.getMethodName());
-            quickEntryTable.setCell(index, 4, itemDO.getTypeOfSample());
+            quickEntryTable.setValueAt(index, 0, man.getSample().getAccessionNumber());
+            quickEntryTable.setValueAt(index, 1, man.getSample().getReceivedDate());
+            quickEntryTable.setValueAt(index, 2, anDO.getTestName());
+            quickEntryTable.setValueAt(index, 3, anDO.getMethodName());
+            quickEntryTable.setValueAt(index, 4, itemDO.getTypeOfSample());
             // FIXME this code is not there.
             // have no specs to put it in either quickEntryTable.setCell(index,
             // 5, value);
 
         } catch (Exception e) {
-            Window.alert("updateQuickEntryRowFromBundle: " + e.getMessage());
+            com.google.gwt.user.client.Window.alert("updateQuickEntryRowFromBundle: " + e.getMessage());
         }
     }
 
@@ -748,19 +747,19 @@ public class QuickEntryScreen extends Screen {
     }
     
     private boolean accessionNumExistsInTable(Integer accessionNumber){
-        TableDataRow row;
+        Row row;
         
-        for(int i=0; i<quickEntryTable.numRows(); i++){
-            row = quickEntryTable.getRow(i);
+        for(int i=0; i<quickEntryTable.getRowCount(); i++){
+            row = quickEntryTable.getRowAt(i);
             
-            if(accessionNumber.equals(row.cells.get(0).value))
+            if(accessionNumber.equals(row.getCell(0)))
                 return true;
         }
         
         return false;
     }
     
-    private ArrayList<TableDataRow> getTableModel() {
+    private ArrayList<Row> getTableModel() {
         Collection<SampleManager> manList;
         Iterator<SampleManager> itr;
         SampleManager manager;
@@ -769,11 +768,11 @@ public class QuickEntryScreen extends Screen {
         SampleDO sampleDO;
         SampleItemViewDO itemDO;
         AnalysisViewDO anDO;
-        TableDataRow row;
+        Row row;
         OrganizationContactDO data;
-        ArrayList<TableDataRow> model;
+        ArrayList<Row> model;
         
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<Row>();
         if (managers.size() == 0)
             return model;
 
@@ -792,12 +791,12 @@ public class QuickEntryScreen extends Screen {
                     for(int j=0; j<anMan.count(); j++){   //analyses
                         anDO = anMan.getAnalysisAt(j);
                         if(anDO.getId() < 0){
-                            row = new TableDataRow(6);
-                            row.cells.get(0).value = sampleDO.getAccessionNumber();
-                            row.cells.get(1).value = sampleDO.getReceivedDate();
-                            row.cells.get(2).value = anDO.getTestName();
-                            row.cells.get(3).value = anDO.getMethodName();
-                            row.cells.get(4).value = itemDO.getTypeOfSample();
+                            row = new Row(6);
+                            row.setCell(0,sampleDO.getAccessionNumber());
+                            row.setCell(1,sampleDO.getReceivedDate());
+                            row.setCell(2,anDO.getTestName());
+                            row.setCell(3,anDO.getMethodName());
+                            row.setCell(4,itemDO.getTypeOfSample());
                             //TODO not here yet row.cells.get(5).value = "";
                             model.add(row);
                         }
@@ -805,7 +804,7 @@ public class QuickEntryScreen extends Screen {
                 }
             }
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             e.printStackTrace();
         }
         return model;
@@ -813,29 +812,29 @@ public class QuickEntryScreen extends Screen {
 
     private void initializeDropdowns() {
         ArrayList<TestMethodSampleTypeVO> testPanelList;
-        ArrayList<TableDataRow> model;
-        TableDataRow row;
+        ArrayList<Item<String>> model;
+        Item<String> row;
 
         try {
             sampleLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
-            todaysDate = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
+            todaysDate = org.openelis.gwt.screen.Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
             
             testPanelList = service.callList("fetchTestMethodSampleTypeList");
-            model = new ArrayList<TableDataRow>();
-            model.add(new TableDataRow(null, ""));
+            model = new ArrayList<Item<String>>();
+            model.add(new Item<String>(null, ""));
 
             for (TestMethodSampleTypeVO typeDO : testPanelList) {
-                row = new TableDataRow(1);
+                row = new Item<String>(1);
                 if (typeDO.getPanelId() == null) {
-                    row.key = "T" + typeDO.getTestId() + "|" + typeDO.getSampleTypeId();
-                    row.cells.get(0).value = typeDO.getTest() + ", " + typeDO.getMethod() + ", " +
-                                             typeDO.getSampleType();
-                    row.data = typeDO;
+                    row.setKey("T" + typeDO.getTestId() + "|" + typeDO.getSampleTypeId());
+                    row.setCell(0,typeDO.getTest() + ", " + typeDO.getMethod() + ", " +
+                                             typeDO.getSampleType());
+                    row.setData(typeDO);
 
                 } else {
-                    row.key = "P" + typeDO.getPanelId() + "|" + typeDO.getSampleTypeId();
-                    row.cells.get(0).value = typeDO.getPanel() + ", " + typeDO.getSampleType();
-                    row.data = typeDO;
+                    row.setKey("P" + typeDO.getPanelId() + "|" + typeDO.getSampleTypeId());
+                    row.setCell(0,typeDO.getPanel() + ", " + typeDO.getSampleType());
+                    row.setData(typeDO);
                 }
 
                 model.add(row);
@@ -843,7 +842,7 @@ public class QuickEntryScreen extends Screen {
 
             testMethodSampleType.setModel(model);
         } catch (Exception e) {
-            Window.alert("inializeDropdowns: " + e.getMessage());
+            com.google.gwt.user.client.Window.alert("inializeDropdowns: " + e.getMessage());
             window.close();
         }
     }
@@ -865,7 +864,7 @@ public class QuickEntryScreen extends Screen {
                                          }
 
                                          public void onFailure(Throwable caught) {
-                                             Window.alert(caught.getMessage());
+                                             com.google.gwt.user.client.Window.alert(caught.getMessage());
                                          }
                                      });
     }

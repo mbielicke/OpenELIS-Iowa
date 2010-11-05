@@ -43,7 +43,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
 <!-- main screen -->
-    <screen id="InternalOrder" name="{resource:getString($constants,'internalOrder')}">
+    <screen name="{resource:getString($constants,'internalOrder')}">
       <HorizontalPanel padding="0" spacing="0">
 <!--left table goes here -->
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
@@ -57,7 +57,7 @@ UIRF Software License are applicable instead of those above.
               </VerticalPanel>
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" width="auto" maxRows="20" style="atozTable">
+              <table key="atozTable" rows="20" style="atozTable">
                 <col width="75" header="{resource:getString($constants,'orderNum')}">
                   <label field="Integer" />
                 </col>
@@ -67,12 +67,12 @@ UIRF Software License are applicable instead of those above.
               </table>
               <widget halign="center">
                 <HorizontalPanel>
-                  <appButton key="atozPrev" style="Button" enable="false">
+                  <button key="atozPrev" style="Button" enabled="false">
                     <AbsolutePanel style="prevNavIndex" />
-                  </appButton>
-                  <appButton key="atozNext" style="Button" enable="false">
+                  </button>
+                  <button key="atozNext" style="Button" enabled="false">
                     <AbsolutePanel style="nextNavIndex" />
-                  </appButton>
+                  </button>
                 </HorizontalPanel>
               </widget>
             </VerticalPanel>
@@ -82,63 +82,31 @@ UIRF Software License are applicable instead of those above.
         <VerticalPanel padding="0" spacing="0">
           <AbsolutePanel spacing="0" style="ButtonPanelContainer">
             <HorizontalPanel>
-              <xsl:call-template name="queryButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="previousButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="nextButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
+              <xsl:call-template name="queryButton"/>
+              <xsl:call-template name="previousButton"/>
+              <xsl:call-template name="nextButton"/>
               <xsl:call-template name="buttonPanelDivider" />
-              <xsl:call-template name="addButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="updateButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
+              <xsl:call-template name="addButton"/>
+              <xsl:call-template name="updateButton"/>
               <xsl:call-template name="buttonPanelDivider" />
-              <xsl:call-template name="commitButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="abortButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
+              <xsl:call-template name="commitButton"/>
+              <xsl:call-template name="abortButton"/>
               <xsl:call-template name="buttonPanelDivider" />
-              <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
-                <menuItem>
+              <menu key="optionsMenu" selfShow="true" showBelow="true">
                   <menuDisplay>
-                    <appButton style="ButtonPanelButton" action="option">
-                      <HorizontalPanel>
-                        <text>
-                          <xsl:value-of select='resource:getString($constants,"options")' />
-                        </text>
-                        <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
-                      </HorizontalPanel>
-                    </appButton>
+                    <button style="ButtonPanelButton" action="option">
+                      <Grid cols="2">
+                        <row>
+                          <cell text="{resource:getString($constants,'options')}" />
+                          <cell style="OptionsButtonImage" />
+                        </row>
+                      </Grid>
+                    </button>
                   </menuDisplay>
-                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                    <xsl:call-template name="duplicateRecordMenuItem" />
-                    <menuItem key="orderHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'orderHistory')}" />
-                    <menuItem key="itemHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'orderItemHistory')}" />
-                  </menuPanel>
-                </menuItem>
-              </menuPanel>
+                  <xsl:call-template name="duplicateRecordMenuItem" />
+                  <menuItem key="orderHistory" enabled="false" icon="historyIcon" display="{resource:getString($constants,'orderHistory')}" />
+                  <menuItem key="itemHistory" enabled="false" icon="historyIcon" display="{resource:getString($constants,'orderItemHistory')}" />
+              </menu>
             </HorizontalPanel>
           </AbsolutePanel>
 <!--end button panel-->
@@ -160,7 +128,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'status')" />:
                 </text>
-                <dropdown key="{meta:getStatusId()}" width="90" popWidth="auto" tab="{meta:getRequestedBy()},{meta:getNeededInDays()}" field="Integer" required="true" />
+                <dropdown key="{meta:getStatusId()}" width="90" tab="{meta:getRequestedBy()},{meta:getNeededInDays()}" field="Integer" required="true" />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'requestedBy')" />:
                 </text>
@@ -176,7 +144,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"costCenter")' />:
                 </text>
-                <dropdown key="{meta:getCostCenterId()}" width="187" popWidth="auto" tab="tabPanel,{meta:getOrderedDate()}" field="Integer" />
+                <dropdown key="{meta:getCostCenterId()}" width="187" tab="tabPanel,{meta:getOrderedDate()}" field="Integer" />
               </row>
             </TablePanel>
 <!-- TAB PANEL -->
@@ -184,7 +152,7 @@ UIRF Software License are applicable instead of those above.
 <!-- TAB 1 (Items) -->
               <tab key="itemTab" text="{resource:getString($constants,'items')}" tab="itemTable, itemTable">
                 <VerticalPanel padding="0" spacing="0">
-                  <table key="itemTable" width="auto" maxRows="11" showScroll="ALWAYS">
+                  <table key="itemTable" rows="11" vscroll="ALWAYS" hscroll="ALWAYS">
                     <col key="{meta:getOrderItemQuantity()}" width="65" align="right" header="{resource:getString($constants,'quantity')}">
                       <textbox field="Integer" required="true" />
                     </col>
@@ -192,10 +160,10 @@ UIRF Software License are applicable instead of those above.
                       <autoComplete width="auto" case="LOWER" field="Integer" required="true">
                         <col width="155" header="{resource:getString($constants,'name')}" />
                         <col width="110" header="{resource:getString($constants,'store')}">
-                          <dropdown width="110" popWidth="auto" field="Integer" />
+                          <dropdown width="110" field="Integer" />
                         </col>
                         <col width="110" header="{resource:getString($constants,'dispensedUnits')}">
-                          <dropdown width="110" popWidth="auto" field="Integer" />
+                          <dropdown width="110" field="Integer" />
                         </col>
                       </autoComplete>
                     </col>
@@ -204,29 +172,15 @@ UIRF Software License are applicable instead of those above.
                     </col>
                   </table>
                   <HorizontalPanel>
-                    <appButton key="addItemButton" style="Button">
-                      <HorizontalPanel>
-                        <AbsolutePanel style="AddRowButtonImage" />
-                        <text>
-                          <xsl:value-of select="resource:getString($constants,'addRow')" />
-                        </text>
-                      </HorizontalPanel>
-                    </appButton>
-                    <appButton key="removeItemButton" style="Button">
-                      <HorizontalPanel>
-                        <AbsolutePanel style="RemoveRowButtonImage" />
-                        <text>
-                          <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                        </text>
-                      </HorizontalPanel>
-                    </appButton>
+                    <button key="addItemButton" icon="AddRowButtonImage" text="{resource:getString($constants,'addRow')}" style="Button"/>
+                    <button key="removeItemButton" icon="RemoveRowButtonImage" text="{resource:getString($constants,'removeRow')}" style="Button"/>
                   </HorizontalPanel>
                 </VerticalPanel>
               </tab>
 <!-- TAB 2 (receipts) -->
               <tab key="fillTab" text="{resource:getString($constants,'filled')}">
                 <VerticalPanel padding="0" spacing="0">
-                  <table key="fillTable" width="auto" maxRows="11" showScroll="ALWAYS">
+                  <table key="fillTable" rows="11" vscroll="ALWAYS" hscroll="ALWAYS">
                     <col key="{meta:getInventoryReceiptOrderItemId()}" width="150" header="{resource:getString($constants,'inventoryItem')}">
                       <label field="String" />
                     </col>
@@ -249,14 +203,7 @@ UIRF Software License are applicable instead of those above.
               <tab key="noteTab" text="{resource:getString($constants,'orderShippingNotes')}" tab="notesPanel, notesPanel">
                 <VerticalPanel padding="0" spacing="0">
                   <notes key="notesPanel" width="604" height="267" />
-                  <appButton key="standardNoteButton" style="Button">
-                    <HorizontalPanel>
-                      <AbsolutePanel style="StandardNoteButtonImage" />
-                      <text>
-                        <xsl:value-of select="resource:getString($constants,'addNote')" />
-                      </text>
-                    </HorizontalPanel>
-                  </appButton>
+                  <button key="standardNoteButton" icon="StandardNoteButtonImage" text="{resource:getString($constants,'addNote')}" style="Button"/>
                 </VerticalPanel>
               </tab>
             </TabPanel>

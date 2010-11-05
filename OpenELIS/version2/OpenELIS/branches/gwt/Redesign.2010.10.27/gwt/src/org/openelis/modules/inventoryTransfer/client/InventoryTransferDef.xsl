@@ -47,29 +47,17 @@ UIRF Software License are applicable instead of those above.
       <xsl:value-of select="props" />
     </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="InventoryTransfer" name="{resource:getString($constants,'inventoryTransfer')}">
+    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="{resource:getString($constants,'inventoryTransfer')}">
       <VerticalPanel padding="0" spacing="0">
 
 <!--button panel code-->
 
         <AbsolutePanel spacing="0" style="ButtonPanelContainer">
           <HorizontalPanel>
-            <xsl:call-template name="addButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
+            <xsl:call-template name="addButton"/>
             <xsl:call-template name="buttonPanelDivider" />
-            <xsl:call-template name="commitButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="abortButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
+            <xsl:call-template name="commitButton"/>
+            <xsl:call-template name="abortButton"/>
           </HorizontalPanel>
         </AbsolutePanel>
 
@@ -77,9 +65,9 @@ UIRF Software License are applicable instead of those above.
 
         <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
           <widget valign="top">
-            <table key="receiptTable" width="auto" maxRows="10" showScroll="ALWAYS" title="">
+            <table key="receiptTable" rows="10" vscroll="ALWAYS" hscroll="ALWAYS">
               <col key="fromItemName" width="135" header="{resource:getString($constants,'fromItem')}">
-                <autoComplete width="120" required  = "true" field="Integer">
+                <autoComplete width="120" required="true">
                   <col width="100" header="{resource:getString($constants,'name')}" />
                   <col width="110" header="{resource:getString($constants,'store')}" />
                   <col width="160" header="{resource:getString($constants,'location')}" />
@@ -96,7 +84,7 @@ UIRF Software License are applicable instead of those above.
                 <textbox key="inventoryReceiptgetQuantityReceived" required = "true" field="Integer" />
               </col>
               <col key="toItemName" width="135"  header="{resource:getString($constants,'toItem')}">
-                <autoComplete width="120" case="LOWER" field="Integer" required = "true">
+                <autoComplete width="120" case="LOWER" required = "true">
                   <col width="100" header="{resource:getString($constants,'name')}" />
                   <col width="150" header="{resource:getString($constants,'store')}" />
                   <col width="150" header="{resource:getString($constants,'dispensedUnits')}" />
@@ -106,7 +94,7 @@ UIRF Software License are applicable instead of those above.
                 <check />
               </col>
               <col key="toLoc" width="160" header="{resource:getString($constants,'toLoc')}">
-                <autoComplete width="137" required  = "true" field="Integer">
+                <autoComplete width="137" required="true">
                   <col width="300" header="{resource:getString($constants,'description')}" />
                   <col width="65" header="{resource:getString($constants,'lotNum')}" />
                   <col width="55" header="{resource:getString($constants,'qty')}" />
@@ -119,22 +107,8 @@ UIRF Software License are applicable instead of those above.
           </widget>
           <widget style="TableButtonFooter">
             <HorizontalPanel>
-            <appButton key="addReceiptButton" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="AddRowButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'addRow')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
-              <appButton key="removeReceiptButton" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="RemoveRowButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
+              <button key="addReceiptButton" icon="AddRowButtonImage" text="{resource:getString($constants,'addRow')}" style="Button"/>
+              <button key="removeReceiptButton" icon="RemoveRowButtonImage" text="{resource:getString($constants,'removeRow')}" style="Button"/>
             </HorizontalPanel>
           </widget>
           <VerticalPanel style="subform">

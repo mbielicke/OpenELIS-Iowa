@@ -41,7 +41,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen id="WorksheetFileUpload" name="{resource:getString($constants,'worksheetFileUpload')}">
+    <screen name="{resource:getString($constants,'worksheetFileUpload')}">
       <VerticalPanel padding="0" spacing="0">
         <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
           <fileUpload key="loadFile" service="org.openelis.modules.worksheet.server.WorksheetService"/>
@@ -51,16 +51,8 @@ UIRF Software License are applicable instead of those above.
 
         <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
           <HorizontalPanel>
-            <xsl:call-template name="okButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="cancelButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
+            <xsl:call-template name="okButton"/>
+            <xsl:call-template name="cancelButton"/>
           </HorizontalPanel>
         </AbsolutePanel>
 

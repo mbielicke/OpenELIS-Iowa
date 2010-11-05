@@ -47,15 +47,17 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CheckBox;
-import org.openelis.gwt.widget.HasField;
+import org.openelis.gwt.widget.HasExceptions;
+import org.openelis.gwt.widget.Item;
+import org.openelis.gwt.widget.ModalWindow;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.Window;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
@@ -63,13 +65,12 @@ import org.openelis.meta.SampleMeta;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Window;
 
 public class EnvironmentalTab extends Screen {
     private TextBox                        location, description, collector, collectorPhone;
     private TextBox<Integer>               priority;
-    private AutoComplete<Integer>          project, reportTo, billTo;
-    private AppButton                      billToLookup, reportToLookup, projectLookup,
+    private AutoComplete                   project, reportTo, billTo;
+    private Button                         billToLookup, reportToLookup, projectLookup,
                                            locationLookup;
     private CheckBox                       isHazardous;
 
@@ -85,11 +86,11 @@ public class EnvironmentalTab extends Screen {
 
     protected boolean                      loaded = false;
 
-    public EnvironmentalTab(ScreenWindow window) throws Exception {
+    public EnvironmentalTab(Window window) throws Exception {
         this(null, window);
     }
     
-    public EnvironmentalTab(ScreenDefInt def, ScreenWindow window) throws Exception {
+    public EnvironmentalTab(ScreenDefInt def, Window window) throws Exception {
         if (def == null)
             drawScreen((ScreenDefInt)GWT.create(EnvironmentalTabDef.class));
         else
@@ -115,7 +116,7 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isHazardous.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                isHazardous.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                           .contains(event.getState()));
                 isHazardous.setQueryMode(event.getState() == State.QUERY);
             }
@@ -132,7 +133,7 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                priority.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                priority.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                        .contains(event.getState()));
                 priority.setQueryMode(event.getState() == State.QUERY);
             }
@@ -149,7 +150,7 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                description.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                description.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                           .contains(event.getState()));
                 description.setQueryMode(event.getState() == State.QUERY);
             }
@@ -166,7 +167,7 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collector.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                collector.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                         .contains(event.getState()));
                 collector.setQueryMode(event.getState() == State.QUERY);
             }
@@ -183,7 +184,7 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collectorPhone.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                collectorPhone.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                              .contains(event.getState()));
                 collectorPhone.setQueryMode(event.getState() == State.QUERY);
             }
@@ -200,39 +201,39 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                location.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                location.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                        .contains(event.getState()));
                 location.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        project = (AutoComplete<Integer>)def.getWidget(SampleMeta.getProjectName());
-        addScreenHandler(project, new ScreenEventHandler<String>() {
+        project = (AutoComplete)def.getWidget(SampleMeta.getProjectName());
+        addScreenHandler(project, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
                     SampleProjectViewDO projectDO = manager.getProjects()
                                                            .getFirstPermanentProject();
 
                     if (projectDO != null)
-                        project.setSelection(projectDO.getProjectId(), projectDO.getProjectName());
+                        project.setValue(projectDO.getProjectId(), projectDO.getProjectName());
                     else
-                        project.setSelection(null, "");
+                        project.setValue(null, "");
 
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                TableDataRow selectedRow = project.getSelection();
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                Item<Integer> selectedRow = project.getSelectedItem();
                 SampleProjectViewDO projectDO = null;
                 try {
-                    if (selectedRow.key != null) {
+                    if (selectedRow.getKey() != null) {
                         projectDO = new SampleProjectViewDO();
                         projectDO.setIsPermanent("Y");
-                        projectDO.setProjectId((Integer)selectedRow.key);
-                        projectDO.setProjectName((String)selectedRow.cells.get(0).value);
-                        projectDO.setProjectDescription((String)selectedRow.cells.get(1).value);
+                        projectDO.setProjectId((Integer)selectedRow.getKey());
+                        projectDO.setProjectName((String)selectedRow.getCell(0));
+                        projectDO.setProjectDescription((String)selectedRow.getCell(1));
                     }
 
                     manager.getProjects().addFirstPermanentProject(projectDO);
@@ -240,17 +241,17 @@ public class EnvironmentalTab extends Screen {
                     projectDO = manager.getProjects().getFirstPermanentProject();
 
                     if (projectDO != null)
-                        project.setSelection(projectDO.getProjectId(), projectDO.getProjectName());
+                        project.setValue(projectDO.getProjectId(), projectDO.getProjectName());
                     else
-                        project.setSelection(null, "");
+                        project.setValue(null, "");
 
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                project.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                project.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                       .contains(event.getState()));
                 project.setQueryMode(event.getState() == State.QUERY);
             }
@@ -259,66 +260,70 @@ public class EnvironmentalTab extends Screen {
         project.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
-                TableDataRow row;
+                Item<Integer> row;
                 ProjectDO data;
                 ArrayList<ProjectDO> list;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e){
+                	
+                }
 
                 window.setBusy();
                 try {
                     list = projectService.callList("fetchActiveByName", parser.getParameter()
                                                                               .get(0));
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new TableDataRow(4);
+                        row = new Item<Integer>(4);
                         data = list.get(i);
 
-                        row.key = data.getId();
-                        row.cells.get(0).value = data.getName();
-                        row.cells.get(1).value = data.getDescription();
+                        row.setKey(data.getId());
+                        row.setCell(0,data.getName());
+                        row.setCell(1,data.getDescription());
 
                         model.add(row);
                     }
                     project.showAutoMatches(model);
                 } catch (Throwable e) {
                     e.printStackTrace();
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
                 window.clearStatus();
             }
         });
 
-        reportTo = (AutoComplete<Integer>)def.getWidget(SampleMeta.getOrgName());
-        addScreenHandler(reportTo, new ScreenEventHandler<String>() {
+        reportTo = (AutoComplete)def.getWidget(SampleMeta.getOrgName());
+        addScreenHandler(reportTo, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
                     SampleOrganizationViewDO reportToOrg = manager.getOrganizations()
                                                                   .getFirstReportTo();
 
                     if (reportToOrg != null)
-                        reportTo.setSelection(reportToOrg.getOrganizationId(),
+                        reportTo.setValue(reportToOrg.getOrganizationId(),
                                               reportToOrg.getOrganizationName());
                     else
-                        reportTo.setSelection(null, "");
+                        reportTo.setValue(null, "");
 
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                TableDataRow selectedRow = reportTo.getSelection();
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                Item<Integer> selectedRow = reportTo.getSelectedItem();
                 SampleOrganizationViewDO reportToOrg = null;
                 try {
-                    if (selectedRow.key != null) {
+                    if (selectedRow.getKey() != null) {
                         reportToOrg = new SampleOrganizationViewDO();
-                        reportToOrg.setOrganizationId((Integer)selectedRow.key);
-                        reportToOrg.setOrganizationName((String)selectedRow.cells.get(0).value);
-                        reportToOrg.setOrganizationCity((String)selectedRow.cells.get(2).value);
-                        reportToOrg.setOrganizationState((String)selectedRow.cells.get(3).value);
+                        reportToOrg.setOrganizationId((Integer)selectedRow.getKey());
+                        reportToOrg.setOrganizationName((String)selectedRow.getCell(0));
+                        reportToOrg.setOrganizationCity((String)selectedRow.getCell(2));
+                        reportToOrg.setOrganizationState((String)selectedRow.getCell(3));
                     }
 
                     manager.getOrganizations().setReportTo(reportToOrg);
@@ -326,18 +331,18 @@ public class EnvironmentalTab extends Screen {
                     reportToOrg = manager.getOrganizations().getFirstReportTo();
 
                     if (reportToOrg != null)
-                        reportTo.setSelection(reportToOrg.getOrganizationId(),
+                        reportTo.setValue(reportToOrg.getOrganizationId(),
                                               reportToOrg.getOrganizationName());
                     else
-                        reportTo.setSelection(null, "");
+                        reportTo.setValue(null, "");
 
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                reportTo.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                reportTo.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                        .contains(event.getState()));
                 reportTo.setQueryMode(event.getState() == State.QUERY);
             }
@@ -350,34 +355,34 @@ public class EnvironmentalTab extends Screen {
             }
         });
 
-        billTo = (AutoComplete<Integer>)def.getWidget(SampleMeta.getBillTo());
-        addScreenHandler(billTo, new ScreenEventHandler<String>() {
+        billTo = (AutoComplete)def.getWidget(SampleMeta.getBillTo());
+        addScreenHandler(billTo, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
                     SampleOrganizationViewDO billToOrg = manager.getOrganizations()
                                                                 .getFirstBillTo();
 
                     if (billToOrg != null)
-                        billTo.setSelection(billToOrg.getOrganizationId(),
+                        billTo.setValue(billToOrg.getOrganizationId(),
                                             billToOrg.getOrganizationName());
                     else
-                        billTo.setSelection(null, "");
+                        billTo.setValue(null, "");
 
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                TableDataRow selectedRow = billTo.getSelection();
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                Item<Integer> selectedRow = billTo.getSelectedItem();
                 SampleOrganizationViewDO billToOrg = null;
                 try {
-                    if (selectedRow.key != null) {
+                    if (selectedRow.getKey() != null) {
                         billToOrg = new SampleOrganizationViewDO();
-                        billToOrg.setOrganizationId((Integer)selectedRow.key);
-                        billToOrg.setOrganizationName((String)selectedRow.cells.get(0).value);
-                        billToOrg.setOrganizationCity((String)selectedRow.cells.get(2).value);
-                        billToOrg.setOrganizationState((String)selectedRow.cells.get(3).value);
+                        billToOrg.setOrganizationId((Integer)selectedRow.getKey());
+                        billToOrg.setOrganizationName((String)selectedRow.getCell(0));
+                        billToOrg.setOrganizationCity((String)selectedRow.getCell(2));
+                        billToOrg.setOrganizationState((String)selectedRow.getCell(3));
                     }
 
                     manager.getOrganizations().setBillTo(billToOrg);
@@ -385,18 +390,18 @@ public class EnvironmentalTab extends Screen {
                     billToOrg = manager.getOrganizations().getFirstBillTo();
 
                     if (billToOrg != null)
-                        billTo.setSelection(billToOrg.getOrganizationId(),
+                        billTo.setValue(billToOrg.getOrganizationId(),
                                             billToOrg.getOrganizationName());
                     else
-                        billTo.setSelection(null, "");
+                        billTo.setValue(null, "");
 
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                billTo.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                billTo.setEnabled(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
                 billTo.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -408,50 +413,50 @@ public class EnvironmentalTab extends Screen {
             }
         });
 
-        billToLookup = (AppButton)def.getWidget("billToLookup");
+        billToLookup = (Button)def.getWidget("billToLookup");
         addScreenHandler(billToLookup, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 onOrganizationLookupClick();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                billToLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
+                billToLookup.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
                                            .contains(event.getState()));
             }
         });
 
-        reportToLookup = (AppButton)def.getWidget("reportToLookup");
+        reportToLookup = (Button)def.getWidget("reportToLookup");
         addScreenHandler(reportToLookup, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 onOrganizationLookupClick();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                reportToLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
+                reportToLookup.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
                                              .contains(event.getState()));
             }
         });
 
-        projectLookup = (AppButton)def.getWidget("projectLookup");
+        projectLookup = (Button)def.getWidget("projectLookup");
         addScreenHandler(projectLookup, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 onProjectLookupClick();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                projectLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
+                projectLookup.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
                                             .contains(event.getState()));
             }
         });
 
-        locationLookup = (AppButton)def.getWidget("locButton");
+        locationLookup = (Button)def.getWidget("locButton");
         addScreenHandler(locationLookup, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 onLocationLookupClick();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                locationLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
+                locationLookup.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
                                              .contains(event.getState()));
             }
         });
@@ -489,34 +494,38 @@ public class EnvironmentalTab extends Screen {
 
     private void getOrganizationMatches(String match, AutoComplete widget) {
         QueryFieldUtil parser;
-        TableDataRow row;
+        Item<Integer> row;
         OrganizationDO data;
         ArrayList<OrganizationDO> list;
-        ArrayList<TableDataRow> model;
+        ArrayList<Item<Integer>> model;
 
         parser = new QueryFieldUtil();
-        parser.parse(match);
+        try {
+        	parser.parse(match);
+        }catch(Exception e){
+        	
+        }
 
         window.setBusy();
         try {
             list = orgService.callList("fetchByIdOrName", parser.getParameter().get(0));
-            model = new ArrayList<TableDataRow>();
+            model = new ArrayList<Item<Integer>>();
             for (int i = 0; i < list.size(); i++ ) {
-                row = new TableDataRow(4);
+                row = new Item<Integer>(4);
                 data = list.get(i);
 
-                row.key = data.getId();
-                row.cells.get(0).value = data.getName();
-                row.cells.get(1).value = data.getAddress().getStreetAddress();
-                row.cells.get(2).value = data.getAddress().getCity();
-                row.cells.get(3).value = data.getAddress().getState();
+                row.setKey(data.getId());
+                row.setCell(0,data.getName());
+                row.setCell(1,data.getAddress().getStreetAddress());
+                row.setCell(2,data.getAddress().getCity());
+                row.setCell(3,data.getAddress().getState());
 
                 model.add(row);
             }
             widget.showAutoMatches(model);
         } catch (Throwable e) {
             e.printStackTrace();
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
         }
         window.clearStatus();
     }
@@ -536,7 +545,7 @@ public class EnvironmentalTab extends Screen {
                 });
             }
 
-            ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+            ModalWindow modal = new ModalWindow();
             modal.setName(consts.get("sampleProject"));
             modal.setContent(projectScreen);
             projectScreen.setScreenState(state);
@@ -545,7 +554,7 @@ public class EnvironmentalTab extends Screen {
 
         } catch (Exception e) {
             e.printStackTrace();
-            Window.alert("error: " + e.getMessage());
+            com.google.gwt.user.client.Window.alert("error: " + e.getMessage());
             return;
         }
     }
@@ -566,7 +575,7 @@ public class EnvironmentalTab extends Screen {
                 });
             }
 
-            ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+            ModalWindow modal = new ModalWindow();
             modal.setName(consts.get("sampleOrganization"));
             modal.setContent(organizationScreen);
 
@@ -575,7 +584,7 @@ public class EnvironmentalTab extends Screen {
 
         } catch (Exception e) {
             e.printStackTrace();
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             return;
         }
     }
@@ -595,7 +604,7 @@ public class EnvironmentalTab extends Screen {
                 });
             }
 
-            ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+            ModalWindow modal = new ModalWindow();
             modal.setName(consts.get("sampleLocation"));
             modal.setContent(locationScreen);
 
@@ -605,7 +614,7 @@ public class EnvironmentalTab extends Screen {
             locationScreen.setEnvDO(envDO);
         } catch (Exception e) {
             e.printStackTrace();
-            Window.alert("error: " + e.getMessage());
+            com.google.gwt.user.client.Window.alert("error: " + e.getMessage());
             return;
         }
     }
@@ -613,17 +622,17 @@ public class EnvironmentalTab extends Screen {
     public void showErrors(ValidationErrorsList errors) {
         TableFieldErrorException tableE;
         FieldErrorException fieldE;
-        TableWidget tableWid;
-        HasField field;
+        Table tableWid;
+        HasExceptions field;
 
         for (Exception ex : errors.getErrorList()) {
             if (ex instanceof TableFieldErrorException) {
                 tableE = (TableFieldErrorException) ex;
-                tableWid = (TableWidget)def.getWidget(tableE.getTableKey());
-                tableWid.setCellException(tableE.getRowIndex(), tableE.getFieldName(), tableE);
+                tableWid = (Table)def.getWidget(tableE.getTableKey());
+                tableWid.addException(tableE.getRowIndex(), tableWid.getColumnByName(tableE.getFieldName()), tableE);
             } else if (ex instanceof FieldErrorException) {
                 fieldE = (FieldErrorException)ex;
-                field = (HasField)def.getWidget(fieldE.getFieldName());
+                field = (HasExceptions)def.getWidget(fieldE.getFieldName());
                 
                 if(field != null)
                     field.addException(fieldE);

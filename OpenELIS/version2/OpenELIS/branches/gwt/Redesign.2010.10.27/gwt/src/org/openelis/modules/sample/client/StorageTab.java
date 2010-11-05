@@ -42,13 +42,14 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoCompleteValue;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.AutoComplete;
+import org.openelis.gwt.widget.Item;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.Window;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
@@ -67,21 +68,20 @@ import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.user.client.Window;
 
 public class StorageTab extends Screen {
     private boolean                 loaded;
 
-    protected AutoComplete<Integer> location;
-    protected TableWidget           storageTable;
-    protected AppButton             addStorageButton, removeStorageButton;
+    protected AutoComplete          location;
+    protected Table                 storageTable;
+    protected Button                addStorageButton, removeStorageButton;
 
     protected SampleDataBundle      bundle;
     protected StorageManager        manager;
 
     private Integer                 analysisCancelledId, analysisReleasedId;
 
-    public StorageTab(ScreenDefInt def, ScreenWindow window) {
+    public StorageTab(ScreenDefInt def, Window window) {
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.storage.server.StorageService");
         setDefinition(def);
         setWindow(window);
@@ -91,35 +91,35 @@ public class StorageTab extends Screen {
     }
 
     private void initialize() {
-        storageTable = (TableWidget)def.getWidget("storageTable");
-        addScreenHandler(storageTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        storageTable = (Table)def.getWidget("storageTable");
+        addScreenHandler(storageTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                storageTable.load(getTableModel());
+                storageTable.setModel(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                storageTable.enable(canEdit() &&
+                storageTable.setEnabled(canEdit() &&
                                     EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
                 storageTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        location = ((AutoComplete<Integer>)storageTable.getColumns().get(1).colWidget);
+        location = ((AutoComplete)storageTable.getColumnWidget(1));
         storageTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int row, col;
                 row = event.getRow();
                 col = event.getCol();
                 StorageViewDO storageDO;
-                TableDataRow tableRow = storageTable.getRow(row);
+                Row tableRow = storageTable.getRowAt(row);
                 try {
                     storageDO = manager.getStorageAt(row);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                     return;
                 }
 
-                Object val = tableRow.cells.get(col).value;
+                Object val = tableRow.getCell(col);
                 Datetime checkin, checkout;
 
                 switch (col) {
@@ -127,18 +127,17 @@ public class StorageTab extends Screen {
                         storageDO.setSystemUserId((Integer)val);
                         break;
                     case 1:
-                        TableDataRow selection = location.getSelection();
-                        storageDO.setStorageLocationId((Integer) ((TableDataRow)val).key);
-                        storageDO.setStorageLocation((String)selection.getCells().get(0));
+                        storageDO.setStorageLocationId(((AutoCompleteValue)val).getId());
+                        storageDO.setStorageLocation(((AutoCompleteValue)val).getDisplay());
                         break;
                     case 2:
                         storageDO.setCheckin((Datetime)val);
 
-                        checkin = (Datetime)tableRow.cells.get(2).value;
-                        checkout = (Datetime)tableRow.cells.get(3).value;
+                        checkin = (Datetime)tableRow.getCell(2);
+                        checkout = (Datetime)tableRow.getCell(3);
 
                         if (checkin != null && checkout != null && checkout.compareTo(checkin) <= 0)
-                            storageTable.setCellException(
+                            storageTable.addException(
                                                           row,
                                                           col,
                                                           new LocalizedException(
@@ -147,11 +146,11 @@ public class StorageTab extends Screen {
                     case 3:
                         storageDO.setCheckout((Datetime)val);
 
-                        checkin = (Datetime)tableRow.cells.get(2).value;
-                        checkout = (Datetime)tableRow.cells.get(3).value;
+                        checkin = (Datetime)tableRow.getCell(2);
+                        checkout = (Datetime)tableRow.getCell(3);
 
                         if (checkin != null && checkout != null && checkout.compareTo(checkin) <= 0)
-                            storageTable.setCellException(
+                            storageTable.addException(
                                                           row,
                                                           col,
                                                           new LocalizedException(
@@ -161,32 +160,32 @@ public class StorageTab extends Screen {
             }
         });
         
-        storageTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
-            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+        storageTable.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+            public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
                 //always allow selection
             }
         });
 
-        storageTable.addSelectionHandler(new SelectionHandler<TableRow>() {
-            public void onSelection(SelectionEvent<TableRow> event) {
+        storageTable.addSelectionHandler(new SelectionHandler<Integer>() {
+            public void onSelection(SelectionEvent<Integer> event) {
                 if(EnumSet.of(State.ADD, State.UPDATE).contains(state))
-                    removeStorageButton.enable(true);
+                    removeStorageButton.setEnabled(true);
             }
         });
         
         storageTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 try {
-                    TableDataRow selectedRow = storageTable.getRow(0);
+                    Row selectedRow = storageTable.getRowAt(0);
                     StorageViewDO storageDO = new StorageViewDO();
-                    storageDO.setCheckin((Datetime)selectedRow.cells.get(2).value);
+                    storageDO.setCheckin((Datetime)selectedRow.getCell(2));
                     storageDO.setSystemUserId(OpenELIS.getSystemUserPermission().getSystemUserId());
                     storageDO.setUserName(OpenELIS.getSystemUserPermission().getLoginName());
 
                     manager.addStorage(storageDO);
-                    removeStorageButton.enable(true);
+                    removeStorageButton.setEnabled(true);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
@@ -195,9 +194,9 @@ public class StorageTab extends Screen {
             public void onRowDeleted(RowDeletedEvent event) {
                 try {
                     manager.removeStorageAt(event.getIndex());
-                    removeStorageButton.enable(false);
+                    removeStorageButton.setEnabled(false);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
@@ -206,86 +205,90 @@ public class StorageTab extends Screen {
             public void onGetMatches(GetMatchesEvent event) {
                 String locationName;
                 QueryFieldUtil parser;
-                TableDataRow row;
+                Item<Integer> row;
                 StorageLocationViewDO data;
                 ArrayList<StorageLocationViewDO> list;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e) {
+                	
+                }
 
                 window.setBusy();
 
                 try {
                     list = service.callList("fetchAvailableByName", parser.getParameter().get(0));
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new TableDataRow(3);
+                        row = new Item<Integer>(3);
                         data = list.get(i);
 
                         locationName = StorageLocationManager.getLocationForDisplay(data.getName(), data.getStorageUnitDescription(),
                                                                                     data.getLocation());
-                        row.key = data.getId();
-                        row.cells.get(0).value = data.getName();
-                        row.cells.get(1).value = data.getStorageUnitDescription();
-                        row.cells.get(2).value = data.getLocation();
-                        row.display = locationName;
+                        row.setKey(data.getId());
+                        row.setCell(0,data.getName());
+                        row.setCell(1,data.getStorageUnitDescription());
+                        row.setCell(2,data.getLocation());
+                        //row.setDisplay(locationName);
                         
                         model.add(row);
                     }
                     location.showAutoMatches(model);
 
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
                 window.clearStatus();
             }
         });
 
-        addStorageButton = (AppButton)def.getWidget("addStorageButton");
+        addStorageButton = (Button)def.getWidget("addStorageButton");
         addScreenHandler(addStorageButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 Datetime date = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
 
-                if (storageTable.numRows() > 0 && storageTable.getCell(0, 3).value == null) {
+                if (storageTable.getRowCount() > 0 && storageTable.getValueAt(0, 3) == null) {
                     manager.getStorageAt(0).setCheckout(date);
-                    storageTable.setCell(0, 3, date);
+                    storageTable.setValueAt(0, 3, date);
                 }
 
-                TableDataRow newRow = new TableDataRow(4);
-                newRow.cells.get(0).value = OpenELIS.getSystemUserPermission().getLoginName();
-                newRow.cells.get(2).value = date;
-                storageTable.addRow(0, newRow);
-                storageTable.selectRow(0);
-                storageTable.scrollToSelection();
+                Row newRow = new Row(4);
+                newRow.setCell(0,OpenELIS.getSystemUserPermission().getLoginName());
+                newRow.setCell(2,date);
+                storageTable.addRowAt(0, newRow);
+                storageTable.selectRowAt(0);
+                storageTable.scrollToVisible(0);
                 storageTable.startEditing(0, 1);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addStorageButton.enable(canEdit() &&
+                addStorageButton.setEnabled(canEdit() &&
                                         EnumSet.of(State.ADD, State.UPDATE)
                                                .contains(event.getState()));
             }
         });
 
-        removeStorageButton = (AppButton)def.getWidget("removeStorageButton");
+        removeStorageButton = (Button)def.getWidget("removeStorageButton");
         addScreenHandler(removeStorageButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int selectedRow = storageTable.getSelectedRow();
-                if (selectedRow > -1 && storageTable.numRows() > 0) {
-                    storageTable.deleteRow(selectedRow);
+                if (selectedRow > -1 && storageTable.getRowCount() > 0) {
+                    storageTable.removeRowAt(selectedRow);
                 }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeStorageButton.enable(false);
+                removeStorageButton.setEnabled(false);
             }
         });
 
     }
 
-    private ArrayList<TableDataRow> getTableModel() {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+    private ArrayList<Row> getTableModel() {
+        ArrayList<Row> model = new ArrayList<Row>();
 
         if (manager == null)
             return model;
@@ -294,14 +297,14 @@ public class StorageTab extends Screen {
             for (int iter = 0; iter < manager.count(); iter++ ) {
                 StorageViewDO storageDO = manager.getStorageAt(iter);
 
-                TableDataRow row = new TableDataRow(4);
-                row.key = storageDO.getId();
+                Row row = new Row(4);
+                //row.key = storageDO.getId();
 
-                row.cells.get(0).value = storageDO.getUserName();
-                row.cells.get(1).value = new TableDataRow(storageDO.getStorageLocationId(),
-                                                          storageDO.getStorageLocation());
-                row.cells.get(2).value = storageDO.getCheckin();
-                row.cells.get(3).value = storageDO.getCheckout();
+                row.setCell(0,storageDO.getUserName());
+                row.setCell(1,new AutoCompleteValue(storageDO.getStorageLocationId(),
+                                                          storageDO.getStorageLocation()));
+                row.setCell(2,storageDO.getCheckin());
+                row.setCell(3,storageDO.getCheckout());
 
                 model.add(row);
             }
@@ -329,7 +332,7 @@ public class StorageTab extends Screen {
         
         return false;
         }catch(Exception e){
-            Window.alert("storageTab canEdit: "+e.getMessage());
+            com.google.gwt.user.client.Window.alert("storageTab canEdit: "+e.getMessage());
             return false;
         }
     }
@@ -340,7 +343,7 @@ public class StorageTab extends Screen {
             analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
 
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             window.close();
         }
     }
@@ -381,7 +384,7 @@ public class StorageTab extends Screen {
             DataChangeEvent.fire(this);
 
         } catch (Exception e) {
-            Window.alert("storageTab draw: "+ e.getMessage());
+            com.google.gwt.user.client.Window.alert("storageTab draw: "+ e.getMessage());
         }
 
         loaded = true;
@@ -394,12 +397,12 @@ public class StorageTab extends Screen {
         Datetime checkout, checkin;
         boolean returnValue = true;
 
-        for (int i = 0; i < storageTable.numRows(); i++ ) {
-            checkin = (Datetime)storageTable.getObject(i, 2);
-            checkout = (Datetime)storageTable.getObject(i, 3);
+        for (int i = 0; i < storageTable.getRowCount(); i++ ) {
+            checkin = (Datetime)storageTable.getValueAt(i, 2);
+            checkout = (Datetime)storageTable.getValueAt(i, 3);
 
             if (checkin != null && checkout != null && checkout.compareTo(checkin) <= 0) {
-                storageTable.setCellException(
+                storageTable.addException(
                                               i,
                                               3,
                                               new LocalizedException(

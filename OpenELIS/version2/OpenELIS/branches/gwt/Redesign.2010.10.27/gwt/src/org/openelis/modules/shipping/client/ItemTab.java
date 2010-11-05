@@ -38,11 +38,11 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.Button;
+import org.openelis.gwt.widget.ModalWindow;
+import org.openelis.gwt.widget.Window;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
@@ -60,21 +60,20 @@ import org.openelis.modules.order.client.SendoutOrderScreen;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.SyncCallback;
 
 public class ItemTab extends Screen {
     
     private ShippingManager                manager;
     private OrderManager                   orderManager;
-    private TableWidget                    itemTable, trackingTable;
-    private AppButton                      addItemButton, removeItemButton, addTrackingButton,
+    private Table                          itemTable, trackingTable;
+    private Button                         addItemButton, removeItemButton, addTrackingButton,
                                            removeTrackingButton, lookupItemButton;
     private ScreenService                  orderService;    
     private SendoutOrderScreen             sendoutOrderScreen;    
     private boolean                        loaded;
 
-    public ItemTab(ScreenDefInt def, ScreenWindow window) {
+    public ItemTab(ScreenDefInt def, Window window) {
         this.orderService = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
         setDefinition(def);
         setWindow(window);        
@@ -83,14 +82,14 @@ public class ItemTab extends Screen {
     }
     
     private void initialize() {
-        itemTable = (TableWidget)def.getWidget("itemTable");
-        addScreenHandler(itemTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        itemTable = (Table)def.getWidget("itemTable");
+        addScreenHandler(itemTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                itemTable.load(getItemTableModel()); 
+                itemTable.setModel(getItemTableModel()); 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                itemTable.enable(true);
+                itemTable.setEnabled(true);
                 itemTable.setQueryMode(false);
             }
         });
@@ -101,9 +100,9 @@ public class ItemTab extends Screen {
             }            
         });
         
-        itemTable.addSelectionHandler(new SelectionHandler<TableRow>() {
-            public void onSelection(SelectionEvent<TableRow> event) {
-                lookupItemButton.enable(true);   
+        itemTable.addSelectionHandler(new SelectionHandler<Integer>() {
+            public void onSelection(SelectionEvent<Integer> event) {
+                lookupItemButton.setEnabled(true);   
             }           
         });
         
@@ -116,12 +115,12 @@ public class ItemTab extends Screen {
                 r = event.getRow();
                 c = event.getCol();
                 
-                val = itemTable.getObject(r,c);
+                val = itemTable.getValueAt(r,c);
                 
                 try {
                     data = manager.getItems().getItemAt(r);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                     return;
                 }
                 
@@ -142,7 +141,7 @@ public class ItemTab extends Screen {
                 try {
                     manager.getItems().addItem();
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
@@ -152,63 +151,63 @@ public class ItemTab extends Screen {
                 try {
                     manager.getItems().removeItemAt(event.getIndex());
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
         
-        addItemButton = (AppButton)def.getWidget("addItemButton");
+        addItemButton = (Button)def.getWidget("addItemButton");
         addScreenHandler(addItemButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) { 
                 int n;
 
                 itemTable.addRow();
-                n = itemTable.numRows() - 1;
-                itemTable.selectRow(n);
-                itemTable.scrollToSelection();
+                n = itemTable.getRowCount() - 1;
+                itemTable.selectRowAt(n);
+                itemTable.scrollToVisible(n);
                 itemTable.startEditing(n, 0);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addItemButton.enable(false);
+                addItemButton.setEnabled(false);
             }
         });
 
-        removeItemButton = (AppButton)def.getWidget("removeItemButton");
+        removeItemButton = (Button)def.getWidget("removeItemButton");
         addScreenHandler(removeItemButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {       
                 int r;
 
                 r = itemTable.getSelectedRow();
-                if (r > -1 && itemTable.numRows() > 0)
-                    itemTable.deleteRow(r);
+                if (r > -1 && itemTable.getRowCount() > 0)
+                    itemTable.removeRowAt(r);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeItemButton.enable(false);
+                removeItemButton.setEnabled(false);
             }
         });
         
-        lookupItemButton = (AppButton)def.getWidget("lookupItemButton");
+        lookupItemButton = (Button)def.getWidget("lookupItemButton");
         addScreenHandler(lookupItemButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {                       
                 showParent();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                lookupItemButton.enable(false);
+                lookupItemButton.setEnabled(false);
             }
         });
 
-        trackingTable = (TableWidget)def.getWidget("trackingTable");
-        addScreenHandler(trackingTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        trackingTable = (Table)def.getWidget("trackingTable");
+        addScreenHandler(trackingTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
                 if(state != State.QUERY)
-                    trackingTable.load(getTrackingNumbersTableModel());
+                    trackingTable.setModel(getTrackingNumbersTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                trackingTable.enable(true);
+                trackingTable.setEnabled(true);
                 trackingTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -230,12 +229,12 @@ public class ItemTab extends Screen {
                 r = event.getRow();
                 c = event.getCol();
                 
-                val = (String)trackingTable.getObject(r,c);
+                val = (String)trackingTable.getValueAt(r,c);
                 
                 try {
                     data = manager.getTrackings().getTrackingAt(r);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                     return;
                 }
                 
@@ -253,7 +252,7 @@ public class ItemTab extends Screen {
                 try {
                     manager.getTrackings().addTracking();
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
@@ -263,53 +262,53 @@ public class ItemTab extends Screen {
                 try {
                     manager.getTrackings().removeTrackingAt(event.getIndex());
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
         
-        addTrackingButton = (AppButton)def.getWidget("addTrackingButton");
+        addTrackingButton = (Button)def.getWidget("addTrackingButton");
         addScreenHandler(addTrackingButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int n;
 
                 trackingTable.addRow();
-                n = trackingTable.numRows() - 1;
-                trackingTable.selectRow(n);
-                trackingTable.scrollToSelection();
+                n = trackingTable.getRowCount() - 1;
+                trackingTable.selectRowAt(n);
+                trackingTable.scrollToVisible(n);
                 trackingTable.startEditing(n, 0);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addTrackingButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                addTrackingButton.setEnabled(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
 
-        removeTrackingButton = (AppButton)def.getWidget("removeTrackingButton");
+        removeTrackingButton = (Button)def.getWidget("removeTrackingButton");
         addScreenHandler(removeTrackingButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int r;
 
                 r = trackingTable.getSelectedRow();
-                if (r > -1 && trackingTable.numRows() > 0)
-                    trackingTable.deleteRow(r);
+                if (r > -1 && trackingTable.getRowCount() > 0)
+                    trackingTable.removeRowAt(r);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeTrackingButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                removeTrackingButton.setEnabled(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
         
     }    
     
-    private ArrayList<TableDataRow> getTrackingNumbersTableModel() {
+    private ArrayList<Row> getTrackingNumbersTableModel() {
         int i;
         ShippingTrackingDO data;
-        ArrayList<TableDataRow> model;
-        TableDataRow row;
+        ArrayList<Row> model;
+        Row row;
         ShippingTrackingManager man;
 
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<Row>();
         if (manager == null)
             return model;
          
@@ -317,12 +316,12 @@ public class ItemTab extends Screen {
             man = manager.getTrackings();
             for(i = 0; i < man.count(); i++) {
                 data = man.getTrackingAt(i);
-                row = new TableDataRow(null, data.getTrackingNumber());  
+                row = new Row(null, data.getTrackingNumber());  
                 
                 model.add(row);
             }
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             e.printStackTrace();
         }
         
@@ -341,15 +340,15 @@ public class ItemTab extends Screen {
         loaded = true;        
     }
     
-    private ArrayList<TableDataRow> getItemTableModel(){
-        ArrayList<TableDataRow> model;
+    private ArrayList<Row> getItemTableModel(){
+        ArrayList<Row> model;
         ShippingItemManager man;
         ShippingItemDO data;
-        TableDataRow row;
+        Row row;
 
         int count, i;
 
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<Row>();
 
         try {
             man = manager.getItems();
@@ -357,30 +356,30 @@ public class ItemTab extends Screen {
 
             for (i = 0; i < count; i++ ) {
                 data = man.getItemAt(i);
-                row = new TableDataRow(2);
-                row.cells.get(0).setValue(data.getQuantity());
-                row.cells.get(1).setValue(data.getDescription());
-                row.data = data;
+                row = new Row(2);
+                row.setCell(0,data.getQuantity());
+                row.setCell(1,data.getDescription());
+                row.setData(data);
                 model.add(row);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Window.alert(e.toString());
+            com.google.gwt.user.client.Window.alert(e.toString());
         }
 
         return model;
     }
     
     private void showParent() {
-        TableDataRow row;
+        Row row;
         ShippingItemDO data;
         
-        row = itemTable.getSelection();
+        row = itemTable.getRowAt(itemTable.getSelectedRow());
         
         if(row == null) 
             return;
         
-        data = (ShippingItemDO)row.data;
+        data = (ShippingItemDO)row.getData();
         if(data.getReferenceTableId().equals(ReferenceTable.ORDER_ITEM)) {
             showOrder(data);
         } else if(data.getReferenceTableId().equals(ReferenceTable.SAMPLE_ITEM)) {
@@ -389,7 +388,7 @@ public class ItemTab extends Screen {
     }
 
     private void showOrder(ShippingItemDO data) {
-        ScreenWindow modal;
+        ModalWindow modal;
         
         try {
             window.setBusy(consts.get("fetching"));
@@ -403,20 +402,20 @@ public class ItemTab extends Screen {
                     } catch (Throwable e) {
                         orderManager = null;
                         e.printStackTrace();
-                        Window.alert(e.getMessage());
+                        com.google.gwt.user.client.Window.alert(e.getMessage());
                         window.clearStatus();
                     }                                        
                 }
                 public void onFailure(Throwable error) {    
                     orderManager = null;
                     error.printStackTrace();
-                    Window.alert("Error: Fetch failed; " + error.getMessage());                    
+                    com.google.gwt.user.client.Window.alert("Error: Fetch failed; " + error.getMessage());                    
                     window.clearStatus();
                 }
             });    
             
             if(orderManager != null) {
-                modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+                modal = new ModalWindow();
                 modal.setName(consts.get("kitOrder"));
                 if (sendoutOrderScreen == null)
                     sendoutOrderScreen = new SendoutOrderScreen(modal);
@@ -428,7 +427,7 @@ public class ItemTab extends Screen {
             
         } catch (Throwable e) {
             e.printStackTrace();
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             window.clearStatus();
             return;
         }

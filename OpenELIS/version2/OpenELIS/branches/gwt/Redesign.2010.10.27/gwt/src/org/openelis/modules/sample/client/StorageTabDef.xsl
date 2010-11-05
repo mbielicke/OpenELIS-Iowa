@@ -41,12 +41,12 @@ UIRF Software License are applicable instead of those above.
     <VerticalPanel padding="0" spacing="0">
       <TablePanel padding="0" spacing="0">
         <row>
-          <table key="storageTable" width="auto" maxRows="8" showScroll="ALWAYS" title="">
+          <table key="storageTable" rows="8" vscroll="ALWAYS" hscroll="ALWAYS" >
             <col width="155" header="{resource:getString($constants,'user')}">
               <label field="Integer" />
             </col>
             <col width="259" header="{resource:getString($constants,'location')}">
-              <autoComplete key="" width="215" case="LOWER" popWidth="auto" field="Integer" required="true">
+              <autoComplete key="" width="215" case="LOWER" required="true">
                 <col width="140" header="{resource:getString($constants,'parent')}" />
                 <col width="140" header="{resource:getString($constants,'storageUnit')}" />
                 <col width="140" header="{resource:getString($constants,'location')}" />
@@ -63,22 +63,8 @@ UIRF Software License are applicable instead of those above.
         <row>
           <widget style="TableButtonFooter">
             <HorizontalPanel>
-              <appButton key="addStorageButton" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="AddRowButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'addRow')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
-              <appButton key="removeStorageButton" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="RemoveRowButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
+              <button key="addStorageButton" icon="AddRowButtonImage" text="{resource:getString($constants,'addRow')}" style="Button"/>
+              <button key="removeStorageButton" icon="RemoveRowButtonImage" text="{resource:getString($constants,'removeRow')}" style="Button"/>
             </HorizontalPanel>
           </widget>
         </row>

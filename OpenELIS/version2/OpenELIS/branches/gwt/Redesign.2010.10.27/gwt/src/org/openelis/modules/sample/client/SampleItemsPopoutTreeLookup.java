@@ -48,14 +48,15 @@ import org.openelis.gwt.event.DropEnterEvent.DropPosition;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.widget.DragItem;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.Item;
 import org.openelis.gwt.widget.Label;
-import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.Row;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.gwt.widget.tree.TreeDataItem;
-import org.openelis.gwt.widget.tree.TreeRow;
-import org.openelis.gwt.widget.tree.TreeWidget;
+import org.openelis.gwt.widget.tree.Node;
+import org.openelis.gwt.widget.tree.Tree;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
@@ -68,7 +69,7 @@ import com.google.gwt.user.client.Window;
 
 public class SampleItemsPopoutTreeLookup extends Screen {
     protected SampleTreeUtility treeUtil;
-    protected TreeWidget        sampleTreePopout;
+    protected Tree              sampleTreePopout;
     private SampleManager       manager;
 
     public SampleItemsPopoutTreeLookup() throws Exception {
@@ -83,48 +84,48 @@ public class SampleItemsPopoutTreeLookup extends Screen {
     }
 
     private void initialize() {
-        sampleTreePopout = (TreeWidget)def.getWidget("itemsTestsTree");
-        sampleTreePopout.enableDrag(true);
-        sampleTreePopout.enableDrop(true);
+        sampleTreePopout = (Tree)def.getWidget("itemsTestsTree");
+        sampleTreePopout.enableDrag();
+        sampleTreePopout.enableDrop();
         
         addStateChangeHandler(new StateChangeHandler<State>() {
             public void onStateChange(StateChangeEvent<State> event) {
-                sampleTreePopout.enableDrag(EnumSet.of(State.ADD, State.UPDATE).contains(state));
-                sampleTreePopout.enableDrop(EnumSet.of(State.ADD, State.UPDATE).contains(state));
+                //sampleTreePopout.enableDrag(EnumSet.of(State.ADD, State.UPDATE).contains(state));
+                //sampleTreePopout.enableDrop(EnumSet.of(State.ADD, State.UPDATE).contains(state));
             }
         });
         
         treeUtil = new SampleTreeUtility(window, sampleTreePopout, this){
-            public TreeDataItem addNewTreeRowFromBundle(TreeDataItem parentRow, SampleDataBundle bundle) {
-                TreeDataItem row;
+            public Node addNewTreeRowFromBundle(Node parentRow, SampleDataBundle bundle) {
+                Node row;
                 
-                row = new TreeDataItem(2);
-                row.leafType = "analysis";
-                row.data = bundle;
+                row = new Node(2);
+                row.setType("analysis");
+                row.setData(bundle);
                 
-                sampleTreePopout.addChildItem(parentRow, row);
+                sampleTreePopout.addNodeAt(parentRow, row);
                 
                 return row;
             }
             
-            public void selectNewRowFromBundle(TreeDataItem row) {
-                sampleTreePopout.select(row);
-                sampleTreePopout.scrollToVisible();
+            public void selectNewRowFromBundle(Node row) {
+                sampleTreePopout.selectNodeAt(row);
+                sampleTreePopout.scrollToVisible(sampleTreePopout.getSelectedNode());
             }
         };
         
         addScreenHandler(sampleTreePopout, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                sampleTreePopout.load(getTreeModel());
+                sampleTreePopout.setRoot(getTreeModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sampleTreePopout.enable(true);
+                sampleTreePopout.setEnabled(true);
             }
         });
         
-        sampleTreePopout.addBeforeSelectionHandler(new BeforeSelectionHandler<TreeDataItem>(){
-            public void onBeforeSelection(BeforeSelectionEvent<TreeDataItem> event) {
+        sampleTreePopout.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>(){
+            public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
                 //nothing
             }
         });
@@ -135,18 +136,18 @@ public class SampleItemsPopoutTreeLookup extends Screen {
             } 
         });
         
-        sampleTreePopout.addBeforeDragStartHandler(new BeforeDragStartHandler<TreeRow>() {
-            public void onBeforeDragStart(BeforeDragStartEvent<TreeRow> event) {
-                TreeDataItem treeItem;
+        sampleTreePopout.getDragController().addBeforeDragStartHandler(new BeforeDragStartHandler<DragItem>() {
+            public void onBeforeDragStart(BeforeDragStartEvent<DragItem> event) {
+                Node treeItem;
                 Label label;
                 
                 try{
-                    treeItem = event.getDragObject().item;
-                    if(!treeItem.leafType.equals("analysis"))
+                    treeItem = sampleTreePopout.getNodeAt(event.getDragObject().getIndex());
+                    if(!treeItem.getType().equals("analysis"))
                         event.cancel();
                     else{
-                        label = new Label(treeItem.cells.get(0).value + " | " + 
-                                          DictionaryCache.getEntryFromId((Integer)treeItem.cells.get(1).value).getEntry());
+                        label = new Label(treeItem.getCell(0) + " | " + 
+                                          DictionaryCache.getEntryFromId((Integer)treeItem.getCell(1)).getEntry());
                         label.setStyleName("ScreenLabel");
                         label.setWordWrap(false);
                         event.setProxy(label);
@@ -157,14 +158,14 @@ public class SampleItemsPopoutTreeLookup extends Screen {
             }
         });
         
-        sampleTreePopout.addBeforeDropHandler(new BeforeDropHandler<TreeRow>() {
-            public void onBeforeDrop(BeforeDropEvent<TreeRow> event) {
+        sampleTreePopout.getDropController().addBeforeDropHandler(new BeforeDropHandler<DragItem>() {
+            public void onBeforeDrop(BeforeDropEvent<DragItem> event) {
                 AnalysisViewDO anDO;
                 AnalysisManager am;
-                TreeDataItem dropTarget = ((TreeRow)event.getDropTarget()).item;
-                TreeDataItem dragItem = event.getDragObject().dragItem;
-                SampleDataBundle dragKey = (SampleDataBundle)dragItem.data;
-                SampleDataBundle dropKey = (SampleDataBundle)dropTarget.data;
+                Node dropTarget = (Node)event.getDropTarget();
+                Node dragItem = sampleTreePopout.getNodeAt(event.getDragObject().getIndex());
+                SampleDataBundle dragKey = (SampleDataBundle)dragItem.getData();
+                SampleDataBundle dropKey = (SampleDataBundle)dropTarget.getData();
                 try {
                     anDO = manager.getSampleItems()
                                   .getAnalysisAt(dragKey.getSampleItemIndex())
@@ -177,7 +178,7 @@ public class SampleItemsPopoutTreeLookup extends Screen {
                     
                     //reset the dropped row data bundle
                     am = manager.getSampleItems().getAnalysisAt(dropKey.getSampleItemIndex());
-                    dragItem.data = am.getBundleAt(am.count()-1);
+                    dragItem.setData(am.getBundleAt(am.count()-1));
                     
                 }catch(Exception e) {
                     e.printStackTrace();
@@ -186,30 +187,30 @@ public class SampleItemsPopoutTreeLookup extends Screen {
             }
         });
         
-        sampleTreePopout.addDropEnterHandler(new DropEnterHandler<TreeRow>() {
-            public void onDropEnter(DropEnterEvent<TreeRow> event) {
-                TreeDataItem dropTarget = ((TreeRow)event.getDropTarget()).item;
-                TreeDataItem dragItem = event.getDragObject().dragItem;
+        sampleTreePopout.getDropController().addDropEnterHandler(new DropEnterHandler<DragItem>() {
+            public void onDropEnter(DropEnterEvent<DragItem> event) {
+                Node dropTarget = (Node)event.getDropTarget();
+                Node dragItem = sampleTreePopout.getNodeAt(event.getDragObject().getIndex());
                 
-                if(!dropTarget.leafType.equals("sampleItem") || event.getDropPosition() != DropPosition.ON || 
-                                (dropTarget.leafType.equals("sampleItem") && dropTarget.equals(dragItem.parent)))
+                if(!dropTarget.getType().equals("sampleItem") || event.getDropPosition() != DropPosition.ON || 
+                                (dropTarget.getType().equals("sampleItem") && dropTarget.equals(dragItem.getParent())))
                     event.cancel();
             }
         });
         
-        sampleTreePopout.addTarget(sampleTreePopout);
+        sampleTreePopout.addDropTarget(sampleTreePopout.getDropController());
     }
     
-    private ArrayList<TreeDataItem> getTreeModel() {
+    private Node getTreeModel() {
         int i, j;
         AnalysisManager am;
         SampleItemViewDO itemDO;
-        TreeDataItem tmp;
-        TreeDataItem treeModelItem, row;
-        ArrayList<TreeDataItem> model = new ArrayList<TreeDataItem>();
+        Node tmp;
+        Node treeModelItem, row;
+        Node model = new Node();
 
         try {
-            HashMap<Integer, TreeDataItem> keyTable = new HashMap<Integer, TreeDataItem>();
+            HashMap<Integer, Node> keyTable = new HashMap<Integer, Node>();
 
             if (manager == null)
                 return model;
@@ -218,16 +219,16 @@ public class SampleItemsPopoutTreeLookup extends Screen {
                 SampleItemManager sim = manager.getSampleItems();
                 itemDO = sim.getSampleItemAt(i);
 
-                row = new TreeDataItem(2);
-                row.leafType = "sampleItem";
-                row.toggle();
-                row.key = itemDO.getId();
-                row.data = sim.getBundleAt(i);
+                row = new Node(2);
+                row.setType("sampleItem");
+                //row.toggle();
+                row.setKey(itemDO.getId());
+                row.setData(sim.getBundleAt(i));
                 treeUtil.updateSampleItemRow(row);
 
                 tmp = keyTable.get(itemDO.getId());
                 if (itemDO.getId() != null && tmp != null) {
-                    tmp.addItem(row);
+                    tmp.add(row);
                 } else {
                     keyTable.put(itemDO.getId(), row);
                     model.add(row);
@@ -238,14 +239,14 @@ public class SampleItemsPopoutTreeLookup extends Screen {
                 for (j = 0; j < am.count(); j++ ) {
                     AnalysisViewDO aDO = (AnalysisViewDO)am.getAnalysisAt(j);
 
-                    treeModelItem = new TreeDataItem(2);
-                    treeModelItem.leafType = "analysis";
+                    treeModelItem = new Node(2);
+                    treeModelItem.setType("analysis");
 
-                    treeModelItem.key = aDO.getId();
-                    treeModelItem.data = am.getBundleAt(j);
+                    treeModelItem.setKey(aDO.getId());
+                    treeModelItem.setData(am.getBundleAt(j));
                     treeUtil.updateAnalysisRow(treeModelItem);
 
-                    row.addItem(treeModelItem);
+                    row.add(treeModelItem);
                 }
             }
         } catch (Exception e) {
@@ -258,15 +259,15 @@ public class SampleItemsPopoutTreeLookup extends Screen {
     }
 
     private void initializeDropdowns() {
-        ArrayList<TableDataRow> model;
+        ArrayList<Item<Integer>> model;
 
         // analysis status dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("analysis_status"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+            model.add(new Item<Integer>(d.getId(), d.getEntry()));
 
-        ((Dropdown<Integer>)sampleTreePopout.getColumns().get("analysis").get(1).colWidget).setModel(model);
+        ((Dropdown<Integer>)sampleTreePopout.getNodeDefinitionAt("analysis",1).getCellEditor().getWidget()).setModel(model);
     }
     
     public void setScreenState(State state){

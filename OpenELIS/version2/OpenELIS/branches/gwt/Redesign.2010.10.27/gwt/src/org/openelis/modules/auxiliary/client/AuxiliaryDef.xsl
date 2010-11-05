@@ -41,7 +41,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Auxiliary" name="{resource:getString($constants,'auxiliaryPrompt')}">
+    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="{resource:getString($constants,'auxiliaryPrompt')}">
       <HorizontalPanel padding="0" spacing="0">
 <!--left table goes here -->
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
@@ -50,19 +50,19 @@ UIRF Software License are applicable instead of those above.
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" width="auto" maxRows="25" style="atozTable">
+              <table key="atozTable" width="auto" rows="25" style="atozTable">
                 <col width="175" header="{resource:getString($constants,'groupName')}">
                   <label field="String" />
                 </col>
               </table>
               <widget halign="center">
                 <HorizontalPanel>
-                  <appButton key="atozPrev" style="Button" enable="false">
+                  <button key="atozPrev" style="Button" enabled="false">
                     <AbsolutePanel style="prevNavIndex" />
-                  </appButton>
-                  <appButton key="atozNext" style="Button" enable="false">
+                  </button>
+                  <button key="atozNext" style="Button" enabled="false">
                     <AbsolutePanel style="nextNavIndex" />
-                  </appButton>
+                  </button>
                 </HorizontalPanel>
               </widget>
             </VerticalPanel>
@@ -72,63 +72,31 @@ UIRF Software License are applicable instead of those above.
 <!--button panel code-->
           <AbsolutePanel spacing="0" style="ButtonPanelContainer">
             <HorizontalPanel>
-              <xsl:call-template name="queryButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="previousButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="nextButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
+              <xsl:call-template name="queryButton"/>
+              <xsl:call-template name="previousButton"/>
+              <xsl:call-template name="nextButton"/>
               <xsl:call-template name="buttonPanelDivider" />
-              <xsl:call-template name="addButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="updateButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
+              <xsl:call-template name="addButton"/>
+              <xsl:call-template name="updateButton"/>
               <xsl:call-template name="buttonPanelDivider" />
-              <xsl:call-template name="commitButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="abortButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
+              <xsl:call-template name="commitButton"/>
+              <xsl:call-template name="abortButton"/>
               <xsl:call-template name="buttonPanelDivider" />
-              <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
-                <menuItem>
+              <menu key="optionsMenu" selfShow="true">
                   <menuDisplay>
-                    <appButton style="ButtonPanelButton" action="option">
-                      <HorizontalPanel>
-                        <text>
-                          <xsl:value-of select='resource:getString($constants,"options")' />
-                        </text>
-                        <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
-                      </HorizontalPanel>
-                    </appButton>
+                    <button style="ButtonPanelButton" action="option">
+                      <Grid cols="2">
+                        <row>
+                          <cell style="ScreenLabel,ButtonAdj" text="{resource:getString($constants,'options')}" />
+                          <cell style="OptionsButtonImage" />
+                        </row>
+                      </Grid>
+                    </button>
                   </menuDisplay>
-                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                    <menuItem key="auxFieldGroupHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'auxFieldGroupHistory')}" />
-                    <menuItem key="auxFieldHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'auxFieldHistory')}" />
-                    <menuItem key="auxFieldValueHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'auxFieldValueHistory')}" />
-                  </menuPanel>
-                </menuItem>
-              </menuPanel>
+                  <menuItem key="auxFieldGroupHistory" enabled="false" icon="historyIcon" display="{resource:getString($constants,'auxFieldGroupHistory')}" />
+                  <menuItem key="auxFieldHistory" enabled="false" icon="historyIcon" display="{resource:getString($constants,'auxFieldHistory')}" />
+                  <menuItem key="auxFieldValueHistory" enabled="false" icon="historyIcon" display="{resource:getString($constants,'auxFieldValueHistory')}" />
+              </menu>
             </HorizontalPanel>
           </AbsolutePanel>
 <!--end button panel-->
@@ -166,14 +134,14 @@ UIRF Software License are applicable instead of those above.
               </row>
             </TablePanel>
             <HorizontalPanel width="630">
-              <table key="auxFieldTable" width="620" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides" tab="auxFieldValueTable,{meta:getActiveEnd()}" title="">
+              <table key="auxFieldTable" width="620" rows="10" vscroll="ALWAYS" hscroll="ALWAYS" style="ScreenTableWithSides" tab="auxFieldValueTable,{meta:getActiveEnd()}">
                 <col key="{meta:getFieldAnalyteName()}" width="250" header="{resource:getString($constants,'analyte')}">
-                  <autoComplete width="300" popWidth="auto" field="Integer" required="true">
+                  <autoComplete width="300" required="true">
                     <col width="300" />
                   </autoComplete>
                 </col>
                 <col key="{meta:getFieldMethodName()}" width="70" header="{resource:getString($constants,'method')}">
-                  <autoComplete width="300" popWidth="auto" field="Integer">
+                  <autoComplete width="300">
                     <col width="100" />
                   </autoComplete>
                 </col>
@@ -193,7 +161,7 @@ UIRF Software License are applicable instead of those above.
                   <textbox max="60" field="String" />
                 </col>
                 <col key="{meta:getFieldScriptletName()}" width="150" header="{resource:getString($constants,'scriptlet')}">
-                  <autoComplete width="150" popWidth="auto" field="Integer">
+                  <autoComplete width="150">
                     <col width="150" />
                   </autoComplete>
                 </col>
@@ -201,25 +169,11 @@ UIRF Software License are applicable instead of those above.
             </HorizontalPanel>
             <widget style="TableButtonFooter">
               <HorizontalPanel>
-                <appButton key="addAuxFieldButton" style="Button">
-                  <HorizontalPanel>
-                    <AbsolutePanel style="AddRowButtonImage" />
-                    <text>
-                      <xsl:value-of select="resource:getString($constants,'addRow')" />
-                    </text>
-                  </HorizontalPanel>
-                </appButton>
-                <appButton key="removeAuxFieldButton" style="Button">
-                  <HorizontalPanel>
-                    <AbsolutePanel style="RemoveRowButtonImage" />
-                    <text>
-                      <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                    </text>
-                  </HorizontalPanel>
-                </appButton>
+                <button key="addAuxFieldButton" icon="AddRowButtonImage" text="{resource:getString($constants,'addRow')}" style="Button"/>
+                <button key="removeAuxFieldButton" icon="RemoveRowButtonImage" text="{resource:getString($constants,'removeRow')}" style="Button"/>
               </HorizontalPanel>
             </widget>
-            <table key="auxFieldValueTable" width="620" maxRows="6" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},auxFieldTable" title="">
+            <table key="auxFieldValueTable" width="620" rows="6" vscroll="ALWAYS" hscroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},auxFieldTable" >
               <col key="{meta:getFieldValueTypeId()}" width="110" align="left" header="{resource:getString($constants,'type')}">
                 <dropdown width="110" field="Integer" required="true" />
               </col>
@@ -230,30 +184,9 @@ UIRF Software License are applicable instead of those above.
             <HorizontalPanel>
               <widget style="TableButtonFooter">
                 <HorizontalPanel>
-                  <appButton key="addAuxFieldValueButton" style="Button">
-                    <HorizontalPanel>
-                      <AbsolutePanel style="AddRowButtonImage" />
-                      <text>
-                        <xsl:value-of select="resource:getString($constants,'addRow')" />
-                      </text>
-                    </HorizontalPanel>
-                  </appButton>
-                  <appButton key="removeAuxFieldValueButton" style="Button">
-                    <HorizontalPanel>
-                      <AbsolutePanel style="RemoveRowButtonImage" />
-                      <text>
-                        <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                      </text>
-                    </HorizontalPanel>
-                  </appButton>
-                  <appButton key="dictionaryLookUpButton" style="Button">
-                    <HorizontalPanel>
-                      <AbsolutePanel style="DictionaryButtonImage" />
-                      <text>
-                        <xsl:value-of select="resource:getString($constants,'dictionary')" />
-                      </text>
-                    </HorizontalPanel>
-                  </appButton>
+                  <button key="addAuxFieldValueButton" icon="AddRowButtonImage" text="{resource:getString($constants,'addRow')}" style="Button"/>
+                  <button key="removeAuxFieldValueButton" icon="RemoveRowButtonImage" text="{resource:getString($constants,'removeRow')}" style="Button"/>
+                  <button key="dictionaryLookUpButton" icon="DictionaryButtonImage" text="{resource:getString($constants,'dictionary')}" style="Button"/>
                 </HorizontalPanel>
               </widget>
             </HorizontalPanel>

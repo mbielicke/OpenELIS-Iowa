@@ -39,10 +39,11 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.Item;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.Row;
 import org.openelis.meta.SampleMeta;
 
 import com.google.gwt.core.client.GWT;
@@ -57,7 +58,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
     protected Dropdown<String> state, country;
     protected TextBox samplingLocation, multipleUnit, streetAddress,
                       city, zipCode;
-    protected AppButton okButton;
+    protected Button  okButton;
     
     private boolean dropdownsInited;
     private SampleEnvironmentalDO        envDO;
@@ -89,7 +90,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                samplingLocation.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                samplingLocation.setEnabled(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
                 samplingLocation.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -105,7 +106,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                multipleUnit.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                multipleUnit.setEnabled(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
                 multipleUnit.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -121,7 +122,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                streetAddress.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                streetAddress.setEnabled(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
                 streetAddress.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -137,7 +138,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                city.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                city.setEnabled(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
                 city.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -145,7 +146,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
         state = (Dropdown)def.getWidget(SampleMeta.getLocationAddrState());
         addScreenHandler(state, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                state.setSelection(envDO.getLocationAddress().getState());
+                state.setValue(envDO.getLocationAddress().getState());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -153,7 +154,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                state.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                state.setEnabled(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
                 state.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -169,7 +170,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                zipCode.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                zipCode.setEnabled(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
                 zipCode.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -177,7 +178,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
         country = (Dropdown)def.getWidget(SampleMeta.getLocationAddrCountry());
         addScreenHandler(country, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                country.setSelection(envDO.getLocationAddress().getCountry());
+                country.setValue(envDO.getLocationAddress().getCountry());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -185,19 +186,19 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                country.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                country.setEnabled(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
                 country.setQueryMode(event.getState() == State.QUERY);
             }
         });
         
-        okButton = (AppButton)def.getWidget("ok");
+        okButton = (Button)def.getWidget("ok");
         addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 ok();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                okButton.enable(true);
+                okButton.setEnabled(true);
             }
         });
     }
@@ -208,20 +209,20 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
     }
 
     public void setCountriesModel(ArrayList<DictionaryDO> list) {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        ArrayList<Item<String>> model = new ArrayList<Item<String>>();
+        model.add(new Item<String>(null, ""));
         for(DictionaryDO resultDO :  list){
-            model.add(new TableDataRow(resultDO.getEntry(),resultDO.getEntry()));
+            model.add(new Item<String>(resultDO.getEntry(),resultDO.getEntry()));
         } 
         
         country.setModel(model);
     }
     
     public void setStatesModel(ArrayList<DictionaryDO> list) {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        ArrayList<Item<String>> model = new ArrayList<Item<String>>();
+        model.add(new Item<String>(null, ""));
         for(DictionaryDO resultDO :  list){
-            model.add(new TableDataRow(resultDO.getEntry(),resultDO.getEntry()));
+            model.add(new Item<String>(resultDO.getEntry(),resultDO.getEntry()));
         }
         state.setModel(model);
     }

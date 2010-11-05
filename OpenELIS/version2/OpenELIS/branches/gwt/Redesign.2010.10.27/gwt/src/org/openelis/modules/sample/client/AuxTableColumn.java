@@ -33,26 +33,23 @@ import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.widget.AutoComplete;
-import org.openelis.gwt.widget.CalendarLookUp;
-import org.openelis.gwt.widget.DateField;
-import org.openelis.gwt.widget.IntegerField;
+import org.openelis.gwt.widget.calendar.Calendar;
 import org.openelis.gwt.widget.Label;
-import org.openelis.gwt.widget.StringField;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.TextBox.Case;
-import org.openelis.gwt.widget.table.TableColumn;
-import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.Column;
+import org.openelis.gwt.widget.table.Row;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
-public class AuxTableColumn extends TableColumn {
+public class AuxTableColumn extends Column {
     protected GetMatchesHandler     screen;
     protected TextBox<String>       alphaTextBox;
     protected TextBox<Integer>      numericTextBox;
     protected TextBox<Double>       numTextBox;
-    protected CalendarLookUp        calendar;
-    protected AutoComplete<Integer> autoComplete;
+    protected Calendar              calendar;
+    protected AutoComplete          autoComplete;
     protected Label                 label;
 
     protected Integer               alphaLowerId, alphaUpperId, alphaMixedId, timeId, numericId,

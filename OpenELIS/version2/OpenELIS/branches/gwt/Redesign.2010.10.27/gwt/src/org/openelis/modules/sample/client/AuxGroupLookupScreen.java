@@ -37,10 +37,9 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.Button;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.manager.AuxFieldManager;
@@ -54,9 +53,9 @@ import com.google.gwt.user.client.Window;
 
 public class AuxGroupLookupScreen extends Screen implements HasActionHandlers<AuxGroupLookupScreen.Action>{
     public enum Action {OK};
-    protected AppButton okButton, cancelButton;
-    protected TableWidget auxGroupsTable;
-    private ArrayList<TableDataRow> groupsModel; 
+    protected Button                okButton, cancelButton;
+    protected Table                 auxGroupsTable;
+    private ArrayList<Row>          groupsModel; 
     
     public AuxGroupLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(AuxGroupLookupDef.class));
@@ -70,14 +69,14 @@ public class AuxGroupLookupScreen extends Screen implements HasActionHandlers<Au
     }
 
     private void initialize() {
-        auxGroupsTable = (TableWidget)def.getWidget("auxGroupsTable");
-        addScreenHandler(auxGroupsTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        auxGroupsTable = (Table)def.getWidget("auxGroupsTable");
+        addScreenHandler(auxGroupsTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                auxGroupsTable.load(getTableModel());
+                auxGroupsTable.setModel(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                auxGroupsTable.enable(true);
+                auxGroupsTable.setEnabled(true);
             }
         });
 
@@ -87,43 +86,51 @@ public class AuxGroupLookupScreen extends Screen implements HasActionHandlers<Au
             }
         });
         
-        auxGroupsTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>(){
-           public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+        auxGroupsTable.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>(){
+           public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
                //do nothing
            }
         });
         
-        okButton = (AppButton)def.getWidget("ok");
+        okButton = (Button)def.getWidget("ok");
         addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 ok();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                okButton.enable(true);
+                okButton.setEnabled(true);
             }
         });
 
-        cancelButton = (AppButton)def.getWidget("cancel");
+        cancelButton = (Button)def.getWidget("cancel");
         addScreenHandler(cancelButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 cancel();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                cancelButton.enable(true);
+                cancelButton.setEnabled(true);
             }
         });
     }
     
     private void ok(){
-        ArrayList<TableDataRow> selections = auxGroupsTable.getSelections();
+    	Integer[] sels;
+        ArrayList<Row> selections; 
         ArrayList<AuxFieldManager> returnList;
+        
+        sels = auxGroupsTable.getSelectedRows();
+        
+        selections = new ArrayList<Row>();
+        
+        for(int i = 0; i < sels.length; i++)
+        	selections.add(auxGroupsTable.getRowAt(sels[i]));
 
         returnList = new ArrayList<AuxFieldManager>();
         try{
             for(int i=0; i<selections.size(); i++)
-                returnList.add(AuxFieldManager.fetchByGroupIdWithValues((Integer)selections.get(i).key));
+                returnList.add(AuxFieldManager.fetchByGroupIdWithValues((Integer)selections.get(i).getData()));
         }catch(Exception e){
             Window.alert(e.getMessage());
         }
@@ -138,13 +145,13 @@ public class AuxGroupLookupScreen extends Screen implements HasActionHandlers<Au
         window.close();
     }
     
-    private ArrayList<TableDataRow> getTableModel() {
+    private ArrayList<Row> getTableModel() {
         ArrayList<AuxFieldGroupDO> groups;
         AuxFieldGroupDO groupDO;
         if(groupsModel != null)
             return groupsModel;
         
-        groupsModel = new ArrayList<TableDataRow>();
+        groupsModel = new ArrayList<Row>();
         try{
             groups = service.callList("fetchActive");
         }catch(Exception e){
@@ -155,13 +162,13 @@ public class AuxGroupLookupScreen extends Screen implements HasActionHandlers<Au
         for(int i=0; i<groups.size(); i++) {
             groupDO = groups.get(i);
             
-           TableDataRow row = new TableDataRow(2);
-           row.key = groupDO.getId();
+           Row row = new Row(2);
+           row.setData(groupDO.getId());
 
-           row.cells.get(0).value = groupDO.getName();
-           row.cells.get(1).value = groupDO.getDescription();
+           row.setCell(0,groupDO.getName());
+           row.setCell(1,groupDO.getDescription());
            
-          groupsModel.add(row);
+           groupsModel.add(row);
         }
             
         return groupsModel;

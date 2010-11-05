@@ -36,9 +36,9 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.Button;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.manager.TestPrepManager;
@@ -53,7 +53,7 @@ public class TestPrepLookupScreen extends Screen implements
         SELECTED_PREP_ROW, CANCEL
     };
 
-    protected TableWidget   prepTestTable;
+    protected Table   prepTestTable;
     private TestPrepManager manager;
 
     public TestPrepLookupScreen() throws Exception {
@@ -67,14 +67,14 @@ public class TestPrepLookupScreen extends Screen implements
     }
 
     private void initialize() {
-        prepTestTable = (TableWidget)def.getWidget("prepTestTable");
-        addScreenHandler(prepTestTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        prepTestTable = (Table)def.getWidget("prepTestTable");
+        addScreenHandler(prepTestTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                prepTestTable.load(getTableModel());
+                prepTestTable.setModel(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                prepTestTable.enable(true);
+                prepTestTable.setEnabled(true);
             }
         });
 
@@ -84,25 +84,25 @@ public class TestPrepLookupScreen extends Screen implements
             }
         });
 
-        final AppButton okButton = (AppButton)def.getWidget("ok");
+        final Button okButton = (Button)def.getWidget("ok");
         addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 ok();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                okButton.enable(true);
+                okButton.setEnabled(true);
             }
         });
 
-        final AppButton cancelButton = (AppButton)def.getWidget("cancel");
+        final Button cancelButton = (Button)def.getWidget("cancel");
         addScreenHandler(cancelButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 cancel();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                cancelButton.enable(true);
+                cancelButton.setEnabled(true);
             }
         });
 
@@ -110,7 +110,7 @@ public class TestPrepLookupScreen extends Screen implements
 
     private void ok() {
         if (validate()) {
-            TableDataRow selectedRow = prepTestTable.getSelection();
+            Row selectedRow = prepTestTable.getRowAt(prepTestTable.getSelectedRow());
 
             window.close();
 
@@ -132,8 +132,8 @@ public class TestPrepLookupScreen extends Screen implements
         return super.validate();
     }
 
-    private ArrayList<TableDataRow> getTableModel() {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+    private ArrayList<Row> getTableModel() {
+        ArrayList<Row> model = new ArrayList<Row>();
 
         if (manager == null)
             return model;
@@ -142,10 +142,10 @@ public class TestPrepLookupScreen extends Screen implements
             for (int iter = 0; iter < manager.count(); iter++ ) {
                 TestPrepViewDO prepRow = (TestPrepViewDO)manager.getPrepAt(iter);
 
-                TableDataRow row = new TableDataRow(1);
-                row.key = prepRow.getPrepTestId();
+                Row row = new Row(1);
+                //row.key = prepRow.getPrepTestId();
 
-                row.cells.get(0).value = prepRow.getPrepTestName() + ", " + prepRow.getMethodName();
+                row.setCell(0,prepRow.getPrepTestName() + ", " + prepRow.getMethodName());
 
                 model.add(row);
             }

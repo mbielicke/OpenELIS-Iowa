@@ -40,7 +40,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="StorageLocationLookup" name="{resource:getString($constants,'storageLocationSelection')}">
+    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="{resource:getString($constants,'storageLocationSelection')}">
       <VerticalPanel>
         <HorizontalPanel height="100%" spacing="0">
 <!--left table goes here -->
@@ -51,7 +51,7 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'search')" />:
                   </text>
-                  <autoComplete key="location" width="375" field="Integer">
+                  <autoComplete key="location" width="375">
                     <col width="375" />
                   </autoComplete>
                 </row>
@@ -59,7 +59,7 @@ UIRF Software License are applicable instead of those above.
             </HorizontalPanel>
             <VerticalPanel spacing="0">
               <widget>
-                <table key="storageLocationTable" width="auto" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
+                <table key="storageLocationTable" rows="10" vscroll="ALWAYS" hscroll="ALWAYS" style="ScreenTableWithSides">
                   <col key="parent" width="140" header="{resource:getString($constants,'parent')}">
                     <label field="String" />
                   </col>
@@ -77,16 +77,8 @@ UIRF Software License are applicable instead of those above.
         <VerticalPanel width="457" spacing="0">
           <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
             <HorizontalPanel>
-              <xsl:call-template name="okButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="cancelButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
+              <xsl:call-template name="okButton"/>
+              <xsl:call-template name="cancelButton"/>
             </HorizontalPanel>
           </AbsolutePanel>
         </VerticalPanel>

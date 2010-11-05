@@ -33,38 +33,37 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.Window;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.manager.InventoryItemManager;
 import org.openelis.manager.StorageLocationManager;
 
-import com.google.gwt.user.client.Window;
 
 public class LocationTab extends Screen {
 
     private InventoryItemManager manager;
-    private TableWidget          table;
+    private Table                table;
     private boolean              loaded;
 
-    public LocationTab(ScreenDefInt def, ScreenWindow window) {
+    public LocationTab(ScreenDefInt def, Window window) {
         setDefinition(def);
         setWindow(window);
         initialize();
     }
 
     private void initialize() {
-        table = (TableWidget)def.getWidget("locationTable");
-        addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        table = (Table)def.getWidget("locationTable");
+        addScreenHandler(table, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
                 if (state != State.QUERY)
-                    table.load(getTableModel());
+                    table.setModel(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                table.enable(true);
+                table.setEnabled(true);
                 table.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -77,14 +76,14 @@ public class LocationTab extends Screen {
         });
     }
 
-    private ArrayList<TableDataRow> getTableModel() {
+    private ArrayList<Row> getTableModel() {
         int i;
         boolean isSerial;
         String locationName;
         InventoryLocationViewDO data;
-        ArrayList<TableDataRow> model;
+        ArrayList<Row> model;
 
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<Row>();
         if (manager == null)
             return model;
 
@@ -99,13 +98,13 @@ public class LocationTab extends Screen {
                 locationName = StorageLocationManager.getLocationForDisplay(data.getStorageLocationName(),
                                                                             data.getStorageLocationUnitDescription(),
                                                                             data.getStorageLocationLocation());
-                model.add(new TableDataRow(null, locationName, data.getLotNumber(),
+                model.add(new Row(locationName, data.getLotNumber(),
                                            (isSerial ? data.getId() : null),
                                            data.getExpirationDate(),
                                            data.getQuantityOnhand()));
             }
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             e.printStackTrace();
         }
         return model;

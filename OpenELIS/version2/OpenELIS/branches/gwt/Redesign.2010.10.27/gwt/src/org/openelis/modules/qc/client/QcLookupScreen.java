@@ -39,12 +39,12 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -59,11 +59,11 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookupScreen.Action> {
 
     protected TextBox     findTextBox;
-    protected AppButton   findButton,okButton,cancelButton;
-    protected TableWidget qcTable;
+    protected Button      findButton,okButton,cancelButton;
+    protected Table       qcTable;
     protected ButtonGroup azButtons;
 
-    private ArrayList<TableDataRow> selectionList;
+    private ArrayList<Row> selectionList;
 
     public enum Action {
         OK, CANCEL
@@ -107,56 +107,64 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                findTextBox.enable(true);
+                findTextBox.setEnabled(true);
             }
         });
 
-        findButton = (AppButton)def.getWidget("findButton");
+        findButton = (Button)def.getWidget("findButton");
         addScreenHandler(findButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {                
                 executeQuery(findTextBox.getText());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                findButton.enable(true);
+                findButton.setEnabled(true);
             }
         });
 
-        qcTable = (TableWidget)def.getWidget("qcTable");
-        addScreenHandler(qcTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        qcTable = (Table)def.getWidget("qcTable");
+        addScreenHandler(qcTable, new ScreenEventHandler<ArrayList<Row>>() {
 
             public void onStateChange(StateChangeEvent<State> event) {
-                qcTable.enable(true);
+                qcTable.setEnabled(true);
 
             }
         });
 
-        qcTable.addSelectionHandler(new SelectionHandler() {
-            public void onSelection(SelectionEvent event) {
-                selectionList = qcTable.getSelections();
+        qcTable.addSelectionHandler(new SelectionHandler<Integer>() {
+            public void onSelection(SelectionEvent<Integer> event) {
+            	Integer[] sels;
+            	
+                sels = qcTable.getSelectedRows();
+                
+                selectionList = new ArrayList<Row>();
+                
+                for(int i = 0; i < sels.length; i++) 
+                	selectionList.add(qcTable.getRowAt(sels[i]));
+                
             }
 
         });
 
-        okButton = (AppButton)def.getWidget("ok");
+        okButton = (Button)def.getWidget("ok");
         addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 ok();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                okButton.enable(true);
+                okButton.setEnabled(true);
             }
         });
 
-        cancelButton = (AppButton)def.getWidget("cancel");
+        cancelButton = (Button)def.getWidget("cancel");
         addScreenHandler(cancelButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 cancel();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                cancelButton.enable(true);
+                cancelButton.setEnabled(true);
             }
         });
 
@@ -166,13 +174,13 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
             public void onClick(ClickEvent event) {
                 String query;
 
-                query = ((AppButton)event.getSource()).action;
+                query = ((Button)event.getSource()).getAction();
                 findTextBox.setText(query);
                 executeQuery(query);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                azButtons.enable(true);
+                azButtons.setEnabled(true);
             }
 
         });
@@ -185,8 +193,8 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
         
         if(selectionList != null) {
             list = new ArrayList<QcDO>();
-            for(TableDataRow row: selectionList)
-                list.add((QcDO)row.data);
+            for(Row row: selectionList)
+                list.add((QcDO)row.getData());
         }
         
         ActionEvent.fire(this, Action.OK, list);
@@ -224,7 +232,11 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
         window.setBusy(consts.get("querying"));
         
         parser = new QueryFieldUtil();
-        parser.parse(pattern);
+        try {
+        	parser.parse(pattern);
+        }catch(Exception e) {
+        	
+        }
 
         service.callList("fetchByName", parser.getParameter().get(0), new AsyncCallback<ArrayList<QcDO>>() {
             public void onSuccess(ArrayList<QcDO> result) {
@@ -252,27 +264,27 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
     }
 
     private void setQueryResult(ArrayList<QcDO> list) {
-        ArrayList<TableDataRow> model;
-        TableDataRow row;
+        ArrayList<Row> model;
+        Row row;
 
         qcTable.clear();
 
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<Row>();
         if(list != null) {
             for (QcDO data : list)   {  
-                row = new TableDataRow(data.getId(), data.getName(), data.getLotNumber(),
+                row = new Row(data.getName(), data.getLotNumber(),
                                        data.getUsableDate(), data.getExpireDate());
-                row.data = data;
+                row.setData(data);
                 model.add(row);
             }
         }
         
-        qcTable.load(model);
+        qcTable.setModel(model);
         
         window.setDone(consts.get("done"));
     }
 
     public void enableMultiSelect(boolean multi) {
-        qcTable.enableMultiSelect(multi);
+        qcTable.setAllowMultipleSelection(multi);
     }
 }

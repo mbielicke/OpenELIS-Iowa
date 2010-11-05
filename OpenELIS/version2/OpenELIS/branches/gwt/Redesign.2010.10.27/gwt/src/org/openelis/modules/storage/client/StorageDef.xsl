@@ -41,7 +41,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Storage" name="{resource:getString($constants,'storage')}">
+    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="{resource:getString($constants,'storage')}">
       <HorizontalPanel padding="0" spacing="0">
 <!--left table goes here -->
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
@@ -50,19 +50,19 @@ UIRF Software License are applicable instead of those above.
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" width="auto" maxRows="19" style="atozTable">
+              <table key="atozTable" rows="19" style="atozTable">
                 <col width="175" header="{resource:getString($constants,'storageLocationName')}">
                   <label field="String" />
                 </col>
               </table>
               <widget halign="center">
                 <HorizontalPanel>
-                  <appButton key="atozPrev" style="Button" enable="false">
+                  <button key="atozPrev" style="Button" enabled="false">
                     <AbsolutePanel style="prevNavIndex" />
-                  </appButton>
-                  <appButton key="atozNext" style="Button" enable="false">
+                  </button>
+                  <button key="atozNext" style="Button" enabled="false">
                     <AbsolutePanel style="nextNavIndex" />
-                  </appButton>
+                  </button>
                 </HorizontalPanel>
               </widget>
             </VerticalPanel>
@@ -72,38 +72,14 @@ UIRF Software License are applicable instead of those above.
         <VerticalPanel padding="0" spacing="0">
           <AbsolutePanel spacing="0" style="ButtonPanelContainer">
             <HorizontalPanel>
-              <xsl:call-template name="queryButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="previousButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="nextButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
+              <xsl:call-template name="queryButton"/>
+              <xsl:call-template name="previousButton"/>
+              <xsl:call-template name="nextButton"/>
               <xsl:call-template name="buttonPanelDivider" />
-              <xsl:call-template name="updateButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
+              <xsl:call-template name="updateButton"/>
               <xsl:call-template name="buttonPanelDivider" />
-              <xsl:call-template name="commitButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="abortButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
+              <xsl:call-template name="commitButton"/>
+              <xsl:call-template name="abortButton"/>
             </HorizontalPanel>
           </AbsolutePanel>
 <!--end button panel-->
@@ -138,19 +114,19 @@ UIRF Software License are applicable instead of those above.
               <tab key="currentTab" text="{resource:getString($constants,'current')}">
                 <VerticalPanel>
                   <widget>
-                    <tree key="storageCurrentTree" width="auto" maxRows="11" showScroll="ALWAYS">
-                      <header>
+                    <tree key="storageCurrentTree" rows="11" vscroll="ALWAYS" hscroll="ALWAYS">
+                      <columns>
                         <col width="200" header="{resource:getString($constants,'storageLocationItem')}" />
                         <col width="100" header="{resource:getString($constants,'user')}" />
                         <col width="150" header="{resource:getString($constants,'checkIn')}" />
                         <col width="150" header="{resource:getString($constants,'checkOut')}" />
-                      </header>
-                      <leaf key="locationName">
+                      </columns>
+                      <node key="locationName">
                         <col>
                           <label field="String" />
                         </col>
-                      </leaf>
-                      <leaf key="storage">
+                      </node>
+                      <node key="storage">
                         <col>
                           <label field="String" />
                         </col>
@@ -163,31 +139,13 @@ UIRF Software License are applicable instead of those above.
                         <col>
                           <textbox pattern="{resource:getString($constants,'dateTimePattern')}" field="Date" />
                         </col>
-                      </leaf>
+                      </node>
                     </tree>
                   </widget>
                   <widget style="TableButtonFooter">
                     <HorizontalPanel>
-                      <appButton key="moveItemsButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel style="MoveStorageButtonImage" />
-                          <widget>
-                            <text>
-                              <xsl:value-of select="resource:getString($constants,'move')" />
-                            </text>
-                          </widget>
-                        </HorizontalPanel>
-                      </appButton>
-                      <appButton key="discardItemsButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel style="DiscardButtonImage" />
-                          <widget>
-                            <text>
-                              <xsl:value-of select="resource:getString($constants,'discard')" />
-                            </text>
-                          </widget>
-                        </HorizontalPanel>
-                      </appButton>
+                      <button key="moveItemsButton" icon="MoveStorageButtonImage" text="resource:getString($constants,'move')" style="Button"/>
+                      <button key="discardItemsButton" icon="DiscardButtonImage" text="resource:getString($constants,'discard')" style="Button"/>
                     </HorizontalPanel>
                   </widget>
                 </VerticalPanel>
@@ -195,7 +153,7 @@ UIRF Software License are applicable instead of those above.
               <tab key="historyTab" text="{resource:getString($constants,'history')}">
                 <VerticalPanel>
                   <widget>
-                    <table key="storageHistoryTable" width="auto" maxRows="11" showScroll="ALWAYS" tab="{meta:getStorageLocationName()},{meta:getStorageLocationIsAvailable()}" title="">
+                    <table key="storageHistoryTable" rows="11" vscroll="ALWAYS" hscroll="ALWAYS" tab="{meta:getStorageLocationName()},{meta:getStorageLocationIsAvailable()}">
                       <col key="{meta:getReferenceId()}" width="100" header="{resource:getString($constants,'storageLocation')}">
                         <textbox field="Integer" />
                       </col>
@@ -215,16 +173,12 @@ UIRF Software License are applicable instead of those above.
                   </widget>
                   <widget style="TableButtonFooter">
                     <HorizontalPanel>
-                      <appButton key="historyPrevButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel style="prevNavIndex" />
-                        </HorizontalPanel>
-                      </appButton>
-                      <appButton key="historyNextButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel style="nextNavIndex" />
-                        </HorizontalPanel>
-                      </appButton>
+                      <button key="historyPrevButton" style="Button">
+                        <AbsolutePanel style="prevNavIndex" />
+                      </button>
+                      <button key="historyNextButton" style="Button">
+                        <AbsolutePanel style="nextNavIndex" />
+                      </button>
                     </HorizontalPanel>
                   </widget>
                 </VerticalPanel>

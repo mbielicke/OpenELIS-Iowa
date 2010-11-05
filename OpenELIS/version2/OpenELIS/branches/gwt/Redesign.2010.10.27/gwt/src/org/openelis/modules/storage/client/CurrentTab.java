@@ -40,13 +40,14 @@ import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.Button;
+import org.openelis.gwt.widget.ModalWindow;
+import org.openelis.gwt.widget.Window;
+import org.openelis.gwt.widget.table.Row;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.gwt.widget.tree.TreeDataItem;
-import org.openelis.gwt.widget.tree.TreeWidget;
+import org.openelis.gwt.widget.tree.Node;
+import org.openelis.gwt.widget.tree.Tree;
 import org.openelis.manager.StorageLocationChildManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.manager.StorageManager;
@@ -57,38 +58,37 @@ import org.openelis.modules.storageLocation.client.StorageLocationLookupScreen;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
-import com.google.gwt.user.client.Window;
 
 public class CurrentTab extends Screen {
 
     private StorageViewManager                       manager;
-    private TreeWidget                               storageCurrentTree;
-    private AppButton                                moveItemsButton, discardItemsButton;
+    private Tree                                     storageCurrentTree;
+    private Button                                   moveItemsButton, discardItemsButton;
     private boolean                                  loaded, treeFetched;
-    private HashMap<Integer, TreeDataItem>           idItemMap;
+    private HashMap<Integer, Node>                   idItemMap;
     private StorageLocationLookupScreen              storageLocationLookup;
     private HashMap<Integer, StorageManager>         storageCache;
     private HashMap<Integer, StorageLocationManager> storageLocationCache;
 
-    public CurrentTab(ScreenDefInt def, ScreenWindow window) {
+    public CurrentTab(ScreenDefInt def, Window window) {
         setDefinition(def);
         setWindow(window);
         initialize();
     }
 
     private void initialize() {
-        idItemMap = new HashMap<Integer, TreeDataItem>();
+        idItemMap = new HashMap<Integer, Node>();
         storageCache = new HashMap<Integer, StorageManager>();
         storageLocationCache = new HashMap<Integer, StorageLocationManager>();
 
-        storageCurrentTree = (TreeWidget)def.getWidget("storageCurrentTree");
-        addScreenHandler(storageCurrentTree, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        storageCurrentTree = (Tree)def.getWidget("storageCurrentTree");
+        addScreenHandler(storageCurrentTree, new ScreenEventHandler<Node>() {
             public void onDataChange(DataChangeEvent event) {
-                storageCurrentTree.load(getTreeModel());
+                storageCurrentTree.setRoot(getTreeModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                storageCurrentTree.enable(true);
+                storageCurrentTree.setEnabled(true);
             }
         });
 
@@ -98,21 +98,21 @@ public class CurrentTab extends Screen {
             }
         });
 
-        storageCurrentTree.addBeforeSelectionHandler(new BeforeSelectionHandler<TreeDataItem>() {
-            public void onBeforeSelection(BeforeSelectionEvent<TreeDataItem> event) {
-                TreeDataItem item;
+        storageCurrentTree.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+            public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
+                Node item;
                 boolean isStorage;
                 StorageViewDO data;
 
-                item = event.getItem();
-                isStorage = "storage".equals(item.leafType);
+                item = storageCurrentTree.getNodeAt(event.getItem());
+                isStorage = "storage".equals(item.getType());
 
                 if (state == State.UPDATE) {
-                    moveItemsButton.enable(isStorage);
-                    discardItemsButton.enable(isStorage);
+                    moveItemsButton.setEnabled(isStorage);
+                    discardItemsButton.setEnabled(isStorage);
 
                     if (isStorage) {
-                        data = (StorageViewDO)item.data;
+                        data = (StorageViewDO)item.getData();
                         if (data.getCheckout() != null) {
                             window.setError(consts.get("cantSelectItem"));
                             event.cancel();
@@ -124,42 +124,42 @@ public class CurrentTab extends Screen {
             }
         });
 
-        storageCurrentTree.multiSelect(true);
+        storageCurrentTree.setAllowMultipleSelection(true);
 
-        moveItemsButton = (AppButton)def.getWidget("moveItemsButton");
+        moveItemsButton = (Button)def.getWidget("moveItemsButton");
         addScreenHandler(moveItemsButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 showStorageLocation();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                moveItemsButton.enable(false);
+                moveItemsButton.setEnabled(false);
             }
         });
 
-        discardItemsButton = (AppButton)def.getWidget("discardItemsButton");
+        discardItemsButton = (Button)def.getWidget("discardItemsButton");
         addScreenHandler(discardItemsButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 discardStorageItems();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                discardItemsButton.enable(false);
+                discardItemsButton.setEnabled(false);
             }
         });
 
     }
 
-    private ArrayList<TreeDataItem> getTreeModel() {
+    private Node getTreeModel() {
         int i, count;
         Integer id;
-        TreeDataItem item;
+        Node item;
         StorageLocationViewDO data;
-        ArrayList<TreeDataItem> model;
+        Node model;
         StorageLocationChildManager slcm;
         StorageLocationManager slm;
 
-        model = new ArrayList<TreeDataItem>();
+        model = new Node();
 
         if (manager == null)
             return model;
@@ -177,33 +177,31 @@ public class CurrentTab extends Screen {
 
             if (count == 0) {
                 data = slm.getStorageLocation();
-                item = new TreeDataItem(1);
-                item.leafType = "locationName";
-                item.close();
+                item = new Node(1);
+                item.setType("locationName");
+                item.setOpen(false);
                 id = data.getId();
-                item.key = id;
-                item.cells.get(0).setValue(data.getName());
-                item.checkForChildren(false);
+                item.setKey(id);
+                item.setCell(0,data.getName());
+                item.setDeferLoadingUntilExpand(false);
                 idItemMap.put(id, item);
                 model.add(item);
             }
 
             for (i = 0; i < count; i++ ) {
                 data = slcm.getChildAt(i);
-                item = new TreeDataItem(1);
-                item.leafType = "locationName";
-                item.close();
+                item = new Node(1);
+                item.setType("locationName");
+                item.setOpen(false);
                 id = data.getId();
-                item.key = data.getId();
-                item.cells.get(0).setValue(
-                                           data.getStorageUnitDescription() + "," +
-                                                           data.getLocation());
-                item.checkForChildren(false);
+                item.setKey(data.getId());
+                item.setCell(0,data.getStorageUnitDescription() + "," + data.getLocation());
+                item.setDeferLoadingUntilExpand(false);
                 idItemMap.put(id, item);
                 model.add(item);
             }
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             e.printStackTrace();
         }
 
@@ -213,10 +211,10 @@ public class CurrentTab extends Screen {
 
     private void addStorageItems() {
         int i;
-        TreeDataItem row;
+        Node row;
         StorageViewDO data;
         StorageManager sm;
-        TreeDataItem item;
+        Node item;
 
         if (manager == null || treeFetched)
             return;
@@ -226,21 +224,21 @@ public class CurrentTab extends Screen {
             for (i = 0; i < sm.count(); i++ ) {
                 data = sm.getStorageAt(i);
                 item = idItemMap.get(data.getStorageLocationId());
-                item.checkForChildren(true);
-                row = new TreeDataItem(4);
-                row.leafType = "storage";
-                row.cells.get(0).setValue(data.getItemDescription());
-                row.cells.get(1).setValue(data.getUserName());
-                row.cells.get(2).setValue(data.getCheckin());
-                row.cells.get(3).setValue(data.getCheckout());
-                row.data = data;
+                item.setDeferLoadingUntilExpand(true);
+                row = new Node(4);
+                row.setType("storage");
+                row.setCell(0,data.getItemDescription());
+                row.setCell(1,data.getUserName());
+                row.setCell(2,data.getCheckin());
+                row.setCell(3,data.getCheckout());
+                row.setData(data);
 
-                item.addItem(row);
+                item.add(row);
             }
 
             treeFetched = true;
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             e.printStackTrace();
         }
 
@@ -272,14 +270,14 @@ public class CurrentTab extends Screen {
     }
 
     private void showStorageLocation() {
-        ScreenWindow modal;
+        ModalWindow modal;
 
         if (storageLocationLookup == null) {
             try {
                 storageLocationLookup = new StorageLocationLookupScreen();
             } catch (Exception e) {
                 e.printStackTrace();
-                Window.alert("StorageLocationLookup Error: " + e.getMessage());
+                com.google.gwt.user.client.Window.alert("StorageLocationLookup Error: " + e.getMessage());
                 return;
             }
 
@@ -290,9 +288,10 @@ public class CurrentTab extends Screen {
                     StorageManager man;
                     StorageViewDO tmpstorage, oldstorage;
                     StorageLocationManager locMan;
-                    TreeDataItem item;
-                    ArrayList<TreeDataItem> list;
+                    Node item;
+                    ArrayList<Node> list;
                     Datetime current;
+                    Integer[] sels;
 
                     if (event.getAction() == StorageLocationLookupScreen.Action.OK) {
                         data = (StorageLocationViewDO)event.getData();
@@ -324,13 +323,19 @@ public class CurrentTab extends Screen {
                                     storageCache.put(locId, man);
                                 }
 
-                                list = storageCurrentTree.getSelections();
+                                sels = storageCurrentTree.getSelectedNodes();
+                                
+                                list = new ArrayList<Node>();
+                                
+                                for(int i = 0; i < sels.length; i++) 
+                                	list.add(storageCurrentTree.getNodeAt(sels[i]));
+                                
                                 current = Calendar.getCurrentDatetime(Datetime.YEAR,
                                                                       Datetime.MINUTE);
                                 userId = OpenELIS.getSystemUserPermission().getSystemUserId();
                                 for (int i = 0; i < list.size(); i++ ) {
                                     item = list.get(i);
-                                    oldstorage = (StorageViewDO)item.data;
+                                    oldstorage = (StorageViewDO)item.getData();
 
                                     if (oldstorage.getStorageLocationId().equals(data.getId())) {
                                         window.setError(consts.get("itemsCantBeMoved"));
@@ -349,12 +354,12 @@ public class CurrentTab extends Screen {
                                     tmpstorage.setSystemUserId(userId);
                                     man.addStorage(tmpstorage);
 
-                                    item.cells.get(3).setValue(current);
-                                    storageCurrentTree.refreshRow(item);
+                                    item.setCell(3,current);
+                                    //storageCurrentTree.refreshRow(item);
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                Window.alert("StorageLocationLookup Error: " + e.getMessage());
+                                com.google.gwt.user.client.Window.alert("StorageLocationLookup Error: " + e.getMessage());
                             }
                         }
                     }
@@ -362,7 +367,7 @@ public class CurrentTab extends Screen {
             });
         }
         window.clearStatus();
-        modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+        modal = new ModalWindow();
         modal.setName(consts.get("storageLocationSelection"));
         modal.setContent(storageLocationLookup);
         storageLocationLookup.setScreenState(State.DEFAULT);
@@ -371,16 +376,24 @@ public class CurrentTab extends Screen {
 
     private void discardStorageItems() {
         StorageViewDO oldstorage;
-        TreeDataItem item;
-        ArrayList<TreeDataItem> list;
+        Node item;
+        ArrayList<Node> list;
         Datetime current;
+        Integer[] sels;
 
         try {
-            list = storageCurrentTree.getSelections();
+        	
+            sels = storageCurrentTree.getSelectedNodes();
+            
+            list = new ArrayList<Node>();
+            
+            for(int i = 0; i < sels.length; i++)
+            	list.add(storageCurrentTree.getNodeAt(sels[i]));
+            
             current = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE);
             for (int i = 0; i < list.size(); i++ ) {
                 item = list.get(i);
-                oldstorage = (StorageViewDO)item.data;
+                oldstorage = (StorageViewDO)item.getData();
 
                 //
                 // if checkout date is not null then we
@@ -390,14 +403,14 @@ public class CurrentTab extends Screen {
                 if (oldstorage.getCheckout() == null) {
                     oldstorage.setCheckout(current);
 
-                    item.cells.get(3).setValue(current);
+                    item.setCell(3,current);
 
-                    storageCurrentTree.refreshRow(item);
+                    //storageCurrentTree.refreshRow(item);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
         }
 
     }

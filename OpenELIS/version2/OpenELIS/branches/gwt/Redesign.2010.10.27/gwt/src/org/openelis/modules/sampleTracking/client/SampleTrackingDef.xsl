@@ -52,181 +52,140 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen id="SampleTracking" name="SampleTracking">
+    <screen name="SampleTracking">
       <VerticalPanel padding="0" spacing="0">
 
 <!--button panel code-->
 
         <AbsolutePanel spacing="0" style="ButtonPanelContainer">
           <HorizontalPanel>
-            <appButton action="expand" key="expand" style="ButtonPanelButton">
-              <HorizontalPanel>
-                <AbsolutePanel height="20" style="expandButtonImage" width="20" />
-                <text>
-                  <xsl:value-of select='resource:getString($constants,"expand")' />
-                </text>
-              </HorizontalPanel>
-            </appButton>
-            <appButton action="collapse" key="collapse" style="ButtonPanelButton">
-              <HorizontalPanel>
-                <AbsolutePanel height="20" style="collapseButtonImage" width="20" />
-                <text>
-                  <xsl:value-of select='resource:getString($constants,"collapse")' />
-                </text>
-              </HorizontalPanel>
-            </appButton>
-            <appButton action="similar" key="similar" style="ButtonPanelButton">
-              <HorizontalPanel>
-                <AbsolutePanel height="20" style="similarButtonImage" width="20" />
-                <text>
-                  <xsl:value-of select='resource:getString($constants,"similar")' />
-                </text>
-              </HorizontalPanel>
-            </appButton>
+            <button action="expand" icon="expandButtonImage" text="{resource:getString($constants,'expand')}" key="expand" style="ButtonPanelButton"/>
+            <button action="collapse" icon="collapseButtonImage" text="{resource:getString($constants,'collapse')}" key="collapse" style="ButtonPanelButton"/>
+            <button action="similar" icon="similarButtonImage" text="{resource:getString($constants,'similar')}" key="similar" style="ButtonPanelButton"/>
             <xsl:call-template name="buttonPanelDivider" />
-            <menuItem>
+            <menu>
               <menuDisplay>
-                <appButton action="query" key="query" shortcut="ctrl+q" style="ButtonPanelButton" toggle="true">
-                  <HorizontalPanel>
-                    <AbsolutePanel height="20" style="QueryButtonImage" width="20" />
-                    <text>
-                      <xsl:value-of select='resource:getString($constants,"query")' />
-                    </text>
-                    <AbsolutePanel height="20px" style="OptionsButtonImage" width="20px" />
-                  </HorizontalPanel>
-                </appButton>
+                <button action="query" key="query" shortcut="ctrl+q" style="ButtonPanelButton" toggle="true">
+                  <Grid cols="3">
+                    <row>
+                      <cell style="QueryButtonImage" />
+                      <cell text="{resource:getString($constants,'query')}" />
+                      <cell style="OptionsButtonImage"/>
+                    </row>
+                  </Grid>
+                </button>
               </menuDisplay>
-              <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                <menuItem description="" icon="environmentalSampleLoginIcon" key="environmentalSample" label="{resource:getString($constants,'environmentalSample')}" style="TopMenuRowContainer" />
-                <menuItem description="" enable="true" icon="privateWellWaterSampleLoginIcon" key="privateWellWaterSample" label="{resource:getString($constants,'privateWellWaterSample')}" style="TopMenuRowContainer" />
-                <menuItem description="" enable="true" icon="sdwisSampleLoginIcon" key="sdwisSample" label="{resource:getString($constants,'sdwisSample')}" style="TopMenuRowContainer" />
-                <menuItem description="" enable="false" icon="clinicalSampleLoginIcon" key="clinicalSample" label="{resource:getString($constants,'clinicalSample')}" style="TopMenuRowContainer" />
-                <menuItem description="" enable="false" icon="newbornScreeningSampleLoginIcon" key="newbornScreeningSample" label="{resource:getString($constants,'newbornScreeningSample')}" style="TopMenuRowContainer" />
-                <menuItem description="" enable="false" icon="animalSampleLoginIcon" key="animalSample" label="{resource:getString($constants,'animalSample')}" style="TopMenuRowContainer" />
-                <menuItem description="" enable="false" icon="ptSampleLoginIcon" key="ptSample" label="{resource:getString($constants,'ptSample')}" style="TopMenuRowContainer" />
-              </menuPanel>
-            </menuItem>
+              <menuItem icon="environmentalSampleLoginIcon" key="environmentalSample" display="{resource:getString($constants,'environmentalSample')}" style="TopMenuRowContainer" />
+              <menuItem icon="privateWellWaterSampleLoginIcon" key="privateWellWaterSample" display="{resource:getString($constants,'privateWellWaterSample')}" style="TopMenuRowContainer" />
+              <menuItem icon="sdwisSampleLoginIcon" key="sdwisSample" display="{resource:getString($constants,'sdwisSample')}" style="TopMenuRowContainer" />
+              <menuItem enabled="false" icon="clinicalSampleLoginIcon" key="clinicalSample" display="{resource:getString($constants,'clinicalSample')}" style="TopMenuRowContainer" />
+              <menuItem enabled="false" icon="newbornScreeningSampleLoginIcon" key="newbornScreeningSample" display="{resource:getString($constants,'newbornScreeningSample')}" style="TopMenuRowContainer" />
+              <menuItem enabled="false" icon="animalSampleLoginIcon" key="animalSample" display="{resource:getString($constants,'animalSample')}" style="TopMenuRowContainer" />
+              <menuItem enabled="false" icon="ptSampleLoginIcon" key="ptSample" display="{resource:getString($constants,'ptSample')}" style="TopMenuRowContainer" />
+            </menu>
             <xsl:call-template name="buttonPanelDivider" />
             <xsl:call-template name="updateButton" />
             <xsl:call-template name="buttonPanelDivider" />
-            <appButton action="addTest" key="addTest" style="ButtonPanelButton">
-              <HorizontalPanel>
-                <AbsolutePanel height="20" style="addTestButtonImage" width="20" />
-                <text>
-                  <xsl:value-of select='resource:getString($constants,"addTest")' />
-                </text>
-              </HorizontalPanel>
-            </appButton>
-            <appButton action="cancelTest" key="cancelTest" style="ButtonPanelButton">
-              <HorizontalPanel>
-                <AbsolutePanel height="20" style="cancelTestButtonImage" width="20" />
-                <text>
-                  <xsl:value-of select='resource:getString($constants,"cancelTest")' />
-                </text>
-              </HorizontalPanel>
-            </appButton>
+            <button action="addTest" icon="addTestButtonImage" text="{resource:getString($constants,'addTest')}" key="addTest" style="ButtonPanelButton"/>
+            <button action="cancelTest" icon="cancelTestButtonImage" text="{resource:getString($constants,'cancelTest')}" key="cancelTest" style="ButtonPanelButton"/>
             <xsl:call-template name="buttonPanelDivider" />
             <xsl:call-template name="commitButton" />
             <xsl:call-template name="abortButton" />
             <xsl:call-template name="buttonPanelDivider" />
-            <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
-              <menuItem>
+            <menu key="optionsMenu" selfShow="true" showBelow="true" style="topBarItemHolder">
                 <menuDisplay>
-                  <appButton style="ButtonPanelButton" action="option">
-                    <HorizontalPanel>
-                      <text>
-                        <xsl:value-of select='resource:getString($constants,"options")' />
-                      </text>
-                      <AbsolutePanel width="20px" height="20px" style="OptionsButtonImage" />
-                    </HorizontalPanel>
-                  </appButton>
+                  <button style="ButtonPanelButton" action="option">
+                    <Grid>
+                      <row>
+                        <cell text="{resource:getString($constants,'options')}" />
+                        <cell style="OptionsButtonImage" />
+                      </row>
+                    </Grid>
+                  </button>
                 </menuDisplay>
-                 <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                  <menuItem key="unreleaseSample" description="" enable="false" icon="unreleaseIcon" label="Unrelease Sample" />
-                  <html>&lt;hr/&gt;</html>
-                  <menuItem key="historySample" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySample')}" />
-                  <menuItem key="historySampleSpec" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleSpec')}" />
-                  <menuItem key="historySampleProject" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleProject')}" />
-                  <menuItem key="historySampleOrganization" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleOrganization')}" />
-                  <menuItem key="historySampleItem" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleItem')}" />
-                  <menuItem key="historyAnalysis" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyAnalysis')}" />
-                  <menuItem key="historyCurrentResult" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyCurrentResult')}" />
-			      <menuItem key="historyStorage" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyStorage')}" />
-                  <menuItem key="historySampleQA" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleQA')}" />
-                  <menuItem key="historyAnalysisQA" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyAnalysisQA')}" />
-                  <menuItem key="historyAuxData" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyAuxData')}" />
-                </menuPanel>
-              </menuItem>
-            </menuPanel>
+                <menuItem key="unreleaseSample" enabled="false" icon="unreleaseIcon" display="Unrelease Sample" />
+                <separator/>
+                <menuItem key="historySample" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historySample')}" />
+                <menuItem key="historySampleSpec" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historySampleSpec')}" />
+                <menuItem key="historySampleProject" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historySampleProject')}" />
+                <menuItem key="historySampleOrganization" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historySampleOrganization')}" />
+                <menuItem key="historySampleItem" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historySampleItem')}" />
+                <menuItem key="historyAnalysis" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historyAnalysis')}" />
+                <menuItem key="historyCurrentResult" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historyCurrentResult')}" />
+			    <menuItem key="historyStorage" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historyStorage')}" />
+                <menuItem key="historySampleQA" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historySampleQA')}" />
+                <menuItem key="historyAnalysisQA" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historyAnalysisQA')}" />
+                <menuItem key="historyAuxData" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historyAuxData')}" />
+            </menu>
           </HorizontalPanel>
         </AbsolutePanel>
         <HorizontalPanel>
           <AbsolutePanel key="collapsePanel" style="LeftSidePanel">
             <HorizontalPanel width="225">
               <VerticalPanel>
-                <tree key="trackingTree" maxRows="14" width="auto">
-                  <header>
+                <tree key="trackingTree" rows="14">
+                  <columns>
                     <col header="Sample" width="200" />
                     <col header="Type/Status" width="100" />
-                  </header>
-                  <leaf key="sample">
+                  </columns>
+                  <node key="sample">
                     <col>
                       <label />
                     </col>
                     <col>
                        <label />
                     </col>
-                  </leaf>
-                  <leaf key="sampleItem">
+                  </node>
+                  <node key="sampleItem">
                     <col>
                       <label />
                     </col>
                     <col>
                        <label/>
                     </col>
-                  </leaf>
-                  <leaf key="analysis">
+                  </node>
+                  <node key="analysis">
                     <col>
                       <label />
                     </col>
                     <col>
-                       <dropdown width="110" case="LOWER" popWidth="110" field="Integer" />
+                       <dropdown width="110" case="LOWER" field="Integer" />
                     </col>
-                  </leaf>
-                  <leaf key="storage">
+                  </node>
+                  <node key="storage">
                     <col>
                       <label />
                     </col>
-                  </leaf>
-                  <leaf key="qaevent">
+                  </node>
+                  <node key="qaevent">
                     <col>
                       <label />
                     </col>
-                  </leaf>
-                  <leaf key="note">
+                  </node>
+                  <node key="note">
                     <col>
                       <label />
                     </col>
-                  </leaf>
-                  <leaf key="auxdata">
+                  </node>
+                  <node key="auxdata">
                     <col>
                       <label />
                     </col>
-                  </leaf>
-                  <leaf key="result">
+                  </node>
+                  <node key="result">
                     <col>
                       <label />
                     </col>
-                  </leaf>
+                  </node>
                 </tree>
                 <widget halign="center">
                   <HorizontalPanel>
-                    <appButton enable="false" key="prevPage" style="Button">
+                    <button enabled="false" key="prevPage" style="Button">
                       <AbsolutePanel style="prevNavIndex" />
-                    </appButton>
-                    <appButton enable="false" key="nextPage" style="Button">
+                    </button>
+                    <button enabled="false" key="nextPage" style="Button">
                       <AbsolutePanel style="nextNavIndex" />
-                    </appButton>
+                    </button>
                   </HorizontalPanel>
                 </widget>
               </VerticalPanel>
@@ -248,7 +207,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'collected')" />:
               </text>
-              <calendar key="{meta:getCollectionDate()}" begin="0" end="2" width="90" maxValue="0" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getCollectionTime()},{meta:getOrderId()}" />
+              <calendar key="{meta:getCollectionDate()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getCollectionTime()},{meta:getOrderId()}" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'time')" />:
               </text>
@@ -258,11 +217,11 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'received')" />:
               </text>
-              <calendar key="{meta:getReceivedDate()}" begin="0" end="4" width="125" maxValue="0" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getStatusId()},{meta:getCollectionTime()}" />
+              <calendar key="{meta:getReceivedDate()}" begin="0" end="4" width="125" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getStatusId()},{meta:getCollectionTime()}" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'status')" />:
               </text>
-              <dropdown key="{meta:getStatusId()}" width="110" popWidth="110" tab="{meta:getClientReference()},{meta:getReceivedDate()}" field="Integer" required="true" />
+              <dropdown key="{meta:getStatusId()}" width="110" tab="{meta:getClientReference()},{meta:getReceivedDate()}" field="Integer" required="true" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'clntRef')" />:
               </text>

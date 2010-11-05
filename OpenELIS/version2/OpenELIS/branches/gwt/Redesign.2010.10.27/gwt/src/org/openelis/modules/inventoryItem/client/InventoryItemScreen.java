@@ -56,17 +56,17 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.Item;
 import org.openelis.gwt.widget.MenuItem;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.Window;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.manager.InventoryComponentManager;
 import org.openelis.manager.InventoryItemManager;
 import org.openelis.manager.InventoryLocationManager;
@@ -83,7 +83,6 @@ import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
 
@@ -101,7 +100,7 @@ public class InventoryItemScreen extends Screen {
     private NotesTab              noteTab;
     private Tabs                  tab;
 
-    private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
+    private Button                queryButton, previousButton, nextButton, addButton, updateButton,
                                   commitButton, abortButton;
     protected MenuItem            invItemHistory,invComponentHistory,invLocationHistory;
     private TextBox               id, name, description, quantityMinLevel, quantityToReorder,
@@ -109,8 +108,8 @@ public class InventoryItemScreen extends Screen {
                                   averageDailyUse;
     private CheckBox              isActive, isReorderAuto, isLotMaintained, isSerialMaintained,
                                   isBulk, isNotForSale, isSubAssembly, isLabor, isNotInventoried;
-    private Dropdown<String>      categoryId, storeId, dispensedUnitsId;
-    private AutoComplete<Integer> parentInventoryItemId;
+    private Dropdown<Integer>      categoryId, storeId, dispensedUnitsId;
+    private AutoComplete          parentInventoryItemId;
     private TabPanel              tabPanel;
 
     private enum Tabs {
@@ -152,92 +151,98 @@ public class InventoryItemScreen extends Screen {
      */
     @SuppressWarnings("unchecked")
     private void initialize() {
-        queryButton = (AppButton)def.getWidget("query");
+        queryButton = (Button)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 query();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                queryButton.setEnabled(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                           .contains(event.getState()) &&
                                    userPermission.hasSelectPermission());
-                if (event.getState() == State.QUERY)
-                    queryButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.QUERY) {
+                    queryButton.setPressed(true);
+                    queryButton.lock();
+                }
             }
         });
 
-        previousButton = (AppButton)def.getWidget("previous");
+        previousButton = (Button)def.getWidget("previous");
         addScreenHandler(previousButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 previous();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                previousButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
-        nextButton = (AppButton)def.getWidget("next");
+        nextButton = (Button)def.getWidget("next");
         addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 next();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                nextButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                nextButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
-        addButton = (AppButton)def.getWidget("add");
+        addButton = (Button)def.getWidget("add");
         addScreenHandler(addButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 add();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                addButton.setEnabled(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                         .contains(event.getState()) &&
                                  userPermission.hasAddPermission());
-                if (event.getState() == State.ADD)
-                    addButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.ADD) {
+                    addButton.setPressed(true);
+                    addButton.lock();
+                }
             }
         });
 
-        updateButton = (AppButton)def.getWidget("update");
+        updateButton = (Button)def.getWidget("update");
         addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 update();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
+                updateButton.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
                                     userPermission.hasUpdatePermission());
-                if (event.getState() == State.UPDATE)
-                    updateButton.setState(ButtonState.LOCK_PRESSED);
+                if (event.getState() == State.UPDATE) {
+                    updateButton.setPressed(true);
+                    updateButton.lock();
+                }
             }
         });
 
-        commitButton = (AppButton)def.getWidget("commit");
+        commitButton = (Button)def.getWidget("commit");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 commit();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                commitButton.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
                                            .contains(event.getState()));
             }
         });
 
-        abortButton = (AppButton)def.getWidget("abort");
+        abortButton = (Button)def.getWidget("abort");
         addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 abort();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                abortButton.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
                                           .contains(event.getState()));
             }
         });
@@ -249,7 +254,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                invItemHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                invItemHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
@@ -260,7 +265,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                invComponentHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                invComponentHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
@@ -271,7 +276,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                invLocationHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                invLocationHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -286,7 +291,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                id.enable(event.getState() == State.QUERY);
+                id.setEnabled(event.getState() == State.QUERY);
                 id.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -302,7 +307,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                name.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                name.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                    .contains(event.getState()));
                 name.setQueryMode(event.getState() == State.QUERY);
             }
@@ -319,16 +324,16 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                description.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                description.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                           .contains(event.getState()));
                 description.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        categoryId = (Dropdown)def.getWidget(InventoryItemMeta.getCategoryId());
+        categoryId = (Dropdown<Integer>)def.getWidget(InventoryItemMeta.getCategoryId());
         addScreenHandler(categoryId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                categoryId.setSelection(manager.getInventoryItem().getCategoryId());
+                categoryId.setValue(manager.getInventoryItem().getCategoryId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -336,7 +341,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                categoryId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                categoryId.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                          .contains(event.getState()));
                 categoryId.setQueryMode(event.getState() == State.QUERY);
             }
@@ -345,7 +350,7 @@ public class InventoryItemScreen extends Screen {
         storeId = (Dropdown)def.getWidget(InventoryItemMeta.getStoreId());
         addScreenHandler(storeId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                storeId.setSelection(manager.getInventoryItem().getStoreId());
+                storeId.setValue(manager.getInventoryItem().getStoreId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -353,7 +358,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                storeId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                storeId.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                       .contains(event.getState()));
                 storeId.setQueryMode(event.getState() == State.QUERY);
             }
@@ -370,7 +375,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                quantityMinLevel.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                quantityMinLevel.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                                .contains(event.getState()));
                 quantityMinLevel.setQueryMode(event.getState() == State.QUERY);
             }
@@ -387,7 +392,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                quantityToReorder.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                quantityToReorder.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                                 .contains(event.getState()));
                 quantityToReorder.setQueryMode(event.getState() == State.QUERY);
             }
@@ -404,7 +409,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                quantityMaxLevel.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                quantityMaxLevel.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                                .contains(event.getState()));
                 quantityMaxLevel.setQueryMode(event.getState() == State.QUERY);
             }
@@ -413,7 +418,7 @@ public class InventoryItemScreen extends Screen {
         dispensedUnitsId = (Dropdown)def.getWidget(InventoryItemMeta.getDispensedUnitsId());
         addScreenHandler(dispensedUnitsId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                dispensedUnitsId.setSelection(manager.getInventoryItem().getDispensedUnitsId());
+                dispensedUnitsId.setValue(manager.getInventoryItem().getDispensedUnitsId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -421,7 +426,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                dispensedUnitsId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                dispensedUnitsId.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                                .contains(event.getState()));
                 dispensedUnitsId.setQueryMode(event.getState() == State.QUERY);
             }
@@ -438,7 +443,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isActive.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                isActive.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                        .contains(event.getState()));
                 isActive.setQueryMode(event.getState() == State.QUERY);
             }
@@ -455,7 +460,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isReorderAuto.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                isReorderAuto.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                             .contains(event.getState()));
                 isReorderAuto.setQueryMode(event.getState() == State.QUERY);
             }
@@ -472,7 +477,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isLotMaintained.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                isLotMaintained.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                               .contains(event.getState()));
                 isLotMaintained.setQueryMode(event.getState() == State.QUERY);
             }
@@ -489,7 +494,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isSerialMaintained.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                isSerialMaintained.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                                  .contains(event.getState()));
                 isSerialMaintained.setQueryMode(event.getState() == State.QUERY);
             }
@@ -506,7 +511,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isBulk.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                isBulk.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                      .contains(event.getState()));
                 isBulk.setQueryMode(event.getState() == State.QUERY);
             }
@@ -523,7 +528,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isNotForSale.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                isNotForSale.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                            .contains(event.getState()));
                 isNotForSale.setQueryMode(event.getState() == State.QUERY);
             }
@@ -540,7 +545,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isSubAssembly.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                isSubAssembly.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                             .contains(event.getState()));
                 isSubAssembly.setQueryMode(event.getState() == State.QUERY);
             }
@@ -557,7 +562,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isLabor.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                isLabor.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                       .contains(event.getState()));
                 isLabor.setQueryMode(event.getState() == State.QUERY);
             }
@@ -574,7 +579,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isNotInventoried.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                isNotInventoried.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                             .contains(event.getState()));
                 isNotInventoried.setQueryMode(event.getState() == State.QUERY);
             }
@@ -591,7 +596,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                productUri.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                productUri.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 productUri.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -599,17 +604,17 @@ public class InventoryItemScreen extends Screen {
         parentInventoryItemId = (AutoComplete)def.getWidget(InventoryItemMeta.getParentInventoryItemName());
         addScreenHandler(parentInventoryItemId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                parentInventoryItemId.setSelection(manager.getInventoryItem().getParentInventoryItemId(),
+                parentInventoryItemId.setValue(manager.getInventoryItem().getParentInventoryItemId(),
                                                    manager.getInventoryItem().getParentInventoryItemName());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 manager.getInventoryItem().setParentInventoryItemId(event.getValue());
-                manager.getInventoryItem().setParentInventoryItemName(parentInventoryItemId.getTextBoxDisplay());
+                manager.getInventoryItem().setParentInventoryItemName(parentInventoryItemId.getDisplay());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                parentInventoryItemId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                parentInventoryItemId.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 parentInventoryItemId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -617,27 +622,27 @@ public class InventoryItemScreen extends Screen {
         parentInventoryItemId.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 InventoryItemDO data;
-                TableDataRow row;
+                Item<Integer> row;
                 ArrayList<InventoryItemDO> list;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
                 DictionaryDO store, units;
 
                 try {
                     list = service.callList("fetchActiveByName", event.getMatch());
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
 
                     for (int i = 0; i < list.size(); i++ ) {
                         data = (InventoryItemDO) list.get(i);
                         store = DictionaryCache.getEntryFromId(data.getStoreId());
                         units = DictionaryCache.getEntryFromId(data.getDispensedUnitsId());
-                        row = new TableDataRow(data.getId(), data.getName(),
+                        row = new Item<Integer>(data.getId(), data.getName(),
                                                store.getEntry(), units.getEntry());
-                        row.data = data;
+                        row.setData(data);
                         model.add(row);
                     }
                     parentInventoryItemId.showAutoMatches(model);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }                                        
         });
@@ -653,7 +658,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                parentRatio.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                parentRatio.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 parentRatio.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -668,7 +673,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                averageLeadTime.enable(false);
+                averageLeadTime.setEnabled(false);
             }
         });
 
@@ -682,7 +687,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                averageCost.enable(false);
+                averageCost.setEnabled(false);
             }
         });
 
@@ -696,7 +701,7 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                averageDailyUse.enable(false);
+                averageDailyUse.setEnabled(false);
             }
         });
         
@@ -791,7 +796,7 @@ public class InventoryItemScreen extends Screen {
                         } else if (error instanceof LastPageException) {
                             window.setError("No more records in this direction");
                         } else {
-                            Window.alert("Error: InventoryItem call query failed; " +
+                            com.google.gwt.user.client.Window.alert("Error: InventoryItem call query failed; " +
                                          error.getMessage());
                             window.setError(consts.get("queryFailed"));
                         }
@@ -803,16 +808,16 @@ public class InventoryItemScreen extends Screen {
                 return fetchById( (entry == null) ? null : ((IdNameStoreVO)entry).getId());
             }
 
-            public ArrayList<TableDataRow> getModel() {
+            public ArrayList<Item<Integer>> getModel() {
                 ArrayList<IdNameStoreVO> result;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 model = null;
                 result = nav.getQueryResult();
                 if (result != null) {
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
                     for (IdNameStoreVO entry : result)
-                        model.add(new TableDataRow(entry.getId(), entry.getName(), entry.getStore()));
+                        model.add(new Item<Integer>(entry.getId(), entry.getName(), entry.getStore()));
                 }
                 return model;
             }
@@ -824,7 +829,7 @@ public class InventoryItemScreen extends Screen {
                 boolean enable;
                 enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
                          userPermission.hasSelectPermission();
-                atoz.enable(enable);
+                atoz.setEnabled(enable);
                 nav.enable(enable);
             }
 
@@ -834,7 +839,7 @@ public class InventoryItemScreen extends Screen {
 
                 field = new QueryData();
                 field.key = InventoryItemMeta.getName();
-                field.query = ((AppButton)event.getSource()).getAction();
+                field.query = ((Button)event.getSource()).getAction();
                 field.type = QueryData.Type.STRING;
 
                 query = new Query();
@@ -843,8 +848,8 @@ public class InventoryItemScreen extends Screen {
             }
         });
         
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+        window.addBeforeClosedHandler(new BeforeCloseHandler<Window>() {
+            public void onBeforeClosed(BeforeCloseEvent<Window> event) {                
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
@@ -854,46 +859,46 @@ public class InventoryItemScreen extends Screen {
     }
 
     private void initializeDropdowns() {
-        TableWidget atozTable;
+        Table atozTable;
         Dropdown<Integer> atozStoreId;
-        ArrayList<TableDataRow> model;
+        ArrayList<Item<Integer>> model;
         List<DictionaryDO> list;
-        TableDataRow row;
+        Item<Integer> row;
 
         // category dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
         list = DictionaryCache.getListByCategorySystemName("inventory_category");
         for (DictionaryDO d : list) {
-            row = new TableDataRow(d.getId(), d.getEntry());
-            row.enabled = ("Y".equals(d.getIsActive()));
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
         categoryId.setModel(model);
 
         // stores dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
         list = DictionaryCache.getListByCategorySystemName("inventory_store");
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("inventory_store")) {
-            row = new TableDataRow(d.getId(), d.getEntry());
-            row.enabled = ("Y".equals(d.getIsActive()));
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
         storeId.setModel(model);
         
         // add the same store model to left hand side atoz table
-        atozTable = (TableWidget)def.getWidget("atozTable");
-        atozStoreId = (Dropdown)atozTable.getColumns().get(1).getColumnWidget();
+        atozTable = (Table)def.getWidget("atozTable");
+        atozStoreId = (Dropdown)atozTable.getColumnWidget(1);
         atozStoreId.setModel(model);
         
         // units dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
         list = DictionaryCache.getListByCategorySystemName("inventory_unit");
         for (DictionaryDO d : list) {
-            row = new TableDataRow(d.getId(), d.getEntry());
-            row.enabled = ("Y".equals(d.getIsActive()));
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
         dispensedUnitsId.setModel(model);
@@ -955,7 +960,7 @@ public class InventoryItemScreen extends Screen {
             DataChangeEvent.fire(this);
             setFocus(name);
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
         }
         window.clearStatus();
     }
@@ -985,7 +990,7 @@ public class InventoryItemScreen extends Screen {
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
-                Window.alert("commitAdd(): " + e.getMessage());
+                com.google.gwt.user.client.Window.alert("commitAdd(): " + e.getMessage());
                 window.clearStatus();
             }
         } else if (state == State.UPDATE) {
@@ -999,7 +1004,7 @@ public class InventoryItemScreen extends Screen {
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
-                Window.alert("commitUpdate(): " + e.getMessage());
+                com.google.gwt.user.client.Window.alert("commitUpdate(): " + e.getMessage());
                 window.clearStatus();
             }
         }
@@ -1022,7 +1027,7 @@ public class InventoryItemScreen extends Screen {
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
             } catch (Exception e) {
-                Window.alert(e.getMessage());
+                com.google.gwt.user.client.Window.alert(e.getMessage());
                 fetchById(null);
             }
             window.setDone(consts.get("updateAborted"));
@@ -1055,7 +1060,7 @@ public class InventoryItemScreen extends Screen {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             return;
         }
 
@@ -1083,7 +1088,7 @@ public class InventoryItemScreen extends Screen {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             return;
         }
 
@@ -1123,7 +1128,7 @@ public class InventoryItemScreen extends Screen {
             } catch (Exception e) {
                 fetchById(null);
                 e.printStackTrace();
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                com.google.gwt.user.client.Window.alert(consts.get("fetchFailed") + e.getMessage());
                 return false;
             }
         }

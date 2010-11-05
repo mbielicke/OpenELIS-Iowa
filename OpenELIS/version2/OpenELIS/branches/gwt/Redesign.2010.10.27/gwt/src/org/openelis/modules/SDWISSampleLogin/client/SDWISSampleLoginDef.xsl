@@ -52,7 +52,7 @@ UIRF Software License are applicable instead of those above.
   <xsl:variable name="props" select="doc/props" />
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
   <xsl:template match="doc">
-    <screen id="SDWISSampleLogin" name="{resource:getString($constants,'sdwisSampleLogin')}">
+    <screen name="{resource:getString($constants,'sdwisSampleLogin')}">
       <VerticalPanel padding="0" spacing="0">
 
 <!--button panel code-->
@@ -69,32 +69,28 @@ UIRF Software License are applicable instead of those above.
             <xsl:call-template name="commitButton" />
             <xsl:call-template name="abortButton" />
             <xsl:call-template name="buttonPanelDivider" />
-            <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
-              <menuItem>
+            <menu key="optionsMenu" selfShow="true" showBelow="true" style="topBarItemHolder">
                 <menuDisplay>
-                  <appButton style="ButtonPanelButton" action="option">
-                    <HorizontalPanel>
-                      <text>
-                        <xsl:value-of select='resource:getString($constants,"options")' />
-                      </text>
-                      <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
-                    </HorizontalPanel>
-                  </appButton>
+                  <button style="ButtonPanelButton" action="option">
+                    <Grid>
+                      <row>
+                        <cell text="{resource:getString($constants,'options')}" />
+                        <cell style="OptionsButtonImage" />
+                      </row>
+                    </Grid>
+                  </button>
                 </menuDisplay>
-                <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                  <menuItem key="historySample" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySample')}" />
-                  <menuItem key="historySampleSDWIS" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleSDWIS')}" />
-                  <menuItem key="historySampleOrganization" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleOrganization')}" />
-                  <menuItem key="historySampleItem" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleItem')}" />
-                  <menuItem key="historyAnalysis" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyAnalysis')}" />
-                  <menuItem key="historyCurrentResult" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyCurrentResult')}" />
-                  <menuItem key="historyStorage" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyStorage')}" />
-                  <menuItem key="historySampleQA" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleQA')}" />
-                  <menuItem key="historyAnalysisQA" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyAnalysisQA')}" />
-                  <menuItem key="historyAuxData" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historyAuxData')}" />
-                </menuPanel>
-              </menuItem>
-            </menuPanel>
+                <menuItem key="historySample" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historySample')}" />
+                <menuItem key="historySampleSDWIS" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historySampleSDWIS')}" />
+                <menuItem key="historySampleOrganization" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historySampleOrganization')}" />
+                <menuItem key="historySampleItem" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historySampleItem')}" />
+                <menuItem key="historyAnalysis" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historyAnalysis')}" />
+                <menuItem key="historyCurrentResult" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historyCurrentResult')}" />
+                <menuItem key="historyStorage" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historyStorage')}" />
+                <menuItem key="historySampleQA" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historySampleQA')}" />
+                <menuItem key="historyAnalysisQA" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historyAnalysisQA')}" />
+                <menuItem key="historyAuxData" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historyAuxData')}" />
+            </menu>
           </HorizontalPanel>
         </AbsolutePanel>
 
@@ -112,14 +108,14 @@ UIRF Software License are applicable instead of those above.
               </text>
               <HorizontalPanel>
                 <textbox key="{meta:getOrderId()}" width="75" tab="{meta:getCollectionDate()},{meta:getAccessionNumber()}" field="Integer" />
-                <appButton key="orderButton" style="LookupButton">
+                <button key="orderButton" style="LookupButton">
                   <AbsolutePanel style="LookupButtonImage" />
-                </appButton>
+                </button>
               </HorizontalPanel>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'collected')" />:
               </text>
-              <calendar key="{meta:getCollectionDate()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getCollectionTime()},{meta:getOrderId()}" maxValue="0" />
+              <calendar key="{meta:getCollectionDate()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getCollectionTime()},{meta:getOrderId()}"/>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'time')" />:
               </text>
@@ -129,11 +125,11 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'received')" />:
               </text>
-              <calendar key="{meta:getReceivedDate()}" begin="0" end="4" width="125" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getStatusId()},{meta:getCollectionTime()}" maxValue="0" />
+              <calendar key="{meta:getReceivedDate()}" begin="0" end="4" width="125" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getStatusId()},{meta:getCollectionTime()}" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'status')" />:
               </text>
-              <dropdown key="{meta:getStatusId()}" width="110" popWidth="110" tab="{meta:getClientReference()},{meta:getReceivedDate()}" field="Integer" required="true" />
+              <dropdown key="{meta:getStatusId()}" width="110" tab="{meta:getClientReference()},{meta:getReceivedDate()}" field="Integer" required="true" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'clntRef')" />:
               </text>
@@ -153,9 +149,9 @@ UIRF Software License are applicable instead of those above.
                 </text>
                 <HorizontalPanel>
                   <textbox key="{meta:getSDWISPwsId()}" width="75" max="9" case="UPPER" tab="pwsName,{meta:getClientReference()}" field="String" required="true"/>
-                  <appButton key="pwsButton" style="LookupButton">
+                  <button key="pwsButton" style="LookupButton">
                     <AbsolutePanel style="LookupButtonImage" />
-                  </appButton>
+                  </button>
                 </HorizontalPanel>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'pwsName')" />:
@@ -200,64 +196,36 @@ UIRF Software License are applicable instead of those above.
               </text>
               <TablePanel padding="0" spacing="0">
                 <row>
-                  <tree key="itemsTestsTree" width="auto" maxRows="4" showScroll="ALWAYS" tab="{meta:getSDWISCollector()},{meta:getSDWISLocation()}">
-                    <header>
+                  <tree key="itemsTestsTree" rows="4" vscroll="ALWAYS" hscroll="ALWAYS" tab="{meta:getSDWISCollector()},{meta:getSDWISLocation()}">
+                    <columns>
                       <col width="280" header="{resource:getString($constants,'itemAnalyses')}" />
                       <col width="130" header="{resource:getString($constants,'typeStatus')}" />
-                    </header>
-                    <leaf key="sampleItem">
+                    </columns>
+                    <node key="sampleItem">
                       <col>
                         <label field="String" />
                       </col>
                       <col>
                         <label field="String" />
                       </col>
-                    </leaf>
-                    <leaf key="analysis">
+                    </node>
+                    <node key="analysis">
                       <col>
                         <label field="String" />
                       </col>
                       <col>
-                        <dropdown width="110" case="LOWER" popWidth="110" field="String" />
+                        <dropdown width="110" case="LOWER" field="String" />
                       </col>
-                    </leaf>
+                    </node>
                   </tree>
                 </row>
                 <row>
                   <widget style="TreeButtonFooter">
                     <HorizontalPanel>
-                      <appButton key="addItemButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel style="AddRowButtonImage" />
-                          <text>
-                            <xsl:value-of select="resource:getString($constants,'addItem')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
-                      <appButton key="addAnalysisButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel style="AddRowButtonImage" />
-                          <text>
-                            <xsl:value-of select="resource:getString($constants,'addAnalysis')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
-                      <appButton key="removeRowButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel style="RemoveRowButtonImage" />
-                          <text>
-                            <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
-                      <appButton key="popoutTree" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel style="popoutButtonImage" />
-                          <text>
-                            <xsl:value-of select="resource:getString($constants,'popout')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
+                      <button key="addItemButton" icon="AddRowButtonImage" text="{resource:getString($constants,'addItem')}" style="Button"/>
+                      <button key="addAnalysisButton" icon="AddRowButtonImage" text="{resource:getString($constants,'addAnalysis')}" style="Button"/>
+                      <button key="removeRowButton" icon="RemoveRowButtonImage" text="{resource:getString($constants,'removeRow')}" style="Button"/>
+                      <button key="popoutTree" icon="popoutButtonImage" text="{resource:getString($constants,'popout')}" style="Button"/>
                     </HorizontalPanel>
                   </widget>
                 </row>
@@ -280,15 +248,15 @@ UIRF Software License are applicable instead of those above.
                   </text>
                   <widget colspan="3">
                     <HorizontalPanel>
-                      <autoComplete key="{meta:getOrgName()}" width="179" case="UPPER" popWidth="auto" tab="{meta:getBillTo()},{meta:getSDWISCollector()}" field="Integer">
+                      <autoComplete key="{meta:getOrgName()}" width="179" case="UPPER" tab="{meta:getBillTo()},{meta:getSDWISCollector()}" >
                         <col width="200" header="{resource:getString($constants,'name')}" />
                         <col width="130" header="{resource:getString($constants,'street')}" />
                         <col width="120" header="{resource:getString($constants,'city')}" />
                         <col width="20" header="{resource:getString($constants,'st')}" />
                       </autoComplete>
-                      <appButton key="reportToLookup" style="LookupButton">
+                      <button key="reportToLookup" style="LookupButton">
                         <AbsolutePanel style="LookupButtonImage" />
-                      </appButton>
+                      </button>
                     </HorizontalPanel>
                   </widget>
                 </row>
@@ -298,15 +266,15 @@ UIRF Software License are applicable instead of those above.
                   </text>
                   <widget colspan="3">
                     <HorizontalPanel>
-                      <autoComplete key="{meta:getBillTo()}" width="179" case="UPPER" popWidth="auto" tab="sampleItemTabPanel,{meta:getOrgName()}" field="Integer">
+                      <autoComplete key="{meta:getBillTo()}" width="179" case="UPPER" tab="sampleItemTabPanel,{meta:getOrgName()}" >
                         <col width="200" header="{resource:getString($constants,'name')}" />
                         <col width="130" header="{resource:getString($constants,'street')}" />
                         <col width="120" header="{resource:getString($constants,'city')}" />
                         <col width="20" header="{resource:getString($constants,'st')}" />
                       </autoComplete>
-                      <appButton key="billToLookup" style="LookupButton">
+                      <button key="billToLookup" style="LookupButton">
                         <AbsolutePanel style="LookupButtonImage" />
-                      </appButton>
+                      </button>
                     </HorizontalPanel>
                   </widget>
                 </row>

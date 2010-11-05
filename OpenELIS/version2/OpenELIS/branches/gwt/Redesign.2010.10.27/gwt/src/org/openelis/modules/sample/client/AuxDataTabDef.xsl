@@ -48,7 +48,7 @@ UIRF Software License are applicable instead of those above.
       <TablePanel padding="0" spacing="0">
         <row>
           <widget colspan="6">
-            <table key="auxValsTable" width="auto" maxRows="{string($maxRows)}" showScroll="ALWAYS" title="">
+            <table key="auxValsTable" rows="{string($maxRows)}" vscroll="ALWAYS" hscroll="ALWAYS">
               <col width="85" header="{resource:getString($constants,'reportable')}">
                 <check />
               </col>
@@ -64,22 +64,8 @@ UIRF Software License are applicable instead of those above.
         <row>
           <widget colspan="6" style="TableButtonFooter">
             <HorizontalPanel>
-              <appButton key="removeAuxButton" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="RemoveRowButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
-              <appButton key="addAuxButton" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="PickerButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'auxGroups')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
+              <button key="removeAuxButton" icon="RemoveRowButtonImage" text="resource:getString($constants,'removeRow')" style="Button"/>
+              <button key="addAuxButton" icon="PickerButtonImage" text="resource:getString($constants,'auxGroups')" style="Button"/>
             </HorizontalPanel>
           </widget>
         </row>

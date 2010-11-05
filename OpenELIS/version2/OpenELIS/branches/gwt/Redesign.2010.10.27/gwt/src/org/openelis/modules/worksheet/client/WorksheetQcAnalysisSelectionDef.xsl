@@ -42,9 +42,9 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen id="WorksheetQcAnalysisSelection" name="{resource:getString($constants,'worksheetQcAnalysisSelection')}">
+    <screen name="{resource:getString($constants,'worksheetQcAnalysisSelection')}">
       <VerticalPanel padding="0" spacing="0">
-        <table key="worksheetQcAnalysisTable" width="auto" maxRows="10" multiSelect="true" showScroll="ALWAYS" tab="okButton,searchButton" title="">
+        <table key="worksheetQcAnalysisTable" rows="10" multiSelect="true" vscroll="ALWAYS" hscroll="ALWAYS" tab="okButton,searchButton">
           <col key="{meta:getWorksheetItemPosition()}" width="50" header="{resource:getString($constants,'position')}">
             <label field="String" />
           </col>
@@ -60,16 +60,8 @@ UIRF Software License are applicable instead of those above.
 
         <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
           <HorizontalPanel>
-            <xsl:call-template name="okButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="cancelButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
+            <xsl:call-template name="okButton"/>
+            <xsl:call-template name="cancelButton"/>
           </HorizontalPanel>
         </AbsolutePanel>
 

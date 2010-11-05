@@ -43,11 +43,11 @@
       <xsl:value-of select="props" />
     </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="SampleOrganizationPicker" name="{resource:getString($constants,'sampleOrganization')}">
+    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="{resource:getString($constants,'sampleOrganization')}">
       <VerticalPanel padding="0" spacing="0">
         <TablePanel padding="0" spacing="0">
           <row>
-            <table key="sampleOrganizationTable" width="auto" maxRows="10" showScroll="ALWAYS" tab="sampleOrganizationTable,sampleOrganizationTable" title="">
+            <table key="sampleOrganizationTable" rows="10" vscroll="ALWAYS" hscroll="ALWAYS" tab="sampleOrganizationTable,sampleOrganizationTable">
               <col width="125" header="Type">
                 <dropdown width="125" field="Integer" required="true"/>
               </col>
@@ -55,7 +55,7 @@
               	<textbox field="String"/>
               </col>
               <col width="220" header="Name">
-                <autoComplete width="130px" case="UPPER" field="Integer" required="true">
+                <autoComplete width="130px" case="UPPER" required="true">
                   <col width="200" header="Name" />
                   <col width="130" header="Street" />
                   <col width="120" header="City" />
@@ -73,33 +73,15 @@
           <row>
             <widget style="TableButtonFooter">
               <HorizontalPanel>
-                <appButton key="organizationAddButton" style="Button">
-                  <HorizontalPanel>
-                    <AbsolutePanel style="AddRowButtonImage" />
-                    <text>
-                      <xsl:value-of select="resource:getString($constants,'addRow')" />
-                    </text>
-                  </HorizontalPanel>
-                </appButton>
-                <appButton key="organizationRemoveButton" style="Button">
-                  <HorizontalPanel>
-                    <AbsolutePanel style="RemoveRowButtonImage" />
-                    <text>
-                      <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                    </text>
-                  </HorizontalPanel>
-                </appButton>
+                <button key="organizationAddButton" icon="AddRowButtonImage" text="{resource:getString($constants,'addRow')}" style="Button"/>
+                <button key="organizationRemoveButton" icon="RemoveRowButtonImage" text="{resource:getString($constants,'removeRow')}" style="Button"/>
               </HorizontalPanel>
             </widget>
           </row>
         </TablePanel>
         <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
           <HorizontalPanel>
-            <xsl:call-template name="okButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
+            <xsl:call-template name="okButton"/>
           </HorizontalPanel>
         </AbsolutePanel>
       </VerticalPanel>

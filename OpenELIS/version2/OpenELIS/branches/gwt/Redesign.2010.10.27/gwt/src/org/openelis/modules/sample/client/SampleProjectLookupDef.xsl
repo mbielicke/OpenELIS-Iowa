@@ -43,13 +43,13 @@
       <xsl:value-of select="props" />
     </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="SampleProjectPicker" name="{resource:getString($constants,'sampleProject')}">
+    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="{resource:getString($constants,'sampleProject')}">
       <VerticalPanel padding="0" spacing="0">
         <TablePanel padding="0" spacing="0">
           <row>
-            <table key="sampleProjectTable" width="auto" maxRows="10" showScroll="ALWAYS" tab="sampleProjectTable,sampleProjectTable" title="">
+            <table key="sampleProjectTable" rows="10" vscroll="ALWAYS" hscroll="ALWAYS" tab="sampleProjectTable,sampleProjectTable">
               <col width="120" header="Name">
-                <autoComplete width="130" case="LOWER" field="Integer" required="true">
+                <autoComplete width="130" case="LOWER" required="true">
                   <col width="150" header="{resource:getString($constants,'name')}" />
                       <col width="275" header="{resource:getString($constants,'description')}" />
                 </autoComplete>
@@ -65,22 +65,8 @@
           <row>
             <widget style="TableButtonFooter">
               <HorizontalPanel>
-                <appButton key="projectAddButton" style="Button">
-                  <HorizontalPanel>
-                    <AbsolutePanel style="AddRowButtonImage" />
-                    <text>
-                      <xsl:value-of select="resource:getString($constants,'addRow')" />
-                    </text>
-                  </HorizontalPanel>
-                </appButton>
-                <appButton key="projectRemoveButton" style="Button">
-                  <HorizontalPanel>
-                    <AbsolutePanel style="RemoveRowButtonImage" />
-                    <text>
-                      <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                    </text>
-                  </HorizontalPanel>
-                </appButton>
+                <button key="projectAddButton" icon="AddRowButtonImage" text="{resource:getString($constants,'addRow')}" style="Button"/>
+                <button key="projectRemoveButton" icon="RemoveRowButtonImage" text="{resource:getString($constants,'removeRow')}" style="Button"/>
               </HorizontalPanel>
             </widget>
           </row>
@@ -88,11 +74,7 @@
 <!--button panel code-->
         <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
           <HorizontalPanel>
-            <xsl:call-template name="okButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
+            <xsl:call-template name="okButton"/>
           </HorizontalPanel>
         </AbsolutePanel>
 <!--end button panel-->

@@ -41,12 +41,14 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoCompleteValue;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.AutoComplete;
+import org.openelis.gwt.widget.Item;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.Window;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
@@ -59,17 +61,16 @@ import org.openelis.manager.InventoryItemManager;
 import org.openelis.meta.InventoryItemMeta;
 
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.Window;
 
 public class ComponentTab extends Screen {
 
     private InventoryItemManager  manager;
-    private TableWidget           table;
-    private AutoComplete<Integer> componentId;
-    private AppButton             addComponentButton, removeComponentButton;
+    private Table                 table;
+    private AutoComplete          componentId;
+    private Button                addComponentButton, removeComponentButton;
     private boolean               loaded;
 
-    public ComponentTab(ScreenDefInt def, ScreenWindow window) {
+    public ComponentTab(ScreenDefInt def, Window window) {
         service = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
 
         setDefinition(def);
@@ -78,16 +79,16 @@ public class ComponentTab extends Screen {
     }
 
     private void initialize() {
-        table = (TableWidget)def.getWidget("componentTable");
+        table = (Table)def.getWidget("componentTable");
         componentId = (AutoComplete)table.getColumnWidget(InventoryItemMeta.getComponentName());
-        addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        addScreenHandler(table, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
                 if (state != State.QUERY)
-                    table.load(getTableModel());
+                    table.setModel(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                table.enable(true);
+                table.setEnabled(true);
                 table.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -103,27 +104,27 @@ public class ComponentTab extends Screen {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 Object val;
-                TableDataRow row;
+                AutoCompleteValue av;
                 InventoryComponentViewDO data;
 
                 r = event.getRow();
                 c = event.getCol();
-                val = table.getObject(r, c);
+                val = table.getValueAt(r, c);
 
                 try {
                     data = manager.getComponents().getComponentAt(r);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                     return;
                 }
 
                 switch (c) {
                     case 0:
-                        row = (TableDataRow)val;
-                        data.setComponentId((Integer)row.key);
-                        data.setComponentName((String)row.getCells().get(0));
-                        data.setComponentDescription((String)row.getCells().get(1));
-                        table.setCell(r, 1, data.getComponentDescription());
+                        av = (AutoCompleteValue)val;
+                        data.setComponentId(av.getId());
+                        data.setComponentName(av.getDisplay());
+                        data.setComponentDescription((String)av.getData());
+                        table.setValueAt(r, 1, data.getComponentDescription());
                         break;
                     case 2:
                         data.setQuantity((Integer)val);
@@ -137,7 +138,7 @@ public class ComponentTab extends Screen {
                 try {
                     manager.getComponents().addComponent(new InventoryComponentViewDO());
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
@@ -147,7 +148,7 @@ public class ComponentTab extends Screen {
                 try {
                     manager.getComponents().removeComponentAt(event.getIndex());
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
@@ -159,7 +160,7 @@ public class ComponentTab extends Screen {
                 QueryFieldUtil parser;
                 InventoryItemDO data;
                 ArrayList<InventoryItemDO> list;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 if (manager.getInventoryItem().getStoreId() == null) {
                     window.setError(consts.get("inventoryNoStoreException"));
@@ -169,7 +170,11 @@ public class ComponentTab extends Screen {
 
                 query = new Query();
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e){
+                	
+                }
 
                 field = new QueryData();
                 field.key = InventoryItemMeta.getName();
@@ -185,7 +190,7 @@ public class ComponentTab extends Screen {
 
                 try {
                     list = service.callList("fetchActiveByNameAndStore", query);
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
 
                     for (int i = 0; i < list.size(); i++ ) {
                         data = list.get(i);
@@ -194,70 +199,70 @@ public class ComponentTab extends Screen {
                         // itself as a component
                         //
                         if (! data.getId().equals(manager.getInventoryItem().getId()))
-                            model.add(new TableDataRow(data.getId(), data.getName(),
+                            model.add(new Item<Integer>(data.getId(), data.getName(),
                                                        data.getDescription()));
                     }
                     componentId.showAutoMatches(model);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
         });
 
-        addComponentButton = (AppButton)def.getWidget("addComponentButton");
+        addComponentButton = (Button)def.getWidget("addComponentButton");
         addScreenHandler(addComponentButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int n;
 
                 table.addRow();
-                n = table.numRows() - 1;
-                table.selectRow(n);
-                table.scrollToSelection();
+                n = table.getRowCount() - 1;
+                table.selectRowAt(n);
+                table.scrollToVisible(n);
                 table.startEditing(n, 0);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addComponentButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                addComponentButton.setEnabled(EnumSet.of(State.ADD, State.UPDATE)
                                                  .contains(event.getState()));
             }
         });
 
-        removeComponentButton = (AppButton)def.getWidget("removeComponentButton");
+        removeComponentButton = (Button)def.getWidget("removeComponentButton");
         addScreenHandler(removeComponentButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int r;
 
                 r = table.getSelectedRow();
-                if (r > -1 && table.numRows() > 0)
-                    table.deleteRow(r);
+                if (r > -1 && table.getRowCount() > 0)
+                    table.removeRowAt(r);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeComponentButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                removeComponentButton.setEnabled(EnumSet.of(State.ADD, State.UPDATE)
                                                     .contains(event.getState()));
             }
         });
 
     }
 
-    private ArrayList<TableDataRow> getTableModel() {
+    private ArrayList<Row> getTableModel() {
         int i;
         InventoryComponentViewDO data;
-        ArrayList<TableDataRow> model;
+        ArrayList<Row> model;
 
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<Row>();
         if (manager == null)
             return model;
 
         try {
             for (i = 0; i < manager.getComponents().count(); i++ ) {
                 data = (InventoryComponentViewDO)manager.getComponents().getComponentAt(i);
-                model.add(new TableDataRow(null, new TableDataRow(data.getComponentId(),
+                model.add(new Row(new AutoCompleteValue(data.getComponentId(),
                                                                   data.getComponentName()),
                                            data.getComponentDescription(), data.getQuantity()));
             }
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             e.printStackTrace();
         }
         return model;

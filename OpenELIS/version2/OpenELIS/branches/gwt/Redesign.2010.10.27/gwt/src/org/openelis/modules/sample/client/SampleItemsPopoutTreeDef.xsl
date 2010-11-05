@@ -33,29 +33,29 @@
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="SampleTreePopout" name="{resource:getString($constants,'itemsAndAnalyses')}">
+    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="{resource:getString($constants,'itemsAndAnalyses')}">
       <VerticalPanel padding="0" spacing="0">
-        <tree key="itemsTestsTree" width="auto" maxRows="25" showScroll="ALWAYS">
-          <header>
+        <tree key="itemsTestsTree" rows="25" vscroll="ALWAYS" hscroll="ALWAYS">
+          <columns>
             <col width="330" header="{resource:getString($constants,'itemAnalyses')}" />
             <col width="180" header="{resource:getString($constants,'typeStatus')}" />
-          </header>
-          <leaf key="sampleItem">
+          </columns>
+          <node key="sampleItem">
             <col>
               <label field="String" />
             </col>
             <col>
               <label field="String" />
             </col>
-          </leaf>
-          <leaf key="analysis">
+          </node>
+          <node key="analysis">
             <col>
               <label field="String" />
             </col>
             <col>
-              <dropdown width="110" case="LOWER" popWidth="110px" field="String" />
+              <dropdown width="110" case="LOWER" field="String" />
             </col>
-          </leaf>
+          </node>
         </tree>
       </VerticalPanel>
     </screen>

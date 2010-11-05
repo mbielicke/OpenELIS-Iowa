@@ -34,7 +34,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.Window;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.manager.InventoryReceiptManager;
 import org.openelis.meta.InventoryReceiptMeta;
@@ -50,7 +50,7 @@ public class VendorAddressTab extends Screen {
     private int                     index;
     private boolean                 loaded;  
 
-    public VendorAddressTab(ScreenDefInt def, ScreenWindow window) {
+    public VendorAddressTab(ScreenDefInt def, Window window) {
         service = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService");              
 
         setDefinition(def);
@@ -81,7 +81,7 @@ public class VendorAddressTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationAddressMultipleUnit.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                organizationAddressMultipleUnit.setEnabled(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 organizationAddressMultipleUnit.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -107,7 +107,7 @@ public class VendorAddressTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationAddressStreetAddress.enable(false);
+                organizationAddressStreetAddress.setEnabled(false);
             }
         });
 
@@ -132,7 +132,7 @@ public class VendorAddressTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationAddressCity.enable(false);
+                organizationAddressCity.setEnabled(false);
             }
         });
 
@@ -157,7 +157,7 @@ public class VendorAddressTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationAddressState.enable(false);
+                organizationAddressState.setEnabled(false);
             }
         });
 
@@ -182,7 +182,7 @@ public class VendorAddressTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationAddressZipCode.enable(false);
+                organizationAddressZipCode.setEnabled(false);
             }
         });
         

@@ -10,21 +10,20 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.CalendarLookUp;
+import org.openelis.gwt.widget.calendar.Calendar;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.Window;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Window;
 
 public class SampleTab extends Screen {
 	
 	TextBox<Integer> accessionNumber, orderNumber;
 	TextBox<Datetime> collectedTime;
-	CalendarLookUp collectedDate,receivedDate;
+	Calendar collectedDate,receivedDate;
 	Dropdown<Integer> statusId;
 	TextBox clientReference;
 	
@@ -32,7 +31,7 @@ public class SampleTab extends Screen {
 	
 	boolean loaded;
 
-	public SampleTab(ScreenDefInt def, ScreenWindow window) {
+	public SampleTab(ScreenDefInt def, Window window) {
 		setDefinition(def);
 		setWindow(window);
 		
@@ -43,7 +42,7 @@ public class SampleTab extends Screen {
         accessionNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                accessionNumber.setValue(Util.toString(manager.getSample().getAccessionNumber()));
+                accessionNumber.setValue(manager.getSample().getAccessionNumber());
             }
 
             public void onValueChange(final ValueChangeEvent<Integer> event) {
@@ -54,12 +53,12 @@ public class SampleTab extends Screen {
                 //} catch (ValidationErrorsList e) {
                  //   showErrors(e);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                accessionNumber.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                accessionNumber.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                               .contains(event.getState()));
                 accessionNumber.setQueryMode(event.getState() == State.QUERY);
 
@@ -71,7 +70,7 @@ public class SampleTab extends Screen {
         orderNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getOrderId());
         addScreenHandler(orderNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                orderNumber.setValue(Util.toString(manager.getSample().getOrderId()));
+                orderNumber.setValue(manager.getSample().getOrderId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -84,17 +83,17 @@ public class SampleTab extends Screen {
                     envOrderImport.importOrderInfo(event.getValue(), manager);
                     DataChangeEvent.fire(envScreen);
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
                 */
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orderNumber.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                orderNumber.setEnabled(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
-        collectedDate = (CalendarLookUp)def.getWidget(SampleMeta.getCollectionDate());
+        collectedDate = (Calendar)def.getWidget(SampleMeta.getCollectionDate());
         addScreenHandler(collectedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 collectedDate.setValue(manager.getSample().getCollectionDate());
@@ -105,7 +104,7 @@ public class SampleTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collectedDate.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                collectedDate.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                             .contains(event.getState()));
                 collectedDate.setQueryMode(event.getState() == State.QUERY);
             }
@@ -123,13 +122,13 @@ public class SampleTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collectedTime.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                collectedTime.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                             .contains(event.getState()));
                 collectedTime.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        receivedDate = (CalendarLookUp)def.getWidget(SampleMeta.getReceivedDate());
+        receivedDate = (Calendar)def.getWidget(SampleMeta.getReceivedDate());
         addScreenHandler(receivedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 receivedDate.setValue(manager.getSample().getReceivedDate());
@@ -140,7 +139,7 @@ public class SampleTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                receivedDate.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                receivedDate.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                            .contains(event.getState()));
                 receivedDate.setQueryMode(event.getState() == State.QUERY);
             }
@@ -149,7 +148,7 @@ public class SampleTab extends Screen {
         statusId = (Dropdown<Integer>)def.getWidget(SampleMeta.getStatusId());
         addScreenHandler(statusId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                statusId.setSelection(manager.getSample().getStatusId());
+                statusId.setValue(manager.getSample().getStatusId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -157,7 +156,7 @@ public class SampleTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                statusId.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                statusId.setEnabled(EnumSet.of(State.QUERY).contains(event.getState()));
                 statusId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -173,7 +172,7 @@ public class SampleTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                clientReference.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                clientReference.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                               .contains(event.getState()));
                 clientReference.setQueryMode(event.getState() == State.QUERY);
             }

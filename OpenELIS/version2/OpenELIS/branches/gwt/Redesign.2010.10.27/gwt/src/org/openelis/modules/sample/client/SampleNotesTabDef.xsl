@@ -51,14 +51,7 @@ UIRF Software License are applicable instead of those above.
           </row>
           <row>
             <widget style="TableButtonFooter">
-              <appButton key="sampleExtNoteButton" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="StandardNoteButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'editNote')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
+              <button key="sampleExtNoteButton" icon="StandardNoteButtonImage" text="{resource:getString($constants,'editNote')}" style="Button"/>
             </widget>
           </row>
         </TablePanel>
@@ -74,14 +67,7 @@ UIRF Software License are applicable instead of those above.
           </row>
           <row>
             <widget style="TableButtonFooter">
-              <appButton key="sampleIntNoteButton" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="StandardNoteButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'addNote')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
+              <button key="sampleIntNoteButton" icon="StandardNoteButtonImage" text="{resource:getString($constants,'addNote')}" style="Button"/>
             </widget>
           </row>
         </TablePanel>

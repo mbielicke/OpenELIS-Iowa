@@ -51,15 +51,17 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.HasField;
+import org.openelis.gwt.widget.HasExceptions;
+import org.openelis.gwt.widget.Item;
+import org.openelis.gwt.widget.ModalWindow;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.Window;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SamplePrivateWellManager;
 import org.openelis.meta.SampleMeta;
@@ -67,7 +69,6 @@ import org.openelis.meta.SampleMeta;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Window;
 
 public class PrivateWellTab extends Screen {
     private TextBox                        addressMultipleUnit, reportToAttn, addressStreetAddress,
@@ -75,11 +76,9 @@ public class PrivateWellTab extends Screen {
                                            locationAddrMultipleUnit, locationAddrStreetAddress, locationAddrCity,
                                            locationAddrZipCode, wellOwner, wellCollector;
     private TextBox<Integer>               wellOrganizationId, wellNumber;
-    private AutoComplete<String>           orgName;
-    private AutoComplete<Integer>          billTo;
+    private AutoComplete                   orgName, billTo,projectName;
     private Dropdown<String>               addressState, locationAddrState;
-    private AutoComplete<Integer>          projectName;
-    private AppButton                      projectLookup, billToLookup;
+    private Button                         projectLookup, billToLookup;
 
     private SampleProjectLookupScreen      projectScreen;
     private SampleOrganizationLookupScreen organizationScreen;
@@ -92,11 +91,11 @@ public class PrivateWellTab extends Screen {
 
     protected boolean                      loaded = false;
 
-    public PrivateWellTab(ScreenWindow window) throws Exception {        
+    public PrivateWellTab(Window window) throws Exception {        
         this(null, window);
     }
 
-    public PrivateWellTab(ScreenDefInt def, ScreenWindow window) throws Exception {
+    public PrivateWellTab(ScreenDefInt def, Window window) throws Exception {
         if (def == null)
             drawScreen((ScreenDefInt)GWT.create(PrivateWellTabDef.class));
         else
@@ -112,31 +111,31 @@ public class PrivateWellTab extends Screen {
     }
 
     public void initialize() {
-        orgName = (AutoComplete<String>)def.getWidget(SampleMeta.getWellOrganizationName());
-        addScreenHandler(orgName, new ScreenEventHandler<String>() {
+        orgName = (AutoComplete)def.getWidget(SampleMeta.getWellOrganizationName());
+        addScreenHandler(orgName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 if (getManager().getPrivateWell().getOrganizationId() == null) {
-                    orgName.setSelection(getManager().getPrivateWell().getReportToName(),
+                    orgName.setValue(getManager().getPrivateWell().getReportToName().hashCode(),
                                          getManager().getPrivateWell().getReportToName());
                     enableReportToFields(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                                 .contains(state));
 
                 } else {
-                    orgName.setSelection(getManager().getPrivateWell().getOrganization().getName(),
+                    orgName.setValue(getManager().getPrivateWell().getOrganization().getName().hashCode(),
                                          getManager().getPrivateWell().getOrganization().getName());
                     enableReportToFields(false);
                 }
             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
+            public void onValueChange(ValueChangeEvent<Integer> event) {
                 OrganizationDO orgDO;
                 SamplePrivateWellViewDO wellDO;
-                TableDataRow selectedRow;
+                Item<Integer> selectedRow;
                 boolean enableAddressValues = false;
 
-                selectedRow = orgName.getSelection();
+                selectedRow = orgName.getSelectedItem();
                 if (selectedRow != null)
-                    orgDO = (OrganizationDO)selectedRow.data;
+                    orgDO = (OrganizationDO)selectedRow.getData();
                 else
                     orgDO = null;
 
@@ -156,13 +155,13 @@ public class PrivateWellTab extends Screen {
                     if (getManager().getPrivateWell().getOrganizationId() != null) 
                         setAddress(null);
                     
-                    wellOrganizationId.setValue("");
-                    wellDO.setReportToName(event.getValue());
+                    wellOrganizationId.setValue(null);
+                    wellDO.setReportToName((String)selectedRow.getCell(0));
                     wellDO.setOrganizationId(null);
 
                     enableAddressValues = true;
                 } else { // it's a clear out
-                    wellOrganizationId.setValue("");
+                    wellOrganizationId.setValue(null);
                     setAddress(null);
 
                     wellDO.setReportToName(null);
@@ -178,7 +177,7 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orgName.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                orgName.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                       .contains(event.getState()));
                 orgName.setQueryMode(event.getState() == State.QUERY);
             }
@@ -187,34 +186,38 @@ public class PrivateWellTab extends Screen {
         orgName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
-                TableDataRow row;
+                Item<Integer> row;
                 OrganizationDO data;
                 ArrayList<OrganizationDO> list;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
                 int i, maxRows;
 
                 maxRows = 10;
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e) {
+                	
+                }
 
                 window.setBusy();
                 try {
                     list = orgService.callList("fetchByIdOrName", parser.getParameter().get(0));
-                    model = new ArrayList<TableDataRow>();
-                    model.add(row = new TableDataRow(event.getMatch(), event.getMatch(), null,
+                    model = new ArrayList<Item<Integer>>();
+                    model.add(row = new Item<Integer>(event.getMatch().hashCode(), event.getMatch(), null,
                                                      null, null));
 
                     i = 0;
                     while (i < maxRows && i < list.size()) {
-                        row = new TableDataRow(4);
+                        row = new Item<Integer>(4);
                         data = list.get(i);
 
-                        row.key = data.getId();
-                        row.cells.get(0).value = data.getName();
-                        row.cells.get(1).value = data.getAddress().getStreetAddress();
-                        row.cells.get(2).value = data.getAddress().getCity();
-                        row.cells.get(3).value = data.getAddress().getState();
-                        row.data = data;
+                        row.setKey(data.getId());
+                        row.setCell(0,data.getName());
+                        row.setCell(1,data.getAddress().getStreetAddress());
+                        row.setCell(2,data.getAddress().getCity());
+                        row.setCell(3,data.getAddress().getState());
+                        row.setData(data);
 
                         model.add(row);
                         i++ ;
@@ -222,7 +225,7 @@ public class PrivateWellTab extends Screen {
                     orgName.showAutoMatches(model);
                 } catch (Throwable e) {
                     e.printStackTrace();
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
                 window.clearStatus();
             }
@@ -239,7 +242,7 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                wellOrganizationId.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                wellOrganizationId.setEnabled(EnumSet.of(State.QUERY).contains(event.getState()));
                 wellOrganizationId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -267,7 +270,7 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addressMultipleUnit.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                addressMultipleUnit.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                                   .contains(event.getState()));
                 addressMultipleUnit.setQueryMode(event.getState() == State.QUERY);
             }
@@ -284,7 +287,7 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                reportToAttn.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                reportToAttn.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                            .contains(event.getState()));
                 reportToAttn.setQueryMode(event.getState() == State.QUERY);
             }
@@ -313,7 +316,7 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addressStreetAddress.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                addressStreetAddress.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                                    .contains(event.getState()));
                 addressStreetAddress.setQueryMode(event.getState() == State.QUERY);
             }
@@ -340,7 +343,7 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addressCity.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                addressCity.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                           .contains(event.getState()));
                 addressCity.setQueryMode(event.getState() == State.QUERY);
             }
@@ -367,7 +370,7 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addressWorkPhone.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                addressWorkPhone.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                                .contains(event.getState()));
                 addressWorkPhone.setQueryMode(event.getState() == State.QUERY);
             }
@@ -393,7 +396,7 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addressState.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                addressState.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                            .contains(event.getState()));
                 addressState.setQueryMode(event.getState() == State.QUERY);
             }
@@ -419,7 +422,7 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addressZipCode.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                addressZipCode.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                              .contains(event.getState()));
                 addressZipCode.setQueryMode(event.getState() == State.QUERY);
             }
@@ -448,7 +451,7 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addressFaxPhone.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                addressFaxPhone.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                               .contains(event.getState()));
                 addressFaxPhone.setQueryMode(event.getState() == State.QUERY);
             }
@@ -465,7 +468,7 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                wellLocation.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                wellLocation.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                            .contains(event.getState()));
                 wellLocation.setQueryMode(event.getState() == State.QUERY);
             }
@@ -486,7 +489,7 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                locationAddrMultipleUnit.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                locationAddrMultipleUnit.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                                        .contains(event.getState()));
                 locationAddrMultipleUnit.setQueryMode(event.getState() == State.QUERY);
             }
@@ -507,7 +510,7 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                locationAddrStreetAddress.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                locationAddrStreetAddress.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                                         .contains(event.getState()));
                 locationAddrStreetAddress.setQueryMode(event.getState() == State.QUERY);
             }
@@ -526,7 +529,7 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                locationAddrCity.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                locationAddrCity.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                                .contains(event.getState()));
                 locationAddrCity.setQueryMode(event.getState() == State.QUERY);
             }
@@ -535,7 +538,7 @@ public class PrivateWellTab extends Screen {
         locationAddrState = (Dropdown)def.getWidget(SampleMeta.getWellLocationAddrState());
         addScreenHandler(locationAddrState, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                locationAddrState.setSelection(getManager().getPrivateWell()
+                locationAddrState.setValue(getManager().getPrivateWell()
                                                            .getLocationAddress()
                                                            .getState());
             }
@@ -545,7 +548,7 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                locationAddrState.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                locationAddrState.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                                 .contains(event.getState()));
                 locationAddrState.setQueryMode(event.getState() == State.QUERY);
             }
@@ -564,7 +567,7 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                locationAddrZipCode.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                locationAddrZipCode.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                                   .contains(event.getState()));
                 locationAddrZipCode.setQueryMode(event.getState() == State.QUERY);
             }
@@ -581,7 +584,7 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                wellOwner.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                wellOwner.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                         .contains(event.getState()));
                 wellOwner.setQueryMode(event.getState() == State.QUERY);
             }
@@ -598,7 +601,7 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                wellCollector.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                wellCollector.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                             .contains(event.getState()));
                 wellCollector.setQueryMode(event.getState() == State.QUERY);
             }
@@ -607,7 +610,7 @@ public class PrivateWellTab extends Screen {
         wellNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getWellWellNumber());
         addScreenHandler(wellNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                wellNumber.setValue(Util.toString(getManager().getPrivateWell().getWellNumber()));
+                wellNumber.setValue(getManager().getPrivateWell().getWellNumber());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -615,40 +618,40 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                wellNumber.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                wellNumber.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                              .contains(event.getState()));
                 wellNumber.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        projectName = (AutoComplete<Integer>)def.getWidget(SampleMeta.getProjectName());
-        addScreenHandler(projectName, new ScreenEventHandler<String>() {
+        projectName = (AutoComplete)def.getWidget(SampleMeta.getProjectName());
+        addScreenHandler(projectName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
                     SampleProjectViewDO projectDO = manager.getProjects()
                                                            .getFirstPermanentProject();
 
                     if (projectDO != null)
-                        projectName.setSelection(projectDO.getProjectId(),
+                        projectName.setValue(projectDO.getProjectId(),
                                                  projectDO.getProjectName());
                     else
-                        projectName.setSelection(null, "");
+                        projectName.setValue(null, "");
 
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                TableDataRow selectedRow = projectName.getSelection();
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                Item<Integer> selectedRow = projectName.getSelectedItem();
                 SampleProjectViewDO projectDO = null;
                 try {
-                    if (selectedRow.key != null) {
+                    if (selectedRow.getKey() != null) {
                         projectDO = new SampleProjectViewDO();
                         projectDO.setIsPermanent("Y");
-                        projectDO.setProjectId((Integer)selectedRow.key);
-                        projectDO.setProjectName((String)selectedRow.cells.get(0).value);
-                        projectDO.setProjectDescription((String)selectedRow.cells.get(1).value);
+                        projectDO.setProjectId((Integer)selectedRow.getKey());
+                        projectDO.setProjectName((String)selectedRow.getCell(0));
+                        projectDO.setProjectDescription((String)selectedRow.getCell(1));
                     }
 
                     manager.getProjects().addFirstPermanentProject(projectDO);
@@ -656,18 +659,18 @@ public class PrivateWellTab extends Screen {
                     projectDO = manager.getProjects().getFirstPermanentProject();
 
                     if (projectDO != null)
-                        projectName.setSelection(projectDO.getProjectId(),
+                        projectName.setValue(projectDO.getProjectId(),
                                                  projectDO.getProjectName());
                     else
-                        projectName.setSelection(null, "");
+                        projectName.setValue(null, "");
 
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                projectName.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                projectName.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                           .contains(event.getState()));
                 projectName.setQueryMode(event.getState() == State.QUERY);
             }
@@ -676,78 +679,82 @@ public class PrivateWellTab extends Screen {
         projectName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
-                TableDataRow row;
+                Item<Integer> row;
                 ProjectDO data;
                 ArrayList<ProjectDO> list;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
+                try {
+                	parser.parse(event.getMatch());
+                }catch(Exception e) {
+                	
+                }
 
                 window.setBusy();
                 try {
                     list = projectService.callList("fetchActiveByName", parser.getParameter()
                                                                               .get(0));
-                    model = new ArrayList<TableDataRow>();
+                    model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        row = new TableDataRow(4);
+                        row = new Item<Integer>(4);
                         data = list.get(i);
 
-                        row.key = data.getId();
-                        row.cells.get(0).value = data.getName();
-                        row.cells.get(1).value = data.getDescription();
+                        row.setKey(data.getId());
+                        row.setCell(0,data.getName());
+                        row.setCell(1,data.getDescription());
 
                         model.add(row);
                     }
                     projectName.showAutoMatches(model);
                 } catch (Throwable e) {
                     e.printStackTrace();
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
                 window.clearStatus();
             }
         });
 
-        projectLookup = (AppButton)def.getWidget("projectLookup");
+        projectLookup = (Button)def.getWidget("projectLookup");
         addScreenHandler(projectLookup, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 onProjectLookupClick();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                projectLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
+                projectLookup.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
                                             .contains(event.getState()));
             }
         });
 
-        billTo = (AutoComplete<Integer>)def.getWidget(SampleMeta.getBillTo());
-        addScreenHandler(billTo, new ScreenEventHandler<String>() {
+        billTo = (AutoComplete)def.getWidget(SampleMeta.getBillTo());
+        addScreenHandler(billTo, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
                     SampleOrganizationViewDO billToOrg = manager.getOrganizations()
                                                                 .getFirstBillTo();
 
                     if (billToOrg != null)
-                        billTo.setSelection(billToOrg.getOrganizationId(),
+                        billTo.setValue(billToOrg.getOrganizationId(),
                                             billToOrg.getOrganizationName());
                     else
-                        billTo.setSelection(null, "");
+                        billTo.setValue(null, "");
 
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                TableDataRow selectedRow = billTo.getSelection();
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                Item<Integer> selectedRow = billTo.getSelectedItem();
                 SampleOrganizationViewDO billToOrg = null;
                 try {
-                    if (selectedRow.key != null) {
+                    if (selectedRow.getKey() != null) {
                         billToOrg = new SampleOrganizationViewDO();
-                        billToOrg.setOrganizationId((Integer)selectedRow.key);
-                        billToOrg.setOrganizationName((String)selectedRow.cells.get(0).value);
-                        billToOrg.setOrganizationCity((String)selectedRow.cells.get(2).value);
-                        billToOrg.setOrganizationState((String)selectedRow.cells.get(3).value);
+                        billToOrg.setOrganizationId((Integer)selectedRow.getKey());
+                        billToOrg.setOrganizationName((String)selectedRow.getCell(0));
+                        billToOrg.setOrganizationCity((String)selectedRow.getCell(2));
+                        billToOrg.setOrganizationState((String)selectedRow.getCell(3));
                     }
 
                     manager.getOrganizations().setBillTo(billToOrg);
@@ -755,18 +762,18 @@ public class PrivateWellTab extends Screen {
                     billToOrg = manager.getOrganizations().getFirstBillTo();
 
                     if (billToOrg != null)
-                        billTo.setSelection(billToOrg.getOrganizationId(),
+                        billTo.setValue(billToOrg.getOrganizationId(),
                                             billToOrg.getOrganizationName());
                     else
-                        billTo.setSelection(null, "");
+                        billTo.setValue(null, "");
 
                 } catch (Exception e) {
-                    Window.alert(e.getMessage());
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                billTo.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                billTo.setEnabled(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
                 billTo.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -778,14 +785,14 @@ public class PrivateWellTab extends Screen {
             }
         });
 
-        billToLookup = (AppButton)def.getWidget("billToLookup");
+        billToLookup = (Button)def.getWidget("billToLookup");
         addScreenHandler(billToLookup, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 onOrganizationLookupClick();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                billToLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
+                billToLookup.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
                                            .contains(event.getState()));
             }
         });
@@ -836,7 +843,7 @@ public class PrivateWellTab extends Screen {
                 });
             }
 
-            ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+            ModalWindow modal = new ModalWindow();
             modal.setName(consts.get("sampleProject"));
             modal.setContent(projectScreen);
             projectScreen.setScreenState(state);
@@ -845,41 +852,45 @@ public class PrivateWellTab extends Screen {
 
         } catch (Exception e) {
             e.printStackTrace();
-            Window.alert("error: " + e.getMessage());
+            com.google.gwt.user.client.Window.alert("error: " + e.getMessage());
             return;
         }
     }
 
     private void getOrganizationMatches(String match, AutoComplete widget) {
         QueryFieldUtil parser;
-        TableDataRow row;
+        Item<Integer> row;
         OrganizationDO data;
         ArrayList<OrganizationDO> list;
-        ArrayList<TableDataRow> model;
+        ArrayList<Item<Integer>> model;
 
         parser = new QueryFieldUtil();
-        parser.parse(match);
+        try {
+        	parser.parse(match);
+        }catch(Exception e) {
+        	
+        }
 
         window.setBusy();
         try {
             list = orgService.callList("fetchByIdOrName", parser.getParameter().get(0));
-            model = new ArrayList<TableDataRow>();
+            model = new ArrayList<Item<Integer>>();
             for (int i = 0; i < list.size(); i++ ) {
-                row = new TableDataRow(4);
+                row = new Item<Integer>(4);
                 data = list.get(i);
 
-                row.key = data.getId();
-                row.cells.get(0).value = data.getName();
-                row.cells.get(1).value = data.getAddress().getStreetAddress();
-                row.cells.get(2).value = data.getAddress().getCity();
-                row.cells.get(3).value = data.getAddress().getState();
+                row.setKey(data.getId());
+                row.setCell(0,data.getName());
+                row.setCell(1,data.getAddress().getStreetAddress());
+                row.setCell(2,data.getAddress().getCity());
+                row.setCell(3,data.getAddress().getState());
 
                 model.add(row);
             }
             widget.showAutoMatches(model);
         } catch (Throwable e) {
             e.printStackTrace();
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
         }
         window.clearStatus();
     }
@@ -900,7 +911,7 @@ public class PrivateWellTab extends Screen {
                 });
             }
 
-            ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+            ModalWindow modal = new ModalWindow();
             modal.setName(consts.get("sampleOrganization"));
             modal.setContent(organizationScreen);
 
@@ -909,29 +920,29 @@ public class PrivateWellTab extends Screen {
 
         } catch (Exception e) {
             e.printStackTrace();
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
             return;
         }
     }
 
     private void enableReportToFields(boolean enable) {
-        addressMultipleUnit.enable(enable);
-        addressStreetAddress.enable(enable);
-        addressCity.enable(enable);
-        addressState.enable(enable);
-        addressZipCode.enable(enable);
-        addressWorkPhone.enable(enable);
-        addressFaxPhone.enable(enable);
+        addressMultipleUnit.setEnabled(enable);
+        addressStreetAddress.setEnabled(enable);
+        addressCity.setEnabled(enable);
+        addressState.setEnabled(enable);
+        addressZipCode.setEnabled(enable);
+        addressWorkPhone.setEnabled(enable);
+        addressFaxPhone.setEnabled(enable);
     }
 
     private void initializeDropdowns() {
-        ArrayList<TableDataRow> model;
+        ArrayList<Item<String>> model;
 
         // state dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+        model = new ArrayList<Item<String>>();
+        model.add(new Item<String>(null, ""));
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("state"))
-            model.add(new TableDataRow(d.getEntry(), d.getEntry()));
+            model.add(new Item<String>(d.getEntry(), d.getEntry()));
 
         addressState.setModel(model);
         locationAddrState.setModel(model);
@@ -940,17 +951,17 @@ public class PrivateWellTab extends Screen {
     public void showErrors(ValidationErrorsList errors) {
         TableFieldErrorException tableE;
         FieldErrorException fieldE;
-        TableWidget tableWid;
-        HasField field;
+        Table tableWid;
+        HasExceptions field;
 
         for (Exception ex : errors.getErrorList()) {
             if (ex instanceof TableFieldErrorException) {
                 tableE = (TableFieldErrorException)ex;
-                tableWid = (TableWidget)def.getWidget(tableE.getTableKey());
-                tableWid.setCellException(tableE.getRowIndex(), tableE.getFieldName(), tableE);
+                tableWid = (Table)def.getWidget(tableE.getTableKey());
+                tableWid.addException(tableE.getRowIndex(), tableWid.getColumnByName(tableE.getFieldName()), tableE);
             } else if (ex instanceof FieldErrorException) {
                 fieldE = (FieldErrorException)ex;
-                field = (HasField)def.getWidget(fieldE.getFieldName());
+                field = (HasExceptions)def.getWidget(fieldE.getFieldName());
 
                 if (field != null)
                     field.addException(fieldE);
