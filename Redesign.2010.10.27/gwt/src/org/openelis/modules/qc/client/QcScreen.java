@@ -268,7 +268,7 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                duplicate.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
@@ -986,7 +986,7 @@ public class QcScreen extends Screen {
             data.setId(null);
             setFocus(name);
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            com.google.gwt.user.client.Window.alert(e.getMessage());
         }
     }
     
