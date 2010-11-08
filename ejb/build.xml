@@ -50,8 +50,9 @@
 			</fileset>
 			<fileset dir=".">
 				<include name="lib/openelis-lib.jar" />
-				<include name="lib/poi-3.6-20091214.jar" />
 				<include name="lib/security-client.jar" />
+				<include name="lib/poi-3.6-20091214.jar" />
+			    <include name="lib/jasperreports-3.7.4.jar" />
 			</fileset>
 		</ear>
 	</target>
