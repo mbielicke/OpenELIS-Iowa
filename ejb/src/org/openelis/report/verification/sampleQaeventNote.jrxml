@@ -13,7 +13,7 @@
 	<pageHeader>
 		<band height="24" splitType="Stretch">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement mode="Transparent" x="30" y="0" width="722" height="12"/>
+				<reportElement mode="Transparent" x="30" y="0" width="722" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement>
 					<font fontName="Times New Roman" isBold="true"/>
 				</textElement>
@@ -27,7 +27,7 @@
 				<text><![CDATA[Note:]]></text>
 			</staticText>
 			<subreport>
-				<reportElement positionType="Float" x="30" y="12" width="722" height="12"/>
+				<reportElement positionType="Float" x="30" y="12" width="722" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SAMPLE_ID">
 					<subreportParameterExpression><![CDATA[$P{SAMPLE_ID}]]></subreportParameterExpression>
 				</subreportParameter>

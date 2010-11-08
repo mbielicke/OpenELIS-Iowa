@@ -31,10 +31,12 @@ import java.util.HashMap;
 import org.openelis.cache.SectionCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.domain.TestViewDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.NotFoundException;
@@ -828,20 +830,56 @@ public class AnalysisManager implements RPC {
     // helper methods
     //
 
-    protected void updateAnalysisStatusAt(int index, Integer sampleTypeId) throws Exception {
+    protected void updateAnalysisStatusAt(int itemIndex, int anaIndex, Integer sampleTypeId) throws Exception {
+        int numPreCompl;
         TestManager testMan;
         boolean error;
         AnalysisViewDO data;
-        Integer currentStatusId;
-
-        data = getItemAt(index).analysis;
+        Integer currentStatusId, preAnalysisId;
+        ArrayList<AnalysisViewDO> preAnaList;
+        SampleDataBundle bundle;
+        AnalysisManager anaMan;        
+        
+        data = getItemAt(anaIndex).analysis;                
 
         // if the analysis is cancelled stop now
         if (proxy().anCancelledId.equals(data.getStatusId()))
             return;
 
-        testMan = getTestAt(index);
+        testMan = getTestAt(anaIndex);
         currentStatusId = data.getStatusId();
+         
+        //
+        // if this analysis' status is "Completed" then we have to check to see 
+        // whether its prep analysis' status has been changed to "Completed"
+        // and if that is the case then this analysis's status should be set to
+        // "Logged In"
+        //
+        numPreCompl = 0;
+        /*if (currentStatusId.equals(proxy().anInPrepId)) {
+            preAnalysisId = data.getPreAnalysisId();
+            preAnaList = getPreAnalysisList(preAnalysisId);
+            for (AnalysisViewDO preData : preAnaList) {
+                if (preData.equals(proxy().anCompletedId)) {
+                    numPreCompl++;
+                }                
+            }
+            
+            if (numPreCompl == preAnaList.size())
+                data.setStatusId(proxy().anLoggedInId);
+        }*/
+        
+        if (currentStatusId.equals(proxy().anCompletedId)) {
+            bundle = getItemAt(anaIndex).bundle;
+            anaMan = bundle.sampleManager.getSampleItems().getAnalysisAt(itemIndex);
+            for (AnalysisViewDO temp : anaMan.getAnalysisList()) {
+                if (DataBaseUtil.isSame(temp.getPreAnalysisId(), data.getId())
+                                && temp.getStatusId().equals(proxy().anInPrepId)) {    
+                    temp.setStatusId(proxy().anLoggedInId);
+                }
+            }
+        }
+        
         error = false;
         
         // sample item needs to match

@@ -138,7 +138,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
     protected MenuItem               unreleaseAnalysis, historySample, historySampleSpec,
                                      historySampleProject, historySampleOrganization, historySampleItem,
                                      historyAnalysis, historyCurrentResult, historyStorage, historySampleQA,
-                                     historyAnalysisQA, historyAuxData;
+                                     historyAnalysisQA, historyAuxData, finalReport;
 
     private enum Tabs {
         BLANK, SAMPLE, ENVIRONMENT, PRIVATE_WELL, SDWIS, SAMPLE_ITEM, ANALYSIS, TEST_RESULT,
@@ -297,6 +297,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         historySample = (MenuItem)def.getWidget("historySample");
         addScreenHandler(historySample, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                historyUtility.setManager(manager);
                 historyUtility.historySample();
             }
 
@@ -328,6 +329,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         historySampleProject = (MenuItem)def.getWidget("historySampleProject");
         addScreenHandler(historySampleProject, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                historyUtility.setManager(manager);
                 historyUtility.historySampleProject();
             }
 
@@ -339,6 +341,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         historySampleOrganization = (MenuItem)def.getWidget("historySampleOrganization");
         addScreenHandler(historySampleOrganization, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                historyUtility.setManager(manager);
                 historyUtility.historySampleOrganization();
             }
 
@@ -351,6 +354,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         historySampleItem = (MenuItem)def.getWidget("historySampleItem");
         addScreenHandler(historySampleItem, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                historyUtility.setManager(manager);
                 historyUtility.historySampleItem();
             }
 
@@ -362,6 +366,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         historyAnalysis = (MenuItem)def.getWidget("historyAnalysis");
         addScreenHandler(historyAnalysis, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                historyUtility.setManager(manager);
                 historyUtility.historyAnalysis();
             }
 
@@ -373,6 +378,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         historyCurrentResult = (MenuItem)def.getWidget("historyCurrentResult");
         addScreenHandler(historyCurrentResult, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                historyUtility.setManager(manager);
                 historyUtility.historyCurrentResult();
             }
 
@@ -384,6 +390,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         historyStorage = (MenuItem)def.getWidget("historyStorage");
         addScreenHandler(historyStorage, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                historyUtility.setManager(manager);
                 historyUtility.historyStorage();
             }
 
@@ -395,6 +402,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         historySampleQA = (MenuItem)def.getWidget("historySampleQA");
         addScreenHandler(historySampleQA, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                historyUtility.setManager(manager);
                 historyUtility.historySampleQA();
             }
 
@@ -406,6 +414,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         historyAnalysisQA = (MenuItem)def.getWidget("historyAnalysisQA");
         addScreenHandler(historyAnalysisQA, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                historyUtility.setManager(manager);
                 historyUtility.historyAnalysisQA();
             }
 
@@ -417,7 +426,23 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         historyAuxData = (MenuItem)def.getWidget("historyAuxData");
         addScreenHandler(historyAuxData, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                historyUtility.setManager(manager);
                 historyUtility.historyAuxData();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                historyAuxData.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        finalReport = (MenuItem)def.getWidget("finalReport");        
+        addScreenHandler(finalReport, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                try {
+                    service.call("runReport", new Integer(0));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {

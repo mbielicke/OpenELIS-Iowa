@@ -3,6 +3,7 @@ package org.openelis.bean;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,9 +13,11 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import net.sf.jasperreports.engine.JRExporter;
+import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
@@ -97,11 +100,13 @@ public class FinalReportBean implements FinalReportBeanRemote {
         jparam.put("SAMPLE_ACCESSION_NUMBER", accession);
         jparam.put("ORGANIZATION_ID", orgId);
         
-        tempFile = File.createTempFile("finalReport", "pdf");
+        tempFile = File.createTempFile("/home/akampoow/Desktop/", "pdf");
         jreport = (JasperReport) JRLoader.loadObject("finalReport/main.jasper");
-//        jprint = JasperFillManager.fillReport(jreport, 
-	
-	
+        jprint = JasperFillManager.fillReport(jreport, jparam);
+        jexport = getPdfExporter();
+        jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(tempFile));
+        jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
+        jexport.exportReport();
 	}
 	
 	
@@ -127,5 +132,9 @@ public class FinalReportBean implements FinalReportBeanRemote {
 			return 0;
 		return (Integer)session.getAttribute("progress");
 	}
+	
+    protected JRExporter getPdfExporter() {
+        return new JRPdfExporter();
+    }
 
 }

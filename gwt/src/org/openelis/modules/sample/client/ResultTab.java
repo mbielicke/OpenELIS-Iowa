@@ -698,10 +698,18 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
     private boolean onlyRowUnderHeading(int index) {
         boolean prevHeader, postHeader;
-
-        prevHeader = (Boolean)testResultsTable.getRow(index - 1).data;
-        postHeader = (Boolean)testResultsTable.getRow(index + 1).data;
-
+        int size;
+        
+        size = testResultsTable.numRows();
+        if (index == 0)
+            prevHeader = false;
+        else
+            prevHeader = (Boolean)testResultsTable.getRow(index - 1).data;
+        if (index == size -1)
+            postHeader = false;
+        else
+            postHeader = (Boolean)testResultsTable.getRow(index + 1).data;
+                    
         return prevHeader && postHeader;
     }
 
