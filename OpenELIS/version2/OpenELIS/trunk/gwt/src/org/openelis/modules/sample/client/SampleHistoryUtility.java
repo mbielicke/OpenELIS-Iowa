@@ -185,6 +185,7 @@ public abstract class SampleHistoryUtility {
         IdNameVO refVoList[];
         SampleItemManager man;
         SampleItemViewDO data;
+        String container;
 
         window.setBusy();
         try {
@@ -193,7 +194,12 @@ public abstract class SampleHistoryUtility {
             refVoList = new IdNameVO[count];
             for (i = 0; i < count; i++ ) {
                 data = man.getSampleItemAt(i);
-                refVoList[i] = new IdNameVO(data.getId(), data.getItemSequence()+" - "+data.getContainer());
+                container = data.getContainer();
+                if (container == null)
+                    container = "";
+                else 
+                    container += " - ";
+                refVoList[i] = new IdNameVO(data.getId(), data.getItemSequence()+container);
             }
             
             HistoryScreen.showHistory(OpenELIS.consts.get("historySampleItem"),

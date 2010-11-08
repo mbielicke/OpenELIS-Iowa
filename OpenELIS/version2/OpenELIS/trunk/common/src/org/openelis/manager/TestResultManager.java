@@ -180,9 +180,6 @@ public class TestResultManager implements RPC {
         if(results == null || group <= 0 || group-1 >= results.size())
             return;
         
-        for(int i = 0; i < getResultGroupSize(group); i++) {
-            removeResultAt(group, i);
-        }
         results.remove(group-1);
     }
     

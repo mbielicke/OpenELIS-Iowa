@@ -1904,7 +1904,7 @@ public class TestScreen extends Screen {
             if (size > 0) {
                 commit = Window.confirm(consts.get("resultGroupsEmpty"));
                 if (commit) {
-                    for (i = 0; i < size; i++ ) {
+                    for (i = size-1; i >= 0 ; i-- ) {
                         manager.getTestResults().removeResultGroup(list.get(i));
                     }
                 }

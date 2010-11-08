@@ -410,7 +410,7 @@ public class SampleManager implements RPC, HasAuxDataInt {
             analysisMan = itemMan.getAnalysisAt(s);
             for (int a = 0; a < analysisMan.count(); a++ ) {
                 // update the analysis status
-                analysisMan.updateAnalysisStatusAt(a, data.getTypeOfSampleId());
+                analysisMan.updateAnalysisStatusAt(s, a, data.getTypeOfSampleId());
 
                 analysis = analysisMan.getAnalysisAt(a);
                 analysisStatusId = analysis.getStatusId();

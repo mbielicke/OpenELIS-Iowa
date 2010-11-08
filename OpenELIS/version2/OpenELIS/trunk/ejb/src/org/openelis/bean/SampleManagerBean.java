@@ -161,7 +161,7 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
         return SampleItemManager.fetchBySampleId(sampleId);
     }
     
-    public SampleManager validateAccessionNumber(SampleDO sampleDO) throws Exception {
+    public SampleManager validateAccessionNumber(SampleDO data) throws Exception {
         ValidationErrorsList errorsList;
         ArrayList<SystemVariableDO> sysVarList;
         SystemVariableDO sysVarDO;
@@ -170,15 +170,30 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
         AnalysisManager anMan;
         AnalysisResultManager arMan;
         AnalysisViewDO anDO;
+        Integer accNum;
         
 
         errorsList = new ValidationErrorsList();
+        accNum = data.getAccessionNumber();
+        if (accNum  <= 0) {
+            errorsList.add(new FieldErrorException("accessionNumberNotPositiveException", SampleMeta.getAccessionNumber()));        
+            throw errorsList;
+        }
+        // get system variable
+        sysVarList = systemVariable.fetchByName("last_accession_number", 1);
+        sysVarDO = sysVarList.get(0);
 
+        // we need to set the error
+        if (data.getAccessionNumber().compareTo(new Integer(sysVarDO.getValue())) > 0) {
+            errorsList.add(new FieldErrorException("accessionNumberNotInUse", SampleMeta.getAccessionNumber()));
+            throw errorsList;
+        }
+        
         // check for dups, if it is quick login return the manager
         try {
-            checkSample = sample.fetchByAccessionNumber(sampleDO.getAccessionNumber());
+            checkSample = sample.fetchByAccessionNumber(accNum);
 
-            if (checkSample != null && !checkSample.getId().equals(sampleDO.getId())){
+            if (checkSample != null && !checkSample.getId().equals(data.getId())){
                 if(SampleManager.QUICK_ENTRY.equals(checkSample.getDomain())){
                     quickEntryMan = fetchForUpdate(checkSample.getId());
                     
@@ -216,14 +231,6 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
                 throw e;
         }
         
-        // get system variable
-        sysVarList = systemVariable.fetchByName("last_accession_number", 1);
-        sysVarDO = sysVarList.get(0);
-
-        // we need to set the error
-        if (sampleDO.getAccessionNumber().compareTo(new Integer(sysVarDO.getValue())) > 0)
-            errorsList.add(new FieldErrorException("accessionNumberNotInUse", SampleMeta.getAccessionNumber()));
-
         if (errorsList.size() > 0)
             throw errorsList;
         
