@@ -25,6 +25,7 @@
 */
 package org.openelis.modules.worksheetCompletion.client;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
@@ -32,6 +33,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -47,6 +50,7 @@ import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SectionDO;
+import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
@@ -57,7 +61,6 @@ import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.SectionPermission;
-import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -105,7 +108,7 @@ public class WorksheetCompletionScreen extends Screen {
     private boolean              closeWindow, isPopup;
     private Integer              formatBatch, formatTotal, statusFailedRun, origStatus;
     private ArrayList<SectionDO> sections;
-    private ScreenService        instrumentService, userService;
+    private ScreenService        instrumentService, sysVarService, userService;
     private ModulePermission     userPermission;
     private WorksheetManager     manager;
 
@@ -117,10 +120,10 @@ public class WorksheetCompletionScreen extends Screen {
     private TableWidget table;
 
     protected Integer                   userId;
-    protected String                    userName;
+    protected String                    tempFileDirectory, worksheetFileName, userName;
     protected AutoComplete<Integer>     instrumentId, defaultUser;
     protected CalendarLookUp            defaultStartedDate, defaultCompletedDate;
-    protected Confirm                   worksheetExitConfirm;
+    protected Confirm                   worksheetExitConfirm, worksheetEditConfirm;
     protected Dropdown<Integer>         statusId;
     protected EditNoteScreen            editNote;
     protected NoteViewDO                failedRunNote;
@@ -148,8 +151,9 @@ public class WorksheetCompletionScreen extends Screen {
         isPopup           = false;
         service           = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheetCompletion.server.WorksheetCompletionService");
         instrumentService = new ScreenService("OpenELISServlet?service=org.openelis.modules.instrument.server.InstrumentService");
+        sysVarService     = new ScreenService("OpenELISServlet?service=org.openelis.modules.systemvariable.server.SystemVariableService");
         userService       = new ScreenService("controller?service=org.openelis.server.SystemUserService");
-
+        
         userPermission = OpenELIS.getSystemUserPermission().getModule("worksheet");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Worksheet Completion Screen");
@@ -167,6 +171,8 @@ public class WorksheetCompletionScreen extends Screen {
      * command.
      */
     private void postConstructor() {
+        ArrayList<SystemVariableDO> list;
+        
         closeWindow = false;
         tab         = Tabs.NOTE;
 
@@ -176,6 +182,12 @@ public class WorksheetCompletionScreen extends Screen {
                                                          "type_of_sample", 
                                                          "test_worksheet_format",
                                                          "worksheet_status");
+            
+            list = sysVarService.callList("fetchByName", "worksheet_temp_directory");
+            if (list.size() == 0)
+                throw new Exception(consts.get("worksheetTempDirectoryLookupException"));
+            else
+                tempFileDirectory = ((SystemVariableDO)list.get(0)).getValue();
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -519,7 +531,7 @@ public class WorksheetCompletionScreen extends Screen {
 
         return true;
     }
-
+    
     private void drawTabs() {
         switch (tab) {
             case WORKSHEET:
@@ -626,7 +638,38 @@ public class WorksheetCompletionScreen extends Screen {
         window.setBusy("Saving worksheet for editing");
         try {
             service.call("saveForEdit", manager);
-            window.setDone("Worksheet saved for editing to 'M:\\temp\\Worksheet"+manager.getWorksheet().getId()+".xls");
+            worksheetFileName = new String(tempFileDirectory+"Worksheet"+
+                                           manager.getWorksheet().getId()+".xls");
+/*
+            worksheetEditConfirm = new Confirm(Confirm.Type.QUESTION, "",
+                                               consts.get("worksheetCompletionEditConfirm")+
+                                               " "+worksheetFileName,
+                                               "Open File", "Cancel");
+            worksheetEditConfirm.addSelectionHandler(new SelectionHandler<Integer>(){
+                public void onSelection(SelectionEvent<Integer> event) {
+                    switch(event.getSelectedItem().intValue()) {
+                        case 0:
+                            try {
+*/
+                                window.setDone(consts.get("worksheetCompletionEditConfirm")+
+                                                          " "+worksheetFileName);
+/*
+                                Window.open("file://"+worksheetFileName.toString(), null, null);
+                            } catch (Exception anyE) {
+                                Window.alert(anyE.getMessage());
+                                window.clearStatus();
+                            }
+                            break;
+                            
+                        case 1:
+                            window.setDone(consts.get("worksheetCompletionEditCancelled"));
+                            break;
+                    }
+                }
+            });
+            
+            worksheetEditConfirm.show();
+*/
         } catch (Exception anyE) {
             Window.alert(anyE.getMessage());
             window.clearStatus();
@@ -805,11 +848,13 @@ public class WorksheetCompletionScreen extends Screen {
                         aVDO = aManager.getAnalysisAt(bundle.getAnalysisIndex());
                         arManager = aManager.getAnalysisResultAt(bundle.getAnalysisIndex());
 
-                        if (sections == null)
-                            sections = new ArrayList<SectionDO>();
-                        sectionDO = SectionCache.getSectionFromId(aVDO.getSectionId());
-                        if (!sections.contains(sectionDO))
-                            sections.add(sectionDO);
+                        if (aVDO.getSectionId() != null) {
+                            if (sections == null)
+                                sections = new ArrayList<SectionDO>();
+                            sectionDO = SectionCache.getSectionFromId(aVDO.getSectionId());
+                            if (!sections.contains(sectionDO))
+                                sections.add(sectionDO);
+                        }
                         
                         if (sDomain != null)
                             row.cells.get(2).value = sDomain.getDomainDescription();
@@ -906,11 +951,15 @@ public class WorksheetCompletionScreen extends Screen {
         SectionDO         section;
         SectionPermission perm;
 
-//        for (i = 0; i < sections.size(); i++) {
-//            section = sections.get(i);
-//            perm = OpenELIS.getSystemUserPermission().getSection(section.getName());
-//            if (perm != null && perm.hasCompletePermission())
-                return true;
+//        if (sections == null) {
+//            sections = new ArrayList<SectionDO>();
+//        } else {
+//            for (i = 0; i < sections.size(); i++) {
+//                section = sections.get(i);
+//                perm = OpenELIS.getSystemUserPermission().getSection(section.getName());
+//                if (perm != null && perm.hasCompletePermission())
+                    return true;
+//            }
 //        }
 
 //        return false;
