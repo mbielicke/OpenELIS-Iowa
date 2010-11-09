@@ -217,6 +217,7 @@ public class ContainerTab extends Screen {
                 TestMethodVO data;
                 ArrayList<Item<Integer>> model;
                 Item<Integer> row;
+                String param = "";
 
                 fields = new ArrayList<QueryData>();
                 query = new Query();
@@ -228,12 +229,16 @@ public class ContainerTab extends Screen {
                 }
 
                 field = new QueryData();
-                field.query = parser.getParameter().get(0);
+                if(!event.getMatch().equals(""))
+                	field.query = parser.getParameter().get(0);
+                else
+                	field.query = "=";
                 fields.add(field);
                 
                 query.setFields(fields);
 
                 try {
+                	
                     autoList = analysisService.callList("getTestMethodMatches", query);
                     model = new ArrayList<Item<Integer>>();
 

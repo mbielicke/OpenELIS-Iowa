@@ -263,36 +263,42 @@ public class QcScreen extends Screen {
         
         duplicate = (MenuItem)def.getWidget("duplicateRecord");
         addScreenHandler(duplicate, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                duplicate();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 duplicate.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
+        duplicate.addCommand(new Command() {
+			public void execute() {
+				duplicate();
+			}
+		});
+        
         qcHistory = (MenuItem)def.getWidget("qcHistory");
         addScreenHandler(qcHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                qcHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 qcHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
+        qcHistory.addCommand(new Command() {
+			public void execute() {
+				qcHistory();
+			}
+		});
+        
         qcAnalyteHistory = (MenuItem)def.getWidget("qcAnalyteHistory");
         addScreenHandler(qcAnalyteHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                qcAnalyteHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 qcAnalyteHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        qcAnalyteHistory.addCommand(new Command() {
+			public void execute() {
+				qcAnalyteHistory();
+			}
+		});
 
         //
         // screen fields
@@ -354,16 +360,16 @@ public class QcScreen extends Screen {
                 QueryFieldUtil parser;
                 ArrayList<InventoryItemDO> list;
                 ArrayList<Item<Integer>> model;
+                String param = "";
 
                 parser = new QueryFieldUtil();
-                try {
-                	parser.parse(event.getMatch());
-                }catch(Exception e) {
-                	
-                }
 
                 try {
-                    list = inventoryService.callList("fetchActiveByName", parser.getParameter().get(0));
+                	if(!event.getMatch().equals("")) {
+                		parser.parse(event.getMatch());
+                		param = parser.getParameter().get(0);
+                	}
+                    list = inventoryService.callList("fetchActiveByName", param);
                     model = new ArrayList<Item<Integer>>();
 
                     for (InventoryItemDO data : list) {
@@ -503,16 +509,16 @@ public class QcScreen extends Screen {
                 QueryFieldUtil parser;
                 ArrayList<SystemUserVO> users;
                 ArrayList<Item<Integer>> model;
+                String param = "";
 
                 parser = new QueryFieldUtil();
-                try {
-                	parser.parse(event.getMatch());
-                }catch(Exception e) {
-                	
-                }
 
                 try {
-                    users = userService.callList("fetchByLoginName", parser.getParameter().get(0));
+                	if(!event.getMatch().equals("")) {
+                		parser.parse(event.getMatch());
+                		param = parser.getParameter().get(0);
+                	}
+                    users = userService.callList("fetchByLoginName", param);
                     model = new ArrayList<Item<Integer>>();
                     for (SystemUserVO user : users)
                         model.add(new Item<Integer>(user.getId(), user.getLoginName()));
@@ -650,16 +656,16 @@ public class QcScreen extends Screen {
                 AnalyteDO data;
                 ArrayList<AnalyteDO> list;
                 ArrayList<Item<Integer>> model;
+                String param = "";
 
                 parser = new QueryFieldUtil();
-                try {
-                	parser.parse(event.getMatch());
-                }catch(Exception e) {
-                	
-                }
 
                 try {
-                    list = analyteService.callList("fetchByName", parser.getParameter().get(0));
+                	if(!event.getMatch().equals("")) {
+                		parser.parse(event.getMatch());
+                		param = parser.getParameter().get(0);
+                	}
+                    list = analyteService.callList("fetchByName", param);
                     model = new ArrayList<Item<Integer>>();
 
                     for (int i = 0; i < list.size(); i++ ) {

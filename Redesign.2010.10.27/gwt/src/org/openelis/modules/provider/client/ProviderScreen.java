@@ -223,25 +223,29 @@ public class ProviderScreen extends Screen {
         
         providerHistory = (MenuItem)def.getWidget("providerHistory");
         addScreenHandler(providerHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                providerHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 providerHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
+        providerHistory.addCommand(new Command() {
+			public void execute() {
+				providerHistory();
+			}
+		});
+        
         providerLocationHistory = (MenuItem)def.getWidget("providerLocationHistory");
         addScreenHandler(providerLocationHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                providerLocationHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 providerLocationHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        providerLocationHistory.addCommand(new Command() {
+			public void execute() {
+				providerLocationHistory();
+			}
+		});
 
         id = (TextBox)def.getWidget(ProviderMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<Integer>() {

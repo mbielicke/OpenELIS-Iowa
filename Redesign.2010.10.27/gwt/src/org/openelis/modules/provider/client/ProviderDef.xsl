@@ -53,7 +53,7 @@ UIRF Software License are applicable instead of those above.
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" rows="18" style="atozTable">
+              <table key="atozTable" rows="18">
                 <col width="88" header="{resource:getString($constants,'lastName')}">
                   <label field="String" />
                 </col>
@@ -64,10 +64,10 @@ UIRF Software License are applicable instead of those above.
               <widget halign="center">
                 <HorizontalPanel>
                   <button key="atozPrev" style="Button" enabled="false">
-                    <AbsolutePanel style="prevNavIndex" />
+                    <AbsolutePanel style="PreviousButtonImage" />
                   </button>
                   <button key="atozNext" style="Button" enabled="false">
-                    <AbsolutePanel style="nextNavIndex" />
+                    <AbsolutePanel style="NextButtonImage" />
                   </button>
                 </HorizontalPanel>
               </widget>
@@ -93,7 +93,7 @@ UIRF Software License are applicable instead of those above.
                     <button style="ButtonPanelButton" action="option">
                       <Grid cols="2">
                         <row>
-                          <cell text="{resource:getString($constants,'options')}" />
+                          <cell style="ScreenLabel,ButtonAdj" text="{resource:getString($constants,'options')}" />
                           <cell style="OptionsButtonImage" />
                         </row>
                       </Grid>
@@ -141,12 +141,12 @@ UIRF Software License are applicable instead of those above.
               </row>
             </TablePanel>
 <!-- TAB PANEL -->
-            <TabPanel key="tabPanel" width="605">
+            <TabPanel key="tabPanel" width="605" height="290">
 <!-- TAB 1 -->
               <tab key="locationTab" text="{resource:getString($constants,'locations')}">
                 <VerticalPanel width="605">
                   <widget valign="top">
-                    <table key="locationTable" width="587" rows="10" vscroll="ALWAYS" hscroll="ALWAYS">
+                    <table key="locationTable" width="605" rows="10" vscroll="ALWAYS" hscroll="ALWAYS">
                       <col key="{meta:getProviderLocationLocation()}" width="115" header="{resource:getString($constants,'location')}">
                         <textbox max="50" field="String" required="true" />
                       </col>
@@ -199,8 +199,8 @@ UIRF Software License are applicable instead of those above.
 <!-- TAB 2 -->
               <tab key="notesTab" text="{resource:getString($constants,'note')}">
               	<xsl:call-template name="InternalNoteTab">
-          			<xsl:with-param name="width">605</xsl:with-param>
-          			<xsl:with-param name="height">247</xsl:with-param>
+          			<xsl:with-param name="width">607</xsl:with-param>
+          			<xsl:with-param name="height">237</xsl:with-param>
         		</xsl:call-template>
               </tab>
             </TabPanel>

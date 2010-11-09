@@ -171,7 +171,7 @@ public class ComponentTab extends Screen {
                 query = new Query();
                 parser = new QueryFieldUtil();
                 try {
-                	parser.parse(event.getMatch());
+                	parser.parse(!event.getMatch().equals("") ? event.getMatch() : "*");
                 }catch(Exception e){
                 	
                 }

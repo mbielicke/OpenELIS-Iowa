@@ -233,25 +233,29 @@ public class StorageLocationScreen extends Screen {
         
         storageLocationHistory = (MenuItem)def.getWidget("storageLocationHistory");
         addScreenHandler(storageLocationHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                storageLocationHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 storageLocationHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
+        storageLocationHistory.addCommand(new Command() {
+			public void execute() {
+				storageLocationHistory();
+			}
+		});
+        
         subLocationHistory = (MenuItem)def.getWidget("subLocationHistory");
         addScreenHandler(subLocationHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                subLocationHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 subLocationHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        subLocationHistory.addCommand(new Command() {
+			public void execute() {
+				subLocationHistory();
+			}
+		});
 
         name = (TextBox)def.getWidget(StorageLocationMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
@@ -313,17 +317,16 @@ public class StorageLocationScreen extends Screen {
                 IdNameVO data;
                 ArrayList<IdNameVO> list;
                 ArrayList<Item<Integer>> model;
+                String param = "";
 
                 parser = new QueryFieldUtil();
-                try {
-                	parser.parse(event.getMatch());
-                }catch(Exception e) {
-                	
-                }
 
                 try {
-                    list = storageUnitService.callList("fetchByDescription", parser.getParameter()
-                                                                                   .get(0));
+                	if(!event.getMatch().equals("")) {
+                		parser.parse(event.getMatch());
+                		param = parser.getParameter().get(0);
+                	}
+                    list = storageUnitService.callList("fetchByDescription", param);
                     model = new ArrayList<Item<Integer>>();
 
                     for (int i = 0; i < list.size(); i++ ) {
@@ -445,17 +448,16 @@ public class StorageLocationScreen extends Screen {
                 IdNameVO data;
                 ArrayList<IdNameVO> list;
                 ArrayList<Item<Integer>> model;
+                String param = "";
 
                 parser = new QueryFieldUtil();
-                try {
-                	parser.parse(event.getMatch());
-                }catch(Exception e) {
-                	
-                }
 
                 try {
-                    list = storageUnitService.callList("fetchByDescription", parser.getParameter()
-                                                                                   .get(0));
+                	if(!event.getMatch().equals("")) {
+                		parser.parse(event.getMatch());
+                		param = parser.getParameter().get(0);
+                	}
+                    list = storageUnitService.callList("fetchByDescription", param);
                     model = new ArrayList<Item<Integer>>();
 
                     for (int i = 0; i < list.size(); i++ ) {

@@ -50,6 +50,8 @@ import org.openelis.gwt.widget.TextArea;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.tree.Node;
 import org.openelis.gwt.widget.tree.Tree;
+import org.openelis.gwt.widget.tree.event.BeforeNodeOpenEvent;
+import org.openelis.gwt.widget.tree.event.BeforeNodeOpenHandler;
 import org.openelis.gwt.widget.tree.event.NodeOpenedEvent;
 import org.openelis.gwt.widget.tree.event.NodeOpenedHandler;
 import org.openelis.meta.StandardNoteMeta;
@@ -95,7 +97,7 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
         });
 
         tree.addNodeOpenedHandler(new NodeOpenedHandler() {
-            public void onNodeOpened(NodeOpenedEvent event) {
+			public void onNodeOpened(NodeOpenedEvent event) {
                 final Node node = event.getNode();
                 if ( !node.isLoaded()) {
                     find(node, (Integer)node.getKey());

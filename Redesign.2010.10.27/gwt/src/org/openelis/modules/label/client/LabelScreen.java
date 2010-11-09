@@ -240,14 +240,16 @@ public class LabelScreen extends Screen {
         
         history = (MenuItem)def.getWidget("labelHistory");
         addScreenHandler(history, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                history();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 history.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        history.addCommand(new Command() {
+			public void execute() {
+				history();
+			}
+		});
 
         name = (TextBox)def.getWidget(LabelMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
@@ -323,16 +325,16 @@ public class LabelScreen extends Screen {
                 QueryFieldUtil parser;
                 ArrayList<Item<Integer>> model;
                 ArrayList<IdNameVO> list;
+                String param = "";
 
                 parser = new QueryFieldUtil();
-                try {
-                	parser.parse(event.getMatch());
-                }catch(Exception e) {
-                	
-                }
                 
                 try {
-                    list = scriptletService.callList("fetchByName", parser.getParameter().get(0));
+                	if(!event.getMatch().equals("")) {
+                		parser.parse(event.getMatch());
+                		param = parser.getParameter().get(0);
+                	}
+                    list = scriptletService.callList("fetchByName", param);
                     model = new ArrayList<Item<Integer>>();
                     for (IdNameVO data : list) {                       
                         model.add(new Item<Integer>(data.getId(),data.getName()));

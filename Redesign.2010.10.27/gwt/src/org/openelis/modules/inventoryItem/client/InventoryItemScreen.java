@@ -249,36 +249,42 @@ public class InventoryItemScreen extends Screen {
         
         invItemHistory = (MenuItem)def.getWidget("invItemHistory");
         addScreenHandler(invItemHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                invItemHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 invItemHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
+        invItemHistory.addCommand(new Command() {
+			public void execute() {
+				invItemHistory();
+			}
+		});
+        
         invComponentHistory = (MenuItem)def.getWidget("invComponentHistory");
         addScreenHandler(invComponentHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                invComponentHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 invComponentHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
+        invComponentHistory.addCommand(new Command() {
+			public void execute() {
+				invComponentHistory();
+			}
+		});
+        
         invLocationHistory = (MenuItem)def.getWidget("invLocationHistory");
         addScreenHandler(invLocationHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                invLocationHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 invLocationHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        invLocationHistory.addCommand(new Command() {
+			public void execute() {
+				invLocationHistory();
+			}
+		});
 
         id = (TextBox)def.getWidget(InventoryItemMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<Integer>() {

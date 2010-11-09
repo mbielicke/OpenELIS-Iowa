@@ -228,14 +228,16 @@ public class StorageUnitScreen extends Screen {
         
         history = (MenuItem)def.getWidget("storageUnitHistory");
         addScreenHandler(history, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                history();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 history.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        history.addCommand(new Command() {
+			public void execute() {
+				history();
+			}
+		});
         
         category = (Dropdown<Integer>)def.getWidget(StorageUnitMeta.getCategoryId());
         addScreenHandler(category, new ScreenEventHandler<Integer>() {

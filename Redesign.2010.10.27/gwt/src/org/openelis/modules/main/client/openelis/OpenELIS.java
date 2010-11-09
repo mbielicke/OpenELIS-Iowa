@@ -36,6 +36,8 @@ import org.openelis.gwt.widget.MenuItem;
 import org.openelis.modules.dictionary.client.DictionaryScreen;
 import org.openelis.modules.favorites.client.FavoritesScreen;
 import org.openelis.modules.organization.client.OrganizationScreen;
+import org.openelis.modules.provider.client.ProviderScreen;
+import org.openelis.modules.project.client.ProjectScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -285,9 +287,9 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-
-        addClickHandler("project", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+		*/
+        addClickHandler("project", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
@@ -304,8 +306,9 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-        addClickHandler("provider", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        
+        addClickHandler("provider", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
@@ -323,7 +326,7 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-        */
+        
         addClickHandler("organization", new Command() {
             public void execute() {
 

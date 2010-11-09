@@ -215,14 +215,16 @@ public class SectionScreen extends Screen {
 
         history = (MenuItem)def.getWidget("sectionHistory");
         addScreenHandler(history, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                history();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 history.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        history.addCommand(new Command() {
+			public void execute() {
+				history();
+			}
+		});
 
         name = (TextBox)def.getWidget(SectionMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
@@ -317,17 +319,17 @@ public class SectionScreen extends Screen {
                 SectionDO data;
                 ArrayList<SectionDO> list;
                 ArrayList<Item<Integer>> model;
+                String param = "";
 
                 parser = new QueryFieldUtil();
-                try {
-                	parser.parse(event.getMatch());
-                }catch(Exception e) {
-                	
-                }
 
                 window.setBusy();
                 try {
-                    list = service.callList("fetchByName", parser.getParameter().get(0));
+                	if(!event.getMatch().equals("")) {
+                		parser.parse(event.getMatch());
+                		param = parser.getParameter().get(0);
+                	}
+                    list = service.callList("fetchByName", param);
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
                         data = list.get(i);
@@ -349,18 +351,17 @@ public class SectionScreen extends Screen {
                 OrganizationDO data;
                 ArrayList<OrganizationDO> list;
                 ArrayList<Item<Integer>> model;
+                String param = "";
 
                 parser = new QueryFieldUtil();
-                try {
-                	parser.parse(event.getMatch());
-                }catch(Exception e) {
-                	
-                }
 
                 window.setBusy();
                 try {
-                    list = organizationService.callList("fetchByIdOrName", parser.getParameter()
-                                                                                 .get(0));
+                	if(!event.getMatch().equals("")) {
+                		parser.parse(event.getMatch());
+                		param = parser.getParameter().get(0);
+                	}
+                    list = organizationService.callList("fetchByIdOrName", param);
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new Item<Integer>(4);

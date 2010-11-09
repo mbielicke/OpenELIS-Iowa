@@ -149,16 +149,16 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
                 QueryFieldUtil parser;
                 ArrayList<SystemUserVO> users;
                 ArrayList<Item<Integer>> model;
+                String param = "";
                 
                 parser = new QueryFieldUtil();
-                try {
-                	parser.parse(event.getMatch());
-                }catch(Exception e) {
-                	
-                }
 
                 try {
-                    users = userService.callList("fetchByLoginName", parser.getParameter().get(0));
+                	if(!event.getMatch().equals("")) {
+                		parser.parse(event.getMatch());
+                		param = parser.getParameter().get(0);
+                	}
+                    users = userService.callList("fetchByLoginName", param);
                     model = new ArrayList<Item<Integer>>();
                     for (SystemUserVO user : users)
                         model.add(new Item<Integer>(user.getId(), user.getLoginName()));

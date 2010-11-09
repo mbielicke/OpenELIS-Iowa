@@ -254,16 +254,16 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
                 QueryFieldUtil parser;
                 ArrayList<Item<Integer>> model;
                 ArrayList<QcDO> list;
+                String param = "";
 
                 parser = new QueryFieldUtil();
-                try {
-                    parser.parse(event.getMatch());
-                }catch(Exception e) {
-                	
-                }
 
                 try {
-                    list = qcService.callList("fetchByName", parser.getParameter().get(0));
+                	if(!event.getMatch().equals("")) {
+                		parser.parse(event.getMatch());
+                		param = parser.getParameter().get(0);
+                	}
+                    list = qcService.callList("fetchByName", param);
                     model = new ArrayList<Item<Integer>>();
                     for (QcDO data : list) 
                         model.add(new Item<Integer>(data.getId(), data.getName()));                    

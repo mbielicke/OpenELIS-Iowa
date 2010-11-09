@@ -315,17 +315,18 @@ public class WorksheetCompletionScreen extends Screen {
                 ArrayList<InstrumentViewDO> matches;
                 QueryFieldUtil              parser;
                 Item<Integer>               row;
-                InstrumentViewDO            iVDO;                
+                InstrumentViewDO            iVDO;
+                String param = "";
 
                 parser = new QueryFieldUtil();
+
                 try {
-                	parser.parse(event.getMatch());
-                }catch(Exception e) {
-                	
-                }
-                try {
+                	if(!event.getMatch().equals("")){
+                		parser.parse(event.getMatch());
+                		param = parser.getParameter().get(0);
+                	}
                     model = new ArrayList<Item<Integer>>();
-                    matches = instrumentService.callList("fetchByName", parser.getParameter().get(0));
+                    matches = instrumentService.callList("fetchByName", param);
                     for (int i = 0; i < matches.size(); i++) {
                         iVDO = (InstrumentViewDO)matches.get(i);
                         

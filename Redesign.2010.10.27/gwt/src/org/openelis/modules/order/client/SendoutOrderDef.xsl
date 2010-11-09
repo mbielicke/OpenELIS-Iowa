@@ -59,7 +59,7 @@ UIRF Software License are applicable instead of those above.
               </VerticalPanel>
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" rows="20" style="atozTable">
+              <table key="atozTable" rows="20">
                 <col width="75" header="{resource:getString($constants,'orderNum')}">
                   <label field="Integer" />
                 </col>
@@ -70,10 +70,10 @@ UIRF Software License are applicable instead of those above.
               <widget halign="center">
                 <HorizontalPanel>
                   <button key="atozPrev" style="Button" enabled="false">
-                    <AbsolutePanel style="prevNavIndex" />
+                    <AbsolutePanel style="PreviousButtonImage" />
                   </button>
                   <button key="atozNext" style="Button" enabled="false">
-                    <AbsolutePanel style="nextNavIndex" />
+                    <AbsolutePanel style="NextButtonImage" />
                   </button>
                 </HorizontalPanel>
               </widget>
@@ -101,7 +101,7 @@ UIRF Software License are applicable instead of those above.
                     <button style="ButtonPanelButton" action="option">
                       <Grid cols="2">
                         <row>
-                          <cell text="{resource:getString($constants,'options')}" />
+                          <cell style="ScreenLabel,ButtonAdj" text="{resource:getString($constants,'options')}" />
                           <cell style="OptionsButtonImage" />
                         </row>
                       </Grid>
@@ -141,7 +141,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select='resource:getString($constants,"shipTo")' />:
                 </text>
                 <widget colspan="5">
-                  <autoComplete key="{meta:getOrganizationName()}" width="188" case="UPPER" tab="{meta:getStatusId()},{meta:getShipFromId()}" required = "true" field="Integer">
+                  <autoComplete key="{meta:getOrganizationName()}" width="188" case="UPPER" tab="{meta:getStatusId()},{meta:getShipFromId()}" required = "true">
                     <col width="180" header="{resource:getString($constants,'name')}" />
                     <col width="110" header="{resource:getString($constants,'street')}" />
                     <col width="100" header="{resource:getString($constants,'city')}" />
@@ -237,7 +237,7 @@ UIRF Software License are applicable instead of those above.
                       <textbox field="Integer" required="true" />
                     </col>
                     <col key="{meta:getOrderItemInventoryItemName()}" width="275" header="{resource:getString($constants,'inventoryItem')}">
-                      <autoComplete width="auto" case="LOWER" field="Integer" required="true">
+                      <autoComplete case="LOWER" required="true">
                         <col width="155" header="{resource:getString($constants,'name')}" />
                         <col width="110" header="{resource:getString($constants,'store')}">
                           <dropdown width="110" field="Integer" />

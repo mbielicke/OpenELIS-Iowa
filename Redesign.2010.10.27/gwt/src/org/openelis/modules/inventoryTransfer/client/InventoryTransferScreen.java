@@ -273,7 +273,7 @@ public class InventoryTransferScreen extends Screen {
                 query = new Query();
                 parser = new QueryFieldUtil();
                 try {
-                	parser.parse(event.getMatch());
+                	parser.parse(!event.getMatch().equals("") ? event.getMatch() : "*");
                 }catch(Exception e) {
                 	
                 }
@@ -330,7 +330,7 @@ public class InventoryTransferScreen extends Screen {
                                               
                 parser = new QueryFieldUtil();
                 try {
-                	parser.parse(event.getMatch());
+                	parser.parse(!event.getMatch().equals("") ? event.getMatch() : "*");
                 }catch(Exception e) {
                 	
                 }

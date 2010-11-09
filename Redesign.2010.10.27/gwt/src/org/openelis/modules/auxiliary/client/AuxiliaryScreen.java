@@ -274,36 +274,42 @@ public class AuxiliaryScreen extends Screen {
         
         auxFieldGroupHistory = (MenuItem)def.getWidget("auxFieldGroupHistory");
         addScreenHandler(auxFieldGroupHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                auxFieldGroupHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 auxFieldGroupHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
+        auxFieldGroupHistory.addCommand(new Command() {
+        	public void execute() {
+        		auxFieldGroupHistory();
+        	}
+        });
+        
         auxFieldHistory = (MenuItem)def.getWidget("auxFieldHistory");
         addScreenHandler(auxFieldHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                auxFieldHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 auxFieldHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
+        auxFieldHistory.addCommand(new Command() {
+			public void execute() {
+				auxFieldHistory();
+			}
+		});
+        
         auxFieldValueHistory = (MenuItem)def.getWidget("auxFieldValueHistory");
         addScreenHandler(auxFieldValueHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                auxFieldValueHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 auxFieldValueHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        auxFieldValueHistory.addCommand(new Command() {
+			public void execute() {
+				auxFieldValueHistory();
+			}
+		});
 
         name = (TextBox)def.getWidget(AuxFieldGroupMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
@@ -559,7 +565,7 @@ public class AuxiliaryScreen extends Screen {
 
                 parser = new QueryFieldUtil();
                 try {
-                	parser.parse(event.getMatch());
+                	parser.parse(!event.getMatch().equals("") ? event.getMatch() : "*");
                 }catch(Exception e) {
                 	
                 }
@@ -587,7 +593,7 @@ public class AuxiliaryScreen extends Screen {
 
                 parser = new QueryFieldUtil();
                 try {
-                	parser.parse(event.getMatch());
+                	parser.parse(!event.getMatch().equals("") ? event.getMatch() : "*");
                 }catch(Exception e) {
                 	
                 }
@@ -614,7 +620,7 @@ public class AuxiliaryScreen extends Screen {
 
                 parser = new QueryFieldUtil();
                 try {
-                	parser.parse(event.getMatch());
+                	parser.parse(!event.getMatch().equals("") ? event.getMatch() : "*");
                 }catch(Exception e) {
                 	
                 }

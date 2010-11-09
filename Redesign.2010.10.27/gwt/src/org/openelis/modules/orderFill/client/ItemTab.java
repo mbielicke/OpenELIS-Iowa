@@ -453,7 +453,10 @@ public class ItemTab extends Screen {
                 }
                                 
                 field = new QueryData();
-                field.query = parser.getParameter().get(0);
+                if(!event.getMatch().equals(""))
+                	field.query = parser.getParameter().get(0);
+                else
+                	field.query = "=";
                 fields.add(field);
                 
                 item = itemsTree.getNodeAt(itemsTree.getSelectedNode());

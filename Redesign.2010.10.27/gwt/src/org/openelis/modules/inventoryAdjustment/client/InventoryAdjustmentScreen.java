@@ -242,25 +242,29 @@ public class InventoryAdjustmentScreen extends Screen {
         
         inventoryAdjustmentHistory = (MenuItem)def.getWidget("inventoryAdjustmentHistory");
         addScreenHandler(inventoryAdjustmentHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                inventoryAdjustmentHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 inventoryAdjustmentHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
+        inventoryAdjustmentHistory.addCommand(new Command() {
+			public void execute() {
+				inventoryAdjustmentHistory();
+			}
+		});
+        
         inventoryAdjustmentLocationHistory = (MenuItem)def.getWidget("inventoryAdjustmentLocationHistory");
         addScreenHandler(inventoryAdjustmentLocationHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                inventoryAdjustmentLocationHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 inventoryAdjustmentLocationHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        inventoryAdjustmentLocationHistory.addCommand(new Command() {
+			public void execute() {
+				inventoryAdjustmentLocationHistory();
+			}
+		});
 
         id = (TextBox)def.getWidget(InventoryAdjustmentMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<Integer>() {
@@ -584,7 +588,7 @@ public class InventoryAdjustmentScreen extends Screen {
                 query = new Query();
                 parser = new QueryFieldUtil();
                 try {
-                	parser.parse(event.getMatch());
+                	parser.parse(!event.getMatch().equals("") ? event.getMatch() : "*");
                 }catch(Exception e) {
                 	
                 }

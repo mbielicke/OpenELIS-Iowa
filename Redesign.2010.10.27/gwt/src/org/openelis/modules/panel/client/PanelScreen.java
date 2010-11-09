@@ -240,25 +240,29 @@ public class PanelScreen extends Screen {
 
         panelHistory = (MenuItem)def.getWidget("panelHistory");
         addScreenHandler(panelHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                panelHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 panelHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        panelHistory.addCommand(new Command() {
+			public void execute() {
+				panelHistory();
+			}
+		});
 
         panelItemHistory = (MenuItem)def.getWidget("panelItemHistory");
         addScreenHandler(panelItemHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                panelItemHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 panelItemHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        panelItemHistory.addCommand(new Command() {
+			public void execute() {
+				panelItemHistory();
+			}
+		});
 
         name = (TextBox<String>)def.getWidget(PanelMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {

@@ -237,14 +237,16 @@ public class OrderFillScreen extends Screen {
 
         shippingInfo = (MenuItem)def.getWidget("shippingInfo");
         addScreenHandler(shippingInfo, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                shippingInfo();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 shippingInfo.setEnabled(false);
             }
         });
+        
+        shippingInfo.addCommand(new Command() {
+			public void execute() {
+				shippingInfo();
+			}
+		});
 
         orderTable = (Table)def.getWidget("orderTable");
 
