@@ -255,7 +255,7 @@ public class AnalysisResultManagerProxy {
 
                 // make sure the result is valid if its filled out
                 try {
-                    if (DataBaseUtil.isEmpty(result.getValue())) {
+                    if (!DataBaseUtil.isEmpty(result.getValue())) {
                         testResultId = man.validateResultValue(result.getResultGroup(),
                                                                anDO.getUnitOfMeasureId(),
                                                                result.getValue());

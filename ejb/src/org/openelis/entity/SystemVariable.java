@@ -51,7 +51,7 @@ import org.openelis.utils.Auditable;
                       + " from SystemVariable where id = :id"),
     @NamedQuery( name = "SystemVariable.FetchByName",
                 query = "select new org.openelis.domain.SystemVariableDO(id, name, value)"
-                      + " from SystemVariable where name = :name")})                     
+                      + " from SystemVariable where name like :name")})                     
 
 @Entity
 @Table(name = "system_variable")
