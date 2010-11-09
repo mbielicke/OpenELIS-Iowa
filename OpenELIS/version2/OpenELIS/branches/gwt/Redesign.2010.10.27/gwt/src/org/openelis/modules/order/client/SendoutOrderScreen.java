@@ -288,58 +288,68 @@ public class SendoutOrderScreen extends Screen {
 
         duplicate = (MenuItem)def.getWidget("duplicateRecord");
         addScreenHandler(duplicate, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                duplicate();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 duplicate.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        duplicate.addCommand(new Command() {
+			public void execute() {
+				duplicate();
+			}
+		});
 
         orderHistory = (MenuItem)def.getWidget("orderHistory");
         addScreenHandler(orderHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                orderHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 orderHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        orderHistory.addCommand(new Command() {
+			public void execute() {
+				orderHistory();
+			}
+		});
 
         itemHistory = (MenuItem)def.getWidget("itemHistory");
         addScreenHandler(itemHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                itemHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 itemHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        itemHistory.addCommand(new Command() {
+			public void execute() {
+				itemHistory();
+			}
+		});
 
         testHistory = (MenuItem)def.getWidget("testHistory");
         addScreenHandler(testHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                testHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 testHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        testHistory.addCommand(new Command() {
+			public void execute() {
+				testHistory();
+			}
+		});
 
         containerHistory = (MenuItem)def.getWidget("containerHistory");
         addScreenHandler(containerHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                containerHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 containerHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        containerHistory.addCommand(new Command() {
+			public void execute() {
+				containerHistory();
+			}
+		});
 
         //
         // screen fields
@@ -465,18 +475,17 @@ public class SendoutOrderScreen extends Screen {
                 OrganizationDO data;
                 ArrayList<OrganizationDO> list;
                 ArrayList<Item<Integer>> model;
+                String param = "";
 
                 parser = new QueryFieldUtil();
-                try {
-                	parser.parse(event.getMatch());
-                }catch(Exception e) {
-                	
-                }
 
                 window.setBusy();
                 try {
-                    list = organizationService.callList("fetchByIdOrName", parser.getParameter()
-                                                                                 .get(0));
+                	if(!event.getMatch().equals("")) {
+                		parser.parse(event.getMatch());
+                		param = parser.getParameter().get(0);
+                	}
+                    list = organizationService.callList("fetchByIdOrName", param);
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new Item<Integer>(4);

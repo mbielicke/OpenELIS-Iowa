@@ -232,25 +232,29 @@ public class QaEventScreen extends Screen {
         
         duplicate = (MenuItem)def.getWidget("duplicateRecord");
         addScreenHandler(duplicate, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                duplicate();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 duplicate.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
+        duplicate.addCommand(new Command() {
+			public void execute() {
+				duplicate();
+			}
+		});
+        
         history = (MenuItem)def.getWidget("qaeventHistory");
         addScreenHandler(history, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                history();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 history.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        history.addCommand(new Command() {
+			public void execute() {
+				history();
+			}
+		});
 
         //
         // screen fields
@@ -339,17 +343,17 @@ public class QaEventScreen extends Screen {
                 TestMethodVO data;
                 ArrayList<TestMethodVO> list;
                 ArrayList<Item<Integer>> model;
+                String param = "";
 
                 parser = new QueryFieldUtil();
-                try {
-                	parser.parse(event.getMatch());
-                }catch(Exception e) {
-                	
-                }
 
                 window.setBusy();
                 try {
-                    list = testService.callList("fetchByName", parser.getParameter().get(0));
+                	if(!event.getMatch().equals("")) {
+                		parser.parse(event.getMatch());
+                		param = parser.getParameter().get(0);
+                	}
+                    list = testService.callList("fetchByName", param);
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
                         data = list.get(i);

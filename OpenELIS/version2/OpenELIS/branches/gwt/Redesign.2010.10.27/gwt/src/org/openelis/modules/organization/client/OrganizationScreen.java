@@ -251,35 +251,41 @@ public class OrganizationScreen extends Screen {
         
         orgHistory = (MenuItem)def.getWidget("orgHistory");
         addScreenHandler(orgHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                orgHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 orgHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
+        orgHistory.addCommand(new Command() {
+        	public void execute() {
+        		orgHistory();
+        	}
+        });
+        
         orgContactHistory = (MenuItem)def.getWidget("orgContactHistory");
         addScreenHandler(orgContactHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                orgContactHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 orgContactHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
+        orgContactHistory.addCommand(new Command(){
+        	public void execute() {
+        		orgContactHistory();
+        	}
+         });
+        
         orgParameterHistory = (MenuItem)def.getWidget("orgParameterHistory");
         addScreenHandler(orgParameterHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                orgParameterHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 orgParameterHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
+        });
+        
+        orgParameterHistory.addCommand(new Command() {
+        	public void execute() {
+        		orgParameterHistory();
+        	}
         });
 
         //
@@ -445,17 +451,17 @@ public class OrganizationScreen extends Screen {
                 OrganizationDO data;
                 ArrayList<OrganizationDO> list;
                 ArrayList<Item<Integer>> model;
+                String param = "";
 
                 parser = new QueryFieldUtil();
-                try {
-                	parser.parse(event.getMatch());
-                }catch(Exception e) {
-                	
-                }
 
                 window.setBusy();
                 try {
-                    list = service.callList("fetchByIdOrName", parser.getParameter().get(0));
+                	if(!event.getMatch().equals("")) {
+                		parser.parse(event.getMatch());
+                		param = parser.getParameter().get(0);
+                	}
+                    list = service.callList("fetchByIdOrName", param);
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
                         item = new Item<Integer>(4);

@@ -235,36 +235,42 @@ public class InternalOrderScreen extends Screen {
         
         duplicate = (MenuItem)def.getWidget("duplicateRecord");
         addScreenHandler(duplicate, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                duplicate();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 duplicate.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        duplicate.addCommand(new Command() {
+			public void execute() {
+				duplicate();
+			}
+		});
 
         orderHistory = (MenuItem)def.getWidget("orderHistory");
         addScreenHandler(orderHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                orderHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 orderHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
+        orderHistory.addCommand(new Command() {
+			public void execute() {
+				orderHistory();
+			}
+		});
+        
         itemHistory = (MenuItem)def.getWidget("itemHistory");
         addScreenHandler(itemHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                itemHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 itemHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        itemHistory.addCommand(new Command() {
+			public void execute() {
+				itemHistory();
+			}
+		});
 
         //
         // screen fields

@@ -59,29 +59,15 @@
                 <HorizontalPanel spacing="3">
                   <textbox key="findTextBox" width="190" />
                 </HorizontalPanel>
-                <button key="findButton" style="Button" action="find">
-                  <HorizontalPanel>
-                    <AbsolutePanel style="FindButtonImage" />
-                    <text>
-                      <xsl:value-of select='resource:getString($constants,"find")' />
-                    </text>
-                  </HorizontalPanel>
-                </button>
+                <button key="findButton" icon="FindButtonImage" text="{resource:getString($constants,'find')}" style="Button" action="find"/>
               </HorizontalPanel>
               <widget halign="right">
-                <button key="pasteButton" style="Button" action="paste">
-                  <HorizontalPanel>
-                    <AbsolutePanel style="pasteIcon" />
-                    <text>
-                      <xsl:value-of select='resource:getString($constants,"paste")' />
-                    </text>
-                  </HorizontalPanel>
-                </button>
+                <button key="pasteButton" icon="pasteIcon" text="{resource:getString($constants,'paste')}" style="Button" action="paste"/>
               </widget>
             </row>
             <row>
               <widget halign="left" valign="top">
-                <tree key="noteTree" rows="10" vscroll="ALWAYS" style="ScreenTableWithSides">
+                <tree key="noteTree" rows="10" vscroll="ALWAYS" hscroll="ALWAYS" style="ScreenTableWithSides">
                   <columns>
                     <col width="230" header="Category/Name" />
                   </columns>

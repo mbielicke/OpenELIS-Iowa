@@ -58,7 +58,7 @@ UIRF Software License are applicable instead of those above.
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" rows="9" style="atozTable">
+              <table key="atozTable" rows="9">
                 <col width="175" header="{resource:getString($constants,'name')}">
                   <label field="String" />
                 </col>
@@ -66,10 +66,10 @@ UIRF Software License are applicable instead of those above.
               <widget halign="center">
                 <HorizontalPanel>
                   <button key="atozPrev" style="Button" enabled="false">
-                    <AbsolutePanel style="prevNavIndex" />
+                    <AbsolutePanel style="PreviousButtonImage" />
                   </button>
                   <button key="atozNext" style="Button" enabled="false">
-                    <AbsolutePanel style="nextNavIndex" />
+                    <AbsolutePanel style="NextButtonImage" />
                   </button>
                 </HorizontalPanel>
               </widget>

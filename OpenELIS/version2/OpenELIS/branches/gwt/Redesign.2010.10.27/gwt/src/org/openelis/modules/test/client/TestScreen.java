@@ -313,124 +313,146 @@ public class TestScreen extends Screen {
         
         duplicate = (MenuItem)def.getWidget("duplicateRecord");
         addScreenHandler(duplicate, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                duplicate();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 duplicate.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        duplicate.addCommand(new Command() {
+			public void execute() {
+				duplicate();
+			}
+		});
 
         testHistory = (MenuItem)def.getWidget("testHistory");
         addScreenHandler(testHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                testHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 testHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        testHistory.addCommand(new Command() {
+			public void execute() {
+				testHistory();
+			}
+		});
                 
         testSectionHistory = (MenuItem)def.getWidget("testSectionHistory");
         addScreenHandler(testSectionHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                testSectionHistory();
-            }            
-
             public void onStateChange(StateChangeEvent<State> event) {
                 testSectionHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
+        testSectionHistory.addCommand(new Command() {
+			public void execute() {
+				testSectionHistory();
+			}
+		});
+        
         testSampleTypeHistory = (MenuItem)def.getWidget("testSampleTypeHistory");
         addScreenHandler(testSampleTypeHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                testSampleTypeHistory();
-            }            
-
             public void onStateChange(StateChangeEvent<State> event) {
                 testSampleTypeHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
+        testSampleTypeHistory.addCommand(new Command() {
+			public void execute() {
+				testSampleTypeHistory();
+			}
+		});
+        
         testAnalyteHistory = (MenuItem)def.getWidget("testAnalyteHistory");
         addScreenHandler(testAnalyteHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                testAnalyteHistory();
-            }                    
-
             public void onStateChange(StateChangeEvent<State> event) {
                 testAnalyteHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
+        testAnalyteHistory.addCommand(new Command() {
+			public void execute() {
+				testAnalyteHistory();
+			}
+		});
+        
         testResultHistory = (MenuItem)def.getWidget("testResultHistory");
         addScreenHandler(testResultHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                testResultHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 testResultHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
+        testResultHistory.addCommand(new Command() {
+			public void execute() {
+				testResultHistory();
+			}
+		});
+        
         testPrepHistory = (MenuItem)def.getWidget("testPrepHistory");
         addScreenHandler(testPrepHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                testPrepHistory();
-            }        
-
             public void onStateChange(StateChangeEvent<State> event) {
                 testPrepHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
+        testPrepHistory.addCommand(new Command() {
+			public void execute() {
+				testPrepHistory();
+			}
+		});
+        
         testReflexHistory = (MenuItem)def.getWidget("testReflexHistory");
         addScreenHandler(testReflexHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                testReflexHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 testReflexHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
+        testReflexHistory.addCommand(new Command() {
+			public void execute() {
+				testReflexHistory();
+			}
+		});
+        
         testWorksheetHistory = (MenuItem)def.getWidget("testWorksheetHistory");
         addScreenHandler(testWorksheetHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                testWorksheetHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 testWorksheetHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
+        testWorksheetHistory.addCommand(new Command() {
+			public void execute() {
+				testWorksheetHistory();
+			}
+		});
+        
         testWorksheetItemHistory = (MenuItem)def.getWidget("testWorksheetItemHistory");
         addScreenHandler(testWorksheetItemHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                testWorksheetItemHistory();
-            }
-            
             public void onStateChange(StateChangeEvent<State> event) {
                 testWorksheetItemHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
+        testWorksheetItemHistory.addCommand(new Command() {
+			public void execute() {
+				testWorksheetItemHistory();
+			}
+		});
+        
         testWorksheetAnalyteHistory = (MenuItem)def.getWidget("testWorksheetAnalyteHistory");
         addScreenHandler(testWorksheetAnalyteHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                testWorksheetAnalyteHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 testWorksheetAnalyteHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        testWorksheetAnalyteHistory.addCommand(new Command() {
+			public void execute() {
+				testWorksheetAnalyteHistory();
+			}
+		}); 
         
 
         id = (TextBox)def.getWidget(TestMeta.getId());
@@ -494,16 +516,16 @@ public class TestScreen extends Screen {
                 QueryFieldUtil parser;
                 ArrayList<MethodDO> list;
                 ArrayList<Item<Integer>> model;
+                String param = "";
 
                 parser = new QueryFieldUtil();
+
                 try {
-                	parser.parse(event.getMatch());
-                }catch(Exception e) {
-                	
-                }
-                                
-                try {
-                    list = methodService.callList("fetchByName", parser.getParameter().get(0));
+                	if(!event.getMatch().equals("")) {
+                		parser.parse(event.getMatch());
+                		param = parser.getParameter().get(0);
+                	}
+                    list = methodService.callList("fetchByName", param);
                     model = new ArrayList<Item<Integer>>();
                     
                     for (MethodDO data : list)
@@ -714,16 +736,16 @@ public class TestScreen extends Screen {
                 QueryFieldUtil parser;
                 ArrayList<Item<Integer>> model;
                 ArrayList<LabelDO> list;
+                String param = "";
 
                 parser = new QueryFieldUtil();
-                try {
-                	parser.parse(event.getMatch());
-                }catch(Exception e) {
-                	
-                }
 
                 try {
-                    list = labelService.callList("fetchByName", parser.getParameter().get(0));
+                	if(!event.getMatch().equals("")) {
+                		parser.parse(event.getMatch());
+                		param = parser.getParameter().get(0);
+                	}
+                    list = labelService.callList("fetchByName", param);
                     model = new ArrayList<Item<Integer>>();
                     
                     for (LabelDO data: list)                         
@@ -994,16 +1016,16 @@ public class TestScreen extends Screen {
                 QueryFieldUtil parser;
                 ArrayList<Item<Integer>> model;
                 ArrayList<IdNameVO> list;
+                String param = "";
 
                 parser = new QueryFieldUtil();
-                try {
-                	parser.parse(event.getMatch());
-                }catch(Exception e) {
-                	
-                }
 
                 try {
-                    list = trailerService.callList("fetchByName", parser.getParameter().get(0));
+                	if(!event.getMatch().equals("")) {
+                		parser.parse(event.getMatch());
+                		param = parser.getParameter().get(0);
+                	}
+                    list = trailerService.callList("fetchByName", param);
                     model = new ArrayList<Item<Integer>>();
                     for (IdNameVO data : list)
                         model.add(new Item<Integer>(data.getId(), data.getName()));
@@ -1060,16 +1082,16 @@ public class TestScreen extends Screen {
                 QueryFieldUtil parser;
                 ArrayList<Item<Integer>> model;
                 ArrayList<IdNameVO> list;
+                String param = "";
 
                 parser = new QueryFieldUtil();
-                try {
-                	parser.parse(event.getMatch());
-                }catch(Exception e) {
-                	
-                }
                 
                 try {
-                    list = scriptletService.callList("fetchByName", parser.getParameter().get(0));
+                	if(!event.getMatch().equals("")) {
+                		parser.parse(event.getMatch());
+                		param = parser.getParameter().get(0);
+                	}
+                    list = scriptletService.callList("fetchByName", param);
                     model = new ArrayList<Item<Integer>>();
                     for (IdNameVO data : list) {                       
                         model.add(new Item<Integer>(data.getId(),data.getName()));

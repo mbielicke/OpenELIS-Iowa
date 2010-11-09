@@ -70,8 +70,10 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.organization.Organization"/>
     <!-- 
     <inherits name="org.openelis.modules.privateWellWaterSampleLogin.PrivateWellWaterSampleLogin"/>
+    -->
     <inherits name="org.openelis.modules.project.Project"/>
     <inherits name="org.openelis.modules.provider.Provider"/>
+    <!-- 
     <inherits name="org.openelis.modules.panel.Panel"/>
     <inherits name="org.openelis.modules.PTSampleLogin.PTSampleLogin"/>
     <inherits name="org.openelis.modules.pws.Pws"/>

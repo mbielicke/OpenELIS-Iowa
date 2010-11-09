@@ -57,7 +57,7 @@ UIRF Software License are applicable instead of those above.
               </VerticalPanel>
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" rows="20" style="atozTable">
+              <table key="atozTable" rows="20">
                 <col width="75" header="{resource:getString($constants,'orderNum')}">
                   <label field="Integer" />
                 </col>
@@ -68,10 +68,10 @@ UIRF Software License are applicable instead of those above.
               <widget halign="center">
                 <HorizontalPanel>
                   <button key="atozPrev" style="Button" enabled="false">
-                    <AbsolutePanel style="prevNavIndex" />
+                    <AbsolutePanel style="PreviuosButtonImage" />
                   </button>
                   <button key="atozNext" style="Button" enabled="false">
-                    <AbsolutePanel style="nextNavIndex" />
+                    <AbsolutePanel style="NextButtonImage" />
                   </button>
                 </HorizontalPanel>
               </widget>
@@ -97,7 +97,7 @@ UIRF Software License are applicable instead of those above.
                     <button style="ButtonPanelButton" action="option">
                       <Grid cols="2">
                         <row>
-                          <cell text="{resource:getString($constants,'options')}" />
+                          <cell style="ScreenLabel,ButtonAdj" text="{resource:getString($constants,'options')}" />
                           <cell style="OptionsButtonImage" />
                         </row>
                       </Grid>

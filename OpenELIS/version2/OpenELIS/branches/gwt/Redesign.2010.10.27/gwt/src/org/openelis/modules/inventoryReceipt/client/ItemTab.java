@@ -371,7 +371,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                 data = manager.getReceiptAt(index);
                 parser = new QueryFieldUtil();
                 try {
-                	parser.parse(event.getMatch());
+                	parser.parse(!event.getMatch().equals("") ? event.getMatch() : "*");
                 }catch(Exception e){
                 	
                 }

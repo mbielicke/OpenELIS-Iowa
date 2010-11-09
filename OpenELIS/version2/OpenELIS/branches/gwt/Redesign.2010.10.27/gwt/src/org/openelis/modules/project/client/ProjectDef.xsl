@@ -52,7 +52,7 @@ UIRF Software License are applicable instead of those above.
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" rows="18" style="atozTable">
+              <table key="atozTable" rows="18">
                 <col width="175" header="{resource:getString($constants,'name')}">
                   <label field="String" />
                 </col>
@@ -60,10 +60,10 @@ UIRF Software License are applicable instead of those above.
               <widget halign="center">
                 <HorizontalPanel>
                   <button key="atozPrev" style="Button" enabled="false">
-                    <AbsolutePanel style="prevNavIndex" />
+                    <AbsolutePanel style="PreviousButtonImage" />
                   </button>
                   <button key="atozNext" style="Button" enabled="false">
-                    <AbsolutePanel style="nextNavIndex" />
+                    <AbsolutePanel style="NextButtonImage" />
                   </button>
                 </HorizontalPanel>
               </widget>
@@ -89,7 +89,7 @@ UIRF Software License are applicable instead of those above.
                     <button style="ButtonPanelButton" action="option">
                       <Grid cols="2">
                         <row>
-                          <cell text="{resource:getString($constants,'options')}" />
+                          <cell style="ScreenLabel,ButtonAdj" text="{resource:getString($constants,'options')}" />
                           <cell style="OptionsButtonImage" />
                         </row>
                       </Grid>
@@ -130,7 +130,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'owner')" />:
                 </text>
                 <widget>
-                  <autoComplete key="{meta:getOwnerId()}" width="145" case="LOWER" tab="{meta:getIsActive()},{meta:getDescription()}" field="Integer" required="true" />
+                  <autoComplete key="{meta:getOwnerId()}" width="145" case="LOWER" tab="{meta:getIsActive()},{meta:getDescription()}" required="true" />
                 </widget>
               </row>
               <row>
@@ -166,7 +166,7 @@ UIRF Software License are applicable instead of those above.
 <!-- parameter table -->
             <HorizontalPanel width="609">
               <widget valign="top">
-                <table key="parameterTable" width="590" rows="8" vscroll="ALWAYS" hscroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getId()},{meta:getScriptletName()}">
+                <table key="parameterTable" width="609" rows="8" vscroll="ALWAYS" hscroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getId()},{meta:getScriptletName()}">
                   <col key="{meta:getProjectParameterParameter()}" width="325" header="{resource:getString($constants,'parameter')}">
                     <textbox field="String" required="true" />
                   </col>

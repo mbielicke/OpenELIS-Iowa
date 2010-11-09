@@ -274,37 +274,42 @@ public class ShippingScreen extends Screen {
         
         shippingHistory = (MenuItem)def.getWidget("shippingHistory");
         addScreenHandler(shippingHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                shippingHistory();
-            }
-
-
             public void onStateChange(StateChangeEvent<State> event) {
                 shippingHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
+        shippingHistory.addCommand(new Command() {
+			public void execute() {
+				shippingHistory();
+			}
+		});
+        
         shippingItemHistory = (MenuItem)def.getWidget("itemHistory");
         addScreenHandler(shippingItemHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                shippingItemHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 shippingItemHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
+        shippingItemHistory.addCommand(new Command() {
+			public void execute() {
+				shippingItemHistory();
+			}
+		});
+        
         shippingTrackingHistory = (MenuItem)def.getWidget("trackingHistory");
         addScreenHandler(shippingTrackingHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                shippingTrackingHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 shippingTrackingHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        shippingTrackingHistory.addCommand(new Command() {
+			public void execute() {
+				shippingTrackingHistory();
+			}
+		});
 
         id = (TextBox<Integer>)def.getWidget(ShippingMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<Integer>() {
@@ -455,17 +460,17 @@ public class ShippingScreen extends Screen {
                 OrganizationDO data;
                 ArrayList<OrganizationDO> list;
                 ArrayList<Item<Integer>> model;
+                String param = "";
 
                 parser = new QueryFieldUtil();
-                try {
-                	parser.parse(event.getMatch());
-                }catch(Exception e) {
-                	
-                }
 
                 window.setBusy();
                 try {
-                    list = organizationService.callList("fetchByIdOrName", parser.getParameter().get(0));
+                	if(!event.getMatch().equals("")) {
+                		parser.parse(event.getMatch());
+                		param = parser.getParameter().get(0);
+                	}
+                    list = organizationService.callList("fetchByIdOrName", param);
                     model = new ArrayList<Item<Integer>>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new Item<Integer>(4);

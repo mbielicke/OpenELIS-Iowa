@@ -235,25 +235,29 @@ public class InstrumentScreen extends Screen {
         
         instrumentHistory = (MenuItem)def.getWidget("instrumentHistory");
         addScreenHandler(instrumentHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                instrumentHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 instrumentHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
+        instrumentHistory.addCommand(new Command() {
+			public void execute() {
+				instrumentHistory();
+			}
+		});
+        
         instrumentLogHistory = (MenuItem)def.getWidget("instrumentLogHistory");
         addScreenHandler(instrumentLogHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                instrumentLogHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 instrumentLogHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        instrumentLogHistory.addCommand(new Command() {
+			public void execute() {
+				instrumentLogHistory();
+			}
+		});
 
         name = (TextBox)def.getWidget(InstrumentMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
@@ -409,7 +413,7 @@ public class InstrumentScreen extends Screen {
 
                 parser = new QueryFieldUtil();
                 try {
-                	parser.parse(event.getMatch());
+                	parser.parse(!event.getMatch().equals("") ? event.getMatch() : "*");
                 }catch(Exception e) {
                 	
                 }

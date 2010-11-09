@@ -275,35 +275,44 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
 
         unreleaseAnalysis = (MenuItem)def.getWidget("unreleaseAnalysis");
         addScreenHandler(unreleaseAnalysis, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-
+            public void onStateChange(StateChangeEvent<State> event) {
+                unreleaseAnalysis.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        unreleaseAnalysis.addCommand(new Command() {
+			public void execute() {
                 if (completeReleaseTable.isMultipleRowsSelected()) {
                     com.google.gwt.user.client.Window.alert(consts.get("selOneRowUnrelease"));
                     return;
                 }
                 
                 showConfirm() ;
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                unreleaseAnalysis.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
-            }
-        });
+			}
+		});
 
         historySample = (MenuItem)def.getWidget("historySample");
         addScreenHandler(historySample, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                historyUtility.historySample();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 historySample.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        historySample.addCommand(new Command() {
+			public void execute() {
+				historyUtility.historySample();
+			}
+		});
 
         historySampleSpec = (MenuItem)def.getWidget("historySampleSpec");
         addScreenHandler(historySampleSpec, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
+            public void onStateChange(StateChangeEvent<State> event) {
+                historySampleSpec.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        historySampleSpec.addCommand(new Command() {
+			public void execute() {
                 String domain;
 
                 historyUtility.setManager(manager);
@@ -314,112 +323,126 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
                     historyUtility.historySamplePrivateWell();
                 else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(domain))
                     historyUtility.historySampleSDWIS();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                historySampleSpec.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
-            }
-        });
+			}
+		});
 
         historySampleProject = (MenuItem)def.getWidget("historySampleProject");
         addScreenHandler(historySampleProject, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                historyUtility.historySampleProject();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 historySampleProject.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        historySampleProject.addCommand(new Command() {
+			public void execute() {
+				historyUtility.historySampleProject();
+			}
+		});
 
         historySampleOrganization = (MenuItem)def.getWidget("historySampleOrganization");
         addScreenHandler(historySampleOrganization, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                historyUtility.historySampleOrganization();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 historySampleOrganization.setEnabled(EnumSet.of(State.DISPLAY)
                                                         .contains(event.getState()));
             }
         });
+        
+        historySampleOrganization.addCommand(new Command() {
+			public void execute() {
+				historyUtility.historySampleOrganization();
+			}
+		});
 
         historySampleItem = (MenuItem)def.getWidget("historySampleItem");
         addScreenHandler(historySampleItem, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                historyUtility.historySampleItem();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 historySampleItem.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        historySampleItem.addCommand(new Command() {
+			public void execute() {
+				historyUtility.historySampleItem();
+			}
+		});
 
         historyAnalysis = (MenuItem)def.getWidget("historyAnalysis");
         addScreenHandler(historyAnalysis, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                historyUtility.historyAnalysis();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 historyAnalysis.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        historyAnalysis.addCommand(new Command() {
+			public void execute() {
+				historyUtility.historyAnalysis();
+			}
+		});
 
         historyCurrentResult = (MenuItem)def.getWidget("historyCurrentResult");
         addScreenHandler(historyCurrentResult, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                historyUtility.historyCurrentResult();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 historyCurrentResult.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        historyCurrentResult.addCommand(new Command() {
+			public void execute() {
+				historyUtility.historyCurrentResult();
+			}
+		});
 
         historyStorage = (MenuItem)def.getWidget("historyStorage");
         addScreenHandler(historyStorage, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                historyUtility.historyStorage();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 historyStorage.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        historyStorage.addCommand(new Command() {
+			public void execute() {
+				historyUtility.historyStorage();
+			}
+		});
 
         historySampleQA = (MenuItem)def.getWidget("historySampleQA");
         addScreenHandler(historySampleQA, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                historyUtility.historySampleQA();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 historySampleQA.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
+        historySampleQA.addCommand(new Command() {
+			public void execute() {
+				historyUtility.historySampleQA();
+			}
+		});
+        
         historyAnalysisQA = (MenuItem)def.getWidget("historyAnalysisQA");
         addScreenHandler(historyAnalysisQA, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                historyUtility.historyAnalysisQA();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 historyAnalysisQA.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        historyAnalysisQA.addCommand(new Command() {
+			public void execute() {
+				historyUtility.historyAnalysisQA();
+			}
+		});
 
         historyAuxData = (MenuItem)def.getWidget("historyAuxData");
         addScreenHandler(historyAuxData, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                historyUtility.historyAuxData();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 historyAuxData.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        historyAuxData.addCommand(new Command() {
+			public void execute() {
+				historyUtility.historyAuxData();
+			}
+		});
 
         //
         // screen fields

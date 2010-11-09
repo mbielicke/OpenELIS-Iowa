@@ -49,7 +49,7 @@ UIRF Software License are applicable instead of those above.
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" rows="20" style="atozTable">
+              <table key="atozTable" rows="20">
                 <col width="175" header="{resource:getString($constants,'catName')}">
                   <label field="String" />
                 </col>
@@ -57,10 +57,10 @@ UIRF Software License are applicable instead of those above.
               <widget halign="center">
                 <HorizontalPanel>
                   <button key="atozPrev" style="Button" enabled="false">
-                    <AbsolutePanel style="prevNavIndex" />
+                    <AbsolutePanel style="PreviousButtonImage" />
                   </button>
                   <button key="atozNext" style="Button" enabled="false">
-                    <AbsolutePanel style="nextNavIndex" />
+                    <AbsolutePanel style="NextButtonImage" />
                   </button>
                 </HorizontalPanel>
               </widget>
@@ -83,12 +83,12 @@ UIRF Software License are applicable instead of those above.
                 <menu>
                   <menuDisplay>
                     <button style="ButtonPanelButton" action="option">
-                      <HorizontalPanel>
-                        <text>
-                          <xsl:value-of select='resource:getString($constants,"options")' />
-                        </text>
-                        <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
-                      </HorizontalPanel>
+                      <Grid cols="2">
+                        <row>
+                          <cell style="ScreenLabel,ButtonAdj" text="{resource:getString($constants,'options')}" />
+                          <cell style="OptionsButtonImage" />
+                        </row>
+                      </Grid>
                     </button>
                   </menuDisplay>
                   <menuItem key="categoryHistory" enabled="false" icon="historyIcon" display="{resource:getString($constants,'categoryHistory')}" />

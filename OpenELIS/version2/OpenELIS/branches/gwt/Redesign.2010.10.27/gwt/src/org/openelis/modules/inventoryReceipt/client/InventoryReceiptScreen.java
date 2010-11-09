@@ -547,7 +547,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
 
                 parser = new QueryFieldUtil();
                 try {
-                	parser.parse(event.getMatch());
+                	parser.parse(!event.getMatch().equals("") ? event.getMatch() : "*");
                 }catch(Exception e) {
                 	
                 }

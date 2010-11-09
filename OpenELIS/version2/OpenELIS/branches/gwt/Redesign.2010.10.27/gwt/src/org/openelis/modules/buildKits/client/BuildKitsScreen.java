@@ -408,7 +408,7 @@ public class BuildKitsScreen extends Screen {
                 parser = new QueryFieldUtil();
                 
                 try {
-                	parser.parse(event.getMatch());
+                	parser.parse(!event.getMatch().equals("") ? event.getMatch() : "*");
                 }catch(Exception e){
                 	
                 }

@@ -72,9 +72,9 @@ UIRF Software License are applicable instead of those above.
             <menu key="optionsMenu" selfShow="true" showBelow="true" style="topBarItemHolder">
                 <menuDisplay>
                   <button style="ButtonPanelButton" action="option">
-                    <Grid>
+                    <Grid cols="2">
                       <row>
-                        <cell text="{resource:getString($constants,'options')}" />
+                        <cell style="ScreenLabel,ButtonAdj" text="{resource:getString($constants,'options')}" />
                         <cell style="OptionsButtonImage" />
                       </row>
                     </Grid>

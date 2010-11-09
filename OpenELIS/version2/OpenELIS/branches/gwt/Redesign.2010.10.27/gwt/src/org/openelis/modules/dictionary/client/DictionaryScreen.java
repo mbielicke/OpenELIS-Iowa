@@ -242,25 +242,29 @@ public class DictionaryScreen extends Screen {
 
         categoryHistory = (MenuItem)def.getWidget("categoryHistory");
         addScreenHandler(categoryHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                categoryHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 categoryHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        categoryHistory.addCommand(new Command() {
+			public void execute() {
+				categoryHistory();
+			}
+		});
 
         dictionaryHistory = (MenuItem)def.getWidget("dictionaryHistory");
         addScreenHandler(dictionaryHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                dictionaryHistory();
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 dictionaryHistory.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        dictionaryHistory.addCommand(new Command() {
+			public void execute() {
+				dictionaryHistory();
+			}
+		});
 
         name = (TextBox)def.getWidget(CategoryMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
@@ -509,7 +513,7 @@ public class DictionaryScreen extends Screen {
 
                 parser = new QueryFieldUtil();
                 try {
-                	parser.parse(event.getMatch());
+                	parser.parse(!event.getMatch().equals("") ? event.getMatch() : "*");
                 }catch(Exception e) {
                 	
                 }
