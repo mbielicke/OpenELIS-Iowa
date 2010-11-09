@@ -420,8 +420,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
             wb.write(out);
             out.close();
             Runtime.getRuntime().exec("chmod go+rw "+getWorksheetTempFileName(manager.getWorksheet().getId()));
-        } catch (IOException ioE) {
-            System.out.println("Error writing Excel file: "+ioE.getMessage());
+        } catch (Exception anyE) {
+            System.out.println("Error writing Excel file: "+anyE.getMessage());
         }
 
         return manager;
@@ -567,6 +567,12 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                             rVDO = arManager.getResultAt(wrVDO.getResultRow(), c);
                             try {
                                 if (c == 0) {
+                                    value = getValueFromCellByName(wb, wb.getSheet("Worksheet"), "analyte_reportable."+i+"."+a);
+                                    if (value != null && !rVDO.getIsReportable().equals(value)) {
+                                        rVDO.setIsReportable((String)value);
+                                        keepLock = true;
+                                    }
+
                                     formatColumn = columnMasterMap.get("final_value");
                                     valIndex = columnList.indexOf(formatColumn);
                                     value = getValueFromCellByName(wb, wb.getSheet("Worksheet"), "final_value."+i+"."+a+"."+r);
@@ -579,7 +585,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                                     value = getValueFromCellByName(wb, wb.getSheet("Worksheet"), aDO.getExternalId()+"."+i+"."+a+"."+r);
                                 }
                                 if (value != null) {
-                                    testResultId = arManager.validateResultValue(wrVDO.getResultGroup(),
+                                    testResultId = arManager.validateResultValue(rVDO.getResultGroup(),
                                                                                  aVDO.getUnitOfMeasureId(),
                                                                                  value.toString());
                                     trDO = arManager.getTestResultList().get(testResultId);
@@ -807,6 +813,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
             
             rVDO = arManager.getResultAt(wrVDO.getResultRow(), 0);
             validator = arManager.getResultValidator(wrVDO.getResultGroup());
+            cellNameIndex = nameIndexPrefix+"."+i;
             
             // analyte
             cell = row.createCell(7);
@@ -817,10 +824,13 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
             cell = row.createCell(8);
             cell.setCellStyle(styles.get("row_edit"));
             cell.setCellValue(rVDO.getIsReportable());
+            cellName = wb.createName();
+            cellName.setNameName("analyte_reportable."+cellNameIndex);
+            cellName.setRefersToFormula("Worksheet!"+CellReference.convertNumToColString(8)+
+                                        (row.getRowNum()+1));
             
 //            createConstraint(cellAttributes, aVDO.getTestId(), wrVDO.getResultGroup(), validator, aVDO.getUnitOfMeasureId());
             
-            cellNameIndex = nameIndexPrefix+"."+i;
             for (c = 0; c < formatColumns.size(); c++) {
                 formatColumn = formatColumns.get(c);
                 
@@ -1156,11 +1166,11 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         return statuses;
     }
     
-    private String getWorksheetTempFileName(Integer worksheetNumber) {
+    private String getWorksheetTempFileName(Integer worksheetNumber) throws Exception {
         return getWorksheetTempDirectory()+"Worksheet"+worksheetNumber+".xls";
     }
     
-    private String getWorksheetTempDirectory() {
+    private String getWorksheetTempDirectory() throws Exception {
         ArrayList<SystemVariableDO> sysVars;
         String                      dirName;
         
@@ -1170,7 +1180,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
             if (sysVars.size() > 0)
                 dirName = ((SystemVariableDO)sysVars.get(0)).getValue();
         } catch (Exception anyE) {
-            System.out.println(anyE.getMessage());
+            throw new Exception("Error retrieving temp directory variable: "+anyE.getMessage());
         }
         
         return dirName; 

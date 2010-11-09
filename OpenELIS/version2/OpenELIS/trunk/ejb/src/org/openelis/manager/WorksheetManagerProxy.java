@@ -116,8 +116,10 @@ public class WorksheetManagerProxy {
             iter = manager.getSampleManagers().values().iterator();
             while (iter.hasNext()) {
                 sManager = (SampleManager) iter.next();
-                sManager.update();
-                manager.getLockedManagers().remove(sManager.getSample().getAccessionNumber());
+                if (manager.getLockedManagers().containsKey(sManager.getSample().getAccessionNumber())) {
+                    sManager.update();
+                    manager.getLockedManagers().remove(sManager.getSample().getAccessionNumber());
+                }
             }
         }
         

@@ -239,7 +239,7 @@ public class WorksheetAnalysisManagerProxy {
             if (qcAccessionNumber.startsWith("X."))
                 analysis.setAccessionNumber(qcAccessionNumber.replaceFirst("X", manager.getWorksheetId().toString()));
             qcManager = QcManager.fetchById(analysis.getQcId());
-            wqrManager = manager.getWorksheetQcResultAt(0);
+            wqrManager = manager.getWorksheetQcResultAt(i);
             initializeWorksheetQcResults(qcManager, wqrManager);
         } else if (analysis.getAnalysisId() != null) {
             //
