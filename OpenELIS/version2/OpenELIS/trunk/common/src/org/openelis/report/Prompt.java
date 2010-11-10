@@ -43,7 +43,7 @@ public class Prompt implements RPC {
     protected String          name, prompt, mask, shift, defaultValue;
     protected Type            type;
     protected Integer         length, width;
-    protected Object          optionList[];
+    protected String          optionList[];
     protected boolean         required, hidden, multiSelect;
 
     public enum Type {
@@ -171,13 +171,17 @@ public class Prompt implements RPC {
         return optionList;
     }
 
-    public Prompt setOptionList(Object[] optionList) {
+    public Prompt setOptionList(String[] optionList) {
         this.optionList = optionList;
         return this;
     }
 
     public Prompt setOptionList(List optionList) {
-        this.optionList = optionList.toArray();
+        this.optionList = new String[optionList.size()];
+        
+        for (int i = 0; i < optionList.size(); i++)
+            this.optionList[i] = optionList.get(i).toString();
+
         return this;
     }
 

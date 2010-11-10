@@ -1,23 +1,20 @@
 package org.openelis.modules.completeRelease.server;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.ReportProgress;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CompleteReleaseRemote;
 import org.openelis.remote.FinalReportBeanRemote;
-import org.openelis.util.SessionManager;
+import org.openelis.report.Prompt;
 
 public class CompleteReleaseService {
 	private static final int rowPP = 500;
 
-	public ArrayList<SampleDataBundle> query(Query query) throws Exception{
+	public ArrayList<SampleDataBundle> query(Query query) throws Exception {
 		 return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
 	}
 	
@@ -28,7 +25,7 @@ public class CompleteReleaseService {
     private static FinalReportBeanRemote reportRemote() {
     	return (FinalReportBeanRemote)EJBFactory.lookup("openelis/FinalReportBean/remote");
     }
-    
+/*    
     public ReportProgress doFinalReport() throws Exception {
 		ReportProgress rp = new ReportProgress();
 		rp.name = "finalreport";
@@ -41,16 +38,33 @@ public class CompleteReleaseService {
 		rp.size = tempFile.length();
 		return rp;
     }
-    
+
     public ReportProgress getProgress() {
     	ReportProgress rp = (ReportProgress)SessionManager.getSession().getAttribute("finalreport");
     	rp.generated = reportRemote().getProgress();
     	return rp;
     }
+*/    
+
+    public ArrayList<Prompt> getPrompts() throws Exception {
+        ArrayList<Prompt> p;
+
+        try {
+            p = reportRemote().getPrompts();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+        
+        return p;
+    }
     
-    public RPC runReport(Integer in) {
+    
+    public RPC runReport(Integer in) throws Exception {
         ArrayList<QueryData> paramList;
         QueryData param;       
+        
+        getPrompts();
         
         paramList = new ArrayList<QueryData>();
         param = new QueryData();
@@ -71,5 +85,4 @@ public class CompleteReleaseService {
         
         return param;
     }
-    
 }
