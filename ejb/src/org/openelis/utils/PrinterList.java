@@ -2,14 +2,10 @@ package org.openelis.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
-import javax.naming.InitialContext;
 import javax.print.DocFlavor;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
-
-import org.openelis.bean.ApplicationCacheInt;
 
 /**
  * This class provides a simple cached interface to the printers.
@@ -23,33 +19,13 @@ public class PrinterList {
 
     protected int                      CACHE_TIME;
 
-    private static ApplicationCacheInt application;
-
-    static {
-        InitialContext ctx;
-
-        try {
-            ctx = new InitialContext();
-            application = (ApplicationCacheInt)ctx.lookup("openelis/ApplicationCache/local");
-            application.setAttribute("Printer", "List", new PrinterList());
-        } catch (Exception e) {
-            application = null;
-            e.printStackTrace();
-        }
-    }
+    private static PrinterList         instance = new PrinterList();
 
     /**
      * Returns an cached version of this class. 
      */
     public static PrinterList getInstance() {
-        PrinterList pl;
-
-        pl = (PrinterList) application.getAttribute("Printer", "List");
-        if (pl == null) {
-            pl = new PrinterList();
-            application.setAttribute("Printer", "List", pl);
-        }
-        return pl;
+        return instance;
     }
     
     /**
@@ -122,7 +98,7 @@ public class PrinterList {
                     type = "unk";
                     if (name.contains("_bar")) {
                         type = "zpl";
-                    } else {
+                    } else if (p.getSupportedDocFlavors() != null) {
                         for (DocFlavor f : p.getSupportedDocFlavors())
                             if (f.getMimeType().contains("application/pdf")) {
                                 type = "pdf";
@@ -133,10 +109,15 @@ public class PrinterList {
                     tempList.add(printer);
                     tempHash.put(name, printer);
                 }
-                printerList = tempList;
-                printerHash = tempHash;
             } catch (Exception ioE) {
                 ioE.printStackTrace();
+                tempList = null;
+                lastPolled = 0;
+            } finally {
+                if (tempList != null) {
+                    printerList = tempList;
+                    printerHash = tempHash;
+                }
             }
         }
     }

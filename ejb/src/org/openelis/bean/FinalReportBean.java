@@ -1,16 +1,18 @@
 package org.openelis.bean;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.net.URL;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
+import javax.sql.DataSource;
 
 import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.JRExporterParameter;
@@ -31,12 +33,17 @@ import org.openelis.utils.ReportUtil;
 @Stateless
 @SecurityDomain("openelis")
 @RolesAllowed("sample-select")
+@Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER,
+          mappedName = "java:/OpenELISDS")
 public class FinalReportBean implements FinalReportBeanRemote {
 	
 	int progress;
 	
 	@EJB
 	SessionCacheInt session;
+	
+	@Resource
+    private SessionContext ctx;
 	
 	/*
 	 * Returns the prompt for a single re-print
@@ -77,11 +84,11 @@ public class FinalReportBean implements FinalReportBeanRemote {
         JasperPrint  jprint;
         JRExporter   jexport;
         HashMap      jparam;
-        Connection   jdbc;
+        DataSource   ds;
+        Connection   con;
 	    
-        //
-//        jdbc = ctx.
-        
+        ds = (DataSource) ctx.lookup("jdbc/OpenELISDB");
+        con = ds.getConnection();
         
         //
         // Parse the parameters
@@ -100,15 +107,15 @@ public class FinalReportBean implements FinalReportBeanRemote {
         jparam.put("SAMPLE_ACCESSION_NUMBER", accession);
         jparam.put("ORGANIZATION_ID", orgId);
         
-        tempFile = File.createTempFile("/home/akampoow/Desktop/", "pdf");
-        jreport = (JasperReport) JRLoader.loadObject("finalReport/main.jasper");
-        jprint = JasperFillManager.fillReport(jreport, jparam);
-        jexport = getPdfExporter();
+        tempFile = File.createTempFile("finalReport", ".pdf", new File("/tmp"));
+        jreport = (JasperReport) JRLoader.loadObject(JRLoader.getResource("org/openelis/report/finalreport/main.jasper"));
+        jprint = JasperFillManager.fillReport(jreport, jparam, con);
+        jexport = new JRPdfExporter();
         jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(tempFile));
         jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
         jexport.exportReport();
 	}
-	
+/*	
 	
 	public byte[] doFinalReport() throws Exception {
 		File pdfFile = new File("/home/tschmidt/jfreechart-1.0.0-rc1-US.pdf");
@@ -136,5 +143,5 @@ public class FinalReportBean implements FinalReportBeanRemote {
     protected JRExporter getPdfExporter() {
         return new JRPdfExporter();
     }
-
+*/
 }

@@ -15,7 +15,9 @@
 				<include name="org/openelis/manager/*.class" />
 				<include name="org/openelis/entity/*.class" />
 				<include name="org/openelis/local/*.class" />
+				<include name="org/openelis/report/**/*" />
 				<include name="org/openelis/utils/*.class" />
+				<exclude name="org/openelis/report/**/*.jrxml"/>
 			</fileset>
 			<fileset dir="${src.resources}/">
 				<include name="META-INF/persistence.xml" />
@@ -32,6 +34,7 @@
 				<include name="org/openelis/messages/*.class" />
 				<include name="org/openelis/meta/*.class" />
 				<include name="org/openelis/remote/*.class" />
+				<include name="org/openelis/report/*.class" />
 				<include name="org/openelis/utilcommon/*.class" />
 			</fileset>
 		</jar>
@@ -52,6 +55,9 @@
 				<include name="lib/openelis-lib.jar" />
 				<include name="lib/security-client.jar" />
 				<include name="lib/poi-3.6-20091214.jar" />
+			    <include name="lib/groovy-all-1.5.5.jar" />
+			    <include name="lib/commons-digester-1.7.jar" />
+		    	<include name="lib/commons-beanutils-1.5.jar" />
 			    <include name="lib/jasperreports-3.7.4.jar" />
 			</fileset>
 		</ear>

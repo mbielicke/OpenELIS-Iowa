@@ -5,13 +5,12 @@ import java.util.ArrayList;
 import javax.ejb.Remote;
 
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.report.Prompt;
 
 @Remote
 public interface FinalReportBeanRemote {
 
-	public byte[]doFinalReport() throws Exception;
-	
-	public int getProgress();
-	
-	public void runReport(ArrayList<QueryData> paramList) throws Exception;
+    public ArrayList<Prompt> getPrompts() throws Exception;
+    
+    public void runReport(ArrayList<QueryData> paramList) throws Exception;
 }

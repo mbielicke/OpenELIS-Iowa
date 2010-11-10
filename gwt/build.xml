@@ -80,6 +80,7 @@
 				<include name="org/openelis/messages/*.class" />
 				<include name="org/openelis/meta/*.class" />
 				<include name="org/openelis/remote/*.class" />
+				<include name="org/openelis/report/*.class" />
 				<include name="org/openelis/utilcommon/*.class" />
 			</fileset>
 		</jar>
