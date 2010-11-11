@@ -52,9 +52,11 @@ UIRF Software License are applicable instead of those above.
 <!--left table goes here -->
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
           <HorizontalPanel width="225">
+            <widget valign="top">
             <buttonGroup key="atozButtons">
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
+            </widget>
             <VerticalPanel>
               <table key="atozTable" rows="14" >
                 <col width="175" header="{resource:getString($constants,'name')}">
@@ -123,7 +125,7 @@ UIRF Software License are applicable instead of those above.
             <HorizontalPanel>
               <VerticalPanel style="Form">
                 <widget valign="top">
-                  <table key="panelItemTable" width="auto" rows="9" vscroll="ALWAYS" hscroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getDescription()}">
+                  <table key="panelItemTable" rows="9" vscroll="ALWAYS" hscroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getDescription()}">
                     <col key="{meta:getItemTestName()}" width="135" align="left" header="{resource:getString($constants,'test')}">
                       <textbox field="String" />
                     </col>
@@ -132,16 +134,13 @@ UIRF Software License are applicable instead of those above.
                     </col>
                   </table>
                 </widget>
-                <HorizontalPanel>
-                  <HorizontalPanel width="5" />
-                  <widget style="TableButtonFooter">
+                <widget style="TableButtonFooter">
                     <HorizontalPanel>
                       <button key="removeTestButton" icon="RemoveRowButtonImage" text="{resource:getString($constants,'removeRow')}" style="Button"/>
                       <button key="moveUpButton" icon="upButtonImage" text="{resource:getString($constants,'moveUp')}" style="Button"/>
                       <button key="moveDownButton" icon="downButtonImage" text="{resource:getString($constants,'moveDown')}" style="Button"/>
                     </HorizontalPanel>
-                  </widget>
-                </HorizontalPanel>
+                </widget>
               </VerticalPanel>
               <HorizontalPanel width="10" />
               <widget valign="middle" style="WhiteContentPanel">

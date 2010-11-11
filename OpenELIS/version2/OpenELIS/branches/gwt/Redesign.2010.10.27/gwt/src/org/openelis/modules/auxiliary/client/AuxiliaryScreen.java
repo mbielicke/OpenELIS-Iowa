@@ -740,7 +740,7 @@ public class AuxiliaryScreen extends Screen {
         });
 
         auxFieldValueTable = (Table)def.getWidget("auxFieldValueTable");
-        auxFieldValueTypeId = (Dropdown<Integer>)auxFieldTable.getColumnAt(auxFieldValueTable.getColumnByName(AuxFieldGroupMeta.getFieldValueTypeId())).getCellEditor().getWidget();
+        auxFieldValueTypeId = (Dropdown<Integer>)auxFieldValueTable.getColumnAt(auxFieldValueTable.getColumnByName(AuxFieldGroupMeta.getFieldValueTypeId())).getCellEditor().getWidget();
         addScreenHandler(auxFieldValueTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
                 auxFieldValueTable.setModel(getAuxFieldValueModel(null));

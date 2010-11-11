@@ -190,7 +190,7 @@ UIRF Software License are applicable instead of those above.
 <!-- TAB 1 -->
               <tab key="facilityTab" text="{resource:getString($constants,'facility')}">
                 <VerticalPanel padding="0" spacing="0">
-                  <table key="facilityTable" width="707" rows="11" vscroll="ALWAYS" hscroll="ALWAYS">
+                  <table key="facilityTable" width="725" rows="11" vscroll="ALWAYS" hscroll="ALWAYS">
                     <col key="{meta:getFacilityName()}" width="250" header="{resource:getString($constants,'name')}">
                       <textbox field="String" />
                     </col>
