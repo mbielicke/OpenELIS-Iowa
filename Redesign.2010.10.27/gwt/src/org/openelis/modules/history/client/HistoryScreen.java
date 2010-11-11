@@ -174,7 +174,7 @@ public class HistoryScreen extends Screen {
 
         try {
             for (IdNameVO data : referenceVoList) {
-                node = new Node();
+                node = new Node(3);
                 node.setType("itemLabel");
                 node.setOpen(false);
                 node.setKey(data.getId());

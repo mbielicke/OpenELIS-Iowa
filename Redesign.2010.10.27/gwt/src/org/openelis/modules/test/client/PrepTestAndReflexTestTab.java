@@ -92,7 +92,7 @@ public class PrepTestAndReflexTestTab extends Screen implements
     private Button                addPrepTestButton, removePrepTestButton, addReflexTestButton,
                                   removeReflexTestButton;
     private AutoComplete          prepTestAuto, reflexTestAuto, analyteAuto, resultAuto;
-    private Label<String>         prepMethodName, reflexMethodName;
+   // private Label<String>         prepMethodName, reflexMethodName;
 
     public PrepTestAndReflexTestTab(ScreenDefInt def,Window window, ScreenService service) {
         setDefinition(def);
@@ -148,8 +148,8 @@ public class PrepTestAndReflexTestTab extends Screen implements
                     case 0:
                         av = (AutoCompleteValue)val;
                         data.setPrepTestId((Integer) (av.getId()));
-                        data.setPrepTestName(prepTestAuto.getDisplay());
-                        data.setMethodName(prepMethodName.getText());
+                        data.setPrepTestName(av.getDisplay());
+                        data.setMethodName((String)testPrepTable.getValueAt(r, testPrepTable.getColumnByName("method")));
                         break;
                     case 2:
                         data.setIsOptional((String)val);
@@ -219,7 +219,7 @@ public class PrepTestAndReflexTestTab extends Screen implements
             }
         });
 
-        prepMethodName = (Label<String>)testPrepTable.getColumnAt(testPrepTable.getColumnByName("method")).getCellEditor().getWidget();
+       // prepMethodName = (Label<String>)testPrepTable.getColumnAt(testPrepTable.getColumnByName("method")).getCellRenderer().getWidget();
 
         prepTestAuto.getPopupContext().addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {
@@ -334,8 +334,8 @@ public class PrepTestAndReflexTestTab extends Screen implements
                         if(val != null) {
                             av = (AutoCompleteValue)val;
                             data.setAddTestId((Integer) (av.getId()));
-                            data.setAddTestName(reflexTestAuto.getDisplay());
-                            data.setAddMethodName(reflexMethodName.getText());
+                            data.setAddTestName(av.getDisplay());
+                            data.setAddMethodName((String)testReflexTable.getValueAt(r, testReflexTable.getColumnByName("method")));
                         } else {
                             data.setAddTestId(null);
                             data.setAddTestName(null);
@@ -425,7 +425,7 @@ public class PrepTestAndReflexTestTab extends Screen implements
             }
         });
 
-        reflexMethodName = (Label<String>)testReflexTable.getColumnAt(testReflexTable.getColumnByName("method")).getCellEditor().getWidget();
+       // reflexMethodName = (Label<String>)testReflexTable.getColumnAt(testReflexTable.getColumnByName("method")).getCellEditor().getWidget();
 
         reflexTestAuto.getPopupContext().addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {

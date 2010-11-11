@@ -50,9 +50,12 @@ import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.BeforeDragStartEvent;
 import org.openelis.gwt.event.BeforeDragStartHandler;
 import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.DropEvent;
+import org.openelis.gwt.event.DropHandler;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.StateChangeEvent;
+import org.openelis.gwt.event.DropEnterEvent.DropPosition;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
@@ -446,18 +449,8 @@ public class DictionaryScreen extends Screen {
             }
         });
 
+
         /*
-        dictTable.addRowMovedHandler(new RowMovedHandler() {
-            public void onRowMoved(RowMovedEvent event) {
-                try {
-                    manager.getEntries().moveEntry(event.getOldIndex(), event.getNewIndex());
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                }
-            }
-        });
-		
-        
         dictTable.addSortHandler(new SortHandler() {
             public void onSort(SortEvent event) {
                 SortDirection direction;
@@ -482,6 +475,30 @@ public class DictionaryScreen extends Screen {
         dictTable.enableDrag();
         dictTable.enableDrop();
         dictTable.addDropTarget(dictTable.getDropController());
+        
+        dictTable.getDropController().addDropHandler(new DropHandler<DragItem>() {
+			public void onDrop(DropEvent<DragItem> event) {
+                int dragIndex,dropIndex;
+                Row row;
+                
+                dragIndex = event.getDragObject().getIndex();
+                dropIndex = dictTable.getDropController().getDropIndex();
+                
+                row = dictTable.removeRowAt(dragIndex);
+                
+                if(dropIndex > dragIndex && dictTable.getDropController().getDropPosition() == DropPosition.ABOVE) 
+                    dropIndex--;
+                
+                dictTable.addRowAt(dropIndex,row);
+                
+                try {
+                    manager.getEntries().moveEntry(dragIndex, dropIndex);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+				
+			}
+		});
 
         dictTable.getDragController().addBeforeDragStartHandler(new BeforeDragStartHandler<DragItem>() {
             public void onBeforeDragStart(BeforeDragStartEvent<DragItem> event) {

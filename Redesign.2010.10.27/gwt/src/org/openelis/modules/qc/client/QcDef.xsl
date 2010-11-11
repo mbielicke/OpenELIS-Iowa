@@ -57,7 +57,7 @@ UIRF Software License are applicable instead of those above.
                   <label field="String" />
                 </col>
                 <col width="95" header="{resource:getString($constants,'lotNumber')}">
-                  <label field="Integer" />
+                  <label field="String" />
                 </col>
               </table>
               <widget halign="center">

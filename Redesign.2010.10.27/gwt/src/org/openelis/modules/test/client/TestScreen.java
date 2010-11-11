@@ -758,10 +758,10 @@ public class TestScreen extends Screen {
 
         });
 
-        labelQty = (TextBox)def.getWidget(TestMeta.getLabelQty());
+        labelQty = (TextBox<Integer>)def.getWidget(TestMeta.getLabelQty());
         addScreenHandler(labelQty, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                labelQty.setValue(Util.toString(manager.getTest().getLabelQty()));
+                labelQty.setValue(manager.getTest().getLabelQty());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -973,13 +973,13 @@ public class TestScreen extends Screen {
             }
         });
 
-        reportingSequence = (TextBox)def.getWidget(TestMeta.getReportingSequence());
-        addScreenHandler(reportingSequence, new ScreenEventHandler<String>() {
+        reportingSequence = (TextBox<Integer>)def.getWidget(TestMeta.getReportingSequence());
+        addScreenHandler(reportingSequence, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                reportingSequence.setValue(Util.toString(manager.getTest().getReportingSequence()));
+                reportingSequence.setValue(manager.getTest().getReportingSequence());
             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
+            public void onValueChange(ValueChangeEvent<Integer> event) {
                 manager.getTest().setReportingSequence(Integer.valueOf(event.getValue()));
             }
 

@@ -141,13 +141,13 @@ public class QaEventScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
+            	 queryButton.setEnabled(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                         .contains(event.getState()) &&
+                  userPermission.hasSelectPermission());
                 if (event.getState() == State.QUERY) {
                     queryButton.setPressed(true);
                     queryButton.lock();
                 }
-                queryButton.setEnabled(EnumSet.of(State.DEFAULT, State.DISPLAY)
-                                          .contains(event.getState()) &&
-                                   userPermission.hasSelectPermission());
             }
         });
 

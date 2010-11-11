@@ -99,7 +99,7 @@ UIRF Software License are applicable instead of those above.
             </HorizontalPanel>
           </AbsolutePanel>
 <!--end button panel-->
-          <VerticalPanel width="620" height="235" padding="0" spacing="0" style="WhiteContentPanel">
+          <VerticalPanel width="620" height="432" padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
                 <text style="Prompt">
@@ -129,8 +129,7 @@ UIRF Software License are applicable instead of those above.
                 <check key="{meta:getIsAvailable()}" tab="childStorageLocsTable,{meta:getStorageUnitDescription()}" />
               </row>
             </TablePanel>
-            <VerticalPanel spacing="3">
-              <widget>
+              <VerticalPanel spacing="0" padding="0">
                 <table key="childStorageLocsTable" rows="11" vscroll="ALWAYS" hscroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getIsAvailable()}">
                   <col key="{meta:getChildStorageUnitDescription()}" width="225" header="{resource:getString($constants,'storageSubUnit')}">
                     <autoComplete width="225" required="true">
@@ -145,16 +144,16 @@ UIRF Software License are applicable instead of those above.
                     <check>Y</check>
                   </col>
                 </table>
-              </widget>
-              <widget style="TableButtonFooter">
+              
+              	<widget valign="top" style="TableButtonFooter">
                 <HorizontalPanel>
                   <button key="addChildButton" icon="AddRowButtonImage" text="{resource:getString($constants,'addRow')}" style="Button"/>
                   <button key="removeChildButton" icon="RemoveRowButtonImage" text="{resource:getString($constants,'removeRow')}" style="Button"/>
                 </HorizontalPanel>
-              </widget>
+                </widget>
+              </VerticalPanel>
             </VerticalPanel>
           </VerticalPanel>
-        </VerticalPanel>
       </HorizontalPanel>
     </screen>
   </xsl:template>

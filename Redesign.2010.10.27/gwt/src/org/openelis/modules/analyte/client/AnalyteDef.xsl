@@ -95,13 +95,13 @@ UIRF Software License are applicable instead of those above.
                     <button style="ButtonPanelButton" action="option">
                       <Grid cols="2">
                         <row>
-                          <cell style="ScreenLabel,ButtonAdj" text='resource:getString($constants,"options")' />
+                          <cell style="ScreenLabel,ButtonAdj" text="{resource:getString($constants,'options')}" />
                           <cell style="OptionsButtonImage" />
                         </row>
                       </Grid>
                     </button>
                   </menuDisplay>
-                  <menuItem key="analyteHistory" description="" enabled="false" icon="historyIcon" display="{resource:getString($constants,'analyteHistory')}" />
+                  <menuItem key="analyteHistory" enabled="false" icon="historyIcon" display="{resource:getString($constants,'analyteHistory')}" />
               </menu>
             </HorizontalPanel>
           </AbsolutePanel>
@@ -122,7 +122,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select='resource:getString($constants,"parentAnalyte")' />:
                 </text>
                 <widget>
-                  <autoComplete key="{meta:getParentAnalyteName()}" width="184" tab="{meta:getExternalId()},{meta:getName()}" field="String">
+                  <autoComplete key="{meta:getParentAnalyteName()}" width="184" tab="{meta:getExternalId()},{meta:getName()}">
                     <col width="300" />
                   </autoComplete>
                 </widget>

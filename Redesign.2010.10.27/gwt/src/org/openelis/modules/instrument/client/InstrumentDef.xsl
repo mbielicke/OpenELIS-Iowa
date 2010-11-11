@@ -55,7 +55,7 @@ UIRF Software License are applicable instead of those above.
                   <label field="String" />
                 </col>
                 <col width="100" header="{resource:getString($constants,'serialNumber')}">
-                  <label field="Integer" />
+                  <label field="String" />
                 </col>
               </table>
               <widget halign="center">
@@ -90,7 +90,7 @@ UIRF Software License are applicable instead of those above.
                     <button style="ButtonPanelButton" action="option">
                       <Grid cols="2">
                         <row>
-                          <cell style="ScreenLabel,ButtonAdj" text='resource:getString($constants,"options")' />
+                          <cell style="ScreenLabel,ButtonAdj" text="{resource:getString($constants,'options')}" />
 	                      <cell style="OptionsButtonImage" />
 	                    </row>
                       </Grid>
