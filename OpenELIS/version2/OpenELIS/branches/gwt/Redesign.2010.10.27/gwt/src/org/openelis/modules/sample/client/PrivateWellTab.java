@@ -115,8 +115,11 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(orgName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 if (getManager().getPrivateWell().getOrganizationId() == null) {
-                    orgName.setValue(getManager().getPrivateWell().getReportToName().hashCode(),
+                	if(getManager().getPrivateWell().getReportToName() != null)
+                		orgName.setValue(getManager().getPrivateWell().getReportToName().hashCode(),
                                          getManager().getPrivateWell().getReportToName());
+                	else
+                		orgName.setValue(null,"");
                     enableReportToFields(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                                 .contains(state));
 

@@ -49,10 +49,12 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.ModalWindow;
 import org.openelis.gwt.widget.Popup;
+import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.Window;
 import org.openelis.gwt.widget.table.Column;
 import org.openelis.gwt.widget.table.Row;
 import org.openelis.gwt.widget.table.Table;
+import org.openelis.gwt.widget.table.TextBoxCell;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
@@ -582,6 +584,8 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
     private void resizeResultTable(int numOfCols) {
         Column col;
+        TextBoxCell<String> cell;
+        TextBox<String> textbox;
         int width = 206;
 
         if (numOfCols == 1)
@@ -589,20 +593,36 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         else if (numOfCols == 3)
             width = 311;
 
+        /*
         if (resultTableCols == null)
             resultTableCols = (ArrayList<Column>)testResultsTable.getColumns().clone();
         testResultsTable.getColumns().clear();
         testResultsTable.clear();
+        */
+        
+       	while(testResultsTable.getColumnCount() > numOfCols)
+       		testResultsTable.removeColumnAt(numOfCols);
+       	
+       	while(testResultsTable.getColumnCount() < numOfCols) {
+       		col = testResultsTable.addColumn();
+       		textbox = new TextBox<String>();
+       		textbox.setMaxLength(80);
+       		cell = new TextBoxCell<String>(textbox);
+       		col.setCellRenderer(cell);
+       	}
+
 
         for (int i = 0; i < numOfCols; i++ ) {
+        	/*
             col = resultTableCols.get(i);
             col.setEnabled(testResultsTable.isEnabled());
-
+			*/
+        	col = testResultsTable.getColumnAt(i);
             if (i == 0)
                 col.setWidth(65);
             else
                 col.setWidth(width);
-            testResultsTable.addColumn(col);
+            //testResultsTable.addColumn(col);
         }
     }
 
@@ -770,6 +790,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
     	public SubHeaderRow(int cols) {
     		super(cols);
     	}
+    	
     	@Override
     	public String getStyle(int index) {
     		return "SubHeader";

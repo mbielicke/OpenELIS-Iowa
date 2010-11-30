@@ -238,7 +238,7 @@ public class InventoryTransferScreen extends Screen {
                         store = DictionaryCache.getEntryFromId(data.getInventoryItemStoreId());
                         row.setCell(1,store.getEntry());
                         row.setCell(2,location);
-                        row.setCell(3,data.getQuantityOnhand());
+                        row.setCell(3,data.getQuantityOnhand().toString());
 
                         row.setData(data);                           
 

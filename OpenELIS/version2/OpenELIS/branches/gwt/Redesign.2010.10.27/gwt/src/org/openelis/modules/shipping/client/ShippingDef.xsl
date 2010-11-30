@@ -199,7 +199,7 @@ UIRF Software License are applicable instead of those above.
                   </widget>
                   <HorizontalPanel>
                     <button key="addItemButton" icon="AddRowButtonImage" text="{resource:getString($constants,'addRow')}" style="Button"/>
-                    <button key="removeItemButton" icon="RemoveRowButtonImage" text="resource:getString($constants,'removeRow')}" style="Button"/>
+                    <button key="removeItemButton" icon="RemoveRowButtonImage" text="{resource:getString($constants,'removeRow')}" style="Button"/>
                     <button key="lookupItemButton" text="{resource:getString($constants,'lookupItem')}" style="Button"/>
                   </HorizontalPanel>
                 </VerticalPanel>

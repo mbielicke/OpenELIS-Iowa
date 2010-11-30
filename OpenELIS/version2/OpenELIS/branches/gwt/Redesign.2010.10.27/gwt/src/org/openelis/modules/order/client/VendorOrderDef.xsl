@@ -59,7 +59,7 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel>
               <table key="atozTable" rows="20">
                 <col width="75" header="{resource:getString($constants,'orderNum')}">
-                  <label field="String" />
+                  <label field="Integer" />
                 </col>
                 <col width="150" header="{resource:getString($constants,'requestedBy')}">
                   <label field="String" />
@@ -217,14 +217,14 @@ UIRF Software License are applicable instead of those above.
 
 <!-- TAB PANEL -->
 
-            <TabPanel key="tabPanel" width="591" height="275">
+            <TabPanel key="tabPanel" width="600" height="300">
 
 <!-- TAB 1 (items) -->
 
               <tab key="itemTab" text="{resource:getString($constants,'items')}" tab="itemTable, itemTable">
                 <VerticalPanel padding="0" spacing="0">
                   <widget>
-                    <table key="itemTable" rows="10" vscroll="ALWAYS" hscroll="ALWAYS">
+                    <table key="itemTable" rows="10" width="600" vscroll="ALWAYS" hscroll="ALWAYS">
                       <col key="{meta:getOrderItemQuantity()}" width="60" align="right" header="{resource:getString($constants,'quantity')}">
                         <textbox field="Integer" required="true" />
                       </col>
@@ -260,7 +260,8 @@ UIRF Software License are applicable instead of those above.
 <!-- TAB 2 (receipts) -->
 
               <tab key="fillTab" text="{resource:getString($constants,'filled')}">
-                <table key="fillTable" width="573" rows="10" vscroll="ALWAYS" hscroll="ALWAYS">
+                <VerticalPanel padding="0" spacing="0" >
+                <table key="fillTable" width="600" rows="10" vscroll="ALWAYS" hscroll="ALWAYS">
                   <col key="{meta:getInventoryReceiptOrderItemId()}" width="150" header="{resource:getString($constants,'inventoryItem')}">
                     <label field="String" />
                   </col>
@@ -268,7 +269,7 @@ UIRF Software License are applicable instead of those above.
                     <label field="String" />
                   </col>
                   <col key="{meta:getInventoryReceiptQuantityReceived()}" width="65" align="right" header="{resource:getString($constants,'quantity')}">
-                    <label field="String" />
+                    <label field="Integer" />
                   </col>
                   <col key="" width="85" header="{resource:getString($constants,'lotNum')}">
                     <label field="String" />
@@ -280,19 +281,20 @@ UIRF Software License are applicable instead of those above.
                     <calendar begin="0" end="2" pattern="{resource:getString($constants,'datePattern')}" />
                   </col>
                   <col key="{meta:getInventoryReceiptUnitCost()}" width="55" header="{resource:getString($constants,'cost')}" align = "right">
-                    <textbox field="String" />
+                    <textbox field="Double" />
                   </col>
                   <col key="{meta:getInventoryReceiptExternalReference()}" width="130" header="{resource:getString($constants,'extReference')}">
                     <label field="String" />
                   </col>
                 </table>
+                </VerticalPanel>
               </tab>
 
 <!-- TAB 3 (order notes) -->
 
               <tab key="noteTab" text="{resource:getString($constants,'orderShippingNotes')}" tab="notesPanel, notesPanel">
                 <VerticalPanel padding="0" spacing="0">
-                  <notes key="notesPanel" width="591" height="247" />
+                  <notes key="notesPanel" width="602" height="236" />
                   <button key="standardNoteButton" icon="StandardNoteButtonImage" text="{resource:getString($constants,'addNote')}" style="Button"/>
                 </VerticalPanel>
               </tab>

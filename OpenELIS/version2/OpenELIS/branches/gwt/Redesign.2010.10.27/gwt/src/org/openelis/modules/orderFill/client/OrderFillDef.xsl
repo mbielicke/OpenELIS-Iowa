@@ -119,7 +119,7 @@ UIRF Software License are applicable instead of those above.
             </table>
           </widget>
           <VerticalPanel style="WhiteContentPanel">
-            <TabPanel key="tabPanel" width="880" height="200">
+            <TabPanel key="tabPanel" width="880" height="250">
               <tab key="itemTab" text="{resource:getString($constants,'items')}">
                 <HorizontalPanel>
                   <VerticalPanel style="subform">

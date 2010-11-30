@@ -32,6 +32,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.Browser;
+import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.modules.dictionary.client.DictionaryScreen;
 import org.openelis.modules.favorites.client.FavoritesScreen;
@@ -53,22 +54,42 @@ import org.openelis.modules.instrument.client.InstrumentScreen;
 import org.openelis.modules.storageLocation.client.StorageLocationScreen;
 import org.openelis.modules.storageunit.client.StorageUnitScreen;
 import org.openelis.modules.test.client.TestScreen;
-//import org.openelis.modules.order.client.InternalOrderScreen;
+import org.openelis.modules.order.client.InternalOrderScreen;
 import org.openelis.modules.qc.client.QcScreen;
 import org.openelis.modules.storage.client.StorageScreen;
+import org.openelis.modules.inventoryReceipt.client.InventoryReceiptScreen;
+import org.openelis.modules.inventoryAdjustment.client.InventoryAdjustmentScreen;
+import org.openelis.modules.inventoryItem.client.InventoryItemScreen;
+import org.openelis.modules.inventoryTransfer.client.InventoryTransferScreen;
+import org.openelis.modules.buildKits.client.BuildKitsScreen;
+import org.openelis.modules.shipping.client.ShippingScreen;
+import org.openelis.modules.order.client.VendorOrderScreen;
+import org.openelis.modules.order.client.SendoutOrderScreen;
+import org.openelis.modules.orderFill.client.OrderFillScreen;
+import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSampleLoginScreen;
+import org.openelis.modules.privateWellWaterSampleLogin.client.PrivateWellWaterSampleLoginScreen;
+import org.openelis.modules.SDWISSampleLogin.client.SDWISSampleLoginScreen;
+import org.openelis.modules.quickEntry.client.QuickEntryScreen;
+import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
+import org.openelis.modules.completeRelease.client.CompleteReleaseScreen;
+import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
+import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class OpenELIS extends Screen {
 
     protected static Browser                          browser;
-    protected static SystemUserPermission                   systemUserPermission;
+    protected static SystemUserPermission             systemUserPermission;
 
-    private FavoritesScreen                                 fv;
-    private static HashMap<String, HashMap> cacheList;
+    private FavoritesScreen                           fv;
+    private static HashMap<String, HashMap>           cacheList;
 
     public OpenELIS() throws Exception {
         OpenELISRPC rpc;
@@ -85,15 +106,15 @@ public class OpenELIS extends Screen {
     }
 
     protected void initialize() {
-    	/*
-        addClickHandler("preference", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+    	
+        addCommand("preference", new Command() {
+            public void execute() {
                 // browser.addScreen(new )
             }
         });
 
-        addClickHandler("FavoritesMenu", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand("FavoritesMenu", new Command() {
+            public void execute() {
                 VerticalPanel fmp = (VerticalPanel)def.getWidget("favoritesPanel");
                 if (fmp.getWidgetCount() == 1) {
                     try {
@@ -116,8 +137,8 @@ public class OpenELIS extends Screen {
                     fv.edit();
             }
         });
-        addClickHandler("Logout", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand("Logout", new Command() {
+            public void execute() {
                 try {
                     service.call("logout");
                     Window.open("OpenELIS.html", "_self", null);
@@ -127,9 +148,9 @@ public class OpenELIS extends Screen {
                 }
             }
         });
-
-        addClickHandler("quickEntry", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+	    
+        addCommand("quickEntry", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
@@ -147,8 +168,8 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-        addClickHandler("tracking", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand("tracking", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
@@ -166,8 +187,9 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-        addClickHandler("environmentalSampleLogin", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        
+        addCommand("environmentalSampleLogin", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
@@ -185,9 +207,9 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-
-        addClickHandler("clinicalSampleLogin", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        
+        addCommand("clinicalSampleLogin", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
@@ -207,8 +229,8 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("animalSampleLogin", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand("animalSampleLogin", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
@@ -227,8 +249,8 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("newbornScreeningSampleLogin", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand("newbornScreeningSampleLogin", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
@@ -248,8 +270,8 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("ptSampleLogin", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand("ptSampleLogin", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
@@ -267,8 +289,9 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-        addClickHandler("sdwisSampleLogin", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        
+        addCommand("sdwisSampleLogin", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
@@ -286,8 +309,8 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-        addClickHandler("privateWellWaterSampleLogin", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand("privateWellWaterSampleLogin", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
@@ -305,8 +328,8 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-		*/
-        addClickHandler("project", new Command() {
+		
+        addCommand("project", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -325,7 +348,7 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addClickHandler("provider", new Command() {
+        addCommand("provider", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -345,7 +368,7 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addClickHandler("organization", new Command() {
+        addCommand("organization", new Command() {
             public void execute() {
 
                 GWT.runAsync(new RunAsyncCallback() {
@@ -365,9 +388,9 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-        /*
-        addClickHandler("worksheetCreation", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        
+        addCommand("worksheetCreation", new Command() {
+            public void execute() {
 
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -386,8 +409,9 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-        addClickHandler("worksheetCompletion", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        
+        addCommand("worksheetCompletion", new Command() {
+            public void execute() {
 
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -406,13 +430,15 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-        addClickHandler("addOrCancel", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        
+        addCommand("addOrCancel", new Command() {
+            public void execute() {
                 // browser.addScreen(new )
             }
         });
-        addClickHandler("reviewAndRelease", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        
+        addCommand("reviewAndRelease", new Command() {
+            public void execute() {
 
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -431,8 +457,8 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-		*/
-        addClickHandler("storage", new Command() {
+		
+        addCommand("storage", new Command() {
             public void execute() {
 
                 GWT.runAsync(new RunAsyncCallback() {
@@ -452,19 +478,19 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-        /*
-        addClickHandler("toDo", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        
+        addCommand("toDo", new Command() {
+            public void execute() {
                 // browser.addScreen(new )
             }
         });
-        addClickHandler("labelFor", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand("labelFor", new Command() {
+            public void execute() {
                 // browser.addScreen(new )
             }
         });
-		*/
-        addClickHandler("storageLocation", new Command() {
+		
+        addCommand("storageLocation", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -484,7 +510,7 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addClickHandler("QC", new Command() {
+        addCommand("QC", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -503,8 +529,8 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-		/*
-        addClickHandler("internalOrder", new Command() {
+		
+        addCommand("internalOrder", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -524,8 +550,8 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addClickHandler("vendorOrder", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand("vendorOrder", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
@@ -543,9 +569,9 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-
-        addClickHandler("kitOrder", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        
+        addCommand("kitOrder", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
@@ -563,9 +589,9 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-
-        addClickHandler("fillOrder", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        
+        addCommand("fillOrder", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
@@ -583,8 +609,9 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-        addClickHandler("shipping", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        
+        addCommand("shipping", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
@@ -602,9 +629,9 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-
-        addClickHandler("buildKits", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+		
+        addCommand("buildKits", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
@@ -622,8 +649,9 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-        addClickHandler("inventoryReceipt", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        
+        addCommand("inventoryReceipt", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
@@ -641,8 +669,9 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-        addClickHandler("inventoryTransfer", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        
+        addCommand("inventoryTransfer", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
@@ -660,8 +689,9 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-        addClickHandler("inventoryAdjustment", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        
+        addCommand("inventoryAdjustment", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
@@ -679,8 +709,9 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-        addClickHandler("inventoryItem", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        
+        addCommand("inventoryItem", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
@@ -698,8 +729,8 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-		*/
-        addClickHandler("instrument", new Command() {
+		
+        addCommand("instrument", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -719,7 +750,7 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addClickHandler("test", new Command() {
+        addCommand("test", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -739,7 +770,7 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addClickHandler("method", new Command() {
+        addCommand("method", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -759,7 +790,7 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addClickHandler("panel", new Command() {
+        addCommand("panel", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -779,7 +810,7 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addClickHandler("QAEvent", new Command() {
+        addCommand("QAEvent", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -799,7 +830,7 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addClickHandler("labSection", new Command() {
+        addCommand("labSection", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -819,7 +850,7 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addClickHandler("analyte", new Command() {
+        addCommand("analyte", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -839,7 +870,7 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addClickHandler("dictionary", new Command() {
+        addCommand("dictionary", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -859,7 +890,7 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addClickHandler("auxiliaryPrompt", new Command() {
+        addCommand("auxiliaryPrompt", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -879,7 +910,7 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addClickHandler("label", new Command() {
+        addCommand("label", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -899,7 +930,7 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addClickHandler("standardNote", new Command() {
+        addCommand("standardNote", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -919,7 +950,7 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addClickHandler("trailerForTest", new Command() {
+        addCommand("trailerForTest", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -939,7 +970,7 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addClickHandler("storageUnit", new Command() {
+        addCommand("storageUnit", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -958,9 +989,9 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-        /*
-        addClickHandler("storageLocation", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        
+        addCommand("storageLocation", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
@@ -979,13 +1010,13 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("scriptlet", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand("scriptlet", new Command() {
+            public void execute() {
                 // browser.addScreen(new )
             }
         });
-        */
-        addClickHandler("systemVariable", new Command() {
+        
+        addCommand("systemVariable", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1005,7 +1036,7 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addClickHandler("pws", new Command() {
+        addCommand("pws", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1024,23 +1055,23 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-        /*
-        addClickHandler("finalReport", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        
+        addCommand("finalReport", new Command() {
+            public void execute() {
                 // browser.addScreen(new )
             }
         });
-        addClickHandler("sampleDataExport", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand("sampleDataExport", new Command() {
+            public void execute() {
                 // browser.addScreen(new )
             }
         });
-        addClickHandler("loginLabel", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand("loginLabel", new Command() {
+            public void execute() {
                 // browser.addScreen(new )
             }
         });
-        */
+        
     }
 
     /**
@@ -1068,7 +1099,7 @@ public class OpenELIS extends Screen {
         return browser;
     }
     
-    private void addClickHandler(String screenName, Command handler) {
+    private void addCommand(String screenName, Command handler) {
         MenuItem item;
 
         item = ((MenuItem)def.getWidget(screenName));

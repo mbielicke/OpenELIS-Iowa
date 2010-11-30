@@ -302,6 +302,7 @@ public class WorksheetCreationScreen extends Screen {
             }
         });
 
+        /*
         worksheetItemTable.addSortHandler(new SortHandler() {
             public void onSort(SortEvent event) {
 				ColumnComparator comparator;
@@ -312,6 +313,7 @@ public class WorksheetCreationScreen extends Screen {
                 mergeAnalysesAndQCs();
             }
         });
+        */
         
         insertQCWorksheetButton = (Button)def.getWidget("insertQCWorksheetButton");
         addScreenHandler(insertQCWorksheetButton, new ScreenEventHandler<Object>() {

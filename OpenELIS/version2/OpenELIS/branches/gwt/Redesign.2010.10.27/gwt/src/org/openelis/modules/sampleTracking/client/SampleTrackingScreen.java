@@ -90,6 +90,8 @@ import org.openelis.modules.sample.client.StorageTab;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -208,7 +210,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                         }
                     }
                 }
-                trackingTree.expand();
+                trackingTree.expand(2);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -541,6 +543,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                         loadSampleItem(manager, event.getNode());
                         event.getNode().setDeferLoadingUntilExpand(false);
                     } catch (Exception e) {
+                    	e.printStackTrace();
                         com.google.gwt.user.client.Window.alert("leafOpened: " + e.getMessage());
                     }
                 }
@@ -640,6 +643,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         //NEED TO FIND A WAY TO DO THIS NOW
         trackingTree.addUnselectionHandler(new UnselectionHandler<Integer>() {
             public void onUnselection(UnselectionEvent<Integer> event) {
+            	/*
                 SampleDataBundle key;
 
                 if (state == State.UPDATE && event.getProposedSelect() != null) {
@@ -656,7 +660,31 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     showTabs(Tabs.BLANK);
                     DataChangeEvent.fire(trackingScreen);
                 }
+                */
+            	
+            	 if (event.getUnselectedItem() == -1) {
+                     manager = SampleManager.getInstance();
+                     showTabs(Tabs.BLANK);
+                     DataChangeEvent.fire(trackingScreen);
+                 }
             }
+        });
+        
+        trackingTree.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+
+        	public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
+        		SampleDataBundle key;
+
+                if (state == State.UPDATE ) {
+                    key = (SampleDataBundle)trackingTree.getNodeAt(event.getItem()).getData();
+
+                    if ( !key.getSampleManager().getSample().getId().equals(manager.getSample().getId())) {
+                        event.cancel();
+                        return;
+                    }
+                }
+        	}
+        	
         });
 
         trackingTree.addSelectionHandler(new SelectionHandler<Integer>() {
@@ -1276,7 +1304,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         Tabs tab;
 
         manager = SampleManager.getInstance();
-        trackingTree.clear();
+        trackingTree.setRoot(null);
         tab = null;
 
         manager.getSample().setDomain(domain);
@@ -1698,7 +1726,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 sample.setDeferLoadingUntilExpand(true);
                 sample.setType("sample");
                 sample.setData(sm.getBundle());
-                sample.setCell(0,sm.getSample().getAccessionNumber());
+                sample.setCell(0,sm.getSample().getAccessionNumber().toString());
                 try {
                     sample.setCell(1,DictionaryCache.getEntryFromId(sm.getSample().getStatusId()).getEntry());
                 } catch (Exception e) {
@@ -1766,25 +1794,25 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                                           treeUtil.formatTreeString(anDO.getMethodName()));
                         results.setCell(1,anDO.getStatusId());
 
-                        analysis = new Node(1);
+                        analysis = new Node(2);
                         analysis.setType("result");
                         analysis.setData(anBundle);
                         analysis.setCell(0,consts.get("analysis"));
                         results.add(analysis);
 
-                        storage = new Node(1);
+                        storage = new Node(2);
                         storage.setType("storage");
                         storage.setData(anBundle);
                         storage.setCell(0,consts.get("storage"));
 
                         results.add(storage);
-                        qaevent = new Node(1);
+                        qaevent = new Node(2);
                         qaevent.setType("qaevent");
                         qaevent.setData(anBundle);
                         qaevent.setCell(0,consts.get("qaEvents"));
                         results.add(qaevent);
 
-                        note = new Node(1);
+                        note = new Node(2);
                         note.setType("note");
                         note.setData(anBundle);
                         note.setCell(0,consts.get("notes"));
@@ -1792,26 +1820,26 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                         item.add(results);
                     }
                 }
-                storage = new Node(1);
+                storage = new Node(2);
                 storage.setType("storage");
                 storage.setData(siBundle);
-                storage.setCell(1,consts.get("storage"));
+                storage.setCell(0,consts.get("storage"));
                 item.add(storage);
                 row.add(item);
             }
-            note = new Node(1);
+            note = new Node(2);
             note.setType("note");
             note.setData(sBundle);
             note.setCell(0,consts.get("notes"));
             row.add(note);
 
-            qaevent = new Node(1);
+            qaevent = new Node(2);
             qaevent.setType("qaevent");
             qaevent.setData(sBundle);
             qaevent.setCell(0,consts.get("qaEvents"));
             row.add(qaevent);
 
-            aux = new Node(1);
+            aux = new Node(2);
             aux.setType("auxdata");
             aux.setData(sBundle);
             aux.setCell(0,consts.get("auxData"));

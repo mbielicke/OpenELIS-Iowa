@@ -284,6 +284,7 @@ UIRF Software License are applicable instead of those above.
                 </tab>
 <!-- start TAB 3 -->
                 <tab key="additionalTab" text="{resource:getString($constants,'additionalInfo')}">
+                  <VerticalPanel padding="0" spacing="0" height="247">
                   <TablePanel style="Form">
                     <row>
                       <text style="Prompt">
@@ -325,11 +326,12 @@ UIRF Software License are applicable instead of those above.
                       <textbox key="{meta:getAverageDailyUse()}" width="55" max="30" style="ScreenTextboxDisplayOnly" field="Integer" />
                     </row>
                   </TablePanel>
+                  </VerticalPanel>
                 </tab>
 <!-- start TAB 4 -->
                 <tab key="manufacturingTab" text="{resource:getString($constants,'manufacturing')}">
                   <VerticalPanel padding="0" spacing="0">
-                    <ScrollPanel width="604" height="247" style="ScreenTable">
+                    <ScrollPanel width="604" height="235" style="ScreenTable">
                       <html key="manufacturingPanel" width="100%" height="100%" />
                     </ScrollPanel>
                     <button key="editManufacturingButton" icon="StandardNoteButtonImage" text="{resource:getString($constants,'edit')}" style="Button"/>
@@ -338,7 +340,7 @@ UIRF Software License are applicable instead of those above.
 <!-- start TAB 5 -->
                 <tab key="noteTab" text="{resource:getString($constants,'note')}">
                   <VerticalPanel padding="0" spacing="0">
-                    <notes key="notesPanel" width="604" height="247" />
+                    <notes key="notesPanel" width="604" height="235" />
                     <button key="standardNoteButton" icon="StandardNoteButtonImage" text="{resource:getString($constants,'addNote')}" style="Button"/>
                   </VerticalPanel>
                 </tab>

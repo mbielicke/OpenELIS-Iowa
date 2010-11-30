@@ -703,7 +703,10 @@ public class SendoutOrderScreen extends Screen {
                 String desc;
 
                 desc = manager.getOrder().getDescription();
-                description.setValue(desc.hashCode(), desc);
+                if(desc != null)
+                	description.setValue(desc.hashCode(), desc);
+                else
+                	description.setValue(null,"");
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {

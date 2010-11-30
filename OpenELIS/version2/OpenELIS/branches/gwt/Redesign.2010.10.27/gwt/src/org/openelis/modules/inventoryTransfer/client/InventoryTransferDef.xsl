@@ -67,7 +67,7 @@ UIRF Software License are applicable instead of those above.
           <widget valign="top">
             <table key="receiptTable" rows="10" vscroll="ALWAYS" hscroll="ALWAYS">
               <col key="fromItemName" width="135" header="{resource:getString($constants,'fromItem')}">
-                <autoComplete width="120" required="true">
+                <autoComplete required="true">
                   <col width="100" header="{resource:getString($constants,'name')}" />
                   <col width="110" header="{resource:getString($constants,'store')}" />
                   <col width="160" header="{resource:getString($constants,'location')}" />
@@ -84,7 +84,7 @@ UIRF Software License are applicable instead of those above.
                 <textbox key="inventoryReceiptgetQuantityReceived" required = "true" field="Integer" />
               </col>
               <col key="toItemName" width="135"  header="{resource:getString($constants,'toItem')}">
-                <autoComplete width="120" case="LOWER" required = "true">
+                <autoComplete width="400" tableWidth="400" case="LOWER" required = "true">
                   <col width="100" header="{resource:getString($constants,'name')}" />
                   <col width="150" header="{resource:getString($constants,'store')}" />
                   <col width="150" header="{resource:getString($constants,'dispensedUnits')}" />

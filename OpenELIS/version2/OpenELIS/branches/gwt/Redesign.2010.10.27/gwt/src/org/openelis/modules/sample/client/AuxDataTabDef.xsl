@@ -48,7 +48,7 @@ UIRF Software License are applicable instead of those above.
       <TablePanel padding="0" spacing="0">
         <row>
           <widget colspan="6">
-            <table key="auxValsTable" rows="{string($maxRows)}" vscroll="ALWAYS" hscroll="ALWAYS">
+            <table width="688" key="auxValsTable" rows="{string($maxRows)}" vscroll="ALWAYS" hscroll="ALWAYS">
               <col width="85" header="{resource:getString($constants,'reportable')}">
                 <check />
               </col>

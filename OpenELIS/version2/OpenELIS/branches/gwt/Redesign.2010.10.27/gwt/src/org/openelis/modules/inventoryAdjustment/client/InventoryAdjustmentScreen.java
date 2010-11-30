@@ -708,7 +708,7 @@ public class InventoryAdjustmentScreen extends Screen {
                 if (result != null) {
                     model = new ArrayList<Item<Integer>>();
                     for (InventoryAdjustmentDO entry : result)
-                        model.add(new Item<Integer>(entry.getId(), entry.getId().toString(), entry.getAdjustmentDate()));
+                        model.add(new Item<Integer>(entry.getId(), entry.getId(), entry.getAdjustmentDate()));
                 }
                 return model;
             }

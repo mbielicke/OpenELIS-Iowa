@@ -43,7 +43,7 @@ UIRF Software License are applicable instead of those above.
         <row>
           <table key="storageTable" rows="8" vscroll="ALWAYS" hscroll="ALWAYS" >
             <col width="155" header="{resource:getString($constants,'user')}">
-              <label field="Integer" />
+              <label field="String" />
             </col>
             <col width="259" header="{resource:getString($constants,'location')}">
               <autoComplete key="" width="215" case="LOWER" required="true">

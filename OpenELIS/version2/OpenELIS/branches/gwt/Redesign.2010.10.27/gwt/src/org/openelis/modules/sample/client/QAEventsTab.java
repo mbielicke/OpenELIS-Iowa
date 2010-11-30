@@ -105,7 +105,7 @@ public class QAEventsTab extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 sampleQATable.setEnabled(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                             .contains(event.getState()));
-                sampleQATable.setQueryMode(event.getState() == State.QUERY);
+                sampleQATable.setQueryMode(false);//event.getState() == State.QUERY);
             }
         });
         
@@ -218,7 +218,7 @@ public class QAEventsTab extends Screen {
                                                                                State.UPDATE)
                                                                            .contains(
                                                                                      event.getState())));
-                analysisQATable.setQueryMode(event.getState() == State.QUERY);
+                analysisQATable.setQueryMode(false);//event.getState() == State.QUERY);
             }
         });
         

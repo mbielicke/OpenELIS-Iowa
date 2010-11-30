@@ -26,19 +26,37 @@
 package org.openelis.modules.sample.client;
 
 import org.openelis.gwt.widget.CheckBox;
-import org.openelis.gwt.widget.CheckField;
 import org.openelis.gwt.widget.Label;
-import org.openelis.gwt.widget.StringField;
-import org.openelis.gwt.widget.table.TableColumn;
-import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.CellEditor;
+import org.openelis.gwt.widget.table.CellRenderer;
+import org.openelis.gwt.widget.table.CheckBoxCell;
+import org.openelis.gwt.widget.table.Column;
+import org.openelis.gwt.widget.table.LabelCell;
+import org.openelis.gwt.widget.table.Row;
 
-import com.google.gwt.user.client.ui.HasAlignment;
-import com.google.gwt.user.client.ui.Widget;
+public class SampleResultTableColumn extends Column {
+    protected LabelCell<String>         label;
+    protected CheckBoxCell              check;
+    
+    @Override
+    public CellEditor getCellEditor(int r) {
+    	Row row;
+    	
+    	row = table.getRowAt(r);
+    	
+    	return (CellEditor)getCellWidget(row);
+    }
+    
+    @Override
+    public CellRenderer getCellRenderer(int r) {
+    	Row row;
+    	
+    	row = table.getRowAt(r);
+    	
+    	return (CellRenderer)getCellWidget(row);
+    }
 
-public class SampleResultTableColumn extends TableColumn {
-    protected Label                 label;
-    protected CheckBox              check;
-
+    /*
     public Widget getDisplayWidget(TableDataRow row) {
         setColumnWidget(getCellWidget(row));
         return super.getDisplayWidget(row);
@@ -54,34 +72,36 @@ public class SampleResultTableColumn extends TableColumn {
         setColumnWidget(getCellWidget(row));
         return super.getWidgetEditor(row);
     }
-
-    private CheckBox getCheckBox(){
-        CheckField field;
+    */
+   
+    private CheckBoxCell getCheckBox(){
+        CheckBox cb;
         if(check == null){
-            check = new CheckBox();
+            cb = new CheckBox();
             
-            field = new CheckField();
-            field.required = false;
-            check.setField(field);
+            check = new CheckBoxCell(cb);
         }
-        setAlign(HasAlignment.ALIGN_CENTER);
+        //setAlign(HasAlignment.ALIGN_CENTER);
         return check;
     }
     
-    private Label getLabel() {
+    private LabelCell<String> getLabelCell() {
+    	Label<String> lb;
+    	
         if (label == null) {
-            label = new Label();
-            label.setStyleName("ScreenLabel");
-            label.setField(new StringField());
+            lb = new Label<String>();
+            lb.setStyleName("ScreenLabel");
+            
+            label = new LabelCell<String>(lb);
         }
-        setAlign(HasAlignment.ALIGN_LEFT);
+        //setAlign(HasAlignment.ALIGN_LEFT);
         return label;
     }
 
-    private Widget getCellWidget(TableDataRow row) {
+    private Object getCellWidget(Row row) {
         Boolean isHeader;
         
-        isHeader = (Boolean)row.data;
+        isHeader = (Boolean)row.getData();
         
         if(isHeader == null || isHeader.booleanValue())
             return getLabel();

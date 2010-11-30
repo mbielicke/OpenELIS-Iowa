@@ -255,7 +255,8 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                 // any new data that belongs to the current row
                 // 
                 if (state ==State.ADD || state == State.UPDATE)
-                    ((Focusable)def.getPanel().focused).setFocus(false);
+                    //((Focusable)def.getPanel().focused).setFocus(false);
+                	setFocus(null);
             }            
         });
         
@@ -762,6 +763,8 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
         InventoryReceiptManager prevMan, currMan;                
         Row row;     
         OrderManager order;
+        
+        setFocus(null);
         
         if ( !validate()) {
             window.setError(consts.get("correctErrors"));

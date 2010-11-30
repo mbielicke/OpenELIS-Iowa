@@ -48,6 +48,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.widget.AutoCompleteValue;
 import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.DateHelper;
@@ -102,9 +103,15 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
 
     private void initialize() {
         final AuxDataTab tab = this;
+        AuxTableColumn auxCol;
 
         auxValsTable = (Table)def.getWidget("auxValsTable");
-        ((AuxTableColumn)auxValsTable.getColumnAt(2)).setScreen(this);
+        
+        auxCol = new AuxTableColumn();
+        auxCol.setScreen(this);
+        auxValsTable.setColumnAt(2, auxCol);
+        auxCol.setWidth(303);
+        
         addScreenHandler(auxValsTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
                 auxValsTable.setModel(getTableModel());
@@ -443,7 +450,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             //auxValsTable.fireEvents(true);
 
         } catch (Exception e) {
-
+        	e.printStackTrace();
             com.google.gwt.user.client.Window.alert(e.getMessage());
         }
     }
@@ -470,7 +477,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             if (dictionary == null)
                 throw new Exception();
 
-            return new Item<Integer>(new Integer(value), dictionary);
+            return new AutoCompleteValue(new Integer(value), dictionary);
         }
 
         return null;
