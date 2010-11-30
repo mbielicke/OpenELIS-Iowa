@@ -29,136 +29,161 @@ import java.util.ArrayList;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.screen.Screen;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.widget.AutoComplete;
-import org.openelis.gwt.widget.calendar.Calendar;
+import org.openelis.gwt.widget.DateHelper;
 import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.TextBox.Case;
+import org.openelis.gwt.widget.calendar.Calendar;
+import org.openelis.gwt.widget.table.AutoCompleteCell;
+import org.openelis.gwt.widget.table.CalendarCell;
+import org.openelis.gwt.widget.table.CellEditor;
+import org.openelis.gwt.widget.table.CellRenderer;
 import org.openelis.gwt.widget.table.Column;
+import org.openelis.gwt.widget.table.Container;
+import org.openelis.gwt.widget.table.LabelCell;
 import org.openelis.gwt.widget.table.Row;
+import org.openelis.gwt.widget.table.Table;
+import org.openelis.gwt.widget.table.TextBoxCell;
 
+import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.Widget;
 
 public class AuxTableColumn extends Column {
     protected GetMatchesHandler     screen;
-    protected TextBox<String>       alphaTextBox;
-    protected TextBox<Integer>      numericTextBox;
-    protected TextBox<Double>       numTextBox;
-    protected Calendar              calendar;
-    protected AutoComplete          autoComplete;
-    protected Label                 label;
+    protected TextBoxCell<String>   alphaTextBox;
+    protected TextBoxCell<Integer>  numericTextBox;
+    protected TextBoxCell<Double>   numTextBox;
+    protected CalendarCell          calendar;
+    protected AutoCompleteCell      autoComplete;
+    protected LabelCell<String>     label;
 
     protected Integer               alphaLowerId, alphaUpperId, alphaMixedId, timeId, numericId,
                     dateId, dateTimeId, dictionaryId;
-
-    public Widget getDisplayWidget(TableDataRow row) {
-        setColumnWidget(getCellWidget(row));
-        return super.getDisplayWidget(row);
+    
+    @Override
+    public CellEditor getCellEditor(int r) {
+    	Row row;
+    	
+    	row = table.getRowAt(r);
+    	
+    	return (CellEditor)getCellWidget(row);
     }
-
-    public void loadWidget(Widget widget, TableDataRow row, int modelIndex) {
-        setColumnWidget(getCellWidget(row));
-        super.loadWidget(widget, row, modelIndex);
+    
+    @Override
+    public CellRenderer getCellRenderer(int r) {
+    	Row row;
+    	
+    	row = table.getRowAt(r);
+    	
+    	return (CellRenderer)getCellWidget(row);
     }
-
-    public Widget getWidgetEditor(TableDataRow row) {
-        setColumnWidget(getCellWidget(row));
-        return super.getWidgetEditor(row);
-    }
-
-    private AutoComplete<Integer> getAutoComplete(Case boxCase) {
-        if (autoComplete == null) {
-            autoComplete = new AutoComplete<Integer>();
-            autoComplete.setWidth("270");
-            autoComplete.setTableWidth("auto");
-            autoComplete.setField(new IntegerField());
-            autoComplete.textbox.setLength(80);
-
-            ArrayList<TableColumn> cols = new ArrayList<TableColumn>();
-            TableColumn col = new TableColumn();
-            col.controller = autoComplete;
-            col.setCurrentWidth(290);
-            Label label = new Label();
-            label.setField(new StringField());
-            col.setColumnWidget(label);
-            cols.add(col);
-            autoComplete.setColumns(cols);
-
-            autoComplete.init();
-            autoComplete.addGetMatchesHandler(screen);
-            autoComplete.enable(true);
-        }
-
-        autoComplete.setCase(boxCase);
-
+    
+    private AutoCompleteCell getAutoComplete(Case boxCase) {
+    	AutoComplete auto;
+    	Table table;
+    	Column column;
+    	
+    	if(autoComplete == null) {
+    	
+    		auto = new AutoComplete();
+    		auto.setWidth("270");
+    		auto.setMaxLength(80);
+        
+    		table = new Table();
+    		table.setVisibleRows(10);
+    		column = table.addColumn();
+    		column.setWidth(290);
+        
+    		auto.setPopupContext(table);
+    		auto.addGetMatchesHandler(screen);
+    		auto.setEnabled(true);
+    		
+    		autoComplete = new AutoCompleteCell(auto);
+    	}
+        
+    	((AutoComplete)autoComplete.getWidget()).setCase(boxCase);
         return autoComplete;
     }
 
-    private TextBox<String> getAlphaTextbox(Case boxCase) {
+    private TextBoxCell<String> getAlphaTextbox(Case boxCase) {
+    	TextBox<String> alpha;
+    	
         if (alphaTextBox == null) {
-            alphaTextBox = new TextBox<String>();
-            alphaTextBox.setStyleName("ScreenTextBox");
-            alphaTextBox.setField(new StringField());
-            alphaTextBox.setLength(80);
+            alpha = new TextBox<String>();
+            alpha.setStyleName("ScreenTextBox");
+            alpha.setMaxLength(80);
+            
+            alphaTextBox = new TextBoxCell<String>(alpha);
         }
 
-        alphaTextBox.setCase(boxCase);
-        alphaTextBox.setQueryMode( ((Screen)screen).state == State.QUERY);
+        ((TextBox)alphaTextBox.getWidget()).setCase(boxCase);
+        
+        //alphaTextBox.setQueryMode( ((Screen)screen).state == State.QUERY);
 
         return alphaTextBox;
     }
 
-    private TextBox getNumericTextbox() {
-        if(((Screen)screen).state == State.QUERY)
-            return getAlphaTextbox(Case.MIXED);
+    private TextBoxCell<Integer> getNumericTextbox() {
+    	TextBox<Integer> numeric;
+        //if(((Screen)screen).state == State.QUERY)
+        //    return getAlphaTextbox(Case.MIXED);
         
         if (numericTextBox == null) {
-            numericTextBox = new TextBox<Integer>();
-            numericTextBox.setStyleName("ScreenTextBox");
-            numericTextBox.setField(new IntegerField());
-            numericTextBox.setLength(80);
+            numeric = new TextBox<Integer>();
+            numeric.setStyleName("ScreenTextBox");
+            numeric.setMaxLength(80);
+            
+            numericTextBox = new TextBoxCell<Integer>(numeric);
         }
-        
+                
         return numericTextBox;
     }
 
-    private CalendarLookUp getCalendar(byte begin, byte end) {
+    private CalendarCell getCalendar(byte begin, byte end) {
+    	Calendar cal;
+    	
         if (calendar == null) {
-            calendar = new CalendarLookUp();
-            calendar.setStyleName("ScreenCalendar");
+            cal = new Calendar();
+            cal.setStyleName("ScreenCalendar");
+            
+            calendar = new CalendarCell(cal);
         }
 
-        DateField field = new DateField();
-        field.setBegin(begin);
-        field.setEnd(end);
+        DateHelper helper = new DateHelper();
+        helper.setBegin(begin);
+        helper.setEnd(end);
 
         if (end == Datetime.DAY)
-            field.setFormat( ((Screen)screen).consts.get("datePattern"));
+            helper.setPattern( ((Screen)screen).consts.get("datePattern"));
         else
-            field.setFormat( ((Screen)screen).consts.get("dateTimePattern"));
+            helper.setPattern( ((Screen)screen).consts.get("dateTimePattern"));
 
-        calendar.setField(field);
-        calendar.init(begin, end, false);
+        ((Calendar)calendar.getWidget()).setHelper(helper);
+        //calendar.init(begin, end, false);
         //calendar.setQueryMode( ((Screen)screen).state == State.QUERY);
 
         return calendar;
     }
 
-    private Label getLabel() {
-        if (label == null) {
-            label = new Label();
-            label.setStyleName("ScreenLabel");
-            label.setField(new StringField());
+    private LabelCell<String> getLabelCell() {
+    	Label lb;
+        
+    	if (label == null) {
+            lb = new Label();
+            lb.setStyleName("ScreenLabel");
+             label = new LabelCell<String>(lb);
         }
 
         return label;
     }
 
-    private Widget getCellWidget(TableDataRow row) {
+    private Object getCellWidget(Row row) {
         Integer typeId;
         typeId = getCellTypeId(row);
 
@@ -178,7 +203,7 @@ public class AuxTableColumn extends Column {
         }
 
         if (typeId == null)
-            return getLabel();
+            return getLabelCell();
         else if (alphaLowerId.equals(typeId))
             return getAlphaTextbox(Case.LOWER);
         else if (alphaUpperId.equals(typeId))
@@ -199,16 +224,19 @@ public class AuxTableColumn extends Column {
         return null;
     }
 
-    private Integer getCellTypeId(TableDataRow row) {
-        AuxDataBundle data = (AuxDataBundle)row.data;
+
+
+    public void setScreen(GetMatchesHandler screen) {
+        this.screen = screen;
+    }
+    
+    
+    private Integer getCellTypeId(Row row) {
+        AuxDataBundle data = (AuxDataBundle)row.getData();
 
         if (data == null)
             return null;
         else
             return data.fieldDO.getTypeId();
-    }
-
-    public void setScreen(GetMatchesHandler screen) {
-        this.screen = screen;
     }
 }

@@ -119,7 +119,7 @@ UIRF Software License are applicable instead of those above.
                         <col width="200" header="{resource:getString($constants,'storageLocationItem')}" />
                         <col width="100" header="{resource:getString($constants,'user')}" />
                         <col width="150" header="{resource:getString($constants,'checkIn')}" />
-                        <col width="150" header="{resource:getString($constants,'checkOut')}" />
+                        <col width="160" header="{resource:getString($constants,'checkOut')}" />
                       </columns>
                       <node key="locationName">
                         <col>
@@ -155,18 +155,18 @@ UIRF Software License are applicable instead of those above.
                   <widget>
                     <table key="storageHistoryTable" rows="11" vscroll="ALWAYS" hscroll="ALWAYS" tab="{meta:getStorageLocationName()},{meta:getStorageLocationIsAvailable()}">
                       <col key="{meta:getReferenceId()}" width="100" header="{resource:getString($constants,'storageLocation')}">
-                        <textbox field="Integer" />
+                        <textbox field="String" />
                       </col>
                       <col key="{meta:getReferenceId()}" width="100" header="{resource:getString($constants,'item')}">
-                        <textbox field="Integer" />
+                        <textbox field="String" />
                       </col>
                       <col key="{meta:getSystemUserId()}" width="100" header="{resource:getString($constants,'user')}">
                         <textbox field="String" />
                       </col>
-                      <col key="{meta:getCheckin()}" width="147" header="{resource:getString($constants,'checkIn')}">
+                      <col key="{meta:getCheckin()}" width="150" header="{resource:getString($constants,'checkIn')}">
                         <textbox pattern="{resource:getString($constants,'dateTimePattern')}" field="Date" />
                       </col>
-                      <col key="{meta:getCheckout()}" width="150" header="{resource:getString($constants,'checkOut')}">
+                      <col key="{meta:getCheckout()}" width="160" header="{resource:getString($constants,'checkOut')}">
                         <textbox pattern="{resource:getString($constants,'dateTimePattern')}" field="Date" />
                       </col>
                     </table>

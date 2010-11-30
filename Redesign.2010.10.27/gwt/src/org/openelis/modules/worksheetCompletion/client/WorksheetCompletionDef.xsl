@@ -217,9 +217,9 @@ UIRF Software License are applicable instead of those above.
                 </table>
                 <widget style="TableButtonFooter">
                   <HorizontalPanel>
-                    <button key="editWorksheetButton" icon="EditMultipleButtonImage" text="{resource:getString($constants,'editWorksheet')}" style="Button"/>
-                    <button key="loadFromEditButton" icon="LoadButtonImage" text="{resource:getString($constants,'loadFromEditFile')} "style="Button"/>
-                    <button key="loadFilePopupButton" icon="LoadButtonImage" text="{resource:getString($constants,'loadFromFile')}" style="Button"/>
+                    <button key="editWorksheetButton" icon="EditMultipleButtonImage" text="{resource:getString($constants,'editWorksheet')}" style="Button" />
+                    <button key="loadFromEditButton" icon="LoadButtonImage" text="{resource:getString($constants,'loadFromEditFile')}" style="Button" />
+                    <button key="loadFilePopupButton" icon="LoadButtonImage" text="{resource:getString($constants,'loadFromFile')}" style="Button" />
                   </HorizontalPanel>
                 </widget>
               </VerticalPanel>

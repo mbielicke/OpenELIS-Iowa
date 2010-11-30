@@ -384,6 +384,7 @@ public class StorageTab extends Screen {
             DataChangeEvent.fire(this);
 
         } catch (Exception e) {
+        	e.printStackTrace();
             com.google.gwt.user.client.Window.alert("storageTab draw: "+ e.getMessage());
         }
 

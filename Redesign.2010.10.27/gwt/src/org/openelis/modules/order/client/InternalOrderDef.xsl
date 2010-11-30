@@ -148,16 +148,16 @@ UIRF Software License are applicable instead of those above.
               </row>
             </TablePanel>
 <!-- TAB PANEL -->
-            <TabPanel key="tabPanel" width="605" height="305">
+            <TabPanel key="tabPanel" width="605" height="315">
 <!-- TAB 1 (Items) -->
               <tab key="itemTab" text="{resource:getString($constants,'items')}" tab="itemTable, itemTable">
                 <VerticalPanel padding="0" spacing="0">
-                  <table key="itemTable" rows="11" vscroll="ALWAYS" hscroll="ALWAYS">
+                  <table key="itemTable" width="605" rows="11" vscroll="ALWAYS" hscroll="ALWAYS">
                     <col key="{meta:getOrderItemQuantity()}" width="65" align="right" header="{resource:getString($constants,'quantity')}">
                       <textbox field="Integer" required="true" />
                     </col>
                     <col key="{meta:getOrderItemInventoryItemName()}" width="275" header="{resource:getString($constants,'inventoryItem')}">
-                      <autoComplete width="auto" case="LOWER" field="Integer" required="true">
+                      <autoComplete case="LOWER" field="Integer" required="true">
                         <col width="155" header="{resource:getString($constants,'name')}" />
                         <col width="110" header="{resource:getString($constants,'store')}">
                           <dropdown width="110" field="Integer" />
@@ -188,7 +188,7 @@ UIRF Software License are applicable instead of those above.
                       <label field="String" />
                     </col>
                     <col key="{meta:getInventoryReceiptQuantityReceived()}" width="65" align="right" header="{resource:getString($constants,'quantity')}">
-                      <label field="String" />
+                      <label field="Integer" />
                     </col>
                     <col key="" width="85" header="{resource:getString($constants,'lotNum')}">
                       <label field="String" />

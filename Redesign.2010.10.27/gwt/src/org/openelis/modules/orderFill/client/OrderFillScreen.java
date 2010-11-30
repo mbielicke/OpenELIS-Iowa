@@ -54,6 +54,7 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.BeforeCloseEvent;
 import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -253,7 +254,8 @@ public class OrderFillScreen extends Screen {
         addScreenHandler(orderTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 Column process;
-                ArrayList list;
+                QueryData qd;
+                
 
                 orderTable.setEnabled(true);
                 orderTable.setQueryMode(event.getState() == State.QUERY);
@@ -261,10 +263,12 @@ public class OrderFillScreen extends Screen {
                 if (state == State.QUERY) {
                     process = orderTable.getColumnAt(0);
                     process.setEnabled(false);
-
-                    list = new ArrayList<Integer>();
-                    list.add(status_pending);
-                    orderTable.setValueAt(0, 2, list);
+                   
+                    qd = new QueryData();
+                    qd.type = QueryData.Type.INTEGER;
+                    qd.query = String.valueOf(status_pending);
+                    qd.key = OrderMeta.getStatusId();
+                    orderTable.setValueAt(0, 2, qd);
                 }
             }
         });

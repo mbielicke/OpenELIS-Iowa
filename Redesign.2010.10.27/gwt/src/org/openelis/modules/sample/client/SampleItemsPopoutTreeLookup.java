@@ -141,6 +141,11 @@ public class SampleItemsPopoutTreeLookup extends Screen {
                 Node treeItem;
                 Label label;
                 
+                if(!EnumSet.of(State.UPDATE,State.ADD).contains(state)) {
+                	event.cancel();
+                	return;
+                }
+                
                 try{
                     treeItem = sampleTreePopout.getNodeAt(event.getDragObject().getIndex());
                     if(!treeItem.getType().equals("analysis"))
@@ -160,12 +165,16 @@ public class SampleItemsPopoutTreeLookup extends Screen {
         
         sampleTreePopout.getDropController().addBeforeDropHandler(new BeforeDropHandler<DragItem>() {
             public void onBeforeDrop(BeforeDropEvent<DragItem> event) {
+            	
+             
                 AnalysisViewDO anDO;
                 AnalysisManager am;
                 Node dropTarget = (Node)event.getDropTarget();
                 Node dragItem = sampleTreePopout.getNodeAt(event.getDragObject().getIndex());
                 SampleDataBundle dragKey = (SampleDataBundle)dragItem.getData();
                 SampleDataBundle dropKey = (SampleDataBundle)dropTarget.getData();
+               
+                
                 try {
                     anDO = manager.getSampleItems()
                                   .getAnalysisAt(dragKey.getSampleItemIndex())
@@ -175,6 +184,8 @@ public class SampleItemsPopoutTreeLookup extends Screen {
                         manager.getSampleItems().getAnalysisAt(dragKey.getSampleItemIndex()).unlinkPrepTest(dragKey.getAnalysisIndex());
                     
                     manager.getSampleItems().moveAnalysis(dragKey,dropKey);
+                    
+                    
                     
                     //reset the dropped row data bundle
                     am = manager.getSampleItems().getAnalysisAt(dropKey.getSampleItemIndex());
@@ -187,14 +198,35 @@ public class SampleItemsPopoutTreeLookup extends Screen {
             }
         });
         
+        sampleTreePopout.getDropController().addDropHandler(new DropHandler<DragItem>() {
+        	public void onDrop(DropEvent<DragItem> event) {
+        		int dragIndex,dropIndex;
+            	Node dragNode, dropNode;
+            	
+            	dragIndex = event.getDragObject().getIndex();
+                dropIndex = sampleTreePopout.getDropController().getDropIndex();
+                dropNode = sampleTreePopout.getNodeAt(dropIndex);                
+                dragNode = sampleTreePopout.removeNodeAt(dragIndex);
+                
+                if(dropIndex > dragIndex && sampleTreePopout.getDropController().getDropPosition() == DropPosition.ABOVE) 
+                    dropIndex--;
+                
+                sampleTreePopout.addNodeAt(dropNode,dragNode);
+                
+        	}
+        });
+        
         sampleTreePopout.getDropController().addDropEnterHandler(new DropEnterHandler<DragItem>() {
             public void onDropEnter(DropEnterEvent<DragItem> event) {
+            
                 Node dropTarget = (Node)event.getDropTarget();
                 Node dragItem = sampleTreePopout.getNodeAt(event.getDragObject().getIndex());
                 
                 if(!dropTarget.getType().equals("sampleItem") || event.getDropPosition() != DropPosition.ON || 
                                 (dropTarget.getType().equals("sampleItem") && dropTarget.equals(dragItem.getParent())))
                     event.cancel();
+                
+                
             }
         });
         

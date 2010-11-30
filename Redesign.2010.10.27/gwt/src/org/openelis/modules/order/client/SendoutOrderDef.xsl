@@ -226,7 +226,7 @@ UIRF Software License are applicable instead of those above.
 
 <!-- TAB PANEL -->
 
-            <TabPanel key="tabPanel" width="605" height="297">
+            <TabPanel key="tabPanel" width="605" height="315">
 
 <!-- TAB 1 (items) -->
 
@@ -247,7 +247,7 @@ UIRF Software License are applicable instead of those above.
                         </col>
                       </autoComplete>
                     </col>
-                    <col key="{meta:getOrderItemInventoryItemStoreId()}" width="238" header="{resource:getString($constants,'store')}">
+                    <col key="{meta:getOrderItemInventoryItemStoreId()}" width="245" header="{resource:getString($constants,'store')}">
                       <dropdown width="235" field="Integer" />
                     </col>
                   </table>
@@ -270,13 +270,13 @@ UIRF Software License are applicable instead of those above.
                       <label field="String" />
                     </col>
                     <col key="{meta:getInventoryReceiptQuantityReceived()}" width="65" align="right" header="{resource:getString($constants,'quantity')}">
-                      <label field="String" />
+                      <label field="Integer" />
                     </col>
                     <col key="" width="85" header="{resource:getString($constants,'lotNum')}">
                       <label field="String" />
                     </col>
-                    <col key="" width="92" header="{resource:getString($constants,'expDate')}">
-                      <label field="String" />
+                    <col key="" width="105" header="{resource:getString($constants,'expDate')}">
+                      <label field="Date" begin="0" end="2" />
                     </col>
                   </table>
                 </VerticalPanel>

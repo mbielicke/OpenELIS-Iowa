@@ -34,7 +34,7 @@
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="{resource:getString($constants,'itemsAndAnalyses')}">
-      <VerticalPanel padding="0" spacing="0">
+      <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
         <tree key="itemsTestsTree" rows="25" vscroll="ALWAYS" hscroll="ALWAYS">
           <columns>
             <col width="330" header="{resource:getString($constants,'itemAnalyses')}" />

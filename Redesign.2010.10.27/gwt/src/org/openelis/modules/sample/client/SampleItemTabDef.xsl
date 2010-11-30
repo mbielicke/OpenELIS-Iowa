@@ -77,6 +77,7 @@ UIRF Software License are applicable instead of those above.
           <dropdown key="{meta:getItemUnitOfMeasureId()}" width="150" field="Integer" />
         </row>
       </TablePanel>
+       
     </VerticalPanel>
   </xsl:template>
 </xsl:stylesheet>

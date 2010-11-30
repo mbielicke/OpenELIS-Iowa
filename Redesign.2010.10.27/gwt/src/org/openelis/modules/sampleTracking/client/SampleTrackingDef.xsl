@@ -63,7 +63,7 @@ UIRF Software License are applicable instead of those above.
             <button action="collapse" icon="collapseButtonImage" text="{resource:getString($constants,'collapse')}" key="collapse" style="ButtonPanelButton"/>
             <button action="similar" icon="similarButtonImage" text="{resource:getString($constants,'similar')}" key="similar" style="ButtonPanelButton"/>
             <xsl:call-template name="buttonPanelDivider" />
-            <menu>
+            <menu selfShow="true" showBelow="true">
               <menuDisplay>
                 <button action="query" key="query" shortcut="ctrl+q" style="ButtonPanelButton" toggle="true">
                   <Grid cols="3">
@@ -92,7 +92,7 @@ UIRF Software License are applicable instead of those above.
             <xsl:call-template name="commitButton" />
             <xsl:call-template name="abortButton" />
             <xsl:call-template name="buttonPanelDivider" />
-            <menu key="optionsMenu" selfShow="true" showBelow="true" style="topBarItemHolder">
+            <menu key="optionsMenu" selfShow="true" showBelow="true">
                 <menuDisplay>
                   <button style="ButtonPanelButton" action="option">
                     <Grid cols="2">
@@ -123,7 +123,7 @@ UIRF Software License are applicable instead of those above.
           <AbsolutePanel key="collapsePanel" style="LeftSidePanel">
             <HorizontalPanel width="225">
               <VerticalPanel>
-                <tree key="trackingTree" rows="14">
+                <tree key="trackingTree" rows="14" vscroll="ALWAYS" hscroll="ALWAYS">
                   <columns>
                     <col header="Sample" width="200" />
                     <col header="Type/Status" width="100" />
@@ -181,10 +181,10 @@ UIRF Software License are applicable instead of those above.
                 <widget halign="center">
                   <HorizontalPanel>
                     <button enabled="false" key="prevPage" style="Button">
-                      <AbsolutePanel style="prevNavIndex" />
+                      <AbsolutePanel style="PreviousButtonImage" />
                     </button>
                     <button enabled="false" key="nextPage" style="Button">
-                      <AbsolutePanel style="nextNavIndex" />
+                      <AbsolutePanel style="NextButtonImage" />
                     </button>
                   </HorizontalPanel>
                 </widget>
@@ -230,7 +230,7 @@ UIRF Software License are applicable instead of those above.
               </widget>
             </row>
               </TablePanel>
-              <TabPanel height="244" key="tabPanel" width="715">
+              <TabPanel height="247" key="tabPanel" width="715">
 <!-- Blank Default deck -->
                 <tab text="" visible="false">
                   <AbsolutePanel />

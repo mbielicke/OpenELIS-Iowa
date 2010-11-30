@@ -192,6 +192,9 @@ public class BuildKitsScreen extends Screen {
                 try {
                     if (manager == null || manager.getInventoryItem() == null)
                         name.setValue(null, "");
+   // Travis Added else after testing that the field did not clear on abort
+                    else
+                    	name.setValue(manager.getInventoryItemId(),manager.getInventoryItem().getInventoryItem().getName());
                 } catch (Exception e) {
                     e.printStackTrace();
                     com.google.gwt.user.client.Window.alert(e.getMessage());

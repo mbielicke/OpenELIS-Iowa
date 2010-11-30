@@ -286,7 +286,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         revision = (TextBox)def.getWidget(SampleMeta.getAnalysisRevision());
         addScreenHandler(revision, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                revision.setValue(Util.toString(analysis.getRevision()));
+                revision.setValue(analysis.getRevision());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {

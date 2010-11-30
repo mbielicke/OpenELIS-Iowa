@@ -44,7 +44,7 @@
     </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="{resource:getString($constants,'sampleOrganization')}">
-      <VerticalPanel padding="0" spacing="0">
+      <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
         <TablePanel padding="0" spacing="0">
           <row>
             <table key="sampleOrganizationTable" rows="10" vscroll="ALWAYS" hscroll="ALWAYS" tab="sampleOrganizationTable,sampleOrganizationTable">

@@ -52,7 +52,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen name="{resource:getString($constants,'reviewAndRelease')}">
-      <VerticalPanel padding="0" spacing="0">
+      <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
 <!--button panel code-->
         <AbsolutePanel spacing="0" style="ButtonPanelContainer">
           <HorizontalPanel>
@@ -78,7 +78,7 @@ UIRF Software License are applicable instead of those above.
             <xsl:call-template name="commitButton" />
             <xsl:call-template name="abortButton" />
             <xsl:call-template name="buttonPanelDivider" />
-            <menu key="optionsMenu" selfShow="true" showBelow="true" style="topBarItemHolder">
+            <menu key="optionsMenu" selfShow="true" showBelow="true">
                 <menuDisplay>
                   <button style="ButtonPanelButton" action="option">
                     <Grid cols="2">
@@ -90,14 +90,16 @@ UIRF Software License are applicable instead of those above.
                   </button>
                 </menuDisplay>
                 <menuItem key="unreleaseAnalysis" enabled="false" icon="unreleaseIcon" display="Unrelease Analysis" />
-                <menuItem>
+                <menu>
   					<menuDisplay>
-  				    	<HorizontalPanel>
-     				    <check key="previewReport"/>
-     					<text style="Prompt">Preview Final Report</text>
-     					</HorizontalPanel>
+  				    	<Grid cols="2">
+  				    	  <row>
+     				    	<check key="previewReport"/>
+     						<text style="Prompt">Preview Final Report</text>
+     					  </row>
+     					</Grid>
  					</menuDisplay>
- 				</menuItem>
+ 				</menu>
                 <separator/>
                 <menuItem key="historySample" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historySample')}" />
                 <menuItem key="historySampleSpec" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historySampleSpec')}" />
@@ -120,7 +122,7 @@ UIRF Software License are applicable instead of those above.
           <col key="{meta:getAnalysisTestName()}" width="192" header="Test" sort="true">
             <textbox field="String" />
           </col>
-          <col key="{meta:getAnalysisMethodName()}" width="192" header="Method" sort="true">
+          <col key="{meta:getAnalysisMethodName()}" width="210" header="Method" sort="true">
             <textbox field="String" />
           </col>
           <col key="{meta:getAnalysisStatusId()}" width="101" header="Analysis Status" sort="true">

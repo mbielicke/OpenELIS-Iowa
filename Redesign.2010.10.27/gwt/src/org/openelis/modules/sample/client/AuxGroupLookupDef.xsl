@@ -44,7 +44,7 @@
     </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="{resource:getString($constants,'auxGroupSelection')}">
-      <VerticalPanel padding="0" spacing="0">
+      <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
         <table key="auxGroupsTable" rows="10" multiSelect="true" vscroll="ALWAYS" hscroll="ALWAYS">
           <col width="205" header="{resource:getString($constants,'name')}">
             <label field="String" />

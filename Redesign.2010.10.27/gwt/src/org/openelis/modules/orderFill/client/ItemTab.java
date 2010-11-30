@@ -802,7 +802,8 @@ public class ItemTab extends Screen {
                 
         item.setDeferLoadingUntilExpand(false);
         
-        item.setData(list);                      
+        item.setData(list);  
+        
     }
     
     private Node getTopLevelItem(OrderItemViewDO data) {

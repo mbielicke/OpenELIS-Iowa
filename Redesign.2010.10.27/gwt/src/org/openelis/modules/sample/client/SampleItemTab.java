@@ -168,7 +168,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
         quantity = (TextBox)def.getWidget(SampleMeta.getItemQuantity());
         addScreenHandler(quantity, new ScreenEventHandler<Double>() {
             public void onDataChange(DataChangeEvent event) {
-                quantity.setValue(Util.toString(sampleItem.getQuantity()));
+                quantity.setValue(sampleItem.getQuantity());
             }
 
             public void onValueChange(ValueChangeEvent<Double> event) {
