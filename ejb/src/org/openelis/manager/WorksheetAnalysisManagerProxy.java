@@ -236,11 +236,16 @@ public class WorksheetAnalysisManagerProxy {
             // Rewrite temporary QC accession number
             //
             qcAccessionNumber = analysis.getAccessionNumber();
-            if (qcAccessionNumber.startsWith("X."))
+            //
+            // We are only initializing the QCs that were not added from another
+            // worksheet
+            //
+            if (qcAccessionNumber.startsWith("X.")) {
                 analysis.setAccessionNumber(qcAccessionNumber.replaceFirst("X", manager.getWorksheetId().toString()));
-            qcManager = QcManager.fetchById(analysis.getQcId());
-            wqrManager = manager.getWorksheetQcResultAt(i);
-            initializeWorksheetQcResults(qcManager, wqrManager);
+                qcManager = QcManager.fetchById(analysis.getQcId());
+                wqrManager = manager.getWorksheetQcResultAt(i);
+                initializeWorksheetQcResults(qcManager, wqrManager);
+            }
         } else if (analysis.getAnalysisId() != null) {
             //
             // Set Analysis status to Initiated and validate/update the sample
