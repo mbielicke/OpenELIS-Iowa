@@ -706,7 +706,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         else
             prevHeader = (Boolean)testResultsTable.getRow(index - 1).data;
         if (index == size -1)
-            postHeader = false;
+            postHeader = true;
         else
             postHeader = (Boolean)testResultsTable.getRow(index + 1).data;
                     

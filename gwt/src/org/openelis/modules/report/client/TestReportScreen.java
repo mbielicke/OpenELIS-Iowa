@@ -25,13 +25,28 @@
 */
 package org.openelis.modules.report.client;
 
-import com.google.gwt.core.client.EntryPoint;
+import org.openelis.gwt.screen.ScreenDef;
+import org.openelis.gwt.services.ScreenService;
 
-public class Report implements EntryPoint {
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 
-    public void onModuleLoad() {
-        // TODO Auto-generated method stub
+public class TestReportScreen extends ReportScreen {
 
+    public TestReportScreen() throws Exception { 
+        drawScreen(new ScreenDef());        
+        service = new ScreenService("controller?service=org.openelis.modules.report.server.TestReportService");
+        
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                postConstructor();
+            }
+        });
     }
-
+    
+    private void postConstructor() {
+        setTitle(consts.get("testReport"));
+        initialize();        
+    }   
+    
 }

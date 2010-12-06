@@ -138,7 +138,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
     protected MenuItem               unreleaseAnalysis, historySample, historySampleSpec,
                                      historySampleProject, historySampleOrganization, historySampleItem,
                                      historyAnalysis, historyCurrentResult, historyStorage, historySampleQA,
-                                     historyAnalysisQA, historyAuxData, finalReport;
+                                     historyAnalysisQA, historyAuxData;
 
     private enum Tabs {
         BLANK, SAMPLE, ENVIRONMENT, PRIVATE_WELL, SDWIS, SAMPLE_ITEM, ANALYSIS, TEST_RESULT,
@@ -433,22 +433,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
             public void onStateChange(StateChangeEvent<State> event) {
                 historyAuxData.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
-        });
-        
-        finalReport = (MenuItem)def.getWidget("finalReport");        
-        addScreenHandler(finalReport, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                try {
-                    service.call("runReport", new Integer(0));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                historyAuxData.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
-            }
-        });
+        });        
 
         //
         // screen fields
@@ -1382,7 +1367,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         SampleManager man;
         HashMap<Integer, Item> hash;
         AnalysisManager anMan;
-        AnalysisViewDO anDO;
+        AnalysisViewDO data;
         ValidationErrorsList errorsList;
         String errorMsg;
 
@@ -1415,14 +1400,14 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
                 anMan = bundle.getSampleManager()
                               .getSampleItems()
                               .getAnalysisAt(bundle.getSampleItemIndex());
-                anDO = anMan.getAnalysisAt(bundle.getAnalysisIndex());
-                if (analysisCompletedId.equals(anDO.getStatusId())) {
+                data = anMan.getAnalysisAt(bundle.getAnalysisIndex());
+                if (analysisCompletedId.equals(data.getStatusId())) {
                     errorsList = new ValidationErrorsList();
                     errorsList.add(new FormErrorException("analysisAlreadyComplete"));
                     throw errorsList;
                 }
 
-                if ( !analysisOnHoldId.equals(anDO.getStatusId()) ||
+                if ( !analysisOnHoldId.equals(data.getStatusId()) ||
                     Window.confirm(consts.get("onHoldWarning"))) {
                     bundle = getCurrentRowBundle(row, man);
                     row.data = bundle;
@@ -1439,13 +1424,13 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
                 window.clearStatus();
             } catch (ValidationErrorsList e) {
                 try {
-                    anDO = man.getSampleItems()
+                    data = man.getSampleItems()
                               .getAnalysisAt(bundle.getSampleItemIndex())
                               .getAnalysisAt(bundle.getAnalysisIndex());
                     item.count = item.count - 1;
 
-                    errorMsg = "Cannot complete " + anDO.getTestName() + ":" +
-                               anDO.getMethodName() + " on accession #" +
+                    errorMsg = "Cannot complete " + data.getTestName() + ":" +
+                               data.getMethodName() + " on accession #" +
                                man.getSample().getAccessionNumber() + ":\n";
 
                     for (int l = 0; l < e.size(); l++ )

@@ -105,7 +105,7 @@ UIRF Software License are applicable instead of those above.
                 </menuDisplay>
                 <menuPanel layout="vertical" position="below" style="topMenuContainer">
                 <menuItem key="unreleaseAnalysis" description="" enable="false" icon="unreleaseIcon" label="Unrelease Analysis" />
-                <menuItem key="finalReport" description="" enable="true" icon="unreleaseIcon" label="Preview Final Report" >
+                <menuItem key="finalReport" description="" enable="false" icon="unreleaseIcon" label="Preview Final Report" >
   					<!-- <menuDisplay>
   						<HorizontalPanel>
      					<check key="previewReport"/>

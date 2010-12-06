@@ -23,20 +23,32 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.buildKits.server;
+package org.openelis.modules.report.client;
 
-import org.openelis.manager.BuildKitManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.BuildKitManagerRemote;
+import org.openelis.gwt.screen.ScreenDef;
+import org.openelis.gwt.services.ScreenService;
 
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 
-public class BuildKitsService {
-    
-    public BuildKitManager add(BuildKitManager man) throws Exception {
-        return remoteManager().add(man);
+public class FinalReportScreen extends ReportScreen {
+
+    public FinalReportScreen() throws Exception {         
+        drawScreen(new ScreenDef());        
+        getPromptsInterface = "getPromptsForSingle";
+        runReportInterface = "runReportForSingle";        
+        service = new ScreenService("controller?service=org.openelis.modules.report.server.FinalReportService");
+        
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                postConstructor();
+            }
+        });
     }
     
-    private BuildKitManagerRemote remoteManager() {
-        return (BuildKitManagerRemote)EJBFactory.lookup("openelis/BuildKitManagerBean/remote");        
-    }
+    private void postConstructor() {
+        setTitle(consts.get("finalReportSingleReprint"));
+        initialize();        
+    }   
+    
 }
