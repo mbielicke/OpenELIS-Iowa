@@ -245,7 +245,10 @@ UIRF Software License are applicable instead of those above.
                 <label style="topMenuBarItem" text="{resource:getString($constants,'report')}" />
               </menuDisplay>
               <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                <menuItem key="finalReport" description="{resource:getString($constants,'finalReportDescription')}" enable="false" icon="finalReportIcon" label="{resource:getString($constants,'finalReport')}" />
+              	<code>if(OpenELIS.getSystemUserPermission().hasModule("test","SELECT")){</code>                
+                <menuItem key="testReport" description="{resource:getString($constants,'testReportDescription')}" enable="true" icon="testReportIcon" label="{resource:getString($constants,'testReport')}" />
+                <code>}</code>
+                <!-- <menuItem key="finalReport" description="{resource:getString($constants,'finalReportDescription')}" enable="true" icon="finalReportIcon" label="{resource:getString($constants,'finalReportSingleReprint')}" />-->
                 <menuItem key="sampleDataExport" description="{resource:getString($constants,'sampleDataExportDescription')}" enable="false" icon="sampleDataExportIcon" label="{resource:getString($constants,'sampleDataExport')}" />
                 <menuItem key="loginLabel" description="{resource:getString($constants,'loginLabelDescription')}" enable="false" icon="loginLabelIcon" label="{resource:getString($constants,'loginLabel')}" />
                 <html>&lt;hr/&gt;</html>

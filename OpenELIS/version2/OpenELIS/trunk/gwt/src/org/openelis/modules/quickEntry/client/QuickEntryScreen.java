@@ -115,7 +115,7 @@ public class QuickEntryScreen extends Screen {
 
     public QuickEntryScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QuickEntryDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.quickEntry.server.QuickEntryService");
+        service = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
         calendarService = new ScreenService("controller?service=org.openelis.gwt.server.CalendarService");
 
         userPermission = OpenELIS.getSystemUserPermission().getModule("quickentry");

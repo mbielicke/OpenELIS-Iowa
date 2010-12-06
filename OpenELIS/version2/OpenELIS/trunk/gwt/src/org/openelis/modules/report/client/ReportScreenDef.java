@@ -23,20 +23,11 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.buildKits.server;
+package org.openelis.modules.report.client;
 
-import org.openelis.manager.BuildKitManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.BuildKitManagerRemote;
+import org.openelis.gwt.screen.ScreenDefInt;
 
 
-public class BuildKitsService {
-    
-    public BuildKitManager add(BuildKitManager man) throws Exception {
-        return remoteManager().add(man);
-    }
-    
-    private BuildKitManagerRemote remoteManager() {
-        return (BuildKitManagerRemote)EJBFactory.lookup("openelis/BuildKitManagerBean/remote");        
-    }
+public interface ReportScreenDef extends ScreenDefInt {
+
 }

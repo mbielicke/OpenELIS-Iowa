@@ -100,7 +100,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     private boolean                                     loaded;
 
     protected AutoComplete<Integer>                     test, method, samplePrep;
-    protected Dropdown<Integer>                         sectionId, unitOfMeasureId, statusId;
+    protected Dropdown<Integer>                         sectionId, unitOfMeasureId, statusId, userActionId;
     protected CheckBox                                  isReportable;
     protected TextBox                                   revision;
     protected CalendarLookUp                            startedDate, completedDate, releasedDate,
@@ -120,8 +120,11 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     protected AnalysisViewDO                            analysis;
     protected SampleItemViewDO                          sampleItem;
 
-    protected Integer                                   analysisLoggedInId, analysisCancelledId,
-                                                        analysisReleasedId, analysisInPrepId, changedTestId;
+    protected Integer                                   analysisLoggedInId, analysisInitiatedId, 
+                                                        analysisOnHoldId, analysisRequeueId,
+                                                        analysisCompletedId, analysisCancelledId,
+                                                        analysisReleasedId, analysisInPrepId, changedTestId,
+                                                        actionReleasedId;
 
     private Confirm                                     changeTestConfirm;
     protected ScreenService                             panelService, userService,
@@ -182,7 +185,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
             public void onStateChange(StateChangeEvent<State> event) {
                 test.enable(canEdit() &&
-                            EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                            EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                    .contains(event.getState()));
                 test.setQueryMode(event.getState() == State.QUERY);
             }
@@ -273,8 +276,20 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                statusId.enable(canEdit() && EnumSet.of(State.QUERY).contains(event.getState()));
+                statusId.enable(canEdit() &&
+                                EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                .contains(event.getState()));
                 statusId.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        statusId.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {           
+            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {                
+                TableDataRow r;
+                
+                r = event.getItem().row;                
+                if (!r.enabled)
+                    event.cancel();
             }
         });
 
@@ -306,7 +321,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
             public void onStateChange(StateChangeEvent<State> event) {
                 isReportable.enable(canEdit() &&
-                                    EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                                    EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                            .contains(event.getState()));
                 isReportable.setQueryMode(event.getState() == State.QUERY);
             }
@@ -412,7 +427,9 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                startedDate.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                startedDate.enable(canEdit() &&
+                                   EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
                 startedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -428,7 +445,9 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                completedDate.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                completedDate.enable(canEdit() &&
+                                     EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                     .contains(event.getState()));
                 completedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -514,21 +533,13 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         addScreenHandler(worksheetTable, new ScreenEventHandler<TableDataRow>() {
             public void onDataChange(DataChangeEvent event) {
                 worksheetTable.load(getWorksheetTableModel());
-
             }
 
             public void onValueChange(ValueChangeEvent<TableDataRow> event) {
-
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 worksheetTable.enable(false);
-            }
-        });
-
-        worksheetTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
-            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
-                // always allow selection
             }
         });
 
@@ -549,12 +560,10 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                analysisUserTable.enable(false);
-                // canEdit() &&
-                // EnumSet.of(State.ADD,
-                // State.UPDATE).contains(event.getState()));
-                // analysisUserTable.setQueryMode(event.getState() ==
-                // State.QUERY);
+                analysisUserTable.enable(canEdit() &&
+                                         EnumSet.of(State.ADD, State.UPDATE)
+                                         .contains(event.getState()));
+                analysisUserTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -597,25 +606,11 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
         });
 
-        analysisUserTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
-            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
-                // always allow selection
-            }
-        });
-
-        analysisUserTable.addSelectionHandler(new SelectionHandler<TableRow>() {
-            public void onSelection(SelectionEvent<TableRow> event) {
-                // if(EnumSet.of(State.ADD, State.UPDATE).contains(state))
-                // removeActionButton.enable(true);
-            }
-        });
-
         analysisUserTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 try {
                     manager.getAnalysisUserAt(bundle.getAnalysisIndex())
                            .addAnalysisUser(new AnalysisUserViewDO());
-                    removeActionButton.enable(true);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -627,7 +622,6 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 try {
                     manager.getAnalysisUserAt(bundle.getAnalysisIndex())
                            .removeAnalysisUserAt(event.getIndex());
-                    removeActionButton.enable(false);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -654,6 +648,18 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                     e.printStackTrace();
                     Window.alert(e.toString());
                 }
+            }
+        });
+        
+        userActionId = ((Dropdown<Integer>)analysisUserTable.getColumns().get(1).getColumnWidget());
+        
+        userActionId.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {           
+            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {                
+                TableDataRow r;
+                
+                r = event.getItem().row;                
+                if (!r.enabled)
+                    event.cancel();
             }
         });
 
@@ -693,10 +699,9 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addActionButton.enable(false);
-                // canEdit() &&
-                // EnumSet.of(State.ADD, State.UPDATE)
-                // .contains(event.getState()));
+                addActionButton.enable(canEdit() && 
+                                       EnumSet.of(State.ADD, State.UPDATE)
+                                       .contains(event.getState()));
             }
         });
 
@@ -704,14 +709,29 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         addScreenHandler(removeActionButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int r;
+                Integer action;
 
                 r = analysisUserTable.getSelectedRow();
-                if (r > -1 && analysisUserTable.numRows() > 0)
-                    analysisUserTable.deleteRow(r);
+                
+                if (r > -1 && analysisUserTable.numRows() > 0) {
+                    try {
+                        action = manager.getAnalysisUserAt(bundle.getAnalysisIndex()).getAnalysisUserAt(r).getActionId();
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        return;
+                    }
+                    
+                    if (!actionReleasedId.equals(action))
+                        analysisUserTable.deleteRow(r);  
+                    else 
+                        window.setError(consts.get("analysisUserActionException"));
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeActionButton.enable(false);
+                removeActionButton.enable(canEdit() &&
+                                          EnumSet.of(State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
             }
         });
 
@@ -815,12 +835,17 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
+        TableDataRow r;
         try {
+            analysisInitiatedId = DictionaryCache.getIdFromSystemName("analysis_initiated"); 
+            analysisOnHoldId = DictionaryCache.getIdFromSystemName("analysis_on_hold");
+            analysisRequeueId = DictionaryCache.getIdFromSystemName("analysis_requeue");
+            analysisCompletedId = DictionaryCache.getIdFromSystemName("analysis_completed");
             analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
             analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
             analysisLoggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
             analysisInPrepId = DictionaryCache.getIdFromSystemName("analysis_inprep");
-
+            actionReleasedId = DictionaryCache.getIdFromSystemName("an_user_ac_released");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -829,8 +854,14 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         // analysis status dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("analysis_status"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("analysis_status")) {
+            r = new TableDataRow(d.getId(), d.getEntry());
+            if (!analysisInitiatedId.equals(d.getId()) && !analysisOnHoldId.equals(d.getId()) && 
+                !analysisRequeueId.equals(d.getId()) && !analysisCompletedId.equals(d.getId()) && 
+                !analysisLoggedInId.equals(d.getId())) 
+                r.enabled = false;
+            model.add(r);
+        }
 
         statusId.setModel(model);
 
@@ -859,9 +890,14 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         // analysis user action
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("user_action"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
-        ((Dropdown<Integer>)analysisUserTable.getColumns().get(1).getColumnWidget()).setModel(model);
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("user_action")) {
+            r = new TableDataRow(d.getId(), d.getEntry());
+            if(actionReleasedId.equals(d.getId())) 
+                r.enabled = false;
+            model.add(r);
+        }
+        
+        userActionId.setModel(model);
 
         // worksheet status
         model = new ArrayList<TableDataRow>();
@@ -955,7 +991,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 row.cells.get(0).value = new TableDataRow(userDO.getSystemUserId(),
                                                           userDO.getSystemUser());
                 row.cells.get(1).value = userDO.getActionId();
-
+                
                 model.add(row);
             }
         } catch (Exception e) {

@@ -23,20 +23,34 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.buildKits.server;
+package org.openelis.modules.report.server;
 
-import org.openelis.manager.BuildKitManager;
+import java.util.ArrayList;
+
+import org.openelis.gwt.common.data.Query;
 import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.BuildKitManagerRemote;
+import org.openelis.remote.FinalReportRemote;
+import org.openelis.report.Prompt;
+import org.openelis.report.ReportStatus;
+import org.openelis.util.SessionManager;
 
-
-public class BuildKitsService {
+public class FinalReportService {    
     
-    public BuildKitManager add(BuildKitManager man) throws Exception {
-        return remoteManager().add(man);
+    public ArrayList<Prompt> getPromptsForSingle() throws Exception{
+        return remote().getPromptsForSingle();      
     }
     
-    private BuildKitManagerRemote remoteManager() {
-        return (BuildKitManagerRemote)EJBFactory.lookup("openelis/BuildKitManagerBean/remote");        
+    public ReportStatus runReportForSingle(Query query) throws Exception { 
+        ReportStatus st;
+        
+        st = remote().runReportForSingle(query.getFields());
+        SessionManager.getSession().setAttribute(st.getMessage(), st.getMessage());
+        return st;
     }
+    
+    private FinalReportRemote remote() {
+        return (FinalReportRemote)EJBFactory.lookup("openelis/FinalReportBean/remote");
+    } 
 }
+
+

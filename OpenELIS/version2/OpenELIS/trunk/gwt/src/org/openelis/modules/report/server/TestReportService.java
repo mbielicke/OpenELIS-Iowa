@@ -23,26 +23,34 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.quickEntry.server;
+package org.openelis.modules.report.server;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.TestMethodSampleTypeVO;
-import org.openelis.gwt.common.DatabaseException;
+import org.openelis.gwt.common.data.Query;
 import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.TestRemote;
+import org.openelis.remote.TestReportRemote;
+import org.openelis.report.Prompt;
+import org.openelis.report.ReportStatus;
+import org.openelis.util.SessionManager;
 
-public class QuickEntryService {
+public class TestReportService {    
     
-    public ArrayList<TestMethodSampleTypeVO> fetchTestMethodSampleTypeList() throws Exception {
-        try{
-            return testRemote().getTestMethodSampleTypeList();
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
+    public ArrayList<Prompt> getPrompts() throws Exception{
+        return remote().getPrompts();      
     }
     
-    private TestRemote testRemote(){
-        return (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
+    public ReportStatus runReport(Query query) throws Exception { 
+        ReportStatus st;
+        
+        st = remote().runReport(query.getFields());
+        SessionManager.getSession().setAttribute(st.getMessage(), st.getMessage());
+        return st;
     }
+    
+    private TestReportRemote remote() {
+        return (TestReportRemote)EJBFactory.lookup("openelis/TestReportBean/remote");
+    } 
 }
+
+
