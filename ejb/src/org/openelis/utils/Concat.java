@@ -23,19 +23,37 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.local;
 
-import java.util.ArrayList;
+package org.openelis.utils;
+/**
+  * A static class that concatenates strings
+  */
+public class Concat {
 
-import javax.ejb.Local;
+    private static StringBuffer buf = new StringBuffer();
+    /**
+      * Decodes the passed argument to String.
+      */
+    public static String concat(Object a, Object b) {
+        buf.setLength(0);
+        if (a != null)
+            buf.append(a.toString().trim());
+        if (b != null)
+            buf.append(b.toString().trim());
+        return buf.toString();
+    }
 
-import org.openelis.domain.SampleQaEventViewDO;
-
-@Local
-public interface SampleQAEventLocal {
-    public ArrayList<SampleQaEventViewDO> fetchBySampleId(Integer sampleId) throws Exception;
-    public ArrayList<SampleQaEventViewDO> fetchInternalBySampleId(Integer sampleId) throws Exception;
-    public void add(SampleQaEventViewDO sampleQAEventDO) throws Exception;
-    public void update(SampleQaEventViewDO sampleQAEventDO) throws Exception;
-    public void delete(SampleQaEventViewDO sampleQAEventDO) throws Exception;
+    public static String concatWithSeparator(Object a, Object s, Object b) {
+        buf.setLength(0);
+        if (a != null)
+            buf.append(a.toString().trim());
+        if (b != null) {
+            if (a != null)
+                buf.append(s);
+            buf.append(b.toString().trim());
+        }
+        return buf.toString();
+    }
 }
+
+

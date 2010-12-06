@@ -69,7 +69,29 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "QaEvent.FetchByCommon",
                 query = "select new org.openelis.domain.QaEventVO(q.id,q.name,q.description,q.testId," +
                 		"q.typeId,q.isBillable,q.reportingSequence,'','')"
-                      + " from QaEvent q where q.testId is null order by q.name")})
+                      + " from QaEvent q where q.testId is null order by q.name"),
+    @NamedQuery( name = "QaEvent.FetchByAnalysisId",
+                 query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId," +
+                         "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
+                       + " from AnalysisQaevent aq left join aq.qaEvent q"
+                       + " where aq.analysisId = :id order by aq.id"),                  
+    @NamedQuery( name = "QaEvent.FetchNotInternalByAnalysisId",                
+                 query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId," +
+                         "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
+                       + " from AnalysisQaevent aq left join aq.qaEvent q left join aq.dictionary d"
+                       + " where aq.analysisId = :id and d.id not in"
+                       + " (select d1.id from Dictionary d1 where d1.systemName = 'qaevent_internal') order by aq.id"),
+    @NamedQuery( name = "QaEvent.FetchBySampleId",
+                 query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId," +
+                         "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
+                       + " from SampleQaevent sq left join sq.qaEvent q"
+                       + " where sq.sampleId = :id order by sq.id"),                  
+    @NamedQuery( name = "QaEvent.FetchNotInternalBySampleId",                
+                 query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId," +
+                         "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
+                       + " from SampleQaevent sq left join sq.qaEvent q left join sq.dictionary d"
+                       + " where sq.sampleId = :id and d.id not in"
+                       + " (select d1.id from Dictionary d1 where d1.systemName = 'qaevent_internal') order by sq.id")})
 
 public class QaEvent implements Auditable, Cloneable {
 

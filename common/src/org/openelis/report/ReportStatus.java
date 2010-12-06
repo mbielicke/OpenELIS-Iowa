@@ -23,34 +23,54 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
+package org.openelis.report;
 
-package org.openelis.report.util;
+import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.RPC;
 
-import java.util.HashMap;
+public class ReportStatus implements RPC {
 
-/**
- * This class is used to map mnemonics to their longer description.
- */
-public class Mapper {
-    private HashMap<String ,String> map;
+    private static final long serialVersionUID = 1L;
     
-    public Mapper() {
-        map = new HashMap<String ,String>();
+    private String message;    
+    private int percentComplete;    
+    private Status status;
+        
+    public enum Status {
+        RUNNING, SAVED, PRINTED
+    };
+    
+    public ReportStatus() {
+        status = Status.RUNNING;
+        percentComplete = 0;
+        message = null;
+    }
+    
+    public String getMessage() {
+        return message;
     }
 
-    /**
-     * Associates the key with its description. It returns this mapper which
-     * allows multiple sets in a single statement.
-     */
-    public Mapper set(String key, String description) {
-        map.put(key, description);
+    public ReportStatus setMessage(String message) {
+        this.message = DataBaseUtil.trim(message);
         return this;
     }
-        
-    /**
-     * Returns the description associated with specified key.
-     */
-    public String get(String key) {
-        return (String) map.get(key);
+
+    public int getPercentComplete() {
+        return percentComplete;
     }
+
+    public ReportStatus setPercentComplete(int percentComplete) {
+        this.percentComplete = percentComplete;
+        return this;
+    }
+    
+    public Status getStatus() {
+        return status;        
+    }
+    
+    public ReportStatus setStatus(Status status) {
+        this.status = status;
+        return this;
+    }
+       
 }

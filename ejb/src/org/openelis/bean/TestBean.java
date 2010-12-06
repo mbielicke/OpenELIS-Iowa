@@ -113,7 +113,7 @@ public class TestBean implements TestRemote, TestLocal {
         }
     }
     
-    public ArrayList<TestMethodSampleTypeVO> getTestMethodSampleTypeList() throws Exception {
+    public ArrayList<TestMethodSampleTypeVO> fetchTestMethodSampleTypeList() throws Exception {
         Query query;
         List returnList;
         
@@ -124,6 +124,14 @@ public class TestBean implements TestRemote, TestLocal {
         returnList.addAll(query.getResultList());
         
         return DataBaseUtil.toArrayList(returnList);
+    }
+    
+    public ArrayList<TestMethodVO> fetchList() throws Exception {
+        Query query;
+        
+        query = manager.createNamedQuery("Test.FetchList");
+
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
     
     public ArrayList<TestMethodVO> query(ArrayList<QueryData> fields, int first, int max)

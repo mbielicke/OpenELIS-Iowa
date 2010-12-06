@@ -93,6 +93,13 @@ public class PermissionInterceptor {
     }
     
     /**
+     * Returns the system user's login name associated with this context.
+     */
+    public static String getSystemUserName() throws Exception {
+        return getSystemUserPermission().getUser().getLoginName();
+    }
+    
+    /**
      * Returns the system user data for the specified id.
      */
     public static SystemUserVO getSystemUser(Integer id) throws Exception {

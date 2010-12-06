@@ -23,46 +23,79 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.report;
 
-import java.util.List;
+import java.util.ArrayList;
 
+import org.openelis.domain.OptionListItem;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.RPC;
 
 /**
  * This class is used by reports to build a user input request. Reports may
- * combine multiple prompts to request for wide variety of inputs.
+ * combine multiple prompts to request for a wide variety of inputs.
  * 
  */
 
 public class Prompt implements RPC {
-    
-    private static final long serialVersionUID = 1L;
-    protected String          name, prompt, mask, shift, defaultValue;
-    protected Type            type;
-    protected Integer         length, width;
-    protected String          optionList[];
-    protected boolean         required, hidden, multiSelect;
+
+    private static final long           serialVersionUID = 1L;
+    protected String                    name, prompt, mask, defaultValue;
+    protected Type                      type;
+    protected Case                      shift; 
+    protected Datetime                  dt_StartCode, dt_EndCode;    
+    protected Integer                   length, width;    
+    protected ArrayList<OptionListItem> optionList;
+    protected boolean                   required, hidden, multiSelect;
 
     public enum Type {
-          ARRAY, ARRAYMULTI, CHECK, SHORT, INTEGER, STRING, FLOAT, DOUBLE, 
-          BIGDECIMAL, MONEY, DATETIME
+        ARRAY, ARRAYMULTI, CHECK, SHORT, INTEGER, STRING, FLOAT, DOUBLE, BIGDECIMAL, MONEY,
+        DATETIME
     };
 
-    public enum OPTION_DATETIME { 
+    public enum Case {
+        UPPER, LOWER, MIXED
+    };
+    
+    public enum Datetime { 
         YEAR, MONTH, DAY, HOUR, MINUTE, SECOND
-    };
-
-    public enum SHIFT {
-        UPPER, LOWER
     };
 
     /**
      * Constructors
      */
 
+    /**
+     * A no-argument constructor is needed for serialization to work
+     */
+    protected Prompt() {        
+    }
+    
     public Prompt(String name) {
         this(name, null);
     }
@@ -113,13 +146,32 @@ public class Prompt implements RPC {
     /**
      * get/set upper/lower shift for text type responses.
      */
-    public String getShift() {
+    public Case getCase() {
         return shift;
     }
 
-    public Prompt setShift(String shift) {
+    public Prompt setCase(Case shift) {
         this.shift = shift;
         return this;
+    }
+    
+    /**     
+     * get/set start and end code for date and time 
+     */
+    public Datetime getDatetimeStartCode() {
+        return dt_StartCode;
+    }
+
+    public void setDatetimeStartCode(Datetime startCode) {
+        this.dt_StartCode = startCode;
+    }
+
+    public Datetime getDatetimeEndCode() {
+        return dt_EndCode;
+    }
+
+    public void setDt_EndCode(Datetime datetimeEndCode) {
+        this.dt_EndCode = datetimeEndCode;
     }
 
     /**
@@ -167,21 +219,12 @@ public class Prompt implements RPC {
      * title is the element displayed in popup list and response is the string
      * returned as parameter.
      */
-    public Object[] getOptionList() {
+    public ArrayList<OptionListItem> getOptionList() {
         return optionList;
     }
 
-    public Prompt setOptionList(String[] optionList) {
+    public Prompt setOptionList(ArrayList<OptionListItem> optionList) {
         this.optionList = optionList;
-        return this;
-    }
-
-    public Prompt setOptionList(List optionList) {
-        this.optionList = new String[optionList.size()];
-        
-        for (int i = 0; i < optionList.size(); i++)
-            this.optionList[i] = optionList.get(i).toString();
-
         return this;
     }
 
@@ -192,11 +235,11 @@ public class Prompt implements RPC {
         this.multiSelect = multiSelect;
         return this;
     }
-    
+
     public boolean getMultiSelect() {
         return multiSelect;
     }
-    
+
     /**
      * get/set the default response value.
      */
@@ -238,7 +281,7 @@ public class Prompt implements RPC {
      */
     public String toString() {
         StringBuffer s;
-        
+
         s = new StringBuffer();
 
         s.append('{')
@@ -252,10 +295,10 @@ public class Prompt implements RPC {
             s.append("prompt=\"").append(prompt).append("\";");
         if (optionList != null) {
             s.append("option_list=(");
-            for (int i = 0; i < optionList.length; i++ ) {
+            for (int i = 0; i < optionList.size(); i++ ) {
                 if (i != 0)
                     s.append(',');
-                s.append('"').append(optionList[i]).append('"');
+                s.append('"').append(optionList.get(i)).append('"');
             }
             s.append(");");
         }

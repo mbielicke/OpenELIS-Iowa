@@ -29,7 +29,7 @@
 				<textElement>
 					<font fontName="Times New Roman" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.report.util.QaEventBean.getAnalysisQaeventText($P{REPORT_CONNECTION}, $P{ANALYSIS_ID},Boolean.TRUE)]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.utils.QaeventUtil.getAnalysisQaeventText($P{ANALYSIS_ID},Boolean.TRUE)]]></textFieldExpression>
 			</textField>
 			<subreport>
 				<reportElement positionType="Float" x="30" y="12" width="520" height="12" isRemoveLineWhenBlank="true"/>

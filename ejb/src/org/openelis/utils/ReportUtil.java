@@ -25,13 +25,42 @@
  */
 package org.openelis.utils;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import net.sf.jasperreports.engine.util.JRLoader;
+
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.data.QueryData;
 
 public class ReportUtil {
 
+    private static StringBuffer buf = new StringBuffer();
+    /**
+      * Decodes the passed argument to String.
+      */
+    public static String concat(Object a, Object b) {
+        buf.setLength(0);
+        if (a != null)
+            buf.append(a.toString().trim());
+        if (b != null)
+            buf.append(b.toString().trim());
+        return buf.toString();
+    }
+
+    public static String concatWithSeparator(Object a, Object s, Object b) {
+        buf.setLength(0);
+        if (a != null)
+            buf.append(a.toString().trim());
+        if (b != null) {
+            if (a != null)
+                buf.append(s);
+            buf.append(b.toString().trim());
+        }
+        return buf.toString();
+    }
+    
     public static HashMap<String, QueryData> parameterMap(ArrayList<QueryData> list) {
         HashMap<String, QueryData> p;
         
@@ -50,5 +79,34 @@ public class ReportUtil {
             return q.query;
 
         return null;
+    }
+    
+    public static String getListParameter(HashMap<String, QueryData> parameter, String key) {
+        QueryData q;
+        
+        q = parameter.get(key);
+        if (q != null) {
+            if (q.query.contains(","))
+                return "in (" + q.query +")";
+            else if (!DataBaseUtil.isEmpty(q.query))
+                return " = "+q.query;
+        }
+        return null;
+    }
+    
+    public static URL getResourceURL(String reportName) {        
+        return JRLoader.getResource(reportName);        
+    }
+    
+    public static String getResourcePath(URL url) {
+        int i;
+        String path;
+        
+        path = url.toExternalForm();
+        i = path.lastIndexOf('/');
+        if (i > 0) 
+            return path.substring(0, i+1);
+            
+        return path;
     }
 }

@@ -12,7 +12,7 @@
 		<defaultValueExpression><![CDATA[1721]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["/auto/home/akampoow/workspace/OpenELIS-EJB/src/org/openelis/report/verification/"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["org/openelis/report/verification/"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="CREATED_BY_ID" class="java.lang.Integer"/>
 	<queryString>

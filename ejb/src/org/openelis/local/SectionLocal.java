@@ -25,6 +25,8 @@
  */
 package org.openelis.local;
 
+import java.util.ArrayList;
+
 import javax.ejb.Local;
 
 import org.openelis.domain.SectionViewDO;
@@ -32,4 +34,6 @@ import org.openelis.domain.SectionViewDO;
 @Local
 public interface SectionLocal {
     public SectionViewDO fetchById(Integer id) throws Exception;
+    
+    public ArrayList<SectionViewDO> fetchList() throws Exception;
 }

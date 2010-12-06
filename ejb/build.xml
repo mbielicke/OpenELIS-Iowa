@@ -55,7 +55,9 @@
 				<include name="lib/openelis-lib.jar" />
 				<include name="lib/security-client.jar" />
 				<include name="lib/poi-3.6-20091214.jar" />
-			    <include name="lib/groovy-all-1.5.5.jar" />
+				<include name="lib/iText-2.1.4.jar" />
+			    <include name="lib/groovy-all-1.5.5.jar" />		
+			    <include name="lib/barbecue-1.5-beta1.jar" />			    
 			    <include name="lib/commons-digester-1.7.jar" />
 		    	<include name="lib/commons-beanutils-1.5.jar" />
 			    <include name="lib/jasperreports-3.7.4.jar" />

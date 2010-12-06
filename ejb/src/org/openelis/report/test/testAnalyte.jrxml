@@ -1,91 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="testAnalyte" language="groovy" pageWidth="392" pageHeight="36" orientation="Landscape" columnWidth="392" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" scriptletClass="org.openelis.report.test.TestReportScriptletBean">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="testAnalyte1" language="groovy" pageWidth="392" pageHeight="572" orientation="Landscape" columnWidth="392" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.zoom" value="3.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<style name="table">
-		<box>
-			<pen lineWidth="1.0" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="table 1">
-		<box>
-			<pen lineWidth="1.0" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="table 1_TH" mode="Opaque" backcolor="#F0F8FF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="table 1_CH" mode="Opaque" backcolor="#BFE1FF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="table 1_TD" mode="Opaque" backcolor="#FFFFFF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="Crosstab Data Text" hAlign="Center"/>
-	<style name="table 2">
-		<box>
-			<pen lineWidth="1.0" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="table 2_TH" mode="Opaque" backcolor="#F0F8FF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="table 2_CH" mode="Opaque" backcolor="#BFE1FF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="table 2_TD" mode="Opaque" backcolor="#FFFFFF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="table 3">
-		<box>
-			<pen lineWidth="1.0" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="table 3_TH" mode="Opaque" backcolor="#F0F8FF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="table 3_CH" mode="Opaque" backcolor="#BFE1FF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="table 3_TD" mode="Opaque" backcolor="#FFFFFF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
 	<parameter name="TEST_ID" class="java.lang.Integer" isForPrompting="false"/>
-	<queryString>
+	<queryString language="SQL">
 		<![CDATA[SELECT
      a.name a_name,
      ta.result_group ta_result_group,
@@ -99,7 +18,7 @@ FROM
      test t,
      dictionary d
 WHERE
-      t.id = $P{TEST_ID} AND ta.test_id = t.id  AND ta.analyte_id = a.id AND ta.type_id = d.id order by ta.row_group , ta.sort_order]]>
+      t.id = 1 AND ta.test_id = t.id  AND ta.analyte_id = a.id AND ta.type_id = d.id order by ta.row_group , ta.sort_order]]>
 	</queryString>
 	<field name="a_name" class="java.lang.String"/>
 	<field name="ta_result_group" class="java.lang.Integer"/>
@@ -108,7 +27,21 @@ WHERE
 	<field name="t_id" class="java.lang.Integer"/>
 	<field name="d_entry" class="java.lang.String"/>
 	<columnHeader>
-		<band height="12">
+		<band height="12" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="275" y="0" width="45" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement>
+					<font size="8" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[ Report]]></text>
+			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="215" y="0" width="55" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
 				<box>
@@ -151,25 +84,30 @@ WHERE
 				</textElement>
 				<text><![CDATA[ Type]]></text>
 			</staticText>
-			<staticText>
-				<reportElement mode="Opaque" x="275" y="0" width="45" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
-				<box>
-					<pen lineWidth="0.25"/>
-					<topPen lineWidth="0.25"/>
-					<leftPen lineWidth="0.25"/>
-					<bottomPen lineWidth="0.25"/>
-					<rightPen lineWidth="0.25"/>
-				</box>
-				<textElement>
-					<font size="8" isStrikeThrough="false"/>
-				</textElement>
-				<text><![CDATA[ Report]]></text>
-			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
 		<band height="12" splitType="Stretch">
-			<printWhenExpression><![CDATA["N".equals($F{ta_is_column})]]></printWhenExpression>
+			<textField isBlankWhenNull="true">
+				<reportElement x="275" y="0" width="45" height="12"/>
+				<box>
+					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
+				</box>
+				<textElement>
+					<font size="8" isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{ta_is_reportable}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="215" y="0" width="55" height="12"/>
+				<box>
+					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
+				</box>
+				<textElement>
+					<font size="8" isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{ta_result_group}]]></textFieldExpression>
+			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="0" y="0" width="210" height="12"/>
 				<box>
@@ -181,17 +119,7 @@ WHERE
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{a_name}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="215" y="0" width="55" height="12"/>
-				<box>
-					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
-				</box>
-				<textElement>
-					<font size="8" isItalic="true"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{ta_result_group}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="325" y="0" width="67" height="11"/>
+				<reportElement x="325" y="0" width="67" height="12"/>
 				<box>
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
@@ -199,40 +127,9 @@ WHERE
 					<font size="8" isItalic="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{d_entry}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="275" y="0" width="45" height="12"/>
-				<box>
-					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
-				</box>
-				<textElement>
-					<font size="8" isItalic="true"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{ta_is_reportable}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="12">
-			<printWhenExpression><![CDATA["Y".equals($F{ta_is_column})]]></printWhenExpression>
-			<textField isBlankWhenNull="true">
-				<reportElement x="325" y="0" width="67" height="11"/>
-				<box>
-					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
-				</box>
-				<textElement>
-					<font size="8" isItalic="true"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{d_entry}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="215" y="0" width="55" height="12"/>
-				<box>
-					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
-				</box>
-				<textElement>
-					<font size="8" isItalic="true"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{ta_result_group}]]></textFieldExpression>
-			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="20" y="0" width="190" height="12"/>
 				<box>
@@ -253,9 +150,29 @@ WHERE
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{ta_is_reportable}]]></textFieldExpression>
 			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="215" y="0" width="55" height="12"/>
+				<box>
+					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
+				</box>
+				<textElement>
+					<font size="8" isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{ta_result_group}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="325" y="0" width="67" height="12"/>
+				<box>
+					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
+				</box>
+				<textElement>
+					<font size="8" isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{d_entry}]]></textFieldExpression>
+			</textField>
 		</band>
 	</detail>
 	<summary>
-		<band height="12"/>
+		<band height="12" splitType="Stretch"/>
 	</summary>
 </jasperReport>
