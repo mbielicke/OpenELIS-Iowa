@@ -29,13 +29,16 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
-import org.openelis.domain.SampleQaEventViewDO;
+import org.openelis.domain.QaEventDO;
 
 @Local
-public interface SampleQAEventLocal {
-    public ArrayList<SampleQaEventViewDO> fetchBySampleId(Integer sampleId) throws Exception;
-    public ArrayList<SampleQaEventViewDO> fetchInternalBySampleId(Integer sampleId) throws Exception;
-    public void add(SampleQaEventViewDO sampleQAEventDO) throws Exception;
-    public void update(SampleQaEventViewDO sampleQAEventDO) throws Exception;
-    public void delete(SampleQaEventViewDO sampleQAEventDO) throws Exception;
+public interface QaeventLocal {
+ 
+    public ArrayList<QaEventDO> fetchBySampleId(Integer sampleId);
+    
+    public ArrayList<QaEventDO> fetchNotInternalBySampleId(Integer sampleId);
+    
+    public ArrayList<QaEventDO> fetchByAnalysisId(Integer analysisId);
+    
+    public ArrayList<QaEventDO> fetchNotInternalByAnalysisId(Integer analysisId);       
 }

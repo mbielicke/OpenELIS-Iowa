@@ -54,6 +54,7 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.LockLocal;
+import org.openelis.local.QaeventLocal;
 import org.openelis.meta.QaEventMeta;
 import org.openelis.remote.QaEventRemote;
 import org.openelis.util.QueryBuilderV2;
@@ -62,7 +63,7 @@ import org.openelis.utils.PermissionInterceptor;
 @Stateless
 @SecurityDomain("openelis")
 @RolesAllowed("qaevent-select")
-public class QaEventBean implements QaEventRemote {
+public class QaEventBean implements QaEventRemote, QaeventLocal {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager               manager;
@@ -111,6 +112,42 @@ public class QaEventBean implements QaEventRemote {
         Query query;
 
         query = manager.createNamedQuery("QaEvent.FetchByCommon");
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
+    @SuppressWarnings("unchecked")
+    public ArrayList<QaEventDO> fetchBySampleId(Integer sampleId) {
+        Query query;
+
+        query = manager.createNamedQuery("QaEvent.FetchBySampleId");
+        query.setParameter("id", sampleId);
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    @SuppressWarnings("unchecked")
+    public ArrayList<QaEventDO> fetchNotInternalBySampleId(Integer sampleId) {
+        Query query;
+
+        query = manager.createNamedQuery("QaEvent.FetchNotInternalBySampleId");
+        query.setParameter("id", sampleId);
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    @SuppressWarnings("unchecked")
+    public ArrayList<QaEventDO> fetchByAnalysisId(Integer analysisId) {
+        Query query;
+
+        query = manager.createNamedQuery("QaEvent.FetchByAnalysisId");
+        query.setParameter("id", analysisId);
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    @SuppressWarnings("unchecked")
+    public ArrayList<QaEventDO> fetchNotInternalByAnalysisId(Integer analysisId) {
+        Query query;
+
+        query = manager.createNamedQuery("QaEvent.FetchNotInternalByAnalysisId");
+        query.setParameter("id", analysisId);
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 

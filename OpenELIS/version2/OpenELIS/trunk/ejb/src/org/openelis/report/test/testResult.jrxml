@@ -6,7 +6,7 @@
 	<parameter name="TEST_ID" class="java.lang.Integer"/>
 	<parameter name="RESULT_GROUP" class="java.lang.Integer"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["/auto/home/akampoow/workspace/OpenELIS-EJB/src/org/openelis/report/test/"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["org/openelis/report/test/"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="TEST_RESULT_VALUE" class="java.lang.String"/>
 	<queryString>
@@ -149,16 +149,6 @@ Order BY tr.result_group, tr.sort_order]]>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{tr_significant_digits}]]></textFieldExpression>
 			</textField>
-			<subreport>
-				<reportElement x="170" y="0" width="175" height="12">
-					<printWhenExpression><![CDATA["test_res_type_dictionary".equals($F{d1_system_name})]]></printWhenExpression>
-				</reportElement>
-				<subreportParameter name="TEST_RESULT_VALUE">
-					<subreportParameterExpression><![CDATA[$F{tr_value}]]></subreportParameterExpression>
-				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression class="java.lang.String"><![CDATA["dictionaryLookUp.jasper"]]></subreportExpression>
-			</subreport>
 			<textField isBlankWhenNull="true">
 				<reportElement isPrintRepeatedValues="false" x="0" y="0" width="15" height="12"/>
 				<textElement>

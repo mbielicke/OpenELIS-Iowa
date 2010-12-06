@@ -7,6 +7,8 @@ import javax.print.DocFlavor;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
 
+import org.openelis.domain.OptionListItem;
+
 /**
  * This class provides a simple cached interface to the printers.
  */
@@ -39,9 +41,16 @@ public class PrinterList {
     /**
      * Returns the list of printers defined for this server
      */
-    public ArrayList<Printer> getList() {
+    public ArrayList<OptionListItem> getList() {
+        ArrayList<OptionListItem> tempList;
+
         refresh();
-        return (ArrayList<Printer>)printerList.clone();
+        tempList = new ArrayList<OptionListItem>();
+        
+        for (Printer p : printerList) 
+            tempList.add(new OptionListItem(p.getName(), p.getDescription()));        
+
+        return tempList;
     }
 
     /**
@@ -54,21 +63,21 @@ public class PrinterList {
 
     /**
      * Returns a list of printers that match the specified type. Currently the types are
-     * "pdf", "zpl", and "unk" 
+     * "pdf", "zpl", and "unk". 
      */
-    public ArrayList<Printer> getListByType(String type) {
-        ArrayList<Printer> tempList;
+    public ArrayList<OptionListItem> getListByType(String type) {
+        ArrayList<OptionListItem> tempList;
 
-        tempList = new ArrayList<Printer>();
+        tempList = new ArrayList<OptionListItem>();
         if (type != null) {
             refresh();
             for (Printer p : printerList) {
                 if (type.equals(p.getType()))
-                    tempList.add(p);
+                    tempList.add(new OptionListItem(p.getName(), p.getDescription()));
             }
         }
         return tempList;
-    }
+    }    
 
     /*
      * Internal method to refresh the printer list cache

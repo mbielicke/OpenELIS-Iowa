@@ -25,17 +25,22 @@
  */
 package org.openelis.local;
 
+import java.util.ArrayList;
+
 import javax.ejb.Local;
 
+import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestViewDO;
 
 @Local
 public interface TestLocal {
     public TestViewDO fetchById(Integer testId) throws Exception;
+    
+    public ArrayList<TestMethodVO> fetchList() throws Exception;
 
-    public TestViewDO add(TestViewDO testDO) throws Exception;
+    public TestViewDO add(TestViewDO data) throws Exception;
 
-    public TestViewDO update(TestViewDO testDO) throws Exception;
+    public TestViewDO update(TestViewDO data) throws Exception;
 
-    public void validate(TestViewDO test) throws Exception;
+    public void validate(TestViewDO data) throws Exception;
 }

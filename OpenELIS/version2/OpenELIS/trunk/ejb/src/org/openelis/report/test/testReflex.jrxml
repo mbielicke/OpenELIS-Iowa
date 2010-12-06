@@ -5,6 +5,9 @@
 	<property name="ireport.y" value="0"/>
 	<parameter name="TEST_ID" class="java.lang.Integer"/>
 	<parameter name="TEST_RESULT_VALUE" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["org/openelis/report/test/"]]></defaultValueExpression>
+	</parameter>
 	<queryString language="SQL">
 		<![CDATA[SELECT
      a.name a_name, d.entry  d_entry,  t.id t_id,  xt.name xt_name,    m.name m_name,  tr.value  tr_value, d1.system_name d1_system_name
@@ -154,16 +157,6 @@ WHERE
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{d_entry}]]></textFieldExpression>
 			</textField>
-			<subreport>
-				<reportElement x="185" y="0" width="130" height="12">
-					<printWhenExpression><![CDATA["test_res_type_dictionary".equals($F{d1_system_name})]]></printWhenExpression>
-				</reportElement>
-				<subreportParameter name="TEST_RESULT_VALUE">
-					<subreportParameterExpression><![CDATA[$F{tr_value}]]></subreportParameterExpression>
-				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression class="java.lang.String"><![CDATA["dictionaryLookUp.jasper"]]></subreportExpression>
-			</subreport>
 		</band>
 	</detail>
 	<summary>

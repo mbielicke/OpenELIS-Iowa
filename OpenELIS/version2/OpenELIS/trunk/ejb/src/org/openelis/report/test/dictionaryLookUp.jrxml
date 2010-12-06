@@ -3,7 +3,7 @@
 	<property name="ireport.zoom" value="6.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<parameter name="TEST_RESULT_VALUE" class="java.lang.String"/>
+	<parameter name="TEST_RESULT_VALUE" class="java.lang.String" isForPrompting="false"/>
 	<queryString>
 		<![CDATA[SELECT  d.entry d_entry
 FROM dictionary d
