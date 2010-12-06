@@ -107,9 +107,36 @@ UIRF Software License are applicable instead of those above.
               </widget>
             </row>
           </TablePanel>
+          <HorizontalPanel>
+            <appButton key="editWorksheetButton" style="Button">
+              <HorizontalPanel>
+                <AbsolutePanel style="EditMultipleButtonImage" />
+                <text>
+                  <xsl:value-of select="resource:getString($constants,'editWorksheet')" />
+                </text>
+              </HorizontalPanel>
+            </appButton>
+            <appButton key="loadFromEditButton" style="Button">
+              <HorizontalPanel>
+                <AbsolutePanel style="LoadButtonImage" />
+                <text>
+                  <xsl:value-of select="resource:getString($constants,'loadFromEditFile')" />
+                </text>
+              </HorizontalPanel>
+            </appButton>
+            <appButton key="loadFilePopupButton" style="Button">
+              <HorizontalPanel>
+                <AbsolutePanel style="LoadButtonImage" />
+                <text>
+                  <xsl:value-of select="resource:getString($constants,'loadFromInstrumentFile')" />
+                </text>
+              </HorizontalPanel>
+            </appButton>
+          </HorizontalPanel>
 <!-- TAB PANEL -->
           <TabPanel key="tabPanel" width="850" height="285">
 <!-- TAB 1 -->
+<!--
             <tab key="worksheetItemTab" tab="worksheetItemTable,worksheetItemTable" text="{resource:getString($constants,'worksheet')}">
               <VerticalPanel padding="0" spacing="0">
                 <table key="worksheetItemTable" width="832" maxRows="10" showScroll="ALWAYS" tab="{meta:getId()},{meta:getId()}">
@@ -253,7 +280,7 @@ UIRF Software License are applicable instead of those above.
                       <HorizontalPanel>
                         <AbsolutePanel style="LoadButtonImage" />
                         <text>
-                          <xsl:value-of select="resource:getString($constants,'loadFromFile')" />
+                          <xsl:value-of select="resource:getString($constants,'loadFromInstrumentFile')" />
                         </text>
                       </HorizontalPanel>
                     </appButton>
@@ -261,6 +288,7 @@ UIRF Software License are applicable instead of those above.
                 </widget>
               </VerticalPanel>
             </tab>
+-->
 <!-- TAB 2 -->
             <tab key="notesTab" tab="standardNoteButton,standardNoteButton" text="{resource:getString($constants,'note')}">
               <xsl:call-template name="InternalNoteTab">
