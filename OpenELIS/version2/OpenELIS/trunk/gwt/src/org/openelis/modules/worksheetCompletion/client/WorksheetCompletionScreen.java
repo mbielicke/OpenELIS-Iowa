@@ -106,9 +106,9 @@ import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
 public class WorksheetCompletionScreen extends Screen {
 
     private boolean              closeWindow, isPopup;
-    private Integer              formatBatch, formatTotal, statusFailedRun, origStatus;
+    private Integer              formatBatch, statusFailedRun, origStatus;
     private ArrayList<SectionDO> sections;
-    private ScreenService        instrumentService, sysVarService, userService;
+    private ScreenService        instrumentService, sysVarService;
     private ModulePermission     userPermission;
     private WorksheetManager     manager;
 
@@ -120,7 +120,8 @@ public class WorksheetCompletionScreen extends Screen {
     private TableWidget table;
 
     protected Integer                   userId;
-    protected String                    tempFileDirectory, worksheetFileName, userName;
+    protected String                    outputFileDirectory, worksheetFileName,
+                                        userName;
     protected AutoComplete<Integer>     instrumentId, defaultUser;
     protected CalendarLookUp            defaultStartedDate, defaultCompletedDate;
     protected Confirm                   worksheetExitConfirm, worksheetEditConfirm;
@@ -132,7 +133,7 @@ public class WorksheetCompletionScreen extends Screen {
     protected WorksheetLookupScreen     wLookupScreen, wrLookupScreen;
     
     private enum Tabs {
-        WORKSHEET, NOTE
+        /*WORKSHEET, */NOTE
     };
 
     public WorksheetCompletionScreen(final Integer worksheetId) throws Exception {
@@ -152,7 +153,6 @@ public class WorksheetCompletionScreen extends Screen {
         service           = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheetCompletion.server.WorksheetCompletionService");
         instrumentService = new ScreenService("OpenELISServlet?service=org.openelis.modules.instrument.server.InstrumentService");
         sysVarService     = new ScreenService("OpenELISServlet?service=org.openelis.modules.systemvariable.server.SystemVariableService");
-        userService       = new ScreenService("controller?service=org.openelis.server.SystemUserService");
         
         userPermission = OpenELIS.getSystemUserPermission().getModule("worksheet");
         if (userPermission == null)
@@ -183,11 +183,11 @@ public class WorksheetCompletionScreen extends Screen {
                                                          "test_worksheet_format",
                                                          "worksheet_status");
             
-            list = sysVarService.callList("fetchByName", "worksheet_temp_directory");
+            list = sysVarService.callList("fetchByName", "worksheet_output_directory");
             if (list.size() == 0)
-                throw new Exception(consts.get("worksheetTempDirectoryLookupException"));
+                throw new Exception(consts.get("worksheetOutputDirectoryLookupException"));
             else
-                tempFileDirectory = ((SystemVariableDO)list.get(0)).getValue();
+                outputFileDirectory = ((SystemVariableDO)list.get(0)).getValue();
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -353,7 +353,7 @@ public class WorksheetCompletionScreen extends Screen {
                 }
             } 
         });
-
+/*
         table = (TableWidget)def.getWidget("worksheetItemTable");
         addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
@@ -371,7 +371,7 @@ public class WorksheetCompletionScreen extends Screen {
                 event.cancel();
             }
         });
-
+*/
         editWorksheetButton = (AppButton)def.getWidget("editWorksheetButton");
         addScreenHandler(editWorksheetButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -379,7 +379,8 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                editWorksheetButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
+//                editWorksheetButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
+                editWorksheetButton.enable(Boolean.TRUE);
             }
         });
 
@@ -460,7 +461,6 @@ public class WorksheetCompletionScreen extends Screen {
 
         try {
             formatBatch = DictionaryCache.getIdFromSystemName("wsheet_num_format_batch");
-            formatTotal = DictionaryCache.getIdFromSystemName("wsheet_num_format_total");
             statusFailedRun = DictionaryCache.getIdFromSystemName("worksheet_failed");
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -490,12 +490,12 @@ public class WorksheetCompletionScreen extends Screen {
         //
         // load analysis status dropdown model
         //
-        dictList  = DictionaryCache.getListByCategorySystemName("analysis_status");
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for (DictionaryDO resultDO : dictList)
-            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
-        ((Dropdown<Integer>)table.getColumns().get(6).getColumnWidget()).setModel(model);
+//        dictList  = DictionaryCache.getListByCategorySystemName("analysis_status");
+//        model = new ArrayList<TableDataRow>();
+//        model.add(new TableDataRow(null, ""));
+//        for (DictionaryDO resultDO : dictList)
+//            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
+//        ((Dropdown<Integer>)table.getColumns().get(6).getColumnWidget()).setModel(model);
     }
     
     protected boolean fetchById(Integer id) {
@@ -506,9 +506,9 @@ public class WorksheetCompletionScreen extends Screen {
             window.setBusy(consts.get("fetching"));
             try {
                 switch (tab) {
-                    case WORKSHEET:
-                        manager = WorksheetManager.fetchWithItems(id);
-                        break;
+//                    case WORKSHEET:
+//                        manager = WorksheetManager.fetchWithItems(id);
+//                        break;
                         
                     case NOTE:
                         manager = WorksheetManager.fetchWithNotes(id);
@@ -534,9 +534,9 @@ public class WorksheetCompletionScreen extends Screen {
     
     private void drawTabs() {
         switch (tab) {
-            case WORKSHEET:
-                table.load(getTableModel());
-                break;
+//            case WORKSHEET:
+//                table.load(getTableModel());
+//                break;
                 
             case NOTE:
                 noteTab.draw();
@@ -638,12 +638,12 @@ public class WorksheetCompletionScreen extends Screen {
         window.setBusy("Saving worksheet for editing");
         try {
             service.call("saveForEdit", manager);
-            worksheetFileName = new String(tempFileDirectory+"Worksheet"+
+            worksheetFileName = new String(outputFileDirectory+"Worksheet"+
                                            manager.getWorksheet().getId()+".xls");
 /*
             worksheetEditConfirm = new Confirm(Confirm.Type.QUESTION, "",
                                                consts.get("worksheetCompletionEditConfirm")+
-                                               " "+worksheetFileName,
+                                               "\n"+worksheetFileName,
                                                "Open File", "Cancel");
             worksheetEditConfirm.addSelectionHandler(new SelectionHandler<Integer>(){
                 public void onSelection(SelectionEvent<Integer> event) {
@@ -654,7 +654,7 @@ public class WorksheetCompletionScreen extends Screen {
                                 window.setDone(consts.get("worksheetCompletionEditConfirm")+
                                                           " "+worksheetFileName);
 /*
-                                Window.open("file://"+worksheetFileName.toString(), null, null);
+                                Window.open("file://"+worksheetFileName, "_blank", "");
                             } catch (Exception anyE) {
                                 Window.alert(anyE.getMessage());
                                 window.clearStatus();
@@ -798,7 +798,7 @@ public class WorksheetCompletionScreen extends Screen {
         failedRunNote.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
         editNote.setNote(failedRunNote);
     }
-    
+/*    
     private ArrayList<TableDataRow> getTableModel() {
         int                      i, j, k, l;
         ArrayList<TableDataRow>  model;
@@ -945,7 +945,7 @@ public class WorksheetCompletionScreen extends Screen {
 
         return model;
     }
-
+*/
     private boolean canEditAny() {
         int               i;
         SectionDO         section;
@@ -964,7 +964,7 @@ public class WorksheetCompletionScreen extends Screen {
 
 //        return false;
     }
-    
+/*    
     private Object getPositionNumber(int position) {
         int    major, minor;
         Object positionNumber;
@@ -980,20 +980,20 @@ public class WorksheetCompletionScreen extends Screen {
         
         return positionNumber;
     }
-    
+*/    
     /**
      * Parses the position number and returns the major number
      * for batch numbering.
      */
-    private int getPositionMajorNumber(int position) {
-        return (int) (position / (double)manager.getWorksheet().getBatchCapacity() + .99);
-    }
+//    private int getPositionMajorNumber(int position) {
+//        return (int) (position / (double)manager.getWorksheet().getBatchCapacity() + .99);
+//    }
 
     /**
       * Parses the position number and returns the minor number
       * for batch numbering.
       */
-    private int getPositionMinorNumber(int position) {
-        return position - (getPositionMajorNumber(position) - 1) * manager.getWorksheet().getBatchCapacity();
-    }
+//    private int getPositionMinorNumber(int position) {
+//        return position - (getPositionMajorNumber(position) - 1) * manager.getWorksheet().getBatchCapacity();
+//    }
 }
