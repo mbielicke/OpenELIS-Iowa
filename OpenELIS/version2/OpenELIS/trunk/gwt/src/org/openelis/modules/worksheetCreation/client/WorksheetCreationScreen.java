@@ -416,7 +416,7 @@ public class WorksheetCreationScreen extends Screen {
 
         try {
             formatBatch = DictionaryCache.getIdFromSystemName("wsheet_num_format_batch");
-            formatTotal = DictionaryCache.getIdFromSystemName("wsheet_num_format_total");
+            formatTotal = DictionaryCache.getIdFromSystemName("wformat_total");
             qcDup = DictionaryCache.getIdFromSystemName("qc_duplicate");
             statusWorking = DictionaryCache.getIdFromSystemName("worksheet_working");
             typeFixed = DictionaryCache.getIdFromSystemName("pos_fixed");
