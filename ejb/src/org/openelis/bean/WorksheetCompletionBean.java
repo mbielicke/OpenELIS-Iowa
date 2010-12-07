@@ -74,6 +74,7 @@ import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalyteLocal;
@@ -139,7 +140,16 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         WorksheetQcResultManager wqrManager;
         WorksheetResultManager   wrManager;
 
-        formatVDO = dictLocal().fetchById(manager.getWorksheet().getFormatId());
+        try {
+            formatVDO = dictLocal().fetchById(manager.getWorksheet().getFormatId());
+        } catch (NotFoundException nfE) {
+            formatVDO = new DictionaryViewDO();
+            formatVDO.setLocalAbbrev("Total");
+            formatVDO.setSystemName("wformat_total");
+        } catch (Exception anyE) {
+            System.out.println("Error retrieving worksheet format: "+anyE.getMessage());
+            return manager;
+        }
 
         try {
             in = new FileInputStream(getWorksheetTemplateFileName(formatVDO));
