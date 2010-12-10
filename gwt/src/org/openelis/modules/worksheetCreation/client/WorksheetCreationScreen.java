@@ -193,7 +193,8 @@ public class WorksheetCreationScreen extends Screen {
         setState(State.DEFAULT);
         openLookupWindow();
         initializeDropdowns();
-
+        clearQCTemplate();
+        
         DataChangeEvent.fire(this);
     }
 
@@ -326,7 +327,7 @@ public class WorksheetCreationScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                insertQCWorksheetButton.enable(false);
+                insertQCWorksheetButton.enable(true);
             }
         });
 
@@ -337,7 +338,7 @@ public class WorksheetCreationScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                insertQCLookupButton.enable(false);
+                insertQCLookupButton.enable(true);
             }
         });
 
@@ -520,8 +521,6 @@ public class WorksheetCreationScreen extends Screen {
                                 isSaved = false;
                                 saveButton.enable(true);
                                 worksheetItemTable.enable(true);
-                                insertQCWorksheetButton.enable(true);
-                                insertQCLookupButton.enable(true);
                             }
                         }
                     }
@@ -675,13 +674,12 @@ public class WorksheetCreationScreen extends Screen {
     }
 
     private void loadQCTemplate() {
-        int                  i, j;
-//        String               message;
-        ArrayList<Object>    dataList;
-        ArrayList<QcDO>      list;
-        QcDO                 qcDO = null;
-        TableDataRow         qcRow;
-        TestWorksheetItemDO  twiDO;
+        int                 i, j;
+        ArrayList<Object>   dataList;
+        ArrayList<QcDO>     list;
+        QcDO                qcDO = null;
+        TableDataRow        qcRow;
+        TestWorksheetItemDO twiDO;
         
         try {
             if (twManager == null) {
@@ -896,12 +894,15 @@ public class WorksheetCreationScreen extends Screen {
         }
 
         //
-        // If last batch contains only QC items, remove it
+        // If last batch contains only QC items and this is not a QC only worksheet,
+        // remove it
         //
-        for (i--; i > -1 && items.get(i).data instanceof ArrayList; i--) {
-            if (i % testWorksheetDO.getTotalCapacity() == 0) {
-                while (i < items.size())
-                    items.remove(i);
+        if (analysisItems.size() > 0) {
+            for (i--; i > -1 && items.get(i).data instanceof ArrayList; i--) {
+                if (i % testWorksheetDO.getTotalCapacity() == 0) {
+                    while (i < items.size())
+                        items.remove(i);
+                }
             }
         }
 
@@ -1044,6 +1045,10 @@ public class WorksheetCreationScreen extends Screen {
                                                         
                                                         buildQCWorksheet();
                                                         mergeAnalysesAndQCs();
+
+                                                        isSaved = false;
+                                                        saveButton.enable(true);
+                                                        worksheetItemTable.enable(true);
                                                     }
                                                 }
                                             }
@@ -1106,7 +1111,7 @@ public class WorksheetCreationScreen extends Screen {
                                 }
                                 
                                 for (i = 0; i < list.size(); i++) {
-                                    if (qcItems[r+i] != null) {
+                                    if (qcItems != null && qcItems[r+i] != null) {
                                         Window.alert("Fixed QC already designated for position "+(r+i+1)+
                                                      "; Please select a different position or "+
                                                      "a shorter list of QCs to add");
@@ -1145,6 +1150,10 @@ public class WorksheetCreationScreen extends Screen {
                                     buildQCWorksheet();
                                 
                                 mergeAnalysesAndQCs();
+
+                                isSaved = false;
+                                saveButton.enable(true);
+                                worksheetItemTable.enable(true);
                             }
                         }
                     }
