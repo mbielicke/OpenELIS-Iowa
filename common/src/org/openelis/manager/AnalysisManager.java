@@ -831,13 +831,14 @@ public class AnalysisManager implements RPC {
     //
 
     protected void updateAnalysisStatusAt(int itemIndex, int anaIndex, Integer sampleTypeId) throws Exception {
-        int numPreCompl;
+        int i, numPreCompl;
         TestManager testMan;
         boolean error;
         AnalysisViewDO data;
         Integer currentStatusId, preAnalysisId;
         ArrayList<AnalysisViewDO> preAnaList;
         SampleDataBundle bundle;
+        SampleItemManager siMan;
         AnalysisManager anaMan;        
         
         data = getItemAt(anaIndex).analysis;                
@@ -859,11 +860,14 @@ public class AnalysisManager implements RPC {
         
         if (currentStatusId.equals(proxy().anCompletedId)) {
             bundle = getItemAt(anaIndex).bundle;
-            anaMan = bundle.sampleManager.getSampleItems().getAnalysisAt(itemIndex);
-            for (AnalysisViewDO temp : anaMan.getAnalysisList()) {
-                if (DataBaseUtil.isSame(temp.getPreAnalysisId(), data.getId())
-                                && temp.getStatusId().equals(proxy().anInPrepId)) {    
-                    temp.setStatusId(proxy().anLoggedInId);
+            siMan = bundle.sampleManager.getSampleItems();
+            for (i = 0; i < siMan.count(); i++) {
+                anaMan = bundle.sampleManager.getSampleItems().getAnalysisAt(i);
+                for (AnalysisViewDO temp : anaMan.getAnalysisList()) {
+                    if (DataBaseUtil.isSame(temp.getPreAnalysisId(), data.getId())
+                                    && temp.getStatusId().equals(proxy().anInPrepId)) {    
+                        temp.setStatusId(proxy().anLoggedInId);
+                    }
                 }
             }
         }
