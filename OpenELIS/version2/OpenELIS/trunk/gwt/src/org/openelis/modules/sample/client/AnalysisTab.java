@@ -272,14 +272,30 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 analysis.setStatusId(event.getValue());
-                ActionEvent.fire(anTab, Action.CHANGED_DONT_CHECK_PREPS, null);
+                if (!State.QUERY.equals(state))
+                    ActionEvent.fire(anTab, Action.CHANGED_DONT_CHECK_PREPS, null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
+                int                     i;
+                ArrayList<TableDataRow> model;
+                TableDataRow            r;
+
                 statusId.enable(canEdit() &&
                                 EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                 .contains(event.getState()));
                 statusId.setQueryMode(event.getState() == State.QUERY);
+
+                model = statusId.getData();
+                for (i = 0; i < model.size(); i++) {
+                    r = model.get(i);
+                    if (!analysisInitiatedId.equals(r.key) && !analysisOnHoldId.equals(r.key) && 
+                        !analysisRequeueId.equals(r.key) && !analysisCompletedId.equals(r.key) && 
+                        !analysisLoggedInId.equals(r.key) && !State.QUERY.equals(event.getState())) 
+                        r.enabled = false;
+                    else
+                        r.enabled = true;
+                }
             }
         });
         
@@ -854,14 +870,8 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         // analysis status dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("analysis_status")) {
-            r = new TableDataRow(d.getId(), d.getEntry());
-            if (!analysisInitiatedId.equals(d.getId()) && !analysisOnHoldId.equals(d.getId()) && 
-                !analysisRequeueId.equals(d.getId()) && !analysisCompletedId.equals(d.getId()) && 
-                !analysisLoggedInId.equals(d.getId())) 
-                r.enabled = false;
-            model.add(r);
-        }
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("analysis_status"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
 
         statusId.setModel(model);
 

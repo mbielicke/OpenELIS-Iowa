@@ -353,7 +353,7 @@ public class WorksheetCreationLookupScreen extends Screen
         //
         dictList  = DictionaryCache.getListByCategorySystemName("analysis_status");
         model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
+//        model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : dictList)
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         statusId.setModel(model);
