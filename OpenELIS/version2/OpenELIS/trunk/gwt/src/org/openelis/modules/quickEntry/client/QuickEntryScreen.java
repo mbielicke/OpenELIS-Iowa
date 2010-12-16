@@ -194,9 +194,6 @@ public class QuickEntryScreen extends Screen {
 
         accessionNumber = (TextBox<Integer>)def.getWidget("accessionNumber");
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
-//            public void onDataChange(DataChangeEvent event) {
-//                accessionNumber.setValue(Util.toString(null));
-//            }
             public void onStateChange(StateChangeEvent<State> event) {
                 accessionNumber.enable(false);
             }
@@ -204,10 +201,6 @@ public class QuickEntryScreen extends Screen {
 
         tubeNumber = (TextBox)def.getWidget("tubeNumber");
         addScreenHandler(tubeNumber, new ScreenEventHandler<String>() {
-//            public void onDataChange(DataChangeEvent event) {
-//                tubeNumber.setValue(null);
-//            }
-            
             public void onStateChange(StateChangeEvent<State> event) {
                 tubeNumber.enable(false);
             }
@@ -215,10 +208,6 @@ public class QuickEntryScreen extends Screen {
 
         receivedDate = (CalendarLookUp)def.getWidget("receivedDate");
         addScreenHandler(receivedDate, new ScreenEventHandler<Datetime>() {
-//            public void onDataChange(DataChangeEvent event) {
-//                receivedDate.setValue(null);
-//            }
-            
             public void onValueChange(ValueChangeEvent<Datetime> event) {
                 if(todaysDate.after(event.getValue())){
                         LocalizedException ex = new LocalizedException("recievedDateNotTodayExceptionBody", event.getValue().toString());
@@ -252,9 +241,6 @@ public class QuickEntryScreen extends Screen {
 
         testMethodSampleType = (Dropdown)def.getWidget("testMethodSampleType");
         addScreenHandler(testMethodSampleType, new ScreenEventHandler<String>() {
-//            public void onDataChange(DataChangeEvent event) {
-//                testMethodSampleType.setValue(null);
-//            }
             public void onStateChange(StateChangeEvent<State> event) {
                 testMethodSampleType.enable(EnumSet.of(State.ADD, State.DEFAULT).contains(event.getState()));
             }
