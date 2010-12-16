@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="testReflex" language="groovy" pageWidth="522" pageHeight="24" orientation="Landscape" columnWidth="522" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
-	<property name="ireport.zoom" value="2.4793388429752063"/>
+	<property name="ireport.zoom" value="2.253944402704733"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="TEST_ID" class="java.lang.Integer"/>
@@ -38,35 +38,35 @@ WHERE t.id = $P{TEST_ID} and
 			<staticText>
 				<reportElement mode="Opaque" x="60" y="0" width="55" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
 				<textElement>
-					<font size="10" isStrikeThrough="false"/>
+					<font size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Method]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="115" y="0" width="150" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
 				<textElement>
-					<font size="10" isStrikeThrough="false"/>
+					<font size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Analyte]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="265" y="0" width="185" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
 				<textElement>
-					<font size="10" isStrikeThrough="false"/>
+					<font size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Result]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="450" y="0" width="72" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
 				<textElement>
-					<font size="10" isStrikeThrough="false"/>
+					<font size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Flag]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="0" y="0" width="60" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
 				<textElement>
-					<font size="10" isStrikeThrough="false"/>
+					<font size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Reflex Test]]></text>
 			</staticText>
@@ -80,7 +80,7 @@ WHERE t.id = $P{TEST_ID} and
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement>
-					<font size="10" isItalic="true"/>
+					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{xt_name}]]></textFieldExpression>
 			</textField>
@@ -90,7 +90,7 @@ WHERE t.id = $P{TEST_ID} and
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement>
-					<font size="10" isItalic="true"/>
+					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{m_name}]]></textFieldExpression>
 			</textField>
@@ -102,7 +102,7 @@ WHERE t.id = $P{TEST_ID} and
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement>
-					<font size="10" isItalic="true"/>
+					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{tr_value}]]></textFieldExpression>
 			</textField>
@@ -112,7 +112,7 @@ WHERE t.id = $P{TEST_ID} and
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement>
-					<font size="10" isItalic="true"/>
+					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{a_name}]]></textFieldExpression>
 			</textField>
@@ -122,7 +122,7 @@ WHERE t.id = $P{TEST_ID} and
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement>
-					<font size="10" isItalic="true"/>
+					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{d_entry}]]></textFieldExpression>
 			</textField>

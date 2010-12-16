@@ -31,28 +31,28 @@ WHERE
 			<staticText>
 				<reportElement mode="Opaque" x="383" y="0" width="50" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
 				<textElement>
-					<font size="10" isStrikeThrough="false"/>
+					<font size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Report]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="337" y="0" width="46" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
 				<textElement>
-					<font size="10" isStrikeThrough="false"/>
+					<font size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Result #]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="0" y="0" width="337" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
 				<textElement textAlignment="Justified">
-					<font size="10"/>
+					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Analyte]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="433" y="0" width="89" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
 				<textElement>
-					<font size="10" isStrikeThrough="false"/>
+					<font size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Type]]></text>
 			</staticText>
@@ -66,7 +66,7 @@ WHERE
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement>
-					<font size="10" isItalic="true"/>
+					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{ta_is_reportable}]]></textFieldExpression>
 			</textField>
@@ -76,7 +76,7 @@ WHERE
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font size="10" isItalic="true"/>
+					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{ta_result_group}]]></textFieldExpression>
 			</textField>
@@ -86,7 +86,7 @@ WHERE
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement>
-					<font size="10" isItalic="true"/>
+					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{a_name}]]></textFieldExpression>
 			</textField>
@@ -96,7 +96,7 @@ WHERE
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement>
-					<font size="10" isItalic="true"/>
+					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{d_entry}]]></textFieldExpression>
 			</textField>
@@ -108,7 +108,7 @@ WHERE
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement>
-					<font size="10" isItalic="true"/>
+					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{a_name}]]></textFieldExpression>
 			</textField>
@@ -118,7 +118,7 @@ WHERE
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement>
-					<font size="10" isItalic="true"/>
+					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{ta_is_reportable}]]></textFieldExpression>
 			</textField>
@@ -128,7 +128,7 @@ WHERE
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font size="10" isItalic="true"/>
+					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{ta_result_group}]]></textFieldExpression>
 			</textField>
@@ -138,7 +138,7 @@ WHERE
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement>
-					<font size="10" isItalic="true"/>
+					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{d_entry}]]></textFieldExpression>
 			</textField>
