@@ -55,7 +55,6 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Name;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.AreaReference;
-import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.ss.util.CellReference;
 import org.jboss.ejb3.annotation.SecurityDomain;
@@ -111,8 +110,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
     }
 
     public WorksheetManager saveForEdit(WorksheetManager manager) throws Exception {
-        int                      r, i, a, c, o, itemMergeStart, anaMergeStart;
-        String                   statuses[], cellNameIndex, posNum;
+        int                      r, i, a, c, o;
+        String                   statuses[], cellNameIndex, posNum, outFileName;
         FileInputStream          in;
         FileOutputStream         out;
         HashMap<Integer,String>  statusMap;
@@ -182,13 +181,11 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         r = 1;
         o = 1;
         for (i = 0; i < manager.getItems().count(); i++) {
-            itemMergeStart = r;
-            wiDO           = manager.getItems().getWorksheetItemAt(i);
-            waManager      = manager.getItems().getWorksheetAnalysisAt(i);
+            wiDO      = manager.getItems().getWorksheetItemAt(i);
+            waManager = manager.getItems().getWorksheetAnalysisAt(i);
 
             for (a = 0; a < waManager.count(); a++) {
-                anaMergeStart = r;
-                waDO          = waManager.getWorksheetAnalysisAt(a);
+                waDO = waManager.getWorksheetAnalysisAt(a);
 
                 row = resultSheet.createRow(r);
                 oRow = overrideSheet.createRow(o);
@@ -366,12 +363,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                                                          wqrManager);
                     }
                 }
-                for (c = 3; c < 6; c++)
-                    resultSheet.addMergedRegion(new CellRangeAddress(anaMergeStart, r - 1, c, c));
             }
-            
-            for (c = 0; c < 3; c++)
-                resultSheet.addMergedRegion(new CellRangeAddress(itemMergeStart, r - 1, c, c));
         }
         
         //
@@ -406,22 +398,13 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         for (c = 0; c < 8; c++)
             overrideSheet.autoSizeColumn(c, true);
         
-        //
-        // Remove names of template cells from workbook
-        //
-        for (c = 0; c < tRow.getLastCellNum(); c++) {
-            i = wb.getNameIndex(tCellNames.get(resultSheet.getSheetName()+"!$"+
-                                              CellReference.convertNumToColString(c+1)+
-                                              "$"+(tRow.getRowNum()+1)));
-            if (i != -1)
-                wb.removeName(i);
-        }
-            
         try {
-            out = new FileOutputStream(getWorksheetOutputFileName(manager.getWorksheet().getId()));
+            outFileName = getWorksheetOutputFileName(manager.getWorksheet().getId(),
+                                                     manager.getWorksheet().getSystemUserId());
+            out = new FileOutputStream(outFileName);
             wb.write(out);
             out.close();
-            Runtime.getRuntime().exec("chmod go+rw "+getWorksheetOutputFileName(manager.getWorksheet().getId()));
+            Runtime.getRuntime().exec("chmod go+rw "+outFileName);
         } catch (Exception anyE) {
             System.out.println("Error writing Excel file: "+anyE.getMessage());
         }
@@ -467,7 +450,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         WorksheetResultViewDO    wrVDO;
         
         errorList = new ValidationErrorsList();
-        file = new File(getWorksheetOutputFileName(manager.getWorksheet().getId()));
+        file = new File(getWorksheetOutputFileName(manager.getWorksheet().getId(),
+                                                   manager.getWorksheet().getSystemUserId()));
         in   = new FileInputStream(file);
         wb   = new HSSFWorkbook(in);
 //        columnList = getColumnListForFormat(formatVDO.getSystemName());
@@ -1120,9 +1104,10 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         return cell;
     }
     
-    private String getWorksheetOutputFileName(Integer worksheetNumber) throws Exception {
+    private String getWorksheetOutputFileName(Integer worksheetNumber, Integer userId) throws Exception {
         ArrayList<SystemVariableDO> sysVars;
         String                      dirName;
+        SystemUserVO                userVO;
         
         dirName = "";
         try {
@@ -1132,8 +1117,15 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         } catch (Exception anyE) {
             throw new Exception("Error retrieving temp directory variable: "+anyE.getMessage());
         }
+
+        userVO = null;
+        try {
+            userVO = sysUserLocal().fetchById(userId);
+        } catch (Exception anyE) {
+            throw new Exception("Error retrieving username for worksheet: "+anyE.getMessage());
+        }
         
-        return dirName+"Worksheet"+worksheetNumber+".xls";
+        return dirName+worksheetNumber+"_"+userVO.getLoginName()+".xls";
     }
     
     private String getWorksheetTemplateFileName(DictionaryViewDO formatVDO) throws Exception {
