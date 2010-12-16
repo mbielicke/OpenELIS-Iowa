@@ -138,7 +138,7 @@ public class TestReportBean implements TestReportRemote {
         else
             section = "";
         if (!DataBaseUtil.isEmpty(test))
-            test += " and t.id " + test;
+            test = " and t.id " + test;
         else
             test = "";
         
