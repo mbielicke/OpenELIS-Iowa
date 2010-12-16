@@ -27,13 +27,12 @@ import org.openelis.domain.OptionListItem;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.SectionLocal;
 import org.openelis.local.TestLocal;
 import org.openelis.remote.TestReportRemote;
 import org.openelis.report.Prompt;
-import org.openelis.report.ReportStatus;
-import org.openelis.utils.PermissionInterceptor;
 import org.openelis.utils.PrinterList;
 import org.openelis.utils.ReportUtil;
 
@@ -89,7 +88,7 @@ public class TestReportBean implements TestReportRemote {
                                                          .setRequired(true));            
 
             prn = PrinterList.getInstance().getListByType("pdf");
-            prn.add(0,new OptionListItem("-view-", "View PDF"));
+            prn.add(0,new OptionListItem("-view-", "View in PDF"));
             p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
                                                           .setWidth(200)
                                                           .setOptionList(prn)
@@ -106,68 +105,86 @@ public class TestReportBean implements TestReportRemote {
      * Execute the report and send its output to specified location
      */
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
-        String detail, test ,section, where;
-        HashMap<String, QueryData> param;
-        File tempFile;
         URL url;
-        String dir, printer;
+        File tempFile;
+        HashMap<String, QueryData> param;
+        HashMap<String, Object> jparam;
+        Connection con;
+        ReportStatus status;
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
-        HashMap jparam;
-        Connection con;
-        ReportStatus status;
-        
-        
+        String detail, test, section, printer, dir, printstat; 
+
+        /*
+         * push status into session so we can query it
+         * while the report is running
+         */
         status = new ReportStatus();        
         session.setAttribute("TestReport", status);
         
+        /*
+         * recover all the params and build a specific where clause
+         */
         param = ReportUtil.parameterMap(paramList);
-        detail = ReportUtil.getSingleParameter(param, "DETAIL");
-        
-        where = "";
-        section = ReportUtil.getListParameter(param, "SECTION");        
-        if (!DataBaseUtil.isEmpty(section))
-            where += " and s.id " + section;
-        
-        test = ReportUtil.getListParameter(param, "TEST");
-        if (!DataBaseUtil.isEmpty(test))
-            where += " and t.id " + test;
-        
-        jparam = new HashMap();
-        
-        jparam.put("DETAIL", detail);   
-        jparam.put("WHERE", where);        
 
+        detail = ReportUtil.getSingleParameter(param, "DETAIL");
+        section = ReportUtil.getListParameter(param, "SECTION");        
+        test = ReportUtil.getListParameter(param, "TEST");
+        printer = ReportUtil.getSingleParameter(param, "PRINTER");
+
+        if (!DataBaseUtil.isEmpty(section))
+            section = " and s.id " + section;
+        else
+            section = "";
+        if (!DataBaseUtil.isEmpty(test))
+            test += " and t.id " + test;
+        else
+            test = "";
+        
+        /*
+         * start the report 
+         */
         con = null;
         try {
-            con = ((DataSource)ctx.lookup("jdbc/OpenELISDB")).getConnection();
+            status.setMessage("Initializing report");
+
+            con = ReportUtil.getConnection(ctx);
             url = ReportUtil.getResourceURL("org/openelis/report/test/main.jasper");            
             dir = ReportUtil.getResourcePath(url);
+
+            tempFile = File.createTempFile("test", ".pdf", new File("/tmp"));
+
+            jparam = new HashMap<String, Object>();
+            jparam.put("DETAIL", detail);
+            jparam.put("SECTION", section);
+            jparam.put("TEST", test);   
             jparam.put("SUBREPORT_DIR", dir);            
             
-            status.setMessage("Initializing report");
+            status.setMessage("Loading report");
+
             jreport = (JasperReport)JRLoader.loadObject(url);   
             jprint = JasperFillManager.fillReport(jreport, jparam, con);
             jexport = new JRPdfExporter();
-            tempFile = File.createTempFile("test", ".pdf", new File("/tmp"));
-            
-            status.setMessage("Outputing report")
-                  .setPercentComplete(20);
             jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(tempFile));
             jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
+
+            status.setMessage("Outputing report").setPercentComplete(20);
+
             jexport.exportReport();
             
-            Runtime.getRuntime().exec("chmod 666 " + tempFile.getPath());
+            status.setPercentComplete(100);
             
-            status.setMessage(tempFile.getName())
-                  .setPercentComplete(100)
-                  .setStatus(ReportStatus.Status.SAVED);                       
-            
-            printer = ReportUtil.getSingleParameter(param, "PRINTER");
-            if (!printer.startsWith("-") && !printer.endsWith("-")) {
-                Runtime.getRuntime().exec("lpr -P"+printer+" -U "+ PermissionInterceptor.getSystemUserName()+" -# 1 "+ tempFile);
-            }
+            if (ReportUtil.isPrinter(printer)) {
+                printstat = ReportUtil.print(tempFile, printer, 1);
+                status.setMessage(printstat)
+                      .setStatus(ReportStatus.Status.PRINTED);
+            } else {
+                tempFile = ReportUtil.saveForUpload(tempFile);
+                status.setMessage(tempFile.getName())
+                      .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
+                      .setStatus(ReportStatus.Status.SAVED);                       
+            }      
         } catch (Exception e) {
             e.printStackTrace();
             throw e;

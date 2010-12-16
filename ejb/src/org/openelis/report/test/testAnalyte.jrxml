@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="testAnalyte1" language="groovy" pageWidth="392" pageHeight="572" orientation="Landscape" columnWidth="392" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
-	<property name="ireport.zoom" value="3.0"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="testAnalyte1" language="groovy" pageWidth="522" pageHeight="572" orientation="Landscape" columnWidth="522" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="2.479338842975207"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="TEST_ID" class="java.lang.Integer" isForPrompting="false"/>
@@ -29,144 +29,116 @@ WHERE
 	<columnHeader>
 		<band height="12" splitType="Stretch">
 			<staticText>
-				<reportElement mode="Opaque" x="275" y="0" width="45" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
-				<box>
-					<pen lineWidth="0.25"/>
-					<topPen lineWidth="0.25"/>
-					<leftPen lineWidth="0.25"/>
-					<bottomPen lineWidth="0.25"/>
-					<rightPen lineWidth="0.25"/>
-				</box>
+				<reportElement mode="Opaque" x="383" y="0" width="50" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
 				<textElement>
-					<font size="8" isStrikeThrough="false"/>
+					<font size="10" isStrikeThrough="false"/>
 				</textElement>
-				<text><![CDATA[ Report]]></text>
+				<text><![CDATA[Report]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="215" y="0" width="55" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
-				<box>
-					<pen lineWidth="0.25"/>
-					<topPen lineWidth="0.25"/>
-					<leftPen lineWidth="0.25"/>
-					<bottomPen lineWidth="0.25"/>
-					<rightPen lineWidth="0.25"/>
-				</box>
+				<reportElement mode="Opaque" x="337" y="0" width="46" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
 				<textElement>
-					<font size="8" isStrikeThrough="false"/>
+					<font size="10" isStrikeThrough="false"/>
 				</textElement>
-				<text><![CDATA[ Result Group]]></text>
+				<text><![CDATA[Result #]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="0" width="210" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
-				<box>
-					<pen lineWidth="0.25"/>
-					<topPen lineWidth="0.25"/>
-					<leftPen lineWidth="0.25"/>
-					<bottomPen lineWidth="0.25"/>
-					<rightPen lineWidth="0.25"/>
-				</box>
+				<reportElement mode="Opaque" x="0" y="0" width="337" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
 				<textElement textAlignment="Justified">
-					<font size="8"/>
+					<font size="10"/>
 				</textElement>
-				<text><![CDATA[ Analyte]]></text>
+				<text><![CDATA[Analyte]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="325" y="0" width="67" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
-				<box>
-					<pen lineWidth="0.25"/>
-					<topPen lineWidth="0.25"/>
-					<leftPen lineWidth="0.25"/>
-					<bottomPen lineWidth="0.25"/>
-					<rightPen lineWidth="0.25"/>
-				</box>
+				<reportElement mode="Opaque" x="433" y="0" width="89" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
 				<textElement>
-					<font size="8" isStrikeThrough="false"/>
+					<font size="10" isStrikeThrough="false"/>
 				</textElement>
-				<text><![CDATA[ Type]]></text>
+				<text><![CDATA[Type]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
 		<band height="12" splitType="Stretch">
 			<textField isBlankWhenNull="true">
-				<reportElement x="275" y="0" width="45" height="12"/>
+				<reportElement x="383" y="0" width="45" height="12"/>
 				<box>
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement>
-					<font size="8" isItalic="true"/>
+					<font size="10" isItalic="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{ta_is_reportable}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="215" y="0" width="55" height="12"/>
+				<reportElement x="337" y="0" width="41" height="12"/>
 				<box>
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
-				<textElement>
-					<font size="8" isItalic="true"/>
+				<textElement textAlignment="Center">
+					<font size="10" isItalic="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{ta_result_group}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="210" height="12"/>
+				<reportElement x="0" y="0" width="332" height="12"/>
 				<box>
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement>
-					<font size="8" isItalic="true"/>
+					<font size="10" isItalic="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{a_name}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="325" y="0" width="67" height="12"/>
+				<reportElement x="433" y="0" width="89" height="12"/>
 				<box>
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement>
-					<font size="8" isItalic="true"/>
+					<font size="10" isItalic="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{d_entry}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="12">
 			<textField isBlankWhenNull="true">
-				<reportElement x="20" y="0" width="190" height="12"/>
+				<reportElement x="20" y="0" width="312" height="12"/>
 				<box>
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement>
-					<font size="8" isItalic="true"/>
+					<font size="10" isItalic="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{a_name}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="275" y="0" width="45" height="12"/>
+				<reportElement x="383" y="0" width="45" height="12"/>
 				<box>
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement>
-					<font size="8" isItalic="true"/>
+					<font size="10" isItalic="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{ta_is_reportable}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="215" y="0" width="55" height="12"/>
+				<reportElement x="337" y="0" width="41" height="12"/>
 				<box>
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
-				<textElement>
-					<font size="8" isItalic="true"/>
+				<textElement textAlignment="Center">
+					<font size="10" isItalic="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{ta_result_group}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="325" y="0" width="67" height="12"/>
+				<reportElement x="433" y="0" width="89" height="12"/>
 				<box>
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement>
-					<font size="8" isItalic="true"/>
+					<font size="10" isItalic="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{d_entry}]]></textFieldExpression>
 			</textField>

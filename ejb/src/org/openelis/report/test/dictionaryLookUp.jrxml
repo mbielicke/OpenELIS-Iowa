@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="testResult_testResult_dictionaryLookUp" language="groovy" pageWidth="175" pageHeight="12" orientation="Landscape" columnWidth="175" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="testResult_testResult_dictionaryLookUp" language="groovy" pageWidth="245" pageHeight="24" orientation="Landscape" columnWidth="245" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.zoom" value="6.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<parameter name="TEST_RESULT_VALUE" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="DICT_ID" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="WIDTH" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
 	<queryString>
-		<![CDATA[SELECT  d.entry d_entry
+		<![CDATA[SELECT d.entry d_entry
 FROM dictionary d
-WHERE d.id = $P{TEST_RESULT_VALUE}]]>
+WHERE d.id = $P{DICT_ID}]]>
 	</queryString>
 	<field name="d_entry" class="java.lang.String"/>
 	<detail>
-		<band height="12" splitType="Stretch">
+		<band height="12">
+			<printWhenExpression><![CDATA[("L".equals($P{WIDTH})?Boolean.TRUE:Boolean.FALSE)]]></printWhenExpression>
 			<textField>
-				<reportElement x="0" y="0" width="175" height="12"/>
+				<reportElement x="0" y="0" width="245" height="12"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.0" lineColor="#000000"/>
@@ -22,7 +26,24 @@ WHERE d.id = $P{TEST_RESULT_VALUE}]]>
 					<rightPen lineWidth="0.0"/>
 				</box>
 				<textElement>
-					<font size="8" isItalic="true"/>
+					<font size="10" isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{d_entry}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="12">
+			<printWhenExpression><![CDATA[("S".equals($P{WIDTH})?Boolean.TRUE:Boolean.FALSE)]]></printWhenExpression>
+			<textField>
+				<reportElement x="0" y="0" width="180" height="12"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.0" lineColor="#000000"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement>
+					<font size="10" isItalic="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{d_entry}]]></textFieldExpression>
 			</textField>
