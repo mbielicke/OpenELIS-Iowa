@@ -163,7 +163,7 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
         if (received == null || expectedDays == null)
             return null;
         
-        now = Datetime.getInstance();
+        now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
         
         expectedDate = received.add(expectedDays);
         
@@ -193,6 +193,7 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
             tempCal.add(Calendar.HOUR_OF_DAY, holdingHours);
             expireDate = new Datetime(Datetime.YEAR, Datetime.MINUTE, tempCal.getTime());
         }
+
         return expireDate;
     }
 }
