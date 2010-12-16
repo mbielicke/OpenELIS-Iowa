@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sampleTypeBarcode" language="groovy" pageWidth="652" pageHeight="36" orientation="Landscape" columnWidth="652" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
-	<property name="ireport.zoom" value="2.853116706110003"/>
+	<property name="ireport.zoom" value="1.6105100000000014"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="T_OR_P_ID" class="java.lang.Integer" isForPrompting="false"/>
@@ -36,14 +36,14 @@ WHERE $P{REF_TYPE} = "P" and
 			<staticText>
 				<reportElement mode="Opaque" x="330" y="0" width="322" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
 				<textElement>
-					<font size="10" isStrikeThrough="false"/>
+					<font size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Unit of measure]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="130" y="0" width="200" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
 				<textElement textAlignment="Justified">
-					<font size="10"/>
+					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Sample type]]></text>
 			</staticText>
@@ -60,14 +60,14 @@ WHERE $P{REF_TYPE} = "P" and
 			<textField isBlankWhenNull="true">
 				<reportElement x="330" y="0" width="322" height="12"/>
 				<textElement>
-					<font size="10" isItalic="true"/>
+					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{unit_entry}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="130" y="0" width="195" height="12"/>
 				<textElement>
-					<font size="10" isItalic="true"/>
+					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{type_entry}]]></textFieldExpression>
 			</textField>
