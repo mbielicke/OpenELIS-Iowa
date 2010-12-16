@@ -26,47 +26,5 @@
 package org.openelis.modules.newbornScreeningSampleLogin.server;
 
 
-public class NewbornScreeningSampleLoginService {//implements AppScreenFormServiceInt<NewbornScreeningSampleLoginForm, Query<TableDataRow<Integer>>>{
-/*
-    public NewbornScreeningSampleLoginForm abort(NewbornScreeningSampleLoginForm rpc) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public NewbornScreeningSampleLoginForm commitAdd(NewbornScreeningSampleLoginForm rpc) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public NewbornScreeningSampleLoginForm commitDelete(NewbornScreeningSampleLoginForm rpc) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> data) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public NewbornScreeningSampleLoginForm commitUpdate(NewbornScreeningSampleLoginForm rpc) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public NewbornScreeningSampleLoginForm fetch(NewbornScreeningSampleLoginForm rpc) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public NewbornScreeningSampleLoginForm fetchForUpdate(NewbornScreeningSampleLoginForm rpc) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public NewbornScreeningSampleLoginForm getScreen(NewbornScreeningSampleLoginForm rpc) throws Exception {
-        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/newbornScreeningSampleLogin.xsl");
-        
-        return rpc;
-    }
-    */
+public class NewbornScreeningSampleLoginService {
 }

@@ -28,25 +28,12 @@ package org.openelis.modules.report.client;
 import org.openelis.gwt.screen.ScreenDef;
 import org.openelis.gwt.services.ScreenService;
 
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-
 public class TestReportScreen extends ReportScreen {
 
     public TestReportScreen() throws Exception { 
         drawScreen(new ScreenDef());        
+        setName(consts.get("testReport"));
         service = new ScreenService("controller?service=org.openelis.modules.report.server.TestReportService");
-        
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
     }
-    
-    private void postConstructor() {
-        setTitle(consts.get("testReport"));
-        initialize();        
-    }   
-    
+
 }

@@ -92,7 +92,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
     protected AuxDataManager        manager;
 
     public AuxDataTab(ScreenDefInt def, ScreenWindow window) {
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.auxiliary.server.AuxiliaryService");
+        service = new ScreenService("controller?service=org.openelis.modules.auxiliary.server.AuxiliaryService");
         setDefinition(def);
         setWindow(window);
 

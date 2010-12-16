@@ -448,7 +448,7 @@ public class QuickEntryScreen extends Screen {
             }
 
             // test/panel
-        } else if (val.matches("[TP][0-9]*\\|[0-9]*")) {
+        } else if (val.matches("[TP][0-9]*\\-[0-9]*")) {
             testMethodSampleType.setValue(val);
 
             // tube #
@@ -827,13 +827,12 @@ public class QuickEntryScreen extends Screen {
             for (TestMethodSampleTypeVO typeDO : testPanelList) {
                 row = new TableDataRow(1);
                 if (typeDO.getPanelId() == null) {
-                    row.key = "T" + typeDO.getTestId() + "|" + typeDO.getSampleTypeId();
+                    row.key = "T" + typeDO.getTestId() + "-" + typeDO.getSampleTypeId();
                     row.cells.get(0).value = typeDO.getTest() + ", " + typeDO.getMethod() + ", " +
                                              typeDO.getSampleType();
                     row.data = typeDO;
-
                 } else {
-                    row.key = "P" + typeDO.getPanelId() + "|" + typeDO.getSampleTypeId();
+                    row.key = "P" + typeDO.getPanelId() + "-" + typeDO.getSampleTypeId();
                     row.cells.get(0).value = typeDO.getPanel() + ", " + typeDO.getSampleType();
                     row.data = typeDO;
                 }

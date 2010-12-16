@@ -100,8 +100,8 @@ public class WorksheetCreationLookupScreen extends Screen
 
     public WorksheetCreationLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetCreationLookupDef.class));
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
-        testService = new ScreenService("OpenELISServlet?service=org.openelis.modules.test.server.TestService");
+        service = new ScreenService("controller?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
+        testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
         
         userPermission = OpenELIS.getSystemUserPermission().getModule("worksheet");
         if (userPermission == null)

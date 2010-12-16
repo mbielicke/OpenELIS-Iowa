@@ -48,7 +48,7 @@ public class SampleManagerProxy {
                                   samCompletedId, samReleasedId, samErrorId;
 
     public SampleManagerProxy() {
-        service = new ScreenService("OpenELISServlet?service=" + SAMPLE_SERVICE_URL);
+        service = new ScreenService("controller?service=" + SAMPLE_SERVICE_URL);
 
         if (anLoggedInId == null) {
             try {

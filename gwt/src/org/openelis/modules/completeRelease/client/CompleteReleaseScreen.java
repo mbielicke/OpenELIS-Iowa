@@ -20,7 +20,6 @@ import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ReportProgress;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -83,10 +82,8 @@ import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.http.client.Request;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -1155,52 +1152,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
                 sampleContent.selectTab(tab.ordinal());
             sampleContent.getTabBar().setStyleName("gwt-TabBar");
         }
-    }
-
-    private void doReport() {
-        Request req = service.call("doFinalReport", new AsyncCallback<ReportProgress>() {
-            public void onSuccess(final ReportProgress rp) {
-                window.setDone("Done");
-                window.setProgress(0);
-                DeferredCommand.addCommand(new Command() {
-                    public void execute() {
-                        Window.open("Report.html?id=" + rp.name, "Report",
-                                    "toolbar=no,location=no,menubar=no,status=no,titlebar=no");
-                    }
-                });
-
-            }
-
-            public void onFailure(Throwable caught) {
-                Window.alert(caught.getMessage());
-            }
-        });
-        getProgress(req);
-
-    }
-
-    public void getProgress(final Request req) {
-        if ( !req.isPending()) {
-            window.setDone("Done");
-            window.setProgress(0);
-            return;
-        }
-        service.call("getProgress", new AsyncCallback<ReportProgress>() {
-            public void onSuccess(ReportProgress fp) {
-                window.setBusy(consts.get("generatingReport"));
-                window.setProgress(fp.generated);
-                Timer timer = new Timer() {
-                    public void run() {
-                        getProgress(req);
-                    }
-                };
-                timer.schedule(500);
-            }
-
-            public void onFailure(Throwable caught) {
-                Window.alert(caught.getMessage());
-            }
-        });
     }
 
     public HandlerRegistration addActionHandler(ActionHandler handler) {

@@ -27,11 +27,11 @@ package org.openelis.modules.report.server;
 
 import java.util.ArrayList;
 
+import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.FinalReportRemote;
 import org.openelis.report.Prompt;
-import org.openelis.report.ReportStatus;
 import org.openelis.util.SessionManager;
 
 public class FinalReportService {    
@@ -44,7 +44,9 @@ public class FinalReportService {
         ReportStatus st;
         
         st = remote().runReportForSingle(query.getFields());
-        SessionManager.getSession().setAttribute(st.getMessage(), st.getMessage());
+        if (st.getStatus() == ReportStatus.Status.SAVED)
+            SessionManager.getSession().setAttribute(st.getMessage(), st);
+
         return st;
     }
     

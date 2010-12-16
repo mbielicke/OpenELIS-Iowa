@@ -37,7 +37,7 @@ public class StorageManagerProxy {
     protected ScreenService service;
     
     public StorageManagerProxy(){
-        service = new ScreenService("OpenELISServlet?service="+STORAGE_SERVICE_URL);
+        service = new ScreenService("controller?service="+STORAGE_SERVICE_URL);
     }
     
     public StorageManager fetchById(Integer tableId, Integer id) throws Exception {

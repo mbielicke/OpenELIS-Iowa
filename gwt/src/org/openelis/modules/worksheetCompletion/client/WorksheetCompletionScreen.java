@@ -150,9 +150,9 @@ public class WorksheetCompletionScreen extends Screen {
         super((ScreenDefInt)GWT.create(WorksheetCompletionDef.class));
 
         isPopup           = false;
-        service           = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheetCompletion.server.WorksheetCompletionService");
-        instrumentService = new ScreenService("OpenELISServlet?service=org.openelis.modules.instrument.server.InstrumentService");
-        sysVarService     = new ScreenService("OpenELISServlet?service=org.openelis.modules.systemvariable.server.SystemVariableService");
+        service           = new ScreenService("controller?service=org.openelis.modules.worksheetCompletion.server.WorksheetCompletionService");
+        instrumentService = new ScreenService("controller?service=org.openelis.modules.instrument.server.InstrumentService");
+        sysVarService     = new ScreenService("controller?service=org.openelis.modules.systemvariable.server.SystemVariableService");
         
         userPermission = OpenELIS.getSystemUserPermission().getModule("worksheet");
         if (userPermission == null)

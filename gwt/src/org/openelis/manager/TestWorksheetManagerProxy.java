@@ -35,7 +35,7 @@ public class TestWorksheetManagerProxy {
     protected ScreenService       service;
 
     public TestWorksheetManagerProxy() {
-        service = new ScreenService("OpenELISServlet?service=" + TEST_MANAGER_SERVICE_URL);
+        service = new ScreenService("controller?service=" + TEST_MANAGER_SERVICE_URL);
     }
 
     public TestWorksheetManager fetchByTestId(Integer testId) throws Exception {

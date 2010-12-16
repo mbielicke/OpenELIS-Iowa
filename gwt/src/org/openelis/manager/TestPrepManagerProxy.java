@@ -33,7 +33,7 @@ public class TestPrepManagerProxy {
     protected ScreenService service;
     
     public TestPrepManagerProxy() {
-        service = new ScreenService("OpenELISServlet?service="+TEST_MANAGER_SERVICE_URL);
+        service = new ScreenService("controller?service="+TEST_MANAGER_SERVICE_URL);
     }
     
     public TestPrepManager add(TestPrepManager man) throws Exception {

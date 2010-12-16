@@ -36,7 +36,7 @@ public class SampleItemManagerProxy {
     protected ScreenService service;
     
     public SampleItemManagerProxy(){
-        service = new ScreenService("OpenELISServlet?service="+SAMPLE_SERVICE_URL);
+        service = new ScreenService("controller?service="+SAMPLE_SERVICE_URL);
     }
     
     public SampleItemManager fetchBySampleId(Integer sampleId) throws Exception {

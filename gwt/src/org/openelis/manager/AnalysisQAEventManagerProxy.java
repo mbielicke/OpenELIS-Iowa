@@ -34,7 +34,7 @@ public class AnalysisQAEventManagerProxy {
     protected ScreenService service;
     
     public AnalysisQAEventManagerProxy(){
-        service = new ScreenService("OpenELISServlet?service="+ANALYSIS_SERVICE_URL);
+        service = new ScreenService("controller?service="+ANALYSIS_SERVICE_URL);
     }
     
     public AnalysisQaEventManager fetchByAnalysisId(Integer analysisId) throws Exception {

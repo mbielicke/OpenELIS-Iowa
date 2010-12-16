@@ -95,7 +95,7 @@ public class OpenELIS extends Screen {
     public OpenELIS() throws Exception {
         OpenELISRPC rpc;
 
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.main.server.OpenELISScreenService");
+        service = new ScreenService("controller?service=org.openelis.modules.main.server.OpenELISScreenService");
         rpc = service.call("initialData");
         consts = rpc.appConstants;
         systemUserPermission = rpc.systemUserPermission;

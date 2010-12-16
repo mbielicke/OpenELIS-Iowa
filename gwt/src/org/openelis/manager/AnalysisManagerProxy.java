@@ -49,7 +49,7 @@ public class AnalysisManagerProxy {
                                   anErrorInitiatedId, anErrorInPrepId, anErrorCompletedId,sampleReleasedId;
 
     public AnalysisManagerProxy() {
-        service = new ScreenService("OpenELISServlet?service=" + ANALYSIS_SERVICE_URL);
+        service = new ScreenService("controller?service=" + ANALYSIS_SERVICE_URL);
 
         if (anLoggedInId == null) {
             try {

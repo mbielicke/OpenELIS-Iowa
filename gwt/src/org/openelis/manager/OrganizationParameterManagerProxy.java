@@ -32,7 +32,7 @@ public class OrganizationParameterManagerProxy {
     protected ScreenService       service;
 
     public OrganizationParameterManagerProxy() {
-        service = new ScreenService("OpenELISServlet?service=" + ORG_MANAGER_SERVICE_URL);
+        service = new ScreenService("controller?service=" + ORG_MANAGER_SERVICE_URL);
     }
 
     public OrganizationParameterManager fetchByOrganizationId(Integer orgId) throws Exception {

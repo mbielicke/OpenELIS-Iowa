@@ -32,7 +32,7 @@ public class CategoryManagerProxy {
     protected ScreenService service;
     
     public CategoryManagerProxy() {
-        service = new ScreenService("OpenELISServlet?service="+MANAGER_SERVICE_URL);
+        service = new ScreenService("controller?service="+MANAGER_SERVICE_URL);
     }
     
     public CategoryManager fetchById(Integer id)throws Exception {

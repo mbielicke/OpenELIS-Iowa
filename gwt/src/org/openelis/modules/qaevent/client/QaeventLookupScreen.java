@@ -68,7 +68,7 @@ public class QaeventLookupScreen extends Screen implements HasActionHandlers<Qae
     
     public QaeventLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QaeventLookupDef.class));
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.qaevent.server.QaEventService");
+        service = new ScreenService("controller?service=org.openelis.modules.qaevent.server.QaEventService");
         // Setup link between Screen and widget Handlers
         initialize();
         
