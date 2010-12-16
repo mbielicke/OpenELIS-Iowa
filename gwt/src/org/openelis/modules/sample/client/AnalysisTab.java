@@ -68,6 +68,8 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
@@ -555,13 +557,20 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                worksheetTable.enable(false);
+                worksheetTable.enable(true);
             }
         });
 
         worksheetTable.addSelectionHandler(new SelectionHandler<TableRow>() {
             public void onSelection(SelectionEvent<TableRow> event) {
                 selectWkshtButton.enable(true);
+            }
+        });
+        
+        worksheetTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                // this table cannot be edited
+                event.cancel();
             }
         });
 
