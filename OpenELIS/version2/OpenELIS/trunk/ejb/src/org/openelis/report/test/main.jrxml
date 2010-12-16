@@ -70,7 +70,7 @@ ORDER BY ref_type desc, s_name, t_name, m_name]]>
 						<rightPen lineColor="#C0C0C0"/>
 					</box>
 					<textElement>
-						<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+						<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{t_name}]]></textFieldExpression>
 				</textField>
@@ -84,7 +84,7 @@ ORDER BY ref_type desc, s_name, t_name, m_name]]>
 						<rightPen lineColor="#C0C0C0"/>
 					</box>
 					<textElement>
-						<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+						<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{t_description}]]></textFieldExpression>
 				</textField>
@@ -98,7 +98,7 @@ ORDER BY ref_type desc, s_name, t_name, m_name]]>
 						<rightPen lineColor="#C0C0C0"/>
 					</box>
 					<textElement>
-						<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+						<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{m_name}]]></textFieldExpression>
 				</textField>
@@ -112,7 +112,7 @@ ORDER BY ref_type desc, s_name, t_name, m_name]]>
 						<rightPen lineColor="#C0C0C0"/>
 					</box>
 					<textElement>
-						<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+						<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{s_name}]]></textFieldExpression>
 				</textField>
@@ -124,42 +124,42 @@ ORDER BY ref_type desc, s_name, t_name, m_name]]>
 			<staticText>
 				<reportElement x="307" y="0" width="138" height="15"/>
 				<textElement textAlignment="Center">
-					<font fontName="Times New Roman" size="12" isBold="true" isUnderline="false" pdfFontName="Times-Roman"/>
+					<font size="12" isBold="true" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Test Name Report]]></text>
 			</staticText>
 			<textField pattern="MMM dd, yyyy">
 				<reportElement x="0" y="0" width="100" height="12"/>
 				<textElement>
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
 			</textField>
 			<textField pattern="HH:mm:ss">
 				<reportElement x="0" y="12" width="100" height="12"/>
 				<textElement>
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
 			</textField>
 			<textField pattern="">
 				<reportElement x="650" y="0" width="77" height="12"/>
 				<textElement textAlignment="Right">
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$V{PAGE_NUMBER} + " of"]]></textFieldExpression>
 			</textField>
 			<textField pattern="">
 				<reportElement x="652" y="12" width="100" height="12"/>
 				<textElement textAlignment="Right">
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{USER_NAME}]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report" pattern="">
 				<reportElement x="730" y="0" width="22" height="12"/>
 				<textElement>
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
@@ -170,28 +170,28 @@ ORDER BY ref_type desc, s_name, t_name, m_name]]>
 			<staticText>
 				<reportElement mode="Opaque" x="100" y="0" width="130" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 				<textElement>
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Test/Panel name]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="230" y="0" width="130" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 				<textElement>
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Method name]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="360" y="0" width="392" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 				<textElement>
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Description]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="0" y="0" width="100" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 				<textElement>
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Section]]></text>
 			</staticText>
