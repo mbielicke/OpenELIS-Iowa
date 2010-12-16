@@ -34,7 +34,7 @@ public class AuxFieldValueManagerProxy {
     protected ScreenService service;
     
     public AuxFieldValueManagerProxy(){
-        service = new ScreenService("OpenELISServlet?service="+AUXILIARY_SERVICE_URL);
+        service = new ScreenService("controller?service="+AUXILIARY_SERVICE_URL);
     }
     
     public AuxFieldValueManager fetchByAuxFieldId(Integer auxFieldId) throws Exception {

@@ -131,9 +131,9 @@ public class WorksheetCreationScreen extends Screen {
     public WorksheetCreationScreen() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetCreationDef.class));
 
-        service          = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
-        qcService        = new ScreenService("OpenELISServlet?service=org.openelis.modules.qc.server.QcService");
-        worksheetService = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheet.server.WorksheetService");
+        service          = new ScreenService("controller?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
+        qcService        = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
+        worksheetService = new ScreenService("controller?service=org.openelis.modules.worksheet.server.WorksheetService");
 
         userPermission = OpenELIS.getSystemUserPermission().getModule("worksheet");
         if (userPermission == null)

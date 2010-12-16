@@ -53,7 +53,7 @@ public class WorksheetFileUploadScreen extends Screen implements HasActionHandle
 
     public WorksheetFileUploadScreen() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetFileUploadDef.class));
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheet.server.WorksheetService");
+        service = new ScreenService("controller?service=org.openelis.modules.worksheet.server.WorksheetService");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {

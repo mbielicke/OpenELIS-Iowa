@@ -33,7 +33,7 @@ public class WorksheetResultManagerProxy {
     protected ScreenService service;
     
     public WorksheetResultManagerProxy(){
-        service = new ScreenService("OpenELISServlet?service="+WORKSHEET_MANAGER_SERVICE_URL);
+        service = new ScreenService("controller?service="+WORKSHEET_MANAGER_SERVICE_URL);
     }
 
     public WorksheetResultManager fetchByWorksheetAnalysisId(Integer worksheetAnalysisId) throws Exception {

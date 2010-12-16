@@ -87,8 +87,7 @@ public class QAEventsTab extends Screen {
     protected QaeventLookupScreen    qaEventScreen;
 
     public QAEventsTab(ScreenDefInt def, ScreenWindow window) {
-        service = new ScreenService(
-                                    "OpenELISServlet?service=org.openelis.modules.qaevent.server.QaEventService");
+        service = new ScreenService("controller?service=org.openelis.modules.qaevent.server.QaEventService");
         setDefinition(def);
         setWindow(window);
 

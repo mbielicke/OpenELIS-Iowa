@@ -32,23 +32,11 @@ import java.util.Locale;
 import javax.servlet.http.HttpSession;
 
 import org.openelis.gwt.common.SystemUserPermission;
-import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.modules.main.client.openelis.OpenELISRPC;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
 public class OpenELISScreenService {
-
-    public static String APP_ROOT; 
-
-    public String getScreen() {
-        try {
-            return ServiceUtils.getXML(APP_ROOT + "/Forms/main.xsl");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     public OpenELISRPC initialData() {
         OpenELISRPC rpc;

@@ -71,8 +71,8 @@ public class WorksheetQcAnalysisSelectionScreen extends Screen implements HasAct
     
     public WorksheetQcAnalysisSelectionScreen() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetQcAnalysisSelectionDef.class));
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheet.server.WorksheetService");
-        qcService = new ScreenService("OpenELISServlet?service=org.openelis.modules.qc.server.QcService");
+        service = new ScreenService("controller?service=org.openelis.modules.worksheet.server.WorksheetService");
+        qcService = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
 
         // Setup link between Screen and widget Handlers
         initialize();

@@ -47,7 +47,7 @@ public class AnalysisResultManagerProxy {
     protected ScreenService       service;
 
     public AnalysisResultManagerProxy() {
-        service = new ScreenService("OpenELISServlet?service=" + SAMPLE_SERVICE_URL);
+        service = new ScreenService("controller?service=" + SAMPLE_SERVICE_URL);
     }
 
     public AnalysisResultManager fetchByAnalysisIdForDisplay(Integer analysisId) throws Exception {

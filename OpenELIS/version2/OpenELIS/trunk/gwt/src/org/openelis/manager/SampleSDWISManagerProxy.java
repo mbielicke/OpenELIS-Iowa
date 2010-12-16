@@ -33,7 +33,7 @@ public class SampleSDWISManagerProxy {
     protected ScreenService       service;
 
     public SampleSDWISManagerProxy() {
-        service = new ScreenService("OpenELISServlet?service=" + SAMPLE_SERVICE_URL);
+        service = new ScreenService("controller?service=" + SAMPLE_SERVICE_URL);
     }
     
     public SampleSDWISManager fetchBySampleId(Integer sampleId) throws Exception {

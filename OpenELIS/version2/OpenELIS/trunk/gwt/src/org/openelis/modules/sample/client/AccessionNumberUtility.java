@@ -37,7 +37,7 @@ public class AccessionNumberUtility {
     protected ScreenService service;
     
     public AccessionNumberUtility(){
-        service = new ScreenService("OpenELISServlet?service="+SAMPLE_SERVICE_URL);
+        service = new ScreenService("controller?service="+SAMPLE_SERVICE_URL);
     }
     
     public SampleManager accessionNumberEntered(SampleDO sampleDO) throws Exception {

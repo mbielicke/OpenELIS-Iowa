@@ -35,7 +35,7 @@ public class TestAnalyteManagerProxy {
     protected ScreenService       service;
 
     public TestAnalyteManagerProxy() {
-        service = new ScreenService("OpenELISServlet?service=" + TEST_MANAGER_SERVICE_URL);
+        service = new ScreenService("controller?service=" + TEST_MANAGER_SERVICE_URL);
     }
 
     public TestAnalyteManager fetchByTestId(Integer testId) throws Exception {

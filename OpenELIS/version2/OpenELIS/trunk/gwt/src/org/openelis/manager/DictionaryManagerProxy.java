@@ -34,7 +34,7 @@ public class DictionaryManagerProxy {
     protected ScreenService service;
     
     public DictionaryManagerProxy() {
-        service = new ScreenService("OpenELISServlet?service="+DICTIONARY_MANAGER_SERVICE_URL);
+        service = new ScreenService("controller?service="+DICTIONARY_MANAGER_SERVICE_URL);
     }
     
     public DictionaryManager fetchByCategoryId(Integer categoryId)throws Exception {

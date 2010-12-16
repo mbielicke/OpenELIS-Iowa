@@ -131,7 +131,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                                                         worksheetService;
 
     public AnalysisTab(ScreenDefInt def, ScreenWindow window) {
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.analysis.server.AnalysisService");
+        service = new ScreenService("controller?service=org.openelis.modules.analysis.server.AnalysisService");
         panelService = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
         userService = new ScreenService("controller?service=org.openelis.server.SystemUserService");
         worksheetService = new ScreenService("controller?service=org.openelis.modules.worksheet.server.WorksheetService");

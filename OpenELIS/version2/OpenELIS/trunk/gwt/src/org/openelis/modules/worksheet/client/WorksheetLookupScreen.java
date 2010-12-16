@@ -91,7 +91,7 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
 
     public WorksheetLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetLookupDef.class));
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheet.server.WorksheetService");
+        service = new ScreenService("controller?service=org.openelis.modules.worksheet.server.WorksheetService");
         userService = new ScreenService("controller?service=org.openelis.server.SystemUserService");
 
         DeferredCommand.addCommand(new Command() {
