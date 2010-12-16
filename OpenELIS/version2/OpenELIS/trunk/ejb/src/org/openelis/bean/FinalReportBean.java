@@ -33,10 +33,10 @@ import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.OptionListItem;
+import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.remote.FinalReportRemote;
 import org.openelis.report.Prompt;
-import org.openelis.report.ReportStatus;
 import org.openelis.utils.PermissionInterceptor;
 import org.openelis.utils.Printer;
 import org.openelis.utils.PrinterList;
