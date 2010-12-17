@@ -246,16 +246,10 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
         	
         }
 
-        field = new QueryData();
-        field.type = QueryData.Type.STRING;
-        field.query = parser.getParameter().get(0);
-        field.key = StandardNoteMeta.getName();
+        field = new QueryData(StandardNoteMeta.getName(),QueryData.Type.STRING,parser.getParameter().get(0));
         query.setFields(field);
 
-        field = new QueryData();
-        field.type = QueryData.Type.STRING;
-        field.query = parser.getParameter().get(0);
-        field.key = StandardNoteMeta.getDescription();
+        field = new QueryData(StandardNoteMeta.getDescription(),QueryData.Type.STRING,parser.getParameter().get(0));
         query.setFields(field);
 
         window.setBusy("querying");

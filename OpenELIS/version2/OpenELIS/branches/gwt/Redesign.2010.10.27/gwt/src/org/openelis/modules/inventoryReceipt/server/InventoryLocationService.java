@@ -38,8 +38,8 @@ public class InventoryLocationService {
         Integer id;
         String search;
         
-        search = query.getFields().get(0).query;
-        id = new Integer(query.getFields().get(1).query);
+        search = query.getFields().get(0).getQuery();
+        id = new Integer(query.getFields().get(1).getQuery());
         return invLocRemote().fetchByLocationNameInventoryItemId(search + "%", id,10);
     }   
     
@@ -47,9 +47,9 @@ public class InventoryLocationService {
         Integer itemId, storeId;
         String search;
         
-        search = query.getFields().get(0).query;
-        itemId = new Integer(query.getFields().get(1).query);
-        storeId = new Integer(query.getFields().get(2).query);
+        search = query.getFields().get(0).getQuery();
+        itemId = new Integer(query.getFields().get(1).getQuery());
+        storeId = new Integer(query.getFields().get(2).getQuery());
         return invLocRemote().fetchByLocationNameInventoryItemIdStoreId(search + "%", itemId, storeId, 10);
     }
     
@@ -61,8 +61,8 @@ public class InventoryLocationService {
         Integer storeId;
         String search;
         
-        search = query.getFields().get(0).query;
-        storeId = new Integer(query.getFields().get(1).query);
+        search = query.getFields().get(0).getQuery();
+        storeId = new Integer(query.getFields().get(1).getQuery());
         return invLocRemote().fetchByInventoryItemNameStoreId(search + "%", storeId, 10);
     }
     

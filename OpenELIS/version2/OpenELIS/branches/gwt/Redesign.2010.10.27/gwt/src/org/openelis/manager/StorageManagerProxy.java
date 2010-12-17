@@ -49,11 +49,11 @@ public class StorageManagerProxy {
         query = new Query();
 
         field = new QueryData();
-        field.query = tableId.toString();
+        field.setQuery(tableId.toString());
         fields.add(field);
 
         field = new QueryData();
-        field.query = id.toString();
+        field.setQuery(id.toString());
         fields.add(field);
 
         query.setFields(fields);

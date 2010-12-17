@@ -155,7 +155,7 @@ public class InventoryTransferScreen extends Screen {
         addButton = (Button)def.getWidget("add");
         addScreenHandler(addButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                add(null);
+                addState(null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -278,16 +278,10 @@ public class InventoryTransferScreen extends Screen {
                 	
                 }
 
-                field = new QueryData();
-                field.key = InventoryItemMeta.getName();
-                field.type = QueryData.Type.STRING;
-                field.query = parser.getParameter().get(0);
+                field = new QueryData(InventoryItemMeta.getName(),QueryData.Type.STRING,parser.getParameter().get(0));
                 query.setFields(field);
                 
-                field = new QueryData();
-                field.key = InventoryItemMeta.getParentInventoryItemId();
-                field.type = QueryData.Type.INTEGER;                
-                field.query = id.toString();           
+                field = new QueryData(InventoryItemMeta.getParentInventoryItemId(),QueryData.Type.INTEGER,id.toString());           
                 query.setFields(field);
                 try {
                     list = inventoryItemService.callList("fetchActiveByNameStoreAndParentInventoryItem", query);
@@ -352,11 +346,11 @@ public class InventoryTransferScreen extends Screen {
                         query = new Query();                                                                                                     
                         
                         field = new QueryData();
-                        field.query = param;
+                        field.setQuery(param);
                         fields.add(field);
 
                         field = new QueryData();
-                        field.query = Integer.toString(itemId);
+                        field.setQuery(Integer.toString(itemId));
                         fields.add(field);
 
                         query.setFields(fields);
@@ -919,10 +913,10 @@ public class InventoryTransferScreen extends Screen {
     }
     
     public void loadTransferData(InventoryTransferManager manager) {
-        add(manager);
+        addState(manager);
     } 
     
-    protected void add(InventoryTransferManager manager) { 
+    protected void addState(InventoryTransferManager manager) { 
         if (manager == null) {
             this.manager = InventoryTransferManager.getInstance();            
         } else {

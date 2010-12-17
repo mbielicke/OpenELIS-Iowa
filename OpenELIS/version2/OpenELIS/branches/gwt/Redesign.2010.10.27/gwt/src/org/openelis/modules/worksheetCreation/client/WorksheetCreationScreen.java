@@ -1109,7 +1109,7 @@ public class WorksheetCreationScreen extends Screen {
                                     r++;
                                 }
                                 
-                                qcLookupScreen.window.close();
+                                qcLookupScreen.getWindow().close();
                                 
                                 if (qcStartIndex != 0)
                                     loadQCTemplate();

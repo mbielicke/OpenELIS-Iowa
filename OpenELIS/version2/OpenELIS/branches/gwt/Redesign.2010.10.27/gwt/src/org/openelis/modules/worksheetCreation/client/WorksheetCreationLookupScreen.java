@@ -391,22 +391,19 @@ public class WorksheetCreationLookupScreen extends Screen
             if (def.getWidget(key) instanceof AutoComplete) {
                 row = ((AutoComplete)def.getWidget(key)).getSelectedItem();
                 if(row != null && row.getKey() != null) {
-                    qd = new QueryData();
-                    qd.key = key;
-                    qd.query = ((Integer)row.getKey()).toString();
-                    qd.type = QueryData.Type.INTEGER;
+                    qd = new QueryData(key, QueryData.Type.INTEGER,((Integer)row.getKey()).toString());
                     list.add(qd);
 
                     qField = new QueryFieldUtil();
                     try {
-                    	qField.parse(qd.query);
+                    	qField.parse(qd.getQuery());
                     }catch(Exception e) {
                     	
                     }
                 }
             } else if (def.getWidget(key) instanceof Queryable) {
             	qd = (QueryData)((Queryable)def.getWidget(key)).getQuery();
-            	qd.key = key;
+            	qd.setKey(key);
             	list.add(qd);
             	
             }

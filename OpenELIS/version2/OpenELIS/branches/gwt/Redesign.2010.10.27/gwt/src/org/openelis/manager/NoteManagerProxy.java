@@ -44,22 +44,13 @@ public class NoteManagerProxy {
         
         query = new Query();
 
-        field = new QueryData();
-        field.key = NoteMeta.getReferenceId();
-        field.type = QueryData.Type.INTEGER;
-        field.query = id.toString();
+        field = new QueryData(NoteMeta.getReferenceId(),QueryData.Type.INTEGER, id.toString());
         query.setFields(field);
         
-        field = new QueryData();
-        field.key = NoteMeta.getReferenceTableId();
-        field.type = QueryData.Type.INTEGER;
-        field.query = tableId.toString();
+        field = new QueryData(NoteMeta.getReferenceTableId(),QueryData.Type.INTEGER,tableId.toString());
         query.setFields(field);
         
-        field = new QueryData();
-        field.key = NoteMeta.getIsExternal();
-        field.type = QueryData.Type.STRING;
-        field.query = isExternal;
+        field = new QueryData(NoteMeta.getIsExternal(),QueryData.Type.STRING,isExternal);
         query.setFields(field);
 
         return service.call("fetchByRefTableRefIdIsExt", query);

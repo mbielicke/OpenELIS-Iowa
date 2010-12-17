@@ -217,11 +217,11 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 }
 
                 field = new QueryData();
-                field.query = parser.getParameter().get(0);
+                field.setQuery(parser.getParameter().get(0));
                 fields.add(field);
 
                 field = new QueryData();
-                field.query = String.valueOf(sampleItem.getTypeOfSampleId());
+                field.setQuery(String.valueOf(sampleItem.getTypeOfSampleId()));
                 fields.add(field);
 
                 query.setFields(fields);

@@ -235,22 +235,13 @@ public class DictionaryLookupScreen extends Screen implements
         fields = new ArrayList<QueryData>();
         catId = category.getValue();        
         if(catId != null) {            
-            field = new QueryData();
-            field.key = CategoryMeta.getId();
-            field.type = QueryData.Type.INTEGER;
-            field.query = catId.toString();
+            field = new QueryData(CategoryMeta.getId(),QueryData.Type.INTEGER,catId.toString());
             fields.add(field);
         }
-        field = new QueryData();
-        field.key = CategoryMeta.getDictionaryEntry();
-        field.type = QueryData.Type.STRING;
-        field.query = pattern;
+        field = new QueryData(CategoryMeta.getDictionaryEntry(),QueryData.Type.STRING,pattern);
         fields.add(field);
         
-        field = new QueryData();
-        field.key = CategoryMeta.getIsSystem();
-        field.type = QueryData.Type.STRING;
-        field.query = "N";
+        field = new QueryData(CategoryMeta.getIsSystem(),QueryData.Type.STRING,"N");
         fields.add(field);
         
         query.setFields(fields);

@@ -75,7 +75,7 @@ public class ResultService {
         ArrayList<QueryData> fields = query.getFields();
         
         for(int i=0; i<fields.size(); i++)
-            ids.add(new Integer(fields.get(i).query));
+            ids.add(new Integer(fields.get(i).getQuery()));
         
         return analyteRemote().getAlias(ids);
     }

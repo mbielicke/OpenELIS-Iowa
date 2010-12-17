@@ -1166,18 +1166,12 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         addPrivateWellFields(fields);
 
         // add the domain
-        field = new QueryData();
-        field.key = SampleMeta.getDomain();
-        field.query = SampleManager.WELL_DOMAIN_FLAG;
-        field.type = QueryData.Type.STRING;
+        field = new QueryData(SampleMeta.getDomain(),QueryData.Type.STRING,SampleManager.WELL_DOMAIN_FLAG);
         fields.add(field);
 
         if (auxFields.size() > 0) {
             // add ref table
-            field = new QueryData();
-            field.key = SampleMeta.getAuxDataReferenceTableId();
-            field.type = QueryData.Type.INTEGER;
-            field.query = String.valueOf(ReferenceTable.SAMPLE);
+            field = new QueryData(SampleMeta.getAuxDataReferenceTableId(),QueryData.Type.INTEGER,String.valueOf(ReferenceTable.SAMPLE));
             fields.add(field);
 
             // add aux fields
@@ -1272,71 +1266,47 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         size = fields.size();
         for (int i = size - 1; i >= 0; i-- ) {
             data = fields.get(i);
-            dataKey = data.key;
+            dataKey = data.getKey();
 
             if (SampleMeta.getWellOrganizationName().equals(dataKey)) {
-                orgName = data.query;
+                orgName = data.getQuery();
 
-                data = new QueryData();
-                data.key = SampleMeta.getWellReportToName();
-                data.type = QueryData.Type.STRING;
-                data.query = orgName;
+                data = new QueryData(SampleMeta.getWellReportToName(),QueryData.Type.STRING,orgName);
                 fields.add(data);
             } else if (SampleMeta.getWellReportToAddressMultipleUnit().equals(dataKey)) {
-                addressMult = data.query;
+                addressMult = data.getQuery();
 
-                data = new QueryData();
-                data.key = SampleMeta.getAddressMultipleUnit();
-                data.type = QueryData.Type.STRING;
-                data.query = addressMult;
+                data = new QueryData(SampleMeta.getAddressMultipleUnit(),QueryData.Type.STRING,addressMult);
                 fields.add(data);
             } else if (SampleMeta.getWellReportToAddressStreetAddress().equals(dataKey)) {
-                addressStreet = data.query;
+                addressStreet = data.getQuery();
 
-                data = new QueryData();
-                data.key = SampleMeta.getAddressStreetAddress();
-                data.type = QueryData.Type.STRING;
-                data.query = addressStreet;
+                data = new QueryData(SampleMeta.getAddressStreetAddress(),QueryData.Type.STRING,addressStreet);
                 fields.add(data);
             } else if (SampleMeta.getWellReportToAddressCity().equals(dataKey)) {
-                addressCity = data.query;
+                addressCity = data.getQuery();
 
-                data = new QueryData();
-                data.key = SampleMeta.getAddressCity();
-                data.type = QueryData.Type.STRING;
-                data.query = addressCity;
+                data = new QueryData(SampleMeta.getAddressCity(),QueryData.Type.STRING,addressCity);
                 fields.add(data);
             } else if (SampleMeta.getWellReportToAddressState().equals(dataKey)) {
-                addressState = data.query;
+                addressState = data.getQuery();
 
-                data = new QueryData();
-                data.key = SampleMeta.getAddressState();
-                data.type = QueryData.Type.STRING;
-                data.query = addressState;
+                data = new QueryData(SampleMeta.getAddressState(),QueryData.Type.STRING,addressState);
                 fields.add(data);
             } else if (SampleMeta.getWellReportToAddressZipCode().equals(dataKey)) {
-                addressZip = data.query;
+                addressZip = data.getQuery();
 
-                data = new QueryData();
-                data.key = SampleMeta.getAddressZipCode();
-                data.type = QueryData.Type.STRING;
-                data.query = addressZip;
+                data = new QueryData(SampleMeta.getAddressZipCode(),QueryData.Type.STRING,addressZip);
                 fields.add(data);
             } else if (SampleMeta.getWellReportToAddressWorkPhone().equals(dataKey)) {
-                addressWorkPhone = data.query;
+                addressWorkPhone = data.getQuery();
 
-                data = new QueryData();
-                data.key = SampleMeta.getAddressWorkPhone();
-                data.type = QueryData.Type.STRING;
-                data.query = addressWorkPhone;
+                data = new QueryData(SampleMeta.getAddressWorkPhone(),QueryData.Type.STRING,addressWorkPhone);
                 fields.add(data);
             } else if (SampleMeta.getWellReportToAddressFaxPhone().equals(dataKey)) {
-                addressFaxPhone = data.query;
+                addressFaxPhone = data.getQuery();
 
-                data = new QueryData();
-                data.key = SampleMeta.getAddressFaxPhone();
-                data.type = QueryData.Type.STRING;
-                data.query = addressFaxPhone;
+                data = new QueryData(SampleMeta.getAddressFaxPhone(),QueryData.Type.STRING,addressFaxPhone);
                 fields.add(data);
             }
         }

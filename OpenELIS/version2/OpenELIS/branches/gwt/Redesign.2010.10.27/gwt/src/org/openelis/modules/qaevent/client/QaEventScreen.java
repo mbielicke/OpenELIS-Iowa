@@ -492,10 +492,7 @@ public class QaEventScreen extends Screen {
                 Query query;
                 QueryData field;
 
-                field = new QueryData();
-                field.key = QaEventMeta.getName();
-                field.query = ((Button)event.getSource()).getAction();
-                field.type = QueryData.Type.STRING;
+                field = new QueryData(QaEventMeta.getName(),QueryData.Type.STRING,((Button)event.getSource()).getAction());
 
                 query = new Query();
                 query.setFields(field);

@@ -790,10 +790,7 @@ public class QcScreen extends Screen {
                 Query query;
                 QueryData field;
 
-                field = new QueryData();
-                field.key = QcMeta.getName();
-                field.query = ((Button)event.getSource()).getAction();
-                field.type = QueryData.Type.STRING;
+                field = new QueryData(QcMeta.getName(),QueryData.Type.STRING,((Button)event.getSource()).getAction());
 
                 query = new Query();
                 query.setFields(field);
@@ -1091,16 +1088,10 @@ public class QcScreen extends Screen {
             return null;
         
         query = new Query();
-        field = new QueryData();
-        field.key = CategoryMeta.getDictionaryEntry();
-        field.type = QueryData.Type.STRING;
-        field.query = entry;
+        field = new QueryData(CategoryMeta.getDictionaryEntry(),QueryData.Type.STRING,entry);
         query.setFields(field);       
         
-        field = new QueryData();
-        field.key = CategoryMeta.getIsSystem();
-        field.type = QueryData.Type.STRING;
-        field.query = "N";
+        field = new QueryData(CategoryMeta.getIsSystem(),QueryData.Type.STRING,"N");
         query.setFields(field); 
         
         try {

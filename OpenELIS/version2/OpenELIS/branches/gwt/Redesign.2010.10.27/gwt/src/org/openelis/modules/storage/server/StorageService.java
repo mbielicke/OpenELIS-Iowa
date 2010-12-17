@@ -39,8 +39,8 @@ public class StorageService {
     private static final int rowPP = 100;
 
     public StorageManager fetchById(Query query) throws Exception {
-        return remoteManager().fetchById(new Integer(query.getFields().get(0).query),
-                                         new Integer(query.getFields().get(1).query));
+        return remoteManager().fetchById(new Integer(query.getFields().get(0).getQuery()),
+                                         new Integer(query.getFields().get(1).getQuery()));
     }
 
     public StorageManager fetchCurrentByLocationId(Integer id) throws Exception {

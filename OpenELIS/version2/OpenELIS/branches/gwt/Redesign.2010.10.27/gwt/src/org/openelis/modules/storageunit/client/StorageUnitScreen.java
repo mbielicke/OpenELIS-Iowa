@@ -351,10 +351,7 @@ public class StorageUnitScreen extends Screen {
                 Query query;
                 QueryData field;
 
-                field = new QueryData();
-                field.key = StorageUnitMeta.getDescription();
-                field.query = ((Button)event.getSource()).getAction();
-                field.type = QueryData.Type.STRING;
+                field = new QueryData(StorageUnitMeta.getDescription(),QueryData.Type.STRING,((Button)event.getSource()).getAction());
 
                 query = new Query();
                 query.setFields(field);

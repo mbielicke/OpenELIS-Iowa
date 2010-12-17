@@ -141,10 +141,7 @@ public class HistoryTab extends Screen {
             
             query = new Query();
             
-            field = new QueryData();
-            field.key = StorageMeta.getStorageLocationId();
-            field.query = slm.getStorageLocation().getId().toString();
-            field.type = QueryData.Type.INTEGER;            
+            field = new QueryData(StorageMeta.getStorageLocationId(),QueryData.Type.INTEGER,slm.getStorageLocation().getId().toString());
             query.setFields(field);
                          
             query.setPage(pageNum);

@@ -34,7 +34,7 @@ public class CompleteReleaseService {
 		File tempFile = new File("/tmp/"+rp.name+SessionManager.getSession().getId()+".pdf");
 		SessionManager.getSession().setAttribute(rp.name, rp);		
 		FileOutputStream out = new FileOutputStream(tempFile);
-		out.write(reportRemote().doFinalReport());
+	//	out.write(reportRemote().doFinalReport());
 		out.close();
 		rp.size = tempFile.length();
 		return rp;
@@ -42,7 +42,7 @@ public class CompleteReleaseService {
     
     public ReportProgress getProgress() {
     	ReportProgress rp = (ReportProgress)SessionManager.getSession().getAttribute("finalreport");
-    	rp.generated = reportRemote().getProgress();
+    	//rp.generated = reportRemote().getProgress();
     	return rp;
     }
     

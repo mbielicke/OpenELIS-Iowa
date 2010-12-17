@@ -46,11 +46,11 @@ public class StandardNoteService {
         String name = null, description = null;
 
         for (QueryData field : query.getFields()) {
-            if (field.key != null) {
-                if (StandardNoteMeta.getName().equals(field.key))
-                    name = field.query;
-                else if (StandardNoteMeta.getDescription().equals(field.key))
-                    description = field.query;
+            if (field.getKey() != null) {
+                if (StandardNoteMeta.getName().equals(field.getKey()))
+                    name = field.getQuery();
+                else if (StandardNoteMeta.getDescription().equals(field.getKey()))
+                    description = field.getQuery();
             }
         }
         return remote().fetchByNameOrDescription(name, description, 1000);

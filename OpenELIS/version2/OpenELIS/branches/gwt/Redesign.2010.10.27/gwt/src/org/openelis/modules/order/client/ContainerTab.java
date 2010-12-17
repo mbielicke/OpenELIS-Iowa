@@ -230,9 +230,9 @@ public class ContainerTab extends Screen {
 
                 field = new QueryData();
                 if(!event.getMatch().equals(""))
-                	field.query = parser.getParameter().get(0);
+                	field.setQuery(parser.getParameter().get(0));
                 else
-                	field.query = "=";
+                	field.setQuery("=");
                 fields.add(field);
                 
                 query.setFields(fields);

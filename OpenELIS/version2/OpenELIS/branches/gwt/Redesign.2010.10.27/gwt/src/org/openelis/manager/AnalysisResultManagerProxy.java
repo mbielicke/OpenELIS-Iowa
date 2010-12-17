@@ -100,7 +100,7 @@ public class AnalysisResultManagerProxy {
 
         for (int i = 0; i < analytes.size(); i++ ) {
             field = new QueryData();
-            field.query = analytes.get(i).getAnalyteId().toString();
+            field.setQuery(analytes.get(i).getAnalyteId().toString());
             fields.add(field);
         }
 

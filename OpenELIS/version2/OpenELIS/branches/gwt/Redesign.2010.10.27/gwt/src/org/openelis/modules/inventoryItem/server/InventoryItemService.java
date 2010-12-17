@@ -60,11 +60,11 @@ public class InventoryItemService {
         name = null;
         // parse the query to find name and/or store
         for (QueryData field : query.getFields()) {
-            if (field.key != null) {
-                if (field.key.endsWith("name"))
-                    name = field.query;
-                else if (field.key.endsWith("storeId"))
-                    storeId = Integer.valueOf(field.query);
+            if (field.getKey() != null) {
+                if (field.getKey().endsWith("name"))
+                    name = field.getQuery();
+                else if (field.getKey().endsWith("storeId"))
+                    storeId = Integer.valueOf(field.getQuery());
             }
         }
         if (storeId == null)
@@ -83,13 +83,13 @@ public class InventoryItemService {
         
         // parse the query to find name and/or store
         for (QueryData field : query.getFields()) {
-            if (field.key != null) {
-                if (field.key.endsWith("name"))
-                    name = field.query;
+            if (field.getKey() != null) {
+                if (field.getKey().endsWith("name"))
+                    name = field.getQuery();
                 //else if (field.key.endsWith("storeId"))
                   //  storeId = Integer.valueOf(field.query);
-                else if (field.key.endsWith("parentInventoryItemId"))
-                    parentInventoryItemId = Integer.valueOf(field.query);
+                else if (field.getKey().endsWith("parentInventoryItemId"))
+                    parentInventoryItemId = Integer.valueOf(field.getQuery());
             }
         }
         
