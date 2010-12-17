@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sampleTypeBarcode" language="groovy" pageWidth="382" pageHeight="24" orientation="Landscape" columnWidth="382" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="2.853116706110003"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="TEST_ID" class="java.lang.Integer" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[SELECT d1.entry type_entry, d2.entry unit_entry, t.type_of_sample_id t_type_of_sample_id
+FROM test_type_of_sample t, outer dictionary d1, outer dictionary d2
+where t.test_id = $P{TEST_ID} and
+           t.type_of_sample_id = d1.id and
+           t.unit_of_measure_id = d2.id]]>
+	</queryString>
+	<field name="type_entry" class="java.lang.String"/>
+	<field name="unit_entry" class="java.lang.String"/>
+	<field name="t_type_of_sample_id" class="java.lang.Integer"/>
+	<detail>
+		<band height="24" splitType="Stretch">
+			<componentElement>
+				<reportElement mode="Transparent" x="1" y="0" width="101" height="12"/>
+				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="3of9" drawText="false" checksumRequired="false">
+					<jr:codeExpression><![CDATA[$F{t_type_of_sample_id}]]></jr:codeExpression>
+				</jr:barbecue>
+			</componentElement>
+			<textField isBlankWhenNull="true">
+				<reportElement x="252" y="0" width="129" height="12"/>
+				<textElement>
+					<font size="8" isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{unit_entry}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="112" y="0" width="129" height="12"/>
+				<textElement>
+					<font size="8" isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{type_entry}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

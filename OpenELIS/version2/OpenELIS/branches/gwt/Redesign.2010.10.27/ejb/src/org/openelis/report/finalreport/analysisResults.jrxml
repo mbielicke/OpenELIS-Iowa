@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="analysisResults" language="groovy" pageWidth="660" pageHeight="572" orientation="Landscape" columnWidth="660" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="ANALYSIS_ID" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[SELECT
+       a.name a_name,
+       r.value r_value,
+       r.sort_order r_sort_order,
+       ta.is_column ta_is_column,
+       ta.sort_order ta_sort_order
+FROM
+       analyte a, result r, test_analyte ta, analysis an, test t, sample_item si, sample s
+WHERE
+       r.analysis_id = $P{ANALYSIS_ID} AND r.analysis_id = an.id AND an.test_id = t.id AND an.sample_item_id = si.id AND si.sample_id = s.id
+       AND r.test_analyte_id = ta.id AND ta.analyte_id = a.id AND r.is_reportable = 'Y'
+       AND an.status_id IN (SELECT d2.id FROM dictionary d2 where d2.system_name = 'analysis_released')
+       AND (t.reporting_method_id IN (SELECT d2.id FROM dictionary d2 where d2.system_name = 'analyses_released')
+            OR (s.status_id IN (SELECT d2.id FROM dictionary d2 where d2.system_name = 'sample_released') AND
+               t.reporting_method_id IN (SELECT d2.id FROM dictionary d2 where d2.system_name = 'complete_sample_only')))
+ORDER BY
+       r.sort_order]]>
+	</queryString>
+	<field name="a_name" class="java.lang.String"/>
+	<field name="r_value" class="java.lang.String"/>
+	<field name="r_sort_order" class="java.lang.Integer"/>
+	<field name="ta_is_column" class="java.lang.String"/>
+	<field name="ta_sort_order" class="java.lang.Integer"/>
+	<columnHeader>
+		<band height="12">
+			<staticText>
+				<reportElement x="0" y="0" width="330" height="12"/>
+				<box topPadding="0">
+					<bottomPen lineWidth="0.5" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="Times New Roman" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Analyte]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="330" y="0" width="330" height="12"/>
+				<box topPadding="0">
+					<bottomPen lineWidth="0.5" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="Times New Roman" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Result]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="12" splitType="Stretch">
+			<printWhenExpression><![CDATA["N".equals($F{ta_is_column})]]></printWhenExpression>
+			<textField>
+				<reportElement x="0" y="0" width="330" height="12"/>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{a_name}.trim()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="330" y="0" width="330" height="12"/>
+				<textElement textAlignment="Center">
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{r_value}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="12">
+			<printWhenExpression><![CDATA["Y".equals($F{ta_is_column})]]></printWhenExpression>
+			<textField isBlankWhenNull="true">
+				<reportElement x="330" y="0" width="330" height="12"/>
+				<textElement textAlignment="Center">
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{r_value}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="32" y="0" width="288" height="12"/>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{a_name}.trim()]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="12" splitType="Stretch"/>
+	</summary>
+</jasperReport>
