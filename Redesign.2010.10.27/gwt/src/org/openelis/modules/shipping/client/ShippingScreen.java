@@ -754,7 +754,7 @@ public class ShippingScreen extends Screen {
     
     public void loadShippingData(ShippingManager manager, State state) { 
         if(state == State.ADD) {
-            add(manager);                    
+            addState(manager);                    
         } else if(state == State.DISPLAY){
             this.manager = manager; 
             itemTab.setManager(manager);
@@ -835,7 +835,7 @@ public class ShippingScreen extends Screen {
         nav.next();
     }
 
-    protected void add(ShippingManager manager) { 
+    protected void addState(ShippingManager manager) { 
         ShippingViewDO data;
         Datetime now;
         

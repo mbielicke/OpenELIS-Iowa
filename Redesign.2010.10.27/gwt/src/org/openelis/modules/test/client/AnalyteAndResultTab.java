@@ -1520,16 +1520,10 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
 
         query = new Query();
         fields = new ArrayList<QueryData>();
-        field = new QueryData();
-        field.key = CategoryMeta.getDictionaryEntry();
-        field.type = QueryData.Type.STRING;
-        field.query = entry;
+        field = new QueryData(CategoryMeta.getDictionaryEntry(),QueryData.Type.STRING,entry);
         fields.add(field);
 
-        field = new QueryData();
-        field.key = CategoryMeta.getIsSystem();
-        field.type = QueryData.Type.STRING;
-        field.query = "N";
+        field = new QueryData(CategoryMeta.getIsSystem(),QueryData.Type.STRING,"N");
         fields.add(field);
 
         query.setFields(fields);

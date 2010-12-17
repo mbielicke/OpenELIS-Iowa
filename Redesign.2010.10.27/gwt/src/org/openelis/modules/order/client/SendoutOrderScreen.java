@@ -890,10 +890,7 @@ public class SendoutOrderScreen extends Screen {
 
                 window.setBusy(consts.get("querying"));
                 // this screen should only query for kit orders
-                field = new QueryData();
-                field.key = OrderMeta.getType();
-                field.query = OrderManager.TYPE_SEND_OUT;
-                field.type = QueryData.Type.STRING;
+                field = new QueryData(OrderMeta.getType(),QueryData.Type.STRING,OrderManager.TYPE_SEND_OUT);
                 query.setFields(field);
 
                 service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
@@ -949,10 +946,7 @@ public class SendoutOrderScreen extends Screen {
                 Query query;
                 QueryData field;
 
-                field = new QueryData();
-                field.key = OrderMeta.getId();
-                field.query = ((Button)event.getSource()).getAction();
-                field.type = QueryData.Type.INTEGER;
+                field = new QueryData(OrderMeta.getId(),QueryData.Type.INTEGER,((Button)event.getSource()).getAction());
 
                 query = new Query();
                 query.setFields(field);
@@ -1129,10 +1123,7 @@ public class SendoutOrderScreen extends Screen {
             QueryData field;
 
             // this screen should only query for internal orders
-            field = new QueryData();
-            field.key = OrderMeta.getType();
-            field.query = OrderManager.TYPE_SEND_OUT;
-            field.type = QueryData.Type.STRING;
+            field = new QueryData(OrderMeta.getType(),QueryData.Type.STRING,OrderManager.TYPE_SEND_OUT);
 
             query = new Query();
             query.setFields(getQueryFields());
@@ -1392,10 +1383,7 @@ public class SendoutOrderScreen extends Screen {
 
         if (auxFields.size() > 0) {
             // add ref table
-            queryData = new QueryData();
-            queryData.key = OrderMeta.getAuxDataReferenceTableId();
-            queryData.type = QueryData.Type.INTEGER;
-            queryData.query = String.valueOf(ReferenceTable.ORDER);
+            queryData = new QueryData(OrderMeta.getAuxDataReferenceTableId(),QueryData.Type.INTEGER,String.valueOf(ReferenceTable.ORDER));
             returnList.add(queryData);
 
             // add aux fields

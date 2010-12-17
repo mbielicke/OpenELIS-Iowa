@@ -59,9 +59,12 @@ import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.BeforeDragStartEvent;
 import org.openelis.gwt.event.BeforeDragStartHandler;
 import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.DropEvent;
+import org.openelis.gwt.event.DropHandler;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.StateChangeEvent;
+import org.openelis.gwt.event.DropEnterEvent.DropPosition;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
@@ -120,7 +123,7 @@ public class AuxiliaryScreen extends Screen {
     private ScreenNavigator                    nav; 
 
     private Calendar                           activeBegin, activeEnd;
-    private TextBox                            name, description;
+    private TextBox<String>                    name, description;
     private CheckBox                           isActive;
     private Button                             queryButton, previousButton, nextButton, addButton, updateButton,
                                                commitButton, abortButton, addAuxFieldButton, removeAuxFieldButton,
@@ -168,7 +171,8 @@ public class AuxiliaryScreen extends Screen {
     /**
      * Setup state and data change handles for every widget on the screen
      */
-    private void initialize() {
+    @SuppressWarnings("unchecked")
+	private void initialize() {
         
         prevSelFieldRow = -1;
         
@@ -311,7 +315,7 @@ public class AuxiliaryScreen extends Screen {
 			}
 		});
 
-        name = (TextBox)def.getWidget(AuxFieldGroupMeta.getName());
+        name = (TextBox<String>)def.getWidget(AuxFieldGroupMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(manager.getGroup().getName());
@@ -328,7 +332,7 @@ public class AuxiliaryScreen extends Screen {
             }
         });
 
-        description = (TextBox)def.getWidget(AuxFieldGroupMeta.getDescription());
+        description = (TextBox<String>)def.getWidget(AuxFieldGroupMeta.getDescription());
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 description.setValue(manager.getGroup().getDescription());
@@ -411,19 +415,14 @@ public class AuxiliaryScreen extends Screen {
             }
             
             public void onStateChange(StateChangeEvent<State> event) {
-                boolean enable;
-                
                 auxFieldTable.setEnabled(true);
                 auxFieldTable.setQueryMode(event.getState() == State.QUERY);
-
-                /*enable = EnumSet.of(State.ADD, State.UPDATE).contains(event.getState());
-                auxFieldTable.enableDrag(enable);
-                auxFieldTable.enableDrop(enable);*/
             }
         });
         
         auxFieldTable.enableDrag();
         auxFieldTable.enableDrop();
+        auxFieldTable.addDropTarget(auxFieldTable.getDropController());
         
         rangeNumeric = new ResultRangeNumeric();     
         
@@ -527,12 +526,43 @@ public class AuxiliaryScreen extends Screen {
               } 
           });
         
+        auxFieldTable.getDropController().addDropHandler(new DropHandler<DragItem>() {
+			public void onDrop(DropEvent<DragItem> event) {
+                int dragIndex,dropIndex;
+                Row row;
+                
+                dragIndex = event.getDragObject().getIndex();
+                dropIndex = auxFieldTable.getDropController().getDropIndex();
+                
+                row = auxFieldTable.removeRowAt(dragIndex);
+                
+                if(dropIndex > dragIndex && auxFieldTable.getDropController().getDropPosition() == DropPosition.ABOVE) 
+                    dropIndex--;
+                
+                auxFieldTable.addRowAt(dropIndex,row);
+                
+                try {
+                	  manager.getFields().moveField(dragIndex, dropIndex);
+                } catch (Exception e) {
+                	e.printStackTrace();
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
+                }
+				
+			}
+		});
         auxFieldTable.getDragController().addBeforeDragStartHandler(new BeforeDragStartHandler<DragItem>(){
             public void onBeforeDragStart(BeforeDragStartEvent<DragItem> event) {
                 Row row;
-                Label label;
+                Label<String> label;
                 AutoCompleteValue value;
                 String display;
+                
+                if(!EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
+                	event.cancel();
+                	return;
+                }
+                
+                auxFieldValueTable.finishEditing();   
                                 
                 try {
                     row = auxFieldTable.getRowAt(event.getDragObject().getIndex());
@@ -542,7 +572,7 @@ public class AuxiliaryScreen extends Screen {
                     else 
                         display = value.getDisplay();                    
                         
-                    label = new Label(display);
+                    label = new Label<String>(display);
                     label.setStyleName("ScreenLabel");
                     label.setWordWrap(false);
                     event.setProxy(label);
@@ -590,22 +620,23 @@ public class AuxiliaryScreen extends Screen {
                 QueryFieldUtil parser;
                 ArrayList<MethodDO> list;
                 ArrayList<Item<Integer>> model;
-
+                String param = "";
+                
                 parser = new QueryFieldUtil();
-                try {
-                	parser.parse(!event.getMatch().equals("") ? event.getMatch() : "*");
-                }catch(Exception e) {
-                	
-                }
                                 
                 try {
-                    list = methodService.callList("fetchByName", parser.getParameter().get(0));
+                	if(!event.getMatch().equals("")) {
+                		parser.parse(event.getMatch());
+                		param = parser.getParameter().get(0);
+                	}
+                    list = methodService.callList("fetchByName", param);
                     model = new ArrayList<Item<Integer>>();
                     
                     for (MethodDO data : list)
                         model.add(new Item<Integer>(data.getId(),data.getName()));                    
                     method.showAutoMatches(model);
                 } catch (Exception e) {
+                	e.printStackTrace();
                     com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
@@ -617,22 +648,23 @@ public class AuxiliaryScreen extends Screen {
                 QueryFieldUtil parser;
                 ArrayList<Item<Integer>> model;
                 ArrayList<IdNameVO> list;
+                String param = "";
 
                 parser = new QueryFieldUtil();
-                try {
-                	parser.parse(!event.getMatch().equals("") ? event.getMatch() : "*");
-                }catch(Exception e) {
-                	
-                }
                 
                 try {
-                    list = scriptletService.callList("fetchByName", parser.getParameter().get(0));
+                	if(!event.getMatch().equals("")) {
+                		parser.parse(event.getMatch());
+                		param = parser.getParameter().get(0);
+                	}
+                    list = scriptletService.callList("fetchByName", param);
                     model = new ArrayList<Item<Integer>>();
                     for (IdNameVO data : list) {                       
                         model.add(new Item<Integer>(data.getId(),data.getName()));
                     }
                     scriptlet.showAutoMatches(model);
                 } catch (Exception e) {
+                	e.printStackTrace();
                     com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
@@ -664,6 +696,7 @@ public class AuxiliaryScreen extends Screen {
                     man = manager.getFields().getValuesAt(r);                    
                     auxFieldValueTable.setModel(getAuxFieldValueModel(man));                   
                 } catch (Exception e) {
+                	e.printStackTrace();
                     com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
@@ -674,31 +707,10 @@ public class AuxiliaryScreen extends Screen {
                 try {
                     manager.getFields().removeAuxFieldAt(event.getIndex());
                 } catch (Exception e) {
+                	e.printStackTrace();
                     com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
-        });
-        
-        /*
-        auxFieldTable.addRowMovedHandler(new RowMovedHandler() {
-            public void onRowMoved(RowMovedEvent event) {
-                try {
-                    manager.getFields().moveField(event.getOldIndex(), event.getNewIndex());
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                }                
-            }            
-        });
-        */
-        
-        auxFieldTable.enableDrag();
-        auxFieldTable.enableDrop();
-        auxFieldTable.addDropTarget(auxFieldTable.getDropController());
-        
-        auxFieldTable.getDragController().addBeforeDragStartHandler(new BeforeDragStartHandler<DragItem>(){            
-            public void onBeforeDragStart(BeforeDragStartEvent<DragItem> event) {
-                auxFieldValueTable.finishEditing();                
-            }            
         });
 
         addAuxFieldButton = (Button)def.getWidget("addAuxFieldButton");
@@ -839,6 +851,7 @@ public class AuxiliaryScreen extends Screen {
                 try {
                     manager.getFields().getValuesAt(r).addAuxFieldValue(new AuxFieldValueViewDO());
                 } catch (Exception e) {
+                	e.printStackTrace();
                     com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
@@ -852,6 +865,7 @@ public class AuxiliaryScreen extends Screen {
                 try {
                     manager.getFields().getValuesAt(fr).removeAuxFieldValueAt(event.getIndex());
                 } catch (Exception e) {
+                	e.printStackTrace();
                     com.google.gwt.user.client.Window.alert(e.getMessage());
                 }                
             }            
@@ -961,10 +975,7 @@ public class AuxiliaryScreen extends Screen {
                 Query query;
                 QueryData field;
 
-                field = new QueryData();
-                field.key = AuxFieldGroupMeta.getName();
-                field.query = ((Button)event.getSource()).getAction();
-                field.type = QueryData.Type.STRING;
+                field = new QueryData(AuxFieldGroupMeta.getName(),QueryData.Type.STRING,((Button)event.getSource()).getAction());
 
                 query = new Query();
                 query.setFields(field);
@@ -1094,6 +1105,7 @@ public class AuxiliaryScreen extends Screen {
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
+            	e.printStackTrace();
                 com.google.gwt.user.client.Window.alert("commitAdd(): " + e.getMessage());
                 window.clearStatus();
             }
@@ -1107,6 +1119,7 @@ public class AuxiliaryScreen extends Screen {
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
+            	e.printStackTrace();
                 com.google.gwt.user.client.Window.alert("commitUpdate(): " + e.getMessage());
                 window.clearStatus();
             }
@@ -1130,6 +1143,7 @@ public class AuxiliaryScreen extends Screen {
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
             } catch (Exception e) {
+            	e.printStackTrace();
                 com.google.gwt.user.client.Window.alert(e.getMessage());
                 fetchById(null);
             }
@@ -1367,16 +1381,10 @@ public class AuxiliaryScreen extends Screen {
             return null;
         
         query = new Query();
-        field = new QueryData();
-        field.key = CategoryMeta.getDictionaryEntry();
-        field.type = QueryData.Type.STRING;
-        field.query = entry;
+        field = new QueryData(CategoryMeta.getDictionaryEntry(),QueryData.Type.STRING,entry);
         query.setFields(field);       
         
-        field = new QueryData();
-        field.key = CategoryMeta.getIsSystem();
-        field.type = QueryData.Type.STRING;
-        field.query = "N";
+        field = new QueryData(CategoryMeta.getIsSystem(),QueryData.Type.STRING,"N");
         query.setFields(field); 
         
         try {

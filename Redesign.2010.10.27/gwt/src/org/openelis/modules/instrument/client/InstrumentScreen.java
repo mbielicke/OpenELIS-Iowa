@@ -626,10 +626,7 @@ public class InstrumentScreen extends Screen {
                 Query query;
                 QueryData field;
 
-                field = new QueryData();
-                field.key = InstrumentMeta.getName();
-                field.query = ((Button)event.getSource()).getAction();
-                field.type = QueryData.Type.STRING;
+                field = new QueryData(InstrumentMeta.getName(),QueryData.Type.STRING,((Button)event.getSource()).getAction());
 
                 query = new Query();
                 query.setFields(field);

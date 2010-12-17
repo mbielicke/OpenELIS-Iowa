@@ -582,18 +582,12 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
 
             if (row.getCell(2) != null) {                                
                 
-                field = new QueryData();
-                field.key = SampleMeta.getAuxDataAuxFieldId();
-                field.type = QueryData.Type.INTEGER;
-                field.query = String.valueOf(adb.fieldDO.getId());
+                field = new QueryData(SampleMeta.getAuxDataAuxFieldId(),QueryData.Type.INTEGER,String.valueOf(adb.fieldDO.getId()));
                 fieldList.add(field);
 
                 // aux data value
-                field = new QueryData();
-                field.key = SampleMeta.getAuxDataValue();
-                field.type = QueryData.Type.STRING;
-                field.query = getCorrectManValueByType(row.getCell(2),
-                                                       adb.fieldDO.getTypeId());
+                field = new QueryData(SampleMeta.getAuxDataValue(),QueryData.Type.STRING,getCorrectManValueByType(row.getCell(2),
+                                                       adb.fieldDO.getTypeId()));
                 fieldList.add(field);
             }
         }

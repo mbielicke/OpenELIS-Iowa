@@ -386,11 +386,11 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                         query = new Query();                                                                                                     
                         
                         field = new QueryData();
-                        field.query = param;
+                        field.setQuery(param);
                         fields.add(field);
 
                         field = new QueryData();
-                        field.query = Integer.toString(itemId);
+                        field.setQuery(Integer.toString(itemId));
                         fields.add(field);
 
                         query.setFields(fields);

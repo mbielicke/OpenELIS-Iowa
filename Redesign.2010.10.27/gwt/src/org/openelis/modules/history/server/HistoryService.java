@@ -40,10 +40,10 @@ public class HistoryService {
         QueryData field;
 
         field = query.getFields().get(0);
-        referenceId = Integer.parseInt(field.query);
+        referenceId = Integer.parseInt(field.getQuery());
 
         field = query.getFields().get(1);
-        referenceTableId = Integer.parseInt(field.query);
+        referenceTableId = Integer.parseInt(field.getQuery());
 
         return remote().fetchByReferenceIdAndTable(referenceId, referenceTableId);
     }

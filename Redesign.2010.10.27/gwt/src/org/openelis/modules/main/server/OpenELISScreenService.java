@@ -41,14 +41,6 @@ public class OpenELISScreenService {
 
     public static String APP_ROOT; 
 
-    public String getScreen() {
-        try {
-            return ServiceUtils.getXML(APP_ROOT + "/Forms/main.xsl");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     public OpenELISRPC initialData() {
         OpenELISRPC rpc;

@@ -75,7 +75,7 @@ public class AnalyteScreen extends Screen {
     private AnalyteViewDO         data;
     private ModulePermission      userPermission;
 
-    private TextBox               name, externalId;
+    private TextBox<String>       name, externalId;
     private CheckBox              isActive;
     private Button                queryButton, previousButton, nextButton, addButton, updateButton,
                                   commitButton, abortButton;
@@ -112,7 +112,8 @@ public class AnalyteScreen extends Screen {
         DataChangeEvent.fire(this);
     }
 
-    private void initialize() {
+    @SuppressWarnings("unchecked")
+	private void initialize() {
         queryButton = (Button)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -222,7 +223,7 @@ public class AnalyteScreen extends Screen {
         	}
         });
         
-        name = (TextBox)def.getWidget(AnalyteMeta.getName());
+        name = (TextBox<String>)def.getWidget(AnalyteMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(data.getName());
@@ -286,7 +287,7 @@ public class AnalyteScreen extends Screen {
             }
         });
 
-        externalId = (TextBox)def.getWidget(AnalyteMeta.getExternalId());
+        externalId = (TextBox<String>)def.getWidget(AnalyteMeta.getExternalId());
         addScreenHandler(externalId, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 externalId.setValue(data.getExternalId());
@@ -379,10 +380,7 @@ public class AnalyteScreen extends Screen {
                 Query query;
                 QueryData field;
 
-                field = new QueryData();
-                field.key = AnalyteMeta.getName();
-                field.query = ((Button)event.getSource()).getAction();
-                field.type = QueryData.Type.STRING;
+                field = new QueryData(AnalyteMeta.getName(),QueryData.Type.STRING,((Button)event.getSource()).getAction());
 
                 query = new Query();
                 query.setFields(field);
@@ -440,6 +438,7 @@ public class AnalyteScreen extends Screen {
             DataChangeEvent.fire(this);
             setFocus(name);
         } catch (Exception e) {
+        	e.printStackTrace();
             com.google.gwt.user.client.Window.alert(e.getMessage());
         }
         window.clearStatus();
@@ -470,6 +469,7 @@ public class AnalyteScreen extends Screen {
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
+            	e.printStackTrace();
                 com.google.gwt.user.client.Window.alert("commitAdd(): " + e.getMessage());
                 window.clearStatus();
             }
@@ -484,6 +484,7 @@ public class AnalyteScreen extends Screen {
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
+            	e.printStackTrace();
                 com.google.gwt.user.client.Window.alert("commitUpdate(): " + e.getMessage());
                 window.clearStatus();
             }
@@ -507,6 +508,7 @@ public class AnalyteScreen extends Screen {
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
             } catch (Exception e) {
+            	e.printStackTrace();
                 com.google.gwt.user.client.Window.alert(e.getMessage());
                 fetchById(null);
             }

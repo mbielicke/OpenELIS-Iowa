@@ -264,10 +264,7 @@ public class OrderFillScreen extends Screen {
                     process = orderTable.getColumnAt(0);
                     process.setEnabled(false);
                    
-                    qd = new QueryData();
-                    qd.type = QueryData.Type.INTEGER;
-                    qd.query = String.valueOf(status_pending);
-                    qd.key = OrderMeta.getStatusId();
+                    qd = new QueryData(OrderMeta.getStatusId(),QueryData.Type.INTEGER,String.valueOf(status_pending));
                     orderTable.setValueAt(0, 2, qd);
                 }
             }

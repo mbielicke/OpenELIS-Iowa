@@ -176,16 +176,10 @@ public class ComponentTab extends Screen {
                 	
                 }
 
-                field = new QueryData();
-                field.key = InventoryItemMeta.getName();
-                field.type = QueryData.Type.STRING;
-                field.query = parser.getParameter().get(0);
+                field = new QueryData(InventoryItemMeta.getName(),QueryData.Type.STRING,parser.getParameter().get(0));
                 query.setFields(field);
 
-                field = new QueryData();
-                field.key = InventoryItemMeta.getStoreId();
-                field.type = QueryData.Type.INTEGER;
-                field.query = manager.getInventoryItem().getStoreId().toString();
+                field = new QueryData(InventoryItemMeta.getStoreId(),QueryData.Type.INTEGER, manager.getInventoryItem().getStoreId().toString());
                 query.setFields(field);
 
                 try {

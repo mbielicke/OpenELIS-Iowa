@@ -430,11 +430,11 @@ public class BuildKitsScreen extends Screen {
                         query = new Query();                                                                                                     
                         
                         field = new QueryData();
-                        field.query = param;
+                        field.setQuery(param);
                         fields.add(field);
 
                         field = new QueryData();
-                        field.query = Integer.toString(itemId);
+                        field.setQuery(Integer.toString(itemId));
                         fields.add(field);
 
                         query.setFields(fields);
@@ -620,15 +620,15 @@ public class BuildKitsScreen extends Screen {
                     query = new Query();                                                                                                     
                     
                     field = new QueryData();
-                    field.query = param;
+                    field.setQuery(param);
                     fields.add(field);
 
                     field = new QueryData();
-                    field.query = Integer.toString(itemId);
+                    field.setQuery(Integer.toString(itemId));
                     fields.add(field);
                     
                     field = new QueryData();
-                    field.query = Integer.toString(storeId);
+                    field.setQuery(Integer.toString(storeId));
                     fields.add(field);
 
                     query.setFields(fields);

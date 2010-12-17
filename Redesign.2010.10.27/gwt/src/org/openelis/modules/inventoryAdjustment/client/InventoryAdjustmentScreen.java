@@ -593,16 +593,10 @@ public class InventoryAdjustmentScreen extends Screen {
                 	
                 }
 
-                field = new QueryData();
-                field.key = InventoryItemMeta.getName();
-                field.type = QueryData.Type.STRING;
-                field.query = parser.getParameter().get(0);
+                field = new QueryData(InventoryItemMeta.getName(),QueryData.Type.STRING,parser.getParameter().get(0));
                 query.setFields(field);
                 
-                field = new QueryData();
-                field.key = InventoryItemMeta.getStoreId();
-                field.type = QueryData.Type.INTEGER;                     
-                field.query = storeId.toString();           
+                field = new QueryData(InventoryItemMeta.getStoreId(),QueryData.Type.INTEGER,storeId.toString());           
                 query.setFields(field);
                 
                 try {
@@ -728,10 +722,7 @@ public class InventoryAdjustmentScreen extends Screen {
                 Query query;
                 QueryData field;
 
-                field = new QueryData();
-                field.key = InventoryAdjustmentMeta.getId();
-                field.query = ((Button)event.getSource()).getAction();
-                field.type = QueryData.Type.INTEGER;
+                field = new QueryData(InventoryAdjustmentMeta.getId(),QueryData.Type.INTEGER,((Button)event.getSource()).getAction());
 
                 query = new Query();
                 query.setFields(field);

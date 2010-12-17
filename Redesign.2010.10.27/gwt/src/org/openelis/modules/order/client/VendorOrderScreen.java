@@ -699,10 +699,7 @@ public class VendorOrderScreen extends Screen {
 
                 window.setBusy(consts.get("querying"));
                 // this screen should only query for vendor orders
-                field = new QueryData();
-                field.key = OrderMeta.getType();
-                field.query = OrderManager.TYPE_VENDOR;
-                field.type = QueryData.Type.STRING;
+                field = new QueryData(OrderMeta.getType(),QueryData.Type.STRING,OrderManager.TYPE_VENDOR);
                 query.setFields(field);
 
                 service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
@@ -758,10 +755,7 @@ public class VendorOrderScreen extends Screen {
                 Query query;
                 QueryData field;
 
-                field = new QueryData();
-                field.key = OrderMeta.getId();
-                field.query = ((Button)event.getSource()).getAction();
-                field.type = QueryData.Type.INTEGER;
+                field = new QueryData(OrderMeta.getId(),QueryData.Type.INTEGER,((Button)event.getSource()).getAction());
 
                 query = new Query();
                 query.setFields(field);
@@ -898,10 +892,7 @@ public class VendorOrderScreen extends Screen {
             QueryData field;
 
             // this screen should only query for vendor orders
-            field = new QueryData();
-            field.key = OrderMeta.getType();
-            field.query = OrderManager.TYPE_VENDOR;
-            field.type = QueryData.Type.STRING;
+            field = new QueryData(OrderMeta.getType(),QueryData.Type.STRING,OrderManager.TYPE_VENDOR);
 
             query = new Query();
             query.setFields(getQueryFields());

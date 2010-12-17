@@ -53,7 +53,7 @@
             <label field="String" />
           </col>
           <col width="100" header="{resource:getString($constants,'type')}">
-            <dropdown width="85px" field="Integer" />
+            <dropdown width="85" field="Integer" />
           </col>
           <col width="70" header="{resource:getString($constants,'billable')}">
             <check />

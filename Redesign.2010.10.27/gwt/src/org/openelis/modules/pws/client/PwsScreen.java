@@ -570,10 +570,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
                 Query query;
                 QueryData field;
 
-                field = new QueryData();
-                field.key = PwsMeta.getName();
-                field.query = ((Button)event.getSource()).getAction();
-                field.type = QueryData.Type.STRING;
+                field = new QueryData(PwsMeta.getName(),QueryData.Type.STRING,((Button)event.getSource()).getAction());
 
                 query = new Query();
                 query.setFields(field);

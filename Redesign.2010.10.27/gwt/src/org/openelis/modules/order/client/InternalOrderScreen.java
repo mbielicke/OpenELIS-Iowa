@@ -438,10 +438,7 @@ public class InternalOrderScreen extends Screen {
 
                 window.setBusy(consts.get("querying"));
                 // this screen should only query for internal orders
-                field = new QueryData();
-                field.key = OrderMeta.getType();
-                field.query = OrderManager.TYPE_INTERNAL;
-                field.type = QueryData.Type.STRING;
+                field = new QueryData(OrderMeta.getType(),QueryData.Type.STRING,OrderManager.TYPE_INTERNAL);
                 query.setFields(field);
 
                 service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
@@ -498,10 +495,7 @@ public class InternalOrderScreen extends Screen {
                 Query query;
                 QueryData field;
 
-                field = new QueryData();
-                field.key = OrderMeta.getId();
-                field.query = ((Button)event.getSource()).getAction();
-                field.type = QueryData.Type.INTEGER;
+                field = new QueryData(OrderMeta.getId(),QueryData.Type.INTEGER,((Button)event.getSource()).getAction());
 
                 query = new Query();
                 query.setFields(field);
@@ -640,10 +634,7 @@ public class InternalOrderScreen extends Screen {
             QueryData field;
 
             // this screen should only query for internal orders
-            field = new QueryData();
-            field.key = OrderMeta.getType();
-            field.query = OrderManager.TYPE_INTERNAL;
-            field.type = QueryData.Type.STRING;
+            field = new QueryData(OrderMeta.getType(),QueryData.Type.STRING,OrderManager.TYPE_INTERNAL);
 
             query = new Query();
             query.setFields(getQueryFields());

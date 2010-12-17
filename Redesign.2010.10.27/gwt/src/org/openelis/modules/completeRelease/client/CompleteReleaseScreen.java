@@ -862,10 +862,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
             Query query;
             query = new Query();
             query.setFields(getQueryFields());
-            QueryData qd = new QueryData();
-            qd.key = SampleMeta.getDomain();
-            qd.query = "!Q";
-            qd.type = QueryData.Type.STRING;
+            QueryData qd = new QueryData(SampleMeta.getDomain(),QueryData.Type.STRING,"!Q");
             query.setFields(qd);
             executeQuery(query);
 

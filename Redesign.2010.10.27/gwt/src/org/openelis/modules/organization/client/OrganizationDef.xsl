@@ -168,7 +168,7 @@ UIRF Software License are applicable instead of those above.
               </row>
             </TablePanel>
 <!-- TAB PANEL -->
-            <TabPanel key="tabPanel" width="605" height="290">
+            <TabPanel key="tabPanel" width="609" height="290">
 <!-- TAB 1 -->
               <tab tab="contactTable,contactTable" text="{resource:getString($constants,'contact')}">
                 <VerticalPanel padding="0" spacing="0">

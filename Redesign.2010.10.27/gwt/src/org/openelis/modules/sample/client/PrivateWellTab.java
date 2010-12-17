@@ -808,10 +808,7 @@ public class PrivateWellTab extends Screen {
         fields = super.getQueryFields();
 
         if (fields.size() > 0) {
-            domain = new QueryData();
-            domain.key = SampleMeta.getDomain();
-            domain.query = SampleManager.WELL_DOMAIN_FLAG;
-            domain.type = QueryData.Type.STRING;
+            domain = new QueryData(SampleMeta.getDomain(),QueryData.Type.STRING,SampleManager.WELL_DOMAIN_FLAG);
             fields.add(domain);
         }       
 

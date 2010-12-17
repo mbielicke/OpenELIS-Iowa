@@ -186,7 +186,7 @@ UIRF Software License are applicable instead of those above.
               </VerticalPanel>
             </HorizontalPanel>
 <!-- TAB PANEL -->
-            <TabPanel key="tabPanel" width="725" height="270">
+            <TabPanel key="tabPanel" width="729" height="270">
 <!-- TAB 1 -->
               <tab key="facilityTab" text="{resource:getString($constants,'facility')}">
                 <VerticalPanel padding="0" spacing="0">

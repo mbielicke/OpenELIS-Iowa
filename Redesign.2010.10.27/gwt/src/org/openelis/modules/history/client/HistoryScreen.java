@@ -216,11 +216,11 @@ public class HistoryScreen extends Screen {
 
         field = new QueryData();
         refVO = referenceVoList[index];
-        field.query = refVO.getId().toString();
+        field.setQuery(refVO.getId().toString());
         query.setFields(field);
 
         field = new QueryData();
-        field.query = referenceTableId.toString();
+        field.setQuery(referenceTableId.toString());
         query.setFields(field);
 
         window.setBusy(consts.get("fetching"));

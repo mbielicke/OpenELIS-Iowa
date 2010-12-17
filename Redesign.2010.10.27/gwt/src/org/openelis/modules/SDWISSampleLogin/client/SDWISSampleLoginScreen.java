@@ -1198,18 +1198,12 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         auxFields = auxDataTab.getQueryFields();
      
         // add the domain
-        field = new QueryData();
-        field.key = SampleMeta.getDomain();
-        field.query = SampleManager.SDWIS_DOMAIN_FLAG;
-        field.type = QueryData.Type.STRING;
+        field = new QueryData(SampleMeta.getDomain(),QueryData.Type.STRING,SampleManager.SDWIS_DOMAIN_FLAG);
         fields.add(field);
         
         if (auxFields.size() > 0) {
             // add ref table
-            field = new QueryData();
-            field.key = SampleMeta.getAuxDataReferenceTableId();
-            field.type = QueryData.Type.INTEGER;
-            field.query = String.valueOf(ReferenceTable.SAMPLE);
+            field = new QueryData(SampleMeta.getAuxDataReferenceTableId(),QueryData.Type.INTEGER,String.valueOf(ReferenceTable.SAMPLE));
             fields.add(field);
 
             // add aux fields
