@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="analysisPending" language="groovy" pageWidth="550" pageHeight="12" orientation="Landscape" columnWidth="550" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[SELECT
+     t.reporting_description t_reporting_description,
+     m.reporting_description m_reporting_description
+FROM
+     analysis a, sample_item si, test t, method m, sample s
+WHERE
+     si.sample_id = $P{SAMPLE_ID} AND a.sample_item_id = si.id AND si.sample_id = s.id AND a.is_reportable = 'Y'
+     AND a.status_id NOT IN (SELECT d2.id FROM dictionary d2 where d2.system_name = 'analysis_cancelled')
+     AND a.test_id = t.id AND t.method_id = m.id  AND (a.status_id NOT IN (SELECT d2.id FROM dictionary d2 where d2.system_name = 'analysis_released')
+     OR (a.status_id IN (SELECT d2.id FROM dictionary d2 where d2.system_name = 'sample_released')
+     AND s.status_id NOT IN (SELECT d2.id FROM dictionary d2 where d2.system_name = 'analysis_released')
+     AND t.reporting_method_id IN (SELECT d2.id FROM dictionary d2 where d2.system_name = 'complete_sample_only')))]]>
+	</queryString>
+	<field name="t_reporting_description" class="java.lang.String"/>
+	<field name="m_reporting_description" class="java.lang.String"/>
+	<detail>
+		<band height="12" splitType="Stretch">
+			<textField>
+				<reportElement mode="Transparent" x="0" y="0" width="550" height="12" backcolor="#FFFFFF"/>
+				<textElement>
+					<font fontName="Times New Roman" isBold="false" isItalic="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.report.util.Concat.concatWithSeparator($F{t_reporting_description}," , ", $F{m_reporting_description})]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

@@ -1,0 +1,71 @@
+<!-- ======================================================================= -->
+<!-- JBoss build file                                                       -->
+<!-- ======================================================================= -->
+
+<project name="ELIS" default="ejbjar" basedir=".">
+
+	<property environment="env" />
+	<property name="src.resources" value="${basedir}/src/resources" />
+
+	<target name="ejbjar">
+		<delete file="build/openelis.jar" />
+		<jar jarfile="build/openelis.jar">
+			<fileset dir="bin">
+				<include name="org/openelis/bean/*.class" />
+				<include name="org/openelis/manager/*.class" />
+				<include name="org/openelis/entity/*.class" />
+				<include name="org/openelis/local/*.class" />
+				<include name="org/openelis/report/**/*" />
+				<include name="org/openelis/utils/*.class" />
+				<exclude name="org/openelis/report/**/*.jrxml"/>
+			</fileset>
+			<fileset dir="${src.resources}/">
+				<include name="META-INF/persistence.xml" />
+				<include name="META-INF/ehcache.xml" />
+			</fileset>
+		</jar>
+		<delete file="build/openelis-common.jar" />
+		<jar jarfile="build/openelis-common.jar">
+			<fileset dir="../OpenELIS-Common/bin">
+				<include name="org/openelis/constants/*" />
+				<include name="org/openelis/domain/*.class" />
+				<include name="org/openelis/exception/*.class" />
+				<include name="org/openelis/manager/*.class" />
+				<include name="org/openelis/messages/*.class" />
+				<include name="org/openelis/meta/*.class" />
+				<include name="org/openelis/remote/*.class" />
+				<include name="org/openelis/report/*.class" />
+				<include name="org/openelis/utilcommon/*.class" />
+			</fileset>
+		</jar>
+		<copy file="../OpenELIS-Security-EJB/security-client.jar" todir="./lib" overwrite="true" />
+        <copy file="../OpenELIS-Lib/openelis-lib.jar" todir="./lib" overwrite="true" />
+		<delete file="build/openelis.ear" />
+		<ear destfile="build/openelis.ear" appxml="${src.resources}/META-INF/application.xml">
+			<fileset dir="${src.resources}/">
+				<include name="META-INF/jboss-app.xml" />
+			</fileset>
+			<fileset dir="build">
+				<include name="openelis.jar" />
+			</fileset>
+			<fileset dir="build">
+				<include name="openelis-common.jar" />
+			</fileset>
+			<fileset dir=".">
+				<include name="lib/openelis-lib.jar" />
+				<include name="lib/security-client.jar" />
+				<include name="lib/poi-3.6-20091214.jar" />
+			    <include name="lib/groovy-all-1.5.5.jar" />
+			    <include name="lib/commons-digester-1.7.jar" />
+		    	<include name="lib/commons-beanutils-1.5.jar" />
+			    <include name="lib/jasperreports-3.7.4.jar" />
+			</fileset>
+		</ear>
+	</target>
+
+	<target name="deploy-openelis-ejb" depends="ejbjar">
+		<copy file="build/openelis.ear" todir="/usr/local/java/jboss/server/uhl/deploy" />
+	</target>
+
+</project>
+
