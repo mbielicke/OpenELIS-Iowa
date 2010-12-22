@@ -96,7 +96,7 @@ public class InventoryAdjustmentManagerBean implements InventoryAdjustmentManage
             ut.begin();
             lockBean.validateLock(ReferenceTable.INVENTORY_ADJUSTMENT, man.getInventoryAdjustment().getId());        
             man.update();
-            lockBean.giveUpLock(ReferenceTable.INVENTORY_ADJUSTMENT, man.getInventoryAdjustment().getId());
+            lockBean.unlock(ReferenceTable.INVENTORY_ADJUSTMENT, man.getInventoryAdjustment().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -107,12 +107,12 @@ public class InventoryAdjustmentManagerBean implements InventoryAdjustmentManage
     }
 
     public InventoryAdjustmentManager fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(ReferenceTable.INVENTORY_ADJUSTMENT, id);
+        lockBean.lock(ReferenceTable.INVENTORY_ADJUSTMENT, id);
         return fetchById(id);
     }
     
     public InventoryAdjustmentManager abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.INVENTORY_ADJUSTMENT, id);
+        lockBean.unlock(ReferenceTable.INVENTORY_ADJUSTMENT, id);
         return fetchById(id);
     }
 

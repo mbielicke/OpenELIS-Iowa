@@ -97,7 +97,7 @@ public class AuxFieldGroupManagerBean implements AuxFieldGroupManagerRemote {
             ut.begin();
             lockBean.validateLock(ReferenceTable.AUX_FIELD_GROUP, man.getGroup().getId());        
             man.update();
-            lockBean.giveUpLock(ReferenceTable.AUX_FIELD_GROUP, man.getGroup().getId());
+            lockBean.unlock(ReferenceTable.AUX_FIELD_GROUP, man.getGroup().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -108,12 +108,12 @@ public class AuxFieldGroupManagerBean implements AuxFieldGroupManagerRemote {
     }
     
     public AuxFieldGroupManager fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(ReferenceTable.AUX_FIELD_GROUP, id);
+        lockBean.lock(ReferenceTable.AUX_FIELD_GROUP, id);
         return fetchById(id);
     }
 
     public AuxFieldGroupManager abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.AUX_FIELD_GROUP, id);
+        lockBean.unlock(ReferenceTable.AUX_FIELD_GROUP, id);
         return fetchById(id);
     }
     

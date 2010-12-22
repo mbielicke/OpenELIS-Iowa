@@ -189,18 +189,18 @@ public class MethodBean implements MethodRemote {
         entity.setName(data.getName());
         entity.setReportingDescription(data.getReportingDescription());
 
-        lock.giveUpLock(ReferenceTable.METHOD, data.getId());            
+        lock.unlock(ReferenceTable.METHOD, data.getId());            
         
         return data;
     }
     
     public MethodDO fetchForUpdate(Integer id) throws Exception {
-        lock.getLock(ReferenceTable.METHOD, id);
+        lock.lock(ReferenceTable.METHOD, id);
         return fetchById(id);
     }
     
     public MethodDO abortUpdate(Integer id) throws Exception {
-        lock.giveUpLock(ReferenceTable.METHOD, id);
+        lock.unlock(ReferenceTable.METHOD, id);
         return fetchById(id);
     }
     

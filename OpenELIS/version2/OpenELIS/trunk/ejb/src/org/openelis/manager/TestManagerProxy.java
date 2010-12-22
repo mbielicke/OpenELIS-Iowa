@@ -292,7 +292,7 @@ public class TestManagerProxy {
             throw list;
     }
 
-    protected SystemUserPermission getSystemUserPermission() {
+    protected SystemUserPermission getSystemUserPermission() throws Exception {
         return PermissionInterceptor.getSystemUserPermission();
     }
 

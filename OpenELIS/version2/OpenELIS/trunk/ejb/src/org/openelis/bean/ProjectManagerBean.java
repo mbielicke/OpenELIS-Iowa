@@ -73,7 +73,7 @@ public class ProjectManagerBean implements ProjectManagerRemote {
             ut.begin();
             lockBean.validateLock(ReferenceTable.PROJECT, man.getProject().getId());
             man.update();
-            lockBean.giveUpLock(ReferenceTable.PROJECT, man.getProject().getId());
+            lockBean.unlock(ReferenceTable.PROJECT, man.getProject().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -84,12 +84,12 @@ public class ProjectManagerBean implements ProjectManagerRemote {
     }
 
     public ProjectManager fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(ReferenceTable.PROJECT, id);
+        lockBean.lock(ReferenceTable.PROJECT, id);
         return fetchById(id);
     }
 
     public ProjectManager abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.PROJECT, id);
+        lockBean.unlock(ReferenceTable.PROJECT, id);
         return fetchById(id);
     }
 

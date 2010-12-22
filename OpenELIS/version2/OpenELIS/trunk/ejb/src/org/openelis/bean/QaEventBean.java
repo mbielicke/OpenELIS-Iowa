@@ -226,18 +226,18 @@ public class QaEventBean implements QaEventRemote, QaeventLocal {
         entity.setReportingSequence(data.getReportingSequence());
         entity.setReportingText(data.getReportingText());
 
-        lockBean.giveUpLock(ReferenceTable.QAEVENT, data.getId());
+        lockBean.unlock(ReferenceTable.QAEVENT, data.getId());
 
         return data;
     }
 
     public QaEventViewDO fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(ReferenceTable.QAEVENT, id);
+        lockBean.lock(ReferenceTable.QAEVENT, id);
         return fetchById(id);
     }
 
     public QaEventViewDO abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.QAEVENT, id);
+        lockBean.unlock(ReferenceTable.QAEVENT, id);
         return fetchById(id);
     }
 

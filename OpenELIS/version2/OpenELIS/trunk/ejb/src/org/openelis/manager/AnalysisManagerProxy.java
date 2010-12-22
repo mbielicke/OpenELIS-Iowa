@@ -414,7 +414,7 @@ public class AnalysisManagerProxy {
         return Datetime.getInstance(begin, end);
     }
 
-    protected SystemUserPermission getSystemUserPermission() {
+    protected SystemUserPermission getSystemUserPermission() throws Exception {
         return PermissionInterceptor.getSystemUserPermission();
     }
 

@@ -110,7 +110,7 @@ public class InventoryItemManagerBean implements InventoryItemManagerRemote {
             ut.begin();
             lockBean.validateLock(ReferenceTable.INVENTORY_ITEM, man.getInventoryItem().getId());        
             man.update();
-            lockBean.giveUpLock(ReferenceTable.INVENTORY_ITEM, man.getInventoryItem().getId());
+            lockBean.unlock(ReferenceTable.INVENTORY_ITEM, man.getInventoryItem().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -121,12 +121,12 @@ public class InventoryItemManagerBean implements InventoryItemManagerRemote {
     }
 
     public InventoryItemManager fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(ReferenceTable.INVENTORY_ITEM, id);
+        lockBean.lock(ReferenceTable.INVENTORY_ITEM, id);
         return fetchById(id);
     }
 
     public InventoryItemManager abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.INVENTORY_ITEM, id);
+        lockBean.unlock(ReferenceTable.INVENTORY_ITEM, id);
         return fetchById(id);
     }
 
