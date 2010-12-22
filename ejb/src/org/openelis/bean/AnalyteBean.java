@@ -183,7 +183,7 @@ public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
         entity.setName(data.getName());
         entity.setParentAnalyteId(data.getParentAnalyteId());
 
-        lockBean.giveUpLock(ReferenceTable.ANALYTE, data.getId());
+        lockBean.unlock(ReferenceTable.ANALYTE, data.getId());
 
         return data;
 
@@ -203,16 +203,16 @@ public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
         if (entity != null)
             manager.remove(entity);
 
-        lockBean.giveUpLock(ReferenceTable.ANALYTE, data.getId());
+        lockBean.unlock(ReferenceTable.ANALYTE, data.getId());
     }
 
     public AnalyteViewDO fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(ReferenceTable.ANALYTE, id);
+        lockBean.lock(ReferenceTable.ANALYTE, id);
         return fetchById(id);
     }
 
     public AnalyteViewDO abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.ANALYTE, id);
+        lockBean.unlock(ReferenceTable.ANALYTE, id);
         return fetchById(id);
     }
     

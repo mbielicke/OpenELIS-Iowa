@@ -172,18 +172,18 @@ public class StorageUnitBean implements StorageUnitRemote {
         entity.setDescription(data.getDescription());
         entity.setIsSingular(data.getIsSingular());
 
-        lockBean.giveUpLock(ReferenceTable.STORAGE_UNIT, data.getId());
+        lockBean.unlock(ReferenceTable.STORAGE_UNIT, data.getId());
 
         return data;
     }
 
     public StorageUnitDO fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(ReferenceTable.STORAGE_UNIT, id);
+        lockBean.lock(ReferenceTable.STORAGE_UNIT, id);
         return fetchById(id);
     }
 
     public StorageUnitDO abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.STORAGE_UNIT, id);
+        lockBean.unlock(ReferenceTable.STORAGE_UNIT, id);
         return fetchById(id);
     }
 
@@ -201,7 +201,7 @@ public class StorageUnitBean implements StorageUnitRemote {
         if (entity != null)
             manager.remove(entity);
 
-        lockBean.giveUpLock(ReferenceTable.STORAGE_UNIT, data.getId());
+        lockBean.unlock(ReferenceTable.STORAGE_UNIT, data.getId());
 
     }
 

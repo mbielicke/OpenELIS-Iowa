@@ -99,7 +99,7 @@ public class CategoryManagerBean implements CategoryManagerRemote {
             ut.begin();
             lockBean.validateLock(ReferenceTable.DICTIONARY, man.getCategory().getId());
             man.update();
-            lockBean.giveUpLock(ReferenceTable.DICTIONARY, man.getCategory().getId());
+            lockBean.unlock(ReferenceTable.DICTIONARY, man.getCategory().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -110,12 +110,12 @@ public class CategoryManagerBean implements CategoryManagerRemote {
     }
 
     public CategoryManager fetchForUpdate(Integer categoryId) throws Exception {
-        lockBean.getLock(ReferenceTable.DICTIONARY, categoryId);
+        lockBean.lock(ReferenceTable.DICTIONARY, categoryId);
         return fetchById(categoryId);
     }
 
     public CategoryManager abortUpdate(Integer categoryId) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.DICTIONARY, categoryId);
+        lockBean.unlock(ReferenceTable.DICTIONARY, categoryId);
         return fetchById(categoryId);
     }
     

@@ -105,7 +105,7 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
             ut.begin();
             lockBean.validateLock(ReferenceTable.ORGANIZATION, man.getOrganization().getId());        
             man.update();
-            lockBean.giveUpLock(ReferenceTable.ORGANIZATION, man.getOrganization().getId());
+            lockBean.unlock(ReferenceTable.ORGANIZATION, man.getOrganization().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -116,12 +116,12 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
     }
 
     public OrganizationManager fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(ReferenceTable.ORGANIZATION, id);
+        lockBean.lock(ReferenceTable.ORGANIZATION, id);
         return fetchById(id);
     }
 
     public OrganizationManager abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.ORGANIZATION, id);
+        lockBean.unlock(ReferenceTable.ORGANIZATION, id);
         return fetchById(id);
     }
 

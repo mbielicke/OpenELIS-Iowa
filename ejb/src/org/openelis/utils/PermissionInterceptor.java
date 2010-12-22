@@ -111,8 +111,13 @@ public class PermissionInterceptor {
         return user;
     }
     
-    public static SystemUserPermission getSystemUserPermission() {
-        return (SystemUserPermission)session.getAttribute("UserPermission");
+    public static SystemUserPermission getSystemUserPermission() throws Exception {
+        SystemUserPermission p;
+        
+        p = (SystemUserPermission)session.getAttribute("UserPermission");
+        if (p == null)
+            throw new Exception("UserPermission attribute not found in EJB session");
+        return p;
     }
     
     private static SystemUserPermissionProxyLocal local() {

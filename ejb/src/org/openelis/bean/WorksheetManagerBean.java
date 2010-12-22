@@ -106,7 +106,7 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
             ut.begin();
             lockBean.validateLock(ReferenceTable.WORKSHEET, man.getWorksheet().getId());        
             man.update();
-            lockBean.giveUpLock(ReferenceTable.WORKSHEET, man.getWorksheet().getId());
+            lockBean.unlock(ReferenceTable.WORKSHEET, man.getWorksheet().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -117,12 +117,12 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
     }
 
     public WorksheetManager fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(ReferenceTable.WORKSHEET, id);
+        lockBean.lock(ReferenceTable.WORKSHEET, id);
         return fetchById(id);
     }
 
     public WorksheetManager abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.WORKSHEET, id);
+        lockBean.unlock(ReferenceTable.WORKSHEET, id);
         return fetchById(id);
     }
 

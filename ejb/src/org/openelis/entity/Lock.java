@@ -29,34 +29,25 @@ package org.openelis.entity;
  * Lock Entity POJO for database
  */
 
-import java.util.Date;
+import java.io.Serializable;
 
 import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
 
 @Entity
 @Table(name = "lock")
 public class Lock {
 
-    @Id
-    @GeneratedValue
-    @Column(name = "id")
-    private Integer id;
-
-    @Column(name = "reference_table_id")
-    private Integer referenceTableId;
-
-    @Column(name = "reference_id")
-    private Integer referenceId;
+    @EmbeddedId
+    private PK      pk;
 
     @Column(name = "expires")
-    private Date    expires;
+    private Long    expires;
 
     @Column(name = "system_user_id")
     private Integer systemUserId;
@@ -64,40 +55,32 @@ public class Lock {
     @Column(name = "session_id")
     private String  sessionId;
 
-    public Integer getId() {
-        return id;
-    }
-
-    protected void setId(Integer id) {
-        if (DataBaseUtil.isDifferent(id, this.id))
-            this.id = id;
+    public Lock() {
+        pk = new PK();
     }
 
     public Integer getReferenceTableId() {
-        return referenceTableId;
+        return pk.referenceTableId;
     }
 
     public void setReferenceTableId(Integer referenceTableId) {
-        if (DataBaseUtil.isDifferent(referenceTableId, this.referenceTableId))
-            this.referenceTableId = referenceTableId;
+        pk.referenceTableId = referenceTableId;
     }
 
     public Integer getReferenceId() {
-        return referenceId;
+        return pk.referenceId;
     }
 
     public void setReferenceId(Integer referenceId) {
-        if (DataBaseUtil.isDifferent(referenceId,this.referenceId))
-            this.referenceId = referenceId;
+        pk.referenceId = referenceId;
     }
 
-    public Datetime getExpires() {
-        return DataBaseUtil.toYM(expires);
+    public Long getExpires() {
+        return expires;
     }
 
-    public void setExpires(Datetime expires) {
-        if ( DataBaseUtil.isDifferentYM(expires,this.expires))
-            this.expires = DataBaseUtil.toDate(expires);
+    public void setExpires(Long expires) {
+        this.expires = expires;
     }
 
     public Integer getSystemUserId() {
@@ -105,8 +88,7 @@ public class Lock {
     }
 
     public void setSystemUserId(Integer systemUserId) {
-        if (DataBaseUtil.isDifferent(systemUserId, this.systemUserId))
-            this.systemUserId = systemUserId;
+        this.systemUserId = systemUserId;
     }
 
     public String getSessionId() {
@@ -114,8 +96,55 @@ public class Lock {
     }
 
     public void setSessionId(String sessionId) {
-        if (DataBaseUtil.isDifferent(sessionId, this.sessionId))
-            this.sessionId = sessionId;
+        this.sessionId = sessionId;
     }
 
+    /**
+     * Implements the primary key for lock table
+     */
+    @Embeddable
+    public static class PK implements Serializable {
+
+        @Column(name = "reference_table_id")
+        private Integer           referenceTableId;
+
+        @Column(name = "reference_id")
+        private Integer           referenceId;
+
+        private static final long serialVersionUID = 1L;
+
+        public PK() {
+        }
+
+        public PK(Integer referenceTableId, Integer referenceId) {
+            this.referenceTableId = referenceTableId;
+            this.referenceId = referenceId;
+        }
+
+        public Integer getReferenceTableId() {
+            return referenceTableId;
+        }
+
+        public void setReferenceTableId(Integer referenceTableId) {
+            this.referenceTableId = referenceTableId;
+        }
+
+        public Integer getReferenceId() {
+            return referenceId;
+        }
+
+        public void setReferenceId(Integer referenceId) {
+            this.referenceId = referenceId;
+        }
+
+        public int hashCode() {
+            return referenceTableId.hashCode() * 200 + referenceId.hashCode();
+        }
+
+        public boolean equals(Object arg) {
+            return (arg instanceof PK &&
+                    !DataBaseUtil.isDifferent(((PK)arg).referenceTableId, referenceTableId) && 
+                    !DataBaseUtil.isDifferent( ((PK)arg).referenceId, referenceId));
+        }
+    }
 }

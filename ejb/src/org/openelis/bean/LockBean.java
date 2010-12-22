@@ -25,19 +25,15 @@
  */
 package org.openelis.bean;
 
-import java.util.Calendar;
 import java.util.Date;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
 import org.openelis.entity.Lock;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
+import org.openelis.entity.Lock.PK;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.local.LockLocal;
@@ -47,155 +43,113 @@ import org.openelis.utils.PermissionInterceptor;
 public class LockBean implements LockLocal {
 
     @PersistenceContext
-    private EntityManager       manager;
+    private EntityManager manager;
+
+    private static int    DEFAULT_LOCK_TIME = 15 * 60 * 1000,   // 15 M * 60 S * 1000 Millis
+                          GRACE_LOCK_TIME = 2 * 60 * 1000;
 
     /**
-     * This method returns true if an un-expired lock is found in the table and
-     * false if no lock or an expired lock is found.
+     * Method creates a new lock entry for the specified table reference and id.
+     * If a valid lock currently exist, a EntityLockedException is thrown.
      */
-    public boolean isLocked(Integer table, Integer row) {
-        return isLocked(table, row, null);
+    public void lock(int referenceTableId, int referenceId) throws Exception {
+        lock(referenceTableId, referenceId, DEFAULT_LOCK_TIME);
     }
 
-    public boolean isLocked(Integer table, Integer row, String session) {
+    /**
+     * Method creates a new lock entry for the specified table reference and id
+     * for the specified time on milliseconds. If a valid lock currently exist,
+     * a EntityLockedException is thrown.
+     */
+    public void lock(int referenceTableId, int referenceId, long lockTimeMillis) throws Exception {
+        PK pk;
         Lock lock;
+        long timeMillis;
         Integer userId;
+        SystemUserVO user;
+
+        userId = PermissionInterceptor.getSystemUserId();
+        timeMillis = System.currentTimeMillis();
         
-        lock = fetchLock(table, row, null, null);
+        pk = new Lock.PK(referenceTableId, referenceId);
         try {
-            userId = PermissionInterceptor.getSystemUserId();
-            if (lock != null) {
-                return lock.getExpires().after(new Date()) &&
-                       DataBaseUtil.isDifferent(lock.getSystemUserId(), userId) &&
-                       DataBaseUtil.isDifferent(lock.getSessionId(), session); 
+            lock = manager.find(Lock.class, pk);
+            if (lock == null) {
+                lock = new Lock();
+                lock.setReferenceTableId(referenceTableId);
+                lock.setReferenceId(referenceId);
+                lock.setSystemUserId(userId);
+                lock.setExpires(lockTimeMillis+timeMillis);
+                manager.persist(lock);
+            } else if (lock.getExpires() < timeMillis) {
+                //
+                // if the lock has expired, then we can take it over
+                //
+                lock.setSystemUserId(userId);
+                lock.setExpires(lockTimeMillis+timeMillis);
+            } else {
+                user = PermissionInterceptor.getSystemUser(lock.getSystemUserId());
+                throw new EntityLockedException("entityLockException",
+                                                user.getLoginName(),
+                                                new Date(lock.getExpires()).toString());
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            //
-            // we want to prevent locking if we get an exception
-            //
-            return true;
+            throw e;
         }
-
-        return false;
     }
 
     /**
-     * This method will look for a lock in the table for the specific user and
-     * entity. If none found we assume that they let the lock expire and someone
-     * else locked and possible changed the data. If a lock is found we can say
-     * that it is either still a valid lock or no one else has changed the data
-     * since the first user locker.
+     * This method removes the lock entry for the specified reference table and id. The
+     * lock record must be owned by the user before the lock is removed.
      */
-    public void validateLock(Integer table, Integer row) throws Exception {
-        validateLock(table, row, "");
-    }
-
-    public void validateLock(Integer table, Integer row, String session) throws Exception {
+    public void unlock(int referenceTableId, int referenceId) {
+        PK pk;
         Lock lock;
         Integer userId;
-        
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+
+        pk = new Lock.PK(referenceTableId, referenceId);
         try {
             userId = PermissionInterceptor.getSystemUserId();
-            lock = fetchLock(table, row, userId, session);
+            lock = manager.find(Lock.class, pk);
+            if (lock != null && lock.getSystemUserId().equals(userId))
+                manager.remove(lock);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * This method will search for an existing lock for the specified reference table and id.
+     * If a lock is not found or the lock does not belong to the calling user, the method
+     * throws EntityLockException specifying that the lock is not valid.
+     * Note that expired locks are valid (because no one else has requested for the
+     * same resource to be locked) and this method resets the expiration time of expired or
+     * nearly expire locks by a constant grace time.    
+     */
+    public void validateLock(int referenceTableId, int referenceId) throws Exception {
+        PK pk;
+        Lock lock;
+        long timeMillis;
+        Integer userId;
+
+        pk = new Lock.PK(referenceTableId, referenceId);
+        try {
+            lock = manager.find(Lock.class, pk);
+            userId = PermissionInterceptor.getSystemUserId();
         } catch (Exception e) {
             lock = null;
+            userId = null;
         }
 
-        if (lock == null)
+        if (lock == null || !lock.getSystemUserId().equals(userId))
             throw new EntityLockedException("expiredLockException");
-    }
-
-    /**
-     * This method will check for an existing valid lock by another user. If
-     * this is locked by the calling user it will refresh the lock.
-     */
-    public Integer getLock(Integer table, Integer row) throws Exception {
-        return getLock(table, row, null);
-    }
-
-    public Integer getLock(Integer table, Integer row, String session) throws Exception {
-        Lock lock;
-        String name;
-        SystemUserVO user;
-        Calendar now;
-        
-        lock = fetchLock(table, row, null, null);
-        user = PermissionInterceptor.getSystemUser();
-        now  = Calendar.getInstance();
-        if (lock != null) {
-            if (lock.getExpires().after(now.getTime()) &&
-                DataBaseUtil.isDifferent(lock.getSystemUserId(), user.getId()) &&
-                DataBaseUtil.isDifferent(lock.getSessionId(), session)) { 
-
-                if (DataBaseUtil.isEmpty(user.getLastName())) 
-                    name = user.getLoginName();
-                else
-                    name = user.getFirstName() + " " + user.getLastName();
-                throw new EntityLockedException("entityLockException", name,
-                                                lock.getExpires().toString());
-            } else {
-                manager.remove(lock);
-                manager.flush();
-            }
-        }
-
         //
-        // create a new lock and set it to expire in 15 minutes
+        // if the lock has expired, we are going to refresh its expiration time
         //
-        now.add(Calendar.MINUTE, 15);
-
-        lock = new Lock();
-        lock.setReferenceTableId(table);
-        lock.setReferenceId(row);
-        lock.setSystemUserId(user.getId());
-        lock.setSessionId(session);
-        lock.setExpires(new Datetime(Datetime.YEAR, Datetime.MINUTE, now.getTime()));
-        manager.persist(lock);
-
-        return lock.getId();
-    }
-
-    /**
-     * This method will remove the given lock from the table.
-     */
-    public void giveUpLock(Integer table, Integer row) {
-        giveUpLock(table, row, null);
-    }
-
-    public void giveUpLock(Integer table, Integer row, String session) {
-        Lock lock;
-        Integer userId;
-        
-        manager.setFlushMode(FlushModeType.COMMIT);
-        try {
-            userId = PermissionInterceptor.getSystemUserId();
-            lock = fetchLock(table, row, userId, session);
-            manager.remove(lock);
-        } catch (EntityNotFoundException e) {
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /*
-     * Returns a lock for this entity by any user.
-     */
-    private Lock fetchLock(Integer table, Integer row, Integer userId, String session) {
-        Query q;
-        String s;
-        
-        s = "from Lock where referenceTableId=" + table + " and referenceId=" + row; 
-        if (! DataBaseUtil.isEmpty(userId))
-            s += " and systemUserId=" + userId;
-        if (!DataBaseUtil.isEmpty(session))
-            s += " and sessionId='" + session + "'";
-        
-        try {
-            q = manager.createQuery(s);
-            return (Lock)q.getSingleResult();
-        } catch (Exception e) {
-            return null;
-        }
+        timeMillis = System.currentTimeMillis();
+        if (lock.getExpires() < timeMillis-GRACE_LOCK_TIME)
+            lock.setExpires(timeMillis+GRACE_LOCK_TIME);
     }
 }

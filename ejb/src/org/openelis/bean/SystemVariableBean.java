@@ -168,13 +168,13 @@ public class SystemVariableBean implements SystemVariableRemote, SystemVariableL
         entity.setName(data.getName());
         entity.setValue(data.getValue());
 
-        lockBean.giveUpLock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
+        lockBean.unlock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
 
         return data;
     }
 
     public SystemVariableDO fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(ReferenceTable.SYSTEM_VARIABLE, id);
+        lockBean.lock(ReferenceTable.SYSTEM_VARIABLE, id);
         return fetchById(id);
     }
     
@@ -185,14 +185,14 @@ public class SystemVariableBean implements SystemVariableRemote, SystemVariableL
         if(list.size() == 0)
             return null;
             
-        lockBean.getLock(ReferenceTable.SYSTEM_VARIABLE, list.get(0).getId());
+        lockBean.lock(ReferenceTable.SYSTEM_VARIABLE, list.get(0).getId());
         
         return list.get(0);
     }
     
 
     public SystemVariableDO abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.SYSTEM_VARIABLE, id);
+        lockBean.unlock(ReferenceTable.SYSTEM_VARIABLE, id);
         return fetchById(id);
     }
 
@@ -208,7 +208,7 @@ public class SystemVariableBean implements SystemVariableRemote, SystemVariableL
         if (entity != null)
             manager.remove(entity);
 
-        lockBean.giveUpLock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
+        lockBean.unlock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
     }
     
     public void validate(SystemVariableDO data) throws Exception {
