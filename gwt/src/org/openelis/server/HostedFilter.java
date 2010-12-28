@@ -93,7 +93,7 @@ public class HostedFilter implements Filter {
         //
         // check to see if we have logged in session
         //
-        if (hreq.getSession().getAttribute("jndiProps") == null) {
+        if (hreq.getSession().getAttribute("USER_NAME") == null) {
             try {
                 login(hreq, user, password, hreq.getRemoteAddr());
                 //
