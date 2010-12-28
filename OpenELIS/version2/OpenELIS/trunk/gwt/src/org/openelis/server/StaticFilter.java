@@ -45,7 +45,6 @@ import org.apache.log4j.Logger;
 import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.modules.main.server.OpenELISScreenService;
 import org.openelis.persistence.JMSMessageConsumer;
 import org.openelis.remote.SystemUserPermissionProxyRemote;
 import org.openelis.util.SessionManager;
@@ -155,6 +154,7 @@ public class StaticFilter implements Filter {
     
 
     public void destroy() {
+        System.out.println("in static filter distroy");
         JMSMessageConsumer.stopListener();
     }
 
