@@ -30,5 +30,6 @@ UIRF Software License are applicable instead of those above.
   <source path="exception"/>
   <source path="manager"/>
   <source path="meta"/>
+  <source path="report"/>
   <source path="utilcommon"/>
 </module>

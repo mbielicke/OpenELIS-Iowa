@@ -831,13 +831,14 @@ public class AnalysisManager implements RPC {
     //
 
     protected void updateAnalysisStatusAt(int itemIndex, int anaIndex, Integer sampleTypeId) throws Exception {
-        int numPreCompl;
+        int i, numPreCompl;
         TestManager testMan;
         boolean error;
         AnalysisViewDO data;
         Integer currentStatusId, preAnalysisId;
         ArrayList<AnalysisViewDO> preAnaList;
         SampleDataBundle bundle;
+        SampleItemManager siMan;
         AnalysisManager anaMan;        
         
         data = getItemAt(anaIndex).analysis;                
@@ -850,32 +851,23 @@ public class AnalysisManager implements RPC {
         currentStatusId = data.getStatusId();
          
         //
-        // if this analysis' status is "Completed" then we have to check to see 
+        // if this analysis' status is "In Prep" then we have to check to see 
         // whether its prep analysis' status has been changed to "Completed"
         // and if that is the case then this analysis's status should be set to
         // "Logged In"
         //
         numPreCompl = 0;
-        /*if (currentStatusId.equals(proxy().anInPrepId)) {
-            preAnalysisId = data.getPreAnalysisId();
-            preAnaList = getPreAnalysisList(preAnalysisId);
-            for (AnalysisViewDO preData : preAnaList) {
-                if (preData.equals(proxy().anCompletedId)) {
-                    numPreCompl++;
-                }                
-            }
-            
-            if (numPreCompl == preAnaList.size())
-                data.setStatusId(proxy().anLoggedInId);
-        }*/
         
         if (currentStatusId.equals(proxy().anCompletedId)) {
             bundle = getItemAt(anaIndex).bundle;
-            anaMan = bundle.sampleManager.getSampleItems().getAnalysisAt(itemIndex);
-            for (AnalysisViewDO temp : anaMan.getAnalysisList()) {
-                if (DataBaseUtil.isSame(temp.getPreAnalysisId(), data.getId())
-                                && temp.getStatusId().equals(proxy().anInPrepId)) {    
-                    temp.setStatusId(proxy().anLoggedInId);
+            siMan = bundle.sampleManager.getSampleItems();
+            for (i = 0; i < siMan.count(); i++) {
+                anaMan = bundle.sampleManager.getSampleItems().getAnalysisAt(i);
+                for (AnalysisViewDO temp : anaMan.getAnalysisList()) {
+                    if (DataBaseUtil.isSame(temp.getPreAnalysisId(), data.getId())
+                                    && temp.getStatusId().equals(proxy().anInPrepId)) {    
+                        temp.setStatusId(proxy().anLoggedInId);
+                    }
                 }
             }
         }
