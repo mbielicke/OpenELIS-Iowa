@@ -244,6 +244,10 @@ public class TestManager implements RPC {
     }
 
     public boolean canAssign() {
+        return canAssignThisSection(null);
+    }
+    
+    public boolean canAssignThisSection(TestSectionViewDO tsVDO) {
         TestSectionViewDO data;
         SystemUserPermission perm;
         SectionPermission sp;
@@ -254,7 +258,8 @@ public class TestManager implements RPC {
             data = testSections.getSectionAt(i);
             sp = perm.getSection(data.getSection());
 
-            if (sp != null && sp.hasAssignPermission())
+            if (sp != null && sp.hasAssignPermission() &&
+                (tsVDO == null || data.getSectionId().equals(tsVDO.getSectionId())))
                 return true;
         }
         return false;
