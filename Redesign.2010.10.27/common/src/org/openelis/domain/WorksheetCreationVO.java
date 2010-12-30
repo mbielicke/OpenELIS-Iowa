@@ -123,7 +123,7 @@ public class WorksheetCreationVO implements RPC {
     }
 
     public void setCollectionTime(Datetime collectionTime) {
-        this.collectionTime = collectionTime;
+        this.collectionTime = DataBaseUtil.toHM(collectionTime);
     }
 
     public Datetime getReceivedDate() {
@@ -273,7 +273,7 @@ public class WorksheetCreationVO implements RPC {
     }
 
     public void setExpireDate(Datetime expireDate) {
-        this.expireDate = DataBaseUtil.toYD(expireDate);
+        this.expireDate = DataBaseUtil.toYM(expireDate);
     }
 
     public Boolean getHasQaOverride() {
