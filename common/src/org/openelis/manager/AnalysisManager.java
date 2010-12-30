@@ -490,6 +490,13 @@ public class AnalysisManager implements RPC {
     public AnalysisListItem getItemAt(int i) {
         return items.get(i);
     }
+    
+    void addItem(AnalysisListItem item) {
+        items.add(item);
+        item.bundle = new SampleDataBundle(SampleDataBundle.Type.ANALYSIS,
+                                           sampleItemManager.sampleManager,
+                                           sampleItemBundle, items.size() - 1);
+    }
 
     //
     // other managers

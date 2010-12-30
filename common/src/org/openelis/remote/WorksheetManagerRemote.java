@@ -17,6 +17,8 @@ public interface WorksheetManagerRemote {
 
     public WorksheetManager fetchWithNotes(Integer id) throws Exception;
     
+    public WorksheetManager fetchWithItemsAndNotes(Integer id) throws Exception;
+    
     public WorksheetManager add(WorksheetManager man) throws Exception;
     
     public WorksheetManager update(WorksheetManager man) throws Exception;

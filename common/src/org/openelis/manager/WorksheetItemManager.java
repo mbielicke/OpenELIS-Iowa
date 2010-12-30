@@ -28,6 +28,7 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
@@ -39,6 +40,7 @@ public class WorksheetItemManager implements RPC {
     protected Integer                          worksheetId;
     protected ArrayList<WorksheetItemListItem> items, deleted;
     protected HashMap<Integer,SampleManager>   sampleManagers, lockedManagers;
+    protected HashMap<Integer,SectionViewDO>   analysisSections;
 
     protected transient static WorksheetItemManagerProxy proxy;
     
@@ -154,6 +156,17 @@ public class WorksheetItemManager implements RPC {
     
     void setLockedManagers(HashMap<Integer,SampleManager> managers) {
         lockedManagers = managers;
+    }
+    
+    HashMap<Integer,SectionViewDO> getAnalysisSections() throws Exception {
+        int i;
+        
+        if (analysisSections == null) {
+            analysisSections = new HashMap<Integer,SectionViewDO>();
+            for (i = 0; i < count(); i++)
+                analysisSections.putAll(getWorksheetAnalysisAt(i).getAnalysisSections());
+        }
+        return analysisSections;
     }
     
     int deleteCount() {
