@@ -17,7 +17,7 @@
 				<textElement>
 					<font fontName="Times New Roman" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.report.util.QaEventBean.getAnalysisQaeventText($P{REPORT_CONNECTION}, $P{ANALYSIS_ID},Boolean.FALSE)]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.utils.QaeventUtil.getAnalysisQaeventText($P{ANALYSIS_ID},Boolean.FALSE)]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement positionType="Float" x="0" y="0" width="30" height="12"/>

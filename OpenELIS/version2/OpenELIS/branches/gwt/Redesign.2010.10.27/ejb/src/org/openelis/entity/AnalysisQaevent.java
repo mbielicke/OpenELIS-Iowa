@@ -27,7 +27,12 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "AnalysisQaevent.FetchByAnalysisId",
                 query = "select new org.openelis.domain.AnalysisQaEventViewDO(q.id, q.analysisId, q.qaeventId, " +
                         "q.typeId, q.isBillable, q.qaEvent.name)"
-                      + " from AnalysisQaevent q where q.analysisId = :id order by q.id")})
+                      + " from AnalysisQaevent q where q.analysisId = :id order by q.id"),
+   @NamedQuery( name = "AnalysisQaevent.FetchInternalByAnalysisId",
+               query = "select new org.openelis.domain.AnalysisQaEventViewDO(aq.id, aq.analysisId, aq.qaeventId, " +
+                       "aq.typeId, aq.isBillable, q.name)"
+                     + " from AnalysisQaevent aq left join aq.qaEvent q left join aq.dictionary d"
+                     + " where aq.analysisId = :id and d.systemName = 'qaevent_internal' order by aq.id")})
 @Entity
 @Table(name = "analysis_qaevent")
 @EntityListeners( {AuditUtil.class})
@@ -53,6 +58,10 @@ public class AnalysisQaevent implements Auditable, Cloneable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "qaevent_id", insertable = false, updatable = false)
     private QaEvent         qaEvent;
+    
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "type_id", insertable = false, updatable = false)
+    private Dictionary    dictionary;
 
     @Transient
     private AnalysisQaevent original;
@@ -108,6 +117,14 @@ public class AnalysisQaevent implements Auditable, Cloneable {
 
     public void setQaEvent(QaEvent qaEvent) {
         this.qaEvent = qaEvent;
+    }
+    
+    public Dictionary getDictionary() {
+        return dictionary;
+    }
+
+    public void setDictionary(Dictionary dictionary) {
+        this.dictionary = dictionary;
     }
 
     public void setClone() {

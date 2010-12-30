@@ -458,12 +458,12 @@ public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryRe
     
 
     public InventoryReceiptViewDO fetchForUpdate(Integer id) throws Exception {
-        lock.getLock(ReferenceTable.INVENTORY_RECEIPT, id);
+        lock.lock(ReferenceTable.INVENTORY_RECEIPT, id);
         return fetchById(id);
     }
 
     public InventoryReceiptViewDO abortUpdate(Integer id) throws Exception {
-        lock.giveUpLock(ReferenceTable.INVENTORY_RECEIPT, id);
+        lock.unlock(ReferenceTable.INVENTORY_RECEIPT, id);
         return fetchById(id);
     }
 

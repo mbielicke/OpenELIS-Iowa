@@ -1,38 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sampleTypeBarcode" language="groovy" pageWidth="382" pageHeight="24" orientation="Landscape" columnWidth="382" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
-	<property name="ireport.zoom" value="2.853116706110003"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sampleTypeBarcode" language="groovy" pageWidth="652" pageHeight="36" orientation="Landscape" columnWidth="652" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.6105100000000014"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<parameter name="TEST_ID" class="java.lang.Integer" isForPrompting="false"/>
+	<parameter name="T_OR_P_ID" class="java.lang.Integer" isForPrompting="false"/>
+	<parameter name="REF_TYPE" class="java.lang.String" isForPrompting="false"/>
 	<queryString>
 		<![CDATA[SELECT d1.entry type_entry, d2.entry unit_entry, t.type_of_sample_id t_type_of_sample_id
 FROM test_type_of_sample t, outer dictionary d1, outer dictionary d2
-where t.test_id = $P{TEST_ID} and
-           t.type_of_sample_id = d1.id and
-           t.unit_of_measure_id = d2.id]]>
+WHERE $P{REF_TYPE} = "T" and
+      t.test_id = $P{T_OR_P_ID} and
+      t.type_of_sample_id = d1.id and
+      t.unit_of_measure_id = d2.id
+
+UNION
+
+SELECT d1.entry type_entry, d2.entry unit_entry, t.type_of_sample_id t_type_of_sample_id
+FROM test_type_of_sample t, outer dictionary d1, outer dictionary d2
+WHERE $P{REF_TYPE} = "P" and
+      t.test_id in (
+	SELECT te.id FROM panel_item pi, test te, method me
+	WHERE pi.panel_id = $P{T_OR_P_ID} and
+      	      pi.test_name = te.name and
+              pi.method_name = me.name and
+      	      te.method_id = me.id and
+      	      te.is_active = "Y" ) and
+      t.type_of_sample_id = d1.id and
+      t.unit_of_measure_id = d2.id]]>
 	</queryString>
 	<field name="type_entry" class="java.lang.String"/>
 	<field name="unit_entry" class="java.lang.String"/>
 	<field name="t_type_of_sample_id" class="java.lang.Integer"/>
+	<columnHeader>
+		<band height="12">
+			<staticText>
+				<reportElement mode="Opaque" x="330" y="0" width="322" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
+				<textElement>
+					<font size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Unit of measure]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="130" y="0" width="200" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
+				<textElement textAlignment="Justified">
+					<font size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Sample type]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
 	<detail>
 		<band height="24" splitType="Stretch">
 			<componentElement>
-				<reportElement mode="Transparent" x="1" y="0" width="101" height="12"/>
+				<reportElement mode="Transparent" x="1" y="0" width="125" height="12"/>
 				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="3of9" drawText="false" checksumRequired="false">
-					<jr:codeExpression><![CDATA[$F{t_type_of_sample_id}]]></jr:codeExpression>
+					<jr:codeExpression><![CDATA[$P{REF_TYPE}+$P{T_OR_P_ID}+"-"+$F{t_type_of_sample_id}]]></jr:codeExpression>
 				</jr:barbecue>
 			</componentElement>
 			<textField isBlankWhenNull="true">
-				<reportElement x="252" y="0" width="129" height="12"/>
+				<reportElement x="330" y="0" width="322" height="12"/>
 				<textElement>
-					<font size="8" isItalic="true"/>
+					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{unit_entry}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="112" y="0" width="129" height="12"/>
+				<reportElement x="130" y="0" width="195" height="12"/>
 				<textElement>
-					<font size="8" isItalic="true"/>
+					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{type_entry}]]></textFieldExpression>
 			</textField>

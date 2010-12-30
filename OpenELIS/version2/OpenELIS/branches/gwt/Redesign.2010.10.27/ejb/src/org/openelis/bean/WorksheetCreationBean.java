@@ -156,11 +156,14 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
     /*
      * Compute the number of days before the analysis is expected to be finshed
      */
-    private long computeDueDays(Datetime received, int expectedDays) {
+    private Long computeDueDays(Datetime received, Integer expectedDays) {
         long     due;
         Datetime now, expectedDate;
         
-        now = Datetime.getInstance();
+        if (received == null || expectedDays == null)
+            return null;
+        
+        now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
         
         expectedDate = received.add(expectedDays);
         
@@ -190,6 +193,7 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
             tempCal.add(Calendar.HOUR_OF_DAY, holdingHours);
             expireDate = new Datetime(Datetime.YEAR, Datetime.MINUTE, tempCal.getTime());
         }
+
         return expireDate;
     }
 }

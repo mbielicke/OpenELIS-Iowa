@@ -92,7 +92,7 @@ public class InventoryReceiptManagerBean implements InventoryReceiptManagerRemot
             ut.begin();
             lockBean.validateLock(ReferenceTable.ORDER, order.getId());        
             man.update();
-            lockBean.giveUpLock(ReferenceTable.ORDER, order.getId());
+            lockBean.unlock(ReferenceTable.ORDER, order.getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();

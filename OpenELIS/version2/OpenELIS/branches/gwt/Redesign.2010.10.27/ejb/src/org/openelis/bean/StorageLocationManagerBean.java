@@ -96,7 +96,7 @@ public class StorageLocationManagerBean implements StorageLocationManagerRemote 
             ut.begin();
             lockBean.validateLock(ReferenceTable.STORAGE_LOCATION, man.getStorageLocation().getId());        
             man.update();
-            lockBean.giveUpLock(ReferenceTable.STORAGE_LOCATION, man.getStorageLocation().getId());
+            lockBean.unlock(ReferenceTable.STORAGE_LOCATION, man.getStorageLocation().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -107,12 +107,12 @@ public class StorageLocationManagerBean implements StorageLocationManagerRemote 
     }
     
     public StorageLocationManager fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(ReferenceTable.STORAGE_LOCATION, id);
+        lockBean.lock(ReferenceTable.STORAGE_LOCATION, id);
         return fetchById(id);
     }
     
     public StorageLocationManager abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.STORAGE_LOCATION, id);
+        lockBean.unlock(ReferenceTable.STORAGE_LOCATION, id);
         return fetchById(id);
     }
     

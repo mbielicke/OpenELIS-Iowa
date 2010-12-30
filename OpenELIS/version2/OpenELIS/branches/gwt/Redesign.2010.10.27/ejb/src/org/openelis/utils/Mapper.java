@@ -23,19 +23,35 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.local;
 
-import java.util.ArrayList;
+package org.openelis.utils;
 
-import javax.ejb.Local;
+import java.util.HashMap;
 
-import org.openelis.domain.SampleQaEventViewDO;
+/**
+ * This class is used to map mnemonics to their longer description.
+ */
+public class Mapper {
+    private HashMap<String ,String> map;
+    
+    public Mapper() {
+        map = new HashMap<String ,String>();
+    }
 
-@Local
-public interface SampleQAEventLocal {
-    public ArrayList<SampleQaEventViewDO> fetchBySampleId(Integer sampleId) throws Exception;
-    public ArrayList<SampleQaEventViewDO> fetchInternalBySampleId(Integer sampleId) throws Exception;
-    public void add(SampleQaEventViewDO sampleQAEventDO) throws Exception;
-    public void update(SampleQaEventViewDO sampleQAEventDO) throws Exception;
-    public void delete(SampleQaEventViewDO sampleQAEventDO) throws Exception;
+    /**
+     * Associates the key with its description. It returns this mapper which
+     * allows multiple sets in a single statement.
+     */
+    public Mapper set(String key, String description) {
+        map.put(key, description);
+        return this;
+    }
+        
+    /**
+     * Returns the description associated with specified key.
+     */
+    public String get(String key) {
+        return (String) map.get(key);
+    }
 }
+

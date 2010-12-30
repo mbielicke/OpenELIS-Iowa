@@ -30,19 +30,11 @@ import javax.ejb.Local;
 @Local
 public interface LockLocal {
     
-    public boolean isLocked(Integer table, Integer row);
+    public void lock(int referenceTableId, int referenceId) throws Exception;
     
-    public boolean isLocked(Integer table, Integer row, String session);
+    public void lock(int referenceTableId, int referenceId, long timeoutMillis) throws Exception;
 
-    public Integer getLock(Integer table, Integer row) throws Exception;
-    
-    public Integer getLock(Integer table, Integer row, String session) throws Exception;
-
-    public void giveUpLock(Integer table, Integer row);
+    public void unlock(int referenceTableId, int referenceId);
             
-    public void giveUpLock(Integer table, Integer row, String session);
-    
-    public void validateLock(Integer table, Integer row) throws Exception;
-    
-    public void validateLock(Integer table, Integer row, String session) throws Exception; 
+    public void validateLock(int referenceTableId, int referenceId) throws Exception;
 }

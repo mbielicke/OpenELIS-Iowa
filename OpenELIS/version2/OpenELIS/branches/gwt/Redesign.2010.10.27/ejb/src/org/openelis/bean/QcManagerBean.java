@@ -96,7 +96,7 @@ public class QcManagerBean implements QcManagerRemote {
             ut.begin();
             lockBean.validateLock(ReferenceTable.QC, man.getQc().getId());
             man.update();
-            lockBean.giveUpLock(ReferenceTable.QC, man.getQc().getId());
+            lockBean.unlock(ReferenceTable.QC, man.getQc().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -107,12 +107,12 @@ public class QcManagerBean implements QcManagerRemote {
     }
 
     public QcManager fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(ReferenceTable.QC, id);
+        lockBean.lock(ReferenceTable.QC, id);
         return fetchById(id);
     }
 
     public QcManager abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.QC, id);
+        lockBean.unlock(ReferenceTable.QC, id);
         return fetchById(id);
     }
 

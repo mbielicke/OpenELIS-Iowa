@@ -174,18 +174,18 @@ public class LabelBean implements LabelRemote {
         entity.setPrinterTypeId(data.getPrinterTypeId());
         entity.setScriptletId(data.getScriptletId());
 
-        lockBean.giveUpLock(ReferenceTable.LABEL, data.getId());
+        lockBean.unlock(ReferenceTable.LABEL, data.getId());
 
         return data;
     }
 
     public LabelViewDO fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(ReferenceTable.LABEL, id);
+        lockBean.lock(ReferenceTable.LABEL, id);
         return fetchById(id);
     }
 
     public LabelViewDO abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.LABEL, id);
+        lockBean.unlock(ReferenceTable.LABEL, id);
         return fetchById(id);
     }
 
@@ -203,7 +203,7 @@ public class LabelBean implements LabelRemote {
         if (entity != null)
             manager.remove(entity);
 
-        lockBean.giveUpLock(ReferenceTable.LABEL, data.getId());
+        lockBean.unlock(ReferenceTable.LABEL, data.getId());
     }
 
     public void validateForDelete(Integer id) throws Exception {

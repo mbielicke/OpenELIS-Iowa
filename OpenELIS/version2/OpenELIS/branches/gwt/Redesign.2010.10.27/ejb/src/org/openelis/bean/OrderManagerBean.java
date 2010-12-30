@@ -112,7 +112,7 @@ public class OrderManagerBean implements OrderManagerRemote {
             ut.begin();
             lockBean.validateLock(ReferenceTable.ORDER, man.getOrder().getId());        
             man.update();
-            lockBean.giveUpLock(ReferenceTable.ORDER, man.getOrder().getId());
+            lockBean.unlock(ReferenceTable.ORDER, man.getOrder().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -123,12 +123,12 @@ public class OrderManagerBean implements OrderManagerRemote {
     }
 
     public OrderManager fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(ReferenceTable.ORDER, id);
+        lockBean.lock(ReferenceTable.ORDER, id);
         return fetchById(id);
     }
 
     public OrderManager abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.ORDER, id);
+        lockBean.unlock(ReferenceTable.ORDER, id);
         return fetchById(id);
     }
 

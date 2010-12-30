@@ -101,7 +101,7 @@ public class ShippingManagerBean implements ShippingManagerRemote {
             ut.begin();
             lockBean.validateLock(ReferenceTable.SHIPPING, man.getShipping().getId());        
             man.update();
-            lockBean.giveUpLock(ReferenceTable.SHIPPING, man.getShipping().getId());
+            lockBean.unlock(ReferenceTable.SHIPPING, man.getShipping().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -112,12 +112,12 @@ public class ShippingManagerBean implements ShippingManagerRemote {
     }
 
     public ShippingManager fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(ReferenceTable.SHIPPING, id);
+        lockBean.lock(ReferenceTable.SHIPPING, id);
         return fetchById(id);
     }
     
     public ShippingManager abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.SHIPPING, id);
+        lockBean.unlock(ReferenceTable.SHIPPING, id);
         return fetchById(id);
     }
 

@@ -64,7 +64,7 @@ public class ProviderManagerBean implements ProviderManagerRemote {
 	}
 
 	public ProviderManager fetchForUpdate(Integer id) throws Exception {
-		lockBean.getLock(ReferenceTable.PROVIDER, id);
+		lockBean.lock(ReferenceTable.PROVIDER, id);
 		return fetchById(id);
 	}
 
@@ -80,7 +80,7 @@ public class ProviderManagerBean implements ProviderManagerRemote {
             ut.begin();
             lockBean.validateLock(ReferenceTable.PROVIDER, man.getProvider().getId());        
             man.update();
-            lockBean.giveUpLock(ReferenceTable.PROVIDER, man.getProvider().getId());
+            lockBean.unlock(ReferenceTable.PROVIDER, man.getProvider().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -91,7 +91,7 @@ public class ProviderManagerBean implements ProviderManagerRemote {
 	}
 	
     public ProviderManager abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.PROVIDER,id);
+        lockBean.unlock(ReferenceTable.PROVIDER,id);
         return fetchById(id);
     }
 

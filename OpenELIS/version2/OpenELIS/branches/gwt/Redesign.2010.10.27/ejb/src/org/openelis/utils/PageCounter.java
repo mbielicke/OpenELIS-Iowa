@@ -23,36 +23,35 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-
-package org.openelis.report.util;
+package org.openelis.utils;
 
 /**
-  * A static class that concatenates strings
-  */
-public class Concat {
+ * Set of conveniance methods for jasper report paginations
+ */
+public class PageCounter {
+   int    count = 0;
+   String reportType;
 
-    private static StringBuffer buf = new StringBuffer();
-    /**
-      * Decodes the passed argument to String.
-      */
-    public static String concat(Object a, Object b) {
-        buf.setLength(0);
-        if (a != null)
-            buf.append(a.toString().trim());
-        if (b != null)
-            buf.append(b.toString().trim());
-        return buf.toString();
-    }
+   public PageCounter(String reportType) {
+       this.reportType = reportType;
+   }
+   public Boolean incrementCount() {
+       count++;
+       return Boolean.FALSE;
+   }
 
-    public static String concatWithSeparator(Object a, Object s, Object b) {
-        buf.setLength(0);
-        if (a != null)
-            buf.append(a.toString().trim());
-        if (b != null) {
-            if (a != null)
-                buf.append(s);
-            buf.append(b.toString().trim());
-        }
-        return buf.toString();
-    }
+   public Integer getCount() {
+       return new Integer(count);
+   }
+   
+   public Boolean isFirstPage() {
+       if (count == 1  && ("B".equals(reportType) || "R".equals(reportType))) 
+           return Boolean.TRUE;
+       return Boolean.FALSE;
+   }
+   public Boolean isNotFirstPage() {
+       if (count != 1 && ("B".equals(reportType) || "R".equals(reportType))) 
+           return Boolean.TRUE;
+       return Boolean.FALSE;
+   }   
 }

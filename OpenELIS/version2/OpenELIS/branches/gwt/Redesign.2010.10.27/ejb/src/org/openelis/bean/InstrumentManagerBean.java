@@ -96,7 +96,7 @@ public class InstrumentManagerBean implements InstrumentManagerRemote {
             ut.begin();
             lockBean.validateLock(ReferenceTable.INSTRUMENT, man.getInstrument().getId());        
             man.update();
-            lockBean.giveUpLock(ReferenceTable.INSTRUMENT, man.getInstrument().getId());
+            lockBean.unlock(ReferenceTable.INSTRUMENT, man.getInstrument().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -107,12 +107,12 @@ public class InstrumentManagerBean implements InstrumentManagerRemote {
     }
 
     public InstrumentManager fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(ReferenceTable.INSTRUMENT, id);
+        lockBean.lock(ReferenceTable.INSTRUMENT, id);
         return fetchById(id);
     }
     
     public InstrumentManager abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.INSTRUMENT, id);
+        lockBean.unlock(ReferenceTable.INSTRUMENT, id);
         return fetchById(id);
     }
 

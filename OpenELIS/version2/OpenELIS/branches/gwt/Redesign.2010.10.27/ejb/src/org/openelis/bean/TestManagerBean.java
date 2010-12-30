@@ -116,7 +116,7 @@ public class TestManagerBean implements TestManagerRemote {
             ut.begin();
             lockBean.validateLock(ReferenceTable.TEST, man.getTest().getId());
             man.update();
-            lockBean.giveUpLock(ReferenceTable.TEST, man.getTest().getId());
+            lockBean.unlock(ReferenceTable.TEST, man.getTest().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -127,12 +127,12 @@ public class TestManagerBean implements TestManagerRemote {
     }
 
     public TestManager fetchForUpdate(Integer testId) throws Exception {
-        lockBean.getLock(ReferenceTable.TEST, testId);
+        lockBean.lock(ReferenceTable.TEST, testId);
         return fetchById(testId);
     }
 
     public TestManager abortUpdate(Integer testId) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.TEST, testId);
+        lockBean.unlock(ReferenceTable.TEST, testId);
         return fetchById(testId);
     }
 

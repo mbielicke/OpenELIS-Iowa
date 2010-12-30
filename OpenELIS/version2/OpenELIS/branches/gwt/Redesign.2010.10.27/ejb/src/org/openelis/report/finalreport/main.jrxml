@@ -2,10 +2,10 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="finalreport" language="groovy" pageWidth="612" pageHeight="791" columnWidth="576" leftMargin="18" rightMargin="18" topMargin="18" bottomMargin="18">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="96"/>
-	<parameter name="SAMPLE_ACCESSION_NUMBER" class="java.lang.Integer"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="ACCESSION_NUMBER" class="java.lang.Integer"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["/auto/home/akampoow/workspace/OpenELIS-EJB/src/org/openelis/report/finalreport/"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["org/openelis/report/finalreport/"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="ORGANIZATION_ID" class="java.lang.Integer"/>
 	<parameter name="REPORT_TYPE" class="java.lang.String"/>
@@ -21,31 +21,31 @@
 FROM
      sample s, outer (sample_organization so, dictionary d)
 WHERE
-     s.accession_number = $P{SAMPLE_ACCESSION_NUMBER} AND so.sample_id = s.id AND so.organization_id = $P{ORGANIZATION_ID}
-     AND so.type_id = d.id AND d.system_name = $P{SYSTEM_NAME}]]>
+     s.accession_number = $P{ACCESSION_NUMBER} AND so.sample_id = s.id AND so.organization_id = $P{ORGANIZATION_ID}
+     AND so.type_id = d.id ]]>
 	</queryString>
 	<field name="s_id" class="java.lang.Integer"/>
 	<field name="s_accession_number" class="java.lang.Integer"/>
 	<field name="s_revision" class="java.lang.Integer"/>
 	<field name="s_domain" class="java.lang.String"/>
 	<field name="so_id" class="java.lang.Integer"/>
-	<variable name="PAGE_COUNTER" class="org.openelis.report.util.PageCounter">
+	<variable name="PAGE_COUNTER" class="org.openelis.utils.PageCounter">
 		<variableExpression><![CDATA[$V{PAGE_COUNTER}]]></variableExpression>
-		<initialValueExpression><![CDATA[new org.openelis.report.util.PageCounter($P{REPORT_TYPE})]]></initialValueExpression>
+		<initialValueExpression><![CDATA[new org.openelis.utils.PageCounter($P{REPORT_TYPE})]]></initialValueExpression>
 	</variable>
 	<pageHeader>
 		<band height="132" splitType="Stretch">
 			<staticText>
-				<reportElement x="275" y="120" width="105" height="12"/>
+				<reportElement x="275" y="120" width="109" height="12"/>
 				<textElement textAlignment="Right">
-					<font fontName="Times New Roman" size="10" isBold="true"/>
+					<font fontName="Times New Roman" size="10" isBold="true" pdfFontName="Times-Bold"/>
 				</textElement>
 				<text><![CDATA[Accession Number]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="399" y="120" width="49" height="12"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10"/>
+				<textElement textAlignment="Left">
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{s_accession_number}]]></textFieldExpression>
 			</textField>
@@ -53,8 +53,8 @@ WHERE
 				<reportElement x="524" y="120" width="26" height="12">
 					<printWhenExpression><![CDATA[$F{s_revision} > 0]]></printWhenExpression>
 				</reportElement>
-				<textElement>
-					<font fontName="Times New Roman"/>
+				<textElement textAlignment="Left">
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{s_revision}]]></textFieldExpression>
 			</textField>
@@ -62,8 +62,8 @@ WHERE
 				<reportElement x="473" y="120" width="51" height="12">
 					<printWhenExpression><![CDATA[$F{s_revision} > 0]]></printWhenExpression>
 				</reportElement>
-				<textElement>
-					<font fontName="Times New Roman" isBold="true"/>
+				<textElement textAlignment="Left">
+					<font fontName="Times New Roman" isBold="true" pdfFontName="Times-Bold"/>
 				</textElement>
 				<text><![CDATA[Revision]]></text>
 			</staticText>
@@ -78,8 +78,8 @@ WHERE
 			</rectangle>
 			<staticText>
 				<reportElement key="header-bottom" x="148" y="74" width="388" height="28" backcolor="#E7E4E4"/>
-				<textElement>
-					<font fontName="Times New Roman" size="22" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="CP1252" isPdfEmbedded="false"/>
+				<textElement textAlignment="Left">
+					<font fontName="Times New Roman" size="22" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Italic" isPdfEmbedded="false"/>
 				</textElement>
 				<text><![CDATA[The University of Iowa]]></text>
 			</staticText>
@@ -95,8 +95,8 @@ WHERE
 			</line>
 			<staticText>
 				<reportElement key="header-top" x="148" y="0" width="402" height="54"/>
-				<textElement>
-					<font fontName="Times New Roman" size="37" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				<textElement textAlignment="Left">
+					<font fontName="Times New Roman" size="37" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Italic" isPdfEmbedded="true"/>
 				</textElement>
 				<text><![CDATA[State Hygienic Laboratory]]></text>
 			</staticText>
@@ -108,11 +108,11 @@ WHERE
 				<reportElement x="0" y="0" width="550" height="12">
 					<printWhenExpression><![CDATA[$F{s_domain}.equals("E")]]></printWhenExpression>
 				</reportElement>
+				<subreportParameter name="ACCESSION_NUMBER">
+					<subreportParameterExpression><![CDATA[$F{s_accession_number}]]></subreportParameterExpression>
+				</subreportParameter>
 				<subreportParameter name="SAMPLE_ORGANIZATION_ID">
 					<subreportParameterExpression><![CDATA[$F{so_id}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="SAMPLE_ACCESSION_NUMBER">
-					<subreportParameterExpression><![CDATA[$F{s_accession_number}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleEnvironmental.jasper"]]></subreportExpression>
@@ -121,11 +121,11 @@ WHERE
 				<reportElement x="0" y="0" width="550" height="12">
 					<printWhenExpression><![CDATA[$F{s_domain}.equals("W")]]></printWhenExpression>
 				</reportElement>
+				<subreportParameter name="ACCESSION_NUMBER">
+					<subreportParameterExpression><![CDATA[$F{s_accession_number}]]></subreportParameterExpression>
+				</subreportParameter>
 				<subreportParameter name="SAMPLE_ORGANIZATION_ID">
 					<subreportParameterExpression><![CDATA[$F{so_id}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="SAMPLE_ACCESSION_NUMBER">
-					<subreportParameterExpression><![CDATA[$F{s_accession_number}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "samplePrivateWell.jasper"]]></subreportExpression>
@@ -135,7 +135,7 @@ WHERE
 			<staticText>
 				<reportElement positionType="Float" x="191" y="82" width="194" height="14"/>
 				<textElement textAlignment="Center">
-					<font fontName="Times New Roman" size="12" isBold="true"/>
+					<font fontName="Times New Roman" size="12" isBold="true" pdfFontName="Times-Bold"/>
 				</textElement>
 				<text><![CDATA[Results of Analyses]]></text>
 			</staticText>
@@ -178,7 +178,7 @@ WHERE
 				<reportElement positionType="Float" x="191" y="46" width="194" height="14"/>
 				<box bottomPadding="0"/>
 				<textElement textAlignment="Center">
-					<font fontName="Times New Roman" size="12" isBold="true"/>
+					<font fontName="Times New Roman" size="12" isBold="true" pdfFontName="Times-Bold"/>
 				</textElement>
 				<text><![CDATA[Pending Analyses]]></text>
 			</staticText>
@@ -209,14 +209,14 @@ WHERE
 			<textField evaluationTime="Report">
 				<reportElement x="307" y="4" width="27" height="12"/>
 				<textElement>
-					<font fontName="Times New Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="280" y="4" width="27" height="12"/>
 				<textElement textAlignment="Right">
-					<font fontName="Times New Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$V{PAGE_NUMBER} + " of "]]></textFieldExpression>
 			</textField>
@@ -226,77 +226,77 @@ WHERE
 			<staticText>
 				<reportElement x="2" y="25" width="114" height="10"/>
 				<textElement>
-					<font fontName="Times New Roman" size="8"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Michael D. Wichman, Ph.D.]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="120" y="25" width="133" height="10"/>
 				<textElement>
-					<font fontName="Times New Roman" size="8"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[State Hygienic Laboratory]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="1" y="55" width="115" height="10"/>
 				<textElement>
-					<font fontName="Times New Roman" size="8" isItalic="true"/>
+					<font fontName="Times New Roman" size="8" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[http://www.uhl.uiowa.edu]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="2" y="35" width="114" height="10"/>
 				<textElement>
-					<font fontName="Times New Roman" size="8"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Michael A. Pentella, Ph.D.]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="2" y="45" width="114" height="10"/>
 				<textElement>
-					<font fontName="Times New Roman" size="8"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Associate Directors]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="120" y="35" width="133" height="10"/>
 				<textElement>
-					<font fontName="Times New Roman" size="8"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[UI Research Park, Iowa City, IA  52242]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="120" y="45" width="133" height="10"/>
 				<textElement>
-					<font fontName="Times New Roman" size="8"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[319/335-4500   Fax:  319/335-4555]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="402" y="35" width="150" height="10"/>
 				<textElement>
-					<font fontName="Times New Roman" size="8"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[2220 S. Ankeny Blvd, Ankeny, IA  50023 ]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="402" y="25" width="150" height="10"/>
 				<textElement>
-					<font fontName="Times New Roman" size="8"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Iowa Laboratories Complex]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="402" y="45" width="150" height="10"/>
 				<textElement>
-					<font fontName="Times New Roman" size="8"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[515/725-1600   Fax:  515/725-1642]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="253" y="4" width="27" height="12"/>
 				<textElement textAlignment="Right">
-					<font fontName="Times New Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Page]]></text>
 			</staticText>
@@ -309,21 +309,21 @@ WHERE
 			<staticText>
 				<reportElement x="262" y="35" width="134" height="10"/>
 				<textElement>
-					<font fontName="Times New Roman" size="8"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[1838 Highway 86, Milford, IA 51351]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="262" y="45" width="134" height="10"/>
 				<textElement>
-					<font fontName="Times New Roman" size="8"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[712/337-3669  ext. 6 Fax: 712/337-0227]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="262" y="25" width="134" height="10"/>
 				<textElement>
-					<font fontName="Times New Roman" size="8"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Lakeside Laboratory]]></text>
 			</staticText>
