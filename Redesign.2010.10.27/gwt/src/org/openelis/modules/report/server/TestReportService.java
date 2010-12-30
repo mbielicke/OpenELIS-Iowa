@@ -23,36 +23,36 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.transferInventory.client;
+package org.openelis.modules.report.server;
 
+import java.util.ArrayList;
 
-public class TransferInventoryScreen {//extends OpenELISScreenForm<TransferInventoryForm,Query<TableDataRow<Integer>>> implements ClickListener, AutoCompleteCallInt {
-/*
-    private KeyListManager keyList = new KeyListManager();
+import org.openelis.gwt.common.ReportStatus;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.TestReportRemote;
+import org.openelis.report.Prompt;
+import org.openelis.util.SessionManager;
+
+public class TestReportService {    
     
-    public TransferInventoryScreen() {
-        super("org.openelis.modules.transferInventory.server.TransferInventoryService");
-        query = new Query<TableDataRow<Integer>>();
-        getScreen(new TransferInventoryForm());
+    public ArrayList<Prompt> getPrompts() throws Exception{
+        return remote().getPrompts();      
     }
     
-    public void onClick(Widget sender) {
-   
-    }
-   
-    public void afterDraw(boolean success) {
-        ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
-   
-        CommandChain chain = new CommandChain();
-        chain.addCommand(this);
-        chain.addCommand(keyList);
-        chain.addCommand(bpanel);
-        super.afterDraw(success);
-    }
-
-    public void callForMatches(AutoComplete widget, TableDataModel model, String text) {
-        // TODO Auto-generated method stub
+    public ReportStatus runReport(Query query) throws Exception { 
+        ReportStatus st;
         
+        st = remote().runReport(query.getFields());
+        if (st.getStatus() == ReportStatus.Status.SAVED)
+            SessionManager.getSession().setAttribute(st.getMessage(), st);
+
+        return st;
     }
-    */
+    
+    private TestReportRemote remote() {
+        return (TestReportRemote)EJBFactory.lookup("openelis/TestReportBean/remote");
+    } 
 }
+
+

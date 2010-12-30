@@ -26,47 +26,5 @@
 package org.openelis.modules.animalSampleLogin.server;
 
 
-public class AnimalSampleLoginService {//implements AppScreenFormServiceInt<AnimalSampleLoginForm, Query<TableDataRow<Integer>>>{
-/*
-    public AnimalSampleLoginForm abort(AnimalSampleLoginForm rpc) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public AnimalSampleLoginForm commitAdd(AnimalSampleLoginForm rpc) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public AnimalSampleLoginForm commitDelete(AnimalSampleLoginForm rpc) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> data) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public AnimalSampleLoginForm commitUpdate(AnimalSampleLoginForm rpc) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public AnimalSampleLoginForm fetch(AnimalSampleLoginForm rpc) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public AnimalSampleLoginForm fetchForUpdate(AnimalSampleLoginForm rpc) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    public AnimalSampleLoginForm getScreen(AnimalSampleLoginForm rpc) throws Exception{
-        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/animalSampleLogin.xsl");
-        
-        return rpc;
-    }
-    */
+public class AnimalSampleLoginService {
 }

@@ -93,7 +93,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
     protected AuxDataManager        manager;
 
     public AuxDataTab(ScreenDefInt def, Window window) {
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.auxiliary.server.AuxiliaryService");
+        service = new ScreenService("controller?service=org.openelis.modules.auxiliary.server.AuxiliaryService");
         setDefinition(def);
         setWindow(window);
 
@@ -407,8 +407,6 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                         validatorItem = getDataItemForRow(valueDO.getTypeId(), values);
                         adb = new AuxDataBundle(validatorItem, fieldDO);
                         row.setData(adb);
-                        
-                        auxValsTable.addRow(row);
 
                         if (defaultValue != null && state != State.QUERY) {
                             try {

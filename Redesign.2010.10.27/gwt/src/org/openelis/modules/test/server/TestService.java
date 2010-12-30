@@ -28,6 +28,7 @@ package org.openelis.modules.test.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.PanelVO;
+import org.openelis.domain.TestMethodSampleTypeVO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.TestAnalyteManager;
@@ -59,6 +60,10 @@ public class TestService {
 
     public ArrayList<PanelVO> fetchNameMethodSectionByName(String name) throws Exception {
         return remote().fetchNameMethodSectionByName(name + "%", 1000000);
+    }
+    
+    public ArrayList<TestMethodSampleTypeVO> fetchTestMethodSampleTypeList() throws Exception {
+        return remote().fetchTestMethodSampleTypeList();
     }
 
     public TestTypeOfSampleManager fetchSampleTypeByTestId(Integer testId) throws Exception {

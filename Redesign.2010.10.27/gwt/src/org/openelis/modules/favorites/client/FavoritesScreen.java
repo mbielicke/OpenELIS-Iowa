@@ -54,7 +54,7 @@ public class FavoritesScreen extends Screen {
     
 	public FavoritesScreen(ScreenDefInt def) throws Throwable {
 		this.def = def;
-		service = new ScreenService("OpenELISServlet?service=org.openelis.modules.favorites.server.FavoritesService");
+		service = new ScreenService("controller?service=org.openelis.modules.favorites.server.FavoritesService");
 		getFavorites();
 		showFavorites();
 	}

@@ -101,8 +101,8 @@ public class WorksheetCreationLookupScreen extends Screen
 
     public WorksheetCreationLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetCreationLookupDef.class));
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
-        testService = new ScreenService("OpenELISServlet?service=org.openelis.modules.test.server.TestService");
+        service = new ScreenService("controller?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
+        testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
         
         userPermission = OpenELIS.getSystemUserPermission().getModule("worksheet");
         if (userPermission == null)
@@ -358,7 +358,7 @@ public class WorksheetCreationLookupScreen extends Screen
         //
         dictList  = DictionaryCache.getListByCategorySystemName("analysis_status");
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
+//        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO resultDO : dictList)
             model.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
         statusId.setModel(model);

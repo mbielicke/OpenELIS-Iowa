@@ -47,6 +47,7 @@ import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.domain.WorksheetDO;
 import org.openelis.domain.WorksheetItemDO;
+import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
@@ -83,6 +84,7 @@ import org.openelis.manager.TestWorksheetManager;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
+import org.openelis.manager.WorksheetQcResultManager;
 import org.openelis.meta.WorksheetCreationMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.qc.client.QcLookupScreen;
@@ -98,7 +100,7 @@ public class WorksheetCreationScreen extends Screen {
                                                   qcDup, statusWorking, typeFixed,
                                                   typeRand, typeLastWell, typeLastRun,
                                                   typeLastBoth;
-    private ScreenService                         qcService;
+    private ScreenService                         qcService, worksheetService;
     private ModulePermission                      userPermission;
     private WorksheetManager                      manager;
 
@@ -126,8 +128,9 @@ public class WorksheetCreationScreen extends Screen {
     public WorksheetCreationScreen() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetCreationDef.class));
 
-        service   = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
-        qcService = new ScreenService("OpenELISServlet?service=org.openelis.modules.qc.server.QcService");
+        service          = new ScreenService("controller?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
+        qcService        = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
+        worksheetService = new ScreenService("controller?service=org.openelis.modules.worksheet.server.WorksheetService");
 
         userPermission = OpenELIS.getSystemUserPermission().getModule("worksheet");
         if (userPermission == null)
@@ -187,7 +190,8 @@ public class WorksheetCreationScreen extends Screen {
         setState(State.DEFAULT);
         openLookupWindow();
         initializeDropdowns();
-
+        clearQCTemplate();
+        
         DataChangeEvent.fire(this);
     }
 
@@ -542,6 +546,8 @@ public class WorksheetCreationScreen extends Screen {
         WorksheetAnalysisManager waManager = null;
         WorksheetItemDO          wiDO;
         WorksheetItemManager     wiManager = null;
+        WorksheetQcResultManager wqrManager,newWqrManager;
+        WorksheetQcResultViewDO  wqrVDO, newWqrVDO;
         
         setFocus(null);
         
@@ -597,6 +603,24 @@ public class WorksheetCreationScreen extends Screen {
             try {
                 waManager = wiManager.getWorksheetAnalysisAt(i);
                 waManager.addWorksheetAnalysis(waDO);
+                //
+                // If this analysis is a QC from another worksheet, copy the result
+                // records from the manager in the 3rd slot of the ArrayList
+                //
+                if (row.getData() instanceof ArrayList && ((ArrayList<Object>)row.getData()).size() == 3) {
+                    wqrManager = (WorksheetQcResultManager) ((ArrayList<Object>)row.getData()).get(2);
+                    newWqrManager = waManager.getWorksheetQcResultAt(waManager.count() - 1);
+                    for (int j = 0; j < wqrManager.count(); j++) {
+                        wqrVDO = wqrManager.getWorksheetQcResultAt(j);
+                        newWqrVDO = new WorksheetQcResultViewDO();
+                        newWqrVDO.setSortOrder(wqrVDO.getSortOrder());
+                        newWqrVDO.setQcAnalyteId(wqrVDO.getQcAnalyteId());
+                        newWqrVDO.setAnalyteName(wqrVDO.getAnalyteName());
+                        newWqrVDO.setTypeId(wqrVDO.getTypeId());
+                        newWqrVDO.setValue(wqrVDO.getValue());
+                        newWqrManager.addWorksheetQcResult(newWqrVDO);
+                    }
+                }
             } catch (Exception anyE) {
                 com.google.gwt.user.client.Window.alert("save(): " + anyE.getMessage());
                 window.clearStatus();
@@ -874,10 +898,12 @@ public class WorksheetCreationScreen extends Screen {
         //
         // If last batch contains only QC items, remove it
         //
-        for (i--; i > -1 && items.get(i).getData() instanceof ArrayList; i--) {
-            if (i % testWorksheetDO.getTotalCapacity() == 0) {
-                while (i < items.size())
-                    items.remove(i);
+        if (analysisItems.size() > 0) {
+            for (i--; i > -1 && items.get(i).getData() instanceof ArrayList; i--) {
+                if (i % testWorksheetDO.getTotalCapacity() == 0) {
+                    while (i < items.size())
+                        items.remove(i);
+                }
             }
         }
 
@@ -978,6 +1004,7 @@ public class WorksheetCreationScreen extends Screen {
                                                 Item<Integer>           qcRow;
                                                 TestWorksheetItemDO     twiDO;
                                                 WorksheetAnalysisDO     waDO;
+                                                WorksheetQcResultManager wqrManager;
     
                                                 if (event.getAction() == WorksheetQcAnalysisSelectionScreen.Action.OK) {
                                                     list = (ArrayList<Item<Integer>>)event.getData();
@@ -992,6 +1019,8 @@ public class WorksheetCreationScreen extends Screen {
                                                             waDO = (WorksheetAnalysisDO)list.get(i).getData();
                                                             try {
                                                                 qcManager = qcService.call("fetchById", waDO.getQcId());
+                                                                wqrManager = worksheetService.call("fetchWorksheeetQcResultByWorksheetAnalysisId", waDO.getId());
+                                                                
                                                                 twiDO = new TestWorksheetItemDO();
                                                                 twiDO.setPosition(r+1);
                                                                 twiDO.setTypeId(typeFixed);
@@ -1004,6 +1033,7 @@ public class WorksheetCreationScreen extends Screen {
                                                                 dataList = new ArrayList<Object>();
                                                                 dataList.add(twiDO);
                                                                 dataList.add((QcDO)qcManager.getQc());
+                                                                dataList.add(wqrManager);
                                                                 qcRow.setData(dataList);
                                                                 
                                                                 testWorksheetItems.add(qcRow);
@@ -1016,6 +1046,10 @@ public class WorksheetCreationScreen extends Screen {
                                                         
                                                         buildQCWorksheet();
                                                         mergeAnalysesAndQCs();
+
+                                                        isSaved = false;
+                                                        saveButton.setEnabled(true);
+                                                        worksheetItemTable.setEnabled(true);
                                                     }
                                                 }
                                             }
@@ -1117,6 +1151,10 @@ public class WorksheetCreationScreen extends Screen {
                                     buildQCWorksheet();
                                 
                                 mergeAnalysesAndQCs();
+
+                                isSaved = false;
+                                saveButton.setEnabled(true);
+                                worksheetItemTable.setEnabled(true);
                             }
                         }
                     }

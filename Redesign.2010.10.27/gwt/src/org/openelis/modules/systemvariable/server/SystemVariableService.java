@@ -42,6 +42,10 @@ public class SystemVariableService {
         return remote().fetchById(id);
     }
 
+    public ArrayList<SystemVariableDO> fetchByName(String name) throws Exception {
+        return remote().fetchByName(name + "%", 10);
+    }
+
     public ArrayList<IdNameVO> query(Query query) throws Exception {
         return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
     }

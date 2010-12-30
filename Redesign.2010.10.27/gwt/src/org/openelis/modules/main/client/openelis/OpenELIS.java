@@ -74,6 +74,8 @@ import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
 import org.openelis.modules.completeRelease.client.CompleteReleaseScreen;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
+import org.openelis.modules.report.client.TestReportScreen;
+import org.openelis.modules.report.client.FinalReportScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -94,7 +96,7 @@ public class OpenELIS extends Screen {
     public OpenELIS() throws Exception {
         OpenELISRPC rpc;
 
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.main.server.OpenELISScreenService");
+        service = new ScreenService("controller?service=org.openelis.modules.main.server.OpenELISScreenService");
         rpc = service.call("initialData");
         consts = rpc.appConstants;
         systemUserPermission = rpc.systemUserPermission;
@@ -1055,10 +1057,44 @@ public class OpenELIS extends Screen {
                 });
             }
         });
+
+        addCommand("testReport", new Command() {
+            public void execute() {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new TestReportScreen());
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
         
         addCommand("finalReport", new Command() {
             public void execute() {
-                // browser.addScreen(new )
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new FinalReportScreen());
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
             }
         });
         addCommand("sampleDataExport", new Command() {

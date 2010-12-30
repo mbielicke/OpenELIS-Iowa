@@ -51,7 +51,7 @@ public class SectionCache {
     private static SectionCache                            instance                  = new SectionCache();    
 
     protected SectionCache() {
-        service = new ScreenService("OpenELISServlet?service=" + SECTION_CACHE_SERVICE_URL);
+        service = new ScreenService("controller?service=" + SECTION_CACHE_SERVICE_URL);
 
         nameList = new HashMap<String, ArrayList<SectionViewDO>>();
         OpenELIS.getCacheList().put("SectionsCache-name", nameList);

@@ -34,7 +34,7 @@ public class AuxDataManagerProxy {
     protected ScreenService service;
     
     public AuxDataManagerProxy(){
-        service = new ScreenService("OpenELISServlet?service="+AUXILIARY_SERVICE_URL);
+        service = new ScreenService("controller?service="+AUXILIARY_SERVICE_URL);
     }
     
     public AuxDataManager fetchById(Integer referenceId, Integer referenceTableId) throws Exception {

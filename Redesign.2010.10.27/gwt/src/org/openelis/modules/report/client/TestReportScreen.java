@@ -23,33 +23,17 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.modules.report.client;
 
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.screen.ScreenDef;
 import org.openelis.gwt.services.ScreenService;
 
-public class WorksheetQcResultManagerProxy {
-    protected static final String WORKSHEET_MANAGER_SERVICE_URL = "org.openelis.modules.worksheet.server.WorksheetService";
-    protected ScreenService service;
-    
-    public WorksheetQcResultManagerProxy(){
-        service = new ScreenService("controller?service="+WORKSHEET_MANAGER_SERVICE_URL);
+public class TestReportScreen extends ReportScreen {
+
+    public TestReportScreen() throws Exception { 
+        drawScreen(new ScreenDef());        
+        setName(consts.get("testReport"));
+        service = new ScreenService("controller?service=org.openelis.modules.report.server.TestReportService");
     }
 
-    public WorksheetQcResultManager fetchByWorksheetAnalysisId(Integer worksheetAnalysisId) throws Exception {
-        return service.call("fetchWorksheeetQcResultByWorksheetAnalysisId", worksheetAnalysisId);
-    }
-
-    public WorksheetQcResultManager add(WorksheetQcResultManager manager) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
-
-    public WorksheetQcResultManager update(WorksheetQcResultManager manager) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
-    
-    public void validate(WorksheetQcResultManager manager, ValidationErrorsList errorList) {
-    }
 }

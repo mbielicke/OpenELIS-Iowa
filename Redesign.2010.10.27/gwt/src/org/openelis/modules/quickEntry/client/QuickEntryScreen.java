@@ -113,7 +113,7 @@ public class QuickEntryScreen extends Screen {
 
     public QuickEntryScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QuickEntryDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.quickEntry.server.QuickEntryService");
+        service = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
         calendarService = new ScreenService("controller?service=org.openelis.gwt.server.CalendarService");
 
         userPermission = OpenELIS.getSystemUserPermission().getModule("quickentry");
@@ -192,9 +192,6 @@ public class QuickEntryScreen extends Screen {
 
         accessionNumber = (TextBox<Integer>)def.getWidget("accessionNumber");
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                accessionNumber.setValue(null);
-            }
             public void onStateChange(StateChangeEvent<State> event) {
                 accessionNumber.setEnabled(false);
             }
@@ -202,10 +199,6 @@ public class QuickEntryScreen extends Screen {
 
         tubeNumber = (TextBox)def.getWidget("tubeNumber");
         addScreenHandler(tubeNumber, new ScreenEventHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                tubeNumber.setValue(null);
-            }
-            
             public void onStateChange(StateChangeEvent<State> event) {
                 tubeNumber.setEnabled(false);
             }
@@ -213,10 +206,6 @@ public class QuickEntryScreen extends Screen {
 
         receivedDate = (Calendar)def.getWidget("receivedDate");
         addScreenHandler(receivedDate, new ScreenEventHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
-                receivedDate.setValue(null);
-            }
-            
             public void onValueChange(ValueChangeEvent<Datetime> event) {
                 if(todaysDate.after(event.getValue())){
                         LocalizedException ex = new LocalizedException("recievedDateNotTodayExceptionBody", event.getValue().toString());
@@ -250,9 +239,6 @@ public class QuickEntryScreen extends Screen {
 
         testMethodSampleType = (Dropdown)def.getWidget("testMethodSampleType");
         addScreenHandler(testMethodSampleType, new ScreenEventHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                testMethodSampleType.setValue(null);
-            }
             public void onStateChange(StateChangeEvent<State> event) {
                 testMethodSampleType.setEnabled(EnumSet.of(State.ADD, State.DEFAULT).contains(event.getState()));
             }
@@ -405,29 +391,28 @@ public class QuickEntryScreen extends Screen {
         Integer accessionNum;
         SampleDO sampleDO;
         SampleManager sampleMan;
-        Datetime date = null;
-        final Datetime calDate;
-        boolean valid = true; 
+        Datetime date;
+        boolean validDate;
 
         val = (String)entry.getValue();
         window.clearStatus();
 
         // date recieved
+        validDate = true;
         try {
         	date = recDate.getValue(val);
         }catch(Exception e) {
-        	valid = false;
-        	LocalizedException le = new LocalizedException("invalidEntryException", val);
-            window.setError(le.getMessage());
+        	validDate = false;
+        	date = null;
         }
-        if (valid) {
+        if (validDate) {
                 if(todaysDate.after(date)){
                     LocalizedException ex = new LocalizedException("recievedDateNotTodayExceptionBody", date.toString());
                     receivedDateNotTodayConfirm = new Confirm(Confirm.Type.QUESTION,
                                                         consts.get("recievedDateNotTodayExceptionTitle"),
                                                         ex.getMessage(),
                                                         "No", "Yes");
-                    calDate = date;
+                    final Datetime cDate = date;
                     receivedDateNotTodayConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
                         public void onSelection(SelectionEvent<Integer> event) {
                             switch (event.getSelectedItem().intValue()) {
@@ -435,7 +420,7 @@ public class QuickEntryScreen extends Screen {
                                     //do nothing
                                     break;
                                 case 1:
-                                    receivedDate.setValue(calDate);
+                                    receivedDate.setValue(cDate);
                                     break;
                             }
                         }
@@ -445,9 +430,9 @@ public class QuickEntryScreen extends Screen {
                 
                 }else
                     receivedDate.setValue(date);
-                 
+
             // test/panel
-        } else if (val.matches("[TP][0-9]*\\|[0-9]*")) {
+        } else if (val.matches("[TP][0-9]*\\-[0-9]*")) {
             testMethodSampleType.setValue(val);
 
             // tube #

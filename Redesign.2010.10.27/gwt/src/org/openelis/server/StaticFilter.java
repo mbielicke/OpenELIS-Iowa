@@ -45,7 +45,6 @@ import org.apache.log4j.Logger;
 import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.modules.main.server.OpenELISScreenService;
 import org.openelis.persistence.JMSMessageConsumer;
 import org.openelis.remote.SystemUserPermissionProxyRemote;
 import org.openelis.util.SessionManager;
@@ -63,12 +62,13 @@ public class StaticFilter implements Filter {
     private static final long    serialVersionUID = 1L;
     private static Logger        log              = Logger.getLogger(StaticFilter.class.getName());
     private static Logger        authLog          = Logger.getLogger("org.openelis.auth");
+    private static String        AppRoot;
 
     public void init(FilterConfig config) throws ServletException {
         log.debug("Initializing the Application.");
 
+        AppRoot = config.getInitParameter("AppRoot");
         ServiceUtils.props = "org.openelis.constants.OpenELISConstants";
-        OpenELISScreenService.APP_ROOT = config.getInitParameter("AppRoot");
         JMSMessageConsumer.startListener("topic/openelisTopic");
         
         log.debug("getting out");
@@ -146,8 +146,7 @@ public class StaticFilter implements Filter {
             ((HttpServletResponse)response).setDateHeader("Expires", 0);
             ((HttpServletResponse)response).setContentType("text/html");
             ((HttpServletResponse)response).setCharacterEncoding("UTF-8");
-            response.getWriter().write(ServiceUtils.getXML(OpenELISScreenService.APP_ROOT + "login.xsl",
-                                                           doc));
+            response.getWriter().write(ServiceUtils.getXML(AppRoot + "login.xsl", doc));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -155,6 +154,7 @@ public class StaticFilter implements Filter {
     
 
     public void destroy() {
+        System.out.println("in static filter distroy");
         JMSMessageConsumer.stopListener();
     }
 

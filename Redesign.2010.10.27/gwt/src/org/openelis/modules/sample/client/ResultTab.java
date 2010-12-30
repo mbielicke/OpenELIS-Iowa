@@ -536,9 +536,8 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                         row.setCell(c + 2,val);
                     }
                 } catch (ParseException e) {
-                	// NEED TO FIND A WAY TO DO THIS NOW
-                	//displayManager.clearExceptions(row,c+2);
-                	//displayManager.addException(row,c+2,e);
+                    //row.cells.get(c + 2).clearExceptions();
+                    //row.cells.get(c + 2).addException(e);
                     resultDO.setTypeId(null);
                     resultDO.setTestResultId(null);
 
@@ -710,10 +709,18 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
     private boolean onlyRowUnderHeading(int index) {
         boolean prevHeader, postHeader;
-
-        prevHeader = (Boolean)testResultsTable.getRowAt(index - 1).getData();
-        postHeader = (Boolean)testResultsTable.getRowAt(index + 1).getData();
-
+        int size;
+        
+        size = testResultsTable.getRowCount();
+        if (index == 0)
+            prevHeader = false;
+        else
+            prevHeader = (Boolean)testResultsTable.getRowAt(index - 1).getData();
+        if (index == size -1)
+            postHeader = true;
+        else
+            postHeader = (Boolean)testResultsTable.getRowAt(index + 1).getData();
+                    
         return prevHeader && postHeader;
     }
 

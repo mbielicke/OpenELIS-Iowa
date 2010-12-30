@@ -86,6 +86,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.scriptlet.Scriptlet"/>
     <inherits name="org.openelis.ELISCommon"/>
     <inherits name="org.openelis.modules.sampleTracking.SampleTracking"/>
+    <inherits name="org.openelis.modules.report.Report"/>
     <source path="manager"/>
     <source path="cache"/>
     <source path="common"/>
@@ -101,7 +102,9 @@ UIRF Software License are applicable instead of those above.
     
     <define-property name="props" values="org_openelis_constants_OpenELISConstants"/>
     <set-property name="props" value="org_openelis_constants_OpenELISConstants"/>
-<!-- 
+ 
+ <!-- 
     <set-property name="user.agent" value="gecko1_8" />
- -->
+   -->
+
 </module>

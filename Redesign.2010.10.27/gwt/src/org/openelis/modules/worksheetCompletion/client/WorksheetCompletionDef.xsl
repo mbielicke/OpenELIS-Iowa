@@ -91,9 +91,15 @@ UIRF Software License are applicable instead of those above.
               </widget>
             </row>
           </TablePanel>
+          <HorizontalPanel>
+            <button key="editWorksheetButton" style="Button" icon="EditMultipleButtonImage" text="{resource:getString($constants,'editWorksheet')}"/>
+            <button key="loadFromEditButton" style="Button" icon="LoadButtonImage" text="{resource:getString($constants,'loadFromEditFile')}"/>
+            <button key="loadFilePopupButton" style="Button" icon="LoadButtonImage" text="{resource:getString($constants,'loadFromInstrumentFile')}"/>
+          </HorizontalPanel>
 <!-- TAB PANEL -->
           <TabPanel key="tabPanel" width="850" height="285">
 <!-- TAB 1 -->
+<!--
             <tab key="worksheetItemTab" tab="worksheetItemTable,worksheetItemTable" text="{resource:getString($constants,'worksheet')}">
               <VerticalPanel padding="0" spacing="0">
                 <table key="worksheetItemTable" width="832" rows="10" vscroll="ALWAYS" hscroll="ALWAYS" tab="{meta:getId()},{meta:getId()}">
@@ -224,6 +230,7 @@ UIRF Software License are applicable instead of those above.
                 </widget>
               </VerticalPanel>
             </tab>
+-->
 <!-- TAB 2 -->
             <tab key="notesTab" tab="standardNoteButton,standardNoteButton" text="{resource:getString($constants,'note')}">
               <xsl:call-template name="InternalNoteTab">

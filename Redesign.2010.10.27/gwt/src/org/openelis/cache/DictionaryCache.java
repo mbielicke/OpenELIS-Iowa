@@ -53,7 +53,7 @@ public class DictionaryCache {
     private static DictionaryCache                     instance                     = new DictionaryCache();
 
     protected DictionaryCache() {
-        service = new ScreenService("OpenELISServlet?service=" + DICTIONARY_CACHE_SERVICE_URL);
+        service = new ScreenService("controller?service=" + DICTIONARY_CACHE_SERVICE_URL);
 
         systemNameList = new HashMap<String, DictionaryDO>();
         OpenELIS.getCacheList().put("DictSystemNameCache-systemName", systemNameList);

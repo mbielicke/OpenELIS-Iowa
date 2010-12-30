@@ -33,7 +33,7 @@ public class SampleProjectManagerProxy {
     protected ScreenService       service;
 
     public SampleProjectManagerProxy() {
-        service = new ScreenService("OpenELISServlet?service=" + SAMPLE_SERVICE_URL);
+        service = new ScreenService("controller?service=" + SAMPLE_SERVICE_URL);
     }
 
     public SampleProjectManager fetchBySampleId(Integer sampleId) throws Exception {

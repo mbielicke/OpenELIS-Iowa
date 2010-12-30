@@ -717,18 +717,15 @@ public class InternalOrderScreen extends Screen {
             data.setRequestedBy(OpenELIS.getSystemUserPermission().getLoginName());
             data.setType(OrderManager.TYPE_INTERNAL);           
             
-            itemTab.setManager(manager);            
-            //fillTab.setManager(manager);
+            itemTab.setManager(manager);                        
             shipNoteTab.setManager(manager);
             
             manager.getItems();
-            //manager.getFills();
             manager.getShippingNotes();            
             
             clearKeys();
             
             itemTab.draw();
-            //fillTab.draw();
             shipNoteTab.draw();
             
             setState(State.ADD);

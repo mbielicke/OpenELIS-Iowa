@@ -55,7 +55,7 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
     protected ScreenService       auxDataService, projectService;
 
     public SamplePrivateWellImportOrder() {
-        auxDataService = new ScreenService("OpenELISServlet?service=" + AUX_DATA_SERVICE_URL);
+        auxDataService = new ScreenService("controller?service=" + AUX_DATA_SERVICE_URL);
         projectService = new ScreenService("controller?service=" + PROJECT_SERVICE_URL);
     }
 

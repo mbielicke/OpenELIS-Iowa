@@ -215,7 +215,12 @@ UIRF Software License are applicable instead of those above.
                 <code>}</code>
             </menu>
             <menu display="{resource:getString($constants,'report')}">
+            	<code>if(OpenELIS.getSystemUserPermission().hasModule("test","SELECT")){</code>  
+                <menuItem key="testReport" description="{resource:getString($constants,'testReportDescription')}" enabled="true" icon="testReportIcon" display="{resource:getString($constants,'testReport')}" />
+                <code>}</code>
+                <code>if(OpenELIS.getSystemUserPermission().hasModule("reportfinal","SELECT")){</code>
                 <menuItem key="finalReport" description="{resource:getString($constants,'finalReportDescription')}" enabled="false" icon="finalReportIcon" display="{resource:getString($constants,'finalReport')}" />
+                <code>}</code>
                 <menuItem key="sampleDataExport" description="{resource:getString($constants,'sampleDataExportDescription')}" enabled="false" icon="sampleDataExportIcon" display="{resource:getString($constants,'sampleDataExport')}" />
                 <menuItem key="loginLabel" description="{resource:getString($constants,'loginLabelDescription')}" enabled="false" icon="loginLabelIcon" display="{resource:getString($constants,'loginLabel')}" />
                 <separator/>
