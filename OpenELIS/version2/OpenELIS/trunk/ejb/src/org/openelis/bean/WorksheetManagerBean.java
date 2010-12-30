@@ -74,6 +74,10 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
         return WorksheetManager.fetchWithNotes(id);
     }
 
+    public WorksheetManager fetchWithItemsAndNotes(Integer id) throws Exception {
+        return WorksheetManager.fetchWithItemsAndNotes(id);
+    }
+
     public WorksheetManager add(WorksheetManager man) throws Exception {
         UserTransaction ut;
         

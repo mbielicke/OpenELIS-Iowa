@@ -35,6 +35,7 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleDO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
@@ -42,78 +43,60 @@ import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.AnalysisLocal;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SampleManagerLocal;
+import org.openelis.local.SectionLocal;
 import org.openelis.local.WorksheetAnalysisLocal;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetAnalysisManager.WorksheetAnalysisListItem;
 
 public class WorksheetAnalysisManagerProxy {
     
+    protected static Integer anLoggedInId, anInitiatedId, anCompletedId;
+
+    public WorksheetAnalysisManagerProxy() {
+        DictionaryLocal l;
+
+        if (anLoggedInId == null) {
+            l = dictionaryLocal();
+
+            try {
+                anLoggedInId = l.fetchBySystemName("analysis_logged_in").getId();
+                anInitiatedId = l.fetchBySystemName("analysis_initiated").getId();
+                anCompletedId = l.fetchBySystemName("analysis_completed").getId();
+            } catch (Exception e) {
+                e.printStackTrace();
+                anLoggedInId = null;
+            }
+        }
+    }
+    
     public WorksheetAnalysisManager fetchByWorksheetItemId(Integer id) throws Exception {
-//        boolean                        doBreak;
-        int                            i;//, j, k;
+        int                            i;
         ArrayList<WorksheetAnalysisDO> analyses;
-//        HashMap<Integer,SampleManager> sManagers;
-//        AnalysisManager                aManager;
-//        AnalysisResultManager          arManager;
-//        AnalysisViewDO                 aVDO;
-//        SampleDO                       sample;
-//        SampleItemManager              siManager;
-//        SampleManager                  sManager;
+        AnalysisViewDO                 aVDO;
+        HashMap<Integer,SectionViewDO> sections;
+        SectionViewDO                  sectionVDO;
         WorksheetAnalysisDO            waDO;
         WorksheetAnalysisManager       waManager;
-//        WorksheetResultManager         wrManager;
         
         analyses = local().fetchByWorksheetItemId(id);
+        sections = new HashMap<Integer,SectionViewDO>();
         waManager = WorksheetAnalysisManager.getInstance();
         waManager.setWorksheetItemId(id);
         for (i = 0; i < analyses.size(); i++) {
             waDO = analyses.get(i);
             waManager.addWorksheetAnalysis(waDO);
-/*
             if (waDO.getAnalysisId() != null) {
-                doBreak = false;
-                //
-                // Keep a hash map of sample managers so we only allocate one per
-                // sample to avoid update collisions for multiple analyses on the
-                // same sample
-                //
-                sManagers = waManager.getSampleManagers();
-                sManager = sManagers.get(Integer.valueOf(waDO.getAccessionNumber()));
-                if (sManager == null) {
-                    sample = sampleLocal().fetchByAccessionNumber(Integer.valueOf(waDO.getAccessionNumber()));
-                    sManager = sampleManagerLocal().fetchForUpdate(sample.getId());
-                    sManagers.put(sample.getAccessionNumber(), sManager);
-                }
-                siManager = sManager.getSampleItems();
-                for (j = 0; j < siManager.count(); j++) {
-                    aManager = siManager.getAnalysisAt(j);
-                    for (k = 0; k < aManager.count(); k++) {
-                        aVDO = aManager.getAnalysisAt(k);
-                        if (waDO.getAnalysisId().equals(aVDO.getId())) {
-                            arManager = aManager.getAnalysisResultAt(k);
-                            if (arManager.rowCount() <= 0) {
-                                try {
-                                    arManager = AnalysisResultManager.fetchForUpdateWithTestId(aVDO.getTestId(), aVDO.getUnitOfMeasureId());
-                                    aManager.setAnalysisResultAt(arManager, k);
-                                } catch (NotFoundException nfE) {
-                                    // ignore result not found error and leave the
-                                    // empty AnalysisResultManager attached to the
-                                    // AnalysisManger
-                                }
-                            }
-                            synchronizeWorksheetResults(aVDO, arManager, waManager, i);
-                            doBreak = true;
-                            break;
-                        }
-                    }
-                    if (doBreak)
-                        break;
-                }
+                aVDO = analysisLocal().fetchById(waDO.getAnalysisId());
+                sectionVDO = sectionLocal().fetchById(aVDO.getSectionId());
+                if (!sections.containsKey(sectionVDO.getId()))
+                    sections.put(sectionVDO.getId(), sectionVDO);
             }
-*/
         }
+        waManager.setAnalysisSections(sections);
         
         return waManager;
     }
@@ -343,7 +326,10 @@ public class WorksheetAnalysisManagerProxy {
                         aVDO = aManager.getAnalysisAt(l);
                         if (analysis.getAnalysisId().equals(aVDO.getId())) {
                             try {
-                                aManager.completeAnalysisAt(l);
+                                if (anLoggedInId.equals(aVDO.getId()) ||
+                                    anInitiatedId.equals(aVDO.getId()) ||            
+                                    anCompletedId.equals(aVDO.getId()))
+                                    aManager.completeAnalysisAt(l);
                             } catch (Exception ignE) {
                                 // ignoring errors cause by trying to complete
                                 // the analysis because they should not prevent
@@ -426,6 +412,40 @@ public class WorksheetAnalysisManagerProxy {
         } catch(Exception e) {
              System.out.println(e.getMessage());
              return null;
+        }
+    }
+
+    private AnalysisLocal analysisLocal() {
+        InitialContext ctx;
+        
+        try {
+            ctx = new InitialContext();
+            return (AnalysisLocal)ctx.lookup("openelis/AnalysisBean/local");
+        } catch(Exception e) {
+             System.out.println(e.getMessage());
+             return null;
+        }
+    }
+
+    private SectionLocal sectionLocal() {
+        InitialContext ctx;
+        
+        try {
+            ctx = new InitialContext();
+            return (SectionLocal)ctx.lookup("openelis/SectionBean/local");
+        } catch(Exception e) {
+             System.out.println(e.getMessage());
+             return null;
+        }
+    }
+
+    private DictionaryLocal dictionaryLocal() {
+        try {
+            InitialContext ctx = new InitialContext();
+            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
         }
     }
 

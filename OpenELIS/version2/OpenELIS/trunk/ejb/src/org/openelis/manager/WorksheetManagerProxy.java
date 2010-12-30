@@ -69,6 +69,16 @@ public class WorksheetManagerProxy {
         return manager;
     }
 
+    public WorksheetManager fetchWithItemsAndNotes(Integer id) throws Exception {
+        WorksheetManager manager;
+
+        manager = fetchById(id);
+        manager.getItems();
+        manager.getNotes();
+
+        return manager;
+    }
+
     public WorksheetManager add(WorksheetManager manager) throws Exception {
         Integer                 id;
         Iterator<SampleManager> iter;

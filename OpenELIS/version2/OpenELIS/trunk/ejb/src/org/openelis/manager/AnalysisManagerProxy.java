@@ -325,9 +325,16 @@ public class AnalysisManagerProxy {
         if (analysisDO.getId() == null) {
             analysisDO.setSampleItemId(man.getSampleItemId());
             analysisLocal().add(analysisDO);
-        } else
+        } else {
+            //
+            // if the analysis was moved to a different sample item, we need to
+            // update the sample_item_id
+            //
+            if (!man.getSampleItemId().equals(analysisDO.getSampleItemId()))
+                analysisDO.setSampleItemId(man.getSampleItemId());
             analysisLocal().update(analysisDO);
-
+        }
+        
         item = man.getItemAt(i);
 
         if (item.analysisUsers != null) {

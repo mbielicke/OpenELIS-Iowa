@@ -64,6 +64,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.domain.WorksheetAnalysisDO;
@@ -74,12 +75,14 @@ import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.SectionPermission;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalyteLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.QcAnalyteLocal;
 import org.openelis.local.SampleManagerLocal;
+import org.openelis.local.SectionLocal;
 import org.openelis.local.SystemUserPermissionProxyLocal;
 import org.openelis.local.SystemVariableLocal;
 import org.openelis.manager.AnalysisManager;
@@ -96,6 +99,7 @@ import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetQcResultManager;
 import org.openelis.manager.WorksheetResultManager;
 import org.openelis.remote.WorksheetCompletionRemote;
+import org.openelis.utils.PermissionInterceptor;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -105,7 +109,36 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
     private HashMap<String,CellStyle>    styles;
 //    private HashMap<String,FormatColumn> columnMasterMap;
 
+    protected static Integer anLoggedInId, anInitiatedId, anCompletedId, anReleasedId,
+                             anInPrepId, anOnHoldId, anRequeueId, anCancelledId,
+                             anErrorLoggedInId, anErrorInitiatedId, anErrorInPrepId,
+                             anErrorCompletedId, sampleReleasedId;
+
     public WorksheetCompletionBean() {
+        DictionaryLocal l;
+
+        if (anLoggedInId == null) {
+            l = dictLocal();
+
+            try {
+                anLoggedInId = l.fetchBySystemName("analysis_logged_in").getId();
+                anInitiatedId = l.fetchBySystemName("analysis_initiated").getId();
+                anCompletedId = l.fetchBySystemName("analysis_completed").getId();
+                anReleasedId = l.fetchBySystemName("analysis_released").getId();
+                anInPrepId = l.fetchBySystemName("analysis_inprep").getId();
+                anOnHoldId = l.fetchBySystemName("analysis_on_hold").getId();
+                anRequeueId = l.fetchBySystemName("analysis_requeue").getId();
+                anCancelledId = l.fetchBySystemName("analysis_cancelled").getId();
+                anErrorLoggedInId = l.fetchBySystemName("analysis_error_logged_in").getId();
+                anErrorInitiatedId = l.fetchBySystemName("analysis_error_initiated").getId();
+                anErrorInPrepId = l.fetchBySystemName("analysis_error_inprep").getId();
+                anErrorCompletedId = l.fetchBySystemName("analysis_error_completed").getId();
+                sampleReleasedId = l.fetchBySystemName("sample_released").getId();
+            } catch (Exception e) {
+                e.printStackTrace();
+                anLoggedInId = null;
+            }
+        }
 //        createColumnMasterMap();
     }
 
@@ -413,18 +446,16 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
     }
 
     public WorksheetManager loadFromEdit(WorksheetManager manager) throws Exception {
-        boolean                  keepLock;
-        int                      a, i, j, k, c, r, s, rowIndex;
+        boolean                  anaModified, newSampleLock, statusLocked, permLocked;
+        int                      a, i, c, r, s, rowIndex;
         Object                   value;
         Integer                  testResultId;
         String                   userToken;
         ArrayList<DictionaryDO>  statusList;
-//        ArrayList<FormatColumn>  columnList;
         ArrayList<SystemUserVO>  userList;
         HashMap<Integer,String>  statusMap;
         File                     file;
         FileInputStream          in;
-//        FormatColumn             formatColumn;
         StringTokenizer          tokenizer;
         ValidationErrorsList     errorList;
         Cell                     cell;
@@ -439,6 +470,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         SampleDataBundle         bundle, newBundle;
         SampleItemManager        siManager;
         SampleManager            sManager;
+        SectionPermission        perm;
+        SectionViewDO            sectionVDO;
         TestResultDO             trDO;
         WorksheetAnalysisDO      waDO;
         WorksheetAnalysisManager waManager;
@@ -452,11 +485,10 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         errorList = new ValidationErrorsList();
         file = new File(getWorksheetOutputFileName(manager.getWorksheet().getId(),
                                                    manager.getWorksheet().getSystemUserId()));
-        in   = new FileInputStream(file);
-        wb   = new HSSFWorkbook(in);
-//        columnList = getColumnListForFormat(formatVDO.getSystemName());
+        in         = new FileInputStream(file);
+        wb         = new HSSFWorkbook(in);
         statusList = getStatuses();
-        statusMap = getStatusMap();
+        statusMap  = getStatusMap();
 
         r = 0;
         rowIndex = 1;
@@ -465,47 +497,65 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
             wiDO = wiManager.getWorksheetItemAt(i);
             waManager = wiManager.getWorksheetAnalysisAt(i);
             for (a = 0; a < waManager.count(); a++) {
+                //
+                // increment rowIndex if there were no result records for the
+                // previous analysis
+                if (r == 0 && a != 0)
+                    rowIndex++;
+
                 waDO = waManager.getWorksheetAnalysisAt(a);
                 if (waDO.getAnalysisId() != null) {
-                    keepLock = false;
+                    anaModified = false;
                     bundle = waManager.getBundleAt(a);
+                    newBundle = lockManagerIfNeeded(manager, waDO, bundle);
+                    if (newBundle != null) {
+                        waManager.setBundleAt(newBundle, a);
+                        bundle = newBundle;
+                        newSampleLock = true;
+                        break;
+                    } else {
+                        newSampleLock = false;
+                    }
+                    
                     sManager = bundle.getSampleManager();
                     siManager = sManager.getSampleItems();
                     aManager = siManager.getAnalysisAt(bundle.getSampleItemIndex());
                     aVDO = aManager.getAnalysisAt(bundle.getAnalysisIndex());
                     arManager = aManager.getAnalysisResultAt(bundle.getAnalysisIndex());
 
-                    if (!manager.getLockedManagers().containsKey(sManager.getSample().getAccessionNumber())) {
-                        sManager = sampManLocal().fetchForUpdate(sManager.getSample().getId());
-                        manager.getLockedManagers().put(sManager.getSample().getAccessionNumber(), sManager);
-                        manager.getSampleManagers().put(sManager.getSample().getAccessionNumber(), sManager);
-                        siManager = sManager.getSampleItems();
-                        newBundle = null;
-                        for (j = 0; j < siManager.count(); j++) {
-                            aManager = siManager.getAnalysisAt(j);
-                            for (k = 0; k < aManager.count(); k++) {
-                                aVDO = aManager.getAnalysisAt(k);
-                                if (waDO.getAnalysisId().equals(aVDO.getId())) {
-                                    newBundle = aManager.getBundleAt(k);
-                                    arManager = aManager.getAnalysisResultAt(k);
-                                    break;
-                                }
-                            }
-                            if (newBundle != null) {
-                                waManager.setBundleAt(newBundle, a);
-                                bundle = newBundle;
-                                break;
-                            }
-                        }
-                    }
+                    if (anInPrepId.equals(aVDO.getStatusId()) ||
+                        anReleasedId.equals(aVDO.getStatusId()) ||
+                        anCancelledId.equals(aVDO.getStatusId()))
+                        statusLocked = true;
+                    else
+                        statusLocked = false;
 
+                    sectionVDO = sectionLocal().fetchById(aVDO.getSectionId());
+                    perm = PermissionInterceptor.getSystemUserPermission().getSection(sectionVDO.getName());
+                    if (perm == null || !perm.hasCompletePermission())
+                        permLocked = true;
+                    else
+                        permLocked = false;
+                    
                     value = getValueFromCellByName(wb.getSheet("Worksheet"), "analysis_status."+i+"."+a);
                     if (!statusMap.get(aVDO.getStatusId()).equals(value)) {
                         for (s = 0; s < statusList.size(); s++) {
                             statusDO = statusList.get(s);
                             if (statusDO.getEntry().equals(value)) {
-                                aVDO.setStatusId(statusDO.getId());
-                                keepLock = true;
+                                if (!anLoggedInId.equals(statusDO.getId()) &&
+                                    !anInitiatedId.equals(statusDO.getId()) &&            
+                                    !anOnHoldId.equals(statusDO.getId()) &&
+                                    !anRequeueId.equals(statusDO.getId()) &&
+                                    !anCompletedId.equals(statusDO.getId())) {
+                                    if (!statusLocked && !permLocked)
+                                        errorList.add(new FormErrorException("invalidAnalysisStatusChange",
+                                                      (String)value, String.valueOf(wiDO.getPosition()),
+                                                      String.valueOf(a+1)));
+                                } else {
+                                    if (!statusLocked && !permLocked)
+                                        aVDO.setStatusId(statusDO.getId());
+                                    anaModified = true;
+                                }
                                 break;
                             }
                         }
@@ -519,24 +569,28 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                             userToken = tokenizer.nextToken();
                             userList = sysUserLocal().fetchByLoginName(userToken, 1);
                             if (userList.size() > 0) {
-                                auManager.addCompleteRecord(userList.get(0));
-                                keepLock = true;
+                                if (!statusLocked && !permLocked)
+                                    auManager.addCompleteRecord(userList.get(0));
+                                anaModified = true;
                             } else {
-                                errorList.add(new FormErrorException("illegalWorksheetUserFormException", String.valueOf(wiDO.getPosition()), String.valueOf(a+1)));
+                                if (!statusLocked && !permLocked)
+                                    errorList.add(new FormErrorException("illegalWorksheetUserFormException", String.valueOf(wiDO.getPosition()), String.valueOf(a+1)));
                             }
                         }
                     }
                     
                     value = getValueFromCellByName(wb.getSheet("Overrides"), "analysis_started."+i+"."+a);
                     if (value != null) {
-                        aVDO.setStartedDate(new Datetime(Datetime.YEAR, Datetime.MINUTE, (Date)value));
-                        keepLock = true;
+                        if (!statusLocked && !permLocked)
+                            aVDO.setStartedDate(new Datetime(Datetime.YEAR, Datetime.MINUTE, (Date)value));
+                        anaModified = true;
                     }
                     
                     value = getValueFromCellByName(wb.getSheet("Overrides"), "analysis_completed."+i+"."+a);
                     if (value != null) {
-                        aVDO.setCompletedDate(new Datetime(Datetime.YEAR, Datetime.MINUTE, (Date)value));
-                        keepLock = true;
+                        if (!statusLocked && !permLocked)
+                            aVDO.setCompletedDate(new Datetime(Datetime.YEAR, Datetime.MINUTE, (Date)value));
+                        anaModified = true;
                     }
                     
                     wrManager = waManager.getWorksheetResultAt(a);
@@ -544,7 +598,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                         wrVDO = wrManager.getWorksheetResultAt(r);
                         for (c = 0; c < 30; c++) {
                             value = getValueFromCellByCoords(wb.getSheet("Worksheet"), rowIndex, 9 + c);
-                            if (value != null)
+                            if (value != null && !statusLocked && !permLocked)
                                 wrVDO.setValueAt(c, value.toString());
                         }   
 
@@ -554,8 +608,9 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                                 if (c == 0) {
                                     value = getValueFromCellByName(wb.getSheet("Worksheet"), "analyte_reportable."+i+"."+a);
                                     if (value != null && !rVDO.getIsReportable().equals(value)) {
-                                        rVDO.setIsReportable((String)value);
-                                        keepLock = true;
+                                        if (!statusLocked && !permLocked)
+                                            rVDO.setIsReportable((String)value);
+                                        anaModified = true;
                                     }
 
                                     value = getValueFromCellByName(wb.getSheet("Worksheet"), "final_value."+i+"."+a+"."+r);
@@ -567,53 +622,75 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                                             continue;
                                         value = getValueFromCellByName(wb.getSheet("Worksheet"), aDO.getExternalId()+"."+i+"."+a+"."+r);
                                     } catch (Exception anyE) {
-                                        errorList.add(new FormErrorException("columnAnalyteLookupFormException",
-                                                                             String.valueOf(wiDO.getPosition()),
-                                                                             wrVDO.getAnalyteName(),
-                                                                             rVDO.getAnalyte()));
+                                        if (!statusLocked && !permLocked)
+                                            errorList.add(new FormErrorException("columnAnalyteLookupFormException",
+                                                                                 String.valueOf(wiDO.getPosition()),
+                                                                                 wrVDO.getAnalyteName(),
+                                                                                 rVDO.getAnalyte()));
                                     }
                                 }
                                 if (value != null) {
-                                    testResultId = arManager.validateResultValue(rVDO.getResultGroup(),
-                                                                                 aVDO.getUnitOfMeasureId(),
-                                                                                 value.toString());
-                                    trDO = arManager.getTestResultList().get(testResultId);
-                                    
-                                    rVDO = arManager.getResultAt(wrVDO.getResultRow(), c);
-                                    rVDO.setTestResultId(testResultId);
-                                    rVDO.setTypeId(trDO.getTypeId());
-                                    rVDO.setValue(formatValue(trDO, value.toString()));
-                                    keepLock = true;
+                                    if (!statusLocked && !permLocked) {
+                                        testResultId = arManager.validateResultValue(rVDO.getResultGroup(),
+                                                                                     aVDO.getUnitOfMeasureId(),
+                                                                                     value.toString());
+                                        trDO = arManager.getTestResultList().get(testResultId);
+                                        
+                                        rVDO.setTestResultId(testResultId);
+                                        rVDO.setTypeId(trDO.getTypeId());
+                                        rVDO.setValue(arManager.formatResultValue(rVDO.getResultGroup(),
+                                                                                  aVDO.getUnitOfMeasureId(),
+                                                                                  testResultId,
+                                                                                  value.toString()));
+                                        manager.addReflexBundle(bundle, rVDO);
+                                    }
+                                    anaModified = true;
                                 }
                             } catch (ParseException parE) {
-                                errorList.add(new FormErrorException("illegalResultValueFormException",
-                                                                     String.valueOf(wiDO.getPosition()),
-                                                                     wrVDO.getAnalyteName(),
-                                                                     (c == 0 ? "Final Value" : rVDO.getAnalyte())));
+                                if (!statusLocked && !permLocked)
+                                    errorList.add(new FormErrorException("illegalResultValueFormException",
+                                                                         String.valueOf(wiDO.getPosition()),
+                                                                         wrVDO.getAnalyteName(),
+                                                                         (c == 0 ? "Final Value" : rVDO.getAnalyte())));
                             }
                         }
                     }
                     
-                    if (!keepLock)
+                    if (anaModified) {
+                        if (statusLocked) {
+                            errorList.add(new FormErrorException("wrongStatusNoModify",
+                            String.valueOf(wiDO.getPosition()),
+                            String.valueOf(a+1)));
+                            if (newSampleLock)
+                                sManager.abortUpdate();
+                        } else if (permLocked) {
+                            errorList.add(new FormErrorException("worksheetSectionPermException",
+                                                                 sectionVDO.getName(),
+                                                                 String.valueOf(wiDO.getPosition()),
+                                                                 String.valueOf(a+1)));
+                            if (newSampleLock)
+                                sManager.abortUpdate();
+                        }
+                    } else if (newSampleLock) {
                         sManager.abortUpdate();
+                    }
                 } else if (waDO.getQcId() != null) {
                     wqrManager = waManager.getWorksheetQcResultAt(a);
                     for (r = 0; r < wqrManager.count(); r++, rowIndex++) {
                         wqrVDO = wqrManager.getWorksheetQcResultAt(r);
-                        
-                        value = getValueFromCellByName(wb.getSheet("Worksheet"), "final_value."+i+"."+a+"."+r);
-                        if (value != null) {
-                            wqrVDO.setValue(value.toString());
+                        for (c = 0; c < 30; c++) {
+                            value = getValueFromCellByCoords(wb.getSheet("Worksheet"), rowIndex, 9 + c);
+                            if (value != null/* && !permLocked*/)
+                                wqrVDO.setValueAt(c, value.toString());
                         }
                     }
                 }
-                
-                //
-                // increment rowIndex if there are no result records for the
-                // analysis
-                if (r == 0)
-                    rowIndex++;
             }
+            //
+            // increment rowIndex if there were no result records for the
+            // last analysis or there were no analyses for this item
+            if (r == 0)
+                rowIndex++;
         }
         
         if (errorList.getErrorList().size() > 0)
@@ -795,32 +872,6 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                         cell = getCellForName(sheet, cellName.getNameName());
                         if (cell.getStringCellValue() == null || cell.getStringCellValue().length() == 0)
                             cell.setCellValue(rVDO.getValue());
-//                    } else {
-//                        formatColumn = columnMasterMap.get(aDO.getExternalId());
-//                        if (formatColumn != null) {
-//                            j = row.getLastCellNum();
-//                            cell = row.createCell(j);
-//                            if (formatColumn.getEquation() != null && formatColumn.getEquation().length() > 0) {
-//                                cell.setCellStyle(styles.get("row_no_edit"));
-//                                try {
-//                                    cell.setCellFormula(formatCellFormula(row, formatColumn, formatColumns));
-//                                } catch (Exception anyE1) {
-//                                    // TODO: Code proper exception handling
-//                                    anyE1.printStackTrace();
-//                                }
-//                            } else {
-//                                cell.setCellStyle(styles.get("row_edit"));
-//                            }
-//                            if (wrVDO.getValueAt(j-9) != null && wrVDO.getValueAt(j-9).length() > 0)
-//                                cell.setCellValue(wrVDO.getValueAt(j-9));
-//                            else
-//                                cell.setCellValue(rVDO.getValue());
-//    
-//                            cellName = sheet.getWorkbook().createName();
-//                            cellName.setNameName(formatColumn.getName()+"."+cellNameIndex);
-//                            cellName.setRefersToFormula("Worksheet!"+CellReference.convertNumToColString(j)+
-//                                                        (row.getRowNum()+1));
-//                        }
                     }
                 } catch (Exception anyE) {
                     // TODO: Code proper exception handling
@@ -835,10 +886,10 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
     private int createQcResultCellsForFormat(HSSFSheet sheet, Row row, Row tRow,
                                              String nameIndexPrefix, HashMap<String,String> cellNames,
                                              WorksheetQcResultManager wqrManager) {
-        boolean                 addName;
         int                     c, i, r;
         String                  cellNameIndex, name;
         Cell                    cell, tCell;
+        Date                    tempDate;
         Name                    cellName;
         QcAnalyteViewDO         qcaVDO;
         WorksheetQcResultViewDO wqrVDO;
@@ -867,42 +918,54 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
             cell.setCellValue("N");
             
             for (c = 9; c < tRow.getLastCellNum(); c++) {
-                addName = false;
                 tCell = tRow.getCell(c);
                 
                 cell = row.createCell(c);
+                cell.setCellStyle(tCell.getCellStyle());
                 name = cellNames.get(sheet.getSheetName()+"!$"+
                                      CellReference.convertNumToColString(tCell.getColumnIndex())+
                                      "$"+(tCell.getRowIndex()+1));
                 if (name != null) {
-                    if ("final_value".equals(name)) {
-                        cell.setCellStyle(styles.get("row_edit"));
-                        if (wqrVDO.getValue() != null && wqrVDO.getValue().length() > 0) {
-                            cell.setCellValue(wqrVDO.getValue());
-                        }
-                        addName = true;
-                    } else if ("expected_value".equals(name)) {
-                        cell.setCellStyle(styles.get("row_edit"));
-                        try {
-                            qcaVDO = qcAnaLocal().fetchById(wqrVDO.getQcAnalyteId());
-                            cell.setCellValue(qcaVDO.getValue());
-                        } catch (Exception anyE) {
-                            // TODO: Code proper exception handling
-                            anyE.printStackTrace();
-                        }
-                        addName = true;
-                    } else {
-                        cell.setCellStyle(styles.get("row_no_edit"));
-                    }
-
-                    if (addName) {
-                        cellName = row.getSheet().getWorkbook().createName();
-                        cellName.setNameName(name+"."+cellNameIndex);
-                        cellName.setRefersToFormula(sheet.getSheetName()+"!$"+
-                                                    CellReference.convertNumToColString(cell.getColumnIndex())+
-                                                    "$"+(row.getRowNum()+1));
-                    }
+                    cellName = row.getSheet().getWorkbook().createName();
+                    cellName.setNameName(name+"."+cellNameIndex);
+                    cellName.setRefersToFormula(sheet.getSheetName()+"!$"+
+                                                CellReference.convertNumToColString(cell.getColumnIndex())+
+                                                "$"+(row.getRowNum()+1));
                 }
+                if (tCell.getCellType() == Cell.CELL_TYPE_FORMULA && tCell.getCellFormula() != null) {
+                    cell.setCellFormula(tCell.getCellFormula());
+
+                    try {
+                        tempDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(wqrVDO.getValueAt(c-9),
+                                                                                  new ParsePosition(1));
+                        if (tempDate != null)
+                            cell.setCellValue(tempDate);
+                        else
+                            throw new Exception("Invalid Date");
+                    } catch (Exception anyE) {
+                        try {
+                            cell.setCellValue(Double.parseDouble(wqrVDO.getValueAt(c-9)));
+                        } catch (Exception ignE) {
+                            // we won't be getting boolean values and string values
+                            // will wipe the formula
+                        }
+                    }
+                } else {
+                    cell.setCellValue(wqrVDO.getValueAt(c-9));
+                }
+            }
+            
+            try {
+                qcaVDO = qcAnaLocal().fetchById(wqrVDO.getQcAnalyteId());
+                cellName = sheet.getWorkbook().getName("expected_value"+cellNameIndex);
+                if (cellName != null && !cellName.isDeleted()) {
+                    cell = getCellForName(sheet, cellName.getNameName());
+                    if (cell.getStringCellValue() == null || cell.getStringCellValue().length() == 0)
+                        cell.setCellValue(qcaVDO.getValue());
+                }
+            } catch (Exception anyE) {
+                // TODO: Code proper exception handling
+                anyE.printStackTrace();
             }
         }
         
@@ -970,6 +1033,16 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         }
     }
 
+    private SectionLocal sectionLocal() {
+        try {
+            InitialContext ctx = new InitialContext();
+            return (SectionLocal)ctx.lookup("openelis/SectionBean/local");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+    
     private SystemUserPermissionProxyLocal sysUserLocal() {
         try {
             InitialContext ctx = new InitialContext();
@@ -1141,7 +1214,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
             throw new Exception("Error retrieving temp directory variable: "+anyE.getMessage());
         }
 
-        return dirName+"OEWorksheet"+formatVDO.getLocalAbbrev()+".xls";
+        return dirName+"OEWorksheet"+formatVDO.getEntry()+".xls";
     }
     
     private String getPositionNumber(int position, String format, Integer batchCapacity) {
@@ -1188,46 +1261,6 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         }
         
         return tooltip.toString();
-    }
-/*
-    private String formatCellFormula(Row row, FormatColumn column, ArrayList<FormatColumn> columnList) throws Exception {
-        int          i, j;
-        String       eColumns[];
-        FormatColumn tempColumn;
-        
-        eColumns = (String[]) column.getEquationColumns().clone();
-        for (i = 0; i < eColumns.length; i++) {
-            tempColumn = columnMasterMap.get(eColumns[i]);
-            if (tempColumn != null) {
-                j = columnList.indexOf(tempColumn);
-                if (j == -1) {
-                    columnList.add(tempColumn);
-                    j = columnList.size() - 1;
-                }
-            } else {
-                throw new Exception("Invalid column name in equation: '"+eColumns[i]+"'");
-            }
-            eColumns[i] = CellReference.convertNumToColString(9+j)+(row.getRowNum()+1);
-        }
-        
-        return String.format(column.getEquation(), eColumns);
-    }
-*/    
-    private String formatValue(TestResultDO testResultDO, String value) {
-        DictionaryViewDO typeVDO;
-
-        try {
-            typeVDO = dictLocal().fetchById(testResultDO.getTypeId());
-            if ("test_res_type_alpha_upper".equals(typeVDO.getSystemName()))
-                value = value.toUpperCase();
-            else if("test_res_type_alpha_lower".equals(typeVDO.getSystemName()))
-                value =  value.toLowerCase();
-        } catch (Exception anyE) {
-            System.out.println(anyE.getMessage());
-            value = "ERROR";
-        }
-        
-        return value;
     }
 
     private Object getValueFromCellByCoords(HSSFSheet sheet, int row, int col) {
@@ -1335,27 +1368,34 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         
         return value;
     }
-/*    
-    class FormatColumn {
-        String name, equation, eColumns[];
+    
+    private SampleDataBundle lockManagerIfNeeded(WorksheetManager manager, WorksheetAnalysisDO waDO,
+                                                 SampleDataBundle bundle) throws Exception {
+        int               i, j;
+        AnalysisManager   aManager;
+        AnalysisViewDO    aVDO;
+        SampleDataBundle  newBundle;
+        SampleItemManager siManager;
+        SampleManager     sManager;
         
-        FormatColumn(String name, String equation, String eColumns[]) {
-            this.name = name;
-            this.equation = equation;
-            this.eColumns = eColumns;
+        newBundle = null;
+        sManager = bundle.getSampleManager();
+        if (!manager.getLockedManagers().containsKey(sManager.getSample().getAccessionNumber())) {
+            sManager = sampManLocal().fetchForUpdate(sManager.getSample().getId());
+            manager.getLockedManagers().put(sManager.getSample().getAccessionNumber(), sManager);
+            manager.getSampleManagers().put(sManager.getSample().getAccessionNumber(), sManager);
+            siManager = sManager.getSampleItems();
+            items: for (i = 0; i < siManager.count(); i++) {
+                aManager = siManager.getAnalysisAt(i);
+                for (j = 0; j < aManager.count(); j++) {
+                    aVDO = aManager.getAnalysisAt(j);
+                    if (waDO.getAnalysisId().equals(aVDO.getId())) {
+                        newBundle = aManager.getBundleAt(j);
+                        break items;
+                    }
+                }
+            }
         }
-        
-        String getName() {
-            return name;
-        }
-        
-        String getEquation() {
-            return equation;
-        }
-        
-        String[] getEquationColumns() {
-            return eColumns;
-        }
+        return newBundle;
     }
-*/
 }
