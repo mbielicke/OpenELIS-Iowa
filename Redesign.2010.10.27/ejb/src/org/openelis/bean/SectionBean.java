@@ -190,7 +190,7 @@ public class SectionBean implements SectionRemote, SectionLocal {
         section.setIsExternal(data.getIsExternal());
         section.setParentSectionId(data.getParentSectionId());
 
-        lockBean.giveUpLock(ReferenceTable.SECTION, data.getId());
+        lockBean.unlock(ReferenceTable.SECTION, data.getId());
 
         // invalidate the cache
         msg = new SectionCacheMessage();
@@ -201,12 +201,12 @@ public class SectionBean implements SectionRemote, SectionLocal {
     }
 
     public SectionViewDO fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(ReferenceTable.SECTION, id);
+        lockBean.lock(ReferenceTable.SECTION, id);
         return fetchById(id);
     }
 
     public SectionViewDO abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.SECTION, id);
+        lockBean.unlock(ReferenceTable.SECTION, id);
         return fetchById(id);
     }
 

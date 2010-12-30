@@ -10,5 +10,7 @@
 	<classpathentry kind="lib" path="lib/poi-3.6-20091214.jar"/>
 	<classpathentry kind="lib" path="lib/jasperreports-3.7.4.jar"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="/usr/local/java/jboss/common/lib/jboss-security-spi.jar"/>
+	<classpathentry kind="lib" path="/usr/local/java/jboss-5.1.0.GA/common/lib/jbosssx.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

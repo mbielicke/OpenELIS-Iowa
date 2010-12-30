@@ -96,7 +96,7 @@ public class PanelManagerBean implements PanelManagerRemote {
             ut.begin();
             lockBean.validateLock(ReferenceTable.PANEL, man.getPanel().getId());        
             man.update();
-            lockBean.giveUpLock(ReferenceTable.PANEL, man.getPanel().getId());
+            lockBean.unlock(ReferenceTable.PANEL, man.getPanel().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -107,12 +107,12 @@ public class PanelManagerBean implements PanelManagerRemote {
     }
     
     public PanelManager fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(ReferenceTable.PANEL, id);
+        lockBean.lock(ReferenceTable.PANEL, id);
         return fetchById(id);
     }
     
     public PanelManager abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.PANEL, id);
+        lockBean.unlock(ReferenceTable.PANEL, id);
         return fetchById(id);
     }
 
@@ -126,7 +126,7 @@ public class PanelManagerBean implements PanelManagerRemote {
             ut.begin();
             lockBean.validateLock(ReferenceTable.PANEL, man.getPanel().getId());        
             man.delete();
-            lockBean.giveUpLock(ReferenceTable.PANEL, man.getPanel().getId());
+            lockBean.unlock(ReferenceTable.PANEL, man.getPanel().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();

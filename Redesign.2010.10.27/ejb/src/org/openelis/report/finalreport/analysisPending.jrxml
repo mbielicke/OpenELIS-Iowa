@@ -27,7 +27,7 @@ WHERE
 				<textElement>
 					<font fontName="Times New Roman" isBold="false" isItalic="false"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.report.util.Concat.concatWithSeparator($F{t_reporting_description}," , ", $F{m_reporting_description})]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.utils.Concat.concatWithSeparator($F{t_reporting_description}," , ", $F{m_reporting_description})]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

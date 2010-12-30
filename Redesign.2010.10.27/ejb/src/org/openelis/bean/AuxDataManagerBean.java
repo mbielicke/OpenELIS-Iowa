@@ -35,7 +35,6 @@ import org.openelis.remote.AuxDataManagerRemote;
 
 @Stateless
 @SecurityDomain("openelis")
-//@RolesAllowed("organization-select")
 @TransactionManagement(TransactionManagementType.BEAN)
 
 public class AuxDataManagerBean implements AuxDataManagerRemote {

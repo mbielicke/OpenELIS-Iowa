@@ -192,12 +192,12 @@ public class InventoryLocationBean implements InventoryLocationLocal, InventoryL
     }
     
     public InventoryLocationViewDO fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(ReferenceTable.INVENTORY_LOCATION, id);
+        lockBean.lock(ReferenceTable.INVENTORY_LOCATION, id);
         return fetchById(id);
     }
     
     public InventoryLocationViewDO abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.INVENTORY_LOCATION, id);
+        lockBean.unlock(ReferenceTable.INVENTORY_LOCATION, id);
         return fetchById(id);
     }
 

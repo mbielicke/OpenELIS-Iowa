@@ -93,6 +93,13 @@ public class PermissionInterceptor {
     }
     
     /**
+     * Returns the system user's login name associated with this context.
+     */
+    public static String getSystemUserName() throws Exception {
+        return getSystemUserPermission().getUser().getLoginName();
+    }
+    
+    /**
      * Returns the system user data for the specified id.
      */
     public static SystemUserVO getSystemUser(Integer id) throws Exception {
@@ -104,8 +111,13 @@ public class PermissionInterceptor {
         return user;
     }
     
-    public static SystemUserPermission getSystemUserPermission() {
-        return (SystemUserPermission)session.getAttribute("UserPermission");
+    public static SystemUserPermission getSystemUserPermission() throws Exception {
+        SystemUserPermission p;
+        
+        p = (SystemUserPermission)session.getAttribute("UserPermission");
+        if (p == null)
+            throw new Exception("UserPermission attribute not found in EJB session");
+        return p;
     }
     
     private static SystemUserPermissionProxyLocal local() {

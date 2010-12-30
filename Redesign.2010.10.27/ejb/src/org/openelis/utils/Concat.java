@@ -24,33 +24,36 @@
 * UIRF Software License are applicable instead of those above. 
 */
 
-package org.openelis.report.util;
-
-import java.util.HashMap;
-
+package org.openelis.utils;
 /**
- * This class is used to map mnemonics to their longer description.
- */
-public class Mapper {
-    private HashMap<String ,String> map;
-    
-    public Mapper() {
-        map = new HashMap<String ,String>();
+  * A static class that concatenates strings
+  */
+public class Concat {
+
+    private static StringBuffer buf = new StringBuffer();
+    /**
+      * Decodes the passed argument to String.
+      */
+    public static String concat(Object a, Object b) {
+        buf.setLength(0);
+        if (a != null)
+            buf.append(a.toString().trim());
+        if (b != null)
+            buf.append(b.toString().trim());
+        return buf.toString();
     }
 
-    /**
-     * Associates the key with its description. It returns this mapper which
-     * allows multiple sets in a single statement.
-     */
-    public Mapper set(String key, String description) {
-        map.put(key, description);
-        return this;
-    }
-        
-    /**
-     * Returns the description associated with specified key.
-     */
-    public String get(String key) {
-        return (String) map.get(key);
+    public static String concatWithSeparator(Object a, Object s, Object b) {
+        buf.setLength(0);
+        if (a != null)
+            buf.append(a.toString().trim());
+        if (b != null) {
+            if (a != null)
+                buf.append(s);
+            buf.append(b.toString().trim());
+        }
+        return buf.toString();
     }
 }
+
+

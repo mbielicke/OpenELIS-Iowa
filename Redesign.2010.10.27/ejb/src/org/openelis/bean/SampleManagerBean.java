@@ -127,7 +127,7 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
             ut.begin();
             lock.validateLock(ReferenceTable.SAMPLE, man.getSample().getId());
             man.update();
-            lock.giveUpLock(ReferenceTable.SAMPLE, man.getSample().getId());  
+            lock.unlock(ReferenceTable.SAMPLE, man.getSample().getId());  
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -138,13 +138,13 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
     }
 
     public SampleManager fetchForUpdate(Integer sampleId) throws Exception {
-        lock.getLock(ReferenceTable.SAMPLE, sampleId);
+        lock.lock(ReferenceTable.SAMPLE, sampleId);
         
         return fetchWithAllData(sampleId);
     }
 
     public SampleManager abortUpdate(Integer sampleId) throws Exception {
-        lock.giveUpLock(ReferenceTable.SAMPLE, sampleId);
+        lock.unlock(ReferenceTable.SAMPLE, sampleId);
         
         return fetchWithItemsAnalysis(sampleId);
     }

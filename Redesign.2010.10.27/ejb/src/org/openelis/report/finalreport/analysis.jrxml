@@ -54,7 +54,7 @@ ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 				<textElement textAlignment="Center">
 					<font fontName="Times New Roman" isBold="true" isItalic="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.report.util.Concat.concatWithSeparator($F{t_reporting_description}," , ", $F{m_reporting_description})]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.utils.Concat.concatWithSeparator($F{t_reporting_description}," , ", $F{m_reporting_description})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="81" y="36" width="60" height="12"/>
@@ -133,7 +133,7 @@ ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 				<textElement>
 					<font fontName="Times New Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.report.util.SectionLocationBean.getLocation($P{REPORT_CONNECTION},  $F{a_section_id})]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.utils.SectionLocationUtil.getLocation($F{a_section_id})]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="153" y="36" width="100" height="12"/>
@@ -154,7 +154,7 @@ ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 				<textElement>
 					<font fontName="Times New Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.report.util.Concat.concatWithSeparator($F{pat_reporting_description}," , ", $F{pam_reporting_description})]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.utils.ReportUtil.concatWithSeparator($F{pat_reporting_description}," , ", $F{pam_reporting_description})]]></textFieldExpression>
 			</textField>
 			<subreport>
 				<reportElement x="153" y="60" width="100" height="12"/>

@@ -177,18 +177,18 @@ public class StandardNoteBean implements StandardNoteRemote {
         entity.setText(data.getText());
         entity.setTypeId(data.getTypeId());
 
-        lockBean.giveUpLock(ReferenceTable.STANDARD_NOTE, data.getId());
+        lockBean.unlock(ReferenceTable.STANDARD_NOTE, data.getId());
 
         return data;
     }
 
     public StandardNoteDO fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(ReferenceTable.STANDARD_NOTE, id);
+        lockBean.lock(ReferenceTable.STANDARD_NOTE, id);
         return fetchById(id);
     }
 
     public StandardNoteDO abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.STANDARD_NOTE, id);
+        lockBean.unlock(ReferenceTable.STANDARD_NOTE, id);
         return fetchById(id);
     }
 
@@ -204,7 +204,7 @@ public class StandardNoteBean implements StandardNoteRemote {
         if (entity != null)
             manager.remove(entity);
 
-        lockBean.giveUpLock(ReferenceTable.ANALYTE, data.getId());
+        lockBean.unlock(ReferenceTable.ANALYTE, data.getId());
     }
 
     private void validate(StandardNoteDO standardNoteDO) throws Exception {

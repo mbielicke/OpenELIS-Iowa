@@ -168,18 +168,18 @@ public class TestTrailerBean implements TestTrailerRemote{
         entity.setDescription(data.getDescription());
         entity.setText(data.getText());
 
-        lockBean.giveUpLock(ReferenceTable.TEST_TRAILER, data.getId());
+        lockBean.unlock(ReferenceTable.TEST_TRAILER, data.getId());
 
         return data;
     }
 
     public TestTrailerDO fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(ReferenceTable.TEST_TRAILER, id);
+        lockBean.lock(ReferenceTable.TEST_TRAILER, id);
         return fetchById(id);
     }
 
     public TestTrailerDO abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.TEST_TRAILER, id);
+        lockBean.unlock(ReferenceTable.TEST_TRAILER, id);
         return fetchById(id);
     }
 
@@ -206,7 +206,7 @@ public class TestTrailerBean implements TestTrailerRemote{
         if (entity != null)
             manager.remove(entity);
 
-        lockBean.giveUpLock(ReferenceTable.TEST_TRAILER, data.getId());
+        lockBean.unlock(ReferenceTable.TEST_TRAILER, data.getId());
     }
 
     public void validate(TestTrailerDO data) throws Exception {
