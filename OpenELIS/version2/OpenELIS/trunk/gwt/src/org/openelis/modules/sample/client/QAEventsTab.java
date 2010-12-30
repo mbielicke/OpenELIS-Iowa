@@ -29,10 +29,13 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.SectionCache;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleQaEventViewDO;
+import org.openelis.domain.SectionViewDO;
+import org.openelis.gwt.common.SectionPermission;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -59,6 +62,7 @@ import org.openelis.manager.AnalysisQaEventManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleQaEventManager;
+import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.qaevent.client.QaeventLookupScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -455,7 +459,22 @@ public class QAEventsTab extends Screen {
     }
 
     private boolean canEditAnalysisQA() {
-        return (anDO != null && !analysisCancelledId.equals(anDO.getStatusId()) && !analysisReleasedId.equals(anDO.getStatusId()));
+        SectionPermission perm;
+        SectionViewDO     sectionVDO;
+        
+        if (anDO != null && anDO.getSectionId() != null) {
+            try {
+                sectionVDO = SectionCache.getSectionFromId(anDO.getSectionId());
+                perm = OpenELIS.getSystemUserPermission().getSection(sectionVDO.getName());
+                return !analysisCancelledId.equals(anDO.getStatusId()) &&
+                       !analysisReleasedId.equals(anDO.getStatusId()) &&
+                       perm != null &&
+                       (perm.hasAssignPermission() || perm.hasCompletePermission());
+            } catch (Exception anyE) {
+                Window.alert("canEdit:" + anyE.getMessage());
+            }
+        }
+        return false;
     }
 
     public void setData(SampleDataBundle data) {

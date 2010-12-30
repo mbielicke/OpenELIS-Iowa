@@ -33,10 +33,12 @@ import java.util.Iterator;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.IdVO;
 import org.openelis.domain.OrganizationContactDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.TestMethodSampleTypeVO;
+import org.openelis.domain.TestSectionViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -75,6 +77,8 @@ import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
+import org.openelis.manager.TestManager;
+import org.openelis.manager.TestSectionManager;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
 import org.openelis.modules.sample.client.TestPrepUtility;
@@ -102,20 +106,21 @@ public class QuickEntryScreen extends Screen {
     private TextBox<Integer>                accessionNumber;
     private CheckBox                        currentDateTime, printLabels;
     private AppButton                       commitButton, removeRowButton;
-    private Dropdown<String>                testMethodSampleType, printer;
+    private Dropdown<String>                testMethodSampleType, testSection, printer;
     private TableWidget                     quickEntryTable;
     private TableDataRow                    rowToBeAdded;
 
-    private Integer                         sampleLoggedInId;
+    private Integer                         sampleLoggedInId, testSectionDefaultId;
     private Datetime                        todaysDate;
     private AccessionNumberUtility          accNumUtil;
-    private ScreenService                   calendarService;
+    private ScreenService                   calendarService, panelService;
     private ModulePermission                userPermission;
     private HashMap<Integer, SampleManager> managers;
 
     public QuickEntryScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QuickEntryDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
+        panelService = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
         calendarService = new ScreenService("controller?service=org.openelis.gwt.server.CalendarService");
 
         userPermission = OpenELIS.getSystemUserPermission().getModule("quickentry");
@@ -241,8 +246,75 @@ public class QuickEntryScreen extends Screen {
 
         testMethodSampleType = (Dropdown)def.getWidget("testMethodSampleType");
         addScreenHandler(testMethodSampleType, new ScreenEventHandler<String>() {
+            public void onValueChange(ValueChangeEvent<String> event) {
+                int                     i, j;
+                Integer                 defaultSectionId;
+                ArrayList<IdVO>         testIds;
+                ArrayList<TableDataRow> model;
+                HashMap<Integer,TestSectionViewDO> panelSections;
+                IdVO                    testVO;
+                TestManager             tm;
+                TestMethodSampleTypeVO  typeDO;
+                TestSectionViewDO       tsVDO;
+                TestSectionManager      tsm;
+                
+                defaultSectionId = null;
+                model = new ArrayList<TableDataRow>();
+                typeDO = (TestMethodSampleTypeVO)testMethodSampleType.getSelection().data;
+                if (typeDO.getTestId() != null) {
+                    try {
+                        tm = TestManager.fetchById(typeDO.getTestId());
+                        tsm = tm.getTestSections();
+                        for (i = 0; i < tsm.count(); i++) {
+                            tsVDO = tsm.getSectionAt(i);
+                            if (testSectionDefaultId.equals(tsVDO.getFlagId()))
+                                defaultSectionId = tsVDO.getSectionId();
+                            model.add(new TableDataRow(tsVDO.getSectionId(), tsVDO.getSection()));
+                            model.get(model.size()-1).data = tsVDO;
+                        }
+                        testSection.setModel(model);
+                        testSection.setSelection(defaultSectionId);
+                    } catch (Exception anyE) {
+                        Window.alert(consts.get("testSectionLoadError"));
+                        anyE.printStackTrace();
+                    }
+                } else {
+                    panelSections = new HashMap<Integer,TestSectionViewDO>();
+                    try {
+                        testIds = panelService.callList("fetchTestIdsByPanelId", typeDO.getPanelId());
+                        for (i = 0; i < testIds.size(); i++) {
+                            testVO = testIds.get(i);
+                            tm = TestManager.fetchById(testVO.getId());
+                            tsm = tm.getTestSections();
+                            for (j = 0; j < tsm.count(); j++) {
+                                tsVDO = tsm.getSectionAt(j);
+                                if (!panelSections.containsKey(tsVDO.getSectionId())) {
+                                    panelSections.put(tsVDO.getSectionId(), tsVDO);
+                                    if (testSectionDefaultId.equals(tsVDO.getFlagId()))
+                                        defaultSectionId = tsVDO.getSectionId();
+                                    model.add(new TableDataRow(tsVDO.getSectionId(), tsVDO.getSection()));
+                                    model.get(model.size()-1).data = tsVDO;
+                                }
+                            }
+                        }
+                        testSection.setModel(model);
+                        testSection.setSelection(defaultSectionId);
+                    } catch (Exception anyE) {
+                        Window.alert(consts.get("panelSectionLoadError"));
+                        anyE.printStackTrace();
+                    }
+                }
+            }
+            
             public void onStateChange(StateChangeEvent<State> event) {
                 testMethodSampleType.enable(EnumSet.of(State.ADD, State.DEFAULT).contains(event.getState()));
+            }
+        });
+
+        testSection = (Dropdown)def.getWidget("testSection");
+        addScreenHandler(testSection, new ScreenEventHandler<String>() {
+            public void onStateChange(StateChangeEvent<State> event) {
+                testSection.enable(EnumSet.of(State.ADD, State.DEFAULT).contains(event.getState()));
             }
         });
 
@@ -510,6 +582,7 @@ public class QuickEntryScreen extends Screen {
 
     public void analysisTestChanged(Integer id,
                                     boolean panel,
+                                    TestSectionViewDO tsVDO,
                                     SampleDataBundle analysisBundle,
                                     SampleManager manager) {
         TestPrepUtility.Type type;
@@ -533,7 +606,7 @@ public class QuickEntryScreen extends Screen {
         testLookup.setManager(manager);
 
         try {
-            testLookup.lookup(analysisBundle, type, id);
+            testLookup.lookup(analysisBundle, type, id, tsVDO);
 
         } catch (Exception e) {
             Window.alert("analysisTestChanged: " + e.getMessage());
@@ -617,16 +690,18 @@ public class QuickEntryScreen extends Screen {
     private void addAnalysisRow() {
         TableDataRow row;
         TestMethodSampleTypeVO typeDO;
+        TestSectionViewDO tsVDO;
         Integer id;
         SampleManager sampleMan;
         SampleItemManager itemMan;
         AnalysisManager anMan;
         int sampleItemIndex, analysisAddedIndex;
         SampleDataBundle anBundle;
-        Integer accessionNum;
+        Integer accessionNum, sectionId;
 
         typeDO = (TestMethodSampleTypeVO)testMethodSampleType.getSelection().data;
         accessionNum = Integer.valueOf(accessionNumber.getValue());
+        tsVDO = (TestSectionViewDO)testSection.getSelection().data;
         row = new TableDataRow(6);
 
         try {
@@ -660,7 +735,7 @@ public class QuickEntryScreen extends Screen {
                 id = typeDO.getPanelId();
 
             rowToBeAdded = row;
-            analysisTestChanged(id, (typeDO.getTestId() == null), anBundle, sampleMan);
+            analysisTestChanged(id, (typeDO.getTestId() == null), tsVDO, anBundle, sampleMan);
 
         } catch (Exception e) {
             Window.alert("rowAdded: " + e.getMessage());
@@ -727,6 +802,12 @@ public class QuickEntryScreen extends Screen {
         // test needs filled out
         if (testMethodSampleType.getValue() == null) {
             window.setError(consts.get("testMethodNoValueException"));
+            return false;
+        }
+
+        // test needs filled out
+        if (testSection.getValue() == null) {
+            window.setError(consts.get("testSectionNoValueException"));
             return false;
         }
 
@@ -804,6 +885,7 @@ public class QuickEntryScreen extends Screen {
 
         try {
             sampleLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
+            testSectionDefaultId = DictionaryCache.getIdFromSystemName("test_section_default");
             todaysDate = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
             
             testPanelList = service.callList("fetchTestMethodSampleTypeList");

@@ -29,12 +29,15 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.SectionCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.SectionPermission;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeCloseEvent;
@@ -65,6 +68,7 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.SampleDataBundle;
+import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.test.client.TestAnalyteDisplayManager;
 
 import com.google.gwt.core.client.GWT;
@@ -714,7 +718,22 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
     }
 
     private boolean canEdit() {
-        return (analysis != null && !analysisCancelledId.equals(analysis.getStatusId()) && !analysisReleasedId.equals(analysis.getStatusId()));
+        SectionPermission perm;
+        SectionViewDO     sectionVDO;
+        
+        if (analysis != null && analysis.getSectionId() != null) {
+            try {
+                sectionVDO = SectionCache.getSectionFromId(analysis.getSectionId());
+                perm = OpenELIS.getSystemUserPermission().getSection(sectionVDO.getName());
+                return !analysisCancelledId.equals(analysis.getStatusId()) &&
+                       !analysisReleasedId.equals(analysis.getStatusId()) &&
+                       perm != null &&
+                       (perm.hasAssignPermission() || perm.hasCompletePermission());
+            } catch (Exception anyE) {
+                Window.alert("canEdit:" + anyE.getMessage());
+            }
+        }
+        return false;
     }
     
     private String formatValue(TestResultDO testResultDO, String value){

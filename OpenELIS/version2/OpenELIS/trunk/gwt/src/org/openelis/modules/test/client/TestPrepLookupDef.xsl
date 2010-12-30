@@ -51,6 +51,9 @@
             	<col width="500" header="{resource:getString($constants,'prepTestMethod')}">
                 	<label field="String"/>
                 </col>
+	            <col width="220" sort="true" header="{resource:getString($constants,'section')}">
+	              <dropdown width="200" field="Integer" />
+	            </col>
          	</table>
      	</VerticalPanel>
 
