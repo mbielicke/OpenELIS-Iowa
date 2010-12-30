@@ -20,7 +20,6 @@ import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ReportProgress;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -1163,52 +1162,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         }
     }
 
-    private void doReport() {
-        Request req = service.call("doFinalReport", new AsyncCallback<ReportProgress>() {
-            public void onSuccess(final ReportProgress rp) {
-                window.setDone("Done");
-                window.setProgress(0);
-                DeferredCommand.addCommand(new Command() {
-                    public void execute() {
-                        com.google.gwt.user.client.Window.open("Report.html?id=" + rp.name, "Report",
-                                    "toolbar=no,location=no,menubar=no,status=no,titlebar=no");
-                    }
-                });
-
-            }
-
-            public void onFailure(Throwable caught) {
-                com.google.gwt.user.client.Window.alert(caught.getMessage());
-            }
-        });
-        getProgress(req);
-
-    }
-
-    public void getProgress(final Request req) {
-        if ( !req.isPending()) {
-            window.setDone("Done");
-            window.setProgress(0);
-            return;
-        }
-        service.call("getProgress", new AsyncCallback<ReportProgress>() {
-            public void onSuccess(ReportProgress fp) {
-                window.setBusy(consts.get("generatingReport"));
-                window.setProgress(fp.generated);
-                Timer timer = new Timer() {
-                    public void run() {
-                        getProgress(req);
-                    }
-                };
-                timer.schedule(500);
-            }
-
-            public void onFailure(Throwable caught) {
-                com.google.gwt.user.client.Window.alert(caught.getMessage());
-            }
-        });
-    }
-
     public HandlerRegistration addActionHandler(ActionHandler handler) {
         return addHandler(handler, ActionEvent.getType());
     }
@@ -1384,7 +1337,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         SampleManager man;
         HashMap<Integer, Item> hash;
         AnalysisManager anMan;
-        AnalysisViewDO anDO;
+        AnalysisViewDO data;
         ValidationErrorsList errorsList;
         String errorMsg;
 
@@ -1421,14 +1374,14 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
                 anMan = bundle.getSampleManager()
                               .getSampleItems()
                               .getAnalysisAt(bundle.getSampleItemIndex());
-                anDO = anMan.getAnalysisAt(bundle.getAnalysisIndex());
-                if (analysisCompletedId.equals(anDO.getStatusId())) {
+                data = anMan.getAnalysisAt(bundle.getAnalysisIndex());
+                if (analysisCompletedId.equals(data.getStatusId())) {
                     errorsList = new ValidationErrorsList();
                     errorsList.add(new FormErrorException("analysisAlreadyComplete"));
                     throw errorsList;
                 }
 
-                if ( !analysisOnHoldId.equals(anDO.getStatusId()) ||
+                if ( !analysisOnHoldId.equals(data.getStatusId()) ||
                     com.google.gwt.user.client.Window.confirm(consts.get("onHoldWarning"))) {
                     bundle = getCurrentRowBundle(row, man);
                     row.setData(bundle);
@@ -1445,13 +1398,13 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
                 window.clearStatus();
             } catch (ValidationErrorsList e) {
                 try {
-                    anDO = man.getSampleItems()
+                    data = man.getSampleItems()
                               .getAnalysisAt(bundle.getSampleItemIndex())
                               .getAnalysisAt(bundle.getAnalysisIndex());
                     item.count = item.count - 1;
 
-                    errorMsg = "Cannot complete " + anDO.getTestName() + ":" +
-                               anDO.getMethodName() + " on accession #" +
+                    errorMsg = "Cannot complete " + data.getTestName() + ":" +
+                               data.getMethodName() + " on accession #" +
                                man.getSample().getAccessionNumber() + ":\n";
 
                     for (int l = 0; l < e.size(); l++ )

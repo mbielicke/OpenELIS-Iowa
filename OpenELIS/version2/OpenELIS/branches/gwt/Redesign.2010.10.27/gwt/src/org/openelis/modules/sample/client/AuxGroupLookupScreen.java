@@ -59,7 +59,7 @@ public class AuxGroupLookupScreen extends Screen implements HasActionHandlers<Au
     
     public AuxGroupLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(AuxGroupLookupDef.class));
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.auxiliary.server.AuxiliaryService");
+        service = new ScreenService("controller?service=org.openelis.modules.auxiliary.server.AuxiliaryService");
         
         // Setup link between Screen and widget Handlers
         initialize();

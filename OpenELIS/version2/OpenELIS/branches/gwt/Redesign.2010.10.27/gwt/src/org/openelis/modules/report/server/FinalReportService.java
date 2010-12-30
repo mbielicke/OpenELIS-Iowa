@@ -23,15 +23,36 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.report.client;
+package org.openelis.modules.report.server;
 
-import com.google.gwt.core.client.EntryPoint;
+import java.util.ArrayList;
 
-public class Report implements EntryPoint {
+import org.openelis.gwt.common.ReportStatus;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.FinalReportRemote;
+import org.openelis.report.Prompt;
+import org.openelis.util.SessionManager;
 
-    public void onModuleLoad() {
-        // TODO Auto-generated method stub
-
+public class FinalReportService {    
+    
+    public ArrayList<Prompt> getPromptsForSingle() throws Exception{
+        return remote().getPromptsForSingle();      
     }
+    
+    public ReportStatus runReportForSingle(Query query) throws Exception { 
+        ReportStatus st;
+        
+        st = remote().runReportForSingle(query.getFields());
+        if (st.getStatus() == ReportStatus.Status.SAVED)
+            SessionManager.getSession().setAttribute(st.getMessage(), st);
 
+        return st;
+    }
+    
+    private FinalReportRemote remote() {
+        return (FinalReportRemote)EJBFactory.lookup("openelis/FinalReportBean/remote");
+    } 
 }
+
+

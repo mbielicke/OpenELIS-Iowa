@@ -60,7 +60,6 @@ public class HostedFilter implements Filter {
         log.debug("Initializing the Application.");
 
         ServiceUtils.props = "org.openelis.constants.OpenELISConstants";
-        OpenELISScreenService.APP_ROOT = config.getInitParameter("AppRoot");
         //JMSMessageConsumer.startListener("topic/openelisTopic");
 
         locale = config.getInitParameter("Locale");
@@ -94,7 +93,7 @@ public class HostedFilter implements Filter {
         //
         // check to see if we have logged in session
         //
-        if (hreq.getSession().getAttribute("jndiProps") == null) {
+        if (hreq.getSession().getAttribute("USER_NAME") == null) {
             try {
                 login(hreq, user, password, hreq.getRemoteAddr());
                 //
@@ -116,7 +115,6 @@ public class HostedFilter implements Filter {
     }
 
     public void destroy() {
-        CachingManager.destroy();
     }
 
     /*
@@ -162,5 +160,4 @@ public class HostedFilter implements Filter {
             throw e;
         }
     }
-
 }

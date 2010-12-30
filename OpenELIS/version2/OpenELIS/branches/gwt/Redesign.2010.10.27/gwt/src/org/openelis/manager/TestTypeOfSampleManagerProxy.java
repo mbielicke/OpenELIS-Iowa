@@ -32,7 +32,7 @@ public class TestTypeOfSampleManagerProxy {
     protected ScreenService       service;
 
     public TestTypeOfSampleManagerProxy() {
-        service = new ScreenService("OpenELISServlet?service=" + TEST_MANAGER_SERVICE_URL);
+        service = new ScreenService("controller?service=" + TEST_MANAGER_SERVICE_URL);
     }
 
     public TestTypeOfSampleManager fetchByTestId(Integer testId) throws Exception {

@@ -36,7 +36,7 @@ public class QuickEntryService {
     
     public ArrayList<TestMethodSampleTypeVO> fetchTestMethodSampleTypeList() throws Exception {
         try{
-            return testRemote().getTestMethodSampleTypeList();
+            return testRemote().fetchTestMethodSampleTypeList();
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }

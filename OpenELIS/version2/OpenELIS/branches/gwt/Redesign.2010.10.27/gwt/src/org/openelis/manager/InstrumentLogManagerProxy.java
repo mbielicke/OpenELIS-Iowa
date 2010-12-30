@@ -32,7 +32,7 @@ public class InstrumentLogManagerProxy {
     protected ScreenService       service;
     
     public InstrumentLogManagerProxy() {
-        service = new ScreenService("OpenELISServlet?service=" + INSTRUMENT_MANAGER_SERVICE_URL);
+        service = new ScreenService("controller?service=" + INSTRUMENT_MANAGER_SERVICE_URL);
     }
     
     public InstrumentLogManager fetchByInstrumentId(Integer id) throws Exception {

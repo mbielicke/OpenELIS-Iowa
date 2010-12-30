@@ -44,7 +44,7 @@
 			<jvmarg value="-Xmx2048M" />
 			<!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
 			<arg value="org.openelis.OpenELIS" />
-			<arg value="-draftCompile" />
+			<arg value="-draftCompile" /> 
 		</java>
 	</target>
 
@@ -80,6 +80,7 @@
 				<include name="org/openelis/messages/*.class" />
 				<include name="org/openelis/meta/*.class" />
 				<include name="org/openelis/remote/*.class" />
+				<include name="org/openelis/report/*.class" />
 				<include name="org/openelis/utilcommon/*.class" />
 			</fileset>
 		</jar>
@@ -91,8 +92,7 @@
 
 		<war destfile="build/openelis.war" webxml="metadata/openelis-web.xml">
 			<webinf dir="metadata" includes="stylesheet/**/*" />
-			<metainf dir="metadata" includes="context.xml, ehcache.xml" />
-			<fileset dir="metadata" excludes="stylesheet/**/**, openelis-web.xml, context.xml, ehcache.xml" />
+			<metainf dir="metadata" includes="context.xml" />
 			<fileset dir="war/openelis">
 			</fileset>
 			<classes dir="war/WEB-INF/classes" includes="org/openelis/**/*" />

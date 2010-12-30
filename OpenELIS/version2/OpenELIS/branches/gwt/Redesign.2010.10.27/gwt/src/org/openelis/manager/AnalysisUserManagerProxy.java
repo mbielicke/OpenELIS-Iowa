@@ -36,7 +36,7 @@ public class AnalysisUserManagerProxy {
     protected ScreenService       service;
 
     public AnalysisUserManagerProxy() {
-        service = new ScreenService("OpenELISServlet?service=" + ANALYSIS_USER_SERVICE_URL);
+        service = new ScreenService("controller?service=" + ANALYSIS_USER_SERVICE_URL);
     }
 
     public AnalysisUserManager fetchByAnalysisId(Integer analysisId) throws Exception {

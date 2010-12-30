@@ -38,7 +38,7 @@ public class InventoryItemCache {
     private static InventoryItemCache           instance = new InventoryItemCache();  
     
     protected InventoryItemCache() {
-        service = new ScreenService("OpenELISServlet?service="+INVENTORY_ITEM_CACHE_SERVICE_URL);
+        service = new ScreenService("controller?service="+INVENTORY_ITEM_CACHE_SERVICE_URL);
         
         idList = new HashMap<Integer, InventoryItemDO>();
         OpenELIS.getCacheList().put("InventoryItemsCache-id", idList);

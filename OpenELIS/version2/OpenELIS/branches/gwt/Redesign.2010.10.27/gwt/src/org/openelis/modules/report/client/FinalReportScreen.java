@@ -23,33 +23,32 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.modules.report.client;
 
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.screen.ScreenDef;
 import org.openelis.gwt.services.ScreenService;
 
-public class WorksheetQcResultManagerProxy {
-    protected static final String WORKSHEET_MANAGER_SERVICE_URL = "org.openelis.modules.worksheet.server.WorksheetService";
-    protected ScreenService service;
-    
-    public WorksheetQcResultManagerProxy(){
-        service = new ScreenService("controller?service="+WORKSHEET_MANAGER_SERVICE_URL);
-    }
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 
-    public WorksheetQcResultManager fetchByWorksheetAnalysisId(Integer worksheetAnalysisId) throws Exception {
-        return service.call("fetchWorksheeetQcResultByWorksheetAnalysisId", worksheetAnalysisId);
-    }
+public class FinalReportScreen extends ReportScreen {
 
-    public WorksheetQcResultManager add(WorksheetQcResultManager manager) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
-
-    public WorksheetQcResultManager update(WorksheetQcResultManager manager) throws Exception {
-        assert false : "not supported";
-        return null;
+    public FinalReportScreen() throws Exception {         
+        drawScreen(new ScreenDef());        
+        getPromptsInterface = "getPromptsForSingle";
+        runReportInterface = "runReportForSingle";        
+        service = new ScreenService("controller?service=org.openelis.modules.report.server.FinalReportService");
+        
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                postConstructor();
+            }
+        });
     }
     
-    public void validate(WorksheetQcResultManager manager, ValidationErrorsList errorList) {
-    }
+    private void postConstructor() {
+        setTitle(consts.get("finalReportSingleReprint"));
+        initialize();        
+    }   
+    
 }

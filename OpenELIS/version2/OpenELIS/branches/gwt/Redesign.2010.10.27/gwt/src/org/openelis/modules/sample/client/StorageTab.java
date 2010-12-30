@@ -82,7 +82,7 @@ public class StorageTab extends Screen {
     private Integer                 analysisCancelledId, analysisReleasedId;
 
     public StorageTab(ScreenDefInt def, Window window) {
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.storage.server.StorageService");
+        service = new ScreenService("controller?service=org.openelis.modules.storage.server.StorageService");
         setDefinition(def);
         setWindow(window);
 

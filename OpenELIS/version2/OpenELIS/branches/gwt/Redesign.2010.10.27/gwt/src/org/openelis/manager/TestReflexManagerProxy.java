@@ -37,7 +37,7 @@ public class TestReflexManagerProxy {
     protected ScreenService       service;
 
     public TestReflexManagerProxy() {
-        service = new ScreenService("OpenELISServlet?service=" + TEST_MANAGER_SERVICE_URL);
+        service = new ScreenService("controller?service=" + TEST_MANAGER_SERVICE_URL);
     }
 
     public TestReflexManager fetchByTestId(Integer testId) throws Exception {
