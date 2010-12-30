@@ -50,6 +50,10 @@ public class WorksheetManagerProxy {
         return service.call("fetchWithNotes", worksheetId);
     }
     
+    public WorksheetManager fetchWithItemsAndNotes(Integer worksheetId) throws Exception {
+        return service.call("fetchWithItemsAndNotes", worksheetId);
+    }
+    
     public WorksheetManager add(WorksheetManager man) throws Exception {
         return service.call("add",man);
     }

@@ -36,11 +36,13 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SectionDO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.SectionPermission;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.data.Query;
@@ -83,6 +85,7 @@ import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.TestSectionManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -1022,7 +1025,25 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     }
 
     private boolean canEdit() {
-        return (analysis != null && !analysisCancelledId.equals(analysis.getStatusId()) && !analysisReleasedId.equals(analysis.getStatusId()));
+        SectionPermission perm;
+        SectionViewDO     sectionVDO;
+        
+        if (analysis != null) {
+            if (analysis.getSectionId() == null)
+                return true;
+            
+            try {
+                sectionVDO = SectionCache.getSectionFromId(analysis.getSectionId());
+                perm = OpenELIS.getSystemUserPermission().getSection(sectionVDO.getName());
+                return !analysisCancelledId.equals(analysis.getStatusId()) &&
+                       !analysisReleasedId.equals(analysis.getStatusId()) &&
+                       perm != null &&
+                       (perm.hasAssignPermission() || perm.hasCompletePermission());
+            } catch (Exception anyE) {
+                Window.alert("canEdit:" + anyE.getMessage());
+            }
+        }
+        return false;
     }
 
     private String formatTreeString(String val) {

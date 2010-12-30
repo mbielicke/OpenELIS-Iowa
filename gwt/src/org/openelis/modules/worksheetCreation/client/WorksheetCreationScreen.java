@@ -616,7 +616,36 @@ public class WorksheetCreationScreen extends Screen {
                         newWqrVDO.setQcAnalyteId(wqrVDO.getQcAnalyteId());
                         newWqrVDO.setAnalyteName(wqrVDO.getAnalyteName());
                         newWqrVDO.setTypeId(wqrVDO.getTypeId());
-                        newWqrVDO.setValue(wqrVDO.getValue());
+                        newWqrVDO.setValueAt(0, wqrVDO.getValueAt(0));
+                        newWqrVDO.setValueAt(1, wqrVDO.getValueAt(1));
+                        newWqrVDO.setValueAt(2, wqrVDO.getValueAt(2));
+                        newWqrVDO.setValueAt(3, wqrVDO.getValueAt(3));
+                        newWqrVDO.setValueAt(4, wqrVDO.getValueAt(4));
+                        newWqrVDO.setValueAt(5, wqrVDO.getValueAt(5));
+                        newWqrVDO.setValueAt(6, wqrVDO.getValueAt(6));
+                        newWqrVDO.setValueAt(7, wqrVDO.getValueAt(7));
+                        newWqrVDO.setValueAt(8, wqrVDO.getValueAt(8));
+                        newWqrVDO.setValueAt(9, wqrVDO.getValueAt(9));
+                        newWqrVDO.setValueAt(10, wqrVDO.getValueAt(10));
+                        newWqrVDO.setValueAt(11, wqrVDO.getValueAt(11));
+                        newWqrVDO.setValueAt(12, wqrVDO.getValueAt(12));
+                        newWqrVDO.setValueAt(13, wqrVDO.getValueAt(13));
+                        newWqrVDO.setValueAt(14, wqrVDO.getValueAt(14));
+                        newWqrVDO.setValueAt(15, wqrVDO.getValueAt(15));
+                        newWqrVDO.setValueAt(16, wqrVDO.getValueAt(16));
+                        newWqrVDO.setValueAt(17, wqrVDO.getValueAt(17));
+                        newWqrVDO.setValueAt(18, wqrVDO.getValueAt(18));
+                        newWqrVDO.setValueAt(19, wqrVDO.getValueAt(19));
+                        newWqrVDO.setValueAt(20, wqrVDO.getValueAt(20));
+                        newWqrVDO.setValueAt(21, wqrVDO.getValueAt(21));
+                        newWqrVDO.setValueAt(22, wqrVDO.getValueAt(22));
+                        newWqrVDO.setValueAt(23, wqrVDO.getValueAt(23));
+                        newWqrVDO.setValueAt(24, wqrVDO.getValueAt(24));
+                        newWqrVDO.setValueAt(25, wqrVDO.getValueAt(25));
+                        newWqrVDO.setValueAt(26, wqrVDO.getValueAt(26));
+                        newWqrVDO.setValueAt(27, wqrVDO.getValueAt(27));
+                        newWqrVDO.setValueAt(28, wqrVDO.getValueAt(28));
+                        newWqrVDO.setValueAt(29, wqrVDO.getValueAt(29));
                         newWqrManager.addWorksheetQcResult(newWqrVDO);
                     }
                 }

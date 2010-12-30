@@ -28,9 +28,12 @@ package org.openelis.modules.sample.client;
 import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.SectionCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.NoteViewDO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.SectionPermission;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -44,6 +47,7 @@ import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.HasNotesInt;
 import org.openelis.manager.NoteManager;
 import org.openelis.manager.SampleDataBundle;
+import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.note.client.EditNoteScreen;
 import org.openelis.modules.note.client.NotesTab;
 
@@ -112,7 +116,7 @@ public class AnalysisNotesTab extends NotesTab {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                standardNote.enable( !isReleased() && !isCancelled() &&
+                standardNote.enable(!isReleased() && canEdit() &&
                                     EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
@@ -173,9 +177,8 @@ public class AnalysisNotesTab extends NotesTab {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                internalEditButton.enable( !isCancelled() &&
-                                          EnumSet.of(State.ADD, State.UPDATE)
-                                                 .contains(event.getState()));
+                internalEditButton.enable(canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                              .contains(event.getState()));
             }
         });
     }
@@ -218,6 +221,24 @@ public class AnalysisNotesTab extends NotesTab {
         return (analysis != null && analysisReleasedId.equals(analysis.getStatusId()));
     }
 
+    private boolean canEdit() {
+        SectionPermission perm;
+        SectionViewDO     sectionVDO;
+        
+        if (analysis != null && analysis.getSectionId() != null) {
+            try {
+                sectionVDO = SectionCache.getSectionFromId(analysis.getSectionId());
+                perm = OpenELIS.getSystemUserPermission().getSection(sectionVDO.getName());
+                return !analysisCancelledId.equals(analysis.getStatusId()) &&
+                       perm != null &&
+                       (perm.hasAssignPermission() || perm.hasCompletePermission());
+            } catch (Exception anyE) {
+                Window.alert("canEdit:" + anyE.getMessage());
+            }
+        }
+        return false;
+    }
+    
     private void initializeDropdowns() {
         try {
             analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");

@@ -25,16 +25,15 @@
 */
 package org.openelis.modules.worksheetCompletion.client;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -42,19 +41,12 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.TabPanel;
 
 import org.openelis.cache.DictionaryCache;
-import org.openelis.cache.SectionCache;
-import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InstrumentViewDO;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.ResultViewDO;
-import org.openelis.domain.SectionDO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.SystemVariableDO;
-import org.openelis.domain.WorksheetAnalysisDO;
-import org.openelis.domain.WorksheetItemDO;
-import org.openelis.domain.WorksheetQcResultViewDO;
-import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.ModulePermission;
@@ -87,37 +79,31 @@ import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.manager.AnalysisManager;
-import org.openelis.manager.AnalysisResultManager;
-import org.openelis.manager.QcManager;
 import org.openelis.manager.SampleDataBundle;
-import org.openelis.manager.SampleDomainInt;
-import org.openelis.manager.SampleManager;
-import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetManager;
-import org.openelis.manager.WorksheetQcResultManager;
-import org.openelis.manager.WorksheetResultManager;
 import org.openelis.meta.WorksheetCompletionMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.note.client.EditNoteScreen;
 import org.openelis.modules.note.client.NotesTab;
+import org.openelis.modules.sample.client.ReflexTestUtility;
 import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
 
 public class WorksheetCompletionScreen extends Screen {
 
     private boolean              closeWindow, isPopup;
-    private Integer              formatBatch, statusFailedRun, origStatus;
-    private ArrayList<SectionDO> sections;
+    private Integer              formatBatch, statusWorking, statusFailedRun, origStatus;
     private ScreenService        instrumentService, sysVarService;
     private ModulePermission     userPermission;
     private WorksheetManager     manager;
 
-    private AppButton   lookupWorksheetButton, printButton, updateButton, commitButton,
-                        abortButton, editWorksheetButton, loadFromEditButton, loadFilePopupButton;
-    private NotesTab    noteTab;
-    private Tabs        tab;
-    private TabPanel    tabPanel;
-    private TableWidget table;
+    private AppButton         lookupWorksheetButton, printButton, updateButton,
+                              commitButton, abortButton, editWorksheetButton, loadFromEditButton,
+                              loadFilePopupButton;
+    private NotesTab          noteTab;
+    private ReflexTestUtility reflexTestUtil;
+    private Tabs              tab;
+    private TabPanel          tabPanel;
+    private TableWidget       table;
 
     protected Integer                   userId;
     protected String                    outputFileDirectory, worksheetFileName,
@@ -305,7 +291,15 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                lookupWorksheetButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
+                Integer statusId;
+                
+                if (manager != null && manager.getWorksheet() != null) {
+                    statusId = manager.getWorksheet().getStatusId();
+                    lookupWorksheetButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
+                                                 statusWorking.equals(statusId));
+                } else {
+                    lookupWorksheetButton.enable(false);
+                }
             }
         });
 
@@ -315,7 +309,15 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                instrumentId.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
+                Integer statusId;
+                
+                if (manager != null && manager.getWorksheet() != null) {
+                    statusId = manager.getWorksheet().getStatusId();
+                    instrumentId.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
+                                        statusWorking.equals(statusId));
+                } else {
+                    instrumentId.enable(false);
+                }
             }
         });
 
@@ -379,8 +381,11 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-//                editWorksheetButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
-                editWorksheetButton.enable(Boolean.TRUE);
+                if (manager != null)
+                    editWorksheetButton.enable(userPermission.hasUpdatePermission() &&
+                                               canEditAny());
+                else
+                    editWorksheetButton.enable(false);
             }
         });
 
@@ -391,7 +396,15 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                loadFromEditButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
+                Integer statusId;
+                
+                if (manager != null && manager.getWorksheet() != null) {
+                    statusId = manager.getWorksheet().getStatusId();
+                    loadFromEditButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
+                                              statusWorking.equals(statusId));
+                } else {
+                    loadFromEditButton.enable(false);
+                }
             }
         });
 
@@ -402,8 +415,15 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-//                loadFilePopupButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
-                loadFilePopupButton.enable(Boolean.FALSE);
+//                Integer statusId;
+//                
+//                if (manager != null && manager.getWorksheet() != null) {
+//                    statusId = manager.getWorksheet().getStatusId();
+//                    loadFilePopupButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
+//                                               statusWorking.equals(statusId));
+//                } else {
+                    loadFilePopupButton.enable(Boolean.FALSE);
+//                }
             }
         });
 
@@ -461,6 +481,7 @@ public class WorksheetCompletionScreen extends Screen {
 
         try {
             formatBatch = DictionaryCache.getIdFromSystemName("wsheet_num_format_batch");
+            statusWorking = DictionaryCache.getIdFromSystemName("worksheet_working");
             statusFailedRun = DictionaryCache.getIdFromSystemName("worksheet_failed");
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -506,12 +527,8 @@ public class WorksheetCompletionScreen extends Screen {
             window.setBusy(consts.get("fetching"));
             try {
                 switch (tab) {
-//                    case WORKSHEET:
-//                        manager = WorksheetManager.fetchWithItems(id);
-//                        break;
-                        
                     case NOTE:
-                        manager = WorksheetManager.fetchWithNotes(id);
+                        manager = WorksheetManager.fetchWithItemsAndNotes(id);
                         break;
                 }
                 setState(State.DISPLAY);
@@ -534,10 +551,6 @@ public class WorksheetCompletionScreen extends Screen {
     
     private void drawTabs() {
         switch (tab) {
-//            case WORKSHEET:
-//                table.load(getTableModel());
-//                break;
-                
             case NOTE:
                 noteTab.draw();
                 break;
@@ -638,38 +651,12 @@ public class WorksheetCompletionScreen extends Screen {
         window.setBusy("Saving worksheet for editing");
         try {
             service.call("saveForEdit", manager);
+//            outFileName = getWorksheetOutputFileName(manager.getWorksheet().getId(),
+//                                                     manager.getWorksheet().getSystemUserId());
             worksheetFileName = new String(outputFileDirectory+"Worksheet"+
                                            manager.getWorksheet().getId()+".xls");
-/*
-            worksheetEditConfirm = new Confirm(Confirm.Type.QUESTION, "",
-                                               consts.get("worksheetCompletionEditConfirm")+
-                                               "\n"+worksheetFileName,
-                                               "Open File", "Cancel");
-            worksheetEditConfirm.addSelectionHandler(new SelectionHandler<Integer>(){
-                public void onSelection(SelectionEvent<Integer> event) {
-                    switch(event.getSelectedItem().intValue()) {
-                        case 0:
-                            try {
-*/
-                                window.setDone(consts.get("worksheetCompletionEditConfirm")+
-                                                          " "+worksheetFileName);
-/*
-                                Window.open("file://"+worksheetFileName, "_blank", "");
-                            } catch (Exception anyE) {
-                                Window.alert(anyE.getMessage());
-                                window.clearStatus();
-                            }
-                            break;
-                            
-                        case 1:
-                            window.setDone(consts.get("worksheetCompletionEditCancelled"));
-                            break;
-                    }
-                }
-            });
-            
-            worksheetEditConfirm.show();
-*/
+            window.setDone(consts.get("worksheetCompletionEditConfirm")+
+                                      " "+worksheetFileName);
         } catch (Exception anyE) {
             Window.alert(anyE.getMessage());
             window.clearStatus();
@@ -677,10 +664,28 @@ public class WorksheetCompletionScreen extends Screen {
     }
 
     protected void loadFromEdit() {
+        int                          i;
+        ArrayList<Object>            tempBundle;
+        ArrayList<ArrayList<Object>> reflexBundles;
+        
         window.setBusy("Loading worksheet from edited file");
         try {
             manager = service.call("loadFromEdit", manager);
             DataChangeEvent.fire(this);
+
+            if (reflexTestUtil == null){
+                reflexTestUtil = new ReflexTestUtility();
+                reflexTestUtil.setScreen(this);
+            }
+
+            reflexBundles = manager.getReflexBundles();
+            for (i = 0; i < reflexBundles.size(); i++) {
+                tempBundle = reflexBundles.get(i);
+                reflexTestUtil.resultEntered((SampleDataBundle)tempBundle.get(0),
+                                             (ResultViewDO)tempBundle.get(1));
+            }
+            reflexBundles.clear();
+
             window.setDone("Worksheet loaded");
         } catch (ValidationErrorsList e) {
             showErrors(e);
@@ -797,6 +802,53 @@ public class WorksheetCompletionScreen extends Screen {
         failedRunNote.setSubject(consts.get("failedRunSubject"));
         failedRunNote.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
         editNote.setNote(failedRunNote);
+    }
+
+    private boolean canEditAny() {
+        HashMap<Integer,SectionViewDO> sections;
+        Iterator<SectionViewDO>        iter;
+        SectionViewDO                  section;
+        SectionPermission              perm;
+
+        try {
+            sections = manager.getAnalysisSections();
+            iter = sections.values().iterator();
+            while (iter.hasNext()) {
+                section = iter.next();
+                perm = OpenELIS.getSystemUserPermission().getSection(section.getName());
+                if (perm != null && perm.hasCompletePermission())
+                    return true;
+            }
+        } catch (Exception anyE) {
+            anyE.printStackTrace();
+            Window.alert("Error loading sections for permission check:" + anyE.getMessage());
+        }
+
+        return false;
+    }
+/*    
+    private String getWorksheetOutputFileName(Integer worksheetNumber, Integer userId) throws Exception {
+        ArrayList<SystemVariableDO> sysVars;
+        String                      dirName;
+        SystemUserVO                userVO;
+        
+        dirName = "";
+        try {
+            sysVars = sysVarLocal().fetchByName("worksheet_output_directory", 1);
+            if (sysVars.size() > 0)
+                dirName = ((SystemVariableDO)sysVars.get(0)).getValue();
+        } catch (Exception anyE) {
+            throw new Exception("Error retrieving temp directory variable: "+anyE.getMessage());
+        }
+
+        userVO = null;
+        try {
+            userVO = sysUserLocal().fetchById(userId);
+        } catch (Exception anyE) {
+            throw new Exception("Error retrieving username for worksheet: "+anyE.getMessage());
+        }
+        
+        return dirName+worksheetNumber+"_"+userVO.getLoginName()+".xls";
     }
 /*    
     private ArrayList<TableDataRow> getTableModel() {
@@ -945,26 +997,7 @@ public class WorksheetCompletionScreen extends Screen {
 
         return model;
     }
-*/
-    private boolean canEditAny() {
-        int               i;
-        SectionDO         section;
-        SectionPermission perm;
 
-//        if (sections == null) {
-//            sections = new ArrayList<SectionDO>();
-//        } else {
-//            for (i = 0; i < sections.size(); i++) {
-//                section = sections.get(i);
-//                perm = OpenELIS.getSystemUserPermission().getSection(section.getName());
-//                if (perm != null && perm.hasCompletePermission())
-                    return true;
-//            }
-//        }
-
-//        return false;
-    }
-/*    
     private Object getPositionNumber(int position) {
         int    major, minor;
         Object positionNumber;

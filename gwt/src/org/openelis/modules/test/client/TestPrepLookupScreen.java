@@ -26,8 +26,11 @@
 package org.openelis.modules.test.client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.TestPrepViewDO;
+import org.openelis.domain.TestSectionViewDO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -37,15 +40,19 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
+import org.openelis.manager.TestManager;
 import org.openelis.manager.TestPrepManager;
+import org.openelis.manager.TestSectionManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Window;
 
 public class TestPrepLookupScreen extends Screen implements
                                                 HasActionHandlers<TestPrepLookupScreen.Action> {
@@ -53,8 +60,9 @@ public class TestPrepLookupScreen extends Screen implements
         SELECTED_PREP_ROW, CANCEL
     };
 
-    protected TableWidget   prepTestTable;
-    private TestPrepManager manager;
+    protected TableWidget     prepTestTable;
+    private   Integer         testSectionDefaultId;
+    private   TestPrepManager manager;
 
     public TestPrepLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(TestPrepLookupDef.class));
@@ -64,6 +72,8 @@ public class TestPrepLookupScreen extends Screen implements
 
         // Initialize Screen
         setState(State.DEFAULT);
+        
+        initializeDropdowns();
     }
 
     private void initialize() {
@@ -79,8 +89,34 @@ public class TestPrepLookupScreen extends Screen implements
         });
 
         prepTestTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            @SuppressWarnings("unchecked")
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                event.cancel();
+                int                     i, j;
+                ArrayList<TableDataRow> model;
+                TableDataRow            row;
+                TestSectionManager      tsMan;
+                TestSectionViewDO       tsVDO;
+                //
+                //  
+                //
+                if (event.getCol() == 1) {
+                    model = ((Dropdown<Integer>)prepTestTable.getColumns().get(1).getColumnWidget()).getData();
+                    for (i = 0; i < model.size(); i++) {
+                        row = model.get(i);
+                        tsMan = (TestSectionManager) row.data;
+                        for (j = 0; j < tsMan.count(); j++) {
+                            tsVDO = tsMan.getSectionAt(j);
+                            if (tsVDO.getSectionId().equals(row.key)) {
+                                row.enabled = true;
+                                break;
+                            }
+                        }
+                        if (j == tsMan.count())
+                            row.enabled = false;
+                    }
+                } else {
+                    event.cancel();
+                }
             }
         });
 
@@ -108,14 +144,26 @@ public class TestPrepLookupScreen extends Screen implements
 
     }
 
-    private void ok() {
-        if (validate()) {
-            TableDataRow selectedRow = prepTestTable.getSelection();
-
+    private void initializeDropdowns() {
+        try {
+            testSectionDefaultId = DictionaryCache.getIdFromSystemName("test_section_default");
+        } catch (Exception e) {
+            Window.alert("inializeDropdowns: " + e.getMessage());
             window.close();
+        }
+    }
 
-            //if (selectedRow != null)
+    private void ok() {
+        TableDataRow selectedRow;
+
+        if (validate()) {
+            selectedRow = prepTestTable.getSelection();
+            if (selectedRow.cells.get(1).value == null) {
+                Window.alert("Selected Prep Test must have a Section assigned");
+            } else {
+                window.close();
                 ActionEvent.fire(this, Action.SELECTED_PREP_ROW, selectedRow);
+            }
         }
     }
 
@@ -124,31 +172,61 @@ public class TestPrepLookupScreen extends Screen implements
             window.close();
             ActionEvent.fire(this, Action.CANCEL, null);
         }
-        
-        
     }
 
     public boolean validate() {
         return super.validate();
     }
 
+    @SuppressWarnings("unchecked")
     private ArrayList<TableDataRow> getTableModel() {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+        int                     i, j;
+        Integer                 defaultId;
+        ArrayList<TableDataRow> model, sModel;
+        HashMap<Integer,TestSectionViewDO> sections;
+        TableDataRow            row, sRow;
+        TestManager             tMan;
+        TestPrepViewDO          prepRow;
+        TestSectionManager      tsMan;
+        TestSectionViewDO       tsVDO;
 
+        model = new ArrayList<TableDataRow>();
         if (manager == null)
             return model;
 
+        sections = new HashMap<Integer,TestSectionViewDO>();
         try {
-            for (int iter = 0; iter < manager.count(); iter++ ) {
-                TestPrepViewDO prepRow = (TestPrepViewDO)manager.getPrepAt(iter);
+            sModel = new ArrayList<TableDataRow>();
+            for (i = 0; i < manager.count(); i++) {
+                prepRow = (TestPrepViewDO)manager.getPrepAt(i);
+                defaultId = null;
 
-                TableDataRow row = new TableDataRow(1);
+                tMan = TestManager.fetchById(prepRow.getPrepTestId());
+                tsMan = tMan.getTestSections();
+                for (j = 0; j < tsMan.count(); j++) {
+                    tsVDO = tsMan.getSectionAt(j);
+                    if (testSectionDefaultId.equals(tsVDO.getFlagId()))
+                        defaultId = tsVDO.getSectionId();
+                    if (!sections.containsKey(tsVDO.getSectionId())) {
+                        sRow = new TableDataRow(1);
+                        sRow.key = tsVDO.getSectionId();
+                        sRow.cells.get(0).value = tsVDO.getSection();
+                        sRow.data = tsVDO;
+                        sModel.add(sRow);
+                        sections.put(tsVDO.getSectionId(), tsVDO);
+                    }
+                }
+
+                row = new TableDataRow(2);
                 row.key = prepRow.getPrepTestId();
-
                 row.cells.get(0).value = prepRow.getPrepTestName() + ", " + prepRow.getMethodName();
+                if (defaultId != null)
+                    row.cells.get(1).value = defaultId;
+                row.data = tsMan;
 
                 model.add(row);
             }
+            ((Dropdown<Integer>)prepTestTable.getColumns().get(1).getColumnWidget()).setModel(sModel);
         } catch (Exception e) {
 
             e.printStackTrace();

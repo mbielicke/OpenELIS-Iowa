@@ -32,6 +32,7 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.TestPrepViewDO;
+import org.openelis.domain.TestSectionViewDO;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
@@ -46,6 +47,7 @@ import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestPrepManager;
+import org.openelis.manager.TestSectionManager;
 import org.openelis.modules.test.client.TestPrepLookupScreen;
 
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -106,6 +108,19 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
      * @throws Exception
      */
     public void lookup(SampleDataBundle analysisDataBundle, Type type, Integer id) throws Exception {
+        lookup(analysisDataBundle, type, id, null);
+    }
+    
+    /**
+     * This method is used under normal circumstances.  It is used when a test/panel
+     * has been added via the quick entry screen and needs to add the records and check for preps.
+     * @param analysisDataBundle
+     * @param type
+     * @param id
+     * @param sectionId
+     * @throws Exception
+     */
+    public void lookup(SampleDataBundle analysisDataBundle, Type type, Integer id, TestSectionViewDO tsVDO) throws Exception {
         ArrayList<IdVO> testIds;
 
         assert manager != null : "manager is null";
@@ -124,7 +139,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
             testIds.add(new IdVO(id));
         }
 
-        processTestListAndCheckPrepTests(testIds);
+        processTestListAndCheckPrepTests(testIds, tsVDO);
     }
     
     /**
@@ -171,14 +186,14 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
             testIds.add(new IdVO(testDO.getTestId()));
         }
 
-        processTestListAndCheckPrepTests(testIds);
+        processTestListAndCheckPrepTests(testIds, null);
     }
 
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
         return addHandler(handler, ActionEvent.getType());
     }
 
-    private void processTestListAndCheckPrepTests(ArrayList<IdVO> testIds) throws Exception {
+    private void processTestListAndCheckPrepTests(ArrayList<IdVO> testIds, TestSectionViewDO tsVDO) throws Exception {
         IdVO idVO;
         AnalysisManager anMan;
         TestManager testMan;
@@ -192,7 +207,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
             if (idVO.getId() != null) {
                 testMan = TestManager.fetchWithPrepTestsSampleTypes(idVO.getId());
 
-                if (testMan.canAssign()) {
+                if (testMan.canAssignThisSection(tsVDO)) {
                     if (i == 0) // the first test id row will be in the analysis
                                 // manager already
                         addedIndex = analysisDataBundle.getAnalysisIndex();
@@ -200,11 +215,21 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
                         addedIndex = anMan.addAnalysis();
 
                     anMan.setTestAt(testMan, addedIndex);
+                    if (tsVDO != null)
+                        anMan.getAnalysisAt(addedIndex).setSectionId(tsVDO.getSectionId());
+
                     updateAnalysisAndCheckForPreps(anMan, addedIndex, testMan);
                 } else {
-                    errorsList.add(new FormErrorException("insufficientPrivilegesAddTest",
-                                                          testMan.getTest().getName(),
-                                                          testMan.getTest().getMethodName()));
+                    if (tsVDO != null) {
+                        errorsList.add(new FormErrorException("insufficientPrivilegesAddTestForSection",
+                                                              testMan.getTest().getName(),
+                                                              testMan.getTest().getMethodName(),
+                                                              tsVDO.getSection()));
+                    } else {
+                        errorsList.add(new FormErrorException("insufficientPrivilegesAddTest",
+                                                              testMan.getTest().getName(),
+                                                              testMan.getTest().getMethodName()));
+                    }
                 }
             } else{
                 anMan.removeTestAt(analysisDataBundle.getAnalysisIndex());
@@ -253,7 +278,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
                     drawTestPrepScreen(anMan, anBundle, prepMan, anDO.getTestName() + ", " +
                                                                  anDO.getMethodName());
                 else
-                    selectedPrepTest(anMan, anBundle, requiredTestPrepDO.getPrepTestId());
+                    selectedPrepTest(anMan, anBundle, requiredTestPrepDO.getPrepTestId(), null);
             }
 
         } catch (Exception e) {
@@ -267,8 +292,11 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
     //
     private void selectedPrepTest(AnalysisManager anMan,
                                   SampleDataBundle parentBundle,
-                                  Integer prepTestId) {
+                                  Integer prepTestId,
+                                  Integer sectionId) {
         TestManager testMan;
+        TestSectionManager tsMan;
+        TestSectionViewDO tsVDO;
         AnalysisViewDO anDO, prepDO;
         int addedIndex;
 
@@ -287,22 +315,38 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
             testMan = null;
             try {
                 testMan = TestManager.fetchWithPrepTestsSampleTypes(prepTestId);
-
+                if (sectionId == null) {
+                    tsMan = testMan.getTestSections();
+                    tsVDO = tsMan.getDefaultSection();
+                    if (tsVDO == null) {
+                        // TODO
+                    }
+                } else {
+                    tsVDO = new TestSectionViewDO();
+                    tsVDO.setSectionId(sectionId);
+                }
+                if (testMan.canAssignThisSection(tsVDO)) {
+                    addedIndex = anMan.addPreAnalysis(parentBundle.getAnalysisIndex());
+                    anDO = anMan.getAnalysisAt(addedIndex);
+                    anMan.setTestAt(testMan, addedIndex);
+    
+                    updateAnalysisAndCheckForPreps(anMan, addedIndex, testMan);
+                } else {
+                    if (tsVDO != null) {
+                        errorsList.add(new FormErrorException("insufficientPrivilegesAddTestForSection",
+                                                              testMan.getTest().getName(),
+                                                              testMan.getTest().getMethodName(),
+                                                              tsVDO.getSection()));
+                    } else {
+                        errorsList.add(new FormErrorException("insufficientPrivilegesAddTest",
+                                                              testMan.getTest().getName(),
+                                                              testMan.getTest().getMethodName()));
+                    }
+                }
             } catch (Exception e) {
                 Window.alert(e.getMessage());
             }
             
-            if (testMan.canAssign()) {
-                addedIndex = anMan.addPreAnalysis(parentBundle.getAnalysisIndex());
-                anDO = anMan.getAnalysisAt(addedIndex);
-                anMan.setTestAt(testMan, addedIndex);
-
-                updateAnalysisAndCheckForPreps(anMan, addedIndex, testMan);
-            } else {
-                errorsList.add(new FormErrorException("insufficientPrivilegesAddTest",
-                                          testMan.getTest().getName(),
-                                          testMan.getTest().getMethodName()));
-            }
         }
     }
 
@@ -332,7 +376,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
             prepPickerScreen.addActionHandler(new ActionHandler<TestPrepLookupScreen.Action>() {
                 public void onAction(ActionEvent<TestPrepLookupScreen.Action> event) {
                     TableDataRow selectedRow;
-                    Integer testId;
+                    Integer testId, sectionId;
                     /*if (event.getAction() == TestPrepLookupScreen.Action.SELECTED_PREP_ROW) {
                         TableDataRow selectedRow;
                         Integer testId;
@@ -350,7 +394,8 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
                         selectedRow = (TableDataRow)event.getData();
                         if (selectedRow != null) { 
                             testId = (Integer)selectedRow.key;
-                            selectedPrepTest(anMan, parentBundle, testId);
+                            sectionId = (Integer)selectedRow.cells.get(1).value;
+                            selectedPrepTest(anMan, parentBundle, testId, sectionId);
                         }
                     } else {
                         numberOfPrepScreensDrawn-- ;
