@@ -78,272 +78,272 @@ import org.openelis.utils.Auditable;
 @EntityListeners({AuditUtil.class})
 public class Analysis implements Auditable, Cloneable {
   
-  @Id
-  @GeneratedValue
-  @Column(name="id")
-  private Integer id;             
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private Integer                     id;
 
-  @Column(name="sample_item_id")
-  private Integer sampleItemId;             
+    @Column(name = "sample_item_id")
+    private Integer                     sampleItemId;
 
-  @Column(name="revision")
-  private Integer revision;             
+    @Column(name = "revision")
+    private Integer                     revision;
 
-  @Column(name="test_id")
-  private Integer testId;             
+    @Column(name = "test_id")
+    private Integer                     testId;
 
-  @Column(name="section_id")
-  private Integer sectionId;             
+    @Column(name = "section_id")
+    private Integer                     sectionId;
 
-  @Column(name="pre_analysis_id")
-  private Integer preAnalysisId;             
+    @Column(name = "pre_analysis_id")
+    private Integer                     preAnalysisId;
 
-  @Column(name="parent_analysis_id")
-  private Integer parentAnalysisId;             
+    @Column(name = "parent_analysis_id")
+    private Integer                     parentAnalysisId;
 
-  @Column(name="parent_result_id")
-  private Integer parentResultId;             
+    @Column(name = "parent_result_id")
+    private Integer                     parentResultId;
 
-  @Column(name="is_reportable")
-  private String isReportable;             
+    @Column(name = "is_reportable")
+    private String                      isReportable;
 
-  @Column(name="unit_of_measure_id")
-  private Integer unitOfMeasureId;             
+    @Column(name = "unit_of_measure_id")
+    private Integer                     unitOfMeasureId;
 
-  @Column(name="status_id")
-  private Integer statusId;             
+    @Column(name = "status_id")
+    private Integer                     statusId;
 
-  @Column(name="available_date")
-  private Date availableDate;             
+    @Column(name = "available_date")
+    private Date                        availableDate;
 
-  @Column(name="started_date")
-  private Date startedDate;             
+    @Column(name = "started_date")
+    private Date                        startedDate;
 
-  @Column(name="completed_date")
-  private Date completedDate;             
+    @Column(name = "completed_date")
+    private Date                        completedDate;
 
-  @Column(name="released_date")
-  private Date releasedDate;             
+    @Column(name = "released_date")
+    private Date                        releasedDate;
 
-  @Column(name="printed_date")
-  private Date printedDate;             
+    @Column(name = "printed_date")
+    private Date                        printedDate;
 
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "sample_item_id", insertable = false, updatable = false)
-  private SampleItem sampleItem;
-  
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "pre_analysis_id", insertable = false, updatable = false)
-  private Analysis preAnalysis;
-  
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "test_id", insertable = false, updatable = false)
-  private Test test;
-  
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "section_id", insertable = false, updatable = false)
-  private Section section;
-  
-  //analysis qa events
-  @OneToMany(fetch = FetchType.LAZY)
-  @JoinColumn(name = "analysis_id")
-  private Collection<AnalysisQaevent> analysisQAEvent;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sample_item_id", insertable = false, updatable = false)
+    private SampleItem                  sampleItem;
 
-  @Transient
-  private Analysis original;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pre_analysis_id", insertable = false, updatable = false)
+    private Analysis                    preAnalysis;
 
-  
-  public Integer getId() {
-    return id;
-  }
-  
-  protected void setId(Integer id) {
-    if(DataBaseUtil.isDifferent(id, this.id))
-      this.id = id;
-  }
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "test_id", insertable = false, updatable = false)
+    private Test                        test;
 
-  public Integer getSampleItemId() {
-    return sampleItemId;
-  }
-  
-  public void setSampleItemId(Integer sampleItemId) {
-    if(DataBaseUtil.isDifferent(sampleItemId, this.sampleItemId))
-      this.sampleItemId = sampleItemId;
-  }
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "section_id", insertable = false, updatable = false)
+    private Section                     section;
 
-  public Integer getRevision() {
-    return revision;
-  }
-  
-  public void setRevision(Integer revision) {
-    if(DataBaseUtil.isDifferent(revision, this.revision))
-      this.revision = revision;
-  }
+    // analysis qa events
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "analysis_id")
+    private Collection<AnalysisQaevent> analysisQAEvent;
 
-  public Integer getTestId() {
-    return testId;
-  }
-  
-  public void setTestId(Integer testId) {
-    if(DataBaseUtil.isDifferent(testId, this.testId))
-      this.testId = testId;
-  }
+    @Transient
+    private Analysis                    original;
 
-  public Integer getSectionId() {
-    return sectionId;
-  }
-  
-  public void setSectionId(Integer sectionId) {
-    if(DataBaseUtil.isDifferent(sectionId, this.sectionId))
-      this.sectionId = sectionId;
-  }
+    public Integer getId() {
+        return id;
+    }
 
-  public Integer getPreAnalysisId() {
-    return preAnalysisId;
-  }
-  
-  public void setPreAnalysisId(Integer preAnalysisId) {
-    if(DataBaseUtil.isDifferent(preAnalysisId, this.preAnalysisId))
-      this.preAnalysisId = preAnalysisId;
-  }
+    protected void setId(Integer id) {
+        if (DataBaseUtil.isDifferent(id, this.id))
+            this.id = id;
+    }
 
-  public Integer getParentAnalysisId() {
-    return parentAnalysisId;
-  }
-  
-  public void setParentAnalysisId(Integer parentAnalysisId) {
-    if(DataBaseUtil.isDifferent(parentAnalysisId, this.parentAnalysisId))
-      this.parentAnalysisId = parentAnalysisId;
-  }
+    public Integer getSampleItemId() {
+        return sampleItemId;
+    }
 
-  public Integer getParentResultId() {
-    return parentResultId;
-  }
-  public void setParentResultId(Integer parentResultId) {
-    if(DataBaseUtil.isDifferent(parentResultId, this.parentResultId))
-      this.parentResultId = parentResultId;
-  }
+    public void setSampleItemId(Integer sampleItemId) {
+        if (DataBaseUtil.isDifferent(sampleItemId, this.sampleItemId))
+            this.sampleItemId = sampleItemId;
+    }
 
-  public String getIsReportable() {
-    return isReportable;
-  }
-  
-  public void setIsReportable(String isReportable) {
-    if(DataBaseUtil.isDifferent(isReportable, this.isReportable ))
-      this.isReportable = isReportable;
-  }
+    public Integer getRevision() {
+        return revision;
+    }
 
-  public Integer getUnitOfMeasureId() {
-    return unitOfMeasureId;
-  }
-  
-  public void setUnitOfMeasureId(Integer unitOfMeasureId) {
-    if(DataBaseUtil.isDifferent(unitOfMeasureId, this.unitOfMeasureId))
-      this.unitOfMeasureId = unitOfMeasureId;
-  }
+    public void setRevision(Integer revision) {
+        if (DataBaseUtil.isDifferent(revision, this.revision))
+            this.revision = revision;
+    }
 
-  public Integer getStatusId() {
-    return statusId;
-  }
-  
-  public void setStatusId(Integer statusId) {
-    if(DataBaseUtil.isDifferent(statusId, this.statusId))
-      this.statusId = statusId;
-  }
+    public Integer getTestId() {
+        return testId;
+    }
 
-  public Datetime getAvailableDate() {
-      return DataBaseUtil.toYM(availableDate);
-  }
-  
-  public void setAvailableDate (Datetime availableDate){
-      if(DataBaseUtil.isDifferentYM(availableDate, this.availableDate))
-          this.availableDate = DataBaseUtil.toDate(availableDate);
-  }
+    public void setTestId(Integer testId) {
+        if (DataBaseUtil.isDifferent(testId, this.testId))
+            this.testId = testId;
+    }
 
-  public Datetime getStartedDate() {
-      return DataBaseUtil.toYM(startedDate);
-  }
-  
-  public void setStartedDate (Datetime startedDate){
-      if(DataBaseUtil.isDifferentYM(startedDate, this.startedDate))
-          this.startedDate = DataBaseUtil.toDate(startedDate);
-  }
+    public Integer getSectionId() {
+        return sectionId;
+    }
 
-  public Datetime getCompletedDate() {
-      return DataBaseUtil.toYM(completedDate);
-  }
-  
-  public void setCompletedDate (Datetime completedDate){
-      if(DataBaseUtil.isDifferentYM(completedDate, this.completedDate))
-          this.completedDate = DataBaseUtil.toDate(completedDate);
-  }
+    public void setSectionId(Integer sectionId) {
+        if (DataBaseUtil.isDifferent(sectionId, this.sectionId))
+            this.sectionId = sectionId;
+    }
 
-  public Datetime getReleasedDate() {
-      return DataBaseUtil.toYM(releasedDate);
-  }
-  
-  public void setReleasedDate (Datetime releasedDate){
-      if(DataBaseUtil.isDifferentYM(releasedDate, this.releasedDate))
-          this.releasedDate = DataBaseUtil.toDate(releasedDate);
-  }
+    public Integer getPreAnalysisId() {
+        return preAnalysisId;
+    }
 
-  public Datetime getPrintedDate() {
-      return DataBaseUtil.toYM(printedDate);
-  }
-  
-  public void setPrintedDate (Datetime printedDate){
-      if(DataBaseUtil.isDifferentYM(printedDate, this.printedDate))
-        this.printedDate = DataBaseUtil.toDate(printedDate);
-  }
-  
-  public Test getTest() {
-      return test;
-  }
-  
-  public void setTest(Test test) {
-      this.test = test;
-  }
-  
-  public Collection<AnalysisQaevent> getAnalysisQAEvent() {
-      return analysisQAEvent;
-  }
-  
-  public void setAnalysisQAEvent(Collection<AnalysisQaevent> analysisQAEvent) {
-      this.analysisQAEvent = analysisQAEvent;
-  }
-  
-  public SampleItem getSampleItem() {
-      return sampleItem;
-  }
-  
-  public void setSampleItem(SampleItem sampleItem) {
-      this.sampleItem = sampleItem;
-  }
-  
-  public Analysis getPreAnalysis() {
-      return preAnalysis;
-  }
-  
-  public void setPreAnalysis(Analysis preAnalysis) {
-      this.preAnalysis = preAnalysis;
-  }
-  
-  public Section getSection() {
-      return section;
-  }
-  
-  public void setSection(Section section) {
-      this.section = section;
-  }
-  
-  public void setClone() {
-    try {
+    public void setPreAnalysisId(Integer preAnalysisId) {
+        if (DataBaseUtil.isDifferent(preAnalysisId, this.preAnalysisId))
+            this.preAnalysisId = preAnalysisId;
+    }
+
+    public Integer getParentAnalysisId() {
+        return parentAnalysisId;
+    }
+
+    public void setParentAnalysisId(Integer parentAnalysisId) {
+        if (DataBaseUtil.isDifferent(parentAnalysisId, this.parentAnalysisId))
+            this.parentAnalysisId = parentAnalysisId;
+    }
+
+    public Integer getParentResultId() {
+        return parentResultId;
+    }
+
+    public void setParentResultId(Integer parentResultId) {
+        if (DataBaseUtil.isDifferent(parentResultId, this.parentResultId))
+            this.parentResultId = parentResultId;
+    }
+
+    public String getIsReportable() {
+        return isReportable;
+    }
+
+    public void setIsReportable(String isReportable) {
+        if (DataBaseUtil.isDifferent(isReportable, this.isReportable))
+            this.isReportable = isReportable;
+    }
+
+    public Integer getUnitOfMeasureId() {
+        return unitOfMeasureId;
+    }
+
+    public void setUnitOfMeasureId(Integer unitOfMeasureId) {
+        if (DataBaseUtil.isDifferent(unitOfMeasureId, this.unitOfMeasureId))
+            this.unitOfMeasureId = unitOfMeasureId;
+    }
+
+    public Integer getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(Integer statusId) {
+        if (DataBaseUtil.isDifferent(statusId, this.statusId))
+            this.statusId = statusId;
+    }
+
+    public Datetime getAvailableDate() {
+        return DataBaseUtil.toYM(availableDate);
+    }
+
+    public void setAvailableDate(Datetime availableDate) {
+        if (DataBaseUtil.isDifferentYM(availableDate, this.availableDate))
+            this.availableDate = DataBaseUtil.toDate(availableDate);
+    }
+
+    public Datetime getStartedDate() {
+        return DataBaseUtil.toYM(startedDate);
+    }
+
+    public void setStartedDate(Datetime startedDate) {
+        if (DataBaseUtil.isDifferentYM(startedDate, this.startedDate))
+            this.startedDate = DataBaseUtil.toDate(startedDate);
+    }
+
+    public Datetime getCompletedDate() {
+        return DataBaseUtil.toYM(completedDate);
+    }
+
+    public void setCompletedDate(Datetime completedDate) {
+        if (DataBaseUtil.isDifferentYM(completedDate, this.completedDate))
+            this.completedDate = DataBaseUtil.toDate(completedDate);
+    }
+
+    public Datetime getReleasedDate() {
+        return DataBaseUtil.toYM(releasedDate);
+    }
+
+    public void setReleasedDate(Datetime releasedDate) {
+        if (DataBaseUtil.isDifferentYM(releasedDate, this.releasedDate))
+            this.releasedDate = DataBaseUtil.toDate(releasedDate);
+    }
+
+    public Datetime getPrintedDate() {
+        return DataBaseUtil.toYM(printedDate);
+    }
+
+    public void setPrintedDate(Datetime printedDate) {
+        if (DataBaseUtil.isDifferentYM(printedDate, this.printedDate))
+            this.printedDate = DataBaseUtil.toDate(printedDate);
+    }
+
+    public Test getTest() {
+        return test;
+    }
+
+    public void setTest(Test test) {
+        this.test = test;
+    }
+
+    public Collection<AnalysisQaevent> getAnalysisQAEvent() {
+        return analysisQAEvent;
+    }
+
+    public void setAnalysisQAEvent(Collection<AnalysisQaevent> analysisQAEvent) {
+        this.analysisQAEvent = analysisQAEvent;
+    }
+
+    public SampleItem getSampleItem() {
+        return sampleItem;
+    }
+
+    public void setSampleItem(SampleItem sampleItem) {
+        this.sampleItem = sampleItem;
+    }
+
+    public Analysis getPreAnalysis() {
+        return preAnalysis;
+    }
+
+    public void setPreAnalysis(Analysis preAnalysis) {
+        this.preAnalysis = preAnalysis;
+    }
+
+    public Section getSection() {
+        return section;
+    }
+
+    public void setSection(Section section) {
+        this.section = section;
+    }
+
+    public void setClone() {
+        try {
             original = (Analysis)this.clone();
         } catch (Exception e) {
             e.printStackTrace();
         }
-  }
-  
+    }
+ 
   public Audit getAudit() {
         Audit audit;
 
