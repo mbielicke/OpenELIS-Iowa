@@ -50,39 +50,6 @@ import org.openelis.local.SystemVariableLocal;
 public class ReportUtil {
 
     /**
-     * Concats two strings together. Null parameters are ignored.
-     */
-    public static String concat(Object a, Object b) {
-        StringBuffer buf;
-
-        buf = new StringBuffer();
-        if (a != null)
-            buf.append(a.toString().trim());
-        if (b != null)
-            buf.append(b.toString().trim());
-
-        return buf.toString();
-    }
-
-    /**
-     * Concats two strings together with the specified delimiter. Null
-     * parameters are ignored and the delimiter is not used.
-     */
-    public static String concatWithSeparator(Object a, Object s, Object b) {
-        StringBuffer buf;
-
-        buf = new StringBuffer();
-        if (a != null)
-            buf.append(a.toString().trim());
-        if (b != null) {
-            if (a != null)
-                buf.append(s);
-            buf.append(b.toString().trim());
-        }
-        return buf.toString();
-    }
-
-    /**
      * Converts the arraylist of QueryData to a hashmap with querydata.key as
      * the hashmap key.
      */
@@ -173,8 +140,6 @@ public class ReportUtil {
      * NOTE: This method is very "lpr" and "cups" dependent and will not work on non unix platforms.
      */
     public static String print(File file, String destination, int copies, String... options) throws Exception {
-        Process p;
-        byte err[];
         String status;
         StringBuffer sb;
 
