@@ -130,7 +130,7 @@ WHERE
 				<textElement>
 					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{s_collection_time}]]></textFieldExpression>
+				<textFieldExpression class="java.sql.Time"><![CDATA[$F{s_collection_time}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="398" y="72" width="178" height="12"/>
