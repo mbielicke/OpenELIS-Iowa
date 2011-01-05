@@ -5,6 +5,7 @@
 	<property name="ireport.y" value="0"/>
 	<parameter name="REFERENCE_ID" class="java.lang.Integer"/>
 	<parameter name="REFERENCE_TABLE_ID" class="java.lang.Integer"/>
+	<parameter name="BUFF" class="java.lang.StringBuffer"/>
 	<queryString>
 		<![CDATA[SELECT
      note.text AS note_text
@@ -16,13 +17,13 @@ WHERE
 	</queryString>
 	<field name="note_text" class="java.lang.String"/>
 	<detail>
-		<band height="12" splitType="Stretch">
+		<band splitType="Stretch">
 			<textField isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="520" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement x="0" y="0" width="520" height="0" isRemoveLineWhenBlank="true"/>
 				<textElement>
 					<font fontName="Times New Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{note_text}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{BUFF}.append($F{note_text}).append(' ') ? null : null]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

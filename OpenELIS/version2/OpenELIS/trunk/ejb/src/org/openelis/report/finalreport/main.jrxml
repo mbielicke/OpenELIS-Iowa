@@ -6,7 +6,7 @@
 	<parameter name="ACCESSION_NUMBER" class="java.lang.String">
 		<defaultValueExpression><![CDATA["32"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="ORGANIZATION_ID" class="java.lang.String">
+	<parameter name="ORGANIZATION_ID" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA["0"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
@@ -99,19 +99,6 @@ WHERE
 		<band height="12" splitType="Stretch">
 			<subreport>
 				<reportElement x="0" y="0" width="576" height="12">
-					<printWhenExpression><![CDATA[$F{s_domain}.equals("E")]]></printWhenExpression>
-				</reportElement>
-				<subreportParameter name="ACCESSION_NUMBER">
-					<subreportParameterExpression><![CDATA[$F{s_accession_number}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="SAMPLE_ORGANIZATION_ID">
-					<subreportParameterExpression><![CDATA[$F{so_id}]]></subreportParameterExpression>
-				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleEnvironmental.jasper"]]></subreportExpression>
-			</subreport>
-			<subreport>
-				<reportElement x="0" y="0" width="576" height="12">
 					<printWhenExpression><![CDATA[$F{s_domain}.equals("W")]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="SUBREPORT_DIR">
@@ -136,7 +123,7 @@ WHERE
 				<text><![CDATA[Results of Analyses]]></text>
 			</staticText>
 			<subreport isUsingCache="true">
-				<reportElement positionType="Float" isPrintRepeatedValues="false" x="0" y="12" width="550" height="12"/>
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="0" y="12" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SAMPLE_ID">
 					<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -144,7 +131,7 @@ WHERE
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleQaeventNote.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement positionType="Float" x="0" y="24" width="550" height="12"/>
+				<reportElement positionType="Float" x="0" y="24" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SAMPLE_ID">
 					<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
 				</subreportParameter>
