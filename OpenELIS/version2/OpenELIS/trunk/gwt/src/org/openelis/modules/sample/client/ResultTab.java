@@ -249,16 +249,12 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                 data = null;
 
                 val = (String)testResultsTable.getObject(row, col);
-
-                if (col == 0)
+                if (col == 0) {
                     data = displayManager.getObjectAt(row, 0);
-                else
+                    data.setIsReportable(val);
+                } else if ( !DataBaseUtil.isEmpty(val)) {
                     data = displayManager.getObjectAt(row, col - 2);
 
-                if (col == 0) {
-                    data.setIsReportable(val);
-
-                } else if ( !DataBaseUtil.isEmpty(val)) {
                     try {
                         testResultId = manager.validateResultValue(data.getResultGroup(),
                                                                    analysis.getUnitOfMeasureId(), val);
