@@ -36,24 +36,23 @@ import org.openelis.gwt.common.RPC;
  * This class implements a validator for a result group or auxiliary data.
  */
 public class ResultValidator implements RPC {
-    private static final long serialVersionUID = 1L;
-    
-    private HashMap<Integer, ArrayList<Item>>          units;
-    private HashMap<Integer, HashMap<String, Integer>> dictionary;
-    private HashMap<Integer, String>                   defaults;
+    private static final long                 serialVersionUID = 1L;
+
+    private HashMap<Integer, ArrayList<Item>> units;
+    private HashMap<Integer, String>          defaults;
 
     public enum Type {
-        DATE, DATE_TIME, TIME, DICTIONARY, NUMERIC, TITER, ALPHA_LOWER, 
-        ALPHA_MIXED, ALPHA_UPPER, DEFAULT
+        DATE, DATE_TIME, TIME, DICTIONARY, NUMERIC, TITER, ALPHA_LOWER, ALPHA_MIXED, ALPHA_UPPER,
+        DEFAULT
     };
-    
+
     public enum RoundingMethod {
         EPA_METHOD
     };
 
     public ResultValidator() {
         units = new HashMap<Integer, ArrayList<Item>>();
-        dictionary = new HashMap<Integer, HashMap<String, Integer>>();
+        // dictionary = new HashMap<Integer, HashMap<String, Integer>>();
         defaults = new HashMap<Integer, String>();
     }
 
@@ -71,30 +70,18 @@ public class ResultValidator implements RPC {
      * @throws Exception
      */
     public void addResult(Integer id, Integer unitId, Type type, RoundingMethod roundingMethod,
-                          Integer significantDigits, String validRange) throws Exception {
+                          Integer significantDigits, String value, String dictEntry) throws Exception {
         Item item;
         ArrayList<Item> list;
-        HashMap<String, Integer> dictUnit;
 
         if (unitId == null)
             unitId = 0;
+
         //
-        // dictionary is special because we are going to add to the same list
-        // rather than creating a new result range every time
+        // default is special, there is just one per unit id
         //
-        if (type == Type.DICTIONARY) {
-            dictUnit = dictionary.get(unitId);
-            if (dictUnit == null) {
-                dictUnit = new HashMap<String, Integer>();
-                dictionary.put(unitId, dictUnit);
-            }
-            dictUnit.put(validRange, id);
-            return;
-        } else if (type == Type.DEFAULT) {
-            //
-            // default is also special, there is just one per unit id
-            //
-            defaults.put(unitId, validRange);
+        if (type == Type.DEFAULT) {
+            defaults.put(unitId, value);
             return;
         }
 
@@ -105,37 +92,44 @@ public class ResultValidator implements RPC {
         item.significantDigits = significantDigits;
 
         switch (type) {
+            case DICTIONARY:
+                ResultRangeDictionary d;
+                d = new ResultRangeDictionary();
+                d.setRange(dictEntry);
+                d.setId(new Integer(value));
+                item.value = d;
+                break;
             case NUMERIC:
-                item.resultRange = new ResultRangeNumeric();
-                item.resultRange.setRange(validRange);
+                item.value = new ResultRangeNumeric();
+                item.value.setRange(value);
                 break;
             case TITER:
-                item.resultRange = new ResultRangeTiter();
-                item.resultRange.setRange(validRange);
+                item.value = new ResultRangeTiter();
+                item.value.setRange(value);
                 break;
             case DATE:
-                item.resultRange = new ResultRangeDate();
-                item.resultRange.setRange(validRange);
+                item.value = new ResultRangeDate();
+                item.value.setRange(value);
                 break;
             case DATE_TIME:
-                item.resultRange = new ResultRangeDateTime();
-                item.resultRange.setRange(validRange);
+                item.value = new ResultRangeDateTime();
+                item.value.setRange(value);
                 break;
             case TIME:
-                item.resultRange = new ResultRangeTime();
-                item.resultRange.setRange(validRange);
+                item.value = new ResultRangeTime();
+                item.value.setRange(value);
                 break;
             case ALPHA_LOWER:
-                item.resultRange = new ResultRangeAlpha(ResultRangeAlpha.Type.LOWER);
-                item.resultRange.setRange(validRange);
+                item.value = new ResultRangeAlpha(ResultRangeAlpha.Type.LOWER);
+                item.value.setRange(value);
                 break;
             case ALPHA_MIXED:
-                item.resultRange = new ResultRangeAlpha(ResultRangeAlpha.Type.MIXED);
-                item.resultRange.setRange(validRange);
+                item.value = new ResultRangeAlpha(ResultRangeAlpha.Type.MIXED);
+                item.value.setRange(value);
                 break;
             case ALPHA_UPPER:
-                item.resultRange = new ResultRangeAlpha(ResultRangeAlpha.Type.UPPER);
-                item.resultRange.setRange(validRange);
+                item.value = new ResultRangeAlpha(ResultRangeAlpha.Type.UPPER);
+                item.value.setRange(value);
                 break;
         }
         list = units.get(unitId);
@@ -161,7 +155,6 @@ public class ResultValidator implements RPC {
     public Integer validate(Integer unitId, String value) throws ParseException {
         Integer id;
         ArrayList<Item> list;
-        HashMap<String, Integer> dictUnit;
 
         id = null;
 
@@ -173,24 +166,14 @@ public class ResultValidator implements RPC {
         // null units (0) for all the other units
         //
         list = units.get(unitId);
-        dictUnit = dictionary.get(unitId);
-        if (list == null && dictUnit == null) {
+        if (list == null)
             list = units.get(0);
-            dictUnit = dictionary.get(0);
-        }
 
-        // look in dictionary first
-        if (dictUnit != null) {
-            id = dictUnit.get(value);
-            if (id != null)
-                return id;
-        }
-
-        // match the first any range
+        // match the first range
         if (list != null) {
             for (Item item : list) {
                 try {
-                    item.resultRange.contains(value);
+                    item.value.contains(value);
                     id = item.id;
                 } catch (Exception e) {
                     // ignore it
@@ -207,158 +190,130 @@ public class ResultValidator implements RPC {
     /**
      * Formats the result based on rounding and significant digits
      */
-    public String format(Integer unitId, Integer testResultId, String value) throws NumberFormatException {
-        ArrayList<Item> list;        
+    public String getValue(Integer unitId, Integer testResultId, String value) throws NumberFormatException {
+        ArrayList<Item> list;
         String compOp;
-        
+
         if (value == null)
             return value;
-        
-        compOp = null;
-        if (value.startsWith(">") || value.startsWith("<")) { 
-            compOp = value.substring(0, 1); 
-            value = value.substring(1);
-        }
-        
-        if (unitId == null)
-            unitId = 0;
 
         //
         // first check to see if we have unit specific validator; use
         // null units (0) for all the other units
         //
-        list = units.get(unitId);
-        if (list == null) 
-            list = units.get(0);        
-        
-        // match the first any range
+        list = units.get(unitId == null ? 0 : unitId);
+
+        // match the first range
         if (list != null) {
-            for (Item item : list) {                
+            for (Item item : list) {
                 if (item.id.equals(testResultId)) {
-                    if(Type.ALPHA_UPPER.equals(item.type)) {
-                        return value.toUpperCase();
-                    } else if(Type.ALPHA_LOWER.equals(item.type)) {
-                        return value.toLowerCase();
-                    } else if(Type.NUMERIC.equals(item.type) && RoundingMethod.EPA_METHOD.equals(item.roundingMethod)) {
-                        if (item.significantDigits != null)
-                            value = SignificantFigures.format(value, item.significantDigits);  
-                        if (compOp != null)
-                            value = compOp + value ;
-                        return value;                        
+                    switch (item.type) {
+                        case DICTIONARY:
+                            return ((ResultRangeDictionary)item.value).getId().toString();
+                        case ALPHA_UPPER:
+                            return value.toUpperCase();
+                        case ALPHA_LOWER:
+                            return value.toLowerCase();
+                        case NUMERIC:
+                            switch (item.roundingMethod) {
+                                case EPA_METHOD:                                
+                                    if (item.significantDigits != null) {
+                                        compOp = null;
+                                        if (value.startsWith(">") || value.startsWith("<")) {
+                                            compOp = value.substring(0, 1);
+                                            value = value.substring(1);
+                                        }
+                                        value = SignificantFigures.format(value, item.significantDigits);
+                                        if (compOp != null)
+                                            value = compOp + value;
+                                    }
+                                    return value;
+                            }
+                        default:
+                            return value;
                     }
-                }                
+                }
             }
         }
+
         return value;
     }
-    
+
     /**
      * This method returns a list of valid result ranges suitable for tooltip.
      */
-    public ArrayList<LocalizedException> getRanges(Integer unitId) {
+    public ArrayList<OptionItem> getRanges(Integer unitId) {
         ArrayList<Item> list;
-        ArrayList<LocalizedException> ranges;
-        HashMap<String, Integer> dictUnit;
-        LocalizedException e;
-        
-        if (unitId == null)
-            unitId = 0;
+        ArrayList<OptionItem> opt;
 
-        list = units.get(unitId);
-        dictUnit = dictionary.get(unitId);
-        if (list == null && dictUnit == null)
-            list = units.get(0);
+        //
+        // first check to see if we have unit specific validator; use
+        // null units (0) for all the other units
+        //
+        list = units.get(unitId == null ? 0 : unitId);
 
-        ranges = new ArrayList<LocalizedException>();
-        e = null;
+        opt = new ArrayList<OptionItem>();
         if (list != null)
-            for (Item i : list){
-                if(i.type == Type.NUMERIC)
-                    e = new LocalizedException("numbericPlainText", i.resultRange.toString());
-                else if(i.type == Type.TITER)
-                    e = new LocalizedException("titerPlainText", i.resultRange.toString());
-                else if(i.type ==  Type.DATE)
-                    e = new LocalizedException("datePlainText");
-                else if(i.type == Type.DATE_TIME)
-                    e = new LocalizedException("datetimePlainText");
-                else if(i.type == Type.TIME)
-                    e = new LocalizedException("timePlainText");
-                else if(i.type == Type.ALPHA_LOWER)
-                    e = new LocalizedException("alphaLowerPlainText");
-                else if(i.type == Type.ALPHA_MIXED)
-                    e = new LocalizedException("alphaMixedPlainText");
-                else if(i.type == Type.ALPHA_UPPER)
-                    e = new LocalizedException("alphaUpperPlainText");
-                
-                ranges.add(e);
+            for (Item item : list) {
+                if (item.type != Type.DICTIONARY)
+                    opt.add(new OptionItem("option"+item.type, item.value.toString(),
+                                           ((ResultRangeDictionary)item.value).getId()));
+                else
+                    opt.add(new OptionItem("option"+item.type, item.value.toString(), null));
             }
 
-        return ranges;
-    }
-
-    /**
-     * This method returns a list of valid result ranges suitable for tooltip.
-     */
-    public ArrayList<LocalizedException> getDictionaryRanges(Integer unitId) {
-        ArrayList<Item> list;
-        ArrayList<LocalizedException> ranges;
-        HashMap<String, Integer> dictUnit;
-        LocalizedException e;
-
-        if (unitId == null)
-            unitId = 0;
-
-        list = units.get(unitId);
-        dictUnit = dictionary.get(unitId);
-        if (list == null && dictUnit == null)
-            dictUnit = dictionary.get(0);
-
-        e = null;
-        ranges = new ArrayList<LocalizedException>();
-        if (dictUnit != null)
-            for (String i : dictUnit.keySet()){
-                e = new LocalizedException("dictionaryPlainText", i);
-                ranges.add(e);
-            }
-
-        return ranges;
+        return opt;
     }
 
     public String getDefault(Integer unitId) {
-        String returnValue;
-
-        if (unitId == null)
-            unitId = 0;
-
-        returnValue = defaults.get(unitId);
-
-        if (returnValue == null)
-            returnValue = defaults.get(0);
-
-        return returnValue;
+        return defaults.get(unitId == null ? 0 : unitId);
     }
 
     public boolean noUnitsSpecified() {
-        int unitsSize, dictUnitsSize, defaultsSize;
-        boolean unitsNoUnits, dictNoUnits, defaultsNoUnits;
+        int unitsSize, defaultsSize;
 
         unitsSize = units.size();
-        dictUnitsSize = dictionary.size();
         defaultsSize = defaults.size();
 
-        unitsNoUnits = ((unitsSize == 1 && units.containsKey(0)) || unitsSize == 0);
-        dictNoUnits = ((dictUnitsSize == 1 && dictionary.containsKey(0)) || dictUnitsSize == 0);
-        defaultsNoUnits = ((defaultsSize == 1 && defaults.containsKey(0)) || defaultsSize == 0);
-
-        return unitsNoUnits && dictNoUnits && defaultsNoUnits;
+        return ( unitsSize == 0 || (unitsSize == 1 && units.containsKey(0))) &&
+               ( defaultsSize == 0 || (defaultsSize == 1 && defaults.containsKey(0)));
     }
 
+    /**
+     * Class to hold all our result validator objects
+     */
     static class Item implements RPC {
         private static final long serialVersionUID = 1L;
 
         Integer                   id, significantDigits;
         Type                      type;
         RoundingMethod            roundingMethod;
-        ResultRange               resultRange;
+        ResultRange               value;
+    }
+
+    /**
+     * Simple class to carry suggestions and dropdown options for dictionary entries.
+     */
+    public class OptionItem {
+        private Integer id;
+        private String property, value;
+
+        OptionItem(String property, String value, Integer id) {
+            this.property = property;
+            this.value = value;
+            this.id = id;
+        }
+        
+        public String getProperty() {
+            return property;
+        }
+
+        public Integer getId() {
+            return id;
+        }
+
+        public String getValue() {
+            return value;
+        }
     }
 }
