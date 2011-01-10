@@ -3,6 +3,8 @@
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<import value="org.openelis.utils.JasperUtil"/>
+	<import value="org.openelis.utils.SectionLocation"/>
 	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["/auto/home/akampoow/workspace/OpenELIS-EJB/src/org/openelis/report/finalreport/"]]></defaultValueExpression>
@@ -52,112 +54,103 @@ ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 			<textField>
 				<reportElement mode="Opaque" x="112" y="12" width="309" height="12" backcolor="#EDE6E6"/>
 				<textElement textAlignment="Center">
-					<font fontName="Times New Roman" isBold="true" isItalic="true"/>
+					<font fontName="Times New Roman" isBold="true" isItalic="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.utils.Concat.concatWithSeparator($F{t_reporting_description}," , ", $F{m_reporting_description})]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.concatWithSeparator($F{t_reporting_description}," , ", $F{m_reporting_description})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="81" y="36" width="60" height="12"/>
+				<reportElement x="71" y="36" width="60" height="12"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman"/>
 				</textElement>
 				<text><![CDATA[Units]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="81" y="48" width="60" height="12"/>
+				<reportElement x="71" y="48" width="60" height="12"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman"/>
 				</textElement>
 				<text><![CDATA[Date Analyzed]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="81" y="60" width="60" height="12"/>
+				<reportElement x="71" y="60" width="60" height="12"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman"/>
 				</textElement>
 				<text><![CDATA[Analyst]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="314" y="36" width="56" height="12"/>
+				<reportElement x="304" y="36" width="56" height="12"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman"/>
 				</textElement>
 				<text><![CDATA[Analyzed In]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="314" y="60" width="56" height="12"/>
+				<reportElement x="304" y="60" width="56" height="12"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman"/>
 				</textElement>
 				<text><![CDATA[Verifier]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="314" y="48" width="56" height="12"/>
+				<reportElement x="304" y="48" width="56" height="12"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman"/>
 				</textElement>
 				<text><![CDATA[Date Verified]]></text>
 			</staticText>
 			<line>
-				<reportElement x="146" y="36" width="1" height="48"/>
+				<reportElement x="136" y="36" width="1" height="48"/>
 			</line>
 			<line>
-				<reportElement x="375" y="36" width="1" height="36"/>
+				<reportElement x="365" y="36" width="1" height="36"/>
 			</line>
 			<staticText>
-				<reportElement x="81" y="72" width="60" height="12"/>
+				<reportElement x="71" y="72" width="60" height="12"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman"/>
 				</textElement>
 				<text><![CDATA[Analysis Prep]]></text>
 			</staticText>
 			<subreport>
-				<reportElement x="81" y="96" width="469" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement x="0" y="96" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="ANALYSIS_ID">
 					<subreportParameterExpression><![CDATA[$F{a_id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisResults.jasper"]]></subreportExpression>
 			</subreport>
-			<staticText>
-				<reportElement x="482" y="48" width="45" height="12">
-					<printWhenExpression><![CDATA[$F{a_revision} > 0]]></printWhenExpression>
-				</reportElement>
-				<textElement>
-					<font fontName="Times New Roman"/>
-				</textElement>
-				<text><![CDATA[Revision]]></text>
-			</staticText>
 			<textField isBlankWhenNull="false">
-				<reportElement x="382" y="36" width="100" height="12"/>
+				<reportElement x="372" y="36" width="100" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.utils.SectionLocationUtil.getLocation($F{a_section_id})]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[SectionLocationUtil.getLocation($F{a_section_id})]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="153" y="36" width="100" height="12"/>
+				<reportElement x="143" y="36" width="100" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{d1_entry}]]></textFieldExpression>
 			</textField>
 			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
-				<reportElement x="153" y="48" width="100" height="12"/>
+				<reportElement x="143" y="48" width="100" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman"/>
 				</textElement>
 				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{a_started_date}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="153" y="72" width="397" height="12"/>
+				<reportElement x="143" y="72" width="397" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.utils.ReportUtil.concatWithSeparator($F{pat_reporting_description}," , ", $F{pam_reporting_description})]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.concatWithSeparator($F{pat_reporting_description}," , ", $F{pam_reporting_description})]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement x="153" y="60" width="100" height="12"/>
+				<reportElement x="143" y="60" width="100" height="12"/>
 				<subreportParameter name="ANALYSIS_ID">
 					<subreportParameterExpression><![CDATA[$F{a_id}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -168,7 +161,7 @@ ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analyst.jasper"]]></subreportExpression>
 			</subreport>
 			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
-				<reportElement x="382" y="48" width="100" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement x="372" y="48" width="100" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement>
 					<font fontName="Times New Roman"/>
 				</textElement>
@@ -183,7 +176,7 @@ ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisQaeventNote.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement x="382" y="60" width="100" height="12"/>
+				<reportElement x="372" y="60" width="100" height="12"/>
 				<subreportParameter name="ANALYSIS_ID">
 					<subreportParameterExpression><![CDATA[$F{a_id}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -194,13 +187,13 @@ ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisVerifier.jasper"]]></subreportExpression>
 			</subreport>
 			<textField>
-				<reportElement x="527" y="48" width="23" height="12">
+				<reportElement x="472" y="48" width="78" height="12">
 					<printWhenExpression><![CDATA[$F{a_revision} > 0]]></printWhenExpression>
 				</reportElement>
-				<textElement>
-					<font fontName="Times New Roman"/>
+				<textElement textAlignment="Left">
+					<font fontName="Times New Roman" isBold="true" isItalic="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
-				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{a_revision}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA["Revision "+$F{a_revision}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

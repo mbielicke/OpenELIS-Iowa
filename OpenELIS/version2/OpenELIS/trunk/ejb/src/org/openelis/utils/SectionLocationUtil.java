@@ -25,26 +25,13 @@
 */
 package org.openelis.utils;
 
-import javax.naming.InitialContext;
-
-import org.openelis.domain.SectionViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.local.SectionLocal;
-
 public class SectionLocationUtil {
-    public static String getLocation (Integer sectionId) {
-        String name;        
-        SectionViewDO data;
-        
-        if (sectionId == null)
-            return "";
-                
-        try {
-            data = sectionLocal().fetchById(sectionId);
-            
-            name = DataBaseUtil.trim(data.getName());
+    public static String getLocation (String name) {                                
+        try {                                   
             if (name == null)
                 return name;
+            
+            name = name.trim();
             
             if (name.endsWith("-ank")) 
                 name = "Ankeny";
@@ -58,15 +45,5 @@ public class SectionLocationUtil {
             e.printStackTrace();    
             return null;
         }   
-    }
-    
-    private static SectionLocal sectionLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (SectionLocal)ctx.lookup("openelis/SectionBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }           
     }
 }
