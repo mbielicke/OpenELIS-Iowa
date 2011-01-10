@@ -125,7 +125,7 @@ public class AnalysisResultManagerProxy {
                 for (int j = 0; j < results.size(); j++ ) {
                     result = results.get(j);
 
-                    if (result.getValue() != null && !"".equals(result.getValue())) {
+                    if (!DataBaseUtil.isEmpty(result.getValue())) {
                         testResultId = man.validateResultValue(result.getResultGroup(),
                                                                data.getUnitOfMeasureId(),
                                                                result.getValue());

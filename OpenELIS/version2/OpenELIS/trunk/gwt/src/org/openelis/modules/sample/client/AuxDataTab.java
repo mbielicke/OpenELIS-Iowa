@@ -491,9 +491,9 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                 for (int i = 0; i < values.size(); i++ ) {
                     af = values.get(i);
                     if (numericId.equals(typeId))
-                        rv.addResult(af.getId(), null, Type.NUMERIC, null, null, af.getValue());
+                        rv.addResult(af.getId(), null, Type.NUMERIC, null, null, af.getValue(), null);
                     else
-                        rv.addResult(af.getId(), null, Type.TIME, null, null, af.getValue());
+                        rv.addResult(af.getId(), null, Type.TIME, null, null, af.getValue(), null);
                 }
             } catch (Exception e) {
                 Window.alert(e.getMessage());
