@@ -4,6 +4,7 @@
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="ANALYSIS_ID" class="java.lang.Integer"/>
+	<parameter name="BUFF" class="java.lang.StringBuffer"/>
 	<queryString>
 		<![CDATA[SELECT
      tt.text AS tt_text
@@ -14,13 +15,13 @@ WHERE
 	</queryString>
 	<field name="tt_text" class="java.lang.String"/>
 	<detail>
-		<band height="12" splitType="Stretch">
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="520" height="12"/>
+		<band splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="520" height="0" isRemoveLineWhenBlank="true"/>
 				<textElement>
-					<font fontName="Times New Roman" size="8"/>
+					<font pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{tt_text}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{BUFF}.append($F{tt_text}).append(' ') ? null : null]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

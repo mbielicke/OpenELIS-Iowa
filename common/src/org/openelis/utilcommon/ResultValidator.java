@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.exception.ParseException;
-import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.RPC;
 
 /**
@@ -52,7 +51,6 @@ public class ResultValidator implements RPC {
 
     public ResultValidator() {
         units = new HashMap<Integer, ArrayList<Item>>();
-        // dictionary = new HashMap<Integer, HashMap<String, Integer>>();
         defaults = new HashMap<Integer, String>();
     }
 
@@ -157,18 +155,8 @@ public class ResultValidator implements RPC {
         ArrayList<Item> list;
 
         id = null;
-
-        if (unitId == null)
-            unitId = 0;
-
-        //
-        // first check to see if we have unit specific validator; use
-        // null units (0) for all the other units
-        //
-        list = units.get(unitId);
-        if (list == null)
-            list = units.get(0);
-
+        list = getUnits(unitId);
+        
         // match the first range
         if (list != null) {
             for (Item item : list) {
@@ -197,11 +185,7 @@ public class ResultValidator implements RPC {
         if (value == null)
             return value;
 
-        //
-        // first check to see if we have unit specific validator; use
-        // null units (0) for all the other units
-        //
-        list = units.get(unitId == null ? 0 : unitId);
+        list = getUnits(unitId);
 
         // match the first range
         if (list != null) {
@@ -214,21 +198,23 @@ public class ResultValidator implements RPC {
                             return value.toUpperCase();
                         case ALPHA_LOWER:
                             return value.toLowerCase();
-                        case NUMERIC:
-                            switch (item.roundingMethod) {
-                                case EPA_METHOD:                                
-                                    if (item.significantDigits != null) {
-                                        compOp = null;
-                                        if (value.startsWith(">") || value.startsWith("<")) {
-                                            compOp = value.substring(0, 1);
-                                            value = value.substring(1);
-                                        }
-                                        value = SignificantFigures.format(value, item.significantDigits);
-                                        if (compOp != null)
-                                            value = compOp + value;
-                                    }
-                                    return value;
+                        case NUMERIC:                  
+                            compOp = null;
+                            if (value.startsWith(">") || value.startsWith("<")) {
+                                compOp = value.substring(0, 1);
+                                value = value.substring(1);
                             }
+                            if (item.roundingMethod != null) {
+                                switch (item.roundingMethod) {
+                                    case EPA_METHOD:
+                                        if (item.significantDigits != null)
+                                            value = SignificantFigures.format(value,
+                                                                              item.significantDigits);
+                                }
+                            }
+                            if (compOp != null)
+                                value = compOp + value;
+                            return value;
                         default:
                             return value;
                     }
@@ -246,16 +232,11 @@ public class ResultValidator implements RPC {
         ArrayList<Item> list;
         ArrayList<OptionItem> opt;
 
-        //
-        // first check to see if we have unit specific validator; use
-        // null units (0) for all the other units
-        //
-        list = units.get(unitId == null ? 0 : unitId);
-
+        list = getUnits(unitId);
         opt = new ArrayList<OptionItem>();
         if (list != null)
             for (Item item : list) {
-                if (item.type != Type.DICTIONARY)
+                if (item.type == Type.DICTIONARY)
                     opt.add(new OptionItem("option"+item.type, item.value.toString(),
                                            ((ResultRangeDictionary)item.value).getId()));
                 else
@@ -279,6 +260,19 @@ public class ResultValidator implements RPC {
                ( defaultsSize == 0 || (defaultsSize == 1 && defaults.containsKey(0)));
     }
 
+    private ArrayList<Item> getUnits(Integer unitId) {
+        ArrayList<Item> list;
+        //
+        // first check to see if we have unit specific validator; use
+        // null units (0) for all the other units
+        //
+        list = units.get(unitId == null ? 0 : unitId);
+        if (list == null)
+            list = units.get(0);
+        
+        return list;
+    }
+    
     /**
      * Class to hold all our result validator objects
      */

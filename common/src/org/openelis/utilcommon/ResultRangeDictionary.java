@@ -51,13 +51,14 @@ public class ResultRangeDictionary implements ResultRange {
     }
 
     public void contains(String value) throws ParseException {
-        if(DataBaseUtil.isDifferent(value, entry))
+        if(DataBaseUtil.isDifferent(value, entry) && (id != null && DataBaseUtil.isDifferent(value, id.toString())))
             throw new ParseException("illegalDictionaryValueException");
     }
     
     public boolean intersects(ResultRange value) {
-        if (value instanceof ResultRangeDictionary && entry != null)
-            return DataBaseUtil.isSame(entry, ((ResultRangeDictionary)value).entry);
+        if (value instanceof ResultRangeDictionary && entry != null && id != null)
+            return DataBaseUtil.isSame(entry, ((ResultRangeDictionary)value).entry) &&
+                   DataBaseUtil.isSame(id, ((ResultRangeDictionary)value).id);
 
         return false;
     }

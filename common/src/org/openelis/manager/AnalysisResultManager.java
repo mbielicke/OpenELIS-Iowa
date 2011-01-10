@@ -14,27 +14,26 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.utilcommon.ResultValidator;
 
 public class AnalysisResultManager implements RPC {
-    private static final long serialVersionUID = 1L;
+    private static final long                             serialVersionUID = 1L;
 
-    protected Integer                               analysisId, mergeTestId, mergeUnitId;
-    protected ArrayList<ArrayList<ResultViewDO>>    results;
-    protected ArrayList<ResultViewDO>               deletedResults;
-    protected HashMap<Integer, AnalyteDO>           analyteList;
-    protected HashMap<Integer, TestAnalyteListItem> testAnalyteList;
-    protected HashMap<Integer, TestResultDO>        testResultList;
-    protected ArrayList<ResultValidator>            resultValidators;
-    protected boolean                               defaultsLoaded;
-    protected AnalysisManager                       analysisManager;
+    protected Integer                                     analysisId, mergeTestId, mergeUnitId;
+    protected ArrayList<ArrayList<ResultViewDO>>          results;
+    protected ArrayList<ResultViewDO>                     deletedResults;
+    protected HashMap<Integer, AnalyteDO>                 analyteList;
+    protected HashMap<Integer, TestAnalyteListItem>       testAnalyteList;
+    protected HashMap<Integer, TestResultDO>              testResultList;
+    protected ArrayList<ResultValidator>                  resultValidators;
+    protected boolean                                     defaultsLoaded;
+    protected AnalysisManager                             analysisManager;
 
-    protected transient        TestManager                testManager;
+    protected transient TestManager                       testManager;
     protected transient static AnalysisResultManagerProxy proxy;
 
-    
     private AnalysisResultManager() {
         analysisManager = null;
         testManager = null;
     }
-    
+
     public static AnalysisResultManager getInstance() {
         AnalysisResultManager arm;
 
@@ -79,12 +78,10 @@ public class AnalysisResultManager implements RPC {
         }
     }
 
-    public void addRowAt(int index,
-                         Integer rowGroup,
-                         Integer firstColTestAnalyteId,
-                         Integer firstColAnalyteId,
-                         String firstColAnalyteName) {
+    public void addRowAt(int index, Integer rowGroup, Integer firstColTestAnalyteId,
+                         Integer firstColAnalyteId, String firstColAnalyteName) {
         ArrayList<ResultViewDO> currlist;
+        
         currlist = createNewDataListAt(rowGroup, firstColTestAnalyteId, firstColAnalyteId,
                                        firstColAnalyteName);
 
@@ -191,22 +188,22 @@ public class AnalysisResultManager implements RPC {
     public void setTestAnalyteList(HashMap<Integer, TestAnalyteListItem> testAnalyteList) {
         this.testAnalyteList = testAnalyteList;
     }
-    
+
     public TestAnalyteViewDO getTestAnalyte(Integer rowGroup, Integer testAnalyteId) {
         TestAnalyteViewDO returnDO, tmpDO;
         ArrayList<TestAnalyteViewDO> anList;
-        
+
         returnDO = null;
         anList = testAnalyteList.get(rowGroup).testAnalytes;
-        for(int i=0; i<anList.size(); i++){
+        for (int i = 0; i < anList.size(); i++ ) {
             tmpDO = anList.get(i);
-            
-            if(testAnalyteId.equals(tmpDO.getId())){
+
+            if (testAnalyteId.equals(tmpDO.getId())) {
                 returnDO = tmpDO;
                 break;
             }
         }
-        
+
         return returnDO;
     }
 
@@ -236,11 +233,13 @@ public class AnalysisResultManager implements RPC {
 
     public Integer validateResultValue(Integer resultGroup, Integer unitId, String value)
                                                                                          throws Exception {
-        return resultValidators.get(resultGroup.intValue() - 1).validate(unitId, value);        
+        return resultValidators.get(resultGroup.intValue() - 1).validate(unitId, value);
     }
-    
-    public String formatResultValue(Integer resultGroup, Integer unitId, Integer testResultId, String value) throws Exception {
-        return resultValidators.get(resultGroup.intValue() - 1).format(unitId, testResultId, value);        
+
+    public String formatResultValue(Integer resultGroup, Integer unitId,
+                                    Integer testResultId, String value) throws Exception {
+        return resultValidators.get(resultGroup.intValue() - 1).getValue(unitId, testResultId,
+                                                                         value);
     }
 
     public String getDefaultValue(Integer resultGroup, Integer unitOfMeasureId) {
@@ -261,13 +260,14 @@ public class AnalysisResultManager implements RPC {
         Integer analyteId;
 
         li = testAnalyteList.get(rowGroup);
-        origAnalyteList = li.testAnalytes;
-        aliasList = li.aliasList;
-        loaded = aliasList != null;
 
         if (li == null)
             return null;
 
+        origAnalyteList = li.testAnalytes;
+        aliasList = li.aliasList;
+        loaded = aliasList != null;
+        
         noColList = new ArrayList<TestAnalyteViewDO>();
         // clean the list of column anaytes
         for (int i = 0; i < origAnalyteList.size(); i++ ) {
@@ -444,10 +444,8 @@ public class AnalysisResultManager implements RPC {
         return currlist;
     }
 
-    private ResultViewDO createResultViewDO(String isColumn,
-                                            TestAnalyteViewDO taDO,
-                                            Integer analyteId,
-                                            String analyteName) {
+    private ResultViewDO createResultViewDO(String isColumn, TestAnalyteViewDO taDO,
+                                            Integer analyteId, String analyteName) {
         ResultViewDO currDO;
 
         currDO = new ResultViewDO();
