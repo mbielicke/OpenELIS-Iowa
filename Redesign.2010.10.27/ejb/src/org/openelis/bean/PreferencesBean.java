@@ -27,68 +27,52 @@ package org.openelis.bean;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
+import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
-import org.openelis.domain.PreferencesDO;
 import org.openelis.entity.Preferences;
-import org.openelis.remote.PreferencesRemote;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.local.PreferencesLocal;
 
+/**
+ * Stateless bean used to persist and retrieve Preferences from the database 
+ *
+ */
 @Stateless
-public class PreferencesBean implements PreferencesRemote {
+public class PreferencesBean implements PreferencesLocal {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
 
-    public PreferencesDO getPreferences(String key) {
-        Query query;
-        Integer userId;
-        PreferencesDO data;
-
-        try {
-            userId = PermissionInterceptor.getSystemUserId();
-        } catch (Exception e) {
-            e.printStackTrace();
-            userId = null;
-        }
-
-        query = manager.createNamedQuery("getPreference");
-        query.setParameter("systemUser", userId);
-        query.setParameter("key", key);
-
-        try {
-            data = (PreferencesDO)query.getSingleResult();
-        } catch (NoResultException e) {
-            data = new PreferencesDO();
-            data.setKey(key);
-            data.setSystemUserId(userId);
-            data.setText("<preferences></preferences>");
-        }
-        return data;
-    }
-
-    public void setPreferences(PreferencesDO data) {
+    /**
+     * Returns the stored XML representation of the preferences for the passed user
+     */
+    public String getPreferences(Integer user) {
         Preferences entity;
 
-        if ( !data.isChanged())
-            return;
+        entity = manager.find(Preferences.class,user);
+        
+        return entity != null ? entity.getText() : "<root></root>";
+        
+    }
 
-        if (data.getId() != null) {
-            entity = manager.find(Preferences.class, data.getId());
-        } else {
+    /**
+     * Stores the passed preferences for the passed user into the database
+     */
+    public void setPreferences(Integer user, String prefs) {
+        Preferences entity;
+        boolean persist = false;
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        entity = manager.find(Preferences.class, user);
+        if(entity == null) {
             entity = new Preferences();
-            try {
-                entity.setSystemUserId(PermissionInterceptor.getSystemUserId());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            entity.setSystemUserId(user);
+            persist = true;
         }
-        entity.setKey(data.getKey());
-        entity.setText(data.getText());
-
-        if (entity.getId() == null)
-            manager.persist(entity);
+        entity.setText(prefs);
+        
+        if(persist)
+        	manager.persist(entity);
     }
 }
