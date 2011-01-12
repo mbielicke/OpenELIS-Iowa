@@ -66,7 +66,7 @@ UIRF Software License are applicable instead of those above.
           <menuBar>
             <menu display="{resource:getString($constants,'application')}">
               <menuItem key="preference" description="{resource:getString($constants,'preferenceDescription')}" enabled="false" icon="preferenceIcon" display="{resource:getString($constants,'preference')}" />
-              <menuItem key="FavoritesMenu" description="{resource:getString($constants,'favoritesMenuDescription')}" enabled="false" icon="favoritesMenuIcon" display="{resource:getString($constants,'favoritesMenu')}" />
+              <menuItem key="FavoritesMenu" description="{resource:getString($constants,'favoritesMenuDescription')}" enabled="true" icon="favoritesMenuIcon" display="{resource:getString($constants,'favoritesMenu')}" />
               <menuItem key="Logout" description="{resource:getString($constants,'logoutDescription')}" icon="logoutIcon" display="{resource:getString($constants,'logout')}" />
             </menu>
             <menu display="{resource:getString($constants,'sample')}">

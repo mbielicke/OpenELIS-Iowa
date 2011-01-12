@@ -27,20 +27,15 @@ package org.openelis.modules.favorites.client;
 
 import java.util.ArrayList;
 
-import org.openelis.gwt.common.RPC;
+import org.openelis.manager.Preferences;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.CheckBox;
+import org.openelis.gwt.widget.CheckMenuItem;
 import org.openelis.gwt.widget.MenuItem;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.HasAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -50,114 +45,90 @@ public class FavoritesScreen extends Screen {
     public boolean editing;
     public ArrayList<String> favorites; 
     private ArrayList<String> menuKeys;
-    private ArrayList<CheckBox> checks;
+    private ArrayList<CheckMenuItem> checks;
+    private Preferences prefs;
     
 	public FavoritesScreen(ScreenDefInt def) throws Throwable {
 		this.def = def;
 		service = new ScreenService("controller?service=org.openelis.modules.favorites.server.FavoritesService");
-		getFavorites();
+		prefs = Preferences.userRoot();
 		showFavorites();
 	}
 	
 	private void showFavorites() {
-		/*
-		ScrollPanel sp = new ScrollPanel();
+		String favs;
+		ScrollPanel sp;
+		VerticalPanel vp;
+		MenuItem favMenu,mi;
+		favorites = new ArrayList<String>();
+		favs = prefs.get("favorites","");
+		if(favs.equals(""))
+			return;
+		
+		sp = new ScrollPanel();
 		sp.setHeight((Window.getClientHeight()-65)+"px");
-		VerticalPanel vp = new VerticalPanel();
+		vp = new VerticalPanel();
 		sp.setWidget(vp);
-		for(String fav : favorites) {
-			MenuItem favMenu = (MenuItem)def.getWidget(fav);
-			if(favMenu != null && favMenu.isEnabled()){
-				final String menuKey = fav;
-				AbsolutePanel ap = new AbsolutePanel();
-				MenuItem clone = new MenuItem();
-				clone.setfavMenu.clone();
-				clone.enable(true);
-				clone.addClickHandler(new ClickHandler(){
-					public void onClick(ClickEvent event) {
-						ClickEvent.fireNativeEvent(event.getNativeEvent(), def.getWidget(menuKey));
-					}
-				});
-				ap.add(clone);
-				vp.add(ap);
+		for(String fav : favs.split(",")) {
+			mi = (MenuItem)def.getWidget(fav);
+			if(mi != null && mi.isEnabled()){			
+				favMenu = new MenuItem(mi.getIcon(),mi.getDisplay(),"");
+				favMenu.setEnabled(true);
+				for(Command comm : mi.getCommands()) 
+					favMenu.addCommand(comm);
+				vp.add(favMenu);
+				favorites.add(fav);
 			}
 		}
-		screenpanel.clear();
-		screenpanel.add(sp);
-		*/
+		clear();
+		add(sp);
 	}
 	
 	public void edit() {
-		/*
+		ScrollPanel sp;
+		VerticalPanel vp;
+		CheckMenuItem cm; 
+		MenuItem mi;
+		Widget wid;
+		
 		editing = true;
-		ScrollPanel sp = new ScrollPanel();
+		sp = new ScrollPanel();
 		sp.setHeight((Window.getClientHeight()-65)+"px");
-		VerticalPanel vp = new VerticalPanel();
+		vp = new VerticalPanel();
 		sp.setWidget(vp);
 		menuKeys = new ArrayList<String>();
-		checks = new ArrayList<CheckBox>();
+		checks = new ArrayList<CheckMenuItem>();
+		
 		for(String key : def.getWidgets().keySet()) {
-			Widget wid = def.getWidget(key);
+			wid = def.getWidget(key);
 			if(wid instanceof MenuItem && ((MenuItem)wid).isEnabled()){
 				menuKeys.add(key);
-				HorizontalPanel hp = new HorizontalPanel();
-				hp.setSpacing(0);
-				CheckBox cb = new CheckBox();
-				checks.add(cb);
-				if(favorites.contains(key))
-					cb.setValue("Y");
-				hp.add(cb);
-				hp.setCellVerticalAlignment(cb, HasAlignment.ALIGN_MIDDLE);
-				AbsolutePanel ap = new AbsolutePanel();
-				ap.add(((MenuItem)wid).clone());
-				hp.add(ap);
-				vp.add(hp);
+				mi = (MenuItem)wid;
+			    
+				cm = new CheckMenuItem(mi.getIcon(),mi.getDisplay(),false);
+				cm.setCheck(favorites.contains(key));
+				checks.add(cm);
+				
+				vp.add(cm);
 			}
 		}
-		screenpanel.clear();
-		screenpanel.add(sp);
-		*/
+		clear();
+		add(sp);
 	}
 	
 	public void stopEditing() {
 		editing = false;
 		StringBuffer sb = new StringBuffer("");
 		for(int i = 0; i < checks.size(); i++) {
-			if(checks.get(i).getValue().equals("Y")){
+			if(checks.get(i).isChecked()){
 				if(sb.length() > 0)
 					sb.append(",");
 				sb.append(menuKeys.get(i));
 			}	
 		}
 		String favs = sb.toString();
-		favorites = new ArrayList<String>();
-		for(String fav : favs.split(",")){
-			favorites.add(fav);
-		}
+		prefs.put("favorites", favs);
 		showFavorites();
-		saveFavorites(favs);	
-	}
-	
-	private void getFavorites() throws Throwable {
-		String favs = service.callString("getFavorites");
-		favorites = new ArrayList<String>();
-		if(favs == null)
-			return;
-		for(String fav : favs.split(",")){
-			favorites.add(fav);
-		}
-	}
-	
-	private void saveFavorites(String favs) {
-		System.out.println("saving favs "+favs);
-		service.call("saveFavorites",favs,new AsyncCallback<RPC>() {
-			public void onSuccess(RPC result) {
-				
-			}
-			public void onFailure(Throwable caught) {
-				Window.alert(caught.getMessage());
-			}
-		});
 	}
 	
 }
