@@ -27,13 +27,34 @@ package org.openelis.remote;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.PreferencesDO;
+import org.openelis.manager.Preferences;
 
+/**
+ * Remote interface to the PreferencesManagerBean
+ *
+ */
 @Remote
 public interface PreferencesRemote {
+
+	/**
+	 * Returns the Preferences for the user to the client
+	 * @return
+	 * @throws Exception
+	 */
+    public Preferences userRoot() throws Exception;
     
-    public PreferencesDO getPreferences(String key);
+    /**
+     * Returns the Preferences for the system to the client
+     * @return
+     * @throws Exception
+     */
+    public Preferences systemRoot() throws Exception;
     
-    public void setPreferences(PreferencesDO prefs);
+    /**
+     * Persists the preferences passed from the client
+     * @param prefs
+     * @throws Exception
+     */
+    public void flush(Preferences prefs) throws Exception;
 
 }
