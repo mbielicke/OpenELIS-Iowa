@@ -112,7 +112,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
     protected static Integer anLoggedInId, anInitiatedId, anCompletedId, anReleasedId,
                              anInPrepId, anOnHoldId, anRequeueId, anCancelledId,
                              anErrorLoggedInId, anErrorInitiatedId, anErrorInPrepId,
-                             anErrorCompletedId, sampleReleasedId;
+                             anErrorCompletedId, sampleReleasedId, resultTypeDictionary;
 
     public WorksheetCompletionBean() {
         DictionaryLocal l;
@@ -134,6 +134,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                 anErrorInPrepId = l.fetchBySystemName("analysis_error_inprep").getId();
                 anErrorCompletedId = l.fetchBySystemName("analysis_error_completed").getId();
                 sampleReleasedId = l.fetchBySystemName("sample_released").getId();
+                resultTypeDictionary = l.fetchBySystemName("test_res_type_dictionary").getId();
             } catch (Exception e) {
                 e.printStackTrace();
                 anLoggedInId = null;
@@ -790,6 +791,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         Date                  tempDate;
         Name                  cellName;
         AnalyteDO             aDO;
+        DictionaryViewDO      dVDO;
         ResultViewDO          rVDO;
         WorksheetResultViewDO wrVDO;
         
@@ -870,8 +872,14 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
                     if (cellName != null && !cellName.isDeleted()) {
                         cell = getCellForName(sheet, cellName.getNameName());
-                        if (cell.getStringCellValue() == null || cell.getStringCellValue().length() == 0)
-                            cell.setCellValue(rVDO.getValue());
+                        if (cell.getStringCellValue() == null || cell.getStringCellValue().length() == 0) {
+                            if (resultTypeDictionary.equals(rVDO.getTypeId())) {
+                                dVDO = dictLocal().fetchById(Integer.valueOf(rVDO.getValue()));
+                                cell.setCellValue(dVDO.getEntry());
+                            } else {
+                                cell.setCellValue(rVDO.getValue());
+                            }
+                        }
                     }
                 } catch (Exception anyE) {
                     // TODO: Code proper exception handling
