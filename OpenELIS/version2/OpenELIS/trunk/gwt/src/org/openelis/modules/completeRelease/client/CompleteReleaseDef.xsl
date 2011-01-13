@@ -134,7 +134,7 @@ UIRF Software License are applicable instead of those above.
         </AbsolutePanel>
         <table key="completeReleaseTable" width="auto" maxRows="10" multiSelect="true" showScroll="ALWAYS">
           <col key="{meta:getAccessionNumber()}" width="115" header="Accession #" sort="true">
-            <textbox field="Integer" />
+            <textbox field="String" />
           </col>
           <col key="{meta:getAnalysisTestName()}" width="192" header="Test" sort="true">
             <textbox field="String" />

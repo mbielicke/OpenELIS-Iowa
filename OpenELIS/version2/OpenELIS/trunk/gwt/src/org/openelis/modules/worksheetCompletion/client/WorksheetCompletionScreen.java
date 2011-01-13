@@ -169,7 +169,7 @@ public class WorksheetCompletionScreen extends Screen {
                                                          "test_worksheet_format",
                                                          "worksheet_status");
             
-            list = sysVarService.callList("fetchByName", "worksheet_output_directory");
+            list = sysVarService.callList("fetchByName", "worksheet_display_directory");
             if (list.size() == 0)
                 throw new Exception(consts.get("worksheetOutputDirectoryLookupException"));
             else
@@ -651,10 +651,8 @@ public class WorksheetCompletionScreen extends Screen {
         window.setBusy("Saving worksheet for editing");
         try {
             service.call("saveForEdit", manager);
-//            outFileName = getWorksheetOutputFileName(manager.getWorksheet().getId(),
-//                                                     manager.getWorksheet().getSystemUserId());
-            worksheetFileName = new String(outputFileDirectory+"Worksheet"+
-                                           manager.getWorksheet().getId()+".xls");
+            worksheetFileName = new String(outputFileDirectory+manager.getWorksheet().getId()+
+                                           "_"+OpenELIS.getSystemUserPermission().getLoginName()+".xls");
             window.setDone(consts.get("worksheetCompletionEditConfirm")+
                                       " "+worksheetFileName);
         } catch (Exception anyE) {

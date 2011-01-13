@@ -96,8 +96,8 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
 
     protected Tabs                   tab;
     protected ArrayList<Tabs>        tabIndexes = new ArrayList<Tabs>();
-    protected TextBox                clientReference;
-    protected TextBox<Integer>       accessionNumber, orderNumber;
+    protected TextBox                accessionNumber, clientReference;
+    protected TextBox<Integer>       orderNumber;
     protected TextBox<Datetime>      collectedTime;
 
     protected Dropdown<Integer>      statusId;
@@ -1057,6 +1057,32 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         return bundle;
     }
 
+    public ArrayList<QueryData> getQueryFields() {
+        int                  i, index;
+        ArrayList<QueryData> fields;
+        QueryData field;
+        
+        fields = super.getQueryFields();
+        for (i = 0; i < fields.size(); i++) {
+            field = fields.get(i);
+            if (field.key == SampleMeta.getAccessionNumber()) {
+                if (field.query.matches("[0-9]+-[0-9]+")) {
+                    //
+                    // Trim the Sample Item ID from the end of the bar coded
+                    // accession number
+                    //
+                    index = field.query.indexOf("-");
+                    if (index != -1)
+                        field.query = field.query.substring(0, index);
+                }
+                field.type = QueryData.Type.INTEGER;
+                break;
+            }
+        }
+        
+        return fields;
+    }
+
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         window.clearStatus();
@@ -1206,6 +1232,11 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
                       .getAnalysisAt(bundle.getSampleItemIndex())
                       .releaseAnalysisAt(bundle.getAnalysisIndex());
 
+                try {
+                    bundle.getSampleManager().validate();
+                } catch (ValidationErrorsList e) {
+                    bundle.getSampleManager().setStatusWithError(true);
+                }
             } catch (EntityLockedException e) {
                 hash.put(man.getSample().getId(), new Item(man, -1));
                 Window.alert(consts.get("errorSampleAccNum") +
@@ -1274,6 +1305,11 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
             anaMan = bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
             anaMan.setInternalNotes(noteMan, bundle.getAnalysisIndex());
             anaMan.unreleaseAnalysisAt(bundle.getAnalysisIndex());
+            try {
+                bundle.getSampleManager().validate();
+            } catch (ValidationErrorsList e) {
+                bundle.getSampleManager().setStatusWithError(true);
+            }
         } catch (EntityLockedException e) {
             hash.put(man.getSample().getId(), new Item(man, -1));
             Window.alert(consts.get("errorSampleAccNum") + man.getSample().getAccessionNumber() +
@@ -1367,7 +1403,11 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
                           .getAnalysisAt(bundle.getSampleItemIndex())
                           .completeAnalysisAt(bundle.getAnalysisIndex());
                 }
-
+                try {
+                    bundle.getSampleManager().validate();
+                } catch (ValidationErrorsList e) {
+                    bundle.getSampleManager().setStatusWithError(true);
+                }
             } catch (EntityLockedException e) {
                 hash.put(man.getSample().getId(), new Item(man, -1));
                 Window.alert(consts.get("errorSampleAccNum") +

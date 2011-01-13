@@ -29,8 +29,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.TestPrepViewDO;
 import org.openelis.domain.TestSectionViewDO;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -42,9 +45,13 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
+import org.openelis.gwt.widget.tree.TreeDataItem;
+import org.openelis.gwt.widget.tree.TreeWidget;
+import org.openelis.gwt.widget.tree.event.BeforeLeafCloseEvent;
+import org.openelis.gwt.widget.tree.event.BeforeLeafCloseHandler;
+import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestPrepManager;
 import org.openelis.manager.TestSectionManager;
@@ -60,9 +67,9 @@ public class TestPrepLookupScreen extends Screen implements
         SELECTED_PREP_ROW, CANCEL
     };
 
-    protected TableWidget     prepTestTable;
+    protected TreeWidget      prepTestTree;
     private   Integer         testSectionDefaultId;
-    private   TestPrepManager manager;
+    private   ArrayList<ArrayList<Object>> prepBundles;
 
     public TestPrepLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(TestPrepLookupDef.class));
@@ -77,46 +84,61 @@ public class TestPrepLookupScreen extends Screen implements
     }
 
     private void initialize() {
-        prepTestTable = (TableWidget)def.getWidget("prepTestTable");
-        addScreenHandler(prepTestTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        prepTestTree = (TreeWidget)def.getWidget("prepTestTree");
+        addScreenHandler(prepTestTree, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                prepTestTable.load(getTableModel());
+                prepTestTree.load(getTreeModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                prepTestTable.enable(true);
+                prepTestTree.enable(true);
             }
         });
 
-        prepTestTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+        prepTestTree.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             @SuppressWarnings("unchecked")
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 int                     i, j;
                 ArrayList<TableDataRow> model;
-                TableDataRow            row;
+                TableDataRow            tsRow;
+                TreeDataItem            row;
                 TestSectionManager      tsMan;
                 TestSectionViewDO       tsVDO;
                 //
                 //  
                 //
-                if (event.getCol() == 1) {
-                    model = ((Dropdown<Integer>)prepTestTable.getColumns().get(1).getColumnWidget()).getData();
-                    for (i = 0; i < model.size(); i++) {
-                        row = model.get(i);
-                        tsMan = (TestSectionManager) row.data;
-                        for (j = 0; j < tsMan.count(); j++) {
-                            tsVDO = tsMan.getSectionAt(j);
-                            if (tsVDO.getSectionId().equals(row.key)) {
-                                row.enabled = true;
-                                break;
+                row = prepTestTree.getRow(event.getRow());
+                if (row.leafType == "prepTest") {
+                    if (event.getCol() == 1) {
+                        model = ((Dropdown<Integer>)prepTestTree.getColumns().get("prepTest").get(1).colWidget).getData();
+                        tsMan = (TestSectionManager) ((ArrayList<Object>)row.data).get(1);
+                        for (i = 0; i < model.size(); i++) {
+                            tsRow = model.get(i);
+                            for (j = 0; j < tsMan.count(); j++) {
+                                tsVDO = tsMan.getSectionAt(j);
+                                if (tsVDO.getSectionId().equals(tsRow.key)) {
+                                    tsRow.enabled = true;
+                                    break;
+                                }
                             }
+                            if (j == tsMan.count())
+                                tsRow.enabled = false;
                         }
-                        if (j == tsMan.count())
-                            row.enabled = false;
+                    } else if (event.getCol() == 2) {
+                        if ("N".equals(((TestPrepViewDO)((ArrayList<Object>)row.data).get(0)).getIsOptional()))
+                            event.cancel();
+                    } else {
+                        event.cancel();
                     }
                 } else {
                     event.cancel();
                 }
+            }
+        });
+
+        prepTestTree.addBeforeLeafCloseHandler(new BeforeLeafCloseHandler() {
+            public void onBeforeLeafClose(BeforeLeafCloseEvent event) {
+                event.cancel();
             }
         });
 
@@ -153,22 +175,39 @@ public class TestPrepLookupScreen extends Screen implements
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void ok() {
-        TableDataRow selectedRow;
+        int          i;
+        ArrayList<ArrayList<Object>> selectedBundles;
+        ValidationErrorsList errorsList;
+        TreeDataItem item;
 
         if (validate()) {
-            selectedRow = prepTestTable.getSelection();
-            if (selectedRow.cells.get(1).value == null) {
-                Window.alert("Selected Prep Test must have a Section assigned");
+            selectedBundles = new ArrayList<ArrayList<Object>>();
+            errorsList = new ValidationErrorsList();
+            for (i = 0; i < prepTestTree.numRows(); i++) {
+                item = prepTestTree.getRow(i);
+                if (item.leafType == "prepTest")
+                    continue;
+                if (!addPrepTestToSelection(item, (SampleDataBundle)((ArrayList<Object>)item.data).get(0),
+                                            selectedBundles, errorsList))
+                    errorsList.add(new FormErrorException("prepTestRequiredForTestException",
+                                                          (String)item.cells.get(0).getValue()));
+            }
+            
+            if (errorsList.size() > 0) {
+                showErrors(errorsList);
             } else {
                 window.close();
-                ActionEvent.fire(this, Action.SELECTED_PREP_ROW, selectedRow);
+                ActionEvent.fire(this, Action.SELECTED_PREP_ROW, selectedBundles);
             }
+            selectedBundles.clear();
         }
     }
 
     private void cancel() {
-        if (validate()){
+        if (validate()) {
+            Window.alert(consts.get("prepTestRequiredException"));
             window.close();
             ActionEvent.fire(this, Action.CANCEL, null);
         }
@@ -179,54 +218,51 @@ public class TestPrepLookupScreen extends Screen implements
     }
 
     @SuppressWarnings("unchecked")
-    private ArrayList<TableDataRow> getTableModel() {
-        int                     i, j;
-        Integer                 defaultId;
-        ArrayList<TableDataRow> model, sModel;
+    private ArrayList<TreeDataItem> getTreeModel() {
+        int                                i, j;
+        ArrayList<Object>                  prepBundle;
+        ArrayList<TableDataRow>            sModel;
+        ArrayList<TreeDataItem>            model;
         HashMap<Integer,TestSectionViewDO> sections;
-        TableDataRow            row, sRow;
-        TestManager             tMan;
-        TestPrepViewDO          prepRow;
-        TestSectionManager      tsMan;
-        TestSectionViewDO       tsVDO;
+        TreeDataItem                       row;
+        AnalysisViewDO                     anDO;
+        SampleDataBundle                   bundle;
+        TestPrepManager                    tpMan;
+        TestPrepViewDO                     tpVDO;
 
-        model = new ArrayList<TableDataRow>();
-        if (manager == null)
+        model = new ArrayList<TreeDataItem>();
+        if (prepBundles == null)
             return model;
 
         sections = new HashMap<Integer,TestSectionViewDO>();
         try {
             sModel = new ArrayList<TableDataRow>();
-            for (i = 0; i < manager.count(); i++) {
-                prepRow = (TestPrepViewDO)manager.getPrepAt(i);
-                defaultId = null;
-
-                tMan = TestManager.fetchById(prepRow.getPrepTestId());
-                tsMan = tMan.getTestSections();
-                for (j = 0; j < tsMan.count(); j++) {
-                    tsVDO = tsMan.getSectionAt(j);
-                    if (testSectionDefaultId.equals(tsVDO.getFlagId()))
-                        defaultId = tsVDO.getSectionId();
-                    if (!sections.containsKey(tsVDO.getSectionId())) {
-                        sRow = new TableDataRow(1);
-                        sRow.key = tsVDO.getSectionId();
-                        sRow.cells.get(0).value = tsVDO.getSection();
-                        sRow.data = tsVDO;
-                        sModel.add(sRow);
-                        sections.put(tsVDO.getSectionId(), tsVDO);
-                    }
+            for (i = 0; i < prepBundles.size(); i++) {
+                prepBundle = prepBundles.get(i);
+                if (prepBundle.size() != 2) {
+                    continue;
                 }
-
-                row = new TableDataRow(2);
-                row.key = prepRow.getPrepTestId();
-                row.cells.get(0).value = prepRow.getPrepTestName() + ", " + prepRow.getMethodName();
-                if (defaultId != null)
-                    row.cells.get(1).value = defaultId;
-                row.data = tsMan;
-
+                
+                bundle = (SampleDataBundle) prepBundle.get(0);
+                tpMan = (TestPrepManager) prepBundle.get(1);
+                anDO = bundle.getSampleManager().getSampleItems()
+                             .getAnalysisAt(bundle.getSampleItemIndex())
+                             .getAnalysisAt(bundle.getAnalysisIndex());
+                
+                row = new TreeDataItem(3);
+                row.leafType = "analysis";
+                row.toggle();
+                row.key = anDO.getId();
+                row.cells.get(0).setValue(anDO.getTestName()+", "+anDO.getMethodName());
+                row.data = prepBundle;
+                
+                for (j = 0; j < tpMan.count(); j++) {
+                    tpVDO = tpMan.getPrepAt(j);
+                    addPrepItem(row, tpVDO, sections, sModel);
+                }
                 model.add(row);
             }
-            ((Dropdown<Integer>)prepTestTable.getColumns().get(1).getColumnWidget()).setModel(sModel);
+            ((Dropdown<Integer>)prepTestTree.getColumns().get("prepTest").get(1).colWidget).setModel(sModel);
         } catch (Exception e) {
 
             e.printStackTrace();
@@ -235,9 +271,111 @@ public class TestPrepLookupScreen extends Screen implements
 
         return model;
     }
+    
+    private void addPrepItem(TreeDataItem parentItem, TestPrepViewDO tpVDO,
+                             HashMap<Integer,TestSectionViewDO> sections, ArrayList<TableDataRow> sModel) {
+        int                i;
+        Integer            defaultId;
+        ArrayList<Object>  dataObject;
+        TableDataRow       sRow;
+        TreeDataItem       row;
+        TestManager        tMan;
+        TestPrepManager    tpMan;
+        TestSectionManager tsMan;
+        TestSectionViewDO  tsVDO;
 
-    public void setManager(TestPrepManager man) {
-        manager = man;
+        row = new TreeDataItem(3);
+        row.leafType = "prepTest";
+        row.key = tpVDO.getPrepTestId();
+        row.cells.get(0).setValue(tpVDO.getPrepTestName()+", "+tpVDO.getMethodName());
+        if ("N".equals(tpVDO.getIsOptional()))
+            row.cells.get(2).setValue("Y");
+        else
+            row.cells.get(2).setValue("N");
+
+        defaultId = null;
+        try {
+            tMan = TestManager.fetchById(tpVDO.getPrepTestId());
+            tsMan = tMan.getTestSections();
+            for (i = 0; i < tsMan.count(); i++) {
+                tsVDO = tsMan.getSectionAt(i);
+                if (testSectionDefaultId.equals(tsVDO.getFlagId()))
+                    defaultId = tsVDO.getSectionId();
+                if (!sections.containsKey(tsVDO.getSectionId())) {
+                    sRow = new TableDataRow(1);
+                    sRow.key = tsVDO.getSectionId();
+                    sRow.cells.get(0).value = tsVDO.getSection();
+                    sRow.data = tsVDO;
+                    sModel.add(sRow);
+                    sections.put(tsVDO.getSectionId(), tsVDO);
+                }
+            }
+    
+            if (defaultId != null)
+                row.cells.get(1).value = defaultId;
+    
+            tpMan = tMan.getPrepTests();
+            if (tpMan.count() > 0) {
+                row.toggle();
+                for (i = 0; i < tpMan.count(); i++) {
+                    tpVDO = tpMan.getPrepAt(i);
+                    addPrepItem(row, tpVDO, sections, sModel);
+                }
+            }
+            
+            dataObject = new ArrayList<Object>();
+            dataObject.add(tpVDO);
+            dataObject.add(tsMan);
+            row.data = dataObject;
+            
+            parentItem.addItem(row);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private boolean addPrepTestToSelection(TreeDataItem parentItem, Object parentBundle,
+                                           ArrayList<ArrayList<Object>> selectedBundles,
+                                           ValidationErrorsList errorsList) {
+        int                  i, depth;
+        ArrayList<Object>    selectedRow;
+        TreeDataItem         item;
+        ValidationErrorsList tempErrors;
+
+        tempErrors = new ValidationErrorsList();
+        depth = parentItem.depth + 1;
+        for (i = parentItem.childIndex + 1; i < prepTestTree.numRows(); i++) {
+            item = prepTestTree.getRow(i);
+            if (item.depth < depth) {
+                return false;
+            } else if (item.depth > depth) {
+                continue;
+            } else if ("Y".equals(item.cells.get(2).getValue())) {
+                if (item.cells.get(1).value == null) {
+                    tempErrors.add(new FormErrorException("prepTestNeedsSection",
+                                                          (String)item.cells.get(0).getValue()));
+                } else {
+                    selectedRow = new ArrayList<Object>();
+                    selectedRow.add(parentBundle);
+                    selectedRow.add(((TestPrepViewDO)((ArrayList<Object>)item.data).get(0)).getPrepTestId());
+                    selectedRow.add(item.cells.get(1).getValue());
+                    selectedBundles.add(selectedRow);
+                    if (item.hasChildren())
+                        return addPrepTestToSelection(item, selectedRow,
+                                                      selectedBundles, errorsList);
+                    else
+                        return true;
+                }
+            }
+        }
+        if (tempErrors.size() > 0)
+            errorsList.add(tempErrors);
+        return false;
+    }
+
+    public void setBundles(ArrayList<ArrayList<Object>> bundles) {
+        prepBundles = bundles;
 
         DataChangeEvent.fire(this);
     }
