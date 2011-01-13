@@ -360,6 +360,15 @@ public class SampleItemAnalysisTreeTab extends Screen
                     itemsTree.fireEvents(true);
                     
                     treeUtil.importReflexTestList((ArrayList<SampleDataBundle>)event.getData());
+                } else if (event.getAction() == AnalysisTab.Action.SAMPLE_TYPE_CHANGED) {
+                    selected = itemsTree.getSelection();
+                    
+                    // make sure it is a sample item row
+                    if ("analysis".equals(selected.leafType))
+                        selected = selected.parent;
+
+                    treeUtil.updateSampleItemRow(selected);
+                    itemsTree.refreshRow(selected);
                 }
             }
         });

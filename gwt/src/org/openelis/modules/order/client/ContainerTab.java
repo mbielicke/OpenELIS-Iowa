@@ -32,10 +32,14 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrderContainerDO;
 import org.openelis.domain.OrderTestViewDO;
+import org.openelis.domain.PanelDO;
 import org.openelis.domain.TestMethodVO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.BeforeGetMatchesEvent;
+import org.openelis.gwt.event.BeforeGetMatchesHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -63,6 +67,8 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.OrderTestManager;
+import org.openelis.manager.PanelManager;
+import org.openelis.manager.TestManager;
 import org.openelis.meta.OrderMeta;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -79,11 +85,12 @@ public class ContainerTab extends Screen {
     private TableWidget           orderTestTable, orderContainerTable;
     private boolean               loaded;
 
-    protected ScreenService       analysisService, testService;
+    protected ScreenService       analysisService, panelService, testService;
 
     public ContainerTab(ScreenDefInt def, ScreenWindow window) {
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
         analysisService = new ScreenService("controller?service=org.openelis.modules.analysis.server.AnalysisService");
+        panelService  = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
         testService  = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
 
         setDefinition(def);
@@ -207,16 +214,86 @@ public class ContainerTab extends Screen {
         });
         
         test = (AutoComplete) orderTestTable.getColumnWidget(OrderMeta.getTestName());
-        test.addGetMatchesHandler(new GetMatchesHandler() {
-            public void onGetMatches(GetMatchesEvent event) {               
-                Query query;
-                QueryData field;
-                QueryFieldUtil parser;
-                ArrayList<QueryData> fields;
-                ArrayList<TestMethodVO> autoList;
-                TestMethodVO data;
+        test.addBeforeGetMatchesHandler(new BeforeGetMatchesHandler() {
+            public void onBeforeGetMatches(BeforeGetMatchesEvent event) {
+                int                     r;
+                Integer                 sampleType, testPanelId, sepIndex;
+                String                  value, flag;
                 ArrayList<TableDataRow> model;
-                TableDataRow row;
+                TableDataRow            row;
+                OrderContainerDO        oData;
+                PanelDO                 pDO;
+                PanelManager            pMan;
+                TestManager             tMan;
+                TestViewDO              tVDO;
+                TestMethodVO            tmData;
+
+                value = event.getMatch();
+                if (value.matches("[tp][0-9]*\\-[0-9]*")) {
+                    flag = value.substring(0, 1);
+                    sepIndex = value.indexOf("-");
+                    testPanelId = Integer.valueOf(value.substring(1, sepIndex));
+                    sampleType = Integer.valueOf(value.substring(sepIndex + 1));
+                    try {
+                        //
+                        // Add container so we can set the sample type to it
+                        //
+                        orderContainerTable.addRow();
+                        r = orderContainerTable.numRows() - 1;
+                        oData = manager.getContainers().getContainerAt(r);
+                        oData.setTypeOfSampleId(sampleType);
+                        orderContainerTable.load(getContainerTableModel());
+                        orderContainerTable.selectRow(r);
+                        orderContainerTable.scrollToSelection();
+
+                        row = new TableDataRow(3);
+                        tmData = new TestMethodVO();
+                        if ("t".equals(flag)) {
+                            tMan = testService.call("fetchById", testPanelId);
+                            tVDO = tMan.getTest();
+                            row.key = tVDO.getId();
+                            tmData.setTestId(tVDO.getId());
+                            row.cells.get(0).value = tVDO.getName();
+                            tmData.setTestName(tVDO.getName());
+                            row.cells.get(1).value = tVDO.getMethodName();
+                            tmData.setMethodId(tVDO.getMethodId());
+                            tmData.setMethodName(tVDO.getMethodName());
+                            row.cells.get(2).value = tVDO.getDescription();
+                            tmData.setTestDescription(tVDO.getDescription());
+                        } else if ("p".equals(flag)) {
+                            pMan = panelService.call("fetchById", testPanelId);
+                            pDO = pMan.getPanel();
+                            row.key = pDO.getId();
+                            tmData.setTestId(pDO.getId());
+                            row.cells.get(0).value = pDO.getName();
+                            tmData.setTestName(pDO.getName());
+                            row.cells.get(2).value = pDO.getDescription();
+                            tmData.setTestDescription(pDO.getDescription());
+                        }
+                        row.data = tmData;
+                        model = new ArrayList<TableDataRow>();
+                        model.add(row);
+                        test.setModel(model);
+                        test.setSelection(row.key);
+                        orderTestTable.finishEditing();
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                    }
+                    event.cancel();
+                }
+            }
+        });
+
+        test.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                ArrayList<QueryData>    fields;
+                ArrayList<TableDataRow> model;
+                ArrayList<TestMethodVO> autoList;
+                Query                   query;
+                QueryData               field;
+                QueryFieldUtil          parser;
+                TableDataRow            row;
+                TestMethodVO            data;
 
                 fields = new ArrayList<QueryData>();
                 query = new Query();
@@ -250,7 +327,6 @@ public class ContainerTab extends Screen {
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
-            
             }            
         });
         

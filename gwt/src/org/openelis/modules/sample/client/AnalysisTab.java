@@ -34,14 +34,17 @@ import org.openelis.cache.SectionCache;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.PanelDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SectionDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.SectionPermission;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.Util;
@@ -49,6 +52,8 @@ import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
+import org.openelis.gwt.event.BeforeGetMatchesEvent;
+import org.openelis.gwt.event.BeforeGetMatchesHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -80,8 +85,10 @@ import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisUserManager;
+import org.openelis.manager.PanelManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
+import org.openelis.manager.TestManager;
 import org.openelis.manager.TestSectionManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.SampleMeta;
@@ -99,7 +106,8 @@ import com.google.gwt.user.client.Window;
 
 public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab.Action> {
     public enum Action {
-        ANALYSIS_ADDED, PANEL_ADDED, ORDER_LIST_ADDED, CHANGED_DONT_CHECK_PREPS, ITEM_CHANGED
+        ANALYSIS_ADDED, PANEL_ADDED, ORDER_LIST_ADDED, CHANGED_DONT_CHECK_PREPS,
+        ITEM_CHANGED, SAMPLE_TYPE_CHANGED
     };
 
     private boolean                                     loaded;
@@ -132,12 +140,13 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                                                         actionReleasedId;
 
     private Confirm                                     changeTestConfirm;
-    protected ScreenService                             panelService, userService,
-                                                        worksheetService;
+    protected ScreenService                             panelService, testService,
+                                                        userService, worksheetService;
 
     public AnalysisTab(ScreenDefInt def, ScreenWindow window) {
         service = new ScreenService("controller?service=org.openelis.modules.analysis.server.AnalysisService");
         panelService = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
+        testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
         userService = new ScreenService("controller?service=org.openelis.server.SystemUserService");
         worksheetService = new ScreenService("controller?service=org.openelis.modules.worksheet.server.WorksheetService");
 
@@ -196,19 +205,92 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
         });
 
+        test.addBeforeGetMatchesHandler(new BeforeGetMatchesHandler() {
+            public void onBeforeGetMatches(BeforeGetMatchesEvent event) {
+                int                     i;
+                Integer                 sampleType, testPanelId, sepIndex;
+                String                  value, flag;
+                ArrayList<TableDataRow> model;
+                FormErrorException      feE;
+                TableDataRow            row;
+                DictionaryDO            stDO;
+                PanelDO                 pDO;
+                PanelManager            pMan;
+                TestManager             tMan;
+                TestTypeOfSampleDO      ttosDO;
+                TestTypeOfSampleManager ttosMan;
+                TestViewDO              tVDO;
+
+                value = event.getMatch();
+                if (value.matches("[tp][0-9]*\\-[0-9]*")) {
+                    flag = value.substring(0, 1);
+                    sepIndex = value.indexOf("-");
+                    testPanelId = Integer.valueOf(value.substring(1, sepIndex));
+                    sampleType = Integer.valueOf(value.substring(sepIndex + 1));
+                    try {
+                        if (sampleItem.getTypeOfSampleId() == null) {
+                            stDO = DictionaryCache.getEntryFromId(sampleType);
+                            sampleItem.setTypeOfSampleId(stDO.getId());
+                            sampleItem.setTypeOfSample(stDO.getEntry());
+                            ActionEvent.fire(anTab, Action.SAMPLE_TYPE_CHANGED, null);
+                        }
+
+                        row = new TableDataRow(3);
+                        if ("t".equals(flag)) {
+                            tMan = testService.call("fetchById", testPanelId);
+                            tVDO = tMan.getTest();
+                            ttosMan = tMan.getSampleTypes();
+                            for (i = 0; i < ttosMan.count(); i++) {
+                                ttosDO = ttosMan.getTypeAt(i);
+                                if (ttosDO.getTypeOfSampleId().equals(sampleItem.getTypeOfSampleId())) {
+                                    row.key = tVDO.getId();
+                                    row.cells.get(0).value = tVDO.getName();
+                                    row.cells.get(1).value = tVDO.getMethodName();
+                                    row.cells.get(2).value = tVDO.getDescription();
+                                    row.data = tVDO.getMethodId();
+                                    break;
+                                }
+                            }
+                            if (i == ttosMan.count()) {
+                                feE = new FormErrorException("testMethodSampleTypeMismatch",
+                                                             tVDO.getName()+", "+tVDO.getMethodName(),
+                                                             sampleItem.getTypeOfSample());
+                                Window.alert(feE.getMessage());
+                            }
+                        } else if ("p".equals(flag)) {
+                            pMan = panelService.call("fetchById", testPanelId);
+                            pDO = pMan.getPanel();
+                            row.key = pDO.getId();
+                            row.cells.get(0).value = pDO.getName();
+                            row.cells.get(2).value = pDO.getDescription();
+                        }
+                        model = new ArrayList<TableDataRow>();
+                        model.add(row);
+                        test.setModel(model);
+                        test.setSelection(row.key);
+                        test.complete();
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                    }
+                    event.cancel();
+                }
+            }
+        });
+
         test.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                Query query;
-                QueryData field;
-                QueryFieldUtil parser;
-                ArrayList<QueryData> fields;
-                ArrayList<TestMethodVO> autoList;
-                TestMethodVO autoDO;
+                int                     i;
+                Integer                 sampleType;
+                ArrayList<QueryData>    fields;
                 ArrayList<TableDataRow> model;
-                Integer sampleType;
-
+                ArrayList<TestMethodVO> autoList;
+                Query                   query;
+                QueryData               field;
+                QueryFieldUtil          parser;
+                TableDataRow            row;
+                TestMethodVO            autoDO;
+                
                 sampleType = sampleItem.getTypeOfSampleId();
-
                 if (sampleType == null) {
                     window.setError(consts.get("sampleItemTypeRequired"));
                     return;
@@ -233,13 +315,13 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                     autoList = service.callList("getTestMethodMatches", query);
                     model = new ArrayList<TableDataRow>();
 
-                    for (int i = 0; i < autoList.size(); i++ ) {
+                    for (i = 0; i < autoList.size(); i++ ) {
                         autoDO = autoList.get(i);
 
-                        TableDataRow row = new TableDataRow(autoDO.getTestId(),
-                                                            autoDO.getTestName(),
-                                                            autoDO.getMethodName(),
-                                                            autoDO.getTestDescription());
+                        row = new TableDataRow(autoDO.getTestId(),
+                                               autoDO.getTestName(),
+                                               autoDO.getMethodName(),
+                                               autoDO.getTestDescription());
                         row.data = autoDO.getMethodId();
 
                         model.add(row);

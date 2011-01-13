@@ -42,7 +42,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'accessionNum')" />:
               </text>
-              <textbox key="{meta:getAccessionNumber()}" width="75" tab="{meta:getOrderId()},SampleContent" field="Integer" required="true" />
+              <textbox key="{meta:getAccessionNumber()}" width="75" tab="{meta:getOrderId()},SampleContent" field="String" required="true" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'orderNum')" />:
               </text>

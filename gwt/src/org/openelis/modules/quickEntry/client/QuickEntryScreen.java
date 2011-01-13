@@ -463,9 +463,10 @@ public class QuickEntryScreen extends Screen {
     }
 
     private void entryChanged() {
-        String val;
-        Integer accessionNum;
-        SampleDO sampleDO;
+        int           index;
+        String        val;
+        Integer       accessionNum;
+        SampleDO      sampleDO;
         SampleManager sampleMan;
 
         val = entry.getValue();
@@ -534,10 +535,18 @@ public class QuickEntryScreen extends Screen {
             }
 
             // accession #
-        } else if (val.matches("[0-9]*")) {
+        } else if (val.matches("[0-9]+") || val.matches("[0-9]+-[0-9]+")) {
             if (validateFields()) {
                 if (accNumUtil == null)
                     accNumUtil = new AccessionNumberUtility();
+
+                //
+                // Trim the Sample Item ID from the end of the bar coded
+                // accession number
+                //
+                index = val.indexOf("-");
+                if (index != -1)
+                    val = val.substring(0, index);
 
                 try {
                     sampleDO = new SampleDO();

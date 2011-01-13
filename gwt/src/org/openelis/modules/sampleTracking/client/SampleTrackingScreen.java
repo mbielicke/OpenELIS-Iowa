@@ -119,8 +119,8 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     private ResultTab            testResultsTab;
 
     private TreeWidget           trackingTree;
-    private TextBox              clientReference;
-    private TextBox<Integer>     accessionNumber, orderNumber;
+    private TextBox              accessionNumber, clientReference;
+    private TextBox<Integer>     orderNumber;
     private TextBox<Datetime>    collectedTime;
     private Dropdown<Integer>    statusId;
     private AppButton            prevPage, nextPage, similarButton, expandButton, collapseButton,
@@ -668,14 +668,27 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             }
         });
 
-        accessionNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getAccessionNumber());
-        addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
+        accessionNumber = (TextBox)def.getWidget(SampleMeta.getAccessionNumber());
+        addScreenHandler(accessionNumber, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 accessionNumber.setValue(Util.toString(manager.getSample().getAccessionNumber()));
             }
 
-            public void onValueChange(final ValueChangeEvent<Integer> event) {
-                manager.getSample().setAccessionNumber(event.getValue());
+            public void onValueChange(final ValueChangeEvent<String> event) {
+                int    index;
+                String val;
+
+                val = event.getValue();
+                //
+                // Trim the Sample Item ID from the end of the bar coded
+                // accession number
+                //
+                index = val.indexOf("-");
+                if (index != -1)
+                    val = val.substring(0, index);
+                accessionNumber.setValue(val);
+
+                manager.getSample().setAccessionNumber(Integer.valueOf(val));
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -969,6 +982,10 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     // we want to update the result tab instead of the analysis
                     // tab
                     treeUtil.updateAnalysisRow(selected.parent);
+                    trackingTree.refreshRow(selected.parent);
+                } else if (event.getAction() == AnalysisTab.Action.SAMPLE_TYPE_CHANGED) {
+                    selected = trackingTree.getSelection();
+                    treeUtil.updateSampleItemRow(selected.parent);
                     trackingTree.refreshRow(selected.parent);
                 }
             }
@@ -1435,13 +1452,31 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     }
     
     public ArrayList<QueryData> getQueryFields() {
-        boolean addDomain;
+        boolean              addDomain;
+        int                  i, index;
         ArrayList<QueryData> fields, auxFields, tmpFields;
-        QueryData field;
+        QueryData            field;
 
         fields = super.getQueryFields();
         tmpFields = null;
         addDomain = true;
+
+        for (i = 0; i < fields.size(); i++) {
+            field = fields.get(i);
+            if (field.key == SampleMeta.getAccessionNumber()) {
+                if (field.query.matches("[0-9]+-[0-9]+")) {
+                    //
+                    // Trim the Sample Item ID from the end of the bar coded
+                    // accession number
+                    //
+                    index = field.query.indexOf("-");
+                    if (index != -1)
+                        field.query = field.query.substring(0, index);
+                }
+                field.type = QueryData.Type.INTEGER;
+                break;
+            }
+        }
 
         // add aux data values if necessary
         auxFields = auxDataTab.getQueryFields();                
@@ -1455,7 +1490,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             fields.add(field);
 
             // add aux fields
-            for (int i = 0; i < auxFields.size(); i++ ) {                
+            for (i = 0; i < auxFields.size(); i++ ) {                
                 fields.add(auxFields.get(i));            
             } 
         }
