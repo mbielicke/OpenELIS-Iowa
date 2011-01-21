@@ -37,7 +37,7 @@ public class PreferencesServlet extends AppServlet {//implements
     }
 
     public void storePreferences(Preferences prefs) {
-        PreferencesManager.store(prefs);
+        PreferencesManager.flush(prefs);
 
     }
 
