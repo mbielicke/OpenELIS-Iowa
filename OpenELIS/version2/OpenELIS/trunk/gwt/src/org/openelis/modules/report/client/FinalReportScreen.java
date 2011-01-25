@@ -28,27 +28,13 @@ package org.openelis.modules.report.client;
 import org.openelis.gwt.screen.ScreenDef;
 import org.openelis.gwt.services.ScreenService;
 
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-
 public class FinalReportScreen extends ReportScreen {
 
     public FinalReportScreen() throws Exception {         
         drawScreen(new ScreenDef());        
-        promptsInterface = "getPromptsForSingle";
-        runReportInterface = "runReportForSingle";        
-        service = new ScreenService("controller?service=org.openelis.modules.report.server.FinalReportService");
-        
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-    
-    private void postConstructor() {
-        setTitle(consts.get("finalReportSingleReprint"));
-        initialize();        
-    }   
-    
+        setPromptsInterface("getPromptsForSingle");
+        setRunReportInterface("runReportForSingle");   
+        setName(consts.get("finalReportSingleReprint"));
+        service = new ScreenService("controller?service=org.openelis.modules.report.server.FinalReportService");       
+    } 
 }

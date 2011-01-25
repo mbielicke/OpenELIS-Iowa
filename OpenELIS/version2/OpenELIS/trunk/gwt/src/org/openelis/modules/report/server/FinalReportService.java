@@ -50,6 +50,18 @@ public class FinalReportService {
         return st;
     }
     
+    public ReportStatus runReportForBatch(Query query) throws Exception { 
+        ReportStatus st;
+        
+        st = remote().runReportForBatch("demo","-view-");
+        if (st.getStatus() == ReportStatus.Status.SAVED)
+            SessionManager.getSession().setAttribute(st.getMessage(), st);
+
+        return st;
+    }
+    
+    
+    
     private FinalReportRemote remote() {
         return (FinalReportRemote)EJBFactory.lookup("openelis/FinalReportBean/remote");
     } 
