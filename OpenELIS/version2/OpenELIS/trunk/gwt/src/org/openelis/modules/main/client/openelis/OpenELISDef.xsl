@@ -80,16 +80,9 @@ UIRF Software License are applicable instead of those above.
               </menuDisplay>
               <menuPanel layout="vertical" position="below" style="topMenuContainer">
 
-<!--				
-<menuItem key="fullLogin" icon="fullLoginIcon" label="{resource:getString($constants,'fullLogin')}" description="{resource:getString($constants,'fullLoginDescription')}"/>
-  -->
- <code>if(OpenELIS.getSystemUserPermission().hasModule("quickentry","SELECT")){</code>
+				<code>if(OpenELIS.getSystemUserPermission().hasModule("quickentry","SELECT")){</code>
                 <menuItem key="quickEntry" description="{resource:getString($constants,'quickEntryDescription')}" enable="true" icon="quickEntryIcon" label="{resource:getString($constants,'quickEntry')}" />
-<code>}</code>
-<!--				
-<menuItem key="secondEntry" icon="secondEntryIcon" label="{resource:getString($constants,'secondEntry')}" description="{resource:getString($constants,'secondEntryDescription')}"/>
-  -->
-
+				<code>}</code>
                 <menuItem key="tracking" description="{resource:getString($constants,'trackingDescription')}" enable="true" icon="trackingIcon" label="{resource:getString($constants,'tracking')}" />
                 <html>&lt;hr/&gt;</html>
                 <code>if(OpenELIS.getSystemUserPermission().hasModule("sampleenvironmental","SELECT")){</code>
@@ -105,11 +98,6 @@ UIRF Software License are applicable instead of those above.
                 <menuItem key="newbornScreeningSampleLogin" description="{resource:getString($constants,'newbornScreeningSampleLoginDescription')}" enable="false" icon="newbornScreeningSampleLoginIcon" label="{resource:getString($constants,'newbornScreeningSampleLogin')}" />
                 <menuItem key="animalSampleLogin" description="{resource:getString($constants,'animalSampleLoginDescription')}" enable="false" icon="animalSampleLoginIcon" label="{resource:getString($constants,'animalSampleLogin')}" />
                 <menuItem key="ptSampleLogin" description="{resource:getString($constants,'ptSampleLoginDescription')}" enable="false" icon="ptSampleLoginIcon" label="{resource:getString($constants,'ptSampleLogin')}" />
-                
-<!-- 
-<menuItem key="sampleManagement" icon="sampleManagementIcon" label="{resource:getString($constants,'sampleManagement')}" description="{resource:getString($constants,'sampleManagementDescription')}"/>
-  -->
-
                 <html>&lt;hr/&gt;</html>
                 <menuItem key="project" description="{resource:getString($constants,'projectDescription')}" icon="projectIcon" label="{resource:getString($constants,'project')}" />
                 <code>if(OpenELIS.getSystemUserPermission().hasModule("provider","SELECT")){</code>
@@ -242,31 +230,36 @@ UIRF Software License are applicable instead of those above.
             </menuItem>
             <menuItem>
               <menuDisplay>
-                <label style="topMenuBarItem" text="{resource:getString($constants,'report')}" />
+                <label style="topMenuBarItem" text="{resource:getString($constants,'report')}"/>
               </menuDisplay>
               <menuPanel layout="vertical" position="below" style="topMenuContainer">
-              	<code>if(OpenELIS.getSystemUserPermission().hasModule("test","SELECT")){</code>                
-                <menuItem key="testReport" description="{resource:getString($constants,'testReportDescription')}" enable="true" icon="testReportIcon" label="{resource:getString($constants,'testReport')}" />
-                <code>}</code>
-                <code>if(OpenELIS.getSystemUserPermission().hasModule("reportfinal","SELECT")){</code>
-                <menuItem key="finalReport" description="{resource:getString($constants,'finalReportDescription')}" enable="true" icon="finalReportIcon" label="{resource:getString($constants,'finalReportSingleReprint')}" />
-                <code>}</code>
-                <menuItem key="sampleDataExport" description="{resource:getString($constants,'sampleDataExportDescription')}" enable="false" icon="sampleDataExportIcon" label="{resource:getString($constants,'sampleDataExport')}" />
-                <menuItem key="loginLabel" description="{resource:getString($constants,'loginLabelDescription')}" enable="false" icon="loginLabelIcon" label="{resource:getString($constants,'loginLabel')}" />
-                <html>&lt;hr/&gt;</html>
-                <menuItem style="TopMenuRowContainer" description="" icon="referenceIcon" label="{resource:getString($constants,'reference')}">
+                <menuItem style="TopMenuRowContainer" description="" icon="" label="{resource:getString($constants,'login')}">
                   <menuPanel layout="vertical" position="beside" style="topMenuContainer">
-                    <menuItem key="organizationRef" description="{resource:getString($constants,'organizationDescription')}" enable="false" icon="organizationIcon" label="{resource:getString($constants,'organization')}" />
-                    <menuItem key="testRef" description="{resource:getString($constants,'testDescription')}" enable="false" icon="testIconRef" label="{resource:getString($constants,'test')}" />
-                    <menuItem key="QAEventRef" description="{resource:getString($constants,'QAEventDescription')}" enable="false" icon="QAEventIconRef" label="{resource:getString($constants,'QAEvent')}" />
+	                <code>if(OpenELIS.getSystemUserPermission().hasModule("r_loginlabel","SELECT")){</code>
+                    <menuItem key="sampleLoginLabelReport" description="" icon="" enable="true" label="{resource:getString($constants,'loginBarcode')}" />
+                    <code>}</code>
+	                <code>if(OpenELIS.getSystemUserPermission().hasModule("r_loginlabelrep","SELECT")){</code>
+                    <menuItem key="sampleLoginLabelReprintReport" description="" icon="" enable="true" label="{resource:getString($constants,'loginBarcodeRep')}" />
+					<code>}</code>                    
+                    <menuItem key="sampleVerificationReport" description="" icon="" enable="false" label="{resource:getString($constants,'verificationReport')}" />
+                    <menuItem key="testRequestFormReport" description="" icon="" enable="false" label="{resource:getString($constants,'TRFReport')}" />
                   </menuPanel>
                 </menuItem>
-                <menuItem style="TopMenuRowContainer" description="" icon="summaryIcon" label="{resource:getString($constants,'summary')}">
+                <menuItem style="TopMenuRowContainer" description="" icon="" label="{resource:getString($constants,'reference')}">
                   <menuPanel layout="vertical" position="beside" style="topMenuContainer">
-                    <menuItem key="QAByOrganization" description="{resource:getString($constants,'QAByOrganizationDescription')}" enable="false" icon="QAByOrganizationIcon" label="{resource:getString($constants,'QAByOrganization')}" />
-                    <menuItem key="testCountByFacility" description="{resource:getString($constants,'testCountByFacilityDescription')}" enable="false" icon="testCountByFacilityIcon" label="{resource:getString($constants,'testCountByFacility')}" />
-                    <menuItem key="turnaround" description="{resource:getString($constants,'turnaroundDescription')}" enable="false" icon="turnaroundIcon" label="{resource:getString($constants,'turnaround')}" />
-                    <menuItem key="positiveTestCount" description="{resource:getString($constants,'positiveTestCountDescription')}" enable="false" icon="positiveTestCountIcon" label="{resource:getString($constants,'positiveTestCount')}" />
+                    <menuItem key="testReport" description="" icon="" enable="true" label="{resource:getString($constants,'testReport')}" />
+                    <menuItem key="qaEventReport" description="" icon="" enable="false" label="{resource:getString($constants,'QAEventReport')}" />
+                    <menuItem key="organizationRef" description="" icon="" enable="false" label="{resource:getString($constants,'organization')}" />
+                  </menuPanel>
+                </menuItem>
+                <menuItem style="TopMenuRowContainer" description="" icon="" label="{resource:getString($constants,'summary')}">
+                  <menuPanel layout="vertical" position="beside" style="topMenuContainer">
+                    <menuItem key="sampleInhouseReport" description="" icon="" enable="false" label="{resource:getString($constants,'sampleInhouseReport')}" />
+	                <menuItem key="sampleDataExport" description="" icon="" enable="false" label="{resource:getString($constants,'sampleDataExport')}" />
+                    <menuItem key="QAByOrganization" description="" icon="" enable="false" label="{resource:getString($constants,'QAByOrganization')}" />
+                    <menuItem key="testCountByFacility" description="" icon="" enable="false" label="{resource:getString($constants,'testCountByFacility')}" />
+                    <menuItem key="turnaround" description="" icon="" enable="false" label="{resource:getString($constants,'turnaround')}" />
+                    <menuItem key="finalReport" description="" icon="" enable="true" label="{resource:getString($constants,'finalReport')}" />
                   </menuPanel>
                 </menuItem>
               </menuPanel>

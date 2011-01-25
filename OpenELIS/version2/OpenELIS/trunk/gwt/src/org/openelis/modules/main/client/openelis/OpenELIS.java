@@ -62,8 +62,10 @@ import org.openelis.modules.pws.client.PwsScreen;
 import org.openelis.modules.qaevent.client.QaEventScreen;
 import org.openelis.modules.qc.client.QcScreen;
 import org.openelis.modules.quickEntry.client.QuickEntryScreen;
-import org.openelis.modules.report.client.TestReportScreen;
 import org.openelis.modules.report.client.FinalReportScreen;
+import org.openelis.modules.report.client.SampleLoginLabelReportScreen;
+import org.openelis.modules.report.client.SampleLoginLabelReprintReportScreen;
+import org.openelis.modules.report.client.TestReportScreen;
 import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
 import org.openelis.modules.section.client.SectionScreen;
 import org.openelis.modules.shipping.client.ShippingScreen;
@@ -1056,6 +1058,46 @@ public class OpenELIS extends Screen {
             }
         });
         
+        addClickHandler("sampleLoginLabelReport", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new SampleLoginLabelReportScreen());
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+
+        addClickHandler("sampleLoginLabelReprintReport", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new SampleLoginLabelReprintReportScreen());
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+
         addClickHandler("finalReport", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -1076,16 +1118,6 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addClickHandler("sampleDataExport", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                // browser.addScreen(new )
-            }
-        });
-        addClickHandler("loginLabel", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                // browser.addScreen(new )
-            }
-        });
     }
 
     /**

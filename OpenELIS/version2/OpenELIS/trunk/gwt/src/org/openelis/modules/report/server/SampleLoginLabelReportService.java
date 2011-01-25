@@ -23,32 +23,37 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.report.client;
+package org.openelis.modules.report.server;
 
-import org.openelis.gwt.screen.ScreenDef;
-import org.openelis.gwt.services.ScreenService;
+import java.util.ArrayList;
 
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
+import org.openelis.gwt.common.ReportStatus;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.SampleLoginLabelReportRemote;
+import org.openelis.report.Prompt;
 
-public class FinalReportScreen extends ReportScreen {
-
-    public FinalReportScreen() throws Exception {         
-        drawScreen(new ScreenDef());        
-        promptsInterface = "getPromptsForSingle";
-        runReportInterface = "runReportForSingle";        
-        service = new ScreenService("controller?service=org.openelis.modules.report.server.FinalReportService");
-        
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
+public class SampleLoginLabelReportService {    
+    
+    public ArrayList<Prompt> getPrompts() throws Exception{
+        return remote().getPrompts();      
     }
     
-    private void postConstructor() {
-        setTitle(consts.get("finalReportSingleReprint"));
-        initialize();        
-    }   
+    public ReportStatus runReport(Query query) throws Exception { 
+        return remote().runReport(query.getFields());
+    }
     
+    public ArrayList<Prompt> getReprintPrompts() throws Exception{
+        return remote().getReprintPrompts();      
+    }
+    
+    public ReportStatus runReprintReport(Query query) throws Exception { 
+        return remote().runReprintReport(query.getFields());
+    }
+    
+    private SampleLoginLabelReportRemote remote() {
+        return (SampleLoginLabelReportRemote)EJBFactory.lookup("openelis/SampleLoginLabelReportBean/remote");
+    } 
 }
+
+
