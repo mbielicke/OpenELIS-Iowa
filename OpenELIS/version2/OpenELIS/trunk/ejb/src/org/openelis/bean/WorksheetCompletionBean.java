@@ -38,8 +38,8 @@ import java.util.HashMap;
 import java.util.StringTokenizer;
 
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.naming.InitialContext;
 
 import org.apache.poi.hssf.usermodel.DVConstraint;
 import org.apache.poi.hssf.usermodel.HSSFDataValidation;
@@ -106,42 +106,22 @@ import org.openelis.utils.PermissionInterceptor;
 @RolesAllowed("worksheet-update")
 public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
+    @EJB
+    AnalyteLocal analyteLocal;
+    @EJB
+    DictionaryLocal dictionaryLocal;
+    @EJB
+    QcAnalyteLocal qcAnalyteLocal;
+    @EJB
+    SampleManagerLocal sampleManagerLocal;
+    @EJB
+    SectionLocal sectionLocal;
+    @EJB
+    SystemUserPermissionProxyLocal systemUserLocal;
+    @EJB
+    SystemVariableLocal systemVariableLocal;
+
     private HashMap<String,CellStyle>    styles;
-//    private HashMap<String,FormatColumn> columnMasterMap;
-
-    protected static Integer anLoggedInId, anInitiatedId, anCompletedId, anReleasedId,
-                             anInPrepId, anOnHoldId, anRequeueId, anCancelledId,
-                             anErrorLoggedInId, anErrorInitiatedId, anErrorInPrepId,
-                             anErrorCompletedId, sampleReleasedId, resultTypeDictionary;
-
-    public WorksheetCompletionBean() {
-        DictionaryLocal l;
-
-        if (anLoggedInId == null) {
-            l = dictLocal();
-
-            try {
-                anLoggedInId = l.fetchBySystemName("analysis_logged_in").getId();
-                anInitiatedId = l.fetchBySystemName("analysis_initiated").getId();
-                anCompletedId = l.fetchBySystemName("analysis_completed").getId();
-                anReleasedId = l.fetchBySystemName("analysis_released").getId();
-                anInPrepId = l.fetchBySystemName("analysis_inprep").getId();
-                anOnHoldId = l.fetchBySystemName("analysis_on_hold").getId();
-                anRequeueId = l.fetchBySystemName("analysis_requeue").getId();
-                anCancelledId = l.fetchBySystemName("analysis_cancelled").getId();
-                anErrorLoggedInId = l.fetchBySystemName("analysis_error_logged_in").getId();
-                anErrorInitiatedId = l.fetchBySystemName("analysis_error_initiated").getId();
-                anErrorInPrepId = l.fetchBySystemName("analysis_error_inprep").getId();
-                anErrorCompletedId = l.fetchBySystemName("analysis_error_completed").getId();
-                sampleReleasedId = l.fetchBySystemName("sample_released").getId();
-                resultTypeDictionary = l.fetchBySystemName("test_res_type_dictionary").getId();
-            } catch (Exception e) {
-                e.printStackTrace();
-                anLoggedInId = null;
-            }
-        }
-//        createColumnMasterMap();
-    }
 
     public WorksheetManager saveForEdit(WorksheetManager manager) throws Exception {
         int                      r, i, a, c, o;
@@ -174,7 +154,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         WorksheetResultManager   wrManager;
 
         try {
-            formatVDO = dictLocal().fetchById(manager.getWorksheet().getFormatId());
+            formatVDO = dictionaryLocal.fetchById(manager.getWorksheet().getFormatId());
         } catch (NotFoundException nfE) {
             formatVDO = new DictionaryViewDO();
             formatVDO.setLocalAbbrev("Total");
@@ -450,7 +430,9 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         boolean                  anaModified, newSampleLock, statusLocked, permLocked;
         int                      a, i, c, r, s, rowIndex;
         Object                   value;
-        Integer                  testResultId;
+        Integer                  anCancelledId, anCompletedId, anInitiatedId, anInPrepId,
+                                 anLoggedInId, anOnHoldId, anReleasedId, anRequeueId, 
+                                 testResultId;
         String                   userToken;
         ArrayList<DictionaryDO>  statusList;
         ArrayList<SystemUserVO>  userList;
@@ -482,6 +464,15 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         WorksheetQcResultViewDO  wqrVDO;
         WorksheetResultManager   wrManager;
         WorksheetResultViewDO    wrVDO;
+        
+        anCancelledId = dictionaryLocal.fetchBySystemName("analysis_cancelled").getId();
+        anCompletedId = dictionaryLocal.fetchBySystemName("analysis_completed").getId();
+        anInitiatedId = dictionaryLocal.fetchBySystemName("analysis_initiated").getId();
+        anInPrepId = dictionaryLocal.fetchBySystemName("analysis_inprep").getId();
+        anLoggedInId = dictionaryLocal.fetchBySystemName("analysis_logged_in").getId();
+        anOnHoldId = dictionaryLocal.fetchBySystemName("analysis_on_hold").getId();
+        anRequeueId = dictionaryLocal.fetchBySystemName("analysis_requeue").getId();
+        anReleasedId = dictionaryLocal.fetchBySystemName("analysis_released").getId();
         
         errorList = new ValidationErrorsList();
         file = new File(getWorksheetOutputFileName(manager.getWorksheet().getId(),
@@ -531,7 +522,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     else
                         statusLocked = false;
 
-                    sectionVDO = sectionLocal().fetchById(aVDO.getSectionId());
+                    sectionVDO = sectionLocal.fetchById(aVDO.getSectionId());
                     perm = PermissionInterceptor.getSystemUserPermission().getSection(sectionVDO.getName());
                     if (perm == null || !perm.hasCompletePermission())
                         permLocked = true;
@@ -568,7 +559,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                         tokenizer = new StringTokenizer((String)value, ",");
                         while (tokenizer.hasMoreTokens()) {
                             userToken = tokenizer.nextToken();
-                            userList = sysUserLocal().fetchByLoginName(userToken, 1);
+                            userList = systemUserLocal.fetchByLoginName(userToken, 1);
                             if (userList.size() > 0) {
                                 if (!statusLocked && !permLocked)
                                     auManager.addCompleteRecord(userList.get(0));
@@ -617,7 +608,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                                     value = getValueFromCellByName(wb.getSheet("Worksheet"), "final_value."+i+"."+a+"."+r);
                                 } else {
                                     try {
-                                        aDO = analyteLocal().fetchById(rVDO.getAnalyteId());
+                                        aDO = analyteLocal.fetchById(rVDO.getAnalyteId());
                                         cell = getCellForName(wb.getSheet("Worksheet"), aDO.getExternalId()+"."+i+"."+a+"."+r);
                                         if (cell == null)
                                             continue;
@@ -701,32 +692,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         
         return manager;
     }
-/*    
-    private void createColumnMasterMap() {
-        columnMasterMap = new HashMap<String,FormatColumn>();
-        
-        columnMasterMap.put("raw_value1", new FormatColumn("raw_value1", null, null));
-        columnMasterMap.put("raw_value2", new FormatColumn("raw_value2", null, null));
-        columnMasterMap.put("dilution_factor", new FormatColumn("dilution_factor", null, null));
-        columnMasterMap.put("final_value1", new FormatColumn("final_value1", "%s*%s", new String[]{"raw_value1", "dilution_factor"}));
-        columnMasterMap.put("final_value2", new FormatColumn("final_value2", "%s*%s", new String[]{"raw_value2", "dilution_factor"}));
-        columnMasterMap.put("final_value", new FormatColumn("final_value", null, null));
-        columnMasterMap.put("range_low", new FormatColumn("range_low", null, null));
-        columnMasterMap.put("range_high", new FormatColumn("range_high", null, null));
-        columnMasterMap.put("quant_limit", new FormatColumn("quant_limit", null, null));
-        columnMasterMap.put("final_quant_limit", new FormatColumn("final_quant_limit", "%s*%s", new String[]{"quant_limit", "dilution_factor"}));
-        columnMasterMap.put("expected_value", new FormatColumn("expected_value", null, null));
-        columnMasterMap.put("expected_value_dilut", new FormatColumn("expected_value_dilut", "%s*%s", new String[]{"expected_value", "dilution_factor"}));
-        columnMasterMap.put("percent_recovery", new FormatColumn("percent_recovery", "(%s/%s)*100", new String[]{"final_value","expected_value"}));
-        columnMasterMap.put("sample_volume", new FormatColumn("sample_volume", null, null));
-        columnMasterMap.put("extract_volume", new FormatColumn("extract_volume", null, null));
-        columnMasterMap.put("instrument_run_id", new FormatColumn("instrument_run_id", null, null));
-        columnMasterMap.put("retention_time", new FormatColumn("retention_time", null, null));
-        columnMasterMap.put("response", new FormatColumn("response", null, null));
-        columnMasterMap.put("molecular_weight", new FormatColumn("molecular_weight", null, null));
-        columnMasterMap.put("desorp_efficiency", new FormatColumn("desorp_efficiency", null, null));
-    }
-*/    
+
     private void createStyles(HSSFWorkbook wb) {
         CellStyle headerStyle, rowEditStyle, rowNoEditStyle;
         Font      font;
@@ -758,34 +724,12 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         rowNoEditStyle.setLocked(true);
         styles.put("row_no_edit", rowNoEditStyle);
     }
-/*
-    private void updateHeader(HSSFSheet sheet, Row row, HashMap<String,String> cellNames) {
-        int                  i;
-        Cell                 cell;
-        FormatColumn         column;
-        ArrayList<AnalyteDO> analytes;
 
-        row = sheet.getRow(0);
-
-        // Add additional header cells for analytes not in format, but in master list
-        for (i = 0; i < formatColumns.size(); i++) {
-            column = formatColumns.get(i);
-            cell = row.createCell(i+9);
-            cell.setCellStyle(styles.get("header"));
-            
-            try {
-                analytes = analyteLocal().fetchByExternalId(column.getName(), 10);
-                cell.setCellValue(analytes.get(0).getName());
-            } catch (Exception anyE) {
-                cell.setCellValue(column.getName());
-            }
-        }
-    }
-*/
     private int createResultCellsForFormat(HSSFSheet sheet, Row row, Row tRow, String nameIndexPrefix,
                                            HashMap<String,String> cellNames, AnalysisResultManager arManager,
                                            WorksheetResultManager wrManager) {
-        int                   c, i, /*j, */r;
+        int                   c, i, r;
+        Integer               resultTypeDictionary;
         String                cellNameIndex, name;
         Cell                  cell, tCell;
         Date                  tempDate;
@@ -796,6 +740,15 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         WorksheetResultViewDO wrVDO;
         
         r = row.getRowNum();
+
+        try {
+            resultTypeDictionary = dictionaryLocal.fetchBySystemName("test_res_type_dictionary").getId();
+        } catch (Exception anyE) {
+            // TODO: Code proper exception handling
+            anyE.printStackTrace();
+            return r;
+        }
+
         for (i = 0; i < wrManager.count(); i++, r++) {
             wrVDO = wrManager.getWorksheetResultAt(i);
             if (i != 0) {
@@ -864,7 +817,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
             for (c = 0; c < arManager.getRowAt(wrVDO.getResultRow()).size(); c++) {
                 rVDO = arManager.getResultAt(wrVDO.getResultRow(), c);
                 try {
-                    aDO = analyteLocal().fetchById(rVDO.getAnalyteId());
+                    aDO = analyteLocal.fetchById(rVDO.getAnalyteId());
                     if (!"Y".equals(rVDO.getIsColumn()))
                         cellName = sheet.getWorkbook().getName("final_value."+cellNameIndex);
                     else
@@ -874,7 +827,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                         cell = getCellForName(sheet, cellName.getNameName());
                         if (cell.getStringCellValue() == null || cell.getStringCellValue().length() == 0) {
                             if (resultTypeDictionary.equals(rVDO.getTypeId())) {
-                                dVDO = dictLocal().fetchById(Integer.valueOf(rVDO.getValue()));
+                                dVDO = dictionaryLocal.fetchById(Integer.valueOf(rVDO.getValue()));
                                 cell.setCellValue(dVDO.getEntry());
                             } else {
                                 cell.setCellValue(rVDO.getValue());
@@ -964,7 +917,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
             }
             
             try {
-                qcaVDO = qcAnaLocal().fetchById(wqrVDO.getQcAnalyteId());
+                qcaVDO = qcAnalyteLocal.fetchById(wqrVDO.getQcAnalyteId());
                 cellName = sheet.getWorkbook().getName("expected_value"+cellNameIndex);
                 if (cellName != null && !cellName.isDeleted()) {
                     cell = getCellForName(sheet, cellName.getNameName());
@@ -1001,122 +954,12 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         }
     }
     
-    private AnalyteLocal analyteLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (AnalyteLocal)ctx.lookup("openelis/AnalyteBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private DictionaryLocal dictLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private QcAnalyteLocal qcAnaLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (QcAnalyteLocal)ctx.lookup("openelis/QcAnalyteBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private SampleManagerLocal sampManLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (SampleManagerLocal)ctx.lookup("openelis/SampleManagerBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private SectionLocal sectionLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (SectionLocal)ctx.lookup("openelis/SectionBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-    
-    private SystemUserPermissionProxyLocal sysUserLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (SystemUserPermissionProxyLocal)ctx.lookup("openelis/SystemUserPermissionProxyBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-    
-    private SystemVariableLocal sysVarLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (SystemVariableLocal)ctx.lookup("openelis/SystemVariableBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-/*    
-    private ArrayList<FormatColumn> getColumnListForFormat(String formatName) {
-        ArrayList<FormatColumn> colList;
-        
-        colList = new ArrayList<FormatColumn>();
-        if ("wsheet_num_format_total".equals(formatName) || "wsheet_num_format_batch".equals(formatName)) {
-            colList.add(columnMasterMap.get("raw_value1"));
-            colList.add(columnMasterMap.get("dilution_factor"));
-            colList.add(columnMasterMap.get("final_value1"));
-            colList.add(columnMasterMap.get("final_value"));
-            colList.add(columnMasterMap.get("expected_value"));
-        } else if ("format_terrycain1".equals(formatName)) {
-            colList.add(columnMasterMap.get("raw_value1"));
-            colList.add(columnMasterMap.get("raw_value2"));
-            colList.add(columnMasterMap.get("dilution_factor"));
-            colList.add(columnMasterMap.get("final_value1"));
-            colList.add(columnMasterMap.get("final_value2"));
-            colList.add(columnMasterMap.get("final_value"));
-            colList.add(columnMasterMap.get("range_low"));
-            colList.add(columnMasterMap.get("range_high"));
-            colList.add(columnMasterMap.get("quant_limit"));
-            colList.add(columnMasterMap.get("final_quant_limit"));
-            colList.add(columnMasterMap.get("expected_value"));
-            colList.add(columnMasterMap.get("expected_value_dilut"));
-            colList.add(columnMasterMap.get("percent_recovery"));
-            colList.add(columnMasterMap.get("sample_volume"));
-            colList.add(columnMasterMap.get("extract_volume"));
-            colList.add(columnMasterMap.get("instrument_run_id"));
-            colList.add(columnMasterMap.get("retention_time"));
-            colList.add(columnMasterMap.get("response"));
-            colList.add(columnMasterMap.get("molecular_weight"));
-            colList.add(columnMasterMap.get("desorp_efficiency"));
-        } else {
-            colList.add(columnMasterMap.get("raw_value1"));
-            colList.add(columnMasterMap.get("final_value"));
-            colList.add(columnMasterMap.get("expected_value"));
-        }
-        
-        return colList;
-    }
-*/    
     private ArrayList<DictionaryDO> getStatuses() {
         ArrayList<DictionaryDO> statusDOs;
 
         statusDOs = new ArrayList<DictionaryDO>();
         try {
-            statusDOs = dictLocal().fetchByCategorySystemName("analysis_status");
+            statusDOs = dictionaryLocal.fetchByCategorySystemName("analysis_status");
         } catch (Exception anyE) {
             System.out.println(anyE.getMessage());
         }
@@ -1192,7 +1035,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         
         dirName = "";
         try {
-            sysVars = sysVarLocal().fetchByName("worksheet_output_directory", 1);
+            sysVars = systemVariableLocal.fetchByName("worksheet_output_directory", 1);
             if (sysVars.size() > 0)
                 dirName = ((SystemVariableDO)sysVars.get(0)).getValue();
         } catch (Exception anyE) {
@@ -1201,7 +1044,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
         userVO = null;
         try {
-            userVO = sysUserLocal().fetchById(userId);
+            userVO = systemUserLocal.fetchById(userId);
         } catch (Exception anyE) {
             throw new Exception("Error retrieving username for worksheet: "+anyE.getMessage());
         }
@@ -1215,7 +1058,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         
         dirName = "";
         try {
-            sysVars = sysVarLocal().fetchByName("worksheet_template_directory", 1);
+            sysVars = systemVariableLocal.fetchByName("worksheet_template_directory", 1);
             if (sysVars.size() > 0)
                 dirName = ((SystemVariableDO)sysVars.get(0)).getValue();
         } catch (Exception anyE) {
@@ -1389,7 +1232,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         newBundle = null;
         sManager = bundle.getSampleManager();
         if (!manager.getLockedManagers().containsKey(sManager.getSample().getAccessionNumber())) {
-            sManager = sampManLocal().fetchForUpdate(sManager.getSample().getId());
+            sManager = sampleManagerLocal.fetchForUpdate(sManager.getSample().getId());
             manager.getLockedManagers().put(sManager.getSample().getAccessionNumber(), sManager);
             manager.getSampleManagers().put(sManager.getSample().getAccessionNumber(), sManager);
             siManager = sManager.getSampleItems();
