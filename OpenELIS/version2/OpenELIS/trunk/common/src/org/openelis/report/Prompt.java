@@ -162,16 +162,18 @@ public class Prompt implements RPC {
         return dt_StartCode;
     }
 
-    public void setDatetimeStartCode(Datetime startCode) {
+    public Prompt setDatetimeStartCode(Datetime startCode) {
         this.dt_StartCode = startCode;
+        return this;
     }
 
     public Datetime getDatetimeEndCode() {
         return dt_EndCode;
     }
 
-    public void setDt_EndCode(Datetime datetimeEndCode) {
+    public Prompt setDatetimeEndCode(Datetime datetimeEndCode) {
         this.dt_EndCode = datetimeEndCode;
+        return this;
     }
 
     /**
